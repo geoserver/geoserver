@@ -32,7 +32,9 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     Set<String> getMapMimeTypes = new HashSet<String>();
     
     boolean dynamicStylingDisabled;
-    
+
+    // GetFeatureInfo result are reprojected by default
+    private boolean featuresReprojectionDisabled = false;
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -202,5 +204,15 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     @Override
     public Boolean isDynamicStylingDisabled() {
         return dynamicStylingDisabled;
+    }
+
+    @Override
+    public boolean isFeaturesReprojectionDisabled() {
+        return featuresReprojectionDisabled;
+    }
+
+    @Override
+    public void setFeaturesReprojectionDisabled(boolean featuresReprojectionDisabled) {
+        this.featuresReprojectionDisabled = featuresReprojectionDisabled;
     }
 }

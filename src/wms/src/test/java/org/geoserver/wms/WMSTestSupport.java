@@ -10,6 +10,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.geoserver.data.test.MockData.WORLD;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.*;
 
 import java.awt.Color;
 import java.awt.Frame;
@@ -59,6 +62,7 @@ import org.geotools.styling.Style;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.geotools.xml.transform.TransformerBase;
+import org.junit.Assert;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -602,4 +606,27 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         }
     }
 
+    /**
+     * Check that a number represent by a string is similar to the expected number
+     * A number is considered similar to another if the difference between them is
+     * inferior or equal to the provided precision.
+     *
+     * @param rawValue raw value that should contain a number
+     * @param expected the expected numeric value
+     * @param precision precision that should be used to compare the two values
+     */
+    public static void checkNumberSimilar(String rawValue, double expected, double precision) {
+        // try to extract a double value
+        assertThat(rawValue, is(notNullValue()));
+        assertThat(rawValue.trim().isEmpty(), is(false));
+        double value = 0;
+        try {
+            value = Double.parseDouble(rawValue);
+        } catch (NumberFormatException exception) {
+            Assert.fail(String.format("Value '%s' is not a number.", rawValue));
+        }
+        // compare the parsed double value with the expected one
+        double difference = Math.abs(expected - value);
+        assertThat(difference <= precision, is(true));
+    }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns="http://www.opengis.net/wfs"
+                       xmlns:gml="http://www.opengis.net/gml"
+                       xmlns:sf="http://www.openplans.org/spearfish"
+                       xmlns:wfs="http://www.opengis.net/wfs"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/wfs http://localhost:8076/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd http://www.openplans.org/spearfish http://localhost:8076/geoserver/wfs?service=WFS&amp;version=1.0.0&amp;request=DescribeFeatureType&amp;typeName=sf%3Abugsites">
+  <gml:boundedBy>
+    <gml:null>unknown</gml:null>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <sf:bugsites fid="bugsites.55">
+      <sf:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#3857">
+          <gml:coordinates cs="," decimal="." ts=" " xmlns:gml="http://www.opengis.net/gml">-1.155686787398436E7,5527291.47718493</gml:coordinates>
+        </gml:Point>
+      </sf:the_geom>
+      <sf:cat>55</sf:cat>
+      <sf:str1>Beetle site</sf:str1>
+    </sf:bugsites>
+  </gml:featureMember>
+  <gml:featureMember>
+    <sf:bugsites fid="bugsites.58">
+      <sf:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#3857">
+          <gml:coordinates cs="," decimal="." ts=" " xmlns:gml="http://www.opengis.net/gml">-1.155670642380653E7,5527242.84807767</gml:coordinates>
+        </gml:Point>
+      </sf:the_geom>
+      <sf:cat>58</sf:cat>
+      <sf:str1>Beetle site</sf:str1>
+    </sf:bugsites>
+  </gml:featureMember>
+</wfs:FeatureCollection>

@@ -126,8 +126,12 @@ The usage of dynamic styling can be restricted on a global or per virtual servic
 .. figure:: img/service_WMS_disableDynamicStyling.png
      
 When the flag is checked, a GetMap/GetFeatureInfo request with a dynamic style will result in a service exception reporting the error.
+
+Disabling GetFeatureInfo requests results reprojection
+------------------------------------------------------
+
+By default GetFeatureInfo results are reproject to the map coordinate reference system. This behavior can be deactivated on a global or per virtual service basis in the **GetFeatureInfo results reprojection** section. 
+
+.. figure:: img/service_WMS_disableFeaturesReprojection.png
      
-     
-     
-     
-     
+When the flag is checked, GetFeatureInfo requests results will not be reprojected and will instead used the layer coordinate reference system.

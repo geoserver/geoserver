@@ -52,7 +52,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
                     req.setOutputFormat("text/xml; subtype=gml/3.1.1"); break;
                 case V_20:
                 default:
-                    req.setOutputFormat("text/xml; subtype=gml/3.2");
+                    req.setOutputFormat("application/gml+xml; version=3.2");
             }
         }
 

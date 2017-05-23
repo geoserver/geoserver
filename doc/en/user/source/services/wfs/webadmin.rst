@@ -112,5 +112,13 @@ is not selected, OGC WKT format will be used. If this checkbox is selected, ESRI
 
 Note: this requires an ``esri.properties`` file to be provided in the ``user_projections`` subdirectory of the GeoServer data directory. This may be obtained from the GeoTools EPSG extension.
 
+Override GML 3.2 MIME type
+--------------------------
 
+The default MIME used for GML 3.2 encoded responses is ``application/gml+xml; version=3.2`` which is the MIME type mandated by OGC WFS 2.0 specification. This MIME type is not identified as XML by most common clients like browsers. 
 
+Option :guilabel:`Override MIME Type` allows the selection of the MIME type that should be used for the responses encoded in GML 3.2.  
+
+.. figure:: img/services_WFS_mimetype.png
+
+The available MIME types are: ``application/gml+xml; version=3.2``, ``text/xml; subtype=gml/3.2`` and ``text/xml``. 

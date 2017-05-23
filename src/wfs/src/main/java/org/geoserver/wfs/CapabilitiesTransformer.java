@@ -1909,7 +1909,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         /** wfs namespace uri */
         static String WFS20_URI = "http://www.opengis.net/wfs/2.0";
         /** gml 3.2 mime type */
-        protected static final String GML32_FORMAT = "text/xml; subtype=gml/3.2";
+        protected static final String GML32_FORMAT = "application/gml+xml; version=3.2";
         
         /** filter namespace + prefix */
         protected static final String FES_PREFIX = "fes";

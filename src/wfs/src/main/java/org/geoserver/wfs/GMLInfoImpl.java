@@ -5,10 +5,14 @@
  */
 package org.geoserver.wfs;
 
+import java.util.Optional;
+
 public class GMLInfoImpl implements GMLInfo {
 
     SrsNameStyle srsNameStyle = SrsNameStyle.NORMAL;
     Boolean overrideGMLAttributes;
+
+    private String mimeTypeToForce;
     
     public SrsNameStyle getSrsNameStyle() {
         return srsNameStyle;
@@ -51,5 +55,13 @@ public class GMLInfoImpl implements GMLInfo {
         return true;
     }
 
-    
+    @Override
+    public Optional<String> getMimeTypeToForce() {
+        return Optional.ofNullable(mimeTypeToForce);
+    }
+
+    @Override
+    public void setMimeTypeToForce(String mimeTypeToForce) {
+        this.mimeTypeToForce = mimeTypeToForce;
+    }
 }

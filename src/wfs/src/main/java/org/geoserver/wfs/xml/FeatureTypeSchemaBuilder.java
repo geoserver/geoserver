@@ -978,7 +978,7 @@ public abstract class FeatureTypeSchemaBuilder {
             describeFeatureTypeParams =  params("request", "DescribeFeatureType", 
                     "version", "2.0.0",
                     "service", "WFS", 
-                    "outputFormat", "text/xml; subtype=gml/3.2");
+                    "outputFormat", "application/gml+xml; version=3.2");
             xmlConfiguration = new org.geotools.gml3.v3_2.GMLConfiguration();
         }
 

@@ -5,7 +5,9 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,7 +31,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.gml3.v3_2.GML;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -60,9 +62,16 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     @Test
     public void testGet() throws Exception {
         String typeName = getLayerId(CiteTestData.PRIMITIVEGEOFEATURE);
-        Document doc = getAsDOM(
-            "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + typeName);
+        MockHttpServletResponse response = getAsServletResponse(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + typeName);
+        assertThat(response.getContentType(), is("application/gml+xml; version=3.2"));
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+        // override GML 3.2 MIME type with text / xml
+        setGmlMimeTypeOverride("text/xml");
+        response = getAsServletResponse(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + typeName);
+        assertThat(response.getContentType(), is("text/xml"));
     }
     
     @Test
@@ -94,9 +103,15 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
           + "xmlns:sf='" + CiteTestData.PRIMITIVEGEOFEATURE.getNamespaceURI() + "'>" 
           + " <wfs:TypeName>" + typeName + "</wfs:TypeName>"
           + "</wfs:DescribeFeatureType>";
-        
-        Document doc = postAsDOM("wfs", xml);
+
+        MockHttpServletResponse response =  postAsServletResponse("wfs", xml);
+        assertThat(response.getContentType(), is("application/gml+xml; version=3.2"));
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+        // override GML 3.2 MIME type with text / xml
+        setGmlMimeTypeOverride("text/xml");
+        response = postAsServletResponse("wfs", xml);
+        assertThat(response.getContentType(), is("text/xml"));
     }
     
     

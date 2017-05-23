@@ -11,12 +11,33 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.Service; 
+import org.geoserver.platform.Service;
+import org.geoserver.wfs.GMLInfo;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Before;
 import org.w3c.dom.Document;
 
 public class WFS20TestSupport extends WFSTestSupport {
+
+    @Before
+    public void beforeTest() {
+        // deactivate GML MIME type overriding
+        setGmlMimeTypeOverride(null);
+    }
+
+    /**
+     * Helper method that just sets the GML 3.2 MIME type to force. If NULL
+     * is provided then GML MIME type overriding will be deactivated. This
+     * changes will be applied to WFS global configuration.
+     */
+    protected void setGmlMimeTypeOverride(String mimeTypeToForce) {
+        WFSInfo info = getGeoServer().getService(WFSInfo.class);
+        GMLInfo gmlInfo = info.getGML().get(WFSInfo.Version.V_20);
+        gmlInfo.setMimeTypeToForce(mimeTypeToForce);
+        getGeoServer().save(info);
+    }
 
     @Override
     protected void setUpNamespaces(Map<String, String> namespaces) {

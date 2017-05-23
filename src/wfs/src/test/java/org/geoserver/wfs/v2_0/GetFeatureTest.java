@@ -34,6 +34,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class GetFeatureTest extends WFS20TestSupport {
 
     @Before
@@ -1051,4 +1054,31 @@ public class GetFeatureTest extends WFS20TestSupport {
                 "//wfs:FeatureCollection/wfs:member/cdf:Fifteen/@gml:id", doc);
     }
 
+    @Test
+    public void testGml32MimeType() throws Exception {
+        // test GET request
+        String url = "wfs?request=GetFeature&typeName=cdf:Fifteen&version=2.0" +
+                "&service=wfs&featureid=Fifteen.2&outputFormat=gml32";
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertThat(response.getContentType(), is("application/gml+xml; version=3.2"));
+        // override GML 3.2 MIME type with text / xml
+        setGmlMimeTypeOverride("text/xml");
+        response =  getAsServletResponse(url);
+        assertThat(response.getContentType(), is("text/xml"));
+        setGmlMimeTypeOverride(null);
+        // test POST request
+        String xml = "<wfs:GetFeature service='WFS' version='2.0.0'" +
+                "                xmlns:cdf='http://www.opengis.net/cite/data'" +
+                "                xmlns:wfs='http://www.opengis.net/wfs/2.0'>" +
+                "    <wfs:Query typeNames='cdf:Other'>" +
+                "        <wfs:PropertyName>cdf:string2</wfs:PropertyName>" +
+                "    </wfs:Query>" +
+                "</wfs:GetFeature>";
+        response = postAsServletResponse("wfs", xml);
+        assertThat(response.getContentType(), is("application/gml+xml; version=3.2"));
+        // override GML 3.2 MIME type with text / xml
+        setGmlMimeTypeOverride("text/xml");
+        response =  postAsServletResponse("wfs", xml);
+        assertThat(response.getContentType(), is("text/xml"));
+    }
 }

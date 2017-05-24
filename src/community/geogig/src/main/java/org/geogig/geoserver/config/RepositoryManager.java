@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.geogig.geoserver.config.ConfigStore.RepositoryInfoChangedCallback;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -86,6 +87,15 @@ public class RepositoryManager implements GeoServerInitializer {
     private Catalog catalog;
     
     private static final String REPO_ROOT = "geogig/repos";
+    
+    private static final RepositoryInfoChangedCallback REPO_CHANGED_CALLBACK = new RepositoryInfoChangedCallback() {
+		@Override
+		public void repositoryInfoChanged(String repoId) {
+			if (INSTANCE != null && INSTANCE.repoCache != null) {
+				INSTANCE.repoCache.invalidate(repoId);
+			}
+		}
+    };
 
     public static synchronized RepositoryManager get() {
         if (INSTANCE == null) {
@@ -97,6 +107,7 @@ public class RepositoryManager implements GeoServerInitializer {
 
     public static void close() {
         if (INSTANCE != null) {
+        	INSTANCE.configStore.removeRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
             INSTANCE.repoCache.invalidateAll();
             INSTANCE = null;
         }
@@ -112,6 +123,7 @@ public class RepositoryManager implements GeoServerInitializer {
         this.configStore = configStore;
         this.resourceStore = resourceStore;
         this.repoCache = new RepositoryCache(this);
+        this.configStore.addRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
     }
 
     @Override

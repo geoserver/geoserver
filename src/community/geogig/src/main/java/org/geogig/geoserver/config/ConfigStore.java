@@ -18,8 +18,10 @@ import java.io.Reader;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -76,6 +78,8 @@ public class ConfigStore {
     private ResourceStore resourceLoader;
 
     private final ReadWriteLock lock;
+    
+    private Queue<RepositoryInfoChangedCallback> callbacks;
 
     /**
      * Map of cached {@link RepositoryInfo} instances key'ed by id
@@ -89,6 +93,7 @@ public class ConfigStore {
             throw new IllegalStateException("Unable to create config directory " + CONFIG_DIR_NAME);
         }
         this.lock = new ReentrantReadWriteLock();
+        this.callbacks = new ConcurrentLinkedQueue<RepositoryInfoChangedCallback>();
         populateCache();
 
     	ResourceNotificationDispatcher dispatcher = resourceLoader.getResourceNotificationDispatcher();
@@ -96,19 +101,40 @@ public class ConfigStore {
 			@Override
 			public void changed(ResourceNotification notify) {
 				for (Event event : notify.events()) {
+					String path = event.getPath().startsWith(CONFIG_DIR_NAME) ? event.getPath() : CONFIG_DIR_NAME + "/" + event.getPath();
+					String repoId = idFromPath(path);
 					switch (event.getKind()) {
 					case ENTRY_CREATE:
 					case ENTRY_MODIFY:
-						cache.remove(idFromPath(event.getPath()));
-						loadResource(resourceLoader.get(event.getPath()));
+						cache.remove(repoId);
+						loadResource(resourceLoader.get(path));
 						break;
 					case ENTRY_DELETE:
-						cache.remove(idFromPath(event.getPath()));
+						cache.remove(repoId);
 						break;
 					}
+					repositoryInfoChanged(repoId);
 				}
 			}
 		});
+    }
+    
+    /**
+     * Add a callback that will be called whenever a RepositoryInfo is changed.
+     * 
+     * @param callback the callback
+     */
+    public void addRepositoryInfoChangedCallback(RepositoryInfoChangedCallback callback) {
+    	this.callbacks.add(callback);
+    }
+    
+    /**
+     * Remove a callback that was previously added to the config store.
+     * 
+     * @param callback the callback
+     */
+    public void removeRepositoryInfoChangedCallback(RepositoryInfoChangedCallback callback) {
+    	this.callbacks.remove(callback);
     }
 
     /**
@@ -204,6 +230,12 @@ public class ConfigStore {
         } catch (IOException e) {
             // log the bad info
             LOGGER.log(Level.WARNING, "Error loading RepositoryInfo", e);
+        }
+    }
+    
+    private void repositoryInfoChanged(String repoId) {
+        for (RepositoryInfoChangedCallback callback : callbacks) {
+        	callback.repositoryInfoChanged(repoId);
         }
     }
     
@@ -330,4 +362,8 @@ public class ConfigStore {
             return input.name().endsWith(".xml");
         }
     };
+    
+    public static abstract class RepositoryInfoChangedCallback {
+    	public abstract void repositoryInfoChanged(String repoId);
+    }
 }

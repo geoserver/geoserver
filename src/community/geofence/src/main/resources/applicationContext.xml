@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="
-	    	http://www.springframework.org/schema/beans
-	   		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context-2.5.xsd
-			http://www.springframework.org/schema/aop
-			http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
 	default-autowire="byName">
 
-
-	<bean id="geofence-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
-		<property name="order" value="5"/>
-        
+    <bean id="geofence-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
         <constructor-arg ref="dataDirectory"/>
 
+        <property name="order" value="5"/>
         <property name="ignoreResourceNotFound" value="true" />
-		<property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
 
         <!-- This location is relative to the datadir -->
         <property name="location" value="file:geofence/geofence.properties"/>
@@ -31,7 +24,7 @@
                      anyway this value is used at least twice, so it's better to define it here
                 -->
                 <prop key="servicesUrl">http://localhost:8081/geofence/remoting/RuleReader</prop>
-                                
+
                 <!-- The frontend will be injected in the access manager. -->
                 <!-- You may replace the cachedRuleReader ref with remoteReaderService in order to disable the caching -->
                 <prop key="ruleReaderFrontend">cachedRuleReader</prop>
@@ -40,9 +33,13 @@
                 <!-- We need this entry to allow geofence-server to replace the backend with the local bean -->
                 <prop key="ruleReaderBackend">remoteReaderService</prop>
             </props>
-          </property>
+        </property>
 
-	</bean>
+    </bean>
+
+    <bean id="geofenceRestController" class="org.geoserver.geofence.rest.GeoFenceController"/>
+    <bean id="geofenceCacheRestController" class="org.geoserver.geofence.rest.CacheController"/>
+
 
     <bean id="geofenceConfigurationManager" class="org.geoserver.geofence.config.GeoFenceConfigurationManager">
         <property name="configurer" ref="geofence-configurer"/>
@@ -69,14 +66,7 @@
     </bean>
 
 
-	<!-- TODO: add authorization to these requests using the hints at
-	     http://book.javanb.com/Professional-Java-Development-with-the-Spring-Framework/BBL0071.html
-	-->
-	<!--
-	    see if you can add some ehcache proxy interceptor when we switch to using remoted services
-	-->
-
-	<bean id="remoteReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
+    <bean id="remoteReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="${servicesUrl}"/>
         <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
     </bean>
@@ -87,73 +77,19 @@
         <property name="realRuleReaderService" ref="${ruleReaderBackend}"/>
     </bean>
 
-	<bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
-		<constructor-arg index="0" ref="${ruleReaderFrontend}" />
-		<constructor-arg index="1" ref="rawCatalog" />
-		<constructor-arg index="2" ref="geofenceConfigurationManager" />
-	</bean>
+    <bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
+            <constructor-arg index="0" ref="${ruleReaderFrontend}" />
+            <constructor-arg index="1" ref="rawCatalog" />
+            <constructor-arg index="2" ref="geofenceConfigurationManager" />
+    </bean>
 
     <bean id="geofenceConfigurationController" class="org.geoserver.geofence.config.GeoFenceConfigurationController">
         <property name="cachedRuleReader" ref="cachedRuleReader"/>
         <property name="configurationManager" ref="geofenceConfigurationManager"/>
     </bean>
 
-
-    <!-- =================================================================== -->
-    <!-- Next part is about REST command against the cache -->
-    <!-- =================================================================== -->
-
-    <bean id="ruleReaderCacheMapping" class="org.geoserver.rest.RESTMapping">
-        <property name="routes">
-            <map>
-                <entry>
-                    <key>
-                        <value>/ruleCache/info</value>
-                    </key>
-                    <value>ruleCacheStatsFinder</value>
-                </entry>
-                <entry>
-                    <key>
-                        <value>/ruleCache/invalidate</value>
-                    </key>
-                    <value>ruleCacheInvalidator</value>
-                </entry>
-            </map>
-        </property>
-    </bean>
-    
-    
-    <bean id="ruleCacheStatsFinder" class="org.geoserver.geofence.cache.rest.RuleCacheStatsFinder" >
-        <constructor-arg index="0" ref="cachedRuleReader"/>
-    </bean>
-    
-    
-    <bean id="ruleCacheInvalidator" class="org.geoserver.geofence.cache.rest.RuleCacheInvalidator" scope="prototype">
-        <constructor-arg index="0" ref="cachedRuleReader"/>
-    </bean>
-
-	<!-- =================================================================== -->
-    <!-- Next part is about REST command against accessManager -->
-    <!-- =================================================================== -->
-	<bean id="accessManagerMapping" class="org.geoserver.rest.RESTMapping" scope="prototype">
-		<property name="routes">
-            <map>
-                <entry>
-                    <key>
-                        <value>/geofence/info</value>
-                    </key>
-                    <value>geofenceInfo</value>
-                </entry>
-            </map>
-        </property>
-	</bean>
-
-	<bean id="geofenceInfo" class="org.geoserver.geofence.rest.GeoFenceInfo" scope="prototype">
-        <constructor-arg index="0" ref="geofenceConfigurationManager"/>
-    </bean>
-
     <!-- geoserver auth mechanism -->
-	
+
     <bean id="geofenceFilter" class="org.geoserver.geoserver.authentication.filter.GeoFenceAuthFilterProvider">
         <property name="ruleReaderService" ref="${ruleReaderFrontend}"/>
         <property name="geofenceAuth" ref="geofenceAuth"/>
@@ -166,17 +102,17 @@
 
     <!-- Admin page -->
     <bean id="geofencePage" class="org.geoserver.web.MenuPageInfo">
-      <property name="id" value="geofencePage"/>
-      <property name="titleKey" value="GeofencePage.page.title"/>
-      <property name="descriptionKey" value="GeofencePage.page.description"/>
-      <property name="componentClass" value="org.geoserver.geofence.web.GeofencePage"/>
-      <property name="category" ref="securityCategory" />
-      <property name="order" value="1000" />
-      <property name="icon" value="img/icons/geofence.png" />
+        <property name="id" value="geofencePage"/>
+        <property name="titleKey" value="GeofencePage.page.title"/>
+        <property name="descriptionKey" value="GeofencePage.page.description"/>
+        <property name="componentClass" value="org.geoserver.geofence.web.GeofencePage"/>
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="1000" />
+        <property name="icon" value="img/icons/geofence.png" />
     </bean>
 
 
-  <!-- ui auth provider panel info-->
+    <!-- ui auth provider panel info-->
     <bean id="geofenceAuthPanelInfo" class="org.geoserver.geofence.web.authentication.GeoFenceAuthProviderPanelInfo">
         <property name="id" value="security.geofenceAuthProvider" />
         <property name="shortTitleKey"  value="GeoFenceAuthProviderPanel.short"/>
@@ -184,6 +120,8 @@
         <property name="descriptionKey" value="GeoFenceAuthProviderPanel.description"/>
     </bean>
 
-    <bean id="geoFenceXStreamInitializer" class="org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer"  lazy-init="false">
+    <bean id="geoFenceXStreamInitializer" 
+          class="org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer"
+          lazy-init="false">
     </bean>
 </beans>

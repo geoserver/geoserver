@@ -56,7 +56,13 @@
             <groupId>org.geoserver</groupId>
             <artifactId>gs-rest</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-restconfig</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -75,7 +81,7 @@
             </exclusions>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
@@ -135,7 +141,6 @@
                 <includes>
                     <include>**/*.html</include>
                 </includes>
-            
             </resource>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
@@ -143,7 +148,7 @@
                     <include>**/*</include>
                 </includes>
             </resource>
-        </resources>        
+        </resources>
     </build>
 </project>
 

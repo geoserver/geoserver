@@ -57,7 +57,7 @@
           <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
-          <!-- <descriptor>release/ext-geofence.xml</descriptor> -->
+          <descriptor>release/ext-geofence.xml</descriptor>
           <!-- <descriptor>release/ext-sldservice.xml</descriptor> -->
           <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
@@ -214,7 +214,7 @@
         <module>hz-cluster</module>
         <module>solr</module>
         <!-- <module>rest-upload</module> -->
-        <!-- <module>geofence</module> -->
+        <module>geofence</module>
         <module>geofence-server</module>
         <!-- <module>sldService</module> -->
         <module>params-extractor</module>

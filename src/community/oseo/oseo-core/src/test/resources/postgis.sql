@@ -197,4 +197,4 @@ create table granule (
   product_id int references product("id"),
   location varchar,
   the_geom geometry(Polygon, 4326)
-)
+);

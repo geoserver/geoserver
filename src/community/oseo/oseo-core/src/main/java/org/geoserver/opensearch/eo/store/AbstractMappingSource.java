@@ -6,6 +6,7 @@ package org.geoserver.opensearch.eo.store;
 
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.METADATA_PROPERTY_NAME;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.OGC_LINKS_PROPERTY_NAME;
+import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 
 import java.awt.RenderingHints.Key;
 import java.io.IOException;
@@ -60,8 +61,6 @@ import org.opengis.filter.sort.SortOrder;
 public abstract class AbstractMappingSource implements FeatureSource<FeatureType, Feature> {
 
     static final Logger LOGGER = Logging.getLogger(AbstractMappingSource.class);
-
-    protected static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     protected JDBCOpenSearchAccess openSearchAccess;
 

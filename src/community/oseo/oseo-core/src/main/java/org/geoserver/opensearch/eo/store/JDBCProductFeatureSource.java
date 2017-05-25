@@ -4,6 +4,8 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 

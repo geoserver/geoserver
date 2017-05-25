@@ -8,18 +8,19 @@
   
   <bean id="geogigRepoManager" class="org.geogig.geoserver.config.RepositoryManager">
     <constructor-arg ref="geogigConfigStore"/>
+    <constructor-arg ref="resourceLoader"/>
   </bean>
 
   <bean id="geoGigGeoServerLifeCycleListener" class="org.geogig.geoserver.config.GeoGigGeoServerLifeCycleListener">
   </bean>
 
-  <bean id="geogigSecurityLogStore" class="org.geogig.geoserver.config.LogStore">
+  <!-- <bean id="geogigSecurityLogStore" class="org.geogig.geoserver.config.LogStore">
     <constructor-arg ref="resourceLoader"/>
   </bean>
 
   <bean id="geogigSecurityLogger" class="org.geogig.geoserver.security.SecurityLogger">
     <constructor-arg ref="geogigSecurityLogStore"/>
-  </bean>
+  </bean> -->
 
   <!--  REST  -->
 

@@ -201,7 +201,6 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
             return null;
         }
         try {
-            RepositoryInfo info = manager.get(repoId);
             return manager.getRepository(repoId);
         } catch (IOException e) {
             throw new RestletException("Error accessing datastore " + repositoryName,

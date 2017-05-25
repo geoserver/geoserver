@@ -15,18 +15,15 @@ import static org.geogig.geoserver.config.LogStore.PROP_SCRIPT;
 import static org.geogig.geoserver.config.LogStore.PROP_URL;
 import static org.geogig.geoserver.config.LogStore.PROP_USER;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -39,6 +36,8 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Charsets;
@@ -72,9 +71,9 @@ class LogStoreInitializer {
         }
     }
 
-    static DataSource newDataSource(final Properties properties, final File configFile) {
+    static DataSource newDataSource(final Properties properties, final Resource configResource) {
         final String driverName = properties.getProperty(PROP_DRIVER_CLASS);
-        checkNotNull(driverName, "driverName not provided in properties file %s", configFile);
+        checkNotNull(driverName, "driverName not provided in properties resource %s", configResource.path());
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
@@ -83,7 +82,7 @@ class LogStoreInitializer {
         }
 
         final String jdbcUrl = properties.getProperty(PROP_URL);
-        checkArgument(jdbcUrl != null, "url not provided in properties file %s", configFile);
+        checkArgument(jdbcUrl != null, "url not provided in properties resource %s", configResource.path());
         final String username = properties.getProperty(PROP_USER);
         final String password = properties.getProperty(PROP_PASSWORD);
         final String maxConnectionsProp = properties.getProperty(PROP_MAX_CONNECTIONS);
@@ -121,16 +120,16 @@ class LogStoreInitializer {
         return dataSource;
     }
 
-    static void createDefaultConfig(final File propertiesFile) throws IOException {
-        final File configDirectory = propertiesFile.getParentFile();
-        final File dbFile = new File(configDirectory, "securitylogs.db");
+    static void createDefaultConfig(final Resource propertiesResource) throws IOException {
+        final Resource configDirectory = propertiesResource.parent();
+        final Resource dbFile = configDirectory.get("securitylogs.db");
         final String driverClassName = "org.sqlite.JDBC";
-        final String jdbcUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+        final String jdbcUrl = "jdbc:sqlite:" + dbFile.file().getAbsolutePath();
 
-        createDefaultPropertiesFile(propertiesFile, driverClassName, jdbcUrl);
+        createDefaultPropertiesFile(propertiesResource, driverClassName, jdbcUrl);
     }
 
-    private static void createDefaultPropertiesFile(final File propertiesFile,
+    private static void createDefaultPropertiesFile(final Resource propertiesResource,
             final String driverClassName, final String jdbcUrl) {
         Properties props = new Properties();
         props.setProperty(PROP_ENABLED, "true");
@@ -141,19 +140,14 @@ class LogStoreInitializer {
         props.setProperty(PROP_MAX_CONNECTIONS, "1");
         props.setProperty(PROP_SCRIPT, "sqlite.sql");
         props.setProperty(PROP_RUN_SCRIPT, "true");
-        try {
-            propertiesFile.createNewFile();
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
 
-        saveConfig(props, propertiesFile);
+        saveConfig(props, propertiesResource);
     }
 
-    static void saveConfig(Properties props, File propertiesFile) {
+    static void saveConfig(Properties props, Resource propertiesResource) {
         String comments = configComments();
 
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(propertiesFile),
+        try (Writer writer = new OutputStreamWriter(propertiesResource.out(),
                 Charsets.UTF_8)) {
             props.store(writer, comments);
         } catch (IOException e) {
@@ -187,23 +181,22 @@ class LogStoreInitializer {
         return comments;
     }
 
-    static void copySampleInitSript(File configDirectory, String scriptName) throws IOException {
-        File file = new File(configDirectory, scriptName);
-        if (file.exists()) {
+    static void copySampleInitSript(Resource configDirectory, String scriptName) throws IOException {
+    	Resource resource = configDirectory.get(scriptName);
+    	if (!resource.getType().equals(Resource.Type.UNDEFINED)) {
             return;
         }
-        file.createNewFile();
-        try (OutputStream out = new FileOutputStream(file)) {
+        try (OutputStream out = resource.out()) {
             Resources.copy(LogStoreInitializer.class.getResource(scriptName), out);
         }
     }
 
-    static void runScript(DataSource ds, URL script) {
+    static void runScript(DataSource ds, Resource script) {
         List<String> statements = parseStatements(script);
 
         try {
             try (Connection connection = ds.getConnection()) {
-                LOGGER.info("Running script " + script.getFile());
+                LOGGER.info("Running script " + script.name());
                 for (String sql : statements) {
                     try (Statement st = connection.createStatement()) {
                         LOGGER.fine(sql);
@@ -218,12 +211,12 @@ class LogStoreInitializer {
         }
     }
 
-    private static List<String> parseStatements(URL script) {
+    private static List<String> parseStatements(Resource script) {
         List<String> lines;
         try {
-            OutputStream to = new ByteArrayOutputStream();
-            Resources.copy(script, to);
-            String scriptContents = to.toString();
+            StringWriter sw = new StringWriter();
+            IOUtils.copy(script.in(), sw);
+            String scriptContents = sw.toString();
             lines = CharStreams.readLines(new StringReader(scriptContents));
         } catch (IOException e) {
             throw Throwables.propagate(e);

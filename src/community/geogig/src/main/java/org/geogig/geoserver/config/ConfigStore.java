@@ -6,22 +6,22 @@ package org.geogig.geoserver.config;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Predicates.notNull;
 import static com.google.common.collect.Iterators.filter;
-import static com.google.common.collect.Iterators.transform;
 import static com.google.common.collect.Lists.newArrayList;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,12 +31,16 @@ import java.util.regex.Pattern;
 
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceListener;
+import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.ResourceNotification.Event;
+import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.thoughtworks.xstream.XStream;
@@ -74,30 +78,63 @@ public class ConfigStore {
     private ResourceStore resourceLoader;
 
     private final ReadWriteLock lock;
-
-    private static class CachedInfo {
-        final RepositoryInfo info;
-
-        final long lastModified;
-
-        CachedInfo(RepositoryInfo info, long lastModified) {
-            this.info = info;
-            this.lastModified = lastModified;
-        }
-    }
+    
+    private Queue<RepositoryInfoChangedCallback> callbacks;
 
     /**
      * Map of cached {@link RepositoryInfo} instances key'ed by id
      */
-    private ConcurrentMap<String, CachedInfo> cache = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, RepositoryInfo> cache = new ConcurrentHashMap<>();
 
     public ConfigStore(ResourceStore resourceLoader) {
         checkNotNull(resourceLoader, "resourceLoader");
         this.resourceLoader = resourceLoader;
-        if (null == Resources.directory(resourceLoader.get(CONFIG_DIR_NAME), true)) {
+        if (resourceLoader.get(CONFIG_DIR_NAME) == null) {
             throw new IllegalStateException("Unable to create config directory " + CONFIG_DIR_NAME);
         }
         this.lock = new ReentrantReadWriteLock();
+        this.callbacks = new ConcurrentLinkedQueue<RepositoryInfoChangedCallback>();
+        populateCache();
+
+    	ResourceNotificationDispatcher dispatcher = resourceLoader.getResourceNotificationDispatcher();
+		dispatcher.addListener(CONFIG_DIR_NAME, new ResourceListener() {
+			@Override
+			public void changed(ResourceNotification notify) {
+				for (Event event : notify.events()) {
+					String path = event.getPath().startsWith(CONFIG_DIR_NAME) ? event.getPath() : CONFIG_DIR_NAME + "/" + event.getPath();
+					String repoId = idFromPath(path);
+					switch (event.getKind()) {
+					case ENTRY_CREATE:
+					case ENTRY_MODIFY:
+						cache.remove(repoId);
+						loadResource(resourceLoader.get(path));
+						break;
+					case ENTRY_DELETE:
+						cache.remove(repoId);
+						break;
+					}
+					repositoryInfoChanged(repoId);
+				}
+			}
+		});
+    }
+    
+    /**
+     * Add a callback that will be called whenever a RepositoryInfo is changed.
+     * 
+     * @param callback the callback
+     */
+    public void addRepositoryInfoChangedCallback(RepositoryInfoChangedCallback callback) {
+    	this.callbacks.add(callback);
+    }
+    
+    /**
+     * Remove a callback that was previously added to the config store.
+     * 
+     * @param callback the callback
+     */
+    public void removeRepositoryInfoChangedCallback(RepositoryInfoChangedCallback callback) {
+    	this.callbacks.remove(callback);
     }
 
     /**
@@ -118,8 +155,7 @@ public class ConfigStore {
         Resource resource = resource(info.getId());
         try (OutputStream out = resource.out()) {
             getConfigredXstream().toXML(info, new OutputStreamWriter(out, Charsets.UTF_8));
-            long lastmodified = resource.lastmodified();
-            cache.put(info.getId(), new CachedInfo(info, lastmodified));
+            cache.put(info.getId(), info);
         } catch (IOException e) {
             throw Throwables.propagate(e);
         } finally {
@@ -133,7 +169,7 @@ public class ConfigStore {
         checkIdFormat(id);
         lock.writeLock().lock();
         try {
-            cache.remove(id);
+        	cache.remove(id);
             return resource(id).delete();
         } finally {
             lock.writeLock().unlock();
@@ -166,24 +202,49 @@ public class ConfigStore {
     static String path(String infoId) {
         return Paths.path(CONFIG_DIR_NAME, infoId + ".xml");
     }
+    
+    static String idFromPath(String path) {
+		List<String> names = Paths.names(path);
+		String resourceName = names.get(names.size() - 1);
+		return resourceName.substring(0, resourceName.length() - 4);
+    }
+    
+    @VisibleForTesting
+    void populateCache() {
+    	cache.clear();
+        Resource configRoot = getConfigRoot();
+        List<Resource> list = configRoot.list();
+        if (null == list) {
+            return;
+        }
+        Iterator<Resource> xmlfiles = filter(list.iterator(), FILENAMEFILTER);
+        while(xmlfiles.hasNext()) {
+        	loadResource(xmlfiles.next());
+        }
+    }
 
+    private void loadResource(Resource resource) {
+        try {
+            RepositoryInfo info = load(resource);
+            cache.put(info.getId(), info);
+        } catch (IOException e) {
+            // log the bad info
+            LOGGER.log(Level.WARNING, "Error loading RepositoryInfo", e);
+        }
+    }
+    
+    private void repositoryInfoChanged(String repoId) {
+        for (RepositoryInfoChangedCallback callback : callbacks) {
+        	callback.repositoryInfoChanged(repoId);
+        }
+    }
+    
     /**
      * Loads and returns all <b>valid</b> {@link RepositoryInfo}'s from {@code 
      * <data-dir>/geogig/config/repos/}; any xml file that can't be parsed is ignored.
      */
     public List<RepositoryInfo> getRepositories() {
-        lock.writeLock().lock();
-        try {
-            Resource configRoot = getConfigRoot();
-            List<Resource> list = configRoot.list();
-            if (null == list) {
-                return newArrayList();
-            }
-            Iterator<Resource> xmlfiles = filter(list.iterator(), FILENAMEFILTER);
-            return newArrayList(filter(transform(xmlfiles, LOADER), notNull()));
-        } finally {
-            lock.writeLock().unlock();
-        }
+    	return newArrayList(cache.values());
     }
 
     /**
@@ -204,9 +265,8 @@ public class ConfigStore {
     }
 
     private static List<WhitelistRule> loadWhitelist(Resource input) throws IOException {
-        File parent = input.parent().dir();
-        File f = new File(parent, input.name());
-        if (!(parent.exists() && f.exists())) {
+        Resource parent = input.parent();
+        if (!(parent.getType().equals(Resource.Type.DIRECTORY) && input.getType().equals(Resource.Type.RESOURCE))) {
             return newArrayList();
         }
         try (Reader reader = new InputStreamReader(input.in(), Charsets.UTF_8)) {
@@ -243,28 +303,38 @@ public class ConfigStore {
         checkIdFormat(id);
         lock.readLock().lock();
         try {
-            CachedInfo cached = cache.get(id);
-            Resource resource = resource(id);
-            final long lastmodified = resource.lastmodified();
-            RepositoryInfo info;
-            if (cached == null || cached.lastModified < lastmodified) {
-                info = load(resource);
-                cache.put(id, new CachedInfo(info, lastmodified));
-            } else {
-                info = cached.info;
-            }
+        	RepositoryInfo info = cache.get(id);
+        	if (info == null) {
+        		throw new FileNotFoundException("Repository not found: " + id);
+        	}
             return info;
         } finally {
             lock.readLock().unlock();
         }
     }
+    
+    public RepositoryInfo getByName(final String name) {
+    	for (RepositoryInfo cached : cache.values()) {
+    		if (cached.getRepoName().equals(name)) {
+    			return cached;
+    		}
+    	}
+    	return null;
+    }
+    
+    public RepositoryInfo getByLocation(final URI location) {
+    	for (RepositoryInfo cached : cache.values()) {
+    		if (cached.getLocation().equals(location)) {
+    			return cached;
+    		}
+    	}
+    	return null;
+    }
 
     private static RepositoryInfo load(Resource input) throws IOException {
-        // make an explicit check here because FileSystemResource.file() creates an empty file
-        File parent = input.parent().dir();
-        File f = new File(parent, input.name());
-        if (!(parent.exists() && f.exists())) {
-            throw new FileNotFoundException("File not found: " + f.getAbsolutePath());
+        Resource parent = input.parent();
+        if (!(parent.getType().equals(Resource.Type.DIRECTORY) && input.getType().equals(Resource.Type.RESOURCE))) {
+            throw new FileNotFoundException("File not found: " + input.path());
         }
         RepositoryInfo info;
         try (Reader reader = new InputStreamReader(input.in(), Charsets.UTF_8)) {
@@ -292,25 +362,8 @@ public class ConfigStore {
             return input.name().endsWith(".xml");
         }
     };
-
-    private final Function<Resource, RepositoryInfo> LOADER = new Function<Resource, RepositoryInfo>() {
-
-        @Override
-        public RepositoryInfo apply(final Resource resource) {
-            try {
-                RepositoryInfo loaded = load(resource);
-                CachedInfo cached = cache.get(loaded.getId());
-                if (cached == null) {
-                    long lastModified = resource.lastmodified();
-                    cached = new CachedInfo(loaded, lastModified);
-                    cache.put(loaded.getId(), cached);
-                }
-                return cached.info;
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Error loading RepositoryInfo", e);
-                return null;
-            }
-        }
-
-    };
+    
+    public static abstract class RepositoryInfoChangedCallback {
+    	public abstract void repositoryInfoChanged(String repoId);
+    }
 }

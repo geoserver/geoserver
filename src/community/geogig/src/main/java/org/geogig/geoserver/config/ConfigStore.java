@@ -78,7 +78,7 @@ public class ConfigStore {
     private ResourceStore resourceLoader;
 
     private final ReadWriteLock lock;
-    
+
     private Queue<RepositoryInfoChangedCallback> callbacks;
 
     /**
@@ -96,45 +96,47 @@ public class ConfigStore {
         this.callbacks = new ConcurrentLinkedQueue<RepositoryInfoChangedCallback>();
         populateCache();
 
-    	ResourceNotificationDispatcher dispatcher = resourceLoader.getResourceNotificationDispatcher();
-		dispatcher.addListener(CONFIG_DIR_NAME, new ResourceListener() {
-			@Override
-			public void changed(ResourceNotification notify) {
-				for (Event event : notify.events()) {
-					String path = event.getPath().startsWith(CONFIG_DIR_NAME) ? event.getPath() : CONFIG_DIR_NAME + "/" + event.getPath();
-					String repoId = idFromPath(path);
-					switch (event.getKind()) {
-					case ENTRY_CREATE:
-					case ENTRY_MODIFY:
-						cache.remove(repoId);
-						loadResource(resourceLoader.get(path));
-						break;
-					case ENTRY_DELETE:
-						cache.remove(repoId);
-						break;
-					}
-					repositoryInfoChanged(repoId);
-				}
-			}
-		});
+        ResourceNotificationDispatcher dispatcher = resourceLoader
+                .getResourceNotificationDispatcher();
+        dispatcher.addListener(CONFIG_DIR_NAME, new ResourceListener() {
+            @Override
+            public void changed(ResourceNotification notify) {
+                for (Event event : notify.events()) {
+                    String path = event.getPath().startsWith(CONFIG_DIR_NAME) ? event.getPath()
+                            : CONFIG_DIR_NAME + "/" + event.getPath();
+                    String repoId = idFromPath(path);
+                    switch (event.getKind()) {
+                    case ENTRY_CREATE:
+                    case ENTRY_MODIFY:
+                        cache.remove(repoId);
+                        loadResource(resourceLoader.get(path));
+                        break;
+                    case ENTRY_DELETE:
+                        cache.remove(repoId);
+                        break;
+                    }
+                    repositoryInfoChanged(repoId);
+                }
+            }
+        });
     }
-    
+
     /**
      * Add a callback that will be called whenever a RepositoryInfo is changed.
      * 
      * @param callback the callback
      */
     public void addRepositoryInfoChangedCallback(RepositoryInfoChangedCallback callback) {
-    	this.callbacks.add(callback);
+        this.callbacks.add(callback);
     }
-    
+
     /**
      * Remove a callback that was previously added to the config store.
      * 
      * @param callback the callback
      */
     public void removeRepositoryInfoChangedCallback(RepositoryInfoChangedCallback callback) {
-    	this.callbacks.remove(callback);
+        this.callbacks.remove(callback);
     }
 
     /**
@@ -169,7 +171,7 @@ public class ConfigStore {
         checkIdFormat(id);
         lock.writeLock().lock();
         try {
-        	cache.remove(id);
+            cache.remove(id);
             return resource(id).delete();
         } finally {
             lock.writeLock().unlock();
@@ -202,24 +204,24 @@ public class ConfigStore {
     static String path(String infoId) {
         return Paths.path(CONFIG_DIR_NAME, infoId + ".xml");
     }
-    
+
     static String idFromPath(String path) {
-		List<String> names = Paths.names(path);
-		String resourceName = names.get(names.size() - 1);
-		return resourceName.substring(0, resourceName.length() - 4);
+        List<String> names = Paths.names(path);
+        String resourceName = names.get(names.size() - 1);
+        return resourceName.substring(0, resourceName.length() - 4);
     }
-    
+
     @VisibleForTesting
     void populateCache() {
-    	cache.clear();
+        cache.clear();
         Resource configRoot = getConfigRoot();
         List<Resource> list = configRoot.list();
         if (null == list) {
             return;
         }
         Iterator<Resource> xmlfiles = filter(list.iterator(), FILENAMEFILTER);
-        while(xmlfiles.hasNext()) {
-        	loadResource(xmlfiles.next());
+        while (xmlfiles.hasNext()) {
+            loadResource(xmlfiles.next());
         }
     }
 
@@ -232,19 +234,19 @@ public class ConfigStore {
             LOGGER.log(Level.WARNING, "Error loading RepositoryInfo", e);
         }
     }
-    
+
     private void repositoryInfoChanged(String repoId) {
         for (RepositoryInfoChangedCallback callback : callbacks) {
-        	callback.repositoryInfoChanged(repoId);
+            callback.repositoryInfoChanged(repoId);
         }
     }
-    
+
     /**
      * Loads and returns all <b>valid</b> {@link RepositoryInfo}'s from {@code 
      * <data-dir>/geogig/config/repos/}; any xml file that can't be parsed is ignored.
      */
     public List<RepositoryInfo> getRepositories() {
-    	return newArrayList(cache.values());
+        return newArrayList(cache.values());
     }
 
     /**
@@ -266,7 +268,8 @@ public class ConfigStore {
 
     private static List<WhitelistRule> loadWhitelist(Resource input) throws IOException {
         Resource parent = input.parent();
-        if (!(parent.getType().equals(Resource.Type.DIRECTORY) && input.getType().equals(Resource.Type.RESOURCE))) {
+        if (!(parent.getType().equals(Resource.Type.DIRECTORY)
+                && input.getType().equals(Resource.Type.RESOURCE))) {
             return newArrayList();
         }
         try (Reader reader = new InputStreamReader(input.in(), Charsets.UTF_8)) {
@@ -303,37 +306,38 @@ public class ConfigStore {
         checkIdFormat(id);
         lock.readLock().lock();
         try {
-        	RepositoryInfo info = cache.get(id);
-        	if (info == null) {
-        		throw new FileNotFoundException("Repository not found: " + id);
-        	}
+            RepositoryInfo info = cache.get(id);
+            if (info == null) {
+                throw new FileNotFoundException("Repository not found: " + id);
+            }
             return info;
         } finally {
             lock.readLock().unlock();
         }
     }
-    
+
     public RepositoryInfo getByName(final String name) {
-    	for (RepositoryInfo cached : cache.values()) {
-    		if (cached.getRepoName().equals(name)) {
-    			return cached;
-    		}
-    	}
-    	return null;
+        for (RepositoryInfo cached : cache.values()) {
+            if (cached.getRepoName().equals(name)) {
+                return cached;
+            }
+        }
+        return null;
     }
-    
+
     public RepositoryInfo getByLocation(final URI location) {
-    	for (RepositoryInfo cached : cache.values()) {
-    		if (cached.getLocation().equals(location)) {
-    			return cached;
-    		}
-    	}
-    	return null;
+        for (RepositoryInfo cached : cache.values()) {
+            if (cached.getLocation().equals(location)) {
+                return cached;
+            }
+        }
+        return null;
     }
 
     private static RepositoryInfo load(Resource input) throws IOException {
         Resource parent = input.parent();
-        if (!(parent.getType().equals(Resource.Type.DIRECTORY) && input.getType().equals(Resource.Type.RESOURCE))) {
+        if (!(parent.getType().equals(Resource.Type.DIRECTORY)
+                && input.getType().equals(Resource.Type.RESOURCE))) {
             throw new FileNotFoundException("File not found: " + input.path());
         }
         RepositoryInfo info;
@@ -362,8 +366,8 @@ public class ConfigStore {
             return input.name().endsWith(".xml");
         }
     };
-    
+
     public static abstract class RepositoryInfoChangedCallback {
-    	public abstract void repositoryInfoChanged(String repoId);
+        public abstract void repositoryInfoChanged(String repoId);
     }
 }

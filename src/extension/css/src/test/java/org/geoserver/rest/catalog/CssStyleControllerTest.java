@@ -61,7 +61,7 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void getGetAsCSS() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/styles/test.css");
+                RestBaseController.ROOT_PATH + "/workspaces/" + catalog.getDefaultWorkspace().getName() + "/styles/test.css");
         assertEquals(200, response.getStatus());
         assertEquals(CssHandler.MIME_TYPE, response.getContentType());
         String content = response.getContentAsString();
@@ -71,7 +71,7 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void getGetAsSLD10() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/styles/test.sld");
+                RestBaseController.ROOT_PATH + "/workspaces/" + catalog.getDefaultWorkspace().getName() + "/styles/test.sld");
         assertEquals(200, response.getStatus());
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
@@ -81,11 +81,11 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void getGetAsHTML() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/styles/test.html");
+                RestBaseController.ROOT_PATH + "/workspaces/" + catalog.getDefaultWorkspace().getName() + "/styles/test.html");
         assertEquals(200, response.getStatus());
         assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
         String content = response.getContentAsString();
-        assertThat(content, containsString("<a href=\"http://localhost:8080/geoserver/rest/styles/test.css\">test.css</a>"));
+        assertThat(content, containsString("<a href=\"http://localhost:8080/geoserver/rest/workspaces/" + catalog.getDefaultWorkspace().getName() + "/styles/test.css\">test.css</a>"));
     }
 
     @Test

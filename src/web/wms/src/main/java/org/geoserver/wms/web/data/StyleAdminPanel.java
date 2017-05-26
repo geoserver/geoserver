@@ -112,6 +112,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             }
             if (StylePage.isDefaultStyle(getStylePage().getStyleInfo())) {
                 nameTextField.setEnabled(false);
+                wsChoice.setEnabled(false);
             }
             // format only settable upon creation
             formatChoice.setEnabled(false);
@@ -127,6 +128,15 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         
         add(nameTextField = new TextField<String>("name", nameBinding));
         nameTextField.setRequired(true);
+        
+        IModel<WorkspaceInfo> wsBinding = styleModel.bind("workspace");
+        wsChoice = 
+            new DropDownChoice<WorkspaceInfo>("workspace", wsBinding, new WorkspacesModel(), new WorkspaceChoiceRenderer());
+        wsChoice.setNullValid(true);
+        if (!stylePage.isAuthenticatedAsAdmin()) {
+            wsChoice.setNullValid(false);
+            wsChoice.setRequired(true);
+        }
 
         //when editing a default style, disallow changing the name
         if (StylePage.isDefaultStyle(style)) {
@@ -141,15 +151,14 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     }
                 }
             });
-        }
-        
-        IModel<WorkspaceInfo> wsBinding = styleModel.bind("workspace");
-        wsChoice = 
-            new DropDownChoice<WorkspaceInfo>("workspace", wsBinding, new WorkspacesModel(), new WorkspaceChoiceRenderer());
-        wsChoice.setNullValid(true);
-        if (!stylePage.isAuthenticatedAsAdmin()) {
-            wsChoice.setNullValid(false);
-            wsChoice.setRequired(true);
+            wsChoice.add((IValidator<WorkspaceInfo>) validatable -> {
+                if (validatable.getValue() != null) {
+                    ValidationError error = new ValidationError();
+                    error.setMessage( "Can't change the workspace of default styles." );
+                    error.addKey("editDefaultStyleWorkspaceDisallowed");
+                    validatable.error(error);
+                }
+            });
         }
 
         add(wsChoice);

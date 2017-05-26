@@ -26,4 +26,17 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
         styleTest.startPage(page);
         styleTest.assertDisabled("styleForm:context:panel:name");
     }
+
+    @Test
+    public void testChangeWsDefaultStyle() {
+        StyleInfo styleInfo = new StyleInfoImpl(null);
+        styleInfo.setName("point");
+        styleInfo.setFilename("test.sld");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
+        WicketTester styleTest = new WicketTester(app, false);
+
+        StyleEditPage page = new StyleEditPage(styleInfo);
+        styleTest.startPage(page);
+        styleTest.assertDisabled("styleForm:context:panel:workspace");
+    }
 }

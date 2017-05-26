@@ -580,12 +580,10 @@ public abstract class GeoServerTablePanel<T> extends Panel {
          * Updates the label given the current page and filtering status
          */
         void updateMatched() {
+            size = dataProvider.size();
             fullSize = dataProvider.fullSize();
-            first = first(fullSize);
-            last = last(fullSize);
-            if (dataProvider.getKeywords() != null) {
-                size = dataProvider.size();
-            }
+            first = first(size);
+            last = last(size);
         }
         
         public IModel<String> model() {
@@ -598,9 +596,10 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         
         /**
          * User oriented index of the first item in the current page
+         *
+         * @param size The total number of items matched by the current filter
          */
-        long first(long fullSize) {
-            long size = fullSize;
+        long first(long size) {
             if (dataProvider.getKeywords() != null) {
                 size = dataView.getDataProvider().size();
             }
@@ -612,16 +611,17 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
         /**
          * User oriented index of the last item in the current page
+         *
+         * @param size The total number of items matched by the current filter
          */
-        long last(long fullSize) {
+        long last(long size) {
             
-            long count = dataProvider.getKeywords() != null ? 
-                    dataView.getPageCount() : optGetPageCount(fullSize);
+            long count = optGetPageCount(size);
             long page = dataView.getCurrentPage();
             if (page < (count - 1))
                 return dataView.getItemsPerPage() * (page + 1);
             else {
-                return dataProvider.getKeywords() != null ? dataView.getDataProvider().size() : fullSize;
+                return dataProvider.getKeywords() != null ? dataView.getDataProvider().size() : size;
             }
         }
         

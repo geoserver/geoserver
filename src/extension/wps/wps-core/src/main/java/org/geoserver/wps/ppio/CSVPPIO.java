@@ -27,10 +27,6 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureStore;
-import org.geoserver.wps.resource.WPSResourceManager;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.csv.CSVDataStore;
 import org.geotools.data.csv.CSVDataStoreFactory;
 import org.geotools.data.csv.CSVFeatureStore;
@@ -41,6 +37,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.io.FileSystemResource;
+
+import org.geotools.util.logging.Logging;
+import org.geotools.xml.Text;
+
 
 /**
  * @author ian
@@ -59,13 +59,6 @@ public class CSVPPIO extends CDataPPIO {
 
     @Override
     public Object decode(String input) throws Exception {
-        if(input.contains("\\r")) {
-            System.out.println("contains \\r");
-        }
-        if(input.contains("\\n")) {
-            System.out.println("contains \\n");
-        }
-
         return decode(new ByteArrayInputStream(input.getBytes()));
     }
 
@@ -73,6 +66,22 @@ public class CSVPPIO extends CDataPPIO {
     public String getFileExtension() {
         return "csv";
     }
+    
+    
+
+    @Override
+    public Object decode(Object input) throws Exception {
+        Class<? extends Object> type = input.getClass();
+        if(type.isAssignableFrom(String.class)) {
+            return decode((String)input);
+        }
+        if(type.isAssignableFrom(Text.class)) {
+            return decode(((Text)input).getValue());
+        }
+        return super.decode(input);
+    }
+
+
 
     @Override
     public Object decode(InputStream input) throws Exception {

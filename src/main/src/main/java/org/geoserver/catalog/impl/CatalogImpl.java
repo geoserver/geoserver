@@ -1390,6 +1390,21 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException(msg); 
         }
 
+        if (!isNew) {
+            StyleInfo current = getStyle(style.getId());
+
+            //Default style validation
+            if (isDefaultStyle(current)) {
+
+                if (!current.getName().equals(style.getName())) {
+                    throw new IllegalArgumentException("Cannot rename default styles");
+                }
+                if (null != style.getWorkspace()) {
+                    throw new IllegalArgumentException("Cannot change the workspace of default styles");
+                }
+            }
+        }
+
         return postValidate(style, isNew);
     }
     
@@ -1405,9 +1420,19 @@ public class CatalogImpl implements Catalog {
                 throw new IllegalArgumentException( msg );
             }
         }
+
+        if (isDefaultStyle(style)) {
+            throw new IllegalArgumentException("Unable to delete a default style");
+        }
         
         facade.remove(style);
         removed(style);
+    }
+
+    private boolean isDefaultStyle(StyleInfo s) {
+        return s.getWorkspace() == null && (StyleInfo.DEFAULT_POINT.equals(s.getName())
+                || StyleInfo.DEFAULT_LINE.equals(s.getName()) || StyleInfo.DEFAULT_POLYGON.equals(s.getName())
+                || StyleInfo.DEFAULT_RASTER.equals(s.getName()) || StyleInfo.DEFAULT_GENERIC.equals(s.getName()));
     }
 
     public void save(StyleInfo style) {

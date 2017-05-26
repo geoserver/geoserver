@@ -49,6 +49,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
         config.setLockProviderName(null);
+        config.setInnerCachingEnabled(false);
         gwc.saveConfig(config);
     }
 
@@ -394,5 +395,20 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.NULL));
         assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_ACCESS));
         assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_WRITE));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testMemoryCachePanelOpen() throws IOException {
+        // enable in memory caching
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setInnerCachingEnabled(true);
+        gwc.saveConfig(config);
+
+        // used to blow because an unused label element was added in the code but not in HTML 
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+        tester.assertVisible("form:cachingOptionsPanel:container:configs:blobstores:container");
     }
 }

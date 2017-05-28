@@ -73,6 +73,11 @@ document.
      - the background color for the text.  supports RGB or RGBA colors specified as hex values.
    * - ``fgcolor``
      - the color for the text and border.  follows the color specification from bgcolor.
+   * - ``format``
+     - the number format pattern, specified using Java own `DecimalFormat <https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_ syntax
+   * - ``formatLanguage``
+     - the language used to drive number formatting (applies only if also ``format`` is used), using a valid Java `Locale <https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html>`_
+     
 
 The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing the scale of the map in world units.  
 

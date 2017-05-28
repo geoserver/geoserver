@@ -13,14 +13,29 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 
 import org.geoserver.wms.WMSMapContent;
 
 
 public class ScaleRatioDecoration implements MapDecoration {
+    
+    String format = null;
+    String formatLanguage = null;
 
     public void loadOptions(Map<String, String> options) {
+        String format = options.get("format");
+        if (format != null) {
+            this.format = format;
+        }
+        String formatLanguage = options.get("formatLanguage");
+        if (format != null) {
+            this.formatLanguage = formatLanguage;
+        }
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
@@ -33,7 +48,18 @@ public class ScaleRatioDecoration implements MapDecoration {
     }
 
     public String getScaleText(WMSMapContent mapContent) {
-        return String.format("1 : %0$1.0f", getScale(mapContent));
+        final double scale = getScale(mapContent);
+        if(format == null) {
+            return String.format("1 : %0$1.0f", scale);
+        } else {
+            DecimalFormatSymbols decimalFormatSymbols;
+            if(formatLanguage != null) {
+                decimalFormatSymbols = DecimalFormatSymbols.getInstance(new Locale(formatLanguage));
+            } else {
+                decimalFormatSymbols = DecimalFormatSymbols.getInstance();
+            }
+            return "1 : " + new DecimalFormat(format, decimalFormatSymbols).format(scale);
+        }
     }
     
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 

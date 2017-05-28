@@ -38,6 +38,9 @@ import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -58,10 +61,18 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.resource.FileSystemResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidator;
-import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.*;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.SLDNamedLayerValidator;
+import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -87,7 +98,7 @@ import org.xml.sax.SAXParseException;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
-    
+
     class ChooseImagePanel extends Panel {
         private WorkspaceInfo ws;
         
@@ -224,6 +235,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         initPreviewLayer(style);
         initUI(style);
     }
+
     protected void initPreviewLayer(StyleInfo style) {
         Catalog catalog = getCatalog();
         List<LayerInfo> layers;

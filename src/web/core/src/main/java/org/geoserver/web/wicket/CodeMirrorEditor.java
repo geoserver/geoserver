@@ -95,7 +95,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
         WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
         if (enableCodeMirror) {
-            editorParent.add(AttributeModifier.replace("style", "border: 1px solid black;"));
+            editorParent.add(AttributeModifier.replace("style", "border: 1px solid black; padding-bottom: 3px"));
         }
         container.add(editorParent);
         editor = new TextArea<String>("editor", model);

@@ -171,7 +171,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         }
 
         IModel<String> formatBinding = styleModel.bind("format");
-        formatChoice = new Select2DropDownChoice<String>("format", formatBinding, new StyleFormatsModel(), 
+        formatChoice = new Select2DropDownChoice<>("format", formatBinding, new StyleFormatsModel(), 
                 new ChoiceRenderer<String>() {
 
             private static final long serialVersionUID = 2064887235303504013L;

@@ -37,6 +37,11 @@ document.getElementById('cm_font_size').onchange = function() {
     editor.getWrapperElement().style.fontSize = fontSize+"px"; 
     editor.refresh();
 }
+document.getElementById('cm_editor_heigth').onchange = function() {
+    var height = document.getElementById('cm_editor_heigth').value;
+    editor.setSize("100%", height); 
+    editor.refresh();
+}
 document.getElementById('cm_reformat').onclick = function() {
     var start, end, i;
     if (editor.getSelection()) {
@@ -58,35 +63,3 @@ replaceSelection = function(repl) {
         editor.indentLine(i);
     }
 }
-// This comes from http://thereisamoduleforthat.com/content/making-div-fullscreen-and-restoring-it-its-original-position
-// Does not work so commented out
-/*
-document.getElementById('cm_fullscreen').onclick = function() {
-	div = $('#$container');
-    if (!div.hasClass('fullscreen')) { // Going fullscreen:
-    	alert("Sigh, can't make this work at all...");
-      // Save current values.
-      editor.beforeFullscreen = {
-        parentElement: div.parent(),
-        index: div.parent().children().index(div),
-        x: $(window).scrollLeft(), y: $(window).scrollTop(),
-      };
-
-      // Set values needed to go fullscreen.
-      $('body').append(div).css('overflow', 'hidden');
-      div.addClass('fullscreen');
-      window.scroll(0,0);
-    } else { // Going back to normal:
-      // Restore saved values.
-      div.removeClass('fullscreen');
-      if (editor.beforeFullscreen.index >= editor.beforeFullscreen.parentElement.children().length) {
-    	  editor.beforeFullscreen.parentElement.append(div);
-      } else {
-    	  div.insertBefore(editor.beforeFullScreen.parentElement.children().get(editor.beforeFullscreen.index));
-      }
-      $('body').css('overflow', 'auto');
-      window.scroll(editor.beforeFullscreen.x, editor.beforeFullscreen.y);
-      editor.beforeFullScreen = null;
-    }
-  };
-*/

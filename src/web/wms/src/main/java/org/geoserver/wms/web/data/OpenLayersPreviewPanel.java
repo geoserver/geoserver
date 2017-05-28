@@ -99,6 +99,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
             }
         });
         add(olPreview);
+        olPreview.setMarkupId("olPreview");
         setOutputMarkupId(true);
 
         CheckBox previewStyleGroup = new CheckBox("previewStyleGroup", new PropertyModel<Boolean>(this, "isPreviewStyleGroup"));

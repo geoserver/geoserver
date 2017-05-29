@@ -20,11 +20,11 @@ final public class ConnectionConfiguration implements JMSConfigurationExt {
 
 	// times to test (connection)
 	public static final String CONNECTION_RETRY_KEY = "connection.retry";
-	public static final Integer DEFAULT_CONNECTION_RETRY = 3;
+	public static final Integer DEFAULT_CONNECTION_RETRY = 10;
 
 	// millisecs to wait between tests (connection)
 	public static final String CONNECTION_MAXWAIT_KEY = "connection.maxwait";
-	public static final Long  DEFAULT_CONNECTION_MAXWAIT = 10000L;
+	public static final Long  DEFAULT_CONNECTION_MAXWAIT = 500L;
 
 	public static final ConnectionConfigurationStatus DEFAULT_CONNECTION_STATUS = ConnectionConfigurationStatus.enabled;
 

@@ -6,15 +6,11 @@ package org.geoserver.web.netcdf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.admin.GlobalSettingsPage;
-import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.junit.Test;
 
 public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
@@ -49,20 +45,19 @@ public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
         assertEquals(container.getCompressionLevel(), container2.getCompressionLevel(), 0.001d);
 //        assertEquals(container.getNetcdfVersion(), container2.getNetcdfVersion());
         assertEquals(container.isShuffle(), container2.isShuffle());
-        
-        List<GlobalAttribute> attr1 = container.getGlobalAttributes();
-        List<GlobalAttribute> attr2 = container2.getGlobalAttributes();
-        assertNotNull(attr1);
-        assertNotNull(attr2);
-        // Ensure same elements
-        assertTrue(attr1.size() == attr2.size());
-        int size = attr1.size();
-        for(int i = 0; i < size ; i++){
-            GlobalAttribute at1 = attr1.get(i);
-            GlobalAttribute at2 = attr2.get(i);
-            assertTrue(at1.getKey().equalsIgnoreCase(at2.getKey()));
-            assertTrue(at1.getValue().equalsIgnoreCase(at2.getValue()));
-        }
+        assertEquals(container.isCopyAttributes(), container2.isCopyAttributes());
+
+        assertNotNull(container.getGlobalAttributes());
+        assertNotNull(container2.getGlobalAttributes());
+        assertEquals(container.getGlobalAttributes(), container2.getGlobalAttributes());
+
+        assertNotNull(container.getVariableAttributes());
+        assertNotNull(container2.getVariableAttributes());
+        assertEquals(container.getVariableAttributes(), container2.getVariableAttributes());
+
+        assertNotNull(container.getExtraVariables());
+        assertNotNull(container2.getExtraVariables());
+        assertEquals(container.getExtraVariables(), container2.getExtraVariables());
     }
 
 }

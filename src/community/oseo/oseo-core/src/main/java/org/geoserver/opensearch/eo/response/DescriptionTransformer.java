@@ -112,7 +112,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             // the template must not be url encoded instead
             String paramSpec = description.getSearchParameters().stream().map(p -> {
                 String spec = p.key + "={";
-                spec += OpenSearchParameters.getQualifiedParamName(p);
+                spec += OpenSearchParameters.getQualifiedParamName(p, false);
                 if (!p.required) {
                     spec += "?";
                 }
@@ -130,7 +130,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
 
                 final Map<String, String> map = new LinkedHashMap<>();
                 map.put("name", param.key);
-                map.put("value", "{" + OpenSearchParameters.getQualifiedParamName(param) + "}");
+                map.put("value", "{" + OpenSearchParameters.getQualifiedParamName(param, false) + "}");
                 if (!param.isRequired()) {
                     map.put("minimum", "0");
                 }

@@ -3709,3 +3709,6 @@ VALUES(6885, 353, 'http://www.opengis.net/spec/owc/1.0/req/atom/wcs', 'GET', 'Ge
 INSERT INTO public.product_ogclink
 ("lid", "product_id", "offering", "method", "code", "type", "href")
 VALUES(6886, 353, 'http://www.opengis.net/spec/owc/1.0/req/atom/wcs', 'GET', 'GetCoverage', 'image/tiff', '${BASE_URL}/sentinel2/ows?service=WCS&version=2.0&request=GetCoverage&coverageid=sentinel2%3Asentinel2-TCI&format=image%2Fgeotiff');
+-- download links
+update product set "originalPackageLocation" = '${BASE_URL}/scihub/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04.zip', "originalPackageType" = 'application/zip' where "id" = 352;
+update product set "originalPackageLocation" = '${BASE_URL}/scihub/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01.zip' where "id" = 353;

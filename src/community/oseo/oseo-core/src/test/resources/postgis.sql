@@ -72,6 +72,7 @@ create table product (
   "timeStart" timestamp,
   "timeEnd" timestamp,
   "originalPackageLocation" varchar,
+  "originalPackageType" varchar,
   "thumbnailURL" varchar,
   "quicklookURL" varchar,
   "eoIdentifier" varchar unique,

@@ -7,6 +7,14 @@ package org.geogig.geoserver.config;
 import static org.geogig.geoserver.config.LogEvent.Severity.DEBUG;
 import static org.geogig.geoserver.config.LogEvent.Severity.ERROR;
 import static org.geogig.geoserver.config.LogEvent.Severity.INFO;
+import static org.geogig.geoserver.config.LogStore.PROP_DRIVER_CLASS;
+import static org.geogig.geoserver.config.LogStore.PROP_ENABLED;
+import static org.geogig.geoserver.config.LogStore.PROP_MAX_CONNECTIONS;
+import static org.geogig.geoserver.config.LogStore.PROP_PASSWORD;
+import static org.geogig.geoserver.config.LogStore.PROP_RUN_SCRIPT;
+import static org.geogig.geoserver.config.LogStore.PROP_SCRIPT;
+import static org.geogig.geoserver.config.LogStore.PROP_URL;
+import static org.geogig.geoserver.config.LogStore.PROP_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -14,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -30,8 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.geogig.geoserver.HeapResourceStore;
 import org.geogig.geoserver.config.LogEvent.Severity;
-import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.After;
@@ -63,11 +70,14 @@ public class AbstractLogStoreTest {
 
     @Before
     public void before() {
-        File resourceDirectory = tmpDir.getRoot();
-        resourceStore = new FileSystemResourceStore(resourceDirectory);
+        resourceStore = getResourceStore();
         logStore = new LogStore(resourceStore);
         SecurityContextHolder.clearContext();
         setUpConfigFile();
+    }
+    
+    protected ResourceStore getResourceStore() {
+    	return new HeapResourceStore();
     }
 
     @After
@@ -79,17 +89,13 @@ public class AbstractLogStoreTest {
 
     private void setUpConfigFile() {
         Resource dirResource = resourceStore.get(LogStore.CONFIG_DIR_NAME);
-        File dir = dirResource.dir();
 
         Properties properties = new Properties();
-        populateConfigProperties(properties, dir);
+        populateConfigProperties(properties);
         if (!properties.isEmpty()) {
-            File configFile = new File(dir, LogStore.CONFIG_FILE_NAME);
+            Resource configFile = dirResource.get(LogStore.CONFIG_FILE_NAME);
             try {
-                if (!configFile.exists()) {
-                    assertTrue(configFile.createNewFile());
-                }
-                try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFile),
+                try (Writer writer = new OutputStreamWriter(configFile.out(),
                         Charsets.UTF_8)) {
                     properties.store(writer, "");
                 }
@@ -99,8 +105,19 @@ public class AbstractLogStoreTest {
         }
     }
 
-    protected void populateConfigProperties(Properties properties, File configDirectory) {
-        // do nothing, override to create a config file for a non default database
+    protected void populateConfigProperties(Properties properties) {
+        final String driverClassName = "org.sqlite.JDBC";
+        final File dbFile = new File(tmpDir.getRoot(), "logstore.sqlite");
+        final String jdbcUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+
+        properties.setProperty(PROP_ENABLED, "true");
+        properties.setProperty(PROP_DRIVER_CLASS, driverClassName);
+        properties.setProperty(PROP_URL, jdbcUrl);
+        properties.setProperty(PROP_USER, "");
+        properties.setProperty(PROP_PASSWORD, "");
+        properties.setProperty(PROP_MAX_CONNECTIONS, "1");
+        properties.setProperty(PROP_SCRIPT, "sqlite.sql");
+        properties.setProperty(PROP_RUN_SCRIPT, "true");
     }
 
     @Test

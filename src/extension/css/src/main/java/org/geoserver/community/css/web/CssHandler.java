@@ -153,4 +153,9 @@ public class CssHandler extends StyleHandler {
             return Arrays.asList(e);
         }
     }
+    
+    @Override
+    public String getCodeMirrorEditMode() {
+        return "text/geocss";
+    }
 }

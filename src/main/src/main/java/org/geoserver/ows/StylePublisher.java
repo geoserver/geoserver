@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -58,35 +58,28 @@ public class StylePublisher extends AbstractURLPublisher {
             reqPath = reqPath.substring(1);
         }
 
-        Resource resource;
-
-        if (reqPath.startsWith("styles/")) {
-           
-            String[] tokens = reqPath.split("/");
-            int count = tokens.length;
+        if (reqPath.startsWith("styles/") && (reqPath.length() > 7)) {
+            Resource resource = null;
             GeoServerResourceLoader resources = catalog.getResourceLoader();
             GeoServerDataDirectory data = new GeoServerDataDirectory(resources);
-            if (count == 2) {
-                // global style
-                String stylePath = tokens[1];
-                resource = data.getStyles(stylePath);
-            } else if (count == 3) {
+            String stylePath = reqPath.substring(7);
+            int slash = stylePath.indexOf('/');
+            if ((slash > -1) && (stylePath.length() > (slash + 1))) {
                 // workspaced style
-                String temp = "workspaces/" + tokens[1] + "/styles/" + tokens[2];
-                String wsName = tokens[1];
-                String stylePath = tokens[2];
-
+                String wsName = stylePath.substring(0, slash);
                 WorkspaceInfo workspace = catalog.getWorkspaceByName(wsName);
-                if (workspace == null) {
-                    throw new IllegalArgumentException("Workspace not found");
+                if (workspace != null) {
+                    String wsStylePath = stylePath.substring(slash + 1);
+                    resource = data.getStyles(workspace, wsStylePath);
+                    if (resource.getType() == Type.UNDEFINED) {
+                        // workspace style not found, try the global styles directory as a fallback
+                        resource = data.getStyles(wsStylePath);
+                    }
                 }
-                resource = data.getStyles(workspace, stylePath);
-                if (resource.getType() == Type.UNDEFINED) {
-                    // workspace style not found, try the global styles directory as a fallback
-                    resource = data.getStyles(stylePath);
-                }
-            } else {
-                throw new IllegalStateException("Unexpected number of tokens in reqest path.");
+            }
+            if ((resource == null) || (resource.getType() == Type.UNDEFINED)) {
+                // global style
+                resource = data.getStyles(stylePath);
             }
             
             switch (resource.getType()) {

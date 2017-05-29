@@ -19,7 +19,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.filter.function.FilterFunction_Convert;
+import org.geotools.filter.function.FilterFunction_parseDouble;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
 import org.mockito.Mockito;
@@ -299,7 +299,7 @@ public class ClassifierTestSupport extends SLDServiceBaseTest {
         
         checkRule(rules[0], "#550000", org.opengis.filter.PropertyIsLessThanOrEqualTo.class);
         org.opengis.filter.PropertyIsLessThanOrEqualTo filter = (org.opengis.filter.PropertyIsLessThanOrEqualTo) rules[0].getFilter();
-        assertTrue(filter.getExpression1() instanceof FilterFunction_Convert);
+        assertTrue(filter.getExpression1() instanceof FilterFunction_parseDouble);
     }
     
     public void testCustomRamp() throws IOException {

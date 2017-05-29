@@ -19,13 +19,14 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.tiles.AbstractTilesGetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
-import org.geoserver.tiles.AbstractTilesGetMapOutputFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
@@ -135,6 +136,22 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         public void close() {
             geopkg.close();
         }
+    }
+
+    @Override
+    public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
+        /*
+         * From the OGC GeoPackage Specification [1]:
+         *
+         * "The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix at any zoom
+         * level, regardless of the actual availability of that tile"
+         *
+         * This is opposite the default GeoServer grid behavior, so we must always flip the y here.
+         *
+         * [1]: http://www.geopackage.org/spec/#tile_matrix
+         */
+        map.getRequest().getFormatOptions().put("flipy", "true");
+        return super.produceMap(map);
     }
    
     @Override

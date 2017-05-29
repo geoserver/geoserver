@@ -53,7 +53,7 @@ To view or edit a layer group, click the layer group name.  A layer group config
 
 The table at the bottom of the page lists layers and groups contained within the current layer group. We refer to layers and layer groups as :guilabel:`publishable elements`. When a layer group is processed, the layers are rendered in the order provided, so the :guilabel:`publishable elements` at the bottom of list will be rendered last and will show on top of the other :guilabel:`publishable elements`.
 
-A :guilabel:`publishable element` can be positioned higher or lower on this list by clicking the green up or down arrows, respectively. The layer at the top of the list is the first one to be painted, the layer below it will be painted second, and so on, the last layer will be painted on top of all others (this is the so called "painter's model").
+A :guilabel:`publishable element` can be positioned higher or lower on this list by clicking the green up or down arrows, respectively, or can be simply dragged in the target position. The layer at the top of the list is the first one to be painted, the layer below it will be painted second, and so on, the last layer will be painted on top of all others (this is the so called "painter's model").
 
 The :guilabel:`Style` column shows the style associated with each layer. To change the style associated with a layer, click the appropriate style link. A list of enabled styles will be displayed. Clicking on a style name reassigns the layer's style.
 

@@ -42,7 +42,7 @@ VALUES(17, 'SENTINEL2', NULL, '<table>
       <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
     </td>
   </tr>
-</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2016-02-26 10:20:21.000', '2015-07-01 10:20:21.000', NULL, NULL, 'SENTINEL2', 'S2MSI1C', 'Sentinel-2', 'A', 'MSI', 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL);
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', NULL, NULL, 'SENTINEL2', 'S2MSI1C', 'Sentinel-2', 'A', 'MSI', 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO collection
 ("id", "name", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation")
 VALUES(32, 'SENTINEL1', NULL, '<table>
@@ -86,7 +86,7 @@ VALUES(32, 'SENTINEL1', NULL, '<table>
       <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
     </td>
   </tr>
-</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-02-26 10:20:21.000', '2014-05-01 10:20:21.000', NULL, NULL, 'SENTINEL1', NULL, 'Sentinel-1', NULL, 'SAR', 'RADAR', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-02-26 10:20:21.000', NULL , NULL, NULL, 'SENTINEL1', NULL, 'Sentinel-1', NULL, 'SAR', 'RADAR', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO collection
 ("id", "name", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation")
 VALUES(31, 'LANDSAT8', NULL, '<table>

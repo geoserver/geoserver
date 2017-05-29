@@ -132,15 +132,15 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
                         allOf(containsString("/oseo/search?"), //
-                                containsString("searchTerms={os:searchTerms?}"), //
+                                containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"))));
         // check some parameters have been described
         String paramBase = resultsBase + "/param:Parameter";
         assertThat(dom, hasXPath(paramBase
-                + "[@name='searchTerms' and @value='{os:searchTerms}' and @minimum='0']"));
+                + "[@name='searchTerms' and @value='{searchTerms}' and @minimum='0']"));
         assertThat(dom, hasXPath(paramBase
-                + "[@name='count' and @value='{os:count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='100']"));
+                + "[@name='count' and @value='{count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='100']"));
 
         // check some EO parameter
         assertThat(dom, hasXPath(
@@ -177,7 +177,7 @@ public class DescriptionTest extends OSEOTestSupport {
                 hasXPath(resultsBase + "/@template",
                         allOf(containsString("/oseo/search?"), //
                                 containsString("parentId=SENTINEL2"), //
-                                containsString("searchTerms={os:searchTerms?}"), //
+                                containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"))));
         // ... and has generic EOP parameters
@@ -223,7 +223,7 @@ public class DescriptionTest extends OSEOTestSupport {
                 hasXPath(resultsBase + "/@template",
                         allOf(containsString("/oseo/search?"), //
                                 containsString("parentId=SENTINEL1"), //
-                                containsString("searchTerms={os:searchTerms?}"), //
+                                containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"), //
                                 containsString("timeEnd={time:end?}"), //

@@ -1,0 +1,640 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer StructuredCoverageStores
+  description: A structured coverage store allows description of its "granules" and management of them.
+
+paths:
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/index:
+    get:
+      operationId: getStructuredCoverageIndex
+      summary: Get the information schema attached to the granules
+      description: Displays a list of all the attributes associated to a particular coverage's granules. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation.
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the coverage to be retrieved
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Schema"
+          examples:
+            application/json: |
+              {"Schema": {
+                  "attributes": {"Attribute":   [
+                        {
+                      "name": "the_geom",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "com.vividsolutions.jts.geom.MultiPolygon"
+                    },
+                        {
+                      "name": "location",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "java.lang.String",
+                      "length": 254
+                    },
+                        {
+                      "name": "ingestion",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "java.util.Date",
+                      "length": 8
+                    },
+                        {
+                      "name": "elevation",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "java.lang.Integer",
+                      "length": 9
+                    }
+                  ]},
+                  "href": "http://localhost:8080/geoserver/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.json"
+                }}            
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <Schema>
+                <attributes>
+                  <Attribute>
+                    <name>the_geom</name>
+                    <minOccurs>0</minOccurs>
+                    <maxOccurs>1</maxOccurs>
+                    <nillable>true</nillable>
+                    <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>
+                  </Attribute>
+                  <Attribute>
+                    <name>location</name>
+                    <minOccurs>0</minOccurs>
+                    <maxOccurs>1</maxOccurs>
+                    <nillable>true</nillable>
+                    <binding>java.lang.String</binding>
+                    <length>254</length>
+                  </Attribute>
+                  <Attribute>
+                    <name>ingestion</name>
+                    <minOccurs>0</minOccurs>
+                    <maxOccurs>1</maxOccurs>
+                    <nillable>true</nillable>
+                    <binding>java.util.Date</binding>
+                    <length>8</length>
+                  </Attribute>
+                  <Attribute>
+                    <name>elevation</name>
+                    <minOccurs>0</minOccurs>
+                    <maxOccurs>1</maxOccurs>
+                    <nillable>true</nillable>
+                    <binding>java.lang.Integer</binding>
+                    <length>9</length>
+                  </Attribute>
+                </attributes>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml" rel="alternate" type="application/xml"/>
+              </Schema>
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postStructuredCoverageIndex
+      description: Invalid, the index cannot be created or modified
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putStructuredCoverageIndex
+      description: Invalid, the index cannot be created or modified
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteCoverageStores
+      description: Invalid, the index cannot be created or modified
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/index/granules:
+    get:
+      operationId: getStructuredCoverageGranules
+      summary: Get the attributes associated to the granules
+      description: |
+        Displays a list of all the attributes associated to a particular coverage's granules. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation. The XML output is actually WFS 1.0 GML, while the JSON output is GeoJSON
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the coverage to be retrieved
+          type: string
+        - name: filter
+          in: query
+          required: false
+          description: A CQL filter to reduce the returned granules
+          type: string
+        - name: offset
+          in: query
+          description: Used for paging, the start of the current page
+          required: false
+          type: integer
+          minimum: 0
+        - name: limit
+          in: query
+          description: Used for paging, the number of items to be returned
+          required: false
+          type: integer
+          minimum: 1
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json: |
+              {
+                "type": "FeatureCollection",
+                "bbox":   [
+                  0.23722068851276978,
+                  40.562080748421806,
+                  14.592757149389236,
+                  44.55808294568743
+                ],
+                "crs":   {
+                  "type": "name",
+                  "properties": {"name": "EPSG:4326"}
+                },
+                "features":   [
+                      {
+                    "type": "Feature",
+                    "geometry":       {
+                      "type": "MultiPolygon",
+                      "coordinates": [[        [
+                                  [
+                          0.2372,
+                          40.5621
+                        ],
+                                  [
+                          0.2372,
+                          44.5581
+                        ],
+                                  [
+                          14.5928,
+                          44.5581
+                        ],
+                                  [
+                          14.5928,
+                          40.5621
+                        ],
+                                  [
+                          0.2372,
+                          40.5621
+                        ]
+                      ]]]
+                    },
+                    "properties":       {
+                      "location": "NCOM_wattemp_000_20081101T0000000_12.tiff",
+                      "ingestion": "2008-11-01T00:00:00.000+0000",
+                      "elevation": 0
+                    },
+                    "id": "watertemp.1"
+                  },
+                      {
+                    "type": "Feature",
+                    "geometry":       {
+                      "type": "MultiPolygon",
+                      "coordinates": [[        [
+                                  [
+                          0.2372,
+                          40.5621
+                        ],
+                                  [
+                          0.2372,
+                          44.5581
+                        ],
+                                  [
+                          14.5928,
+                          44.5581
+                        ],
+                                  [
+                          14.5928,
+                          40.5621
+                        ],
+                                  [
+                          0.2372,
+                          40.5621
+                        ]
+                      ]]]
+                    },
+                    "properties":       {
+                      "location": "NCOM_wattemp_000_20081031T0000000_12.tiff",
+                      "ingestion": "2008-10-31T00:00:00.000+0000",
+                      "elevation": 0
+                    },
+                    "id": "watertemp.2"
+                  }
+                ]
+              }
+            
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+              <gml:boundedBy>
+                  <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                  <gml:coord>
+                      <gml:X>0.23722068851276978</gml:X>
+                      <gml:Y>40.562080748421806</gml:Y>
+                  </gml:coord>
+                  <gml:coord>
+                      <gml:X>14.592757149389236</gml:X>
+                      <gml:Y>44.55808294568743</gml:Y>
+                  </gml:coord>
+              </gml:Box>
+              </gml:boundedBy>
+              <gml:featureMember>
+                  <gf:watertemp fid="watertemp.1">
+                      <gml:boundedBy>
+                          <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                          <gml:coordinates>0.237221,40.562081 14.592757,44.558083</gml:coordinates>
+                      </gml:Box>
+                  </gml:boundedBy>
+                  <gf:the_geom>
+                      <gml:MultiPolygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                      <gml:polygonMember>
+                          <gml:Polygon>
+                              <gml:outerBoundaryIs>
+                                  <gml:LinearRing>
+                                      <gml:coordinates>0.237221,40.562081 0.237221,44.558083 14.592757,44.558083 14.592757,40.562081 0.237221,40.562081</gml:coordinates>
+                                  </gml:LinearRing>
+                              </gml:outerBoundaryIs>
+                          </gml:Polygon>
+                      </gml:polygonMember>
+                  </gml:MultiPolygon>
+              </gf:the_geom>
+              <gf:location>NCOM_wattemp_000_20081101T0000000_12.tiff</gf:location>
+              <gf:ingestion>2008-11-01T00:00:00Z</gf:ingestion>
+              <gf:elevation>0</gf:elevation>
+              </gf:watertemp>
+              </gml:featureMember>
+              <gml:featureMember>
+                  <gf:watertemp fid="watertemp.2">
+                      <gml:boundedBy>
+                          <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                          <gml:coordinates>0.237221,40.562081 14.592757,44.558083</gml:coordinates>
+                      </gml:Box>
+                  </gml:boundedBy>
+                  <gf:the_geom>
+                      <gml:MultiPolygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                      <gml:polygonMember>
+                          <gml:Polygon>
+                              <gml:outerBoundaryIs>
+                                  <gml:LinearRing>
+                                      <gml:coordinates>0.237221,40.562081 0.237221,44.558083 14.592757,44.558083 14.592757,40.562081 0.237221,40.562081</gml:coordinates>
+                                  </gml:LinearRing>
+                              </gml:outerBoundaryIs>
+                          </gml:Polygon>
+                      </gml:polygonMember>
+                  </gml:MultiPolygon>
+              </gf:the_geom>
+              <gf:location>NCOM_wattemp_000_20081031T0000000_12.tiff</gf:location>
+              <gf:ingestion>2008-10-31T00:00:00Z</gf:ingestion>
+              <gf:elevation>0</gf:elevation>
+              </gf:watertemp>
+              </gml:featureMember>
+              </wfs:FeatureCollection>
+
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postStructuredCoverageGranules
+      description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putStructuredCoverageGranules
+      description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteStructuredCoverageGranules
+      description: Allows removing one or more granules from the index
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the coverage to be retrieved
+          type: string
+        - name: filter
+          in: query
+          required: false
+          description: A CQL filter to reduce the returned granules
+          type: string
+      responses:
+        200:
+          description: OK
+        405:
+          description: Method Not Allowed
+
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/index/granules/{granuleId}:
+    parameters:
+      - name: granuleId
+        type: string
+        in: path
+        required: true
+        description: The granule ID
+    get:
+      operationId: getStructuredCoverageGranule
+      summary: Get the attributes of a particular granule
+      description: Displays a list of all the attributes associated to a particular coverage's granule. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation. The XML output is actually WFS 1.0 GML, while the JSON output is GeoJSON
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the coverage to be retrieved
+          type: string       
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json: |
+              {
+                "type": "FeatureCollection",
+                "bbox":   [
+                  0.23722068851276978,
+                  40.562080748421806,
+                  14.592757149389236,
+                  44.55808294568743
+                ],
+                "crs":   {
+                  "type": "name",
+                  "properties": {"name": "EPSG:4326"}
+                },
+                "features":   [
+                      {
+                    "type": "Feature",
+                    "geometry":       {
+                      "type": "MultiPolygon",
+                      "coordinates": [[        [
+                                  [
+                          0.2372,
+                          40.5621
+                        ],
+                                  [
+                          0.2372,
+                          44.5581
+                        ],
+                                  [
+                          14.5928,
+                          44.5581
+                        ],
+                                  [
+                          14.5928,
+                          40.5621
+                        ],
+                                  [
+                          0.2372,
+                          40.5621
+                        ]
+                      ]]]
+                    },
+                    "properties":       {
+                      "location": "NCOM_wattemp_000_20081101T0000000_12.tiff",
+                      "ingestion": "2008-11-01T00:00:00.000+0000",
+                      "elevation": 0
+                    },
+                    "id": "watertemp.1"
+                  }
+                ]
+              }
+
+            application/xml: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+              <gml:boundedBy>
+                  <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                  <gml:coord>
+                      <gml:X>0.23722068851276978</gml:X>
+                      <gml:Y>40.562080748421806</gml:Y>
+                  </gml:coord>
+                  <gml:coord>
+                      <gml:X>14.592757149389236</gml:X>
+                      <gml:Y>44.55808294568743</gml:Y>
+                  </gml:coord>
+              </gml:Box>
+              </gml:boundedBy>
+              <gml:featureMember>
+                  <gf:watertemp fid="watertemp.1">
+                      <gml:boundedBy>
+                          <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                          <gml:coordinates>0.237221,40.562081 14.592757,44.558083</gml:coordinates>
+                      </gml:Box>
+                  </gml:boundedBy>
+                  <gf:the_geom>
+                      <gml:MultiPolygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                      <gml:polygonMember>
+                          <gml:Polygon>
+                              <gml:outerBoundaryIs>
+                                  <gml:LinearRing>
+                                      <gml:coordinates>0.237221,40.562081 0.237221,44.558083 14.592757,44.558083 14.592757,40.562081 0.237221,40.562081</gml:coordinates>
+                                  </gml:LinearRing>
+                              </gml:outerBoundaryIs>
+                          </gml:Polygon>
+                      </gml:polygonMember>
+                  </gml:MultiPolygon>
+              </gf:the_geom>
+              <gf:location>NCOM_wattemp_000_20081101T0000000_12.tiff</gf:location>
+              <gf:ingestion>2008-11-01T00:00:00Z</gf:ingestion>
+              <gf:elevation>0</gf:elevation>
+              </gf:watertemp>
+              </gml:featureMember>
+              </wfs:FeatureCollection>
+
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postStructuredCoverageGranule
+      description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putStructuredCoverageGranule
+      description: Invalid, the granules cannot harvested here, use a POST request on /workspaces/{workspace}/coveragestores/{store}
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteStructuredCoverageGranule
+      description: Allows removing the specified granule
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: coverage
+          in: path
+          required: true
+          description: The name of the coverage to be retrieved
+          type: string
+      responses:
+        200:
+          description: OK
+        405:
+          description: Method Not Allowed
+
+
+definitions:
+  Schema:
+    type: object
+    required: [ attributes, link ]
+    example: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Schema>
+          <attributes>
+            <Attribute>
+              <name>the_geom</name>
+              <minOccurs>0</minOccurs>
+              <maxOccurs>1</maxOccurs>
+              <nillable>true</nillable>
+              <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>
+            </Attribute>
+            <Attribute>
+              <name>location</name>
+              <minOccurs>0</minOccurs>
+              <maxOccurs>1</maxOccurs>
+              <nillable>true</nillable>
+              <binding>java.lang.String</binding>
+              <length>254</length>
+            </Attribute>
+            <Attribute>
+              <name>ingestion</name>
+              <minOccurs>0</minOccurs>
+              <maxOccurs>1</maxOccurs>
+              <nillable>true</nillable>
+              <binding>java.util.Date</binding>
+              <length>8</length>
+            </Attribute>
+            <Attribute>
+              <name>elevation</name>
+              <minOccurs>0</minOccurs>
+              <maxOccurs>1</maxOccurs>
+              <nillable>true</nillable>
+              <binding>java.lang.Integer</binding>
+              <length>9</length>
+            </Attribute>
+          </attributes>
+          <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml" rel="alternate" type="application/xml"/>
+        </Schema>
+    properties:
+      attributes:
+        type: array
+        description: List of attributes
+        items: 
+            $ref: "#/definitions/Attribute"
+      link:
+        type: string
+        description: Link to the list of granules
+
+  Attribute:
+    type: object
+    description: An attribute description
+    properties:
+      name:
+        type: string
+        description: Name of the attribute
+      minOccurs:
+        type: integer
+        description: Minimum number of occurences (0 for optional attribute)
+      maxOccurs:
+        type: integer
+        description: Maximumn number of occurences (normally 1)
+      nillable:
+        type: boolean
+        description: If the attribute can be missing
+      binding:
+        type: string
+        description: Name of the java class for the attribute
+      length:
+        type: integer
+        description: Length of the field

@@ -4,7 +4,19 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_GEOMETRY;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_NAME;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RELATION;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_END;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,18 +42,14 @@ import org.geoserver.opensearch.eo.OpenSearchParameters.GeometryRelation;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
-import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
-import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
 import org.opengis.filter.Filter;
@@ -50,8 +58,9 @@ import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.spatial.BBOX;
 import org.opengis.filter.spatial.DWithin;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.StringUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -93,6 +102,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     private OpenSearchEoService oseo;
 
     private GeoServer gs;
+    
+    OpenSearchBBoxKvpParser bboxParser = new OpenSearchBBoxKvpParser();
 
     public SearchRequestKvpReader(GeoServer gs, OpenSearchEoService service) {
         super(SearchRequest.class);
@@ -183,7 +194,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         List<Filter> filters = new ArrayList<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
-            if (value != null && !NOT_FILTERS.contains(parameter.key)) {
+            if (!StringUtils.isEmpty(value) && !NOT_FILTERS.contains(parameter.key)) {
                 Filter filter = null;
                 if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);
@@ -379,14 +390,17 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     private Filter buildBoundingBoxFilter(Object value) throws Exception {
         Filter filter;
-        ReferencedEnvelope box = (ReferencedEnvelope) new BBoxKvpParser().parse((String) value);
-        final CoordinateReferenceSystem crs = box.getCoordinateReferenceSystem();
-        if (crs != null && !CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
-            throw new OWS20Exception(
-                    "OpenSearch for EO requests only support boundig boxes in WGS84",
-                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "box");
+        Object parsed = bboxParser.parse((String) value);
+        if(parsed instanceof ReferencedEnvelope) {
+            filter = FF.bbox(DEFAULT_GEOMETRY, (ReferencedEnvelope) parsed, MatchAction.ANY);
+        } else if(parsed instanceof ReferencedEnvelope[]) {
+            ReferencedEnvelope[] envelopes = (ReferencedEnvelope[]) parsed;
+            BBOX bbox1 = FF.bbox(DEFAULT_GEOMETRY, envelopes[0], MatchAction.ANY);
+            BBOX bbox2 = FF.bbox(DEFAULT_GEOMETRY, envelopes[1], MatchAction.ANY);
+            return FF.or(bbox1, bbox2);
+        } else {
+            throw new IllegalArgumentException("Unexpected bbox parse result: " + parsed);
         }
-        filter = FF.bbox(DEFAULT_GEOMETRY, box, MatchAction.ANY);
         return filter;
     }
     
@@ -592,7 +606,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         Object converted = Converters.convert(value, parameter.getType(), SAFE_CONVERSION_HINTS);
         if (converted == null) {
             throw new OWS20Exception(
-                    value + " of key " + parameter.key + " cannot be converted to a "
+                    "Value '" + value + "' of key " + parameter.key + " cannot be converted to a "
                             + parameter.getType().getSimpleName(),
                     OWSExceptionCode.InvalidParameterValue, parameter.key);
         }

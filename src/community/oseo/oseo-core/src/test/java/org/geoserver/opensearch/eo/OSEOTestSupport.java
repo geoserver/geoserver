@@ -10,8 +10,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -59,6 +62,10 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }
+    }
+    
+    protected List<Filter> getFilters() {
+        return Collections.singletonList(new OSEOFilter());
     }
 
     @Override
@@ -145,6 +152,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri("time", "http://a9.com/-/opensearch/extensions/time/1.0");
         namespaceContext.bindNamespaceUri("owc", "http://www.opengis.net/owc/1.0");
         namespaceContext.bindNamespaceUri("dc", "http://purl.org/dc/elements/1.1/");
+        namespaceContext.bindNamespaceUri("media", "http://search.yahoo.com/mrss/");
         for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
             namespaceContext.bindNamespaceUri(pc.getPrefix(), pc.getNamespace());
         }

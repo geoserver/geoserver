@@ -6,10 +6,10 @@
     service="WCS" version="2.0.1">
     <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
     <wcs:Extension>    
-        <rsub:rangeSubset>
-            <rsub:rangeItem>
+        <rsub:RangeSubset>
+            <rsub:RangeItem>
                 <rsub:rangeComponent>RED_BAND</rsub:rangeComponent>
-            </rsub:rangeItem>        
-        </rsub:rangeSubset>
+            </rsub:RangeItem>        
+        </rsub:RangeSubset>
     </wcs:Extension>
 </wcs:GetCoverage>

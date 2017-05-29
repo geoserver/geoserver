@@ -50,6 +50,7 @@ import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.springframework.http.MediaType;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -120,6 +121,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             mapNamespacePrefix("xs", "http://www.w3.org/2001/XMLSchema");
             mapNamespacePrefix("sch", "http://www.ascc.net/xml/schematron");
             mapNamespacePrefix("owc", "http://www.opengis.net/owc/1.0");
+            mapNamespacePrefix("media", "http://search.yahoo.com/mrss/");
             for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
                 mapNamespacePrefix(pc.getPrefix(), pc.getNamespace());
             }
@@ -238,7 +240,14 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.ISO_METADATA, "title", "ISO metadata"));
 
+            // OGC links
             encodeOgcLinksFromFeature(feature, request);
+        }
+
+        private void mediaContent(String quicklookLink) {
+            element("media:content", () -> {
+                element("media:category", "THUMBNAIL", attributes("scheme", "http://www.opengis.net/spec/EOMPOM/1.0"));
+            }, attributes("medium", "image", "type", "image/jpeg", "url", quicklookLink));
         }
 
         private void encodeOgcLinksFromFeature(Feature feature, SearchRequest request) {
@@ -307,7 +316,31 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.OM_METADATA, "title", "O&M metadata"));
 
+            // and a quicklook as a link and as media
+            if(quicklookLink != null) {
+                element("link", NO_CONTENTS, attributes("rel", "icon", "href", quicklookLink,
+                        "type", "image/jpeg", "title", "Quicklook"));
+                element("media:group", () -> mediaContent(quicklookLink));
+            }
+            
             encodeOgcLinksFromFeature(feature, request);
+            
+            encodeDownloadLink(feature, request);
+        }
+
+        private void encodeDownloadLink(Feature feature, SearchRequest request) {
+            String location  = (String) value(feature, null, OpenSearchAccess.ORIGINAL_PACKAGE_LOCATION);
+            if(location != null) {
+                String type = (String) value(feature, null, OpenSearchAccess.ORIGINAL_PACKAGE_TYPE);
+                if(type == null) {
+                    type = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+                }
+                String hrefBase = getHRefBase(request);
+                String locationExpanded = QuickTemplate.replaceVariables(location,
+                        Collections.singletonMap(BASE_URL_KEY, hrefBase));
+                element("link", NO_CONTENTS, attributes("rel", "enclosure", "href", locationExpanded,
+                        "type", type, "title", "Source package download"));
+            }
         }
 
         private void encodeGenericEntryContents(Feature feature, String name,
@@ -315,11 +348,24 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             element("id", identifierLink);
             element("title", name);
             element("dc:identifier", name);
-            // TODO: need an actual update column
-            Date updated = (Date) value(feature, "timeStart");
-            if (updated != null) {
+            Date start = (Date) value(feature, "timeStart");
+            Date end = (Date) value(feature, "timeEnd");
+            if(start != null || end != null) {
+                // TODO: need an actual update column
+                Date updated = end == null ? start : end;
                 String formattedUpdated = DateTimeFormatter.ISO_INSTANT.format(updated.toInstant());
                 element("updated", formattedUpdated);
+
+                // dc:date, can be a range
+                String spec;
+                if(start != null && end != null && start.equals(end)) {
+                    spec = DateTimeFormatter.ISO_INSTANT.format(start.toInstant());
+                } else {
+                    spec = start != null ? DateTimeFormatter.ISO_INSTANT.format(start.toInstant()) : "";
+                    spec += "/";
+                    spec += end != null ? DateTimeFormatter.ISO_INSTANT.format(end.toInstant()) : "";
+                }
+                element("dc:date", spec);
             }
             Geometry footprint = (Geometry) value(feature, "footprint");
             if (footprint != null) {
@@ -407,7 +453,12 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private Object value(Feature feature, String prefix, String attribute) {
-            Property property = feature.getProperty(new NameImpl(prefix, attribute));
+            Property property; 
+            if(prefix != null) {
+                property = feature.getProperty(new NameImpl(prefix, attribute));
+            } else {
+                property = feature.getProperty(attribute);
+            }
             if (property == null) {
                 return null;
             } else {

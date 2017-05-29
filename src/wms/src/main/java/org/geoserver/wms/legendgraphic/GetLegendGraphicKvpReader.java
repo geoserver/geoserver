@@ -27,7 +27,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
@@ -45,7 +44,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.FactoryRegistryException;
 import org.geotools.factory.GeoTools;
-import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.SLDParser;
@@ -106,6 +104,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
         GetLegendGraphicRequest request = (GetLegendGraphicRequest) super.read(req, kvp, rawKvp);
         request.setRawKvp(rawKvp);
+        request.setKvp(kvp);
+        request.setWms(wms);
 
         if (request.getVersion() == null || request.getVersion().length() == 0) {
             String version = (String) rawKvp.get("WMTVER");
@@ -245,12 +245,31 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
             LegendInfo legendInfo = resolveLegendInfo(layerInfo.getLegend(),request);
             if(legendInfo != null ){
-                legend.setLegendInfo( legendInfo );
+                configureLegendInfo(request, legend, legendInfo);
             }
             return legend;            
         } else {
             throw new ServiceException("Cannot get FeatureType for Layer",
                     "MissingFeatureType");
+        }
+    }
+
+    /**
+     * Ensures the online resource is stored on the GetLegendGraphicRequest and native
+     * dimensions are configured if not specified on the original request.
+     * 
+     * @param request GetLegendGraphicRequest original KWP Request
+     * @param legend LegendRequest internal Class containing references to Resources
+     * @param legendInfo LegendInfo used to document use external graphic
+     */
+    private void configureLegendInfo(GetLegendGraphicRequest request, LegendRequest legend,
+            LegendInfo legendInfo) {
+        legend.setLegendInfo( legendInfo );
+        if (legendInfo.getHeight() > 0 && !request.getKvp().containsKey("HEIGHT")) {
+            request.setHeight(legendInfo.getHeight());
+        }
+        if (legendInfo.getWidth() > 0 && !request.getKvp().containsKey("WIDTH")) {
+            request.setWidth(legendInfo.getWidth());
         }
     }
     /**
@@ -445,7 +464,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                                 Name name = layerInfo.getResource().getQualifiedName();
                                 LegendRequest legendRequest = req.getLegend(name);
                                 if( legendRequest != null ){
-                                    legendRequest.setLegendInfo( legend );
+                                    configureLegendInfo(req, legendRequest, legend);
                                 }
                                 else {
                                     LOGGER.log(Level.FINE, "Unable to set LegendInfo for "+name);
@@ -468,7 +487,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     Name name = layerInfo.getResource().getQualifiedName();
                     LegendRequest legendRequest = req.getLegend(name);
                     if( legendRequest != null ){
-                        legendRequest.setLegendInfo( legend );
+                        configureLegendInfo(req, legendRequest, legend);
                     }
                     else {
                         LOGGER.log(Level.FINE, "Unable to set LegendInfo for "+name);
@@ -493,7 +512,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                         Name name = layerInfo.getResource().getQualifiedName();
                         LegendRequest legendRequest = req.getLegend(name);
                         if( legendRequest != null ){
-                            legendRequest.setLegendInfo( legend );
+                            configureLegendInfo(req, legendRequest, legend);
                         }
                         else {
                             LOGGER.log(Level.FINE, "Unable to set LegendInfo for "+name);

@@ -123,7 +123,20 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.mediaType("sld", MediaType.valueOf(SLDHandler.MIMETYPE_11));
+        // scan and register media types for style handlers
+        List<StyleHandler> styleHandlers = GeoServerExtensions.extensions(StyleHandler.class);
+        for (StyleHandler handler : styleHandlers) {
+            if(handler.getVersions() != null && handler.getVersions().size() > 0) {
+                // Spring configuration allows associating a single mime to extensions, pick the latest
+                List<Version> versions = handler.getVersions();
+                final Version firstVersion = versions.get(versions.size() - 1);
+                configurer.mediaType(handler.getFormat(), MediaType.valueOf(handler.mimeType(firstVersion)));
+            }
+        }
+        // manually force SLD to v10 for backwards compatibility
+        configurer.mediaType("sld", MediaType.valueOf(SLDHandler.MIMETYPE_10));
+        
+        // other common media types
         configurer.mediaType("html", MediaType.TEXT_HTML);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);

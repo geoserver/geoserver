@@ -225,7 +225,7 @@ public class StyleController extends AbstractCatalogController {
         return uriComponents;
     }
 
-    @GetMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"})
+    @GetMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, produces = {MediaType.ALL_VALUE})
     protected RestWrapper<StyleInfo> styleGet(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
@@ -443,7 +443,7 @@ public class StyleController extends AbstractCatalogController {
                         }
                         return;
                     }
-                    catch(IOException invalid){
+                    catch(Exception invalid){
                         throw new RestException("Invalid style:"+invalid.getMessage(), HttpStatus.BAD_REQUEST, invalid);
                     }
                 }

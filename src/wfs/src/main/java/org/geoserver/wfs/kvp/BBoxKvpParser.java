@@ -11,11 +11,11 @@ import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.SingleCRS;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -69,6 +69,26 @@ public class BBoxKvpParser extends KvpParser {
         	maxy = bbox[3];     
         }
         
+        // check for srs
+        String srs = null;
+        if (unparsed.size() > countco) {
+        	// merge back the CRS definition, in case it is an AUTO one
+            StringBuilder sb = new StringBuilder();
+            for (int i = countco; i < unparsed.size(); i++) {
+                sb.append(unparsed.get(i));
+                if(i < (unparsed.size() - 1)) {
+                    sb.append(",");
+                }
+            }
+            srs = sb.toString();
+        }
+        
+        return buildEnvelope(countco, minx, miny, minz, maxx, maxy, maxz, srs);
+    }
+
+    protected Object buildEnvelope(int countco, double minx, double miny, double minz, double maxx,
+            double maxy, double maxz, String srs)
+            throws NoSuchAuthorityCodeException, FactoryException {
         if (minx > maxx) {
             throw new ServiceException("illegal bbox, minX: " + minx + " is "
                 + "greater than maxX: " + maxx);
@@ -82,20 +102,6 @@ public class BBoxKvpParser extends KvpParser {
         if (minz > maxz) {
             throw new ServiceException("illegal bbox, minZ: " + minz + " is "
                 + "greater than maxZ: " + maxz);
-        }  
-
-        // check for srs
-        String srs = null;
-        if (unparsed.size() > countco) {
-        	// merge back the CRS definition, in case it is an AUTO one
-            StringBuilder sb = new StringBuilder();
-            for (int i = countco; i < unparsed.size(); i++) {
-                sb.append(unparsed.get(i));
-                if(i < (unparsed.size() - 1)) {
-                    sb.append(",");
-                }
-            }
-            srs = sb.toString();
         }
         
         if (countco == 6) {

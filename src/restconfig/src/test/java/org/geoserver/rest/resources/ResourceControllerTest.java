@@ -7,6 +7,7 @@ package org.geoserver.rest.resources;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.test.JSONAssert;
+import org.apache.commons.lang.SystemUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -171,7 +172,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testSpecialCharacterNames() throws Exception {
         // if the file system encoded the file with a ? we need to skip this test
-        Assume.assumeTrue(getDataDirectory().get("po?zie").getType() == Type.UNDEFINED);
+        Assume.assumeTrue(SystemUtils.IS_OS_WINDOWS || getDataDirectory().get("po?zie").getType() == Type.UNDEFINED);
         Assert.assertEquals(Type.DIRECTORY, getDataDirectory().get("poëzie").getType());
         XMLUnit.setXpathNamespaceContext(NS_XML);
         Document doc = getAsDOM(RestBaseController.ROOT_PATH+"/resource/po%c3%abzie?format=xml");

@@ -6,6 +6,7 @@
 package org.geoserver.cluster.server;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -49,10 +50,10 @@ public abstract class JMSAbstractGeoServerProducer extends JMSAbstractProducer {
         // TODO not all options are needed: append only instance name when NOT debug mode
 
         // get options from rest callback
-        final List<Parameter> p = RestDispatcherCallback.getParameters();
+        final Map<String, String> p = RestDispatcherCallback.getParameters();
         if (p != null) {
-            for (Parameter par : p) {
-                options.put(par.getName(), par.getValue().toString());
+            for (Map.Entry<String, String> entry : p.entrySet()) {
+                options.put(entry.getKey(), entry.getValue());
             }
         }
         return options;

@@ -285,6 +285,17 @@ tr.even th {
 background: #e2efcd; /* override blueprint's settings */
 }
 
+tr.dnd-drop-center td {
+  background-color: #cccccc !important;
+}
+
+div.dnd-theme-web tr {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
 tr.even:hover td,
 tr.even:hover th {
 background: #f4f9eb;

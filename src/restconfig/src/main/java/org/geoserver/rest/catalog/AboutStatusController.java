@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
@@ -104,7 +105,10 @@ public class AboutStatusController extends RestBaseController {
                                 hash.put("isEnabled", Boolean.toString(status.isEnabled()));
                                 status.getComponent().ifPresent(component -> hash.put("component", component));
                                 status.getVersion().ifPresent(version -> hash.put("version", version));
-                                status.getMessage().ifPresent(message -> hash.put("message", message.replace("\n", "<br/>")));
+                                //Make sure to escape the string, otherwise strange chars here will bork the XML parser later
+                                
+                                status.getMessage().ifPresent(message -> hash.put("message", 
+                                        StringEscapeUtils.escapeXml(message.replace("\u001b", "ESC")).replace("\n", "<br/>")));
 
                                 return hash;
                             }

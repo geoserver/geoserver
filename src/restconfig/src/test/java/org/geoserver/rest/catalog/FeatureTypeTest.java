@@ -120,6 +120,41 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         put(BASEPATH + "/workspaces/gs/datastores/ngpds/file.properties?" + q, zbytes.toByteArray(),
                 "application/zip");
     }
+    
+    /**
+     * Add a property data store with multiple feature types, but only configure the first.
+     * @param configureFeatureType
+     * @throws Exception
+     */
+    void addPropertyDataStoreOnlyConfigureFirst() throws Exception {
+        ByteArrayOutputStream zbytes = new ByteArrayOutputStream();
+        ZipOutputStream zout = new ZipOutputStream(zbytes);
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(bytes));
+        writer.write("_=name:String,pointProperty:Point\n");
+        writer.write("pdsa.0='zero'|POINT(0 0)\n");
+        writer.write("pdsa.1='one'|POINT(1 1)\n");
+        writer.flush();
+
+        zout.putNextEntry(new ZipEntry("pdsa.properties"));
+        zout.write(bytes.toByteArray());
+        bytes.reset();
+
+        writer.write("_=name:String,pointProperty:Point\n");
+        writer.write("pdsb.0='two'|POINT(2 2)\n");
+        writer.write("pdsb.1='trhee'|POINT(3 3)\n");
+        writer.flush();
+        zout.putNextEntry(new ZipEntry("pdsb.properties"));
+        zout.write(bytes.toByteArray());
+
+        zout.flush();
+        zout.close();
+
+        String q = "configure=first";
+        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(),
+                "application/zip");
+    }
 
     @Test
     public void testGetAllByDataStore() throws Exception {
@@ -155,6 +190,21 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         dom = getAsDOM(BASEPATH
                 + "/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available_with_geom");
         assertXpathEvaluatesTo("0", "count(//featureTypeName)", dom);
+    }
+    
+
+    /**
+     * Test that a list of all feature types for a data source are returned when "list=all", including both
+     * configured and unconfigured ones. 
+     */
+    @Test
+    public void testGetAllByDataStoreWithListAll() throws Exception {
+        // Create a data store with only the first feature type configured.
+        addPropertyDataStoreOnlyConfigureFirst();
+        Document dom = getAsDOM(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml?list=all");
+        assertEquals(2, dom.getElementsByTagName("featureTypeName").getLength());
+        assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsa'])", dom);
+        assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsb'])", dom);
     }
 
     @Test

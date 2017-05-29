@@ -280,6 +280,7 @@
     </bean>
  	<bean id="startIndexKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
  	    <constructor-arg value="startIndex"/>
+ 	    <property name="service" value="WMS"/>
  	</bean>
  	<bean id="angleKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
 		<constructor-arg value="angle"/>
@@ -734,6 +735,7 @@
   </bean>
   <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier">
       <constructor-arg ref="entityResolverProvider" />
+      <constructor-arg ref="wms" />
   </bean>
     
     

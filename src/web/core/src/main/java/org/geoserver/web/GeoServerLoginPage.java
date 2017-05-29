@@ -10,10 +10,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.Request;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.geoserver.security.ConcurrentAuthenticationException;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.WebAttributes;
 
 /**
  * This is a simple login form shown when the user tries to access a secured page directly 
@@ -38,10 +41,35 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         
         try {
             if(parameters.get("error").toBoolean()) {
-                error(new ParamResourceModel("error", this).getString());
+                Exception exception = getAuthenticationException();
+                if (exception instanceof ConcurrentAuthenticationException) {
+                    ConcurrentAuthenticationException cae = (ConcurrentAuthenticationException) exception;
+                    error(new ParamResourceModel("concurrentAuthenticationError", this, cae.getCount()).getString());
+                } else {
+                    error(new ParamResourceModel("error", this).getString());
+                }
             }
         } catch(Exception e) {
             // ignore
+        }
+    }
+
+    private AuthenticationException getAuthenticationException() {
+        Request request = getRequest();
+        if(request == null || !(request.getContainerRequest() instanceof HttpServletRequest)) {
+            return null;
+        }
+        HttpServletRequest hr = (HttpServletRequest) request.getContainerRequest();
+        HttpSession session = hr.getSession(false);
+        if(session == null) {
+            return null;
+        }
+        
+        Object exception = session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        if(exception instanceof AuthenticationException) {
+            return (AuthenticationException) exception;
+        } else {
+            return null;
         }
     }
     

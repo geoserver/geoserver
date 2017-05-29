@@ -794,12 +794,40 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         
         File f = new File( testData.getDataDirectoryRoot(), 
             "styles/foostyle.xml");
-        assertTrue( f.exists() );
+        assertTrue(f.exists());
         
-        StyleInfo s = catalog.getStyleByName( "foostyle" );
-        catalog.remove( s );
+        File sf = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld");
+        sf.createNewFile();
+        assertTrue(sf.exists());
         
-        assertThat( f, not(fileExists()) );
+        StyleInfo s = catalog.getStyleByName( "foostyle" );        
+        catalog.remove(s);
+        
+        assertThat(f, not(fileExists()));
+        assertThat(sf, not(fileExists()));
+        
+        File sfb = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld.bak");
+        assertThat(sfb, fileExists() );
+        
+        //do it a second time
+        
+        testAddStyle();               
+        sf = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld");
+        sf.createNewFile();
+        assertTrue(sf.exists());
+        
+        s = catalog.getStyleByName("foostyle");        
+        catalog.remove(s);
+        
+        assertThat(f, not(fileExists()));
+        assertThat(sf, not(fileExists()));
+        
+        sfb = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld.bak.1");
+        assertThat(sfb, fileExists());
     }
 
     @Test

@@ -1,0 +1,77 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Fonts
+  description: A font is a set of characters that can be used in a style for displaying labels.
+
+paths:
+  /fonts:
+    get:
+      operationId: getFonts
+      summary: Get a list of fonts
+      description: Displays a list of all fonts on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/fonts.xml" for XML)
+      produces:
+        - application/json
+        - application/xml
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/FontList"
+          examples:
+            application/json: |
+              {"fonts":["Calibri Light Italic","Microsoft PhagsPa Bold","Lucida Sans Typewriter Oblique","ChaparralPro-Regular","Californian FB Italic"]}
+              
+            application/xml: |
+              <root>
+                <fonts>
+                  <entry>Calibri Light Italic</entry>
+                  <entry>Microsoft PhagsPa Bold</entry>
+                  <entry>Lucida Sans Typewriter Oblique</entry>
+                  <entry>ChaparralPro-Regular</entry>
+                  <entry>Californian FB Italic</entry>
+                </fonts>
+              </root>
+              
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postFonts
+      description: Invalid. Fonts cannot be added through the REST API.
+      responses:
+        401:
+          description: Unauthorized    
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putFonts
+      description: Invalid. Fonts cannot be updated through the REST API.
+      responses:
+        401:
+          description: Unauthorized    
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteFonts
+      description: Invalid. Fonts cannot be deleted through the REST API.
+      responses:
+        401:
+          description: Unauthorized    
+        405:
+          description: Method Not Allowed
+
+definitions:
+  FontListItem:
+    type: object
+    properties:
+      entry:
+        type: string
+        description: Name of font
+  FontList:
+    type: array
+    items:
+      $ref: '#/definitions/FontListItem'

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -193,17 +193,20 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Normalizes an envelope to get a usable viewport.
      * 
      * @param e2
-     *
      */
-    private ReferencedEnvelope normalizeEnvelope(ReferencedEnvelope e) {
-        if (e != null) {
+    private ReferencedEnvelope normalizeEnvelope(ReferencedEnvelope pEnv) {
+        if (pEnv != null) {
             // if it's empty, get a 1 meter envelope around it
-            if (e.getWidth() == 0 && e.getHeight() == 0) {
-                e.expandBy(1);
+            if (pEnv.getWidth() == 0 && pEnv.getHeight() == 0) {
+                // no features or no geom, enable creation of valid empty file at least
+                pEnv.init(0d, 1d, 0d, 1d);
             }
+        } else {
+            // no data, enable creation of empty file at least
+            pEnv = new ReferencedEnvelope();
+            pEnv.init(0d, 1d, 0d, 1d);
         }
-        return e;
-
+        return pEnv;
     }
 
     /**

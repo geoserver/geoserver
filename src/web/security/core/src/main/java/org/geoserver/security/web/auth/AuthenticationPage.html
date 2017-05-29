@@ -31,6 +31,33 @@
          </fieldset>
      </li>
      <li>
+        <fieldset>
+        <legend><span><wicket:message key="bruteForceSettings"></wicket:message></span></legend>
+         <ul>
+            <li>
+                <label for="bfEnabled"><wicket:message key="bfEnabled"></wicket:message></label>
+                <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field checkbox"/>
+            </li>
+            <li>
+                <label for="bfMinDelaySeconds"><wicket:message key="bfMinDelaySeconds"></wicket:message></label>
+                <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text" class="text"/>
+            </li>
+            <li>
+                <label for="bfMaxDelaySeconds"><wicket:message key="bfMaxDelaySeconds"></wicket:message></label>
+                <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text" class="text"/>
+            </li>
+            <li>
+                <label for="bfWhitelistedNetmasks"><wicket:message key="bfWhitelistedNetmasks"></wicket:message></label>
+                <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text" class="text"/>
+            </li>
+            <li>
+                <label for="bfMaxBlockedThreads"><wicket:message key="bfMaxBlockedThreads"></wicket:message></label>
+                <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text" class="text"/>
+            </li>
+          </ul>
+         </fieldset>
+     </li>
+     <li>
        <fieldset>
         <legend>
           <span><wicket:message key="authFilters"></wicket:message></span>

@@ -3,7 +3,8 @@ var editor = CodeMirror.fromTextArea(textarea, {
     mode: '$mode',
     theme: 'default',
     lineWrapping: true,
-    lineNumbers: true
+    lineNumbers: true,
+    extraKeys: {"Ctrl-Space": "autocomplete"}
 });
 editor.getWrapperElement().style.fontSize = "12px"; 
 editor.refresh();

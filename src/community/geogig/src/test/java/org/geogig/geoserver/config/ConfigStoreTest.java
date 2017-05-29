@@ -11,20 +11,22 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geogig.geoserver.HeapResourceStore;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +37,6 @@ import org.junit.rules.TemporaryFolder;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 
 public class ConfigStoreTest {
 
@@ -51,8 +52,7 @@ public class ConfigStoreTest {
 
     @Before
     public void before() {
-        File root = tempFolder.getRoot();
-        dataDir = new FileSystemResourceStore(root);
+        dataDir = new HeapResourceStore();
         store = new ConfigStore(dataDir);
         XMLUnit.setIgnoreWhitespace(true);
     }
@@ -84,8 +84,7 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(info.getId());
         Resource resource = dataDir.get(path);
-        assertTrue(resource.file().exists());
-        // Files.copy(resource.file(), System.err);
+        assertEquals(Type.RESOURCE, resource.getType());
         String expected = "<RepositoryInfo>"//
                 + "<id>" + dummyId + "</id>"//
                 + "<location>" + info.getLocation().toString() + "</location>"//
@@ -104,8 +103,7 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(info.getId());
         Resource resource = dataDir.get(path);
-        assertTrue(resource.file().exists());
-        // Files.copy(resource.file(), System.err);
+        assertEquals(Type.RESOURCE, resource.getType());
         String expected = "<RepositoryInfo>"//
                 + "<id>" + dummyId + "</id>"//
                 + "<location>file:/home/test/repo</location>"//
@@ -138,12 +136,12 @@ public class ConfigStoreTest {
             store.get(dummyId);
             fail("Expected FileNotFoundException");
         } catch (FileNotFoundException e) {
-            assertTrue(e.getMessage().startsWith("File not found: "));
+            assertTrue(e.getMessage().startsWith("Repository not found: "));
         }
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        assertFalse(new File(resource.parent().dir(), resource.name()).exists());
+        assertEquals(Type.UNDEFINED, resource.getType());
     }
 
     @Test
@@ -157,7 +155,9 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        Files.write(expected, resource.file(), Charsets.UTF_8);
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
 
         RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
@@ -176,7 +176,9 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        Files.write(expected, resource.file(), Charsets.UTF_8);
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
 
         RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
@@ -196,9 +198,11 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        Files.write(expected, resource.file(), Charsets.UTF_8);
-        thrown.expect(IOException.class);
-        thrown.expectMessage("Unable to load");
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
+        thrown.expect(FileNotFoundException.class);
+        thrown.expectMessage("Repository not found: " + dummyId);
         store.get(dummyId);
     }
 
@@ -230,10 +234,12 @@ public class ConfigStoreTest {
         RepositoryInfo dummy = dummy(4);
         store.save(dummy);
         Resource breakIt = dataDir.get(ConfigStore.path(dummy.getId()));
-        byte[] bytes = Files.toByteArray(breakIt.file());
+        byte[] bytes = IOUtils.toByteArray(breakIt.in());
         byte[] from = new byte[bytes.length - 5];
         System.arraycopy(bytes, 0, from, 0, from.length);
-        Files.write(from, breakIt.file());
+        try (OutputStream out = breakIt.out()) {
+        	out.write(from);
+        }
 
         List<RepositoryInfo> all = store.getRepositories();
         assertNotNull(all);
@@ -253,7 +259,9 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        Files.write(expected, resource.file(), Charsets.UTF_8);
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
 
         assertNotNull(store.get(dummyId));
         assertTrue(store.delete(dummyId));

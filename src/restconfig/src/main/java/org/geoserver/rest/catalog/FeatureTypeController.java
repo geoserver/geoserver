@@ -32,6 +32,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
@@ -87,14 +88,15 @@ public class FeatureTypeController extends AbstractCatalogController {
             @PathVariable(required = false) String dataStoreName,
             @RequestParam(defaultValue = "configured") String list) {
 
-        if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)) {
+        if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)
+                || "all".equalsIgnoreCase(list)) {
             DataStoreInfo info = getExistingDataStore(workspaceName, dataStoreName);
 
             // flag to control whether to filter out types without geometry
             boolean skipNoGeom = "available_with_geom".equalsIgnoreCase(list);
 
             // list of available feature types
-            List<String> available = new ArrayList<>();
+            List<String> featureTypes = new ArrayList<>();
             try {
                 DataStore ds = (DataStore) info.getDataStore(null);
 
@@ -103,7 +105,7 @@ public class FeatureTypeController extends AbstractCatalogController {
                     FeatureTypeInfo ftinfo = catalog.getFeatureTypeByDataStore(info,
                             featureTypeName);
                     if (ftinfo == null) {
-                        // not in catalog, add it
+                        // The feature type is not in catalog, so add it to the return list.
                         // check whether to filter by geometry
                         if (skipNoGeom) {
                             try {
@@ -118,14 +120,17 @@ public class FeatureTypeController extends AbstractCatalogController {
                                         e);
                             }
                         }
-                        available.add(featureTypeName);
+                        featureTypes.add(featureTypeName);
+                    } else if ("all".equalsIgnoreCase(list)) {
+                        // The feature type is already configured, but "all" was specified, so add it to the return list.
+                        featureTypes.add(featureTypeName);
                     }
                 }
             } catch (IOException e) {
                 throw new ResourceNotFoundException("Could not load datastore: " + dataStoreName);
             }
 
-            return new StringsList(available, "featureTypeName");
+            return new StringsList(featureTypes, "featureTypeName");
         } else {
             List<FeatureTypeInfo> fts;
 

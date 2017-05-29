@@ -40,7 +40,7 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return Style.class.isAssignableFrom(clazz) || StyleInfo.class.isAssignableFrom(clazz);
+        return RestWrapper.class.isAssignableFrom(clazz) || Style.class.isAssignableFrom(clazz) || StyleInfo.class.isAssignableFrom(clazz);
     }
 
     //
@@ -87,4 +87,11 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
             IOUtils.copy(in, out);
         }
     }
+
+    @Override
+    public String toString() {
+        return "StyleWriterConverter [version=" + version + ", handler=" + handler + "]";
+    }
+    
+    
 }

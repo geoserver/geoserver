@@ -34,7 +34,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/coverages.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/coverages.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/coverages</output>
             </configuration>
@@ -46,7 +46,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/coveragestores.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/coveragestores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/coveragestores</output>
             </configuration>
@@ -58,7 +58,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/datastores.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/datastores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/datastores</output>
             </configuration>
@@ -70,7 +70,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/featuretypes.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/featuretypes.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/featuretypes</output>
             </configuration>
@@ -82,7 +82,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/fonts.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/fonts.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/fonts</output>
             </configuration>
@@ -94,7 +94,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/layergroups.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/layergroups.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/layergroups</output>
             </configuration>
@@ -106,7 +106,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/layers.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/layers.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/layers</output>
             </configuration>
@@ -118,7 +118,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/manifests.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/manifests.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/manifests</output>
             </configuration>
@@ -130,7 +130,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/namespaces.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/namespaces.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/namespaces</output>
             </configuration>
@@ -142,7 +142,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/owsservices.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/owsservices.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/owsservices</output>
             </configuration>
@@ -154,7 +154,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/reload.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/reload.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/reload</output>
             </configuration>
@@ -166,7 +166,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/security.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/security.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/security</output>
             </configuration>
@@ -178,7 +178,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/settings.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/settings.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/settings</output>
             </configuration>
@@ -190,7 +190,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/structuredcoverages.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/structuredcoverages.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/structuredcoverages</output>
             </configuration>
@@ -202,7 +202,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/styles.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/styles.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/styles</output>
             </configuration>
@@ -214,7 +214,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/templates.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/templates.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/templates</output>
             </configuration>
@@ -226,7 +226,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/wmslayers.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/wmslayers.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/wmslayers</output>
             </configuration>
@@ -238,7 +238,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/wmsstores.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/wmsstores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/wmsstores</output>
             </configuration>
@@ -250,7 +250,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/workspaces.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/workspaces.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/workspaces</output>
             </configuration>
@@ -262,9 +262,57 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/api/monitoring.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/monitoring.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/monitoring</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>importer</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/importer.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/importer</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>importer-transforms</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/importerTransforms.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/importerTransforms</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>importer-tasks</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/importerTasks.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/importerTasks</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>importer-data</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/importerData.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/importerData</output>
             </configuration>
           </execution>
         </executions>
@@ -307,7 +355,9 @@
         <version>2.5.3</version>
         <configuration>
           <descriptors>
-            <descriptor>src/assembly/user.xml</descriptor>
+            <descriptor>release/user.xml</descriptor>
+            <descriptor>release/developer.xml</descriptor>
+            <descriptor>release/docguide.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>

@@ -40,6 +40,7 @@ import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -60,10 +61,16 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     private final ConfigDatabase db;
     
+    private ResourceStore ddResourceStore;
+    
     private GeoServerResourceLoader resourceLoader;
 
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
+    }
+    
+    public void setDdResourceStore(ResourceStore ddResourceStore) {
+        this.ddResourceStore = ddResourceStore;
     }
 
     public JDBCGeoServerFacade(final ConfigDatabase db) {
@@ -77,7 +84,8 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             if (realLogInfo == null) {
                 return;
             }
-            LoggingInfo startLogInfo = LoggingStartupContextListener.getLogging(resourceLoader);
+            LoggingInfo startLogInfo = LoggingStartupContextListener.getLogging(
+                    ddResourceStore == null ? resourceLoader : ddResourceStore);
             
             // Doing this reflectively so that if LoggingInfo gets new properties, this should still
             // work. KS

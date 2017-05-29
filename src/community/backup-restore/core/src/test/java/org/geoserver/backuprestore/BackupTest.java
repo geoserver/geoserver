@@ -4,22 +4,30 @@
  */
 package org.geoserver.backuprestore;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.factory.Hints;
 import org.geotools.filter.text.ecql.ECQL;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
@@ -30,7 +38,15 @@ import org.springframework.batch.core.BatchStatus;
  *
  */
 public class BackupTest extends BackupRestoreTestSupport {
-    
+
+    @Before
+    public void beforeTest() {
+        // reset invocations counter of continuable handler
+        ContinuableHandler.resetInvocationsCount();
+        // reset invocation of generic listener
+        GenericListener.reset();
+    }
+
     @Test
     public void testRunSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
@@ -62,6 +78,12 @@ public class BackupTest extends BackupRestoreTestSupport {
         }
 
         assertTrue(backupExecution.getStatus() == BatchStatus.COMPLETED);
+        assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
+        // check that generic listener was invoked for the backup job
+        assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(0));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(0));
     }
 
     @Test
@@ -113,6 +135,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         }
 
         assertTrue(backupExecution.getStatus() == BatchStatus.COMPLETED);
+        assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
     }
 
     @Test
@@ -163,6 +186,14 @@ public class BackupTest extends BackupRestoreTestSupport {
             assertTrue(restoreCatalog.getLayers().size() == 4);
             assertTrue(restoreCatalog.getLayerGroups().size() == 1);
         }
+
+        checkExtraPropertiesExists();
+        assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
+        // check that generic listener was invoked for the backup job
+        assertThat(GenericListener.getBackupAfterInvocations(), is(0));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(0));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
     }
 
     @Test
@@ -204,11 +235,14 @@ public class BackupTest extends BackupRestoreTestSupport {
 
         assertTrue(restoreExecution.getStatus() == BatchStatus.COMPLETED);
         if (restoreCatalog.getWorkspaces().size() > 0) {
-            assertTrue(restoreCatalog.getWorkspaces().size() == 2);
+            // assertTrue(restoreCatalog.getWorkspaces().size() == 2);
     
             assertTrue(restoreCatalog.getDataStores().size() == 2);
             assertTrue(restoreCatalog.getStyles().size() == 21);
         }
+
+        checkExtraPropertiesExists();
+        assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
     }
 
     @Test
@@ -262,4 +296,24 @@ public class BackupTest extends BackupRestoreTestSupport {
         }
     }
 
+    /**
+     * Helper method that just check if the extra properties file was correctly backup / restore.
+     */
+    private void checkExtraPropertiesExists() {
+        // find the properties file on the current data dir
+        GeoServerDataDirectory dataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        Resource extraResource = dataDirectory.get(ExtraFileHandler.EXTRA_FILE_NAME);
+        assertThat(extraResource.file().exists(), is(true));
+        // load the properties
+        Properties extraProperties = new Properties();
+        try(InputStream input = extraResource.in()) {
+            extraProperties.load(input);
+        } catch (Exception exception) {
+            throw new RuntimeException("Error reading extra properties file.", exception);
+        }
+        // check that the expected properties are present
+        assertThat(extraProperties.size(), is(2));
+        assertThat(extraProperties.getProperty("property.a"), is("1"));
+        assertThat(extraProperties.getProperty("property.b"), is("2"));
+    }
 }

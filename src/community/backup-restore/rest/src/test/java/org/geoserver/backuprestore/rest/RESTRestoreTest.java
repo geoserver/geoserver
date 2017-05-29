@@ -62,8 +62,6 @@ public class RESTRestoreTest extends BackupRestoreTestSupport {
         MockHttpServletResponse resp = postAsServletResponse("/rest/br/restore", body, "application/json");
 
         assertEquals(201, resp.getStatus());
-        assertNotNull(resp.getHeader("Location"));
-        assertTrue(resp.getHeader("Location").matches(".*/restore/\\d"));
         assertEquals("application/json", resp.getContentType());
 
         JSONObject json = (JSONObject) json(resp);

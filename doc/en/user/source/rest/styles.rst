@@ -5,11 +5,7 @@ Styles
 
 The REST API allows you to list, create, upload, update, and delete styles in GeoServer.
 
-Please see the API documentation for more details about the spec.
-
-API:
-
-* `Styles API Reference <../api/workspaces/index.html>`__
+.. note:: Read the :api:`API reference for /styles <styles.yaml>`.
 
 Listing all styles
 ------------------
@@ -23,14 +19,6 @@ Listing all styles
    ::
 
      curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles.json
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -48,14 +36,6 @@ Listing all styles
    ::
 
      curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/cite/styles.xml
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -81,14 +61,6 @@ Retrieve a style
    ::
 
      curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/rain.sld
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -135,14 +107,6 @@ You can create a new style on the server in two ways. In the first way, the crea
 
      curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<style><name>roads_style</name><filename>roads.sld</filename></style>" http://localhost:8080/geoserver/rest/styles
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::
@@ -156,14 +120,6 @@ You can create a new style on the server in two ways. In the first way, the crea
    ::
 
      curl -v -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld+xml" -d @roads.sld http://localhost:8080/geoserver/rest/styles/roads_styl
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -180,14 +136,6 @@ You can create a new style on the server in two ways. In the first way, the crea
    ::
 
      curl -u admin:geoserver -XPOST -H "Content-type: application/zip" --data-binary @roads_style.zip http://localhost:8080/geoserver/rest/styles
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -209,14 +157,6 @@ Changing an existing style
      curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld+xml" -d @roads.sld 
      http://localhost:8080/geoserver/rest/styles/roads_style
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::
@@ -234,14 +174,6 @@ Changing an existing style
      curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld+xml" -d @roads.sld 
      http://localhost:8080/geoserver/rest/workspaces/cite/styles/roads_style
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::
@@ -257,14 +189,6 @@ Changing an existing style
    ::
 
      curl -u admin:geoserver -XPUT -H "Content-type: application/zip" --data-binary @roads_style.zip http://localhost:8080/geoserver/rest/styles/roads_style.zip
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -285,14 +209,6 @@ Deleting a style
 
      curl -u admin:geoserver -XDELETE http://localhost:8080/geoserver/rest/styles/zoning
 
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
-
 *Response*
 
 ::
@@ -308,14 +224,6 @@ Deleting a style
    ::
 
      curl -u admin:geoserver -XDELETE http://localhost:8080/geoserver/rest/styles/zoning?purge=true
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 

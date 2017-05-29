@@ -37,6 +37,7 @@
 
   <bean id="gwcTilePageCalculator" class="org.geowebcache.diskquota.storage.TilePageCalculator">
     <constructor-arg ref="gwcTLDispatcher" />
+    <constructor-arg ref="gwcStorageBroker" />
   </bean>
 
   <bean id="gwcCacheCleaner" class="org.geowebcache.diskquota.CacheCleaner">

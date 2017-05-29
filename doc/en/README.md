@@ -27,7 +27,7 @@ Profiles are defined to build individual manuals:
 
 To package documentation into zip archives:
     
-    mvn aseembly:assembly
+    mvn aseembly:single
 
 ## Building with ANT
 

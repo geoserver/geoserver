@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
@@ -18,8 +19,16 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.web.data.layergroup.LayerGroupEntry;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
+
+import wicketdnd.DragSource;
+import wicketdnd.DropTarget;
+import wicketdnd.Location;
+import wicketdnd.Operation;
+import wicketdnd.Transfer;
+import wicketdnd.theme.WebTheme;
 
 /**
  * Base class for tables that have up/down modifiers
@@ -68,11 +77,34 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
     static Property<?> RENDERING_ORDER = new PropertyPlaceholder<Object>("order");
 
-    //private List<T> items;
-
+    @SuppressWarnings("serial")
     public ReorderableTablePanel(String id, List<T> items, List<Property<T>> properties) {
         super(id, new ReorderableDataProvider<T>(items, properties));
-        //this.items = items;
+        this.setOutputMarkupId(true);
+        this.add(new WebTheme());
+        this.add(new DragSource(Operation.MOVE).drag("tr"));
+        this.add(new DropTarget(Operation.MOVE) {
+
+            public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
+                if (location == null || !(location.getComponent().getDefaultModel().getObject() instanceof LayerGroupEntry)) {
+                    return;
+                }
+                T movedItem = transfer.getData();
+                T targetItem = (T) location.getComponent().getDefaultModel().getObject();
+                if (movedItem.equals(targetItem)) {
+                    return;
+                }
+                items.remove(movedItem);
+                int idx = items.indexOf(targetItem);
+                if(idx < (items.size() - 1)) {
+                    items.add(idx, movedItem);
+                } else {
+                    items.add(movedItem);
+                }
+                target.add(ReorderableTablePanel.this);
+            }
+        }.dropCenter("tr"));
+        
     }
 
     @Override

@@ -51,6 +51,23 @@
       <artifactId>easymockclassextension</artifactId>
       <scope>test</scope>
     </dependency>
+        <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-rest</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
     <maven.test.search.classdir>true</maven.test.search.classdir>

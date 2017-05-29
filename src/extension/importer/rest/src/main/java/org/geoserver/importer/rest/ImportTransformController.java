@@ -69,12 +69,12 @@ public class ImportTransformController extends ImportBaseController {
         return (writer, builder, converter) -> {
             ImportTransform tx = transform(importId, taskId, transformId, true);
             if (tx == null) {
-                converter.transformChain(builder,task(importId, taskId), true, converter.expand(1));
+                converter.transformChain(builder,task(importId, taskId), true, converter.expand(expand, 1));
             } else {
                 ImportTask task = task(importId, taskId);
                 int index = task.getTransform().getTransforms().indexOf(tx);
 
-                converter.transform(builder, tx, index, task, true, converter.expand(1));
+                converter.transform(builder, tx, index, task, true, converter.expand(expand, 1));
             }
         };
     }
@@ -96,7 +96,7 @@ public class ImportTransformController extends ImportBaseController {
             ImportTask task = task(importId, taskId);
             int index = task.getTransform().getTransforms().indexOf(orig);
 
-            converter.transform(builder, orig, index, task, true, converter.expand(1));
+            converter.transform(builder, orig, index, task, true, converter.expand(expand, 1));
         };
     }
 

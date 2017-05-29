@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -356,6 +356,9 @@ public class WMSRequests {
               // semantics of feature id slightly different, replicate entire value
               params.put("elevation", req.getRawKvp().get("elevation"));
             }
+            req.getRawKvp().entrySet().stream()
+                .filter(e -> e.getKey().toLowerCase().startsWith("dim_"))
+                .forEach(e -> params.put(e.getKey().toLowerCase(), e.getValue()));
 
         } else {
             // include all

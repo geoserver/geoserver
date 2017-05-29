@@ -7,6 +7,7 @@ package org.geoserver.opensearch.eo.kvp;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
@@ -140,6 +141,28 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<Parameter, String> searchParameters = request.getSearchParameters();
         assertEquals(1, searchParameters.size());
         assertThat(searchParameters, hasEntry(OpenSearchParameters.GEO_BOX, "10,20,30,40"));
+    }
+    
+    @Test
+    public void testParseBBoxWholeWorld() throws Exception {
+        Map<String, String> map = toMap(GEO_BOX.key, "-180,-90,180,90");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "BBOX(, -180.0,-90.0,180.0,90.0)";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+    }
+    
+    @Test
+    public void testParseBBoxDatelineCrossing() throws Exception {
+        Map<String, String> map = toMap(GEO_BOX.key, "170,-90,-170,90");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "BBOX(, 170.0,-90.0,180.0,90.0) OR BBOX(, -180.0,-90.0,-170.0,90.0)";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
     }
 
     @Test
@@ -416,6 +439,13 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertBinaryFilter(children.get(0), OpenSearchAccess.EO_NAMESPACE, "sensorType", "OPTICAL");
         assertBinaryFilter(children.get(1), OpenSearchAccess.EO_NAMESPACE, "sensorType", "RADAR");
         assertBinaryFilter(children.get(2), OpenSearchAccess.EO_NAMESPACE, "sensorType", "ALTIMETRIC");
+    }
+    
+    @Test
+    public void testCloudCoverEmpty() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, equalTo(Filter.INCLUDE));
     }
     
     @Test

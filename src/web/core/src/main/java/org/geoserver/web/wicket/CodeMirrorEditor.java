@@ -45,8 +45,10 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public static final PackageResourceReference REFERENCE = new PackageResourceReference(
             CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
     
-    public static final PackageResourceReference CSS_REFERENCE = new PackageResourceReference(
-            CodeMirrorEditor.class, "js/codemirror/css/codemirror.css");
+    public static final PackageResourceReference[] CSS_REFERENCE = new PackageResourceReference[] {
+            new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
+            new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/show-hint.css")};
+            
     
     public static final PackageResourceReference[] MODES = new PackageResourceReference[] {
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
@@ -55,7 +57,9 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js")
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js")
     };
     
 
@@ -249,7 +253,9 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         public void renderHead(Component component, IHeaderResponse response) {
             super.renderHead(component, response);
             // Add CSS
-            response.render(CssHeaderItem.forReference(CSS_REFERENCE));
+            for(PackageResourceReference css : CSS_REFERENCE) {
+                response.render(CssHeaderItem.forReference(css));
+            }
             // Add JS
             response.render(JavaScriptHeaderItem.forReference(REFERENCE));
             // Add Modes

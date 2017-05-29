@@ -236,29 +236,39 @@ public class TimeKvpParserTest extends TestCase {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void testContinuousRelativeInterval() throws ParseException {
         final int millisInDay = (int) TimeParser.MILLIS_IN_DAY;
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
-        Calendar back = Calendar.getInstance();
-        Calendar now = (Calendar) back.clone();
+        Calendar back;
+        Calendar now;
+        Calendar check;
+        List<Collection> l;
+        DateRange range;
 
-        List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_H));
-        // Verify that the list contains at least one element.
-        now.set(Calendar.MILLISECOND, 0);
-        back.set(Calendar.MILLISECOND, 0);
+        do {
+            now = Calendar.getInstance();
+            l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_H));
+            check = Calendar.getInstance();
+            now.set(Calendar.MILLISECOND, 0);
+            check.set(Calendar.MILLISECOND, 0);
+        } while (!now.equals(check));
+        back = (Calendar) now.clone();
         back.add(Calendar.HOUR, -2);
         assertFalse(l.isEmpty());
         assertTrue(l.get(0) instanceof DateRange);
-        DateRange range = (DateRange) l.get(0);
+        range = (DateRange) l.get(0);
         assertEquals(back.getTime(), range.getMinValue());
         assertEquals(now.getTime(), range.getMaxValue());
 
-        back = Calendar.getInstance();
-        now = (Calendar) back.clone();
-        l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_D));
-        // Verify that the list contains at least one element.
-        now.set(Calendar.MILLISECOND, 0);
-        back.set(Calendar.MILLISECOND, 0);
+        do {
+            now = Calendar.getInstance();
+            l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_D));
+            check = Calendar.getInstance();
+            now.set(Calendar.MILLISECOND, 0);
+            check.set(Calendar.MILLISECOND, 0);
+        } while (!now.equals(check));
+        back = (Calendar) now.clone();
         back.add(Calendar.MILLISECOND, millisInDay * -10);
         assertFalse(l.isEmpty());
         assertTrue(l.get(0) instanceof DateRange);
@@ -266,12 +276,14 @@ public class TimeKvpParserTest extends TestCase {
         assertEquals(back.getTime(), range.getMinValue());
         assertEquals(now.getTime(), range.getMaxValue());
 
-        back = Calendar.getInstance();
-        now = (Calendar) back.clone();
-        l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_W));
-        // Verify that the list contains at least one element.
-        now.set(Calendar.MILLISECOND, 0);
-        back.set(Calendar.MILLISECOND, 0);
+        do {
+            now = Calendar.getInstance();
+            l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_W));
+            check = Calendar.getInstance();
+            now.set(Calendar.MILLISECOND, 0);
+            check.set(Calendar.MILLISECOND, 0);
+        } while (!now.equals(check));
+        back = (Calendar) now.clone();
         back.add(Calendar.MILLISECOND, millisInDay * -2 * 7);
         assertFalse(l.isEmpty());
         assertTrue(l.get(0) instanceof DateRange);

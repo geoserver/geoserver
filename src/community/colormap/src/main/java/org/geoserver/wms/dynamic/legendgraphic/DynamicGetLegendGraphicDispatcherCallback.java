@@ -40,6 +40,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.function.ProcessFunction;
 import org.geotools.process.raster.DynamicColorMapProcess;
@@ -50,6 +51,7 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.util.NullProgressListener;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.filter.expression.Expression;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -170,9 +172,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         try {
 
             // Getting coverage to parse statistics
-            final CoverageStoreInfo storeInfo = coverageInfo.getStore();
-            final GridCoverage2DReader reader = (GridCoverage2DReader) catalog.getResourcePool()
-                    .getGridCoverageReader(storeInfo, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(
+                    new NullProgressListener(), GeoTools.getDefaultHints());
 
             GeneralParameterValue[] parameters = parseReadParameters(coverageInfo, reader);
             coverage = (GridCoverage2D) reader.read(parameters);

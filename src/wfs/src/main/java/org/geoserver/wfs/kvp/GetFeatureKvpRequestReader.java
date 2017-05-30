@@ -113,7 +113,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                     EMFUtils.set(eObject, "outputFormat", "text/xml; subtype=gml/3.1.1"); break;
                 case V_20:
                 default:
-                    EMFUtils.set(eObject, "outputFormat", "text/xml; subtype=gml/3.2");
+                    EMFUtils.set(eObject, "outputFormat", "application/gml+xml; version=3.2");
             };
         }
 

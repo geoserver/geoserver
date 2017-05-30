@@ -6,6 +6,7 @@
 package org.geoserver.wfs;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.geotools.gml2.SrsSyntax;
 
@@ -104,4 +105,13 @@ public interface GMLInfo extends Serializable {
      * @see {@link #getOverrideGMLAttributes()}
      */
     void setOverrideGMLAttributes(Boolean overrideGMLAttributes);
+
+    default void setMimeTypeToForce(String mimeType) {
+        // do nothing
+    }
+
+    default Optional<String> getMimeTypeToForce() {
+        // no MIME type available
+        return Optional.empty();
+    }
 }

@@ -5,13 +5,12 @@
  */
 package org.geoserver.wfs.web;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -42,6 +41,10 @@ import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
 
 @SuppressWarnings("serial")
 public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
@@ -99,7 +102,11 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
         form.add(new GMLPanel("gml2", gml2Model));
         form.add(new GMLPanel("gml3", gml3Model));
-        form.add(new GMLPanel("gml32", gml32Model));
+        // add GML 3.2. configuration panel with alternative MIME types
+        form.add(new GMLPanel("gml32", gml32Model,
+                "application/gml+xml; version=3.2",
+                "text/xml; subtype=gml/3.2",
+                "text/xml"));
 
         form.add( new CheckBox("canonicalSchemaLocation") );
         
@@ -149,7 +156,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     
     static class GMLPanel extends Panel {
 
-        public GMLPanel(String id, IModel gmlModel) { 
+        public GMLPanel(String id, IModel gmlModel, String ... mimeTypes) {
             super(id, new CompoundPropertyModel(gmlModel));
             
             //srsNameStyle
@@ -159,6 +166,58 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             add(srsNameStyle);
             
             add(new CheckBox("overrideGMLAttributes"));
+
+            // GML MIME type overriding section
+            GMLInfo gmlInfo = (GMLInfo) gmlModel.getObject();
+            boolean mimesTypesProvided = mimeTypes.length != 0;
+            boolean activated = gmlInfo.getMimeTypeToForce().isPresent();
+            // add MIME type drop down choice
+            DropDownChoice<String> mimeTypeToForce = new DropDownChoice<>("mimeTypeToForce",
+                    new Model<>(gmlInfo.getMimeTypeToForce().orElse(null)), Arrays.asList(mimeTypes));
+            mimeTypeToForce.add(new AjaxFormComponentUpdatingBehavior("change") {
+
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    // set the MIME type to force
+                    String value = mimeTypeToForce.getModelObject();
+                    gmlInfo.setMimeTypeToForce(value);
+                }
+            });
+            // set the select value if available
+            if (mimesTypesProvided) {
+                mimeTypeToForce.setModelObject(gmlInfo.getMimeTypeToForce().orElse(mimeTypes[0]));
+            }
+            // need for Ajax updates
+            mimeTypeToForce.setOutputMarkupId(mimesTypesProvided);
+            mimeTypeToForce.setOutputMarkupPlaceholderTag(mimesTypesProvided);
+            mimeTypeToForce.setVisible(mimesTypesProvided && activated);
+            add(mimeTypeToForce);
+            // add activate MIME type force checkbox
+            CheckBox checkBox = new AjaxCheckBox("forceGmlMimeType", new Model<>(activated)) {
+
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    boolean checked = getModelObject();
+                    if (checked) {
+                        // force MIME type activated
+                        mimeTypeToForce.setVisible(true);
+                        String value = mimeTypeToForce.getModelObject();
+                        gmlInfo.setMimeTypeToForce(value);
+                    } else {
+                        // force MIME type deactivated
+                        mimeTypeToForce.setVisible(false);
+                        gmlInfo.setMimeTypeToForce(null);
+                    }
+                    // update the drop down choice (requires markup ID and markup placeholder)
+                    target.add(mimeTypeToForce);
+                }
+            };
+            checkBox.setVisible(mimesTypesProvided);
+            add(checkBox);
+            // add check box label
+            Label checkBoxLabel = new Label("forceGmlMimeTypeLabel", new StringResourceModel("WFSAdminPage$GMLPanel.forceGmlMimeTypeLabel"));
+            checkBoxLabel.setVisible(mimesTypesProvided);
+            add(checkBoxLabel);
         }
         
     }

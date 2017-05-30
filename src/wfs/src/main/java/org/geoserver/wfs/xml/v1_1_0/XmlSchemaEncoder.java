@@ -115,8 +115,8 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     public static class V20 extends XmlSchemaEncoder {
         static Set<String> MIME_TYPES = new LinkedHashSet<String>();
         static {
-            MIME_TYPES.add("text/xml; subtype=gml/3.2");
             MIME_TYPES.add("application/gml+xml; version=3.2");
+            MIME_TYPES.add("text/xml; subtype=gml/3.2");
         }
         public V20(GeoServer gs) {
             super(MIME_TYPES, gs, new FeatureTypeSchemaBuilder.GML32(gs));

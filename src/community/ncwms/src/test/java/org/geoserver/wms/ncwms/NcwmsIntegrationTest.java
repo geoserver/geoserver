@@ -4,19 +4,6 @@
  */
 package org.geoserver.wms.ncwms;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -27,11 +14,24 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.StyleProperty;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.style.PaletteStyleHandler;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+
+import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 
 public class NcwmsIntegrationTest extends WMSTestSupport {
 
@@ -250,5 +250,16 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // print(dom);
         assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
     }
-    
+
+    @Test
+    public void testGetLegendGraphic() throws Exception {
+        // get legend graphic
+        BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&layer=" + getLayerId(RAIN)
+                        + "&style=" + GRAY_BLUE_STYLE + "&request=GetLegendGraphic&format=image/png&width=20&height=20",
+                "image/png");
+        // compare the obtained image with the expect result
+        try (InputStream inputStream = this.getClass().getResourceAsStream("gray_blue_legend.png")) {
+            ImageAssert.assertEquals(ImageIO.read(inputStream), image, 1000);
+        }
+    }
 }

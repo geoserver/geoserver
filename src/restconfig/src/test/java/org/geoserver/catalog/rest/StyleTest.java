@@ -224,6 +224,33 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("gs", "/style/workspace/name", dom);
     }
 
+    //GEOS-8080
+    @Test
+    public void testGetGlobalWithDuplicateInDefaultWorkspace() throws Exception {
+        Catalog cat = getCatalog();
+        String styleName = "foo";
+        String wsName = cat.getDefaultWorkspace().getName();
+
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName(styleName);
+        s.setFilename(styleName + ".sld");
+        cat.add(s);
+
+        s = cat.getFactory().createStyle();
+        s.setName(styleName);
+        s.setFilename(styleName + ".sld");
+        s.setWorkspace(cat.getDefaultWorkspace());
+        cat.add(s);
+
+        Document dom = getAsDOM("/rest/styles/foo.xml");
+        assertXpathEvaluatesTo(styleName, "/style/name", dom);
+        assertXpathEvaluatesTo("", "/style/workspace/name", dom);
+
+        dom = getAsDOM("/rest/workspaces/" + wsName + "/styles/foo.xml");
+        assertXpathEvaluatesTo(styleName, "/style/name", dom);
+        assertXpathEvaluatesTo(wsName, "/style/workspace/name", dom);
+    }
+
     String newSLDXML() {
         return 
              "<sld:StyledLayerDescriptor xmlns:sld='http://www.opengis.net/sld'>"+

@@ -50,9 +50,9 @@ public class WFSPPIO extends XMLPPIO {
 
     Configuration configuration;
     private static final Logger LOGGER = Logging.getLogger(WFSPPIO.class);
-    private static final String metaData = GML.metaDataProperty.getLocalPart();
-    private static final String boundedBy = GML.boundedBy.getLocalPart();
-    private static final String location = GML.location.getLocalPart();
+    private static final String METADATA = GML.metaDataProperty.getLocalPart();
+    private static final String BOUNDEDBY = GML.boundedBy.getLocalPart();
+    private static final String LOCATION = GML.location.getLocalPart();
     protected WFSPPIO(Configuration configuration, String mimeType, QName element) {
         super( FeatureCollectionType.class, FeatureCollection.class, mimeType, element);
         this.configuration = configuration;
@@ -138,10 +138,10 @@ public class WFSPPIO extends XMLPPIO {
         for(AttributeDescriptor ad : original.getAttributeDescriptors()) {
             final String name = ad.getLocalName();
 
-            if(!boundedBy.equals(name) && !metaData.equals(name)) {
+            if(!BOUNDEDBY.equals(name) && !METADATA.equals(name)) {
                 names.add(name);
             }
-            if(!location.equals(name) && ad instanceof GeometryDescriptor) {
+            if(!LOCATION.equals(name) && ad instanceof GeometryDescriptor) {
                 alternateGeometry = true;
             }
         }

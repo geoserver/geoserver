@@ -363,6 +363,24 @@ public class GetFeatureTest extends WFSTestSupport {
     }
 
     @Test
+    public void testStrictComplianceVersionNegotiation() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo service = geoServer.getService(WFSInfo.class);
+        try {
+            service.setCiteCompliant(true);
+            geoServer.save(service);
+
+            Document doc = getAsDOM("wfs?service=WFS&request=GetCapabilities");
+            XMLAssert.assertXpathEvaluatesTo("true", "//wfs:WFS_Capabilities/@version='1.1.0'", doc);
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+        Document doc = getAsDOM("wfs?service=WFS&request=GetCapabilities");
+        XMLAssert.assertXpathEvaluatesTo("false", "//wfs:WFS_Capabilities/@version='1.1.0'", doc);
+    }
+
+    @Test
     public void testRequestDisabledResource() throws Exception {
         Catalog catalog = getCatalog();
         ResourceInfo fifteen = catalog.getResourceByName(getLayerId(MockData.FIFTEEN),

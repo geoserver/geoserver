@@ -14,17 +14,17 @@
     http://www.springframework.org/schema/mvc/spring-mvc.xsd"
     default-autowire="byName">
 
-    <bean id="serviceFinder" class="org.opengeo.gsr.service.ServiceFinder">
+    <bean id="serviceFinder" class="com.boundlessgeo.gsr.service.ServiceFinder">
         <constructor-arg ref="geoServer" />
         <constructor-arg ref="wms"></constructor-arg>
         <constructor-arg ref="dispatcher"></constructor-arg>
     </bean>
 
-    <bean id="jsonpFilter" class="org.opengeo.gsr.service.JsonpFilter">
+    <bean id="jsonpFilter" class="com.boundlessgeo.gsr.service.JsonpFilter">
         <property name="next" ref="serviceFinder"></property>
     </bean>
 
-	<bean id="imageResourceController" class="org.opengeo.gsr.core.controller.ImageResourceController">
+	<bean id="imageResourceController" class="com.boundlessgeo.gsr.core.controller.ImageResourceController">
 		<constructor-arg ref="geoServer" />
 	</bean>
 

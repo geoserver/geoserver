@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps.gs.download;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +43,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.process.ProcessException;
@@ -467,8 +469,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 resourceManager);
 
         // test ROI
+        double firstXRoi = -127.57473954542964;
+        double firstYRoi = 54.06575021619523;
         Polygon roi = (Polygon) new WKTReader2()
-                .read("POLYGON (( -127.57473954542964 54.06575021619523, -130.88669845369998 52.00807146727025, -129.50812897394974 49.85372324691927, -130.5300633861675 49.20465679591609, -129.25955033314003 48.60392508062591, -128.00975216684665 50.986137055052474, -125.8623089087404 48.63154492960477, -123.984159178178 50.68231871628503, -126.91186316993704 52.15307567440926, -125.3444367403868 53.54787804784162, -127.57473954542964 54.06575021619523 ))");
+                .read("POLYGON (( " + firstXRoi + " " + firstYRoi + ", -130.88669845369998 52.00807146727025, -129.50812897394974 49.85372324691927, -130.5300633861675 49.20465679591609, -129.25955033314003 48.60392508062591, -128.00975216684665 50.986137055052474, -125.8623089087404 48.63154492960477, -123.984159178178 50.68231871628503, -126.91186316993704 52.15307567440926, -125.3444367403868 53.54787804784162, -127.57473954542964 54.06575021619523 ))");
         roi.setSRID(4326);
         // ROI reprojection
         Polygon roiResampled = (Polygon) JTS.transform(
@@ -500,7 +504,6 @@ public class DownloadProcessTest extends WPSTestSupport {
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
             gc = reader.read(null);
-
             Assert.assertNotNull(gc);
 
             Assert.assertEquals(-130.88669845369998,
@@ -511,6 +514,77 @@ public class DownloadProcessTest extends WPSTestSupport {
                     gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
             Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1),
                     1E-6);
+
+            // Take a pixel within the ROI
+            byte[] result = (byte[]) gc.evaluate(new DirectPosition2D(new Point2D.Double(firstXRoi, firstYRoi - 1E-4)));
+            Assert.assertNotEquals(0, result[0]);
+            Assert.assertNotEquals(0, result[1]);
+            Assert.assertNotEquals(0, result[2]);
+
+            // Take a pixel outside of the ROI
+            result = (byte[]) gc.evaluate(new DirectPosition2D(new Point2D.Double(firstXRoi - 2, firstYRoi - 0.5)));
+            Assert.assertEquals(0, result[0]);
+            Assert.assertEquals(0, result[1]);
+            Assert.assertEquals(0, result[2]);
+
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+
+        // Download the coverage as tiff with clipToROI set to False (Crop on envelope)
+        rasterZip = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                roi, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                new NullProgressListener() // progressListener
+                );
+
+        // Final checks on the result
+        Assert.assertNotNull(rasterZip);
+        try {
+            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+            Assert.assertNotNull(gc);
+
+            Assert.assertEquals(-130.88669845369998,
+                    gc.getEnvelope().getLowerCorner().getOrdinate(0), 1E-6);
+            Assert.assertEquals(48.611129008700004, gc.getEnvelope().getLowerCorner()
+                    .getOrdinate(1), 1E-6);
+            Assert.assertEquals(-123.95304462109999,
+                    gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
+            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1),
+                    1E-6);
+
+            // Take a pixel within the ROI
+            byte[] result = (byte[]) gc.evaluate(new DirectPosition2D(new Point2D.Double(firstXRoi, firstYRoi - 1E-4)));
+            Assert.assertNotEquals(0, result[0]);
+            Assert.assertNotEquals(0, result[1]);
+            Assert.assertNotEquals(0, result[2]);
+
+            // Take a pixel outside of the ROI geometry but within the ROI's envelope 
+            // (We have set cropToROI = False) 
+            result = (byte[]) gc.evaluate(new DirectPosition2D(new Point2D.Double(firstXRoi - 2, firstYRoi - 0.5)));
+            Assert.assertNotEquals(0, result[0]);
+            Assert.assertNotEquals(0, result[1]);
+            Assert.assertNotEquals(0, result[2]);
 
         } finally {
             if (gc != null) {

@@ -103,6 +103,7 @@ public class CatalogImplTest {
     protected WMSLayerInfo wl;
     protected LayerInfo l;
     protected StyleInfo s;
+    protected StyleInfo defaultLineStyle;
     protected LayerGroupInfo lg;
     
     @Before
@@ -188,6 +189,10 @@ public class CatalogImplTest {
         s = factory.createStyle();
         s.setName( "styleName" );
         s.setFilename( "styleFilename" );
+
+        defaultLineStyle = factory.createStyle();
+        defaultLineStyle.setName( StyleInfo.DEFAULT_LINE );
+        defaultLineStyle.setFilename( StyleInfo.DEFAULT_LINE+".sld" );
         
         l = factory.createLayer();
         l.setResource( ft );
@@ -247,6 +252,10 @@ public class CatalogImplTest {
     
     protected void addStyle() {
         catalog.add(s);
+    }
+
+    protected void addDefaultStyle() {
+        catalog.add(defaultLineStyle);
     }
     
     protected void addLayer() {
@@ -1466,7 +1475,7 @@ public class CatalogImplTest {
     }
     
     @Test
-    public void testModifyDefaultStyle() {
+    public void testModifyLayerDefaultStyle() {
         // create new style
         CatalogFactory factory = catalog.getFactory();
         StyleInfo s2 = factory.createStyle();
@@ -1744,6 +1753,29 @@ public class CatalogImplTest {
         s3 = catalog.getStyleByName( s2.getName() );
         assertEquals( s2, s3 );
     }
+
+    @Test
+    public void testModifyDefaultStyle() {
+        addWorkspace();
+        addDefaultStyle();
+        StyleInfo s = catalog.getStyleByName(StyleInfo.DEFAULT_LINE);
+
+        s.setName("foo");
+
+        try {
+            catalog.save(s);
+            fail("changing name of default style should fail");
+        }
+        catch( Exception e ) {}
+
+        s = catalog.getStyleByName(StyleInfo.DEFAULT_LINE);
+        s.setWorkspace(ws);
+        try {
+            catalog.save(s);
+            fail("changing workspace of default style should fail");
+        }
+        catch( Exception e ) {}
+    }
     
     @Test
     public void testRemoveStyle() {
@@ -1752,6 +1784,19 @@ public class CatalogImplTest {
         
         catalog.remove(s);
         assertTrue( catalog.getStyles().isEmpty() );
+    }
+
+    @Test
+    public void testRemoveDefaultStyle() {
+        addWorkspace();
+        addDefaultStyle();
+        StyleInfo s = catalog.getStyleByName(StyleInfo.DEFAULT_LINE);
+
+        try {
+            catalog.remove(s);
+            fail("removing default style should fail");
+        }
+        catch( Exception e ) {}
     }
     
     @Test

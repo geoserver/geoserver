@@ -439,6 +439,23 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
             putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles/foo", xml, "application/xml");
         assertEquals(403, response.getStatus());
     }
+
+    @Test
+    public void testPutRenameDefault() throws Exception {
+        StyleInfo style = catalog.getStyleByName( "Ponds");
+        assertEquals( "Ponds.sld", style.getFilename() );
+
+        String xml =
+                "<style>" +
+                        "<name>Ponds</name>" +
+                        "<filename>Forests.sld</filename>" +
+                        "</style>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/line", xml.getBytes(), "text/xml");
+        assertEquals( 500, response.getStatus() );
+    }
+
     @Test
     public void testStyleNotFoundGloballyWhenInWorkspace() throws Exception {
         testPostToWorkspace();
@@ -472,6 +489,13 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals( 200, response.getStatus() );
 
         assertNull( catalog.getStyleByName( "dummy" ) );
+    }
+    @Test
+    public void testDeleteDefault() throws Exception {
+
+        MockHttpServletResponse response =
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/styles/line");
+        assertEquals( 500, response.getStatus() );
     }
 
     @Test

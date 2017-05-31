@@ -106,8 +106,6 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos.{extension}", RepositoryListResource.class);
         router.attach("/repos/", RepositoryListResource.class);
         router.attach("/repos.{extension}/", RepositoryListResource.class);
-        router.attach("/repos/{repository}/importExistingRepo", ImportRepoCommandResource.class);
-        router.attach("/repos/{repository}/importExistingRepo.{extension}", ImportRepoCommandResource.class);
 
         router.attach("/tasks.{extension}", TaskStatusResource.class);
         router.attach("/tasks", TaskStatusResource.class);
@@ -122,10 +120,14 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos/{repository}.{extension}", RepositoryResource.class);
         router.attach("/repos/{repository}", RepositoryResource.class);
         router.attach("/repos/{repository}/repo", makeRepoRouter());
+        router.attach("/repos/{repository}/rename.{extension}", UnsupportedCommandResource.class);
+        router.attach("/repos/{repository}/rename", UnsupportedCommandResource.class);
         router.attach("/repos/{repository}/import.{extension}", UploadCommandResource.class);
         router.attach("/repos/{repository}/import", UploadCommandResource.class);
         router.attach("/repos/{repository}/init.{extension}", InitCommandResource.class);
         router.attach("/repos/{repository}/init", InitCommandResource.class);
+        router.attach("/repos/{repository}/importExistingRepo", ImportRepoCommandResource.class);
+        router.attach("/repos/{repository}/importExistingRepo.{extension}", ImportRepoCommandResource.class);
         router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
         router.attach("/repos/{repository}/{command}", CommandResource.class);
         router.attach("/repos/{repository}/index/{command}.{extension}", IndexCommandResource.class);

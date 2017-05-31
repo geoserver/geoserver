@@ -26,6 +26,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_0.WFSConfiguration;
@@ -49,7 +50,9 @@ public class WFSPPIO extends XMLPPIO {
 
     Configuration configuration;
     private static final Logger LOGGER = Logging.getLogger(WFSPPIO.class);
-    
+    private static final String METADATA = GML.metaDataProperty.getLocalPart();
+    private static final String BOUNDEDBY = GML.boundedBy.getLocalPart();
+    private static final String LOCATION = GML.location.getLocalPart();
     protected WFSPPIO(Configuration configuration, String mimeType, QName element) {
         super( FeatureCollectionType.class, FeatureCollection.class, mimeType, element);
         this.configuration = configuration;
@@ -129,14 +132,16 @@ public class WFSPPIO extends XMLPPIO {
      */
     private SimpleFeatureCollection eliminateFeatureBounds(SimpleFeatureCollection fc) {
         final SimpleFeatureType original = fc.getSchema();
+        
         List<String> names = new ArrayList<String>();
         boolean alternateGeometry = false;
         for(AttributeDescriptor ad : original.getAttributeDescriptors()) {
             final String name = ad.getLocalName();
-            if(!"boundedBy".equals(name) && !"metadataProperty".equals(name)) {
+
+            if(!BOUNDEDBY.equals(name) && !METADATA.equals(name)) {
                 names.add(name);
             }
-            if(!"location".equals(name) && ad instanceof GeometryDescriptor) {
+            if(!LOCATION.equals(name) && ad instanceof GeometryDescriptor) {
                 alternateGeometry = true;
             }
         }

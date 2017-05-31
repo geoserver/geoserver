@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.LayerInfo;
@@ -57,6 +58,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     public void removeStyles() throws IOException {
         removeStyle("gs", "foo");
         removeStyle(null, "foo");
+        removeStyle(getCatalog().getDefaultWorkspace().getName(), "foo");
     }
 
     @Before
@@ -212,6 +214,41 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/styles/foo.xml");
         assertXpathEvaluatesTo("foo", "/style/name", dom);
         assertXpathEvaluatesTo("gs", "/style/workspace/name", dom);
+    }
+
+    //GEOS-8080
+    @Test
+    public void testGetGlobalWithDuplicateInDefaultWorkspace() throws Exception {
+        Catalog cat = getCatalog();
+        String styleName = "foo";
+        String wsName = cat.getDefaultWorkspace().getName();
+
+        //Add a workspace style
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName(styleName);
+        s.setFilename(styleName + ".sld");
+        s.setWorkspace(cat.getDefaultWorkspace());
+        cat.add(s);
+
+        //Verify this style cannot retrieved by a non-workspaced GET
+        MockHttpServletResponse resp = getAsServletResponse(RestBaseController.ROOT_PATH + "/styles/foo.xml");
+        assertEquals(404, resp.getStatus());
+
+        //Add a global style
+        s = cat.getFactory().createStyle();
+        s.setName(styleName);
+        s.setFilename(styleName + ".sld");
+        cat.add(s);
+
+        //Verify the global style is returned by a non-workspaced GET
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/styles/foo.xml");
+        assertXpathEvaluatesTo("foo", "/style/name", dom);
+        assertXpathEvaluatesTo("", "/style/workspace/name", dom);
+
+        //Verify the workspaced style is returned by a workspaced GET
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/" + wsName + "/styles/foo.xml");
+        assertXpathEvaluatesTo("foo", "/style/name", dom);
+        assertXpathEvaluatesTo(wsName, "/style/workspace/name", dom);
     }
 
     String newSLDXML() {

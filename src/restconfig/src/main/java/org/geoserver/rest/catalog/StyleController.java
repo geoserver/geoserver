@@ -245,9 +245,7 @@ public class StyleController extends AbstractCatalogController {
 
     protected StyleInfo getStyleInternal(String styleName, String workspace) {
         LOGGER.fine("GET style " + styleName);
-        StyleInfo sinfo = workspace == null ?
-            catalog.getStyleByName(styleName) :
-            catalog.getStyleByName(workspace, styleName);
+        StyleInfo sinfo = catalog.getStyleByName(workspace, styleName);
 
         if (sinfo == null) {
             String message = "No such style: " + styleName;

@@ -196,7 +196,7 @@ final class DownloadUtilities {
                 .getUserData();
         // find math transform between the two coordinate reference systems
         MathTransform targetTX = null;
-        if (!CRS.equalsIgnoreMetadata(geometry, crs)) {
+        if (!CRS.equalsIgnoreMetadata(geometryCRS, crs)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE,
                         "Geometry CRS is not equal to the target CRS, we might have to reproject");

@@ -297,12 +297,12 @@ class RasterDownload {
                 if (clip) {
                     // clipping means carefully following the ROI shape
                     clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage,
-                            roiManager.getSafeRoiInTargetCRS(), progressListener);
+                            roiManager.getRoiInTargetCRS(), progressListener);
                 } else {
                     // use envelope of the ROI to simply crop and not clip the raster. This is important since when
                     // reprojecting we might read a bit more than needed!
                     clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage,
-                            roiManager.getSafeRoiInTargetCRS(), progressListener);
+                            roiManager.getSafeRoiInTargetCRS().getEnvelope(), progressListener);
                 }
                 
                 if(clippedGridCoverage == null) {

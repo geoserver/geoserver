@@ -256,7 +256,7 @@ class ScaleToTarget {
 
         // scale
         final Hints hints = GeoTools.getDefaultHints();
-        final GridEnvelope2D sourceGE = getGridGeometry().getGridRange2D();
+        final GridEnvelope2D sourceGE = sourceGC.getGridGeometry().getGridRange2D();
         if ((isTargetSizeSet() && this.adjustedTargetSizeX.equals(sourceGE.width) && this.adjustedTargetSizeY == sourceGE.height)
                 || (!isTargetSizeSet())) {
             // NO NEED TO SCALE, do we need interpolation?

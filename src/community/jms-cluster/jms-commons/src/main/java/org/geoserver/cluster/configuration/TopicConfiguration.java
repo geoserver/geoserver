@@ -18,7 +18,7 @@ final public class TopicConfiguration implements JMSConfigurationExt {
 
     public static final String TOPIC_NAME_KEY = "topicName";
 
-    public static final String DEFAULT_TOPIC_NAME = "VirtualTopic.>";
+    public static final String DEFAULT_TOPIC_NAME = "VirtualTopic.geoserver";
 
     public static final String DURABLE_KEY = "durable";
 

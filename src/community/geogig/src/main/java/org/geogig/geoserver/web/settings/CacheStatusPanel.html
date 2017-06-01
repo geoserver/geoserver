@@ -1,0 +1,133 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+<ul>
+  <li class="button-group selfclear">
+    <h3><span><wicket:message key="sharedCache">Shared Cache</wicket:message></span></h3>
+    <span><wicket:message key="sharedCacheDesc">Settings</wicket:message></span>
+  </li>
+  <li class="button-group selfclear">
+      &nbsp;
+  </li>
+  <li class="button-group selfclear">
+    <fieldset>
+      <legend>
+        <span><wicket:message key="settings">Settings</wicket:message></span>
+      </legend>
+      <ul>
+        <li class="button-group selfclear">
+          <span wicket:id="settings"></span>
+        </li>
+      </ul>
+    </fieldset>
+  </li>
+  <li class="button-group selfclear">
+    <fieldset>
+      <legend>
+        <span><wicket:message key="status">Status</wicket:message></span>
+      </legend>
+      <ul>
+        <li class="button-group selfclear">
+          <span wicket:id="table"></span>
+        </li>
+      <li class="button-group selfclear">
+        <a wicket:id="refresh"><wicket:message key="refresh">Refresh</wicket:message></a>
+        <a wicket:id="clear"><wicket:message key="clear">Clear cache</wicket:message></a>
+      </li>
+      </ul>
+    </fieldset>
+  </li>
+</ul>
+  
+<wicket:fragment wicket:id="settingsFragment"> 
+  <form wicket:id="settingsForm">
+    <ul>
+      <li>
+        <label for="name"><wicket:message key="maximumSize">Name</wicket:message></label>
+        <input style="width:100px" id="maximumSize" class="text" type="number" wicket:id="maximumSize"></input> 
+        /<wicket:message wicket:id="absoluteMaximumSizeMB"/> MB
+      </li>
+      <li>
+        <div class="button-group selfclear">
+          <a href="#" wicket:id="submit"><wicket:message key="save">Save</wicket:message></a>
+          <a href="#" wicket:id="reset"><wicket:message key="reset">Reset to default</wicket:message></a>
+        </div>
+        <div wicket:id="feedback"></div>
+      </li>
+    </ul>
+  </form>
+</wicket:fragment> 
+
+<wicket:fragment wicket:id="tableFragment"> 
+  <table>
+    <thead>
+      <tr>
+          <th><span><wicket:message key="property">Property</wicket:message></span></th>
+          <th><span><wicket:message key="value">Value</wicket:message></span></th>
+          <th><wicket:message key="desc">Description</wicket:message></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="size"/></th>
+          <td wicket:id="size">0</td>
+          <td><wicket:message key="sizeDesc"/></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="sizeMB"/></th>
+          <td wicket:id="sizeMB">0</td>
+          <td><wicket:message key="sizeMBDesc"/></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="maximumSizeMB"/></th>
+          <td wicket:id="maximumSizeMB">0</td>
+          <td><wicket:message key="maximumSizeMBDesc"/></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="maximumSizePercent"/></th>
+          <td wicket:id="maximumSizePercent">0</td>
+          <td><wicket:message key="maximumSizePercentDesc"/></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="absoluteMaximumSizeMB"/></th>
+          <td wicket:id="absoluteMaximumSizeMB">0</td>
+          <td><wicket:message key="absoluteMaximumSizeMBDesc"/></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="defaultSizeMB"/></th>
+          <td wicket:id="defaultSizeMB">0</td>
+          <td><wicket:message key="defaultSizeMBDesc"/></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="evictionCount"/></th>
+          <td wicket:id="evictionCount">0</td>
+          <td><wicket:message key="evictionCountDesc"/></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="hitCount"/></th>
+          <td wicket:id="hitCount">0</td>
+          <td><wicket:message key="hitCountDesc"/></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="hitRate"/></th>
+          <td wicket:id="hitRate">0</td>
+          <td><wicket:message key="hitRateDesc"/></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="missCount"/></th>
+          <td wicket:id="missCount">0</td>
+          <td><wicket:message key="missCountDesc"/></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="missRate"/></th>
+          <td wicket:id="missRate">0</td>
+          <td><wicket:message key="missRateDesc"/></td>
+      </tr>
+    </tbody>
+  </table>
+</wicket:fragment>
+
+</wicket:panel>
+</body>
+</html>

@@ -50,7 +50,9 @@ public class CatalogRepository implements Repository, Serializable {
             return (DataStore) da;
         }
         
-        LOGGER.severe( name + " is not a data store.");
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(name + " is not a data store.");
+        }
         return null;
     }
 

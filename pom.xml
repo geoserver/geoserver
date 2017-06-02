@@ -8,7 +8,43 @@
   <artifactId>gsr</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer GeoServices REST API</name>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
+
+  <repositories>
+    <repository>
+      <id>boundless</id>
+      <name>Boundless Maven Repository</name>
+      <url>https://repo.boundlessgeo.com/main/</url>
+      <!-- contains snapshot and release (including third-party-dependences)               -->
+      <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
+      <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+
+    <repository>
+      <id>osgeo</id>
+      <name>Open Source Geospatial Foundation Repository</name>
+      <url>http://download.osgeo.org/webdav/geotools/</url>
+      <!-- release repository used by geotools (and third-party dependencies) -->
+    </repository>
+
+    <repository>
+      <id>geosolutions</id>
+      <name>geosolutions repository</name>
+      <url>http://maven.geo-solutions.it/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -25,6 +61,11 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>1.0.8</version>
     </dependency>
 
     <!--  Test dependencies -->
@@ -98,8 +139,8 @@
   </build>
 
   <properties>
-    <gs.version>2.11-SNAPSHOT</gs.version>
-    <gt.version>17-SNAPSHOT</gt.version>
+    <gs.version>2.12-SNAPSHOT</gs.version>
+    <gt.version>18-SNAPSHOT</gt.version>
     <spring.version>4.3.7.RELEASE</spring.version>
   </properties>
 

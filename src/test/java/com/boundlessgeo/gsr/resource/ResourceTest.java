@@ -13,7 +13,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import com.boundlessgeo.gsr.validation.JSONValidator;
 import org.junit.Test;

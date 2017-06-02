@@ -6,14 +6,14 @@ package com.boundlessgeo.gsr;
 
 import java.io.File;
 
-import com.boundlessgeo.gsr.core.format.GeoServicesJsonFormat;
+import com.boundlessgeo.gsr.api.GeoServicesJSONConverter;
 import com.boundlessgeo.gsr.validation.JSONValidator;
 
 import com.thoughtworks.xstream.XStream;
 
 public abstract class JsonSchemaTest {
 
-    final protected static XStream xstream = new GeoServicesJsonFormat().getXStream();
+    final protected static XStream xstream = new GeoServicesJSONConverter().getXStream();
 
     public JsonSchemaTest() {
     }

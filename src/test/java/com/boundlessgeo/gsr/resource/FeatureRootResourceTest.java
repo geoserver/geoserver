@@ -19,6 +19,6 @@ public class FeatureRootResourceTest extends ResourceTest {
         String result = getAsString(query("cite", "?f=json"));
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
-        assertTrue(result + " ;Root resource validates", JsonSchemaTest.validateJSON(result, "/gsr-fs/1.0/root.json"));
+        assertTrue(result + " ;Root resource validates", JsonSchemaTest.validateJSON(result, "/gsr-feature/1.0/root.json"));
     }
 }

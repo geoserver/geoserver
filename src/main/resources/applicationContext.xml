@@ -5,89 +5,23 @@
   application directory.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/tx
     http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://www.springframework.org/schema/mvc
-    http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd"
     default-autowire="byName">
 
-    <bean id="serviceFinder" class="com.boundlessgeo.gsr.service.ServiceFinder">
-        <constructor-arg ref="geoServer" />
-        <constructor-arg ref="wms"></constructor-arg>
-        <constructor-arg ref="dispatcher"></constructor-arg>
-    </bean>
-
-    <bean id="jsonpFilter" class="com.boundlessgeo.gsr.service.JsonpFilter">
-        <property name="next" ref="serviceFinder"></property>
-    </bean>
 
 	<bean id="imageResourceController" class="com.boundlessgeo.gsr.core.controller.ImageResourceController">
 		<constructor-arg ref="geoServer" />
 	</bean>
 
-    <bean id="gsrImageResourceDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="alwaysUseFullPath" value="true"/>
-        <property name="mappings">
-          <props>
-		      <prop key="/gsr/**/images/**">imageResourceController</prop>
-          </props>
-        </property>
-    </bean>
-
-    <bean id="gsrDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="alwaysUseFullPath" value="true"/>
-        <property name="mappings">
-          <props>
-              <prop key="gsr">restWrapper</prop>
-              <prop key="/gsr/**">restWrapper</prop>
-          </props>
-        </property>
-    </bean>
-
-    <bean id="restMapping" class="org.geoserver.rest.RESTMapping">
-    <property name="routes">
-            <map>
-                <entry>
-                    <key>
-                        <value>/services?{params}</value>
-                    </key>
-                    <value>jsonpFilter</value>
-                </entry>
-                <entry>
-                    <key>
-                        <value>/services/?{params}</value>
-                    </key>
-                    <value>jsonpFilter</value>
-                </entry>
-                <entry>
-                    <key>
-                        <value>/services/{workspace}?{params}</value>
-                    </key>
-                    <value>jsonpFilter</value>
-                </entry>
-                <entry>
-                    <key>
-                        <value>/services/{workspace}/{serviceType}?{params}</value>
-                    </key>
-                    <value>jsonpFilter</value>
-                </entry>
-                <entry>
-                    <key>
-                        <value>/services/{workspace}/{serviceType}/{operation}?{params}</value>
-                    </key>
-                    <value>jsonpFilter</value>
-                </entry>
-                <entry>
-                    <key>
-                        <value>/services/{workspace}/{serviceType}/{layerOrTable}/{operation}?{params}</value>
-                    </key>
-                    <value>jsonpFilter</value>
-                </entry>
-            </map>
-    </property>
-    </bean>
-	
+    <!-- <mvc:annotation-driven/> -->
+    <context:component-scan base-package="com.boundlessgeo.gsr.api" />
 </beans>

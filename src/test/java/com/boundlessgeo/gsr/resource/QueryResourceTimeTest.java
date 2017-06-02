@@ -63,7 +63,7 @@ public class QueryResourceTimeTest extends ResourceTest {
         assertEquals("time", dimensionInfo.getAttribute());
         assertNotNull(getCatalog().getLayerByName(TIME_ELEVATION.getLocalPart()));
         String rootResource = getAsString(baseURL + "cite/MapServer?f=json");
-        assertTrue(JsonSchemaTest.validateJSON(rootResource, "gsr-ms/1.0/root.json"));
+        assertTrue(JsonSchemaTest.validateJSON(rootResource, "gsr-map/1.0/root.json"));
         JSONObject json = JSONObject.fromObject(rootResource);
         assertTrue(json.containsKey("timeInfo"));
     }

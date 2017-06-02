@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.model.service;
+package com.boundlessgeo.gsr.core.service;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

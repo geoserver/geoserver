@@ -1,8 +1,8 @@
 package com.boundlessgeo.gsr.api.service.map;
 
-import com.boundlessgeo.gsr.model.map.LayerNameComparator;
-import com.boundlessgeo.gsr.model.map.MapServiceRoot;
-import org.geoserver.catalog.Catalog;
+import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.map.LayerNameComparator;
+import com.boundlessgeo.gsr.core.map.MapServiceRoot;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -10,8 +10,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -21,7 +23,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-public class MapServiceController extends AbstractMapServiceController {
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
+public class MapServiceController extends AbstractGSRController {
 
     @Autowired
     public MapServiceController(@Qualifier("geoServer") GeoServer geoServer) {

@@ -1,4 +1,4 @@
-package com.boundlessgeo.gsr.model.map;
+package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.renderer.*;
 import com.boundlessgeo.gsr.core.symbol.*;

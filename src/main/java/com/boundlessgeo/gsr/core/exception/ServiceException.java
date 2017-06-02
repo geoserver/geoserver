@@ -4,6 +4,7 @@
  */
 package com.boundlessgeo.gsr.core.exception;
 
+import com.boundlessgeo.gsr.core.GSRModel;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -13,7 +14,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 
 @XStreamAlias(value = "")
-public class ServiceException {
+public class ServiceException implements GSRModel {
 
     private ServiceError error;
 

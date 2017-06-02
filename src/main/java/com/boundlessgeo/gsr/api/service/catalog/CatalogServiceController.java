@@ -1,8 +1,7 @@
 package com.boundlessgeo.gsr.api.service.catalog;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.model.service.*;
-import org.geoserver.catalog.Catalog;
+import com.boundlessgeo.gsr.core.service.*;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,7 @@ public class CatalogServiceController extends AbstractGSRController {
 
     private final String specVersion = "1.0";
 
+    //TODO: Move to public constant, apply to all
     private final double currentVersion = 10.1;
 
     @Autowired

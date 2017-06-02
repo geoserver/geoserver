@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.model.map;
+package com.boundlessgeo.gsr.core.map;
 
 import java.util.Comparator;
 
@@ -16,7 +16,6 @@ public final class LayerNameComparator implements Comparator<LayerInfo> {
     private LayerNameComparator() {
     }
     
-    @Override
     public int compare(LayerInfo a, LayerInfo b) {
         return a.getName().compareTo(b.getName());
     }

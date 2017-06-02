@@ -2,12 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
- package com.boundlessgeo.gsr.model.map;
+ package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.feature.FieldTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.renderer.Renderer;
-import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.core.GSRModel;
 import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.*;
 import org.geotools.geometry.jts.ReferencedEnvelope;

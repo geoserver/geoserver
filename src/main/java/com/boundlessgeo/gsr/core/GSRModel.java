@@ -1,4 +1,4 @@
-package com.boundlessgeo.gsr.model;
+package com.boundlessgeo.gsr.core;
 
 import com.boundlessgeo.gsr.api.GeoServicesJSONConverter;
 

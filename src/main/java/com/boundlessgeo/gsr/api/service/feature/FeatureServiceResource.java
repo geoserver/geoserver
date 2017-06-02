@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.api.service.feature;
 
 import com.boundlessgeo.gsr.core.exception.ServiceError;
-import com.boundlessgeo.gsr.model.map.LayerNameComparator;
+import com.boundlessgeo.gsr.core.map.LayerNameComparator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;

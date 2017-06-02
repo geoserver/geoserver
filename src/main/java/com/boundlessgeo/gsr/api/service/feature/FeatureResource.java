@@ -7,8 +7,8 @@ package com.boundlessgeo.gsr.api.service.feature;
 import com.boundlessgeo.gsr.core.exception.ServiceError;
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
 //import com.boundlessgeo.gsr.core.format.GeoServicesJsonFormat;
-import com.boundlessgeo.gsr.model.map.LayersAndTables;
-import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;

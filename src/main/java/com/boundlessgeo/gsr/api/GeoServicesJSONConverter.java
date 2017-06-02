@@ -1,6 +1,6 @@
 package com.boundlessgeo.gsr.api;
 
-import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.core.GSRModel;
 import com.boundlessgeo.gsr.core.feature.AttributeListConverter;
 import com.boundlessgeo.gsr.core.feature.FieldTypeConverter;
 import com.boundlessgeo.gsr.core.font.FontDecorationEnumConverter;
@@ -10,17 +10,16 @@ import com.boundlessgeo.gsr.core.geometry.*;
 import com.boundlessgeo.gsr.core.label.LineLabelPlacementEnumConverter;
 import com.boundlessgeo.gsr.core.label.PointLabelPlacementEnumConverter;
 import com.boundlessgeo.gsr.core.label.PolygonLabelPlacementEnumConverter;
-import com.boundlessgeo.gsr.model.service.CatalogService;
+import com.boundlessgeo.gsr.core.service.CatalogService;
 import com.boundlessgeo.gsr.core.symbol.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.json.JsonWriter;
+import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
@@ -28,9 +27,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * Converts a {@link GSRModel} to a JSON string
+ */
 @Component
-public class GeoServicesJSONConverter extends AbstractHttpMessageConverter<GSRModel>
-        implements HttpMessageConverter<GSRModel> {
+public class GeoServicesJSONConverter extends BaseMessageConverter<GSRModel> {
 
     protected XStream xStream;
 

@@ -1,12 +1,12 @@
 package com.boundlessgeo.gsr.api.service.map;
 
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
-import com.boundlessgeo.gsr.model.map.LayerOrTable;
-import com.boundlessgeo.gsr.model.map.LayersAndTables;
-import com.boundlessgeo.gsr.model.map.QueryResponse;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.core.map.QueryResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -36,20 +36,18 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.temporal.Instant;
 import org.opengis.temporal.Period;
-import org.restlet.data.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
 @RestController
-public class QueryController extends AbstractMapServiceController {
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
+public class QueryController extends AbstractGSRController {
 
     private static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
     private static final Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.global");

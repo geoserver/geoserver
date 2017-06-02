@@ -5,6 +5,7 @@
 package com.boundlessgeo.gsr.resource;
 
 import com.boundlessgeo.gsr.JsonSchemaTest;
+import net.sf.json.JSONObject;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -20,5 +21,12 @@ public class MapRootResourceTest extends ResourceTest {
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
          assertTrue(result + " ;Root resource validates", JsonSchemaTest.validateJSON(result, "/gsr-map/1.0/root.json"));
+    }
+
+    @Test
+    public void testNotFoundException() throws Exception {
+        JSONObject result = (JSONObject) getAsJSON(query("cte", "?f=json"));
+        JSONObject error = result.getJSONObject("error");
+        assertEquals(500, error.getInt("code"));
     }
 }

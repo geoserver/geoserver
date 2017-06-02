@@ -1,8 +1,7 @@
-package com.boundlessgeo.gsr.model.map;
+package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.model.GSRModel;
-import net.sf.json.util.JSONBuilder;
+import com.boundlessgeo.gsr.core.GSRModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -11,15 +10,9 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.restlet.data.MediaType;
-import org.restlet.resource.OutputRepresentation;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 

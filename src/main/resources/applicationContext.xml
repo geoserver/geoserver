@@ -24,4 +24,8 @@
 
     <!-- <mvc:annotation-driven/> -->
     <context:component-scan base-package="com.boundlessgeo.gsr.api" />
+
+	<mvc:interceptors>
+		<bean class="com.boundlessgeo.gsr.api.FormatParameterInterceptor"/>
+	</mvc:interceptors>
 </beans>

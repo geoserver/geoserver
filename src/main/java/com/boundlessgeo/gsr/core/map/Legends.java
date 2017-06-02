@@ -1,6 +1,6 @@
-package com.boundlessgeo.gsr.model.map;
+package com.boundlessgeo.gsr.core.map;
 
-import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.core.GSRModel;
 
 import java.util.List;
 

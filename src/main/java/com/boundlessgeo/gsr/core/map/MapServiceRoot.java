@@ -1,7 +1,6 @@
-package com.boundlessgeo.gsr.model.map;
+package com.boundlessgeo.gsr.core.map;
 
-import com.boundlessgeo.gsr.model.GSRModel;
-import net.sf.json.util.JSONBuilder;
+import com.boundlessgeo.gsr.core.GSRModel;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -17,9 +16,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

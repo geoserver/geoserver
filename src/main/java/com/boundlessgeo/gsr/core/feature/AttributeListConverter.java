@@ -19,13 +19,11 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  */
 public class AttributeListConverter implements Converter {
 
-    @Override
     @SuppressWarnings("rawtypes")
     public boolean canConvert(Class clazz) {
         return clazz.equals(AttributeList.class);
     }
 
-    @Override
     public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
         AttributeList attributes = (AttributeList) obj;
         List<Attribute> attrs = attributes.getAttributes();
@@ -38,7 +36,6 @@ public class AttributeListConverter implements Converter {
 
     }
 
-    @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         // TODO Auto-generated method stub
         return null;

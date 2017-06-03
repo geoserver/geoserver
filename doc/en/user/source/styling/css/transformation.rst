@@ -41,7 +41,7 @@ when a suitable zoom level is reached::
     }
     
     /* @title Values */
-    [@scale < 12000] {
+    [@sd < 12000] {
       transform: ras:RasterAsPointCollection(scale: 0.5);
       z-index: 1;
       label: [GRAY_INDEX];

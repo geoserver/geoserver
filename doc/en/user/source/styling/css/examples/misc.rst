@@ -15,12 +15,12 @@ When zoomed in (when there are less points in view) the size of the markers is d
     mark: symbol(square);
   }
   
-  [@scale > 1000000] :mark {
+  [@sd > 1M] :mark {
     size: [sqrt(REPORTS)];
   }
   
   /* So that single-report points can be more easily seen */
-  [@scale < 1000000] :mark {
+  [@sd < 1M] :mark {
     size: [sqrt(REPORTS)*2];
   }
 

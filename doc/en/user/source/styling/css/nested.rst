@@ -19,20 +19,20 @@ functionality, besides more compact and hopefully readable styles.
 This is an example of a CSS style using only cascading to get a different shape,
 fill and stroke color for a point symbol in case the ``type`` attribute equals to ``important``::
 
-  [@scale < 3000] {
+  [@sd < 3000] {
     mark: symbol(circle)
   }
   
-  [@scale < 3000] :mark {
+  [@sd < 3000] :mark {
     fill: gray;
     size: 5
   }
   
-  [@scale < 3000] [type = 'important'] {
+  [@sd < 3000] [type = 'important'] {
     mark: symbol('triangle')
   }
   
-  [@scale < 3000] [type = 'important'] :mark {
+  [@sd < 3000] [type = 'important'] :mark {
     fill: red;
     stroke: yellow
   }
@@ -40,7 +40,7 @@ fill and stroke color for a point symbol in case the ``type`` attribute equals t
 This second version uses rule nesting getting a more compact expression, putting related symbology
 element close by::
 
-  [@scale < 3000] {
+  [@sd < 3000] {
      mark: symbol(circle);
      :mark {
         fill: gray;

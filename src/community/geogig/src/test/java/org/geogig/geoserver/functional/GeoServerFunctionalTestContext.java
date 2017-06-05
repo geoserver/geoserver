@@ -33,6 +33,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
+import org.geotools.factory.Hints;
+import org.geotools.referencing.CRS;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.Repository;
@@ -186,6 +188,22 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void setUp() throws Exception {
+        // use the OGC standard for axis order
+        //
+        // must be done *before* super.oneTimeSetUp() to ensure CRS factories
+        // configured before data is loaded
+        //
+        // if this property is null, GeoServerAbstractTestSupport.oneTimeSetUp()
+        // will blow away our changes
+        System.setProperty("org.geotools.referencing.forceXY", "false");
+        // yes, we need this too
+        Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, false);
+        // if this is set to anything but "http", GeoServerAbstractTestSupport.oneTimeSetUp()
+        // will blow away our changes
+        Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
+        // apply changes
+        CRS.reset("all");
+        
         testData = new GeoGigTestData(this.tempFolder);
         if (helper == null) {
             helper = new TestHelper();
@@ -215,6 +233,13 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         } finally {
             helper = null;
         }
+        
+        // undo the changes made for this suite and reset
+        System.clearProperty("org.geotools.referencing.forceXY");
+        Hints.removeSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER);
+        Hints.removeSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING);
+        CRS.reset("all");
+        
         System.runFinalization();
     }
 

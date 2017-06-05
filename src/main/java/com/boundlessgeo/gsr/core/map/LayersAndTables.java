@@ -43,12 +43,12 @@ public class LayersAndTables {
 
     /**
      * Look up a single GSR layer (with at least one geometry column) or table.
-     * 
+     *
      * @param catalog GeoServer Catalog
      * @param workspaceName GeoServer workspace name
      * @param layerId Index of Layer (based on sorting by layer name)
      * @return LayerOrTable from workspaceName identified by layerId
-     * @throws IOException 
+     * @throws IOException
      */
     public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id) throws IOException{
         // short list all layers
@@ -97,7 +97,7 @@ public class LayersAndTables {
      * <p>
      * Will return null, and log a warning if layer could not be represented
      * as LayerOrTable.
-     * 
+     *
      * @param layer
      * @param idCounter
      * @return LayerOrTable, or null if layer could not be represented
@@ -115,7 +115,7 @@ public class LayersAndTables {
 
             if (gDesc == null) {
                 gtype = null;
-            } else { 
+            } else {
                 gtype = GeometryTypeEnum.forJTSClass(gDesc.getType().getBinding());
             }
 
@@ -156,7 +156,7 @@ public class LayersAndTables {
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Skipping layer " + l, e);
-            } 
+            }
             idCounter++;
         }
         return new LayersAndTables(Collections.unmodifiableList(layers), Collections.unmodifiableList(tables));

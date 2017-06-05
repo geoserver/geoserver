@@ -7,14 +7,14 @@ package com.boundlessgeo.gsr.core.renderer;
 import com.boundlessgeo.gsr.core.symbol.Symbol;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class ClassBreakInfo {
 
-	private Double classMinValue;
-	
+    private Double classMinValue;
+
     private double classMaxValue;
 
     private String label;
@@ -24,13 +24,13 @@ public class ClassBreakInfo {
     private Symbol symbol;
 
     public Double getClassMinValue() {
-    	return classMinValue;
+        return classMinValue;
     }
-    
+
     public void setClassMinValue(Double classMinValue) {
-    	this.classMinValue = classMinValue;
+        this.classMinValue = classMinValue;
     }
-    
+
     public double getClassMaxValue() {
         return classMaxValue;
     }

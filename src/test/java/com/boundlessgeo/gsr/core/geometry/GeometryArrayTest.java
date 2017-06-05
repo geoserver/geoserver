@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class GeometryArrayTest {
 
-    
+
     /*
      * A.3.7: geometry/array - Verify that every array object meets the requirements
      */

@@ -5,9 +5,9 @@
 package com.boundlessgeo.gsr.core.domain;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class Domain {
 

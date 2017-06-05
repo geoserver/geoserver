@@ -16,18 +16,18 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 /**
  * JSON Schema validation class. Validation is possible with local files, with the following modifications: - All $ref elements need to point to a
  * local JSON Schema - The $id element with absolute URI needs to be removed from parent Schema files
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 
 public class GeometryJSONSchemaTest extends JsonSchemaTest {
     public GeometryJSONSchemaTest() {
         super();
     }
-    
+
     private static final GeometryFactory geometries = new GeometryFactory();
-    
+
     @Test
     public void testPointSchema() throws Exception {
         com.vividsolutions.jts.geom.Point point = geometries.createPoint(new Coordinate(77, 39.5));
@@ -62,7 +62,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
             geometries.createLineString(path1),
             geometries.createLineString(path2)
         };
-        
+
         com.vividsolutions.jts.geom.MultiLineString polyline = geometries.createMultiLineString(lineStrings);
 
         String json = GeometryEncoder.toJson(polyline);
@@ -80,7 +80,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         Coordinate[] ring1 = { c1, c2, c3, c4, c5, c1 };
 
         Coordinate[] ring2 = { c2, c3, c4, c2 };
-        
+
         com.vividsolutions.jts.geom.LinearRing shell = geometries.createLinearRing(ring1);
         com.vividsolutions.jts.geom.LinearRing hole = geometries.createLinearRing(ring2);
         com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[] { hole };

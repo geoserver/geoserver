@@ -59,7 +59,7 @@ public class CatalogResourceTest extends ResourceTest {
         System.out.println(jsonString);
         assertTrue(validateJSON(jsonString, "gsr-cs/1.0/catalog.json"));
     }
-    
+
     // TODO: Set up ResourceTest to include Virtual Services and test that folders contain those virtual services
     // and that they validate as Catalog endpoints
 

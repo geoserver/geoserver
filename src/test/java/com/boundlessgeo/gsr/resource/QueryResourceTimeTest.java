@@ -27,7 +27,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class QueryResourceTimeTest extends ResourceTest {
-    public static final QName TIME_ELEVATION = 
+    public static final QName TIME_ELEVATION =
             new QName(MockData.CITE_URI, "TimeElevation", MockData.CITE_PREFIX);
 
 
@@ -42,7 +42,7 @@ public class QueryResourceTimeTest extends ResourceTest {
                     TIME_ELEVATION.getNamespaceURI(),
                     TIME_ELEVATION.getLocalPart());
             DimensionInfo di = new DimensionInfoImpl();
-            
+
             di.setEnabled(true);
             di.setAttribute("time");
             di.setPresentation(DimensionPresentation.CONTINUOUS_INTERVAL);
@@ -52,7 +52,7 @@ public class QueryResourceTimeTest extends ResourceTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testRootResource() throws Exception {
         FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_ELEVATION.getNamespaceURI(), TIME_ELEVATION.getLocalPart());
@@ -67,27 +67,27 @@ public class QueryResourceTimeTest extends ResourceTest {
         JSONObject json = JSONObject.fromObject(rootResource);
         assertTrue(json.containsKey("timeInfo"));
     }
-    
+
     @Test
     public void testTimeQuery() throws Exception {
-        String query = 
+        String query =
                 baseURL +
                 "cite" +
                 "/MapServer/" +
                 "12" +
-                "/query" + 
+                "/query" +
                 "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90";
         String result;
         result = getAsString(query + "&time=1304294400000"); // 2011-05-02Z in milliseconds since UNIX epoch
         assertNFeatures(result, 1);
-        
+
         result = getAsString(query + "&time=NULL,1304294400000"); // 2011-05-02Z in milliseconds since UNIX epoch
         assertNFeatures(result, 1);
-        
+
         result = getAsString(query + "&time=1304294400000,NULL"); // 2011-05-02Z in milliseconds since UNIX epoch
         assertNFeatures(result, 2);
     }
-    
+
     private static void assertNFeatures(String jsonFeatureCollection, int n) {
         JSONObject json = JSONObject.fromObject(jsonFeatureCollection);
         assertTrue(jsonFeatureCollection + " should contain features", json.containsKey("features"));

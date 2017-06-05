@@ -24,9 +24,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author tkunicki
  */
 public class ImageResourceController extends AbstractController {
-    
+
     public static final String PROPERTY_IMAGE_RESOURCE_DIR = "GSR_IMAGE_RESOURCE_DIR";
-    
+
     private static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
     private static final String HTTP_HEADER_LAST_MODIFIED = "Last-Modified";
     private static final String HTTP_HEADER_ETAG = "ETag";
@@ -130,7 +130,7 @@ public class ImageResourceController extends AbstractController {
             IOUtils.closeQuietly(os);
         }
     }
-    
+
     private File findImageResourceDirectory(GeoServer geoserver) {
         File candidate;
         String propertyPath = System.getProperty(PROPERTY_IMAGE_RESOURCE_DIR);

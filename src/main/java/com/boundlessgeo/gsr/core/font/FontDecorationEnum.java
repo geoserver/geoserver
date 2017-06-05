@@ -5,9 +5,9 @@
 package com.boundlessgeo.gsr.core.font;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public enum FontDecorationEnum {
 

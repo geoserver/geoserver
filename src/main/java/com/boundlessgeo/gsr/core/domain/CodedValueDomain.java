@@ -9,9 +9,9 @@ import java.util.Set;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class CodedValueDomain extends Domain {
 

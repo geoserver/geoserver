@@ -22,7 +22,7 @@ public enum GeometryTypeEnum {
     POLYLINE("esriGeometryPolyline"),
     POLYGON("esriGeometryPolygon"),
     ENVELOPE("esriGeometryEnvelope");
-    
+
     private final String geometryType;
 
     public String getGeometryType() {
@@ -54,7 +54,7 @@ public enum GeometryTypeEnum {
             throw new NoSuchElementException("No GeoServices Geometry equivalent known for " + jtsClass);
         }
     }
-    
+
     public static GeometryTypeEnum forResourceDefaultGeometry(ResourceInfo resource) throws IOException {
         if (resource instanceof CoverageInfo) {
             return POLYGON;

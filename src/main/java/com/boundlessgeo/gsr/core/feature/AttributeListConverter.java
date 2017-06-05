@@ -13,9 +13,9 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class AttributeListConverter implements Converter {
 

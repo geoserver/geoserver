@@ -5,9 +5,9 @@
 package com.boundlessgeo.gsr.core.feature;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class Field {
 

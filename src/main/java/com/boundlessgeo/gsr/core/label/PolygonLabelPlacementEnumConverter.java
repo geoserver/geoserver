@@ -7,7 +7,7 @@ package com.boundlessgeo.gsr.core.label;
 import com.boundlessgeo.gsr.core.format.EnumTypeConverter;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */
@@ -30,5 +30,5 @@ public class PolygonLabelPlacementEnumConverter extends EnumTypeConverter {
         }
         return str;
     }
-    
+
 }

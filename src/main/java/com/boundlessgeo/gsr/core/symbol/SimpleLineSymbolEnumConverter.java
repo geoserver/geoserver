@@ -7,9 +7,9 @@ package com.boundlessgeo.gsr.core.symbol;
 import com.boundlessgeo.gsr.core.format.EnumTypeConverter;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class SimpleLineSymbolEnumConverter extends EnumTypeConverter {
 

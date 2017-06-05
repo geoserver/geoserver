@@ -14,7 +14,7 @@ public class MapRootResourceTest extends ResourceTest {
     private final String query(String service, String params) {
         return baseURL + service + "/MapServer" + params;
     }
-    
+
     @Test
     public void testBasicQuery() throws Exception {
         String result = getAsString(query("cite", "?f=json"));

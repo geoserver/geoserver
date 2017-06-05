@@ -7,7 +7,7 @@ package com.boundlessgeo.gsr.core.renderer;
 import com.boundlessgeo.gsr.core.symbol.Symbol;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */

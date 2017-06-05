@@ -85,7 +85,7 @@ public class StyleEncoder {
 //          .key("description").value("")
 //        .endObject();
 //    }
-//    
+//
 //    public static void defaultRasterStyle(JSONBuilder json) {
 //        json.object()
 //          .key("type").value("simple")
@@ -135,25 +135,25 @@ public class StyleEncoder {
 //          .key("description").value("")
 //        .endObject();
 //    }
-//    
+//
 //    private static void color(JSONBuilder json, int r, int g, int b, int a) {
 //        json.array().value(r).value(g).value(b).value(a).endArray();
 //    }
-    
+
     public static Renderer styleToRenderer(Style style) {
-                
+
         List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
         if (featureTypeStyles == null || featureTypeStyles.size() != 1) return null;
-        
+
         FeatureTypeStyle featureTypeStyle = featureTypeStyles.get(0);
-        if (featureTypeStyle == null) return null; 
-        
+        if (featureTypeStyle == null) return null;
+
         List<Rule> rules = featureTypeStyle.rules();
         if (rules == null || rules.size() == 0) return null;
-        
+
         Renderer render = rulesToUniqueValueRenderer(rules);
         if (render != null) return render;
-        
+
         render = rulesToClassBreaksRenderer(rules);
         if (render != null) return render;
 
@@ -169,7 +169,7 @@ public class StyleEncoder {
             return null;
         }
     }
-    
+
     private static Renderer rulesToClassBreaksRenderer(List<Rule> rules) {
         List<Rule> rulesOther = new LinkedList<Rule>();
         Map<String, ClassBreaksRenderer> map = new LinkedHashMap<String, ClassBreaksRenderer>();
@@ -179,7 +179,7 @@ public class StyleEncoder {
                 ClassBreaksRenderer renderer = map.get(meta.propertyName);
                 if (renderer == null) {
                     double minValue = 0;
-                    renderer = new ClassBreaksRenderer(meta.propertyName, 
+                    renderer = new ClassBreaksRenderer(meta.propertyName,
                             minValue,
                             new LinkedList<ClassBreakInfo>());
                     map.put(meta.propertyName, renderer);
@@ -259,22 +259,22 @@ public class StyleEncoder {
             return null;
         }
         Double maxAsDouble = ((Literal)max).evaluate(null, double.class);
-        
+
         String title = null, description = null;
         Description desc = rule.getDescription();
         if (desc != null) {
-        	if (desc.getTitle() != null) {
-	            title = desc.getTitle().toString();
-        	}
-        	if (desc.getAbstract() != null) {
-        		description = desc.getAbstract().toString();
-        	}
+            if (desc.getTitle() != null) {
+                title = desc.getTitle().toString();
+            }
+            if (desc.getAbstract() != null) {
+                description = desc.getAbstract().toString();
+            }
         }
         if (title == null) title = "";
         if (description == null) description = "";
         return new ClassBreakInfoMeta(propertyName, new ClassBreakInfo(minAsDouble, maxAsDouble, title, description, symbolizerToSymbol(symbolizer)));
     }
-    
+
     private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
         List<Rule> rulesOther = new LinkedList<Rule>();
         Map<String, UniqueValueRenderer> map = new LinkedHashMap<String, UniqueValueRenderer>();
@@ -315,7 +315,7 @@ public class StyleEncoder {
         }
         return null;
     }
-    
+
     private static class UniqueValueInfoMeta {
         final String propertyName;
         final UniqueValueInfo uniqueValueInfo;
@@ -324,65 +324,65 @@ public class StyleEncoder {
             this.uniqueValueInfo = uniqueValueInfo;
         }
     }
-    
+
     private static UniqueValueInfoMeta ruleToUniqueValueInfoMeta(Rule rule) {
         List<Symbolizer> symbolizers = rule.symbolizers();
         if (symbolizers == null || symbolizers.size() != 1) return null;
-        
+
         Symbolizer symbolizer = symbolizers.get(0);
         if (symbolizer == null) return null;
-        
+
         Filter filter = rule.getFilter();
         if (!(filter instanceof PropertyIsEqualTo)) return null;
-        
+
         PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo)filter;
-        
+
         Expression expression1 = uniqueValueFilter.getExpression1();
         String propertyName = expression1 instanceof PropertyName ?
                 ((PropertyName)expression1).getPropertyName() : null;
         if (propertyName == null) return null;
-        
+
         Expression expression2 = uniqueValueFilter.getExpression2();
         String valueAsString = expression2 instanceof Literal ?
                 ((Literal)expression2).getValue().toString() : null;
         if (valueAsString == null) return null;
-        
+
         String title = rule.getTitle();
         if (title == null) title = "";
         String description = rule.getAbstract();
         if (description == null) description = "";
-        
+
         return new UniqueValueInfoMeta(propertyName,
                 new UniqueValueInfo(valueAsString, title, description,
-                    symbolizerToSymbol(symbolizer)));    
+                    symbolizerToSymbol(symbolizer)));
     }
-    
+
     private static Renderer defaultPolyRenderer() {
         SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] { 0, 0, 0, 255 }, 1);
         Symbol symbol = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, new int[] { 255, 0, 0, 255 }, outline);
         return new SimpleRenderer(symbol, "Polygon", "Default polygon renderer");
     }
-    
+
     private static Renderer defaultRasterRenderer() {
         SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, null, 1);
         Symbol symbol = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, null, outline);
         return new SimpleRenderer(symbol, "Raster", "Default raster renderer");
     }
-    
+
     private static Renderer defaultLineRenderer() {
         SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] { 0, 0, 0, 255 }, 1);
         return new SimpleRenderer(outline, "Line", "Default line renderer");
     }
-    
+
     private static Renderer defaultMarkRenderer() {
         Outline outline = new Outline(new int[] { 0, 0, 0, 255 }, 1);
         SimpleMarkerSymbol marker = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.SQUARE, new int[] { 255, 0, 0, 255 }, 24, 0, 0, 0, outline);
         return new SimpleRenderer(marker, "Marker", "Default marker renderer");
     }
-    
+
     public static Renderer effectiveRenderer(LayerInfo layer) throws IOException {
         Renderer renderer = null;
-        
+
         StyleInfo styleInfo = layer.getDefaultStyle();
         if (styleInfo != null) {
             Style style = styleInfo.getStyle();
@@ -390,7 +390,7 @@ public class StyleEncoder {
                 renderer = styleToRenderer(style);
             }
         }
-        
+
         if (renderer == null) {
             GeometryTypeEnum gtype = GeometryTypeEnum.forResourceDefaultGeometry(layer.getResource());
             switch (gtype) {
@@ -413,10 +413,10 @@ public class StyleEncoder {
                 renderer = null;
             }
         }
-        
+
         return renderer;
     }
-    
+
     private static Symbol symbolizerToSymbol(Symbolizer sym) {
         if (sym instanceof PointSymbolizer) {
             return pointSymbolizerToMarkSymbol((PointSymbolizer)sym);
@@ -426,7 +426,7 @@ public class StyleEncoder {
             return polygonSymbolizerToFillSymbol((PolygonSymbolizer)sym);
         } else return null; // TODO: Should we throw here?
     }
-    
+
     private static Symbol polygonSymbolizerToFillSymbol(PolygonSymbolizer sym) {
         final Fill fill = sym.getFill();
         final Stroke stroke = sym.getStroke();
@@ -451,7 +451,7 @@ public class StyleEncoder {
                 components(Color.BLACK, 1),
                 1);
         }
-        
+
         return new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, components(color, opacity), outline);
     }
 
@@ -486,7 +486,7 @@ public class StyleEncoder {
                 xoffset = 0d;
                 yoffset = 0d;
             }
-            
+
             final Outline outline;
             final Stroke stroke = mark.getStroke();
             if (stroke != null) {
@@ -563,7 +563,7 @@ public class StyleEncoder {
         }
         return null;
     }
-    
+
     public static SimpleLineSymbol lineSymbolizerToLineSymbol(LineSymbolizer sym) {
         Stroke stroke = sym.getStroke();
         return strokeToLineSymbol(stroke);
@@ -571,8 +571,8 @@ public class StyleEncoder {
 
     private static SimpleLineSymbol strokeToLineSymbol(Stroke stroke) {
         final Color color;
-        final double opacity; 
-        final double width; 
+        final double opacity;
+        final double width;
         float[] dashArray;
         final SimpleLineSymbolEnum lineStyle;
         if (stroke != null) {
@@ -613,7 +613,7 @@ public class StyleEncoder {
             encodePolygonSymbolizer(json, (PolygonSymbolizer) sym);
         }
     }
-    
+
     public static void encodeSymbol(JSONBuilder json, Symbol symbol) {
         if (symbol instanceof SimpleMarkerSymbol) {
             encodeMarkerSymbol(json, (SimpleMarkerSymbol) symbol);
@@ -627,7 +627,7 @@ public class StyleEncoder {
             json.value(null);
         }
     }
-    
+
     private static void encodePolygonSymbolizer(JSONBuilder json, PolygonSymbolizer sym) {
         final Fill fill = sym.getFill();
         final Stroke stroke = sym.getStroke();
@@ -652,8 +652,8 @@ public class StyleEncoder {
                 components(Color.BLACK, 1),
                 1);
         }
-        
-        encodeFillSymbol(json, 
+
+        encodeFillSymbol(json,
                 new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, components(color, opacity), outline));
     }
 
@@ -672,9 +672,9 @@ public class StyleEncoder {
         SimpleLineSymbol symbol = lineSymbolizerToLineSymbol(sym);
         encodeLineStyle(json, symbol);
     }
-    
+
     private static int[] components(Color color, double opacity) {
-        return new int[] { 
+        return new int[] {
             color.getRed(), color.getGreen(), color.getBlue(), (int) Math.round(opacity * 255)
         };
     }
@@ -685,7 +685,7 @@ public class StyleEncoder {
             encodeMarkerSymbol(json, (SimpleMarkerSymbol)markSymbol);
         }
     }
-    
+
     private static void encodeMarkerSymbol(JSONBuilder json, SimpleMarkerSymbol sms) {
       json.object()
         .key("type").value("esriSMS")
@@ -705,7 +705,7 @@ public class StyleEncoder {
         json.key("yoffset").value(sms.getYoffset());
       json.endObject();
     }
-    
+
     private static void encodePictureMarkerSymbol(JSONBuilder json, PictureMarkerSymbol symbol) {
         json.object()
             .key("type").value("esriPMS")
@@ -758,7 +758,7 @@ public class StyleEncoder {
         if (rule.symbolizers().size() != 1) return null;
         return rule.symbolizers().get(0);
     }
-    
+
     private static SimpleMarkerSymbolEnum equivalentSMS(String markName) {
         if ("circle".equals(markName)) {
             return SimpleMarkerSymbolEnum.CIRCLE;
@@ -784,34 +784,34 @@ public class StyleEncoder {
         } else if (renderer instanceof UniqueValueRenderer) {
             encodeUniqueValueRenderer(json, (UniqueValueRenderer) renderer);
         } else if (renderer instanceof ClassBreaksRenderer) {
-        	encodeClassBreaksRenderer(json, (ClassBreaksRenderer) renderer);
+            encodeClassBreaksRenderer(json, (ClassBreaksRenderer) renderer);
         } else throw new IllegalArgumentException("Unhandled renderer " + renderer);
     }
-    
-    private static void encodeClassBreaksRenderer(JSONBuilder json, ClassBreaksRenderer renderer) {
-		// TODO Auto-generated method stub
-    	json.object()
-    	  .key("type").value("classBreaks")
-    	  .key("field").value(renderer.getField())
-    	  .key("minValue").value(renderer.getMinValue());
-    	
-    	json.key("classBreakInfos").array();
-    	
-    	for (ClassBreakInfo info : renderer.getClassBreakInfos()) {
-    		json.object();
-    		if (info.getClassMinValue() != null) json.key("classMinValue").value(info.getClassMinValue());
-    		json.key("classMaxValue").value(info.getClassMaxValue())
-    		    .key("label").value(info.getLabel())
-    		    .key("description").value(info.getDescription())
-    		    .key("symbol");
-    		encodeSymbol(json, info.getSymbol());
-    		json.endObject();
-    	}
-    	
-    	json.endArray().endObject();
-	}
 
-	private static void encodeSimpleRenderer(JSONBuilder json, SimpleRenderer renderer) {
+    private static void encodeClassBreaksRenderer(JSONBuilder json, ClassBreaksRenderer renderer) {
+        // TODO Auto-generated method stub
+        json.object()
+          .key("type").value("classBreaks")
+          .key("field").value(renderer.getField())
+          .key("minValue").value(renderer.getMinValue());
+
+        json.key("classBreakInfos").array();
+
+        for (ClassBreakInfo info : renderer.getClassBreakInfos()) {
+            json.object();
+            if (info.getClassMinValue() != null) json.key("classMinValue").value(info.getClassMinValue());
+            json.key("classMaxValue").value(info.getClassMaxValue())
+                .key("label").value(info.getLabel())
+                .key("description").value(info.getDescription())
+                .key("symbol");
+            encodeSymbol(json, info.getSymbol());
+            json.endObject();
+        }
+
+        json.endArray().endObject();
+    }
+
+    private static void encodeSimpleRenderer(JSONBuilder json, SimpleRenderer renderer) {
         json.object()
           .key("type").value("simple")
           .key("symbol");
@@ -820,7 +820,7 @@ public class StyleEncoder {
           .key("description").value(renderer.getDescription())
         .endObject();
     }
-    
+
     private static void encodeUniqueValueRenderer(JSONBuilder json, UniqueValueRenderer renderer) {
         json.object()
           .key("type").value("uniqueValue")
@@ -845,7 +845,7 @@ public class StyleEncoder {
           json.endArray()
         .endObject();
     }
-	
+
     static String relativizeExternalGraphicImageResourceURI(URI resourceURI) {
         String path = resourceURI.getPath();
         int index = path.lastIndexOf('/');

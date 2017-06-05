@@ -31,19 +31,19 @@ public class FeatureEncoder {
     private FeatureEncoder() {
         throw new RuntimeException("Feature encoder has only static methods, no need to instantiate it.");
     }
-    
+
     public static
     <T extends FeatureType, F extends org.opengis.feature.Feature>
     void featuresToJson(FeatureCollection<T, F> collection, JSONBuilder json, boolean returnGeometry)
     throws IOException
     {
         FeatureIterator<F> iterator = collection.features();
-        
+
         T schema = collection.getSchema();
         json.object()
           .key("objectIdFieldName").value("objectid")
           .key("globalIdFieldName").value("");
-        
+
         if (returnGeometry) {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             if (geometryDescriptor == null) throw new RuntimeException("No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
@@ -54,7 +54,7 @@ public class FeatureEncoder {
             GeometryTypeEnum geometryTypeEnum = GeometryTypeEnum.forJTSClass(binding);
             json.key("geometryType").value(geometryTypeEnum.getGeometryType());
         }
-        
+
         if (schema.getCoordinateReferenceSystem() != null) {
             try {
                 SpatialReference sr = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
@@ -64,7 +64,7 @@ public class FeatureEncoder {
                 throw new RuntimeException(e);
             }
         }
-        
+
         json.key("fields").array();
         for (PropertyDescriptor desc : schema.getDescriptors()) {
             if (schema.getGeometryDescriptor() != null && !desc.getName().equals(schema.getGeometryDescriptor().getName())) {
@@ -72,7 +72,7 @@ public class FeatureEncoder {
             }
         }
         json.endArray();
-        
+
         try {
             json.key("features");
             json.array();
@@ -96,7 +96,7 @@ public class FeatureEncoder {
         }
         json.key("attributes");
         json.object();
-        
+
         json.key("objectid").value(adaptId(feature.getIdentifier().getID()));
 
         for (Property prop : feature.getProperties()) {
@@ -112,18 +112,18 @@ public class FeatureEncoder {
                 json.key(prop.getName().getLocalPart()).value(value);
             }
         }
-        
+
         json.endObject();
         json.endObject();
     }
-    
+
     public static void descriptorToJson(PropertyDescriptor field, JSONBuilder json) {
         // Similar to LayerListResource encodeencodeSchemaProperties
-        // Similar to FeatureEncoder descriptorToJson. 
-        json.object();			
+        // Similar to FeatureEncoder descriptorToJson.
+        json.object();
         json.key("name").value(field.getName().getLocalPart());
 
-        FieldTypeEnum type = FieldTypeEnum.forClass(field.getType().getBinding());						
+        FieldTypeEnum type = FieldTypeEnum.forClass(field.getType().getBinding());
         json.key("type").value(type.getFieldType());
         json.key("alias").value(field.getName().toString());
 
@@ -138,12 +138,12 @@ public class FeatureEncoder {
             case XML:
                 json.key("length").value(length == -1 ? 4000 : length);
                 json.key("editable").value("false");
-                break;				
+                break;
             default:
                 // length and editable are optional
         }
         json.key("nullable").value(field.isNillable() ? "true" : "false");
-        json.key("domain").value(null);		
+        json.key("domain").value(null);
 
         json.endObject();
     }
@@ -170,7 +170,7 @@ public class FeatureEncoder {
 
         json.endObject();
     }
-    
+
     private final static Pattern featureIDPattern = Pattern.compile("^(?:.*\\.)?(\\p{Digit}+)$");
     private static Object adaptId(String featureId) {
         Matcher matcher = featureIDPattern.matcher(featureId);

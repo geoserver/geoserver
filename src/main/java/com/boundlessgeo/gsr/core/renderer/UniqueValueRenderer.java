@@ -9,7 +9,7 @@ import java.util.List;
 import com.boundlessgeo.gsr.core.symbol.Symbol;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */

@@ -15,7 +15,7 @@ public class FeatureResourceTest extends ResourceTest {
     private final String query(String service, String layer, String feature, String params) {
         return baseURL + service + "/FeatureServer/" + layer + "/" + feature + params;
     }
-    
+
     @Test
     public void testBasicQuery() throws Exception {
         String q = query("cite", "1", "1107531599613", "?f=json");

@@ -7,9 +7,9 @@ package com.boundlessgeo.gsr.core.symbol;
 import org.geotools.data.Base64;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class PictureMarkerSymbol extends MarkerSymbol {
 

@@ -18,16 +18,16 @@ import com.github.fge.jsonschema.report.ProcessingReport;
 import com.github.fge.jsonschema.util.JsonLoader;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class JSONValidator {
 
     public static boolean isValidSchema(String json, File schemaFile) {
         boolean isValid = false;
         final String baseURI = "file:///" + schemaFile.getAbsolutePath();
-        
+
         JsonSchema schema;
         try {
             JsonSchemaFactory factory = JsonSchemaFactory

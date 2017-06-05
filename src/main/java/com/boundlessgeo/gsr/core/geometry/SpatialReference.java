@@ -6,9 +6,9 @@ package com.boundlessgeo.gsr.core.geometry;
 
 
 /**
- * 
+ *
  * @author Juan Marin - OpenGeo
- * 
+ *
  */
 
 public interface SpatialReference {

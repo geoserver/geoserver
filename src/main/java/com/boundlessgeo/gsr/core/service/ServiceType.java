@@ -8,7 +8,7 @@ package com.boundlessgeo.gsr.core.service;
  * Service type enum
  *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public enum ServiceType {
     CatalogServer, MapServer, GeometryServer, GeocodeServer, GPServer, FeatureServer, ImageServer

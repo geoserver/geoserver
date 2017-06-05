@@ -41,7 +41,7 @@ public class DomainSchemaTest extends JsonSchemaTest {
         String json = getJson(codedValueDomain);
         assertTrue(validateJSON(json, "gsr/1.0/codedValueDomain.json"));
     }
-    
+
     public void testInheritedDomainJsonSchema() throws Exception {
         InheritedDomain domain = new InheritedDomain();
         String json = getJson(domain);

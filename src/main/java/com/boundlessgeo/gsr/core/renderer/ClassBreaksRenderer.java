@@ -7,7 +7,7 @@ package com.boundlessgeo.gsr.core.renderer;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */

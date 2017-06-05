@@ -74,7 +74,7 @@ import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
  * <li>generateRenderer</li>
  * <ul>
  * </p>
- * 
+ *
  * @author Jody Garnett (Boundless)
  */
 public class LayerResource extends Resource {
@@ -95,11 +95,11 @@ public class LayerResource extends Resource {
         public void write(OutputStream outputStream) throws IOException {
             Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             try {
-                JSONBuilder json = new JSONBuilder(writer);	
+                JSONBuilder json = new JSONBuilder(writer);
                 FeatureType schema = featureTypeInfo.getFeatureType();
                 json.object();
 
-                // listed first for early exit 
+                // listed first for early exit
                 json.key("currentVersion").value(CURRENT_VERSION);
 
                 // id
@@ -155,7 +155,7 @@ public class LayerResource extends Resource {
 
                     // drawingInfo (renderer, transparency, labelingInfo)
                     json.key("drawingInfo");
-                    {	json.object();
+                    {    json.object();
                         json.key("renderer");
                         StyleEncoder.encodeRenderer(json, entry.drawingInfo.renderer);
 
@@ -169,7 +169,7 @@ public class LayerResource extends Resource {
                     // hasZ - check CRS
                     CoordinateReferenceSystem crs = schema.getGeometryDescriptor().getCoordinateReferenceSystem();
                     int dimension = crs.getCoordinateSystem().getDimension();
-                    json.key("extent").value(dimension > 2 ? "true" : "false");					
+                    json.key("extent").value(dimension > 2 ? "true" : "false");
                 }
                 // enableZDefaults - ignore
                 // zDefault - ignore
@@ -285,7 +285,7 @@ public class LayerResource extends Resource {
             List<MetadataLinkInfo> links = layerInfo.getResource().getMetadataLinks();
             if (links != null && !links.isEmpty()) {
                 return links.get(0).getContent();
-            }			
+            }
             // check attribution
             if (layerInfo.getAttribution() != null && layerInfo.getAttribution().getTitle() != null) {
                 return layerInfo.getAttribution().getTitle();
@@ -300,21 +300,21 @@ public class LayerResource extends Resource {
          * <li>A String field ending in <b>id</b> (preferred) or <b>name</b></li>
          * <li>First available String field</li>
          * </ul>
-         * 
+         *
          * @param schema
          * @return Suitable display field
          */
         private Object displayField(FeatureType schema) {
             PropertyDescriptor property = schema.getDescriptor("name");
             if (property != null && String.class.isAssignableFrom(property.getType().getBinding())) {
-                return "name";					
+                return "name";
             }
             for (PropertyDescriptor attribute : schema.getDescriptors()){
                 String name = attribute.getName().getLocalPart();
                 if (name.toLowerCase().endsWith("id") &&
                         String.class.isAssignableFrom(attribute.getType().getBinding())) {
-                    return name;					
-                }	
+                    return name;
+                }
             }
             for (PropertyDescriptor attribute : schema.getDescriptors()) {
                 String name = attribute.getName().getLocalPart();
@@ -349,41 +349,41 @@ public class LayerResource extends Resource {
     //
     // Property capabilities
     //  Query, Create, Delete, Update, Editing
-    //	double relationships;
-    //	
-    //	double effectiveMinScale;
-    //	double effectiveMaxScale;
-    //	boolean returnUpdates;
-    //	boolean nullable;
-    //	boolean hasAttachments;
+    //    double relationships;
+    //
+    //    double effectiveMinScale;
+    //    double effectiveMaxScale;
+    //    boolean returnUpdates;
+    //    boolean nullable;
+    //    boolean hasAttachments;
     //
     // Optional properties added over time
     //
     /** Require use of standardized queries */
-    //	boolean useStandardizedQueries;
+    //    boolean useStandardizedQueries;
 
     /** rollbackOnFailure available */
-    //	boolean supportsRollbackOnFailures;
+    //    boolean supportsRollbackOnFailures;
 
     /** Server can return changes (using global id and version) */
-    //	boolean syncCanReturnChanges;
-    //	boolean isDataVersioned;
-    //	boolean supportsStatistics;
+    //    boolean syncCanReturnChanges;
+    //    boolean isDataVersioned;
+    //    boolean supportsStatistics;
 
     /** Query can use orderBy */
-    //	boolean supportsAdvancedQueries;
+    //    boolean supportsAdvancedQueries;
 
     /** List of query formats */
-    //	List<String> supportedQueryFormats;
+    //    List<String> supportedQueryFormats;
 
     /** Coordinates include z values */
-    //	boolean hasZ;
+    //    boolean hasZ;
 
     /** Coordiantes include m measurements */
-    //	boolean hasM;
+    //    boolean hasM;
 
     /** If geometry can be edited */
-    //	boolean allowGeometryUpdates;
+    //    boolean allowGeometryUpdates;
 
     public LayerResource(Context context, Request request, Response response, Catalog catalog, String format, String layerId) {
         super(context, request, response);
@@ -391,7 +391,7 @@ public class LayerResource extends Resource {
         this.format = format;
         this.layerId = layerId;
         getVariants().add(JSON);
-    }	
+    }
 
     @Override
     public Representation getRepresentation(Variant variant) {
@@ -415,8 +415,8 @@ public class LayerResource extends Resource {
         LayerOrTable entry;
         try {
             entry = LayersAndTables.find(catalog, workspaceName, layerIndex);
-        } catch (IOException e) {			
-            throw new NoSuchElementException("Unavailable table or layer in workspace \"" + workspaceName + "\" for id " + layerId + ":" + e); 
+        } catch (IOException e) {
+            throw new NoSuchElementException("Unavailable table or layer in workspace \"" + workspaceName + "\" for id " + layerId + ":" + e);
         }
         if (entry == null) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);

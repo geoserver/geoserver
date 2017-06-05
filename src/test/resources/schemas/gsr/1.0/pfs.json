@@ -1,13 +1,13 @@
 {
    "$schema":"http://json-schema.org/draft-03/schema#",
-   
-	"title":"picture fill symbol",
-	"type":"object",
-	"extends":{
-		"$ref":"marker.json"
-	},
-	"properties":{
-	   "type":{
+
+    "title":"picture fill symbol",
+    "type":"object",
+    "extends":{
+        "$ref":"marker.json"
+    },
+    "properties":{
+       "type":{
             "title":"marker type",
             "type":"string",
             "required":true,
@@ -65,5 +65,5 @@
             "title":"angle",
             "type":"number"
         }
-	}
+    }
 }

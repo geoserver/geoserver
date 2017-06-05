@@ -7,9 +7,9 @@ package com.boundlessgeo.gsr.core.symbol;
 import com.boundlessgeo.gsr.core.font.Font;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class TextSymbol extends MarkerSymbol {
 

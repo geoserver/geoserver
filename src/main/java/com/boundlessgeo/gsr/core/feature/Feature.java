@@ -7,9 +7,9 @@ package com.boundlessgeo.gsr.core.feature;
 import com.boundlessgeo.gsr.core.geometry.Geometry;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class Feature {
 

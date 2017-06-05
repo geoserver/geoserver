@@ -5,9 +5,9 @@
 package com.boundlessgeo.gsr.core.label;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public enum LineLabelPlacementEnum {
 

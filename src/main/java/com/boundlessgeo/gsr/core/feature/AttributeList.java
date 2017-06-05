@@ -7,9 +7,9 @@ package com.boundlessgeo.gsr.core.feature;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public class AttributeList {
 

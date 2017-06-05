@@ -15,7 +15,7 @@ public final class LayerNameComparator implements Comparator<LayerInfo> {
     public final static LayerNameComparator INSTANCE = new LayerNameComparator();
     private LayerNameComparator() {
     }
-    
+
     public int compare(LayerInfo a, LayerInfo b) {
         return a.getName().compareTo(b.getName());
     }

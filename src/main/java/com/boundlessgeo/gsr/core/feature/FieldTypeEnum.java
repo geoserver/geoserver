@@ -11,9 +11,9 @@ import java.util.Date;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
- * 
+ *
  */
 public enum FieldTypeEnum {
 

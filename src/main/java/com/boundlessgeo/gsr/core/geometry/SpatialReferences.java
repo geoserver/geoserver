@@ -12,7 +12,7 @@ public final class SpatialReferences {
     private SpatialReferences() {
         throw new RuntimeException("No need to instantiate SpatialReferences, it has only static methods.");
     }
-    
+
     public static SpatialReference fromCRS(CoordinateReferenceSystem crs) throws FactoryException {
         Integer epsgCode = CRS.lookupEpsgCode(crs, false);
         if (null != epsgCode) {

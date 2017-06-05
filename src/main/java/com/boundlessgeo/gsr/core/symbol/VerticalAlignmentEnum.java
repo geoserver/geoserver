@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.core.symbol;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */
@@ -21,5 +21,5 @@ public enum VerticalAlignmentEnum {
     private VerticalAlignmentEnum(String align) {
         this.alignment = align;
     }
-    
+
 }

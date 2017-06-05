@@ -7,7 +7,7 @@ package com.boundlessgeo.gsr.core.geometry;
 import com.boundlessgeo.gsr.core.format.EnumTypeConverter;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */

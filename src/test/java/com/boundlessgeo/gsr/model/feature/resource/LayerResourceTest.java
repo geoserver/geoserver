@@ -17,21 +17,21 @@ import static org.junit.Assert.*;
  * @author Jody Garnett (Boundless)
  */
 public class LayerResourceTest extends ResourceTest {
-	
+
     private final String query(String service, String layer, String params) {
         return baseURL + service + "/FeatureServer/" + layer + params;
     }
-    
+
     @Test
     public void testBasicQuery() throws Exception {
         String q = query("cite", "1", "?f=json");
         JSON result = getAsJSON(q);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
-        
+
         JSONObject json = (JSONObject) result;
-        
+
         Object type = json.get("type");
-        
+
         assertEquals( "Feature Layer", type );
     }
 }

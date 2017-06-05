@@ -69,7 +69,7 @@ public class FeatureResource extends Resource {
 
     private Representation buildJsonError(ServiceError error) {
         getResponse().setStatus(new Status(error.getCode()));
-        
+
         //GeoServicesJsonFormat format = new GeoServicesJsonFormat();
         //return format.toRepresentation(error);
         return null;

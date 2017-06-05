@@ -6,7 +6,7 @@ package com.boundlessgeo.gsr.core.symbol;
 
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */

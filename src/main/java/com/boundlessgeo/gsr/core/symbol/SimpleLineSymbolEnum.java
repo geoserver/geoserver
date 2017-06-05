@@ -5,20 +5,20 @@
 package com.boundlessgeo.gsr.core.symbol;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */
 public enum SimpleLineSymbolEnum {
 
     SOLID("esriSLSSolid"), //
-    DASH("esriSLSDash"), // 
-    DOT("esriSLSDot"), // 
+    DASH("esriSLSDash"), //
+    DOT("esriSLSDot"), //
     DASH_DOT("esriSLSDashDot"),
     DASH_DOT_DOT("esriSLSDashDotDot"), //
     NULL("esriSLSNull"), //
     INSIDE_FRAME("esriSLSInsideFrame");
-    
+
     private final String style;
 
     public String getStyle() {

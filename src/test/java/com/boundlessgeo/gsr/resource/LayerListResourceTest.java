@@ -16,7 +16,7 @@ public class LayerListResourceTest extends ResourceTest {
     private final String query(String service, String params) {
         return baseURL + service + "/MapServer/layers" + params;
     }
-    
+
     @Test
     public void testStreamsQuery() throws Exception {
         String result = getAsString(query("cite", "?f=json"));
@@ -31,7 +31,7 @@ public class LayerListResourceTest extends ResourceTest {
             JSONObject table = (JSONObject) object;
             assertFalse("Table " + table + " should not have an extent", table.has("extent"));
         }
-        
+
         JSONArray layers = json.getJSONArray("layers");
         for (Object object : layers) {
             JSONObject layer = (JSONObject) object;

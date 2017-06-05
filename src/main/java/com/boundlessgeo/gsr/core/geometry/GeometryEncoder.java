@@ -18,19 +18,19 @@ public final class GeometryEncoder {
     private GeometryEncoder() {
         throw new RuntimeException("Geometry encoder has only static methods, no need to instantiate it.");
     }
-    
+
     public static String toJson(com.vividsolutions.jts.geom.Geometry geom) {
         JSONStringer json = new JSONStringer();
         toJson(geom, json);
         return json.toString();
     }
-    
+
     public static String toJson(com.vividsolutions.jts.geom.Envelope envelope) {
         JSONStringer json = new JSONStringer();
         envelopeToJson(envelope, json);
         return json.toString();
     }
-    
+
     public static void referencedEnvelopeToJson(com.vividsolutions.jts.geom.Envelope envelope, SpatialReference sr, JSONBuilder json) {
         json.object();
         envelopeCoordsToJson(envelope, json);
@@ -38,13 +38,13 @@ public final class GeometryEncoder {
         SpatialReferenceEncoder.toJson(sr, json);
         json.endObject();
     }
-    
+
     public static void envelopeToJson(com.vividsolutions.jts.geom.Envelope envelope, JSONBuilder json) {
         json.object();
         envelopeCoordsToJson(envelope, json);
         json.endObject();
     }
-    
+
     private static void envelopeCoordsToJson(com.vividsolutions.jts.geom.Envelope envelope, JSONBuilder json) {
         json
           .key("xmin").value(envelope.getMinX())
@@ -55,7 +55,7 @@ public final class GeometryEncoder {
 
     public static void toJson(com.vividsolutions.jts.geom.Geometry geom, JSONBuilder json) {
         // Implementation notes.
-        
+
         // We have only directly provided support for the
         // JTS geometry types that most closely map to those defined in the
         // GeoServices REST API spec. In the future we will need to deal with
@@ -63,12 +63,12 @@ public final class GeometryEncoder {
         // figure out a good tradeoff of information loss (for example, the spec
         // doesn't distinguish between a linestring and a multilinestring) and
         // generality.
-   
+
         // Currently, we explicitly open and close a JSON object in this method.
         // It might be better for extensibility to push this responsibility onto
         // the caller - for example, that would be a nice way to support the
         // optional 'spatialReference' property on all geometries.
-        
+
         if (geom instanceof com.vividsolutions.jts.geom.Point) {
             com.vividsolutions.jts.geom.Point p = (com.vividsolutions.jts.geom.Point) geom;
             json.object()
@@ -146,7 +146,7 @@ public final class GeometryEncoder {
     private static void embeddedPointToJson(com.vividsolutions.jts.geom.Point point, JSONBuilder json) {
         embeddedCoordinateToJson(point.getCoordinate(), json);
     }
-    
+
     private static void embeddedLineStringToJson(com.vividsolutions.jts.geom.LineString line, JSONBuilder json) {
         json.array();
         for (com.vividsolutions.jts.geom.Coordinate c : line.getCoordinates()) {
@@ -154,7 +154,7 @@ public final class GeometryEncoder {
         }
         json.endArray();
     }
-    
+
     private static String determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {
         if (collection.getNumGeometries() == 0) {
             return GeometryTypeEnum.POINT.getGeometryType();
@@ -176,7 +176,7 @@ public final class GeometryEncoder {
         }
         return new com.vividsolutions.jts.geom.Coordinate(array.getDouble(0), array.getDouble(1));
     }
-    
+
     private static com.vividsolutions.jts.geom.Coordinate[] jsonArrayToCoordinates(JSONArray array) {
         com.vividsolutions.jts.geom.Coordinate[] coordinates = new com.vividsolutions.jts.geom.Coordinate[array.size()];
         for (int i = 0; i < array.size(); i++) {
@@ -184,7 +184,7 @@ public final class GeometryEncoder {
         }
         return coordinates;
     }
-    
+
     public static Envelope jsonToEnvelope(net.sf.json.JSON json) {
         if (!(json instanceof JSONObject)) {
             throw new JSONException("An envelope must be encoded as a JSON Object");
@@ -203,7 +203,7 @@ public final class GeometryEncoder {
         }
         JSONObject obj = (JSONObject) json;
         GeometryFactory geometries = new GeometryFactory();
-        
+
         if (obj.containsKey("x") && obj.containsKey("y")) {
             double x = obj.getDouble("x");
             double y = obj.getDouble("y");
@@ -224,7 +224,7 @@ public final class GeometryEncoder {
             if (rings.size() < 1) {
                 throw new JSONException("Polygon must have at least one ring");
             }
-            com.vividsolutions.jts.geom.LinearRing shell = 
+            com.vividsolutions.jts.geom.LinearRing shell =
                     geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(0)));
             com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[rings.size() - 1];
             for (int i = 1; i < rings.size(); i++) {

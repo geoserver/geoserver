@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.core.renderer;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */

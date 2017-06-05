@@ -25,12 +25,12 @@ public class ResourceTest extends CatalogRESTTestSupport {
     protected Catalog catalog;
 
     protected String baseURL = "/gsr/services/";
-    
+
     @Override
     final protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpDefault();
     }
-    
+
     public void onSetUp(SystemTestData testData) {
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();
@@ -85,7 +85,7 @@ public class ResourceTest extends CatalogRESTTestSupport {
     public void testConfig() {
         assertEquals("/gsr/services/", this.baseURL);
     }
-    
+
     protected boolean validateJSON(String json, String schemaPath) {
         String workingDir = System.getProperty("user.dir") + "/src/test/resources/schemas/";
         return JSONValidator.isValidSchema(json, new File(workingDir + schemaPath));

@@ -23,7 +23,7 @@ public enum SpatialRelationship {
             return filters.intersects(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
-    
+
     CONTAINS("SpatialRelContains") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -35,7 +35,7 @@ public enum SpatialRelationship {
             return filters.contains(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
-    
+
     CROSSES("SpatialRelCrosses") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -47,7 +47,7 @@ public enum SpatialRelationship {
             return filters.crosses(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
-    
+
     ENVELOPE_INTERSECTS("SpatialRelEnvelopeIntersects") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -59,7 +59,7 @@ public enum SpatialRelationship {
             return createEnvelopeFilter(geometryProperty, JTS.toEnvelope(geometry), relationParam);
         }
     },
-    
+
     INDEX_INTERSECTS("SpatialRelIndexIntersects") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -71,7 +71,7 @@ public enum SpatialRelationship {
             return ENVELOPE_INTERSECTS.createGeometryFilter(geometryProperty, geometry, relationParam);
         }
     },
-    
+
     OVERLAPS("SpatialRelOverlaps") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -83,7 +83,7 @@ public enum SpatialRelationship {
             return filters.overlaps(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
-    
+
     TOUCHES("SpatialRelTouches") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -95,7 +95,7 @@ public enum SpatialRelationship {
             return filters.touches(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
-    
+
     WITHIN("SpatialRelWithin") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -107,7 +107,7 @@ public enum SpatialRelationship {
             return filters.within(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
-    
+
     RELATION("SpatialRelRelation") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
@@ -116,23 +116,23 @@ public enum SpatialRelationship {
 
         @Override
         public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
-            return filters.equals(filters.literal(true), 
+            return filters.equals(filters.literal(true),
                     filters.function("relatePattern", filters.property(geometryProperty), filters.literal(geometry), filters.literal(relationParam)));
         }
     };
-    
+
     private static final FilterFactory2 filters = CommonFactoryFinder.getFilterFactory2();
-    
+
     private final String name;
-    
+
     SpatialRelationship(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     static public SpatialRelationship fromRequestString(String requestString) {
         for (SpatialRelationship sr : values()) {
             if (sr.getName().equals(requestString)) {

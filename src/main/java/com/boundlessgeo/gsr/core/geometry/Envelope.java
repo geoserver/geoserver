@@ -10,9 +10,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.referencing.ReferenceIdentifier;
 
 /**
- * 
+ *
  * @author Juan Marin - OpenGeo
- * 
+ *
  */
 public class Envelope implements Geometry {
 
@@ -25,7 +25,7 @@ public class Envelope implements Geometry {
     public void setGeometryType(GeometryTypeEnum geometryType) {
         this.geometryType = geometryType;
     }
-    
+
     private double xmin;
 
     private double ymin;
@@ -85,28 +85,28 @@ public class Envelope implements Geometry {
         this.spatialReference = spatialReference;
         this.geometryType = GeometryTypeEnum.ENVELOPE;
     }
-    
+
     public Envelope(ReferencedEnvelope envelope)
     {
-    	this.xmin = envelope.getMinX();
-    	this.xmax = envelope.getMaxX();
-    	this.ymin = envelope.getMinY();
-    	this.ymax = envelope.getMaxY();
-    	
-    	Set<ReferenceIdentifier> ids = envelope.getCoordinateReferenceSystem().getIdentifiers();
-    	int EPSGid = -1;
-    	for(ReferenceIdentifier id : ids) {
-    		if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
-    			EPSGid = Integer.parseInt(id.getCode());
-    		}
-    	}
-    	
-    	if(EPSGid < 0) {
-    		this.spatialReference = new SpatialReferenceWKID(EPSGid);
-    	}
-    	else {
-    		this.spatialReference = new SpatialReferenceWKT(envelope.getCoordinateReferenceSystem().toWKT());
-    	}
+        this.xmin = envelope.getMinX();
+        this.xmax = envelope.getMaxX();
+        this.ymin = envelope.getMinY();
+        this.ymax = envelope.getMaxY();
+
+        Set<ReferenceIdentifier> ids = envelope.getCoordinateReferenceSystem().getIdentifiers();
+        int EPSGid = -1;
+        for(ReferenceIdentifier id : ids) {
+            if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
+                EPSGid = Integer.parseInt(id.getCode());
+            }
+        }
+
+        if(EPSGid < 0) {
+            this.spatialReference = new SpatialReferenceWKID(EPSGid);
+        }
+        else {
+            this.spatialReference = new SpatialReferenceWKT(envelope.getCoordinateReferenceSystem().toWKT());
+        }
     }
 
     public boolean isValid() {

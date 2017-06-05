@@ -7,16 +7,16 @@ package com.boundlessgeo.gsr.core.renderer;
 import com.boundlessgeo.gsr.core.symbol.Symbol;
 
 /**
- * 
+ *
  * @author Juan Marin, OpenGeo
  *
  */
 public class UniqueValueInfo {
 
     private String value;
-    
+
     private String label;
-    
+
     public String getValue() {
         return value;
     }
@@ -58,7 +58,7 @@ public class UniqueValueInfo {
     }
 
     private String description;
-    
+
     private Symbol symbol;
-    
+
 }

@@ -8,7 +8,7 @@ The intended audience of this quick reference includes:
 -  Advanced designers and cartographers who want to write styles by hand
 -  GeoTools developers using the mbstyle module
 -  Authors of software that generates or processes Mapbox styles.
-- Feature support is provided for the `Mapbox GL JS <https://www.mapbox.com/mapbox-gl-js/api/>`__, `Open Layers <http://openlayers.org>`__ and the GeoTools mbstyle module.
+- Feature support is provided for the `Mapbox GL JS <https://www.mapbox.com/mapbox-gl-js/api/>`__, `Open Layers <https://npmjs.com/package/ol-mapbox-style>`__ and the GeoTools mbstyle module.
 - Where appropriate examples have been changed to reference `GeoWebCache <http://geowebcache.org/>`__.
 
 .. note::
@@ -272,7 +272,7 @@ viewport
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 position
 ~~~~~~~~
@@ -309,7 +309,7 @@ the light (from 0°, directly above, to 180°, directly below).
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 color
 ~~~~~
@@ -331,7 +331,7 @@ Color tint for lighting extruded geometries.
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 intensity
 ~~~~~~~~~
@@ -354,7 +354,7 @@ present as more extreme contrast.
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 .. _sources:
 
@@ -480,7 +480,7 @@ higher zoom levels.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     -
+     - >= 2.4.0
 
 raster
 ~~~~~~
@@ -553,7 +553,7 @@ configurable for raster layers.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     -
+     - >= 2.4.0
 
 geojson
 ~~~~~~~
@@ -665,11 +665,11 @@ clustered).
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     -
+     - >= 2.4.0
    * - clustering
      - >= 0.14.0
      - Not yet supported
-     -
+     - Not yet supported
 
 image
 ~~~~~
@@ -717,7 +717,7 @@ Corners of image specified in longitude, latitude pairs.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     -
+     - Not yet supported
 
 video
 ~~~~~
@@ -775,7 +775,7 @@ Corners of video specified in longitude, latitude pairs.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     -
+     - Not yet supported
 
 canvas
 ~~~~~~
@@ -842,7 +842,7 @@ HTML ID of the canvas from which to read pixels.
    * - basic functionality
      - >= 0.32.0
      - Not yet supported
-     -
+     - Not yet yupported
 
 .. _sprite:
 
@@ -1158,7 +1158,7 @@ none
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 Paint Properties
 ^^^^^^^^^^^^^^^^
@@ -1183,7 +1183,7 @@ The color with which the background will be drawn.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 background-pattern
 """"""""""""""""""
@@ -1208,7 +1208,7 @@ seamless patterns, image width and height must be a factor of two (2, 4,
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 background-opacity
 """"""""""""""""""
@@ -1228,7 +1228,7 @@ The opacity at which the background will be drawn.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 fill
 ~~~~
@@ -1261,7 +1261,7 @@ none
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 Paint Properties
 ^^^^^^^^^^^^^^^^
@@ -1290,7 +1290,7 @@ Whether or not the fill should be antialiased.
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 fill-opacity
 """"""""""""
@@ -1313,11 +1313,11 @@ stroke is used.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.21.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 fill-color
 """"""""""
@@ -1341,11 +1341,11 @@ affect the opacity of the 1px stroke, if it is used.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.19.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 fill-outline-color
 """"""""""""""""""
@@ -1367,11 +1367,11 @@ unspecified.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.19.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 fill-translate
 """"""""""""""
@@ -1393,11 +1393,11 @@ and up, respectively.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 fill-translate-anchor
 """""""""""""""""""""
@@ -1423,11 +1423,11 @@ viewport
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 fill-pattern
 """"""""""""
@@ -1450,11 +1450,11 @@ patterns, image width and height must be a factor of two (2, 4, 8, ...,
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - Not yet supported
 
 line
 ~~~~
@@ -1495,11 +1495,11 @@ square
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 line-join
 """""""""
@@ -1534,11 +1534,11 @@ miter
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 line-miter-limit
 """"""""""""""""
@@ -1560,11 +1560,11 @@ angles.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 line-round-limit
 """"""""""""""""
@@ -1587,11 +1587,11 @@ angles.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 visibility
@@ -1620,11 +1620,11 @@ none
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 Paint Properties
@@ -1650,11 +1650,11 @@ The opacity at which the line will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.29.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 line-color
@@ -1676,11 +1676,11 @@ The color with which the line will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.23.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 line-translate
@@ -1704,11 +1704,11 @@ and up, respectively.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 line-translate-anchor
 """""""""""""""""""""
@@ -1736,11 +1736,11 @@ viewport
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 line-width
@@ -1762,11 +1762,11 @@ Stroke thickness.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 line-gap-width
 """"""""""""""
@@ -1790,11 +1790,11 @@ width of the inner gap.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.29.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 line-offset
 """""""""""
@@ -1818,11 +1818,11 @@ inset, and a negative value results in an outset.
    * - basic functionality
      - >= 0.12.1
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.29.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 line-blur
 """""""""
@@ -1843,11 +1843,11 @@ Blur applied to the line, in pixels.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.29.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 line-dasharray
@@ -1870,11 +1870,11 @@ a dash length to pixels, multiply the length by the current line width.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 line-pattern
 """"""""""""
@@ -1897,11 +1897,11 @@ patterns, image width must be a factor of two (2, 4, 8, ..., 512).
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - Not yet supported
 
 symbol
 ~~~~~~
@@ -1936,11 +1936,11 @@ line
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - Not yet supported
 
 
 symbol-spacing
@@ -1961,11 +1961,11 @@ Distance between two symbol anchors.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 symbol-avoid-edges
@@ -1990,11 +1990,11 @@ placed after a line symbol layer.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 icon-allow-overlap
@@ -2017,11 +2017,11 @@ previously drawn symbols.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-ignore-placement
 """""""""""""""""""""
@@ -2043,11 +2043,11 @@ icon.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 icon-optional
@@ -2071,11 +2071,11 @@ icon collides with other symbols and the text does not.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-rotation-alignment
 """""""""""""""""""""""
@@ -2111,15 +2111,15 @@ auto
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - ``auto`` value
      - >= 0.25.0
      - Not yet supported
-     -
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     -
+     - Not yet supported
 
 icon-size
 """""""""
@@ -2139,11 +2139,11 @@ Scale factor for icon. 1 is original size, 3 triples the size.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.35.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 icon-text-fit
 """""""""""""
@@ -2178,11 +2178,11 @@ both
    * - basic functionality
      - >= 0.21.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-text-fit-padding
 """""""""""""""""""""
@@ -2204,11 +2204,11 @@ Size of the additional area added to dimensions determined by
    * - basic functionality
      - >= 0.21.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 icon-image
@@ -2234,11 +2234,11 @@ with {tokens} replaced, referencing the data property to pull from.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 icon-rotate
 """""""""""
@@ -2260,11 +2260,11 @@ Rotates the icon clockwise.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.21.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 icon-padding
 """"""""""""
@@ -2287,11 +2287,11 @@ detecting symbol collisions.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-keep-upright
 """""""""""""""""
@@ -2314,11 +2314,11 @@ upside-down.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-offset
 """""""""""
@@ -2341,11 +2341,11 @@ and down, while negative values indicate left and up. When combined with
    * - basic functionality
      - >= 0.10.0
      - >= Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.29.0
      - >= Not yet supported
-     - 
+     - Not yet supported
 
 
 text-pitch-alignment
@@ -2375,16 +2375,16 @@ auto
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= Not yet supported
-     - 
+     - Not yet supported
+     - Not yet supported
    * - ``auto`` value
      - >= 0.25.0
-     - >= Not yet supported
-     -
+     - Not yet supported
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
-     - >= Not yet supported
-     - 
+     - Not yet supported
+     - Not yet supported
 
 
 text-rotation-alignment
@@ -2421,7 +2421,7 @@ auto
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - ``auto`` value
      - >= 0.25.0
      - Not yet supported
@@ -2429,7 +2429,7 @@ auto
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-field
 """"""""""
@@ -2454,11 +2454,11 @@ literal ``text-field`` values--not for property functions.)
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.33.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 text-font
 """""""""
@@ -2478,11 +2478,11 @@ Font stack to use for displaying text.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 text-size
 """""""""
@@ -2506,11 +2506,11 @@ Font size.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.35.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 text-max-width
 """"""""""""""
@@ -2533,11 +2533,11 @@ The maximum line width for text wrapping.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 text-line-height
 """"""""""""""""
@@ -2560,11 +2560,11 @@ Text leading value for multi-line text.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 text-letter-spacing
@@ -2588,11 +2588,11 @@ Text tracking amount.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-justify
 """"""""""""
@@ -2624,11 +2624,11 @@ right
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-anchor
 """""""""""
@@ -2680,11 +2680,11 @@ bottom-right
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 
 text-max-angle
@@ -2707,11 +2707,11 @@ Maximum angle change between adjacent characters.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-rotate
 """""""""""
@@ -2734,11 +2734,11 @@ Rotates the text clockwise.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.35.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-padding
 """"""""""""
@@ -2762,11 +2762,11 @@ detecting symbol collisions.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 text-keep-upright
@@ -2791,11 +2791,11 @@ rendered upside-down.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-transform
 """"""""""""""
@@ -2827,11 +2827,11 @@ lowercase
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 text-offset
 """""""""""
@@ -2853,11 +2853,11 @@ and down, while negative values indicate left and up.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.35.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 text-allow-overlap
 """"""""""""""""""
@@ -2881,11 +2881,11 @@ previously drawn symbols.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-ignore-placement
 """""""""""""""""""""
@@ -2909,11 +2909,11 @@ text.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-optional
 """""""""""""
@@ -2937,11 +2937,11 @@ text collides with other symbols and the icon does not.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 visibility
@@ -2972,11 +2972,11 @@ none
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 Paint Properties
 ^^^^^^^^^^^^^^^^
@@ -3001,11 +3001,11 @@ The opacity at which the icon will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.33.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 icon-color
@@ -3029,11 +3029,11 @@ The color of the icon. This can only be used with sdf icons.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-halo-color
 """""""""""""""
@@ -3057,11 +3057,11 @@ icons.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-halo-width
 """""""""""""""
@@ -3084,11 +3084,11 @@ Distance of halo to the icon outline.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-halo-blur
 """"""""""""""
@@ -3111,11 +3111,11 @@ Fade out the halo towards the outside.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-translate
 """"""""""""""
@@ -3141,11 +3141,11 @@ left and up.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 icon-translate-anchor
 """""""""""""""""""""
@@ -3174,11 +3174,11 @@ viewport
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 text-opacity
@@ -3202,11 +3202,11 @@ The opacity at which the text will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.33.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 
 text-color
@@ -3231,11 +3231,11 @@ The color with which the text will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.33.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 text-halo-color
@@ -3260,11 +3260,11 @@ The color of the text's halo, which helps it stand out from backgrounds.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.33.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 text-halo-width
 """""""""""""""
@@ -3289,11 +3289,11 @@ font-size.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.33.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 text-halo-blur
 """"""""""""""
@@ -3316,11 +3316,11 @@ The halo's fadeout distance towards the outside.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-translate
 """"""""""""""
@@ -3346,11 +3346,11 @@ left and up.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 text-translate-anchor
 """""""""""""""""""""
@@ -3379,11 +3379,11 @@ viewport
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 raster
@@ -3420,11 +3420,11 @@ none
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - Not yet supported
 
 Paint Properties
 ^^^^^^^^^^^^^^^^
@@ -3450,11 +3450,11 @@ The opacity at which the image will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - Not yet supported
 
 `raster-hue-rotate <#paint-raster-hue-rotate>`__
 
@@ -3477,11 +3477,11 @@ Rotates hues around the color wheel.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 raster-brightness-min
@@ -3504,11 +3504,11 @@ brightness.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 raster-brightness-max
@@ -3531,11 +3531,11 @@ brightness.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 raster-saturation
 """""""""""""""""
@@ -3556,11 +3556,11 @@ Increase or reduce the saturation of the image.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 raster-contrast
 """""""""""""""
@@ -3581,11 +3581,11 @@ Increase or reduce the contrast of the image.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 raster-fade-duration
@@ -3609,11 +3609,11 @@ Fade duration when a new tile is added.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 circle
@@ -3649,7 +3649,7 @@ none
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 Paint Properties
@@ -3676,11 +3676,11 @@ Circle radius.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 circle-color
 """"""""""""
@@ -3703,11 +3703,11 @@ The fill color of the circle.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 
 circle-blur
@@ -3731,11 +3731,11 @@ centerpoint is full opacity.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.20.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 circle-opacity
@@ -3758,11 +3758,11 @@ The opacity at which the circle will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.20.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 circle-translate
 """"""""""""""""
@@ -3786,11 +3786,11 @@ and up, respectively.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - 
+     - Not yet supported
 
 
 circle-translate-anchor
@@ -3820,11 +3820,11 @@ viewport
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 circle-pitch-scale
@@ -3855,11 +3855,11 @@ viewport
    * - basic functionality
      - >= 0.21.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 circle-stroke-width
@@ -3884,11 +3884,11 @@ The width of the circle's stroke. Strokes are placed outside of the
    * - basic functionality
      - >= 0.29.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.29.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 circle-stroke-color
 """""""""""""""""""
@@ -3911,11 +3911,11 @@ The stroke color of the circle.
    * - basic functionality
      - >= 0.29.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - data-driven styling
      - >= 0.29.0
      - >= 17.1
-     - 
+     - >= 2.4.0
 
 circle-stroke-opacity
 """""""""""""""""""""
@@ -3937,11 +3937,11 @@ The opacity of the circle's stroke.
    * - basic functionality
      - >= 0.29.0
      - >= 17.1
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.29.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 fill-extrusion
 ~~~~~~~~~~~~~~
@@ -3976,7 +3976,7 @@ none
    * - basic functionality
      - >= 0.27.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 
 Paint Properties
@@ -4005,7 +4005,7 @@ available.
    * - basic functionality
      - >= 0.27.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 fill-extrusion-color
 """"""""""""""""""""
@@ -4031,7 +4031,7 @@ component, the alpha component will be ignored; use
    * - basic functionality
      - >= 0.27.0
      - >= 17.1
-     - 
+     - Not yet supported
 
 fill-extrusion-translate
 """"""""""""""""""""""""
@@ -4055,11 +4055,11 @@ and up (on the flat plane), respectively.
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 *Optional* :ref:`types-enum` *One of* map, viewport. *Defaults to* map. *Requires* fill-extrusion-translate.
@@ -4086,11 +4086,11 @@ viewport
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 fill-extrusion-pattern
@@ -4115,11 +4115,11 @@ seamless patterns, image width and height must be a factor of two (2, 4,
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - 
+     - Not yet supported
 
 fill-extrusion-height
 """""""""""""""""""""
@@ -4141,11 +4141,11 @@ The height with which to extrude this layer.
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 fill-extrusion-base
@@ -4169,11 +4169,11 @@ than or equal to ``fill-extrusion-height``.
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
    * - data-driven styling
      - >= 0.27.0
      - Not yet supported
-     - 
+     - Not yet supported
 
 
 Types
@@ -4408,39 +4408,39 @@ hcl
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``property``
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``type``
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``exponential`` type
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``interval`` type
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``categorical`` type
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``identity`` type
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``default`` type
      - >= 0.18.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``colorSpace`` type
      - >= 0.26.0
      - Not yet supported
-     - 
+     - >= 2.4.0
 
 
 **Zoom functions** allow the appearance of a map feature to change with
@@ -4666,8 +4666,8 @@ are Polygons, but have a different ``class`` value, and so on.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - 
+     - >= 2.4.0
    * - ``has``/``!has``
      - >= 0.19.0
      - >= 17.1
-     - 
+     - >= 2.4.0

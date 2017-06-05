@@ -6,9 +6,9 @@
 
 package org.geoserver.catalog;
 
+import static org.easymock.EasyMock.*;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
@@ -31,6 +31,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.easymock.Capture;
+import org.easymock.classextension.EasyMock;
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -44,6 +46,8 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -52,6 +56,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.GeoTools;
+import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
@@ -625,5 +630,45 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ft.setName("foobar");
         testPool.getFeatureSource(ft, null);
         assertThat(counter.get(), greaterThan(0));
+    }
+    
+    @Test
+    public void testRepositoryHints() throws Exception {
+        Catalog catalog = getCatalog();
+        ResourcePool pool = new ResourcePool(catalog) {
+            // cannot clone the mock objects
+            public CoverageStoreInfo clone(CoverageStoreInfo source, boolean allowEnvParametrization) {
+                return source;
+            };
+        };
+
+        // setup all the mocks
+        final String url = "http://www.geoserver.org/mock/format";
+        AbstractGridCoverage2DReader reader = createNiceMock("theReader", AbstractGridCoverage2DReader.class);
+        replay(reader);
+        AbstractGridFormat format = createNiceMock("theFormat", AbstractGridFormat.class);
+        Capture<Hints> capturedHints = new Capture<>();
+        expect(format.getReader(EasyMock.eq(url), capture(capturedHints))).andReturn(reader).anyTimes();
+        replay(format);
+        CoverageStoreInfo storeInfo = createNiceMock("storeInfo", CoverageStoreInfo.class);
+        expect(storeInfo.getURL()).andReturn(url).anyTimes();
+        expect(storeInfo.getFormat()).andReturn(format).anyTimes();
+        replay(storeInfo);
+        
+        // pass no hints
+        GridCoverageReader returnedReader = pool.getGridCoverageReader(storeInfo, null);
+        assertThat(reader, equalTo(returnedReader));
+        final Hints hints1 = capturedHints.getValue();
+        assertThat(hints1, notNullValue());
+        assertThat(hints1, hasEntry(Hints.REPOSITORY, pool.repository));
+        
+        // pass some hints
+        capturedHints.reset();
+        GridCoverageReader returnedReader2 = pool.getGridCoverageReader(storeInfo, new Hints(Hints.KEY_ANTIALIASING, Hints.VALUE_ANTIALIAS_ON));
+        assertThat(reader, equalTo(returnedReader2));
+        final Hints hints2 = capturedHints.getValue();
+        assertThat(hints2, notNullValue());
+        assertThat(hints2, hasEntry(Hints.REPOSITORY, pool.repository));
+        assertThat(hints2, hasEntry(Hints.KEY_ANTIALIASING, Hints.VALUE_ANTIALIAS_ON));
     }
 }

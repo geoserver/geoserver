@@ -4,6 +4,7 @@
  */
 package com.boundlessgeo.gsr.core.map;
 
+import com.boundlessgeo.gsr.core.GSRModel;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.renderer.Renderer;
 import com.boundlessgeo.gsr.core.renderer.StyleEncoder;
@@ -30,13 +31,13 @@ import java.util.logging.Logger;
 /**
  * A list of {@link LayerOrTable}
  */
-public class LayersAndTables {
+public class LayersAndTables implements GSRModel {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
 
-    public final List<LayerOrTable> layers;
-    public final List<LayerOrTable> tables;
+    public final ArrayList<LayerOrTable> layers;
+    public final ArrayList<LayerOrTable> tables;
 
-    private LayersAndTables(List<LayerOrTable> layers, List<LayerOrTable> tables) {
+    private LayersAndTables(ArrayList<LayerOrTable> layers, ArrayList<LayerOrTable> tables) {
         this.layers = layers;
         this.tables = tables;
     }
@@ -46,7 +47,7 @@ public class LayersAndTables {
      *
      * @param catalog GeoServer Catalog
      * @param workspaceName GeoServer workspace name
-     * @param layerId Index of Layer (based on sorting by layer name)
+     * @param id Index of Layer (based on sorting by layer name)
      * @return LayerOrTable from workspaceName identified by layerId
      * @throws IOException
      */
@@ -159,7 +160,7 @@ public class LayersAndTables {
             }
             idCounter++;
         }
-        return new LayersAndTables(Collections.unmodifiableList(layers), Collections.unmodifiableList(tables));
+        return new LayersAndTables(new ArrayList<>(layers), new ArrayList<>(tables));
     }
 
     @Override

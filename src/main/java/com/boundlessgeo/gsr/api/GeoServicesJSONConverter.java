@@ -14,6 +14,7 @@ import com.boundlessgeo.gsr.core.geometry.*;
 import com.boundlessgeo.gsr.core.label.LineLabelPlacementEnumConverter;
 import com.boundlessgeo.gsr.core.label.PointLabelPlacementEnumConverter;
 import com.boundlessgeo.gsr.core.label.PolygonLabelPlacementEnumConverter;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
 import com.boundlessgeo.gsr.core.service.CatalogService;
 import com.boundlessgeo.gsr.core.symbol.*;
 import com.thoughtworks.xstream.XStream;
@@ -95,6 +96,8 @@ public class GeoServicesJSONConverter extends BaseMessageConverter<GSRModel> {
         xstream.omitField(CatalogService.class, "serviceType");
         xstream.omitField(CatalogService.class, "specVersion");
         xstream.omitField(CatalogService.class, "productName");
+
+        xstream.omitField(LayerOrTable.class, "layer");
 
         xstream.omitField(Point.class, "geometryType");
         xstream.omitField(SpatialReferenceWKID.class, "geometryType");

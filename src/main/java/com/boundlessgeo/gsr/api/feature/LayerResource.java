@@ -151,7 +151,8 @@ public class LayerResource extends Resource {
 
                     // extent - layer extent (includes srs info)
                     json.key("extent");
-                    GeometryEncoder.envelopeToJson(entry.extent, json);
+                    //TODO: entry n
+                    //GeometryEncoder.envelopeToJson(entry.extent, json);
 
                     // drawingInfo (renderer, transparency, labelingInfo)
                     json.key("drawingInfo");

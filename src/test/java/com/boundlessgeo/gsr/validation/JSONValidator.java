@@ -4,10 +4,6 @@
  */
 package com.boundlessgeo.gsr.validation;
 
-import java.io.File;
-import java.io.Reader;
-import java.io.StringReader;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jsonschema.cfg.LoadingConfiguration;
 import com.github.fge.jsonschema.exceptions.ProcessingException;
@@ -16,6 +12,10 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.report.ProcessingMessage;
 import com.github.fge.jsonschema.report.ProcessingReport;
 import com.github.fge.jsonschema.util.JsonLoader;
+
+import java.io.File;
+import java.io.Reader;
+import java.io.StringReader;
 
 /**
  *

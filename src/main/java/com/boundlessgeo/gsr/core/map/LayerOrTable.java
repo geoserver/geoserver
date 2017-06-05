@@ -5,7 +5,9 @@
  package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.feature.FieldTypeEnum;
+import com.boundlessgeo.gsr.core.geometry.Envelope;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
+import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 import com.boundlessgeo.gsr.core.renderer.Renderer;
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.vividsolutions.jts.geom.Geometry;
@@ -52,7 +54,7 @@ public class LayerOrTable  implements GSRModel {
     public Double minScale;
     public Double maxScale;
 
-    public final ReferencedEnvelope extent;
+    public final Envelope extent;
     public final DrawingInfo drawingInfo;
     public TimeInfo timeInfo;
 
@@ -82,10 +84,13 @@ public class LayerOrTable  implements GSRModel {
         minScale = range.minScale;
         maxScale = range.maxScale;
 
-
-        this.extent = boundingBox;
+        Integer wkid = Integer.parseInt(boundingBox.getCoordinateReferenceSystem().getIdentifiers().iterator().next().getCode());
+        this.extent = new Envelope(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMaxX(),
+                boundingBox.getMaxY(), new SpatialReferenceWKID(wkid));
         this.drawingInfo = new DrawingInfo(renderer);
-        this.timeInfo = new TimeInfo((DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME));
+
+        DimensionInfo timeDimensionInfo = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME);
+        this.timeInfo = timeDimensionInfo == null ? null : new TimeInfo(timeDimensionInfo);
 
         if (layer.getResource() instanceof FeatureTypeInfo) {
             try {

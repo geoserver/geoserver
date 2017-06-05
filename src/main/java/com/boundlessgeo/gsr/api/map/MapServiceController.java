@@ -1,13 +1,13 @@
-package com.boundlessgeo.gsr.api.service.map;
+package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.map.LayerLegend;
 import com.boundlessgeo.gsr.core.map.LayerNameComparator;
-import com.boundlessgeo.gsr.core.map.Legends;
+import com.boundlessgeo.gsr.core.map.MapServiceRoot;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -24,32 +24,31 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
-public class LegendController extends AbstractGSRController {
+public class MapServiceController extends AbstractGSRController {
 
     @Autowired
-    public LegendController(@Qualifier("geoServer") GeoServer geoServer) {
+    public MapServiceController(@Qualifier("geoServer") GeoServer geoServer) {
         super(geoServer);
     }
 
-    @GetMapping(path = "/legend")
-    public Legends legendGet(@PathVariable String workspaceName) throws IOException {
-        WorkspaceInfo workspace = catalog.getWorkspaceByName(workspaceName);
+    @GetMapping
+    public MapServiceRoot mapServiceGet(@PathVariable String workspaceName) throws IOException {
+        WorkspaceInfo workspace = geoServer.getCatalog().getWorkspaceByName(workspaceName);
         if (workspace == null) {
-            throw new NoSuchElementException("No workspace known by name: " + workspaceName);
+            throw new NoSuchElementException("Workspace name " + workspaceName + " does not correspond to any workspace.");
         }
-
+        WMSInfo service = geoServer.getService(workspace, WMSInfo.class);
+        if (service == null) {
+            service = geoServer.getService(WMSInfo.class);
+        }
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
-        for (LayerInfo l : catalog.getLayers()) {
-            if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+        for (LayerInfo l : geoServer.getCatalog().getLayers()) {
+            if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
                 layersInWorkspace.add(l);
             }
         }
         Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
-        List<LayerLegend> legends = new ArrayList<LayerLegend>();
-        for (int i = 0; i < layersInWorkspace.size(); i++) {
-            legends.add(new LayerLegend(layersInWorkspace.get(i), i));
 
-        }
-        return new Legends(legends);
+        return new MapServiceRoot(service, Collections.unmodifiableList(layersInWorkspace));
     }
 }

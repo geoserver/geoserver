@@ -7,6 +7,8 @@ package com.boundlessgeo.gsr.core.exception;
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
+
 /**
  * 
  * @author Juan Marin - OpenGeo
@@ -17,6 +19,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ServiceException implements GSRModel {
 
     private ServiceError error;
+
+    public final double currentVersion = CURRENT_VERSION;
 
     public ServiceError getError() {
         return error;

@@ -4,7 +4,7 @@
  */
 package com.boundlessgeo.gsr.model.feature.resource;
 
-import com.boundlessgeo.gsr.api.service.feature.LayerResource;
+import com.boundlessgeo.gsr.api.feature.LayerResource;
 import com.boundlessgeo.gsr.resource.ResourceTest;
 import org.junit.Test;
 

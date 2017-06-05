@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.api.service.feature;
+package com.boundlessgeo.gsr.api.feature;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.boundlessgeo.gsr.GSRConfig;
 import net.sf.json.util.JSONBuilder;
 
 import org.geoserver.catalog.Catalog;
@@ -43,6 +44,8 @@ import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
+
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
 
 /**
  * Single feature layer or a non-spatial table in a feature service.
@@ -97,7 +100,7 @@ public class LayerResource extends Resource {
                 json.object();
 
                 // listed first for early exit 
-                json.key("currentVersion").value(2.24);
+                json.key("currentVersion").value(CURRENT_VERSION);
 
                 // id
                 json.key("id").value(entry.id);

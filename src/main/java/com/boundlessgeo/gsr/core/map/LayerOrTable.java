@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
+
 public class LayerOrTable  implements GSRModel {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerOrTable.class);
@@ -29,7 +31,7 @@ public class LayerOrTable  implements GSRModel {
     public final int id;
     public final String type = "Feature Layer";
     public final String name;
-    public final double currentVersion = 2.24;
+    public final double currentVersion = CURRENT_VERSION;
     public final boolean defaultVisibility = false;
     public final String definitionExpression = "";
     public String description;

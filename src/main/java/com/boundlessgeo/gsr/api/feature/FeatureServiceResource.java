@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.api.service.feature;
+package com.boundlessgeo.gsr.api.feature;
 
 import com.boundlessgeo.gsr.core.exception.ServiceError;
 import com.boundlessgeo.gsr.core.map.LayerNameComparator;
@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
 
 /**
  * @author David Winslow, Boundless
@@ -99,7 +101,7 @@ public class FeatureServiceResource extends Resource {
             Writer writer = new OutputStreamWriter(out, "UTF-8");
             JSONBuilder json = new JSONBuilder(writer);
             json.object();
-            json.key("currentVersion").value(10.21);
+            json.key("currentVersion").value(CURRENT_VERSION);
             String description = service.getTitle() != null ? service.getTitle() :  service.getName();
             json.key("serviceDescription").value(description);
             // json.key("hasVersionedData").value(false);

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.api.service.feature;
+package com.boundlessgeo.gsr.api.feature;
 
 import com.boundlessgeo.gsr.core.exception.ServiceError;
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;

@@ -1,4 +1,4 @@
-package com.boundlessgeo.gsr.api.service.catalog;
+package com.boundlessgeo.gsr.api.catalog;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.service.*;
@@ -16,18 +16,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
+import static com.boundlessgeo.gsr.GSRConfig.PRODUCT_NAME;
+import static com.boundlessgeo.gsr.GSRConfig.SPEC_VERSION;
+
 @RestController
 @RequestMapping(path = "/gsr/services", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CatalogServiceController extends AbstractGSRController {
-
-    private String formatValue;
-
-    private final String productName = "OpenGeo Suite";
-
-    private final String specVersion = "1.0";
-
-    //TODO: Move to public constant, apply to all
-    private final double currentVersion = 10.1;
 
     @Autowired
     public CatalogServiceController(@Qualifier("geoServer") GeoServer geoServer) {
@@ -44,6 +39,6 @@ public class CatalogServiceController extends AbstractGSRController {
             services.add(fs);
         }
         services.add(new GeometryService("Geometry"));
-        return new CatalogService("services", specVersion, productName, currentVersion, Collections.<String>emptyList(), services);
+        return new CatalogService("services", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.<String>emptyList(), services);
     }
 }

@@ -1,4 +1,4 @@
-package com.boundlessgeo.gsr.api.service.map;
+package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;

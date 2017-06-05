@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A list of {@link LayerOrTable}
+ */
 public class LayersAndTables {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
 

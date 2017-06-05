@@ -10,9 +10,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
 
 /**
- * 
+ * Wrapper for {@link ServiceError}, for correct JSON serialization
+ *
  * @author Juan Marin - OpenGeo
- * 
  */
 
 @XStreamAlias(value = "")

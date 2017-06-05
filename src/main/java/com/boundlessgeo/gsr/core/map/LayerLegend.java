@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A layer legend entry, usually contained in a {@link Legends} object
+ */
 public class LayerLegend {
 
     Integer layerId;

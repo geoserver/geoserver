@@ -45,6 +45,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * Controller for the Map Service query endpoint
+ */
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryController extends AbstractGSRController {

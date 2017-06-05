@@ -10,7 +10,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * 
+ * Root Catalog service, listing all other services
+ *
  * @author Juan Marin, OpenGeo
  * 
  */

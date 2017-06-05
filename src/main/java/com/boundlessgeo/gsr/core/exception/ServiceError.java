@@ -10,9 +10,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * 
+ * A serializable error, returned to the user by the api
+ *
  * @author Juan Marin, OpenGeo
- * 
  */
 
 @XStreamAlias("error")

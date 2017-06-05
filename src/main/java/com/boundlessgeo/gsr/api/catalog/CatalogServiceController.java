@@ -20,6 +20,9 @@ import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
 import static com.boundlessgeo.gsr.GSRConfig.PRODUCT_NAME;
 import static com.boundlessgeo.gsr.GSRConfig.SPEC_VERSION;
 
+/**
+ * Controller for the root Catalog service endpoint.
+ */
 @RestController
 @RequestMapping(path = "/gsr/services", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CatalogServiceController extends AbstractGSRController {

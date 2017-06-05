@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Converts a {@link GSRModel} to a JSON string
+ * Converter for {@link GSRModel} to JSON
+ *
+ * Used when "f=json"
  */
 @Component
 public class GeoServicesJSONConverter extends BaseMessageConverter<GSRModel> {

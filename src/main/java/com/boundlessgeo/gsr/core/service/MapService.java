@@ -7,7 +7,7 @@ package com.boundlessgeo.gsr.core.service;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Simple model of a MapService, for use in service listings
+ * Simple model of a map service, for use in the list of services published by {@link CatalogService}
  *
  * @author Juan Marin, OpenGeo
  * 

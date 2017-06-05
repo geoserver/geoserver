@@ -4,6 +4,9 @@ import com.boundlessgeo.gsr.core.GSRModel;
 
 import java.util.List;
 
+/**
+ * List of {@link Legends}
+ */
 public class Legends implements GSRModel {
 
     List<LayerLegend> legends;

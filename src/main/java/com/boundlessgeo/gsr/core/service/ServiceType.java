@@ -5,7 +5,8 @@
 package com.boundlessgeo.gsr.core.service;
 
 /**
- * 
+ * Service type enum
+ *
  * @author Juan Marin, OpenGeo
  * 
  */

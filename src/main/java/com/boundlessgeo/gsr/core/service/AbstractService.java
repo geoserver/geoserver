@@ -7,11 +7,11 @@ package com.boundlessgeo.gsr.core.service;
 import com.boundlessgeo.gsr.core.GSRModel;
 
 /**
- * 
+ * Marker interface for service models.
+ *
  * @author Juan Marin, OpenGeo
  * 
  */
-
 public interface AbstractService extends GSRModel {
 
 }

@@ -23,6 +23,9 @@ import java.util.logging.Logger;
 
 import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
 
+/**
+ * A layer or table, used in the {@link LayersAndTables} listing.
+ */
 public class LayerOrTable  implements GSRModel {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerOrTable.class);

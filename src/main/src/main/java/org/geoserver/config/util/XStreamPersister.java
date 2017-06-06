@@ -1188,10 +1188,8 @@ public class XStreamPersister {
                     if (nodes.peek() instanceof JSONArray) {
                         nodes.pop();
                     }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    LOGGER.log(Level.WARNING, "Unexpected reflection error serializing json array", e);
                 }
             }
             writer.endNode();

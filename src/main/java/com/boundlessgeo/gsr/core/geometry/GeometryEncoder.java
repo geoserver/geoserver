@@ -4,6 +4,11 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -14,9 +19,16 @@ import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
 
-public final class GeometryEncoder {
-    private GeometryEncoder() {
-        throw new RuntimeException("Geometry encoder has only static methods, no need to instantiate it.");
+public final class GeometryEncoder implements Converter {
+
+    @Override
+    public void marshal(Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
+
+    }
+
+    @Override
+    public Object unmarshal(HierarchicalStreamReader hierarchicalStreamReader, UnmarshallingContext unmarshallingContext) {
+        return null;
     }
 
     public static String toJson(com.vividsolutions.jts.geom.Geometry geom) {
@@ -241,5 +253,11 @@ public final class GeometryEncoder {
         } else {
             throw new JSONException("Could not parse Geometry from " + json);
         }
+    }
+
+    @Override
+    public boolean canConvert(Class clazz) {
+        return com.vividsolutions.jts.geom.Geometry.class.isAssignableFrom(clazz) ||
+                com.vividsolutions.jts.geom.Envelope.class.isAssignableFrom(clazz);
     }
 }

@@ -5,9 +5,13 @@
  package com.boundlessgeo.gsr.core.feature;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.boundlessgeo.gsr.core.GSRModel;
 import net.sf.json.util.JSONBuilder;
 
 import org.geotools.feature.FeatureCollection;
@@ -32,152 +36,165 @@ public class FeatureEncoder {
         throw new RuntimeException("Feature encoder has only static methods, no need to instantiate it.");
     }
 
-    public static
-    <T extends FeatureType, F extends org.opengis.feature.Feature>
-    void featuresToJson(FeatureCollection<T, F> collection, JSONBuilder json, boolean returnGeometry)
-    throws IOException
-    {
-        FeatureIterator<F> iterator = collection.features();
+    public static class Features implements GSRModel {
 
-        T schema = collection.getSchema();
-        json.object()
-          .key("objectIdFieldName").value("objectid")
-          .key("globalIdFieldName").value("");
+        public final String objectIdFieldName = "objectid";
+        public final String globalIdFieldName = "";
+        public final String geometryType;
+        public final SpatialReference spatialReference;
 
-        if (returnGeometry) {
-            GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
-            if (geometryDescriptor == null) throw new RuntimeException("No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
-            GeometryType geometryType = geometryDescriptor.getType();
-            if (geometryType == null) throw new RuntimeException("No geometry type for type " + schema);
-            Class<?> binding = geometryType.getBinding();
-            if (binding == null) throw new RuntimeException("No binding for geometry type " + schema);
-            GeometryTypeEnum geometryTypeEnum = GeometryTypeEnum.forJTSClass(binding);
-            json.key("geometryType").value(geometryTypeEnum.getGeometryType());
-        }
+        public final ArrayList<Descriptor> fields = new ArrayList<>();
+        public final ArrayList<Feature> features = new ArrayList<>();
 
-        if (schema.getCoordinateReferenceSystem() != null) {
-            try {
-                SpatialReference sr = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
-                json.key("spatialReference");
-                SpatialReferenceEncoder.toJson(sr, json);
-            } catch (FactoryException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        public <T extends FeatureType, F extends org.opengis.feature.Feature> Features(FeatureCollection<T, F> collection, boolean returnGeometry) throws IOException {
+            FeatureIterator<F> iterator = collection.features();
 
-        json.key("fields").array();
-        for (PropertyDescriptor desc : schema.getDescriptors()) {
-            if (schema.getGeometryDescriptor() != null && !desc.getName().equals(schema.getGeometryDescriptor().getName())) {
-                descriptorToJson(desc, json);
-            }
-        }
-        json.endArray();
+            T schema = collection.getSchema();
 
-        try {
-            json.key("features");
-            json.array();
-            while (iterator.hasNext()) {
-                F feature = iterator.next();
-                featureToJson(feature, json, returnGeometry);
-            }
-            json.endArray();
-        } finally {
-            iterator.close();
-        }
-        json.endObject();
-    }
-
-    public static void featureToJson(org.opengis.feature.Feature feature, JSONBuilder json, boolean returnGeometry) {
-        GeometryAttribute geometry = feature.getDefaultGeometryProperty();
-        json.object();
-        if (returnGeometry) {
-            json.key("geometry");
-            GeometryEncoder.toJson((com.vividsolutions.jts.geom.Geometry)geometry.getValue(), json);
-        }
-        json.key("attributes");
-        json.object();
-
-        json.key("objectid").value(adaptId(feature.getIdentifier().getID()));
-
-        for (Property prop : feature.getProperties()) {
-            if (geometry == null || !prop.getName().equals(geometry.getName())) {
-                final Object value;
-                if (prop.getValue() instanceof java.util.Date) {
-                    value = ((java.util.Date) prop.getValue()).getTime();
-                } else if (prop.getValue() instanceof java.lang.Boolean) {
-                    value = ((Boolean) prop.getValue()) ? Integer.valueOf(1) : Integer.valueOf(0);
-                } else {
-                    value = prop.getValue();
+            if (returnGeometry) {
+                GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+                if (geometryDescriptor == null) {
+                    throw new RuntimeException("No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
                 }
-                json.key(prop.getName().getLocalPart()).value(value);
+                GeometryType geometryType = geometryDescriptor.getType();
+                if (geometryType == null) {
+                    throw new RuntimeException("No geometry type for type " + schema);
+                }
+                Class<?> binding = geometryType.getBinding();
+                if (binding == null) {
+                    throw new RuntimeException("No binding for geometry type " + schema);
+                }
+                GeometryTypeEnum geometryTypeEnum = GeometryTypeEnum.forJTSClass(binding);
+                this.geometryType = geometryTypeEnum.getGeometryType();
+            } else {
+                this.geometryType = null;
+            }
+
+            if (schema.getCoordinateReferenceSystem() != null) {
+                try {
+                    spatialReference = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
+                    //SpatialReferenceEncoder.toJson(sr, json);
+                } catch (FactoryException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                spatialReference = null;
+            }
+
+            for (PropertyDescriptor desc : schema.getDescriptors()) {
+                if (schema.getGeometryDescriptor() != null && !desc.getName().equals(schema.getGeometryDescriptor().getName())) {
+                    fields.add(new Descriptor(desc));
+                }
+            }
+
+            try {
+                while (iterator.hasNext()) {
+                    features.add(new Feature(iterator.next(), returnGeometry));
+                }
+            } finally {
+                iterator.close();
             }
         }
-
-        json.endObject();
-        json.endObject();
     }
 
-    public static void descriptorToJson(PropertyDescriptor field, JSONBuilder json) {
-        // Similar to LayerListResource encodeencodeSchemaProperties
-        // Similar to FeatureEncoder descriptorToJson.
-        json.object();
-        json.key("name").value(field.getName().getLocalPart());
+    public static class Feature implements GSRModel {
+        public final Map<String, Object> attributes = new HashMap<>();
+        public final com.vividsolutions.jts.geom.Geometry geometry;
 
-        FieldTypeEnum type = FieldTypeEnum.forClass(field.getType().getBinding());
-        json.key("type").value(type.getFieldType());
-        json.key("alias").value(field.getName().toString());
+        public Feature(org.opengis.feature.Feature feature, boolean returnGeometry) {
 
-        int length = FeatureTypes.getFieldLength(field);
-
-        // String, Date, GlobalID, GUID and XML
-        switch (type) {
-            case STRING:
-            case DATE:
-            case GUID:
-            case GLOBAL_ID:
-            case XML:
-                json.key("length").value(length == -1 ? 4000 : length);
-                json.key("editable").value("false");
-                break;
-            default:
-                // length and editable are optional
-        }
-        json.key("nullable").value(field.isNillable() ? "true" : "false");
-        json.key("domain").value(null);
-
-        json.endObject();
-    }
-
-    public static <T extends FeatureType, F extends Feature>
-    void featureIdSetToJson(FeatureCollection<T, F> features, JSONBuilder json)
-    {
-        json.object();
-        json.key("objectIdFieldName");
-        json.value("objectid"); // TODO: Advertise "real" identifier property
-
-        FeatureIterator<F> iterator = features.features();
-        try {
-            json.key("objectIds");
-            json.array();
-            while (iterator.hasNext()) {
-                F feature = iterator.next();
-                json.value(adaptId(feature.getIdentifier().getID()));
+            GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
+            if(returnGeometry) {
+                geometry = (com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue();
+                //GeometryEncoder.toJson((com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue(), json);
+            } else {
+                geometry = null;
             }
-            json.endArray();
-        } finally {
-            iterator.close();
+            for(Property prop :feature.getProperties()) {
+                if (geometryAttribute == null || !prop.getName().equals(geometryAttribute.getName())) {
+                    final Object value;
+                    if (prop.getValue() instanceof java.util.Date) {
+                        value = ((java.util.Date) prop.getValue()).getTime();
+                    } else if (prop.getValue() instanceof java.lang.Boolean) {
+                        value = ((Boolean) prop.getValue()) ? Integer.valueOf(1) : Integer.valueOf(0);
+                    } else {
+                        value = prop.getValue();
+                    }
+                    attributes.put(prop.getName().getLocalPart(), value);
+                }
+            }
+            attributes.put("objectid", adaptId(feature.getIdentifier().getID()));
         }
+    }
 
-        json.endObject();
+    public static class Descriptor implements GSRModel {
+
+        public final String name;
+        public final String type;
+        public final String alias;
+        public final Integer length;
+        public final Boolean editable;
+        public final Boolean nullable;
+        public final String domain = null;
+
+        public Descriptor(PropertyDescriptor field) {
+            // Similar to LayerListResource encodeencodeSchemaProperties
+            // Similar to FeatureEncoder descriptorToJson.
+            name = field.getName().getLocalPart();
+
+            FieldTypeEnum fieldType = FieldTypeEnum.forClass(field.getType().getBinding());
+            type = fieldType.getFieldType();
+            alias = field.getName().toString();
+
+            int fieldLength = FeatureTypes.getFieldLength(field);
+
+            // String, Date, GlobalID, GUID and XML
+            switch (fieldType) {
+                case STRING:
+                case DATE:
+                case GUID:
+                case GLOBAL_ID:
+                case XML:
+                    length = fieldLength == -1 ? 4000 : fieldLength;
+                    editable = false;
+                    break;
+                default:
+                    // length and editable are optional
+                    length = null;
+                    editable = null;
+            }
+            nullable = field.isNillable();
+        }
+    }
+
+    public static class FeatureIdSet implements GSRModel {
+
+        // TODO: Advertise "real" identifier property
+        public final String objectIdFieldName = "objectid";
+        public final ArrayList<Object> objectIds = new ArrayList<>();
+
+        public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureIdSet(FeatureCollection<T, F> features) {
+
+            FeatureIterator<F> iterator = features.features();
+            try {
+                while (iterator.hasNext()) {
+                    F feature = iterator.next();
+                    objectIds.add(adaptId(feature.getIdentifier().getID()));
+                }
+            } finally {
+                iterator.close();
+            }
+        }
     }
 
     private final static Pattern featureIDPattern = Pattern.compile("^(?:.*\\.)?(\\p{Digit}+)$");
+
     private static Object adaptId(String featureId) {
         Matcher matcher = featureIDPattern.matcher(featureId);
         if (matcher.matches()) {
             return matcher.group(1);
         } else {
-            return Long.valueOf(featureId.hashCode());
+            return featureId.hashCode();
         }
     }
 }

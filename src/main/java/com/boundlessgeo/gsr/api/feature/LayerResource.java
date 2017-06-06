@@ -251,7 +251,8 @@ public class LayerResource extends Resource {
                         if (field == schema.getGeometryDescriptor()) {
                             continue; // continue skip default geometry
                         }
-                        FeatureEncoder.descriptorToJson(field, json);
+                        //TODO: convert
+                        //FeatureEncoder.descriptorToJson(field, json);
                     }
                     json.endArray();
                 }

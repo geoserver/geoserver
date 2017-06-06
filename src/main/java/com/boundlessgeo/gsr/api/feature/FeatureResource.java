@@ -116,7 +116,8 @@ public class FeatureResource extends Resource {
             json.object().key("feature");
             FeatureCollection<?, ?> featureColl = source.getFeatures(filter);
             Feature[] featureArr = featureColl.toArray(new Feature[0]);
-            FeatureEncoder.featureToJson(featureArr[0], json, true);
+            //TODO: Convert
+            //FeatureEncoder.featureToJson(featureArr[0], json, true);
             json.endObject();
             writer.flush();
             writer.close();

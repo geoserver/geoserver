@@ -5,12 +5,13 @@
 package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.GSRModel;
+import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
 import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
 import com.boundlessgeo.gsr.core.map.LayerOrTable;
 import com.boundlessgeo.gsr.core.map.LayersAndTables;
-import com.boundlessgeo.gsr.core.map.QueryResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -22,6 +23,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -30,7 +33,10 @@ import org.geotools.referencing.CRS;
 import org.geotools.temporal.object.DefaultInstant;
 import org.geotools.temporal.object.DefaultPeriod;
 import org.geotools.temporal.object.DefaultPosition;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
@@ -65,23 +71,21 @@ public class QueryController extends AbstractGSRController {
     }
 
     @GetMapping(path = "/{layerId}/query")
-    public QueryResponse queryGet(@PathVariable String workspaceName, @PathVariable Integer layerId,
-                         @RequestParam(name = "geometryType", defaultValue = "GeometryPoint") String geometryTypeName,
-                         @RequestParam(name = "geometry") String geometryText,
-                         @RequestParam(name = "inSR") String inSRText,
-                         @RequestParam(name = "outSR") String outSRText,
-                         @RequestParam(name = "spatialRel", defaultValue = "SpatialRelIntersects") String spatialRelText,
-                         @RequestParam(name = "objectIds") String objectIdsText,
-                         @RequestParam(name = "relationPattern") String relatePattern,
-                         @RequestParam(name = "time", required = false) String time,
-                         @RequestParam(name = "text", required = false) String text,
-                         @RequestParam(name = "maxAllowableOffsets", required = false) String maxAllowableOffsets,
-                         @RequestParam(name = "where", required = false) String whereClause,
-                         @RequestParam(name = "returnGeometry", defaultValue = "true") Boolean returnGeometry,
-                         @RequestParam(name = "outFields", defaultValue = "*") String outFieldsText,
-                         @RequestParam(name = "returnIdsOnly", defaultValue = "false") boolean returnIdsOnly
-
-
+    public GSRModel queryGet(@PathVariable String workspaceName, @PathVariable Integer layerId,
+                             @RequestParam(name = "geometryType", defaultValue = "GeometryPoint") String geometryTypeName,
+                             @RequestParam(name = "geometry") String geometryText,
+                             @RequestParam(name = "inSR", required = false) String inSRText,
+                             @RequestParam(name = "outSR", required = false) String outSRText,
+                             @RequestParam(name = "spatialRel", required = false, defaultValue = "SpatialRelIntersects") String spatialRelText,
+                             @RequestParam(name = "objectIds", required = false) String objectIdsText,
+                             @RequestParam(name = "relationPattern", required = false) String relatePattern,
+                             @RequestParam(name = "time", required = false) String time,
+                             @RequestParam(name = "text", required = false) String text,
+                             @RequestParam(name = "maxAllowableOffsets", required = false) String maxAllowableOffsets,
+                             @RequestParam(name = "where", required = false) String whereClause,
+                             @RequestParam(name = "returnGeometry", required = false, defaultValue = "true") Boolean returnGeometry,
+                             @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
+                             @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly
 
         ) throws IOException {
 
@@ -160,17 +164,24 @@ public class QueryController extends AbstractGSRController {
         }
         String[] properties = parseOutFields(outFieldsText);
 
-        //TODO: Split into objects depending upon returnIdsOnly
-        /*
-            if (returnIdsOnly) {
-                FeatureEncoder.featureIdSetToJson(source.getFeatures(query), null json);
-            } else {
-                final boolean reallyReturnGeometry = returnGeometry || properties == null;
-                FeatureEncoder.featuresToJson(source.getFeatures(query), null json, reallyReturnGeometry);
-            }
-         */
-        return new QueryResponse(featureType, filter, returnIdsOnly, returnGeometry, properties, outSR);
+        FeatureSource<? extends FeatureType, ? extends Feature> source =
+                featureType.getFeatureSource(null, null);
+        final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
 
+        final Query query;
+        if (effectiveProperties == null) {
+            query = new Query(featureType.getName(), filter);
+        } else {
+            query = new Query(featureType.getName(), filter, effectiveProperties);
+        }
+        query.setCoordinateSystemReproject(outSR);
+
+        if (returnIdsOnly) {
+            return new FeatureEncoder.FeatureIdSet(source.getFeatures(query));
+        } else {
+            final boolean reallyReturnGeometry = returnGeometry || properties == null;
+            return new FeatureEncoder.Features(source.getFeatures(query), reallyReturnGeometry);
+        }
     }
 
     private String[] parseOutFields(String outFieldsText) {
@@ -407,4 +418,36 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
+    private String[] adjustProperties(boolean addGeometry, String[] originalProperties, FeatureType schema) {
+        if (originalProperties == null) {
+            return null;
+        }
+
+        String[] effectiveProperties =
+                new String[originalProperties.length + (addGeometry ? 1 : 0)];
+        for (int i = 0; i < originalProperties.length; i++) {
+            effectiveProperties[i] = adjustOneProperty(originalProperties[i], schema);
+        }
+        if (addGeometry){
+            effectiveProperties[effectiveProperties.length - 1] =
+                    schema.getGeometryDescriptor().getLocalName();
+        }
+
+        return effectiveProperties;
+    }
+
+    private String adjustOneProperty(String name, FeatureType schema) {
+        List<String> candidates = new ArrayList<String>();
+        for (PropertyDescriptor d : schema.getDescriptors()) {
+            String pname = d.getName().getLocalPart();
+            if (pname.equals(name)) {
+                return name;
+            } else if (pname.equalsIgnoreCase(name)) {
+                candidates.add(pname);
+            }
+        }
+        if (candidates.size() == 1) return candidates.get(0);
+        if (candidates.size() == 0) throw new NoSuchElementException("No property " + name + " in " + schema);
+        throw new NoSuchElementException("Ambiguous request: " + name + " corresponds to " + candidates);
+    }
 }

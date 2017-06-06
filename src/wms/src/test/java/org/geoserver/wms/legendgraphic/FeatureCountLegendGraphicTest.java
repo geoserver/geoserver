@@ -264,6 +264,26 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         // map but Washington DC is and it's not a state (50 - 2 + 1)
         assertLabel("(49)", rules[3]);
     }
+    
+    @Test
+    public void testStatesMissingHeightWidthBboxSrsOnWMS13() throws Exception {
+        runGetLegendGraphics(
+                "wms?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image/png"
+                        + "&layer=" + getLayerId(SF_STATES)
+                        + "&style=Population"
+                        + "&legend_options="
+                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY + ":true");
+        assertEquals(1, ruleSets.size());
+        Rule[] rules = ruleSets.get(0);
+        logLabels(rules);
+        assertEquals(4, rules.length);
+        assertLabel("2M - 4M (10)", rules[0]);
+        assertLabel("< 2M (16)", rules[1]);
+        assertLabel("> 4M (23)", rules[2]);
+        // this is the rule for outline and text symbolizer, Alaska and Hawaii are not in the
+        // map but Washington DC is and it's not a state (50 - 2 + 1)
+        assertLabel("(49)", rules[3]);
+    }
 
     @Test
     public void testStatesCqlFilter() throws Exception {

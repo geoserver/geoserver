@@ -112,20 +112,21 @@ public class LayerOrTable  implements GSRModel {
     }
 
     public static class DrawingInfo {
-        public Renderer renderer;
+        public final Renderer renderer;
+
         DrawingInfo(Renderer renderer) {
             this.renderer = renderer;
         }
     }
 
-    private static class TimeInfo {
+    public static class TimeInfo {
 
-        String startTimeField;
-        String endTimeField;
-        Object trackIdField = new Object();
+        public final String startTimeField;
+        public final String endTimeField;
+        public final Object trackIdField = new Object();
 
-        BigDecimal timeInterval;
-        String timeIntervalUnits;
+        public final BigDecimal timeInterval;
+        public final String timeIntervalUnits;
 
 
         public TimeInfo(DimensionInfo time) {
@@ -135,15 +136,18 @@ public class LayerOrTable  implements GSRModel {
             if (time.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
                 timeInterval = time.getResolution();
                 timeIntervalUnits = "ms";
+            } else {
+                timeInterval = null;
+                timeIntervalUnits = null;
             }
         }
     }
 
-    private static class SchemaProperty {
-        String name;
-        String type;
-        Boolean editable = false;
-        Integer length;
+    public static class SchemaProperty {
+        public final String name;
+        public final String type;
+        public final Boolean editable = false;
+        public final Integer length;
 
         SchemaProperty(PropertyDescriptor desc) {
             name = desc.getName().getLocalPart();
@@ -151,6 +155,8 @@ public class LayerOrTable  implements GSRModel {
 
             if (String.class.equals(desc.getType().getBinding())) {
                 length = 4000;
+            } else {
+                length = null;
             }
         }
     }

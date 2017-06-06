@@ -54,9 +54,9 @@ public class MapServiceRoot implements GSRModel{
         this.capabilities = "Query";
     }
 
-    private static class Layer {
-        int id;
-        String name;
+    public static class Layer {
+        public final Integer id;
+        public final String name;
 
         Layer(int id, String name) {
             this.id = id;
@@ -64,8 +64,8 @@ public class MapServiceRoot implements GSRModel{
         }
     }
 
-    private static class DateRange {
-        List<String> timeExtent;
+    public static class DateRange {
+        public final List<String> timeExtent = new ArrayList<>();
 
         DateRange(Date[] dateRange) {
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");

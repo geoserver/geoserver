@@ -8,15 +8,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
-import com.boundlessgeo.gsr.api.GeoServicesXStreamJsonConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import com.boundlessgeo.gsr.JsonSchemaTest;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-
-import java.io.ByteArrayOutputStream;
 
 /**
  * JSON Schema validation class. Validation is possible with local files, with the following modifications: - All $ref elements need to point to a

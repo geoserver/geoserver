@@ -6,20 +6,21 @@ package com.boundlessgeo.gsr;
 
 import java.io.File;
 
-import com.boundlessgeo.gsr.api.GeoServicesXStreamJsonConverter;
+import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.validation.JSONValidator;
 
-import com.thoughtworks.xstream.XStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class JsonSchemaTest {
 
-    final protected static XStream xstream = new GeoServicesXStreamJsonConverter().getXStream();
+    final protected static ObjectMapper mapper = new GeoServicesJacksonJsonConverter().getMapper();
 
     public JsonSchemaTest() {
     }
 
-    public static String getJson(Object obj) {
-        return xstream.toXML(obj);
+    public static String getJson(Object obj) throws JsonProcessingException {
+        return mapper.writeValueAsString(obj);
     }
 
     public static boolean validateJSON(String json, String schemaPath) {

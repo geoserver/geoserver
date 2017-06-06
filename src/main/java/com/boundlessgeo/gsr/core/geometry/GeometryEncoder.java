@@ -61,6 +61,7 @@ public final class GeometryEncoder implements Converter {
           .key("ymax").value(envelope.getMaxY());
     }
 
+    //TODO - Consolidate these map results the existing outer classes Polygon etc.
     public static Map<String, Object> toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
         // Implementation notes.
 

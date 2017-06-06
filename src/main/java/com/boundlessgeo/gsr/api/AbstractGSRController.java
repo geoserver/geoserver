@@ -7,6 +7,8 @@ package com.boundlessgeo.gsr.api;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geotools.factory.CommonFactoryFinder;
+import org.opengis.filter.FilterFactory2;
 
 /**
  * Parent to all gsr controllers.
@@ -16,6 +18,7 @@ public class AbstractGSRController {
 
     protected GeoServer geoServer;
     protected Catalog catalog;
+    protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
 
     public AbstractGSRController(GeoServer geoServer) {
         this.geoServer = geoServer;

@@ -30,13 +30,13 @@ import java.util.TimeZone;
 /**
  * Detailed model of a MapService
  */
-public class MapServiceRoot implements GSRModel{
+public class MapServiceRoot implements GSRModel {
 
-    String mapName;
-    List<Layer> layers = new ArrayList<Layer>();
-    DateRange timeInfo;
-    boolean singleFusedMapCache;
-    String capabilities;
+    public final String mapName;
+    public final List<Layer> layers = new ArrayList<Layer>();
+    public final DateRange timeInfo;
+    public final Boolean singleFusedMapCache;
+    public final String capabilities;
 
     public MapServiceRoot(WMSInfo service, List<LayerInfo> layers) throws IOException {
         this.mapName = service.getTitle() != null ? service.getTitle() : service.getName();
@@ -49,6 +49,8 @@ public class MapServiceRoot implements GSRModel{
         Date[] dateRange = getCumulativeDateRange(layers);
         if (dateRange != null) {
             this.timeInfo = new DateRange(dateRange);
+        } else {
+            this.timeInfo = null;
         }
         this.singleFusedMapCache = false;
         this.capabilities = "Query";

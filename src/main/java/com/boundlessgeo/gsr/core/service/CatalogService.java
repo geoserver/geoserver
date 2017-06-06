@@ -6,6 +6,7 @@ package com.boundlessgeo.gsr.core.service;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -23,18 +24,17 @@ public class CatalogService implements AbstractService {
 
     private ServiceType type;
 
-    private String specVersion;
+    private Double specVersion;
 
     private String productName;
 
-    private double currentVersion;
+    private Double currentVersion;
 
-    @XStreamImplicit(itemFieldName = "folders")
     private List<String> folders;
 
-    @XStreamImplicit(itemFieldName = "services")
     private List<AbstractService> services;
 
+    @JsonIgnore
     public String getName() {
         return name;
     }
@@ -43,6 +43,7 @@ public class CatalogService implements AbstractService {
         this.name = name;
     }
 
+    @JsonIgnore
     public ServiceType getType() {
         return type;
     }
@@ -51,14 +52,16 @@ public class CatalogService implements AbstractService {
         this.type = serviceType;
     }
 
-    public String getSpecVersion() {
+    @JsonIgnore
+    public Double getSpecVersion() {
         return specVersion;
     }
 
-    public void setSpecVersion(String specVersion) {
+    public void setSpecVersion(Double specVersion) {
         this.specVersion = specVersion;
     }
 
+    @JsonIgnore
     public String getProductName() {
         return productName;
     }
@@ -91,7 +94,7 @@ public class CatalogService implements AbstractService {
         this.services = services;
     }
 
-    public CatalogService(String name, String specVersion, String productName,
+    public CatalogService(String name, double specVersion, String productName,
             double currentVersion, List<String> folders, List<AbstractService> services) {
         this.name = name;
         this.type = ServiceType.CatalogServer;

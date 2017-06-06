@@ -1,5 +1,6 @@
 package com.boundlessgeo.gsr.core;
 
+import com.boundlessgeo.gsr.api.GeoServicesXStreamJsonConverter;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * Converts {@link Map}s into JSON objects instead of Arrays.
  *
- * Used with {@link com.boundlessgeo.gsr.api.GeoServicesJSONConverter}
+ * Used with {@link GeoServicesXStreamJsonConverter}
  */
 public class MapJsonConverter implements Converter {
 

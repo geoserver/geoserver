@@ -10,6 +10,7 @@ import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 import com.boundlessgeo.gsr.core.renderer.Renderer;
 import com.boundlessgeo.gsr.core.GSRModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.*;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -32,7 +33,9 @@ public class LayerOrTable  implements GSRModel {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerOrTable.class);
 
+    @JsonIgnore
     public final LayerInfo layer;
+
     public final int id;
     public final String type = "Feature Layer";
     public final String name;

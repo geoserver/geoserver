@@ -20,7 +20,7 @@ import java.util.Collections;
 
 /**
  * Resolves unhandled exceptions by converting them to {@link ServiceException}, then encoding that to json via
- * {@link GeoServicesJSONConverter}
+ * {@link GeoServicesXStreamJsonConverter}
  *
  * TODO: If this ever supports more than f=json, look up the right converter programmatically.
  */
@@ -28,7 +28,7 @@ import java.util.Collections;
 public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolver {
 
     @Autowired
-    GeoServicesJSONConverter converter;
+    GeoServicesJacksonJsonConverter converter;
 
     public GeoServicesExceptionResolver() {
         setOrder(0);
@@ -50,7 +50,7 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         try {
-            converter.getXStream().toXML(exception, response.getOutputStream());
+            converter.getMapper().writeValue(response.getOutputStream(), exception);
         } catch (IOException e) {
             e.printStackTrace();
         }

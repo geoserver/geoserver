@@ -7,7 +7,9 @@ package com.boundlessgeo.gsr.core.geometry;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.boundlessgeo.gsr.api.GeoServicesJSONConverter;
+import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
+import com.boundlessgeo.gsr.api.GeoServicesXStreamJsonConverter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import com.boundlessgeo.gsr.JsonSchemaTest;
 
@@ -125,9 +127,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         assertFalse(validateJSON(json, "gsr/1.0/envelope.json"));
     }
 
-    private String representationToJson(Object obj) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new GeoServicesJSONConverter().getXStream().toXML(obj, os);
-        return os.toString();
+    private String representationToJson(Object obj) throws JsonProcessingException {
+        return new GeoServicesJacksonJsonConverter().getMapper().writeValueAsString(obj);
     }
 }

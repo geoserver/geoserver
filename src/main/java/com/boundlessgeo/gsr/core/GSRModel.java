@@ -4,10 +4,10 @@
  */
 package com.boundlessgeo.gsr.core;
 
-import com.boundlessgeo.gsr.api.GeoServicesJSONConverter;
+import com.boundlessgeo.gsr.api.GeoServicesXStreamJsonConverter;
 
 /**
- * Marker interface for classes that can/should be written by {@link GeoServicesJSONConverter}
+ * Marker interface for classes that can/should be written by {@link GeoServicesXStreamJsonConverter}
  */
 public interface GSRModel {
 }

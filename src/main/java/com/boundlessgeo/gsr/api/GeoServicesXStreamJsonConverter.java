@@ -39,12 +39,12 @@ import java.util.Map;
  *
  * Used when "f=json"
  */
-@Component
-public class GeoServicesJSONConverter extends BaseMessageConverter<GSRModel> {
+//@Component
+public class GeoServicesXStreamJsonConverter extends BaseMessageConverter<GSRModel> {
 
     protected XStream xStream;
 
-    public GeoServicesJSONConverter() {
+    public GeoServicesXStreamJsonConverter() {
         super(MediaType.APPLICATION_JSON);
         configureXStream();
     }

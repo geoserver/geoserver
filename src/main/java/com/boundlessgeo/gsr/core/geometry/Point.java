@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author Juan Marin - OpenGeo
@@ -14,6 +16,7 @@ public class Point implements Geometry {
 
     protected GeometryTypeEnum geometryType;
 
+    @JsonIgnore
     public GeometryTypeEnum getGeometryType() {
         return geometryType;
     }

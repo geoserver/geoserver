@@ -7,11 +7,14 @@ package com.boundlessgeo.gsr.core.geometry;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.boundlessgeo.gsr.api.GeoServicesJSONConverter;
 import org.junit.Test;
 import com.boundlessgeo.gsr.JsonSchemaTest;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * JSON Schema validation class. Validation is possible with local files, with the following modifications: - All $ref elements need to point to a
@@ -31,7 +34,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
     @Test
     public void testPointSchema() throws Exception {
         com.vividsolutions.jts.geom.Point point = geometries.createPoint(new Coordinate(77, 39.5));
-        String json = GeometryEncoder.toJson(point);
+        String json = representationToJson(GeometryEncoder.toRepresentation(point));
         assertTrue(validateJSON(json, "gsr/1.0/point.json"));
     }
 
@@ -43,7 +46,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         Coordinate c4 = new Coordinate(-97.06127, 32.832);
         Coordinate[] coords = { c1, c2, c3, c4 };
         com.vividsolutions.jts.geom.MultiPoint mpoint = geometries.createMultiPoint(coords);
-        String json = GeometryEncoder.toJson(mpoint);
+        String json = representationToJson(GeometryEncoder.toRepresentation(mpoint));
         assertTrue(validateJSON(json, "gsr/1.0/multipoint.json"));
     }
 
@@ -65,7 +68,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
 
         com.vividsolutions.jts.geom.MultiLineString polyline = geometries.createMultiLineString(lineStrings);
 
-        String json = GeometryEncoder.toJson(polyline);
+        String json = representationToJson(GeometryEncoder.toRepresentation(polyline));
         assertTrue(validateJSON(json, "gsr/1.0/polyline.json"));
     }
 
@@ -88,7 +91,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         // double[][][] rings = { ring1, ring2 };
         // Polygon polygon = new Polygon(rings, spatialReference);
         com.vividsolutions.jts.geom.Polygon polygon = geometries.createPolygon(shell, holes);
-        String json = GeometryEncoder.toJson(polygon);
+        String json = representationToJson(GeometryEncoder.toRepresentation(polygon));
         assertTrue(validateJSON(json, "gsr/1.0/polygon.json"));
     }
 
@@ -104,7 +107,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         com.vividsolutions.jts.geom.Point point = geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(-77, 39.5));
         com.vividsolutions.jts.geom.Point point2 = geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(-77.4, 40.5));
         com.vividsolutions.jts.geom.GeometryCollection collection = geometries.createGeometryCollection(new com.vividsolutions.jts.geom.Geometry [] { point, point2 });
-        String json = GeometryEncoder.toJson(collection);
+        String json = representationToJson(GeometryEncoder.toRepresentation(collection));
         assertTrue(validateJSON(json, "gsr/1.0/geometries.json"));
     }
 
@@ -120,5 +123,11 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         Point point = new Point(-77, 39.5, new SpatialReferenceWKID(4326));
         String json = getJson(point);
         assertFalse(validateJSON(json, "gsr/1.0/envelope.json"));
+    }
+
+    private String representationToJson(Object obj) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        new GeoServicesJSONConverter().getXStream().toXML(obj, os);
+        return os.toString();
     }
 }

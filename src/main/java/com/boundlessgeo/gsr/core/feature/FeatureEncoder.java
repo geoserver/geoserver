@@ -98,15 +98,15 @@ public class FeatureEncoder {
     }
 
     public static class Feature implements GSRModel {
+        //TODO: Map doesn't serialize properly, try an object? Or use a custom converter <--!!
         public final Map<String, Object> attributes = new HashMap<>();
-        public final com.vividsolutions.jts.geom.Geometry geometry;
+        public final Map<String, Object> geometry;
 
         public Feature(org.opengis.feature.Feature feature, boolean returnGeometry) {
 
             GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
             if(returnGeometry) {
-                geometry = (com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue();
-                //GeometryEncoder.toJson((com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue(), json);
+                geometry = GeometryEncoder.toRepresentation((com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue());
             } else {
                 geometry = null;
             }

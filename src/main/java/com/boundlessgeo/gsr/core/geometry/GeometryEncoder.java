@@ -19,6 +19,8 @@ import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
 
+import java.util.*;
+
 public final class GeometryEncoder implements Converter {
 
     @Override
@@ -29,12 +31,6 @@ public final class GeometryEncoder implements Converter {
     @Override
     public Object unmarshal(HierarchicalStreamReader hierarchicalStreamReader, UnmarshallingContext unmarshallingContext) {
         return null;
-    }
-
-    public static String toJson(com.vividsolutions.jts.geom.Geometry geom) {
-        JSONStringer json = new JSONStringer();
-        toJson(geom, json);
-        return json.toString();
     }
 
     public static String toJson(com.vividsolutions.jts.geom.Envelope envelope) {
@@ -65,7 +61,7 @@ public final class GeometryEncoder implements Converter {
           .key("ymax").value(envelope.getMaxY());
     }
 
-    public static void toJson(com.vividsolutions.jts.geom.Geometry geom, JSONBuilder json) {
+    public static Map<String, Object> toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
         // Implementation notes.
 
         // We have only directly provided support for the
@@ -81,90 +77,76 @@ public final class GeometryEncoder implements Converter {
         // the caller - for example, that would be a nice way to support the
         // optional 'spatialReference' property on all geometries.
 
+        Map<String, Object> geometryRepresentation = new HashMap<>();
+
         if (geom instanceof com.vividsolutions.jts.geom.Point) {
             com.vividsolutions.jts.geom.Point p = (com.vividsolutions.jts.geom.Point) geom;
-            json.object()
-              .key("x").value(p.getX())
-              .key("y").value(p.getY())
-            .endObject();
+            geometryRepresentation.put("x",p.getX());
+            geometryRepresentation.put("y",p.getY());
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPoint) {
             com.vividsolutions.jts.geom.MultiPoint mpoint = (com.vividsolutions.jts.geom.MultiPoint) geom;
-            json.object();
-            json.key("points");
-            json.array();
+            List<List<Double>> points = new ArrayList<>();
             for (int i = 0; i < mpoint.getNumPoints(); i++) {
-                embeddedPointToJson((com.vividsolutions.jts.geom.Point) mpoint.getGeometryN(i), json);
+                points.add(embeddedPoint((com.vividsolutions.jts.geom.Point) mpoint.getGeometryN(i)));
             }
-            json.endArray();
-            json.endObject();
+            geometryRepresentation.put("points", points);
         } else if (geom instanceof com.vividsolutions.jts.geom.LineString) {
             com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) geom;
-            json.object();
-            json.key("paths");
-            json.array();
-            embeddedLineStringToJson(line, json);
-            json.endArray();
-            json.endObject();
+            List<List<List<Double>>> paths = new ArrayList<>();
+            paths.add(embeddedLineString(line));
+            geometryRepresentation.put("paths", paths);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiLineString) {
             com.vividsolutions.jts.geom.MultiLineString mline = (com.vividsolutions.jts.geom.MultiLineString) geom;
-            json.object();
-            json.key("paths");
-            json.array();
+            List<List<List<Double>>> paths = new ArrayList<>();
 
             for (int i = 0; i < mline.getNumGeometries(); i++) {
                 com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) mline.getGeometryN(i);
-                embeddedLineStringToJson(line, json);
+                paths.add(embeddedLineString(line));
             }
-
-            json.endArray();
-            json.endObject();
+            geometryRepresentation.put("paths", paths);
         } else if (geom instanceof com.vividsolutions.jts.geom.Polygon) {
             com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geom;
-            json.object();
-            json.key("rings");
-            json.array();
-            embeddedLineStringToJson(polygon.getExteriorRing(), json);
+            List<List<List<Double>>> rings = new ArrayList<>();
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-                embeddedLineStringToJson(polygon.getInteriorRingN(i), json);
+                rings.add(embeddedLineString(polygon.getInteriorRingN(i)));
             }
-            json.endArray();
-            json.endObject();
+            geometryRepresentation.put("rings", rings);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
             com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
-            toJson(mpoly.getGeometryN(0), json);
+            geometryRepresentation = toRepresentation(mpoly.getGeometryN(0));
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
             String geometryType = determineGeometryType(collection);
-            json.object()
-              .key("geometryType").value(geometryType)
-              .key("geometries").array();
+            geometryRepresentation.put("geometryType", geometryType);
+            List<Object> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
-                toJson(collection.getGeometryN(i), json);
+                geometries.add(toRepresentation(collection.getGeometryN(i)));
             }
-            json.endArray();
-            json.endObject();
+            geometryRepresentation.put("geometries", geometries);
         } else {
           throw new IllegalStateException("Geometry encoding not yet supported for " + geom.getGeometryType());
         }
+        return geometryRepresentation;
     }
 
-    private static void embeddedCoordinateToJson(com.vividsolutions.jts.geom.Coordinate coord, JSONBuilder json) {
-        json.array()
-          .value(coord.x)
-          .value(coord.y)
-        .endArray();
+    private static List<Double> embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {
+        List<Double> coords = new ArrayList<>();
+        coords.add(coord.x);
+        coords.add(coord.y);
+
+        return coords;
     }
 
-    private static void embeddedPointToJson(com.vividsolutions.jts.geom.Point point, JSONBuilder json) {
-        embeddedCoordinateToJson(point.getCoordinate(), json);
+    private static List<Double> embeddedPoint(com.vividsolutions.jts.geom.Point point) {
+        return embeddedCoordinate(point.getCoordinate());
     }
 
-    private static void embeddedLineStringToJson(com.vividsolutions.jts.geom.LineString line, JSONBuilder json) {
-        json.array();
+    private static List<List<Double>> embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
+        List<List<Double>> points = new ArrayList<>();
         for (com.vividsolutions.jts.geom.Coordinate c : line.getCoordinates()) {
-            embeddedCoordinateToJson(c, json);
+            points.add(embeddedCoordinate(c));
         }
-        json.endArray();
+        return points;
     }
 
     private static String determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {

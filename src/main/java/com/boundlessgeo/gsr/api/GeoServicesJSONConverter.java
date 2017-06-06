@@ -5,6 +5,7 @@
 package com.boundlessgeo.gsr.api;
 
 import com.boundlessgeo.gsr.core.GSRModel;
+import com.boundlessgeo.gsr.core.MapJsonConverter;
 import com.boundlessgeo.gsr.core.feature.AttributeListConverter;
 import com.boundlessgeo.gsr.core.feature.FieldTypeConverter;
 import com.boundlessgeo.gsr.core.font.FontDecorationEnumConverter;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 
 /**
  * Converter for {@link GSRModel} to JSON
@@ -76,7 +78,17 @@ public class GeoServicesJSONConverter extends BaseMessageConverter<GSRModel> {
     private void configureXStream() {
         XStream xstream = new XStream(new JsonHierarchicalStreamDriver() {
             public HierarchicalStreamWriter createWriter(Writer writer) {
-                return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
+                return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE) {
+                    /**
+                     * Override isArray to exclude map, so that {@link MapJsonConverter} works as expected
+                     * @param clazz
+                     * @return
+                     */
+                    @Override
+                    protected boolean isArray(Class clazz) {
+                        return clazz != null && !Map.class.isAssignableFrom(clazz) && super.isArray(clazz);
+                    }
+                };
             }
         });
 
@@ -117,6 +129,7 @@ public class GeoServicesJSONConverter extends BaseMessageConverter<GSRModel> {
         xstream.registerConverter(new PointLabelPlacementEnumConverter());
         xstream.registerConverter(new LineLabelPlacementEnumConverter());
         xstream.registerConverter(new PolygonLabelPlacementEnumConverter());
+        xstream.registerConverter(new MapJsonConverter());
 
         this.xStream = xstream;
     }

@@ -80,12 +80,12 @@ public class QueryResourceTest extends ResourceTest {
 
         result = getAsString(query("cite", 11, "?geometryType=GeometryEnvelope&geometry=-180,-90,180,90"));
         assertTrue("Request with no format parameter return an error", JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
-        json = JSONObject.fromObject(result);
+        json = JSONObject.fromObject(result).getJSONObject("error");
         assertTrue("Request with no format parameter; returned " + result, json.containsKey("code"));
 
         result = getAsString(query("cite", 11, "?f=xml&geometryType=GeometryEnvelope&geometry=-180,-90,180,90"));
         assertTrue("Request with unrecognized format returns an error", JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
-        json = JSONObject.fromObject(result);
+        json = JSONObject.fromObject(result).getJSONObject("error");
         assertTrue("Request with f=xml; returned " + result, json.containsKey("code"));
     }
 
@@ -136,7 +136,7 @@ public class QueryResourceTest extends ResourceTest {
 
         result = getAsString(query("cite", 11, "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90&where=invalid_filter"));
         assertTrue("Request with invalid where clause; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
-        json = JSONObject.fromObject(result);
+        json = JSONObject.fromObject(result).getJSONObject("error");
         assertTrue("Request with invalid where clause; returned " + result, json.containsKey("code"));
     }
 
@@ -192,7 +192,7 @@ public class QueryResourceTest extends ResourceTest {
 
         result = getAsString(query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90&outSR=2147483647"));
         assertTrue("Request for unknown WKID produces error; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
-        json = JSONObject.fromObject(result);
+        json = JSONObject.fromObject(result).getJSONObject("error");
         assertTrue("Exception report should have an error code; json is " + result, json.containsKey("code"));
 
         result = getAsString(query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-45,265,-44,264&inSR=3785"));

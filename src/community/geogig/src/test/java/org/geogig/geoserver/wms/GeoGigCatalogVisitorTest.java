@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
+import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.IndexInfo;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.storage.IndexDatabase;
@@ -141,8 +142,7 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
         // set the DataStore to auto-index
         DataStoreInfo dataStore = catalog.getDataStoreByName(GeoGigTestData.CatalogBuilder.WORKSPACE,
                 GeoGigTestData.CatalogBuilder.STORE);
-        final GeoGigDataStore geogigDataStore = GeoGigDataStore.class.cast(
-                            ((DataStoreInfo) dataStore).getDataStore(null));
-        geogigDataStore.setAutoIndexing(true);
+        dataStore.getConnectionParameters().put(GeoGigDataStoreFactory.AUTO_INDEXING.key, true);
+        catalog.save(dataStore);
     }
 }

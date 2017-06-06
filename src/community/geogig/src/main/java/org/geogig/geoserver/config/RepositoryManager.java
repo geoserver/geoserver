@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -27,6 +28,8 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
@@ -415,6 +418,47 @@ public class RepositoryManager implements GeoServerInitializer {
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to connect: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean isGeogigLayer(LayerInfo layer) {
+        ResourceInfo resource = layer.getResource();
+        if (resource == null) {
+            return false;
+        }
+        StoreInfo store = resource.getStore();
+        if (store == null) {
+            return false;
+        }
+        return isGeogigStore(store);
+    }
+
+    public boolean isGeogigStore(CatalogInfo store) {
+        if (!(store instanceof DataStoreInfo)) {
+            return false;
+        }
+        final String storeType = ((DataStoreInfo) store).getType();
+        boolean isGeogigStore = GeoGigDataStoreFactory.DISPLAY_NAME.equals(storeType);
+        return isGeogigStore;
+    }
+
+    public Repository findRepository(LayerInfo geogigLayer) {
+        Preconditions.checkArgument(isGeogigLayer(geogigLayer));
+
+        Map<String, Serializable> params = geogigLayer.getResource().getStore()
+                .getConnectionParameters();
+        String repoUriStr = String.valueOf(params.get(GeoGigDataStoreFactory.REPOSITORY.key));
+        URI repoURI = URI.create(repoUriStr);
+        RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
+        String repoName = resolver.getName(repoURI);
+        RepositoryInfo repoInfo = getByRepoName(repoName);
+        String repoId = repoInfo.getId();
+        try {
+            Repository repository = getRepository(repoId);
+            Preconditions.checkState(repository != null);
+            return repository;
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
         }
     }
 }

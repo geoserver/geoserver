@@ -509,7 +509,8 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                 if (aggregateBbox != null) {
                     aggregateBbox.expandToInclude(curbbox);
                 } else {
-                    aggregateBbox = curbbox;
+                    // defensive copy (otherwise it can cause a catalog referenced envelope to be modified)
+                    aggregateBbox = new ReferencedEnvelope(curbbox);
                 }
             }
 

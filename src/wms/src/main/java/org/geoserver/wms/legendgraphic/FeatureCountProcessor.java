@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.GetMap;
@@ -33,7 +34,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.DescriptionImpl;
 import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
@@ -107,6 +107,7 @@ class FeatureCountProcessor {
         @Override
         protected void onBeforeRender(StreamingRenderer renderer) {
             super.onBeforeRender(renderer);
+            renderer.setGeneralizationDistance(0);
             renderer.addRenderListener(new RenderListener() {
 
                 @Override
@@ -280,8 +281,8 @@ class FeatureCountProcessor {
         rawKvp.put("STYLES", "");
         // ... width and height
         rawKvp.put("WIDTH", rawKvp.get("SRCWIDTH"));
-        rawKvp.put("HEIGTH", rawKvp.get("SRCHEIGHT"));
-        
+        rawKvp.put("HEIGHT", rawKvp.get("SRCHEIGHT"));
+
         // remove decoration to avoid infinite recursion
         final Map formatOptions = (Map) kvp.get("FORMAT_OPTIONS");
         if(formatOptions != null) {
@@ -290,6 +291,7 @@ class FeatureCountProcessor {
 
         // parse
         GetMapRequest getMap = getMapReader.read(getMapReader.createRequest(), kvp, rawKvp);
+        DefaultWebMapService.autoSetBoundsAndSize(getMap);
 
         // replace style with the current set of rules
         Style style = buildStyleFromRules(rules);

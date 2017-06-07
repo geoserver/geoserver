@@ -78,7 +78,7 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
     private String capabilities = "Query,Time,Data";
 
     public AbstractLayerOrTable(LayerInfo layer, int id) throws IOException {
-        this(layer, id, envelope(LayersAndTables.sphericalMercator(layer, layer.getResource().getLatLonBoundingBox())), StyleEncoder.effectiveRenderer(layer));
+        this(layer, id, new Envelope(LayersAndTables.sphericalMercator(layer, layer.getResource().getLatLonBoundingBox())), StyleEncoder.effectiveRenderer(layer));
     }
 
     protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable) throws IOException {
@@ -140,18 +140,6 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
                 LOGGER.log(Level.WARNING, "Omitting fields for layer " + layer + " because we were unable to connect to the underlying resource.", e);
             }
         }
-    }
-
-    /**
-     * Envelope from feature bounds
-     *
-     * @param boundingBox
-     * @return Envelope from feature bounds
-     */
-    protected static Envelope envelope(ReferencedEnvelope boundingBox) {
-        Integer wkid = Integer.parseInt(boundingBox.getCoordinateReferenceSystem().getIdentifiers().iterator().next().getCode());
-        return new Envelope(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMaxX(),
-                boundingBox.getMaxY(), new SpatialReferenceWKID(wkid));
     }
 
     /**

@@ -69,4 +69,4 @@ public enum GeometryTypeEnum {
             return null;
         }
     }
-};
+}

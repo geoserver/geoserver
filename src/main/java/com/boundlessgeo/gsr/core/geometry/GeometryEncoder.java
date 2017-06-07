@@ -18,6 +18,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
+import org.opengis.referencing.ReferenceIdentifier;
 
 import java.util.*;
 
@@ -61,8 +62,13 @@ public final class GeometryEncoder implements Converter {
           .key("ymax").value(envelope.getMaxY());
     }
 
-    //TODO - Consolidate these map results the existing outer classes Polygon etc.
-    public static Map<String, Object> toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
+    /**
+     * Converts a GeoTools {@link Geometry} to a GSR {@link com.boundlessgeo.gsr.core.geometry.Geometry}
+     *
+     * @param geom
+     * @return a {@link com.boundlessgeo.gsr.core.geometry.Geometry} or {@link GeometryArray}
+     */
+    public static Object toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
         // Implementation notes.
 
         // We have only directly provided support for the
@@ -72,87 +78,72 @@ public final class GeometryEncoder implements Converter {
         // figure out a good tradeoff of information loss (for example, the spec
         // doesn't distinguish between a linestring and a multilinestring) and
         // generality.
-
-        // Currently, we explicitly open and close a JSON object in this method.
-        // It might be better for extensibility to push this responsibility onto
-        // the caller - for example, that would be a nice way to support the
-        // optional 'spatialReference' property on all geometries.
-
-        Map<String, Object> geometryRepresentation = new HashMap<>();
+        SpatialReference spatialReference = new SpatialReferenceWKID(geom.getSRID());
 
         if (geom instanceof com.vividsolutions.jts.geom.Point) {
             com.vividsolutions.jts.geom.Point p = (com.vividsolutions.jts.geom.Point) geom;
-            geometryRepresentation.put("x",p.getX());
-            geometryRepresentation.put("y",p.getY());
+            return new Point(p.getX(), p.getY(), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPoint) {
             com.vividsolutions.jts.geom.MultiPoint mpoint = (com.vividsolutions.jts.geom.MultiPoint) geom;
-            List<List<Double>> points = new ArrayList<>();
+            List<double[]> points = new ArrayList<>();
             for (int i = 0; i < mpoint.getNumPoints(); i++) {
                 points.add(embeddedPoint((com.vividsolutions.jts.geom.Point) mpoint.getGeometryN(i)));
             }
-            geometryRepresentation.put("points", points);
+            return new Multipoint(points.toArray(new double[points.size()][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.LineString) {
             com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) geom;
-            List<List<List<Double>>> paths = new ArrayList<>();
-            paths.add(embeddedLineString(line));
-            geometryRepresentation.put("paths", paths);
+            return new Polyline(new double[][][]{embeddedLineString(line)}, spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiLineString) {
             com.vividsolutions.jts.geom.MultiLineString mline = (com.vividsolutions.jts.geom.MultiLineString) geom;
-            List<List<List<Double>>> paths = new ArrayList<>();
+            List<double[][]> paths = new ArrayList<>();
 
             for (int i = 0; i < mline.getNumGeometries(); i++) {
                 com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) mline.getGeometryN(i);
                 paths.add(embeddedLineString(line));
             }
-            geometryRepresentation.put("paths", paths);
+            return new Polyline(paths.toArray(new double[paths.size()][][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.Polygon) {
             com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geom;
-            List<List<List<Double>>> rings = new ArrayList<>();
+            List<double[][]> rings = new ArrayList<>();
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 rings.add(embeddedLineString(polygon.getInteriorRingN(i)));
             }
-            geometryRepresentation.put("rings", rings);
+            return new Polygon(rings.toArray(new double[rings.size()][][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
             com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
-            geometryRepresentation = toRepresentation(mpoly.getGeometryN(0));
+            return toRepresentation(mpoly.getGeometryN(0));
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
-            String geometryType = determineGeometryType(collection);
-            geometryRepresentation.put("geometryType", geometryType);
-            List<Object> geometries = new ArrayList<>();
+            GeometryTypeEnum geometryType = determineGeometryType(collection);
+            List<com.boundlessgeo.gsr.core.geometry.Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
-                geometries.add(toRepresentation(collection.getGeometryN(i)));
+                geometries.add((com.boundlessgeo.gsr.core.geometry.Geometry) toRepresentation(collection.getGeometryN(i)));
             }
-            geometryRepresentation.put("geometries", geometries);
+            return new GeometryArray(geometryType, geometries.toArray(new com.boundlessgeo.gsr.core.geometry.Geometry[geometries.size()]), spatialReference);
         } else {
           throw new IllegalStateException("Geometry encoding not yet supported for " + geom.getGeometryType());
         }
-        return geometryRepresentation;
     }
 
-    private static List<Double> embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {
-        List<Double> coords = new ArrayList<>();
-        coords.add(coord.x);
-        coords.add(coord.y);
-
-        return coords;
+    private static double[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {
+        return new double[] {coord.x, coord.y};
     }
 
-    private static List<Double> embeddedPoint(com.vividsolutions.jts.geom.Point point) {
+    private static double[] embeddedPoint(com.vividsolutions.jts.geom.Point point) {
         return embeddedCoordinate(point.getCoordinate());
     }
 
-    private static List<List<Double>> embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
-        List<List<Double>> points = new ArrayList<>();
+    private static double[][] embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
+        List<double[]> points = new ArrayList<>();
         for (com.vividsolutions.jts.geom.Coordinate c : line.getCoordinates()) {
             points.add(embeddedCoordinate(c));
         }
-        return points;
+        return points.toArray(new double[points.size()][]);
     }
 
-    private static String determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {
+    private static GeometryTypeEnum determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {
         if (collection.getNumGeometries() == 0) {
-            return GeometryTypeEnum.POINT.getGeometryType();
+            return GeometryTypeEnum.POINT;
         } else {
             String type = collection.getGeometryN(0).getGeometryType();
             for (int i = 1; i < collection.getNumGeometries(); i++) {
@@ -161,7 +152,7 @@ public final class GeometryEncoder implements Converter {
                     throw new IllegalArgumentException("GeoServices REST API Specification does not support mixed geometry types in geometry collections. (Core 9.8)");
                 }
             }
-            return type;
+            return GeometryTypeEnum.forJTSClass(collection.getGeometryN(0).getClass());
         }
     }
 

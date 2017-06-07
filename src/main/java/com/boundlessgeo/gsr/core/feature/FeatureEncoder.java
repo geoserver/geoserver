@@ -99,9 +99,8 @@ public class FeatureEncoder {
 
     //TODO - Consolidate these static inner classes with the existing outer classes Feature etc.
     public static class Feature implements GSRModel {
-        //TODO: Map doesn't serialize properly, try an object? Or use a custom converter <--!!
         public final Map<String, Object> attributes = new HashMap<>();
-        public final Map<String, Object> geometry;
+        public final Object geometry;
 
         public Feature(org.opengis.feature.Feature feature, boolean returnGeometry) {
 

@@ -7,6 +7,7 @@ package com.boundlessgeo.gsr.api.map;
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.core.feature.FeatureList;
 import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
@@ -177,10 +178,10 @@ public class QueryController extends AbstractGSRController {
         query.setCoordinateSystemReproject(outSR);
 
         if (returnIdsOnly) {
-            return new FeatureEncoder.FeatureIdSet(source.getFeatures(query));
+            return FeatureEncoder.objectIds(source.getFeatures(query));
         } else {
             final boolean reallyReturnGeometry = returnGeometry || properties == null;
-            return new FeatureEncoder.Features(source.getFeatures(query), reallyReturnGeometry);
+            return new FeatureList(source.getFeatures(query), reallyReturnGeometry);
         }
     }
 

@@ -68,7 +68,7 @@ public final class GeometryEncoder implements Converter {
      * @param geom
      * @return a {@link com.boundlessgeo.gsr.core.geometry.Geometry} or {@link GeometryArray}
      */
-    public static Object toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
+    public static com.boundlessgeo.gsr.core.geometry.Geometry toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
         // Implementation notes.
 
         // We have only directly provided support for the
@@ -117,7 +117,7 @@ public final class GeometryEncoder implements Converter {
             GeometryTypeEnum geometryType = determineGeometryType(collection);
             List<com.boundlessgeo.gsr.core.geometry.Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
-                geometries.add((com.boundlessgeo.gsr.core.geometry.Geometry) toRepresentation(collection.getGeometryN(i)));
+                geometries.add(toRepresentation(collection.getGeometryN(i)));
             }
             return new GeometryArray(geometryType, geometries.toArray(new com.boundlessgeo.gsr.core.geometry.Geometry[geometries.size()]), spatialReference);
         } else {

@@ -4,16 +4,18 @@
  */
 package com.boundlessgeo.gsr.core.feature;
 
+import com.boundlessgeo.gsr.core.GSRModel;
+
 /**
  *
  * @author Juan Marin, OpenGeo
  *
  */
-public class FeatureIdSet {
+public class FeatureIdSet implements GSRModel {
 
     private String objectIdFieldName;
 
-    private int[] objectIds;
+    private long[] objectIds;
 
     public String getObjectIdFieldName() {
         return objectIdFieldName;
@@ -23,15 +25,15 @@ public class FeatureIdSet {
         this.objectIdFieldName = objectIdFieldName;
     }
 
-    public int[] getObjectIds() {
+    public long[] getObjectIds() {
         return objectIds;
     }
 
-    public void setObjectIds(int[] objectIds) {
+    public void setObjectIds(long[] objectIds) {
         this.objectIds = objectIds;
     }
 
-    public FeatureIdSet(String objectIdFieldName, int[] objectIds) {
+    public FeatureIdSet(String objectIdFieldName, long[] objectIds) {
         super();
         this.objectIdFieldName = objectIdFieldName;
         this.objectIds = objectIds;

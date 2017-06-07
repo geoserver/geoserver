@@ -40,7 +40,7 @@ public class FeatureSchemaTest extends JsonSchemaTest {
     @Test
     public void testFeatureIdSetJsonSchema() throws Exception {
         String objectIdFieldName = "objectid";
-        int[] ids = { 1, 2, 3, 4, 5, 6, 7 };
+        long[] ids = { 1, 2, 3, 4, 5, 6, 7 };
         FeatureIdSet fIdSet = new FeatureIdSet(objectIdFieldName, ids);
         String json = getJson(fIdSet);
         assertTrue(validateJSON(json, "gsr/1.0/featureIdSet.json"));
@@ -55,7 +55,7 @@ public class FeatureSchemaTest extends JsonSchemaTest {
 
     @Test
     public void testStringFieldJsonSchema() throws Exception {
-        Field field = new StringField("name", FieldTypeEnum.STRING, "Name", 30);
+        Field field = new Field("name", FieldTypeEnum.STRING, "Name", 30);
         String json = getJson(field);
         assertTrue(validateJSON(json, "gsr/1.0/field.json"));
     }

@@ -5,6 +5,8 @@
  package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.core.feature.Field;
+import com.boundlessgeo.gsr.core.feature.FieldTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.Envelope;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
@@ -73,7 +75,7 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
     private Boolean hasAttachments = false;
     private String htmlPopupType = "esriServerHTMLPopupTypeNone";
 
-    private List<FeatureEncoder.Descriptor> fields = new ArrayList<>();
+    private List<Field> fields = new ArrayList<>();
 
     private String capabilities = "Query,Time,Data";
 
@@ -111,13 +113,13 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
 
             try {
                 // generated field
-                fields.add(new FeatureEncoder.Descriptor("objectid", "", "Feature Id", 4000, false, false));
+                fields.add(new Field("objectid", FieldTypeEnum.OID, "Feature Id", 4000, false, false));
                 FeatureType schema = featureTypeInfo.getFeatureType();
 
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
                     try {
                         if (!Geometry.class.isAssignableFrom(desc.getType().getBinding())) {
-                            fields.add(new FeatureEncoder.Descriptor(desc));
+                            fields.add(FeatureEncoder.field(desc));
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Omitting fields for PropertyDescriptor: " + desc, e);
@@ -312,7 +314,7 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
         return htmlPopupType;
     }
 
-    public List<FeatureEncoder.Descriptor> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 

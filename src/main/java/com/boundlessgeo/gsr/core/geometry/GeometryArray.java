@@ -9,7 +9,7 @@ package com.boundlessgeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  *
  */
-public class GeometryArray {
+public class GeometryArray implements Geometry {
 
     private GeometryTypeEnum geometryType;
 

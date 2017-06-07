@@ -6,14 +6,16 @@ package com.boundlessgeo.gsr.api.feature;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder.Feature;
+import com.boundlessgeo.gsr.core.feature.Feature;
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.map.LayerOrTable;
 import com.boundlessgeo.gsr.core.map.LayersAndTables;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.GeometryAttribute;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,9 +59,8 @@ public class FeatureController extends AbstractGSRController {
         FeatureSource<?, ?> source = featureType.getFeatureSource(null, null);
         FeatureCollection<?, ?> featureColl = source.getFeatures(idFilter);
         org.opengis.feature.Feature[] featureArr = featureColl.toArray(new org.opengis.feature.Feature[0]);
-        return new FeatureWrapper(new FeatureEncoder.Feature(featureArr[0], true));
+        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true));
     }
-
     public static class FeatureWrapper implements GSRModel {
         public Feature feature;
         public FeatureWrapper(Feature feature) {

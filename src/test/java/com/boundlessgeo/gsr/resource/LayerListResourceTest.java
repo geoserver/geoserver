@@ -35,7 +35,7 @@ public class LayerListResourceTest extends ResourceTest {
         JSONArray layers = json.getJSONArray("layers");
         for (Object object : layers) {
             JSONObject layer = (JSONObject) object;
-            assertTrue("Layer " + layer + " should have an extent", layer.has("extent"));
+            assertTrue("LayerEntry " + layer + " should have an extent", layer.has("extent"));
         }
     }
 }

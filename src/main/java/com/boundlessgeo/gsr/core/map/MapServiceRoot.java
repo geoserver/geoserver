@@ -33,7 +33,7 @@ import java.util.TimeZone;
 public class MapServiceRoot implements GSRModel {
 
     public final String mapName;
-    public final List<Layer> layers = new ArrayList<Layer>();
+    public final List<LayerEntry> layers = new ArrayList<LayerEntry>();
     public final DateRange timeInfo;
     public final Boolean singleFusedMapCache;
     public final String capabilities;
@@ -43,7 +43,7 @@ public class MapServiceRoot implements GSRModel {
 
         int count = 0;
         for (LayerInfo l : layers) {
-            this.layers.add(new Layer(count, l.getName()));
+            this.layers.add(new LayerEntry(count, l.getName()));
             count++;
         }
         Date[] dateRange = getCumulativeDateRange(layers);
@@ -54,16 +54,6 @@ public class MapServiceRoot implements GSRModel {
         }
         this.singleFusedMapCache = false;
         this.capabilities = "Query";
-    }
-
-    public static class Layer {
-        public final Integer id;
-        public final String name;
-
-        Layer(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
     }
 
     public static class DateRange {

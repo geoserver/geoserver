@@ -138,6 +138,15 @@ public class FeatureEncoder {
         public final Boolean nullable;
         public final String domain = null;
 
+        public Descriptor(String name, String type, String alias, Integer length, Boolean editable, Boolean nullable) {
+            this.name = name;
+            this.type = type;
+            this.alias = alias;
+            this.length = length;
+            this.editable = editable;
+            this.nullable = nullable;
+        }
+
         public Descriptor(PropertyDescriptor field) {
             // Similar to LayerListResource encodeencodeSchemaProperties
             // Similar to FeatureEncoder descriptorToJson.

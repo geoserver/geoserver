@@ -4,10 +4,12 @@
  */
  package com.boundlessgeo.gsr.core.map;
 
+import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
 import com.boundlessgeo.gsr.core.feature.FieldTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.Envelope;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
+import com.boundlessgeo.gsr.core.renderer.DrawingInfo;
 import com.boundlessgeo.gsr.core.renderer.Renderer;
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,7 +20,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,12 +62,12 @@ public class LayerOrTable  implements GSRModel {
     public final DrawingInfo drawingInfo;
     public TimeInfo timeInfo;
 
-    Boolean hasAttachments = false;
-    String htmlPopupType = "esriServerHTMLPopupTypeNone";
+    public final Boolean hasAttachments = false;
+    public final String htmlPopupType = "esriServerHTMLPopupTypeNone";
 
-    List<SchemaProperty> fields = new ArrayList<SchemaProperty>();
+    public final List<FeatureEncoder.Descriptor> fields = new ArrayList<>();
 
-    String capabilities = "Query,Time,Data";
+    public final String capabilities = "Query,Time,Data";
 
     LayerOrTable(LayerInfo layer, int id, GeometryTypeEnum gtype, ReferencedEnvelope boundingBox, Renderer renderer) throws IOException {
         this.layer = layer;
@@ -97,11 +98,14 @@ public class LayerOrTable  implements GSRModel {
 
         if (layer.getResource() instanceof FeatureTypeInfo) {
             try {
+                // generated field
+                fields.add(new FeatureEncoder.Descriptor("objectid", "", "Feature Id", 4000, false, false));
                 FeatureType ftype = ((FeatureTypeInfo) layer.getResource()).getFeatureType();
+
                 for (PropertyDescriptor desc : ftype.getDescriptors()) {
                     try {
                         if (!Geometry.class.isAssignableFrom(desc.getType().getBinding())) {
-                            fields.add(new SchemaProperty(desc));
+                            fields.add(new FeatureEncoder.Descriptor(desc));
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Omitting fields for PropertyDescriptor: " + desc, e);
@@ -114,53 +118,4 @@ public class LayerOrTable  implements GSRModel {
         }
     }
 
-    public static class DrawingInfo {
-        public final Renderer renderer;
-
-        DrawingInfo(Renderer renderer) {
-            this.renderer = renderer;
-        }
-    }
-
-    public static class TimeInfo {
-
-        public final String startTimeField;
-        public final String endTimeField;
-        public final Object trackIdField = new Object();
-
-        public final BigDecimal timeInterval;
-        public final String timeIntervalUnits;
-
-
-        public TimeInfo(DimensionInfo time) {
-            startTimeField = time.getAttribute();
-            endTimeField = time.getEndAttribute();
-
-            if (time.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
-                timeInterval = time.getResolution();
-                timeIntervalUnits = "ms";
-            } else {
-                timeInterval = null;
-                timeIntervalUnits = null;
-            }
-        }
-    }
-
-    public static class SchemaProperty {
-        public final String name;
-        public final String type;
-        public final Boolean editable = false;
-        public final Integer length;
-
-        SchemaProperty(PropertyDescriptor desc) {
-            name = desc.getName().getLocalPart();
-            type = FieldTypeEnum.forClass(desc.getType().getBinding()).getFieldType();
-
-            if (String.class.equals(desc.getType().getBinding())) {
-                length = 4000;
-            } else {
-                length = null;
-            }
-        }
-    }
 }

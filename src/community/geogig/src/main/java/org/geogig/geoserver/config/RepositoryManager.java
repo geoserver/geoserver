@@ -153,7 +153,7 @@ public class RepositoryManager implements GeoServerInitializer {
         } else {
             // no location set yet, generate one
             // NOTE: If the resource store does not support a file system, the repository will be
-            // created in a temporary directory. If this is the case, remove any repository 
+            // created in a temporary directory. If this is the case, remove any repository
             // resolvers that can resolve a 'file' URI to prevent the creation of such repos.
             Resource root = resourceStore.get(REPO_ROOT);
             File repoDir = root.get(UUID.randomUUID().toString()).dir();
@@ -164,6 +164,9 @@ public class RepositoryManager implements GeoServerInitializer {
             hints.set(Hints.REPOSITORY_URL, repoURI);
         }
 
+        String scheme = repoURI.getScheme();
+        Preconditions.checkArgument(RepositoryResolver.resolverAvailableForURIScheme(scheme),
+                "Unsupported repository URI scheme: " + scheme);
         Context context = GlobalContextBuilder.builder().build(hints);
         RepositoryResolver repositoryResolver = RepositoryResolver.lookup(repoURI);
         final boolean exists = repositoryResolver.repoExists(repoURI);

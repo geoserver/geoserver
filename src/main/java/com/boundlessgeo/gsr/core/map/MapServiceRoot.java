@@ -20,12 +20,9 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Detailed model of a MapService
@@ -54,17 +51,6 @@ public class MapServiceRoot implements GSRModel {
         }
         this.singleFusedMapCache = false;
         this.capabilities = "Query";
-    }
-
-    public static class DateRange {
-        public final List<String> timeExtent = new ArrayList<>();
-
-        DateRange(Date[] dateRange) {
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            format.setTimeZone(TimeZone.getTimeZone("UTC"));
-            timeExtent.add(format.format(dateRange[0]));
-            timeExtent.add(format.format(dateRange[1]));
-        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

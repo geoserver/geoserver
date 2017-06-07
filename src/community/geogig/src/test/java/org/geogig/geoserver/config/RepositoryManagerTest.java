@@ -154,6 +154,20 @@ public class RepositoryManagerTest extends GeoServerSystemTestSupport {
     }
     
     @Test
+    public void testCreateRepoUnsupportedURIScheme() {
+        Hints hints = new Hints();
+        hints.set(Hints.REPOSITORY_NAME, "repo1");
+        hints.set(Hints.REPOSITORY_URL, "unknown://repo1");
+        try {
+            repoManager.createRepo(hints);
+            fail();
+        } catch (IllegalArgumentException e) {
+            //expected
+            assertEquals("Unsupported repository URI scheme: unknown", e.getMessage());
+        }
+    }
+    
+    @Test
     public void testInvalidate() throws IOException {
         Hints hints = new Hints();
         hints.set(Hints.REPOSITORY_NAME, "repo1");

@@ -4,7 +4,6 @@
  */
 package com.boundlessgeo.gsr.model.feature.resource;
 
-import com.boundlessgeo.gsr.api.feature.LayerResource;
 import com.boundlessgeo.gsr.resource.ResourceTest;
 import org.junit.Test;
 
@@ -13,7 +12,7 @@ import net.sf.json.JSONObject;
 import static org.junit.Assert.*;
 
 /**
- * Test FeatureService @link {@link LayerResource} access.
+ * Test FeatureService {@link com.boundlessgeo.gsr.api.feature.FeatureLayerController} access.
  * @author Jody Garnett (Boundless)
  */
 public class LayerResourceTest extends ResourceTest {

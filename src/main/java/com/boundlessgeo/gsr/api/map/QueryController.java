@@ -93,7 +93,7 @@ public class QueryController extends AbstractGSRController {
 
         LayerInfo l = null;
         for (LayerOrTable layerOrTable : layersAndTables.layers) {
-            if (layerOrTable.id == layerId) {
+            if (layerOrTable.getId() == layerId) {
                 l = layerOrTable.layer;
                 break;
             }
@@ -101,7 +101,7 @@ public class QueryController extends AbstractGSRController {
 
         if (l == null) {
             for (LayerOrTable layerOrTable : layersAndTables.tables) {
-                if (layerOrTable.id == layerId) {
+                if (layerOrTable.getId() == layerId) {
                     l = layerOrTable.layer;
                     break;
                 }

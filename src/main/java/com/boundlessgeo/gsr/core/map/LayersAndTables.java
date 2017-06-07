@@ -105,26 +105,9 @@ public class LayersAndTables implements GSRModel {
      */
     public static LayerOrTable entry(LayerInfo layer, int idCounter) throws IOException {
         ResourceInfo resource = layer.getResource();
-        ReferencedEnvelope boundingBox = sphericalMercator(layer, resource.getLatLonBoundingBox());
-        Renderer renderer = StyleEncoder.effectiveRenderer(layer);
 
-        if (resource instanceof CoverageInfo) {
-            return new LayerOrTable(layer, idCounter, GeometryTypeEnum.POLYGON, boundingBox, renderer);
-        } else if (resource instanceof FeatureTypeInfo) {
-            final GeometryTypeEnum gtype;
-            GeometryDescriptor gDesc = ((FeatureTypeInfo)resource).getFeatureType().getGeometryDescriptor();
-
-            if (gDesc == null) {
-                gtype = null;
-            } else {
-                gtype = GeometryTypeEnum.forJTSClass(gDesc.getType().getBinding());
-            }
-
-            if (gtype == null) {
-                return new LayerOrTable(layer, idCounter, gtype, boundingBox, renderer);
-            } else {
-                return new LayerOrTable(layer, idCounter, gtype, boundingBox, renderer);
-            }
+        if (resource instanceof CoverageInfo || resource instanceof FeatureTypeInfo) {
+            return new LayerOrTable(layer, idCounter);
         }
         return null; // Skipping layer
     }

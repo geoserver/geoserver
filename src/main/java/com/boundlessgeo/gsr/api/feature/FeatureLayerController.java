@@ -42,9 +42,6 @@ public class FeatureLayerController extends AbstractGSRController {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
 
-        final LayerInfo layerInfo = entry.layer;
-        final FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerInfo.getResource();
-
-        return new FeatureLayer(entry, layerInfo,featureTypeInfo);
+        return new FeatureLayer(entry);
     }
 }

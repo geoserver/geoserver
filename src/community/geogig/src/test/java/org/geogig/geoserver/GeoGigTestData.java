@@ -124,6 +124,10 @@ public class GeoGigTestData extends ExternalResource {
         this.geogig = createRepository(repoName);
     }
 
+    public void setUp(String repoName, File root) throws Exception {
+        this.geogig = createRepository(repoName, root);
+    }
+
     @Override
     protected void after() {
         tearDown();
@@ -154,6 +158,19 @@ public class GeoGigTestData extends ExternalResource {
 
         TestPlatform testPlatform = new TestPlatform(repoDir);
         testPlatform.setUserHome(dataDirectory);
+        GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
+        Context context = GlobalContextBuilder.builder().build();
+        GeoGIG Geogig = new GeoGIG(context);
+
+        return Geogig;
+    }
+
+    public GeoGIG createRepository(String name, File root) {
+        repoDir = new File(root, name);
+        Assert.assertTrue(repoDir.mkdir());
+
+        TestPlatform testPlatform = new TestPlatform(repoDir);
+        testPlatform.setUserHome(root);
         GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
         Context context = GlobalContextBuilder.builder().build();
         GeoGIG Geogig = new GeoGIG(context);

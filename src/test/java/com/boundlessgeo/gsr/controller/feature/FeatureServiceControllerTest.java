@@ -2,17 +2,17 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.resource;
+package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.JsonSchemaTest;
-import net.sf.json.JSONObject;
+import com.boundlessgeo.gsr.controller.ControllerTest;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MapRootResourceTest extends ResourceTest {
+public class FeatureServiceControllerTest extends ControllerTest {
     private String query(String service, String params) {
-        return baseURL + service + "/MapServer" + params;
+        return baseURL + service + "/FeatureServer" + params;
     }
 
     @Test
@@ -20,13 +20,6 @@ public class MapRootResourceTest extends ResourceTest {
         String result = getAsString(query("cite", "?f=json"));
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
-         assertTrue(result + " ;Root resource validates", JsonSchemaTest.validateJSON(result, "/gsr-map/1.0/root.json"));
-    }
-
-    @Test
-    public void testNotFoundException() throws Exception {
-        JSONObject result = (JSONObject) getAsJSON(query("cte", "?f=json"));
-        JSONObject error = result.getJSONObject("error");
-        assertEquals(500, error.getInt("code"));
+        assertTrue(result + " ;Root controller validates", JsonSchemaTest.validateJSON(result, "/gsr-feature/1.0/root.json"));
     }
 }

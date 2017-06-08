@@ -2,17 +2,18 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.resource;
+package com.boundlessgeo.gsr.controller.map;
 
 import com.boundlessgeo.gsr.JsonSchemaTest;
 
+import com.boundlessgeo.gsr.controller.ControllerTest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class LayerListResourceTest extends ResourceTest {
+public class LayerListControllerTest extends ControllerTest {
     private String query(String service, String params) {
         return baseURL + service + "/MapServer/layers" + params;
     }

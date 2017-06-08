@@ -136,13 +136,13 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
                     type = "Table";
                 }
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Omitting fields for layer " + layer + " because we were unable to connect to the underlying resource.", e);
+                LOGGER.log(Level.WARNING, "Omitting fields for layer " + layer + " because we were unable to connect to the underlying controller.", e);
             }
         }
     }
 
     /**
-     * Geometry type from layer resource
+     * Geometry type from layer controller
      * @param layer
      * @return
      */
@@ -162,7 +162,7 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
 
             return gtype;
         } else {
-            throw new IllegalArgumentException("Layer resource not a valid type: " + resource.getClass());
+            throw new IllegalArgumentException("Layer controller not a valid type: " + resource.getClass());
         }
     }
 

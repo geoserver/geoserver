@@ -2,8 +2,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.resource;
+package com.boundlessgeo.gsr.controller.feature;
 
+import com.boundlessgeo.gsr.controller.ControllerTest;
 import org.junit.Test;
 
 import net.sf.json.JSON;
@@ -11,7 +12,7 @@ import net.sf.json.JSONObject;
 
 import static org.junit.Assert.*;
 
-public class FeatureResourceTest extends ResourceTest {
+public class FeatureControllerTest extends ControllerTest {
     private String query(String service, String layer, String feature, String params) {
         return baseURL + service + "/FeatureServer/" + layer + "/" + feature + params;
     }

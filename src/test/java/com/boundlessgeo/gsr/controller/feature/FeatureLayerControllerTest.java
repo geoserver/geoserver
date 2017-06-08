@@ -2,9 +2,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.model.feature.resource;
+package com.boundlessgeo.gsr.controller.feature;
 
-import com.boundlessgeo.gsr.resource.ResourceTest;
+import com.boundlessgeo.gsr.controller.ControllerTest;
 import org.junit.Test;
 
 import net.sf.json.JSON;
@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  * Test FeatureService {@link com.boundlessgeo.gsr.api.feature.FeatureLayerController} access.
  * @author Jody Garnett (Boundless)
  */
-public class LayerResourceTest extends ResourceTest {
+public class FeatureLayerControllerTest extends ControllerTest {
 
     private String query(String service, String layer, String params) {
         return baseURL + service + "/FeatureServer/" + layer + params;

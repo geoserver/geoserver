@@ -65,7 +65,7 @@ public class ImageResourceController extends AbstractController {
             throws ServletException, IOException {
         final boolean debug = logger.isDebugEnabled();
         if (debug) {
-            logger.debug("Attemping to dispatch image resource: " + fileName);
+            logger.debug("Attemping to dispatch image controller: " + fileName);
         }
 
         boolean resolved = false;
@@ -77,7 +77,7 @@ public class ImageResourceController extends AbstractController {
             } catch (IOException e) {
                 logger.info(e.getMessage());
                 if (debug) {
-                    logger.debug("Error dispatching image resource response", e);
+                    logger.debug("Error dispatching image controller response", e);
                 }
             }
         }
@@ -137,7 +137,7 @@ public class ImageResourceController extends AbstractController {
         if (propertyPath != null) {
             candidate = new File(propertyPath);
             if (candidate.isDirectory()) {
-                logger.info("Using " + propertyPath + " for GeoServices REST API image resource directory");
+                logger.info("Using " + propertyPath + " for GeoServices REST API image controller directory");
                 return candidate;
             } else {
                 logger.warn("Property " + PROPERTY_IMAGE_RESOURCE_DIR + " is set to " + propertyPath +
@@ -145,7 +145,7 @@ public class ImageResourceController extends AbstractController {
             }
         }
         candidate = new File(geoserver.getCatalog().getResourceLoader().getBaseDirectory(), "images");
-        logger.info("Using default location of  " + candidate.getPath() + " for GeoServices REST API image resource directory");
+        logger.info("Using default location of  " + candidate.getPath() + " for GeoServices REST API image controller directory");
         return candidate;
     }
 }

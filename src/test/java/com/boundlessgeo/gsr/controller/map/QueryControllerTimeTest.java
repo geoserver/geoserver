@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.resource;
+package com.boundlessgeo.gsr.controller.map;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import com.boundlessgeo.gsr.controller.ControllerTest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -26,7 +27,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class QueryResourceTimeTest extends ResourceTest {
+public class QueryControllerTimeTest extends ControllerTest {
     public static final QName TIME_ELEVATION =
             new QName(MockData.CITE_URI, "TimeElevation", MockData.CITE_PREFIX);
 
@@ -36,7 +37,7 @@ public class QueryResourceTimeTest extends ResourceTest {
     public void onSetUp(SystemTestData testData) {
         try {
             Map<LayerProperty, Object> props = Collections.emptyMap();
-            testData.addVectorLayer(TIME_ELEVATION, props, "TimeElevation.properties", QueryResourceTimeTest.class, getCatalog());
+            testData.addVectorLayer(TIME_ELEVATION, props, "TimeElevation.properties", QueryControllerTimeTest.class, getCatalog());
 
             FeatureTypeInfo info = getCatalog().getFeatureTypeByName(
                     TIME_ELEVATION.getNamespaceURI(),

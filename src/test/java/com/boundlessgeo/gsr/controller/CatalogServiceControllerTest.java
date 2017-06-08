@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.resource;
+package com.boundlessgeo.gsr.controller;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -10,7 +10,7 @@ import net.sf.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class CatalogResourceTest extends ResourceTest {
+public class CatalogServiceControllerTest extends ControllerTest {
 
     @Test
     public void testServiceException() throws Exception {
@@ -60,7 +60,7 @@ public class CatalogResourceTest extends ResourceTest {
         assertTrue(validateJSON(jsonString, "gsr-cs/1.0/catalog.json"));
     }
 
-    // TODO: Set up ResourceTest to include Virtual Services and test that folders contain those virtual services
+    // TODO: Set up ControllerTest to include Virtual Services and test that folders contain those virtual services
     // and that they validate as Catalog endpoints
 
     /*

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package com.boundlessgeo.gsr.resource;
+package com.boundlessgeo.gsr.controller;
 
 import java.io.File;
 
@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ResourceTest extends CatalogRESTTestSupport {
+public class ControllerTest extends CatalogRESTTestSupport {
 
     protected Catalog catalog;
 

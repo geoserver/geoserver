@@ -13,7 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Static configuration values used in the api output
+ * Static configuration values used in the api output.
+ * Values are read from the properties file "config.properties" in this package.
  */
 public class GSRConfig {
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.boundlessgeo.gsr.controller.ControllerTest;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
@@ -17,10 +18,9 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.StyleFactory;
 import org.junit.Test;
-import com.boundlessgeo.gsr.resource.ResourceTest;
 import org.opengis.style.Style;
 
-public class RendererEncoderTest extends ResourceTest {
+public class RendererEncoderTest extends ControllerTest {
     @Test
     public void testPolygonRendererJsonSchema() throws Exception {
         StyleInfo polygonInfo = getGeoServer().getCatalog().getStyleByName("Lakes");

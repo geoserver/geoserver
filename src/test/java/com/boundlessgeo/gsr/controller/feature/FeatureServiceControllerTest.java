@@ -20,6 +20,6 @@ public class FeatureServiceControllerTest extends ControllerTest {
         String result = getAsString(query("cite", "?f=json"));
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
-        assertTrue(result + " ;Root controller validates", JsonSchemaTest.validateJSON(result, "/gsr-feature/1.0/root.json"));
+        assertTrue(result + " ;Root controller validates", JsonSchemaTest.validateJSON(result, "/gsr-fs/1.0/root.json"));
     }
 }

@@ -215,7 +215,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertEquals("GRAY_INDEX", dimension.getName());
         assertEquals(1, dimension.getNullValues().size());
         assertEquals(-9999, dimension.getNullValues().get(0), 0d);
-        assertEquals(-9999, dimension.getRange().getMinimum(), 0d);
+        assertEquals(Double.NEGATIVE_INFINITY, dimension.getRange().getMinimum(), 0d);
         // Huston, we have a problem here...
         // assertEquals(9999, dimension.getRange().getMaximum(), 0d);
         assertNull(dimension.getUnit());

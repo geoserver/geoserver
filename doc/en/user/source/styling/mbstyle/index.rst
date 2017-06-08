@@ -13,6 +13,7 @@ MBStyle is not a part of GeoServer by default, but is available as an optional i
    :maxdepth: 2
 
    installing
+   source
    reference/index
    reference/spec
    cookbook/index

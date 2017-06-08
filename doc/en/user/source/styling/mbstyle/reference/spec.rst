@@ -149,7 +149,15 @@ Data source specifications.
     "sources": {
       "mapbox-streets": {
         "type": "vector",
-        "url": "mapbox://mapbox.mapbox-streets-v6"
+        "tiles": [
+          "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile
+              &SERVICE=WMTS&VERSION=1.0.0&LAYER=mapbox:streets&STYLE=
+              &TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913
+              &FORMAT=application/x-protobuf;type=mapbox-vector
+              &TILECOL={x}&TILEROW={y}"
+        ],
+        "minZoom": 0,
+        "maxZoom": 14
       }
     }
 
@@ -427,7 +435,14 @@ Mapbox, the ``"url"`` value should be of the form ``mapbox://mapid``.
 
     "mapbox-streets": {
       "type": "vector",
-      "url": "mapbox://mapbox.mapbox-streets-v6"
+      "tiles": [
+        "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS
+            &VERSION=1.0.0&LAYER=mapbox:streets&STYLE=&TILEMATRIX=EPSG:900913:{z}
+            &TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector
+            &TILECOL={x}&TILEROW={y}"
+      ],
+      "minZoom": 0,
+      "maxZoom": 14
     }
 
 url
@@ -492,8 +507,13 @@ value should be of the form ``mapbox://mapid``.
 
     "mapbox-satellite": {
       "type": "raster",
-      "url": "mapbox://mapbox.satellite",
-      "tileSize": 256
+      "tiles": [
+        "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS
+            &VERSION=1.0.0&LAYER=mapbox:satellite&STYLE=&TILEMATRIX=EPSG:900913:{z}
+            &TILEMATRIXSET=EPSG:900913&FORMAT=image/png&TILECOL={x}&TILEROW={y}"
+      ],
+      "minzoom": 0,
+      "maxzoom": 14
     }
 
 url

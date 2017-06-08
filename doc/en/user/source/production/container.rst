@@ -54,6 +54,8 @@ For more information about JVM configuration, see the article `Performance tunin
     
    The above results (from a 16 GB laptop) amount to initial heap size of 256m, and a max heap size of around 4 GB (or around 1/4 of system memory).
    
+.. _production_container.enable_cors:
+
 Enable CORS
 -----------
 

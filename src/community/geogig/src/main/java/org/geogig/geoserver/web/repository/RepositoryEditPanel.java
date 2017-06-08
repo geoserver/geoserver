@@ -100,11 +100,6 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
     }
 
     private boolean repoNameExists(String repoName) {
-        for (RepositoryInfo repo : RepositoryManager.get().getAll()) {
-            if (repo.getRepoName().equals(repoName)) {
-                return true;
-            }
-        }
-        return false;
+        return RepositoryManager.get().getByRepoName(repoName) != null;
     }
 }

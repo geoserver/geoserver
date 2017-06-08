@@ -6,6 +6,7 @@ package com.boundlessgeo.gsr.api;
 
 import com.boundlessgeo.gsr.core.exception.ServiceError;
 import com.boundlessgeo.gsr.core.exception.ServiceException;
+import com.boundlessgeo.gsr.core.map.AbstractLayerOrTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Resolves unhandled exceptions by converting them to {@link ServiceException}, then encoding that to json via
@@ -26,6 +29,8 @@ import java.util.Collections;
  */
 @Component
 public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolver {
+
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(GeoServicesExceptionResolver.class);
 
     @Autowired
     GeoServicesJacksonJsonConverter converter;
@@ -47,12 +52,14 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
         ServiceException exception = new ServiceException(new ServiceError(
                 500, "Internal Server Error", Collections.singletonList(ex.getMessage())));
 
+        //Log the full stack trace, since the response just has the error message.
+        LOGGER.log(Level.INFO, "Error handling request", ex);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         try {
             converter.getMapper().writeValue(response.getOutputStream(), exception);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Error writing exception response", e);
         }
         return new ModelAndView();
     }

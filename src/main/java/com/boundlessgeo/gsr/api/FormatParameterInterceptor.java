@@ -37,7 +37,7 @@ public class FormatParameterInterceptor extends HandlerInterceptorAdapter {
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            converter.getMapper().writeValue(response.getOutputStream(), new ServiceException(new ServiceError(
+            converter.writeToOutputStream(response.getOutputStream(), new ServiceException(new ServiceError(
                     HttpStatus.BAD_REQUEST.value(), "Output format not supported", Collections.singletonList("Format " + format + " is not supported")
             )));
             return false;

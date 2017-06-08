@@ -12,12 +12,13 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * JSON converter using jackson
  */
 @Component
-public class GeoServicesJacksonJsonConverter extends BaseMessageConverter<GSRModel> {
+public class GeoServicesJacksonJsonConverter extends AbstractGeoServicesConverter{
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -40,11 +41,15 @@ public class GeoServicesJacksonJsonConverter extends BaseMessageConverter<GSRMod
     @Override
     public void writeInternal(GSRModel o, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-
-        mapper.writerWithDefaultPrettyPrinter().writeValue(outputMessage.getBody(), o);
+        writeToOutputStream(outputMessage.getBody(), o);
     }
 
     public ObjectMapper getMapper() {
         return mapper;
+    }
+
+    @Override
+    public void writeToOutputStream(OutputStream os, Object o) throws IOException {
+        mapper.writerWithDefaultPrettyPrinter().writeValue(os, o);
     }
 }

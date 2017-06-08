@@ -57,7 +57,7 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         try {
-            converter.getMapper().writeValue(response.getOutputStream(), exception);
+            converter.writeToOutputStream(response.getOutputStream(), exception);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error writing exception response", e);
         }

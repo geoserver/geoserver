@@ -4,12 +4,13 @@
  */
 package org.geoserver.feature;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -19,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.util.ProgressListener;
 
 public class RetypingFeatureCollectionTest {
@@ -59,5 +61,20 @@ public class RetypingFeatureCollectionTest {
         RetypingFeatureCollection retypedCollection = new RetypingFeatureCollection(collection, renamedSchema);
         retypedCollection.accepts(visitor, null);
         assertSame(lastVisitor, visitor);
+    }
+    
+    /**
+     * TEST for GEOS-8176 [https://osgeo-org.atlassian.net/browse/GEOS-8176].
+     * 
+     * Make sure that the subCollection returned is retyped.
+     * 
+     * @author Ian Turton
+     */
+    @Test
+    public void testSubCollectionRetyping() {
+        RetypingFeatureCollection retypedCollection = new RetypingFeatureCollection(collection,
+                renamedSchema);
+        SimpleFeatureCollection subCollection = retypedCollection.subCollection(Filter.INCLUDE);
+        assertSame(renamedSchema, subCollection.getSchema());
     }
 }

@@ -41,7 +41,7 @@ public class GeoServicesJacksonJsonConverter extends BaseMessageConverter<GSRMod
     public void writeInternal(GSRModel o, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        mapper.writeValue(outputMessage.getBody(), o);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(outputMessage.getBody(), o);
     }
 
     public ObjectMapper getMapper() {

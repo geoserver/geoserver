@@ -1146,21 +1146,22 @@ public class CatalogBuilder {
             
             dim.setDimensionType(sd.getSampleDimensionType());
 
+            double sdMin = sd.getMinimumValue();
+            double sdMax = sd.getMaximumValue();
             label.append("[".intern());
-            label.append(sd.getMinimumValue());
+            label.append(sdMin);
             label.append(",".intern());
-            label.append(sd.getMaximumValue());
+            label.append(sdMax);
             label.append("]".intern());
 
             dim.setDescription(label.toString());
+            // Since the nullValues element of the CoverageDimensionInfo reports
+            // the nodata (if available), let's switch to use the 
+            // sampleDimension's min and max as Dimension's Range
+            // instead of the whole SampleDimension Range 
+            // (the latter may include nodata categories).
+            dim.setRange(NumberRange.create(sdMin, sdMax));
 
-            if (sd.getRange() != null) {
-                dim.setRange(sd.getRange());    
-            }
-            else {
-                dim.setRange(NumberRange.create(sd.getMinimumValue(), sd.getMaximumValue()));
-            }
-            
             final List<Category> categories = sd.getCategories();
             if (categories != null) {
                 for (Category cat : categories) {

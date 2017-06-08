@@ -189,13 +189,16 @@ public class RepositoryManager implements GeoServerInitializer {
         }
     }
 
+    /**
+     * Retrieves a RepositoryInfo with a specified name.
+     *
+     * @param name The name of the repository desired.
+     *
+     * @return a RepositoryInfo object, if found. If not found, returns null.
+     */
     public RepositoryInfo getByRepoName(final String name) {
         RepositoryInfo info = configStore.getByName(name);
-        if (info != null) {
-            return info;
-        }
-        // didn't find it
-        throw new NoSuchElementException("No repository with name " + name + " exists");
+        return info;
     }
 
     public List<DataStoreInfo> findGeogigStores() {

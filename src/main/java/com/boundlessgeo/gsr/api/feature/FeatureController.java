@@ -42,12 +42,12 @@ public class FeatureController extends AbstractGSRController {
         LayerOrTable l = LayersAndTables.find(catalog, workspaceName, layerId);
 
         if (null == l) {
-            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + " for id " + layerId);
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
 
         FeatureTypeInfo featureType = (FeatureTypeInfo) l.layer.getResource();
         if (null == featureType) {
-            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + " for id " + layerId);
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
 
 
@@ -56,6 +56,9 @@ public class FeatureController extends AbstractGSRController {
         FeatureSource<?, ?> source = featureType.getFeatureSource(null, null);
         FeatureCollection<?, ?> featureColl = source.getFeatures(idFilter);
         org.opengis.feature.Feature[] featureArr = featureColl.toArray(new org.opengis.feature.Feature[0]);
+        if (featureArr.length == 0) {
+            throw new NoSuchElementException("No feature in layer or table " + layerId + " with id " + featureId);
+        }
         return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true));
     }
 }

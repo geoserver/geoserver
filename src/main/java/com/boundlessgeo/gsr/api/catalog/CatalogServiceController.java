@@ -38,7 +38,7 @@ public class CatalogServiceController extends AbstractGSRController {
 
     @GetMapping(path = {"", "/{folder}"})
     public CatalogService catalogGet(@PathVariable(required = false) String folder) {
-        List<AbstractService> services = new ArrayList<AbstractService>();
+        List<AbstractService> services = new ArrayList<>();
         for (WorkspaceInfo ws : catalog.getWorkspaces()) {
             MapService ms = new MapService(ws.getName());
             FeatureService fs = new FeatureService(ws.getName());
@@ -46,6 +46,6 @@ public class CatalogServiceController extends AbstractGSRController {
             services.add(fs);
         }
         services.add(new GeometryService("Geometry"));
-        return new CatalogService("services", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.<String>emptyList(), services);
+        return new CatalogService("services", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.emptyList(), services);
     }
 }

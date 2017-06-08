@@ -20,7 +20,7 @@ import java.util.Collections;
 
 /**
  * Resolves unhandled exceptions by converting them to {@link ServiceException}, then encoding that to json via
- * {@link GeoServicesXStreamJsonConverter}
+ * {@link GeoServicesJacksonJsonConverter}
  *
  * TODO: If this ever supports more than f=json, look up the right converter programmatically.
  */

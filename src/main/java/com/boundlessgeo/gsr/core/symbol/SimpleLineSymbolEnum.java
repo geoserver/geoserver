@@ -25,7 +25,7 @@ public enum SimpleLineSymbolEnum {
         return style;
     }
 
-    private SimpleLineSymbolEnum(String style) {
+    SimpleLineSymbolEnum(String style) {
         this.style = style;
     }
 }

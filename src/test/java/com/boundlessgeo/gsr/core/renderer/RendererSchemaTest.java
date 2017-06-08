@@ -43,7 +43,7 @@ public class RendererSchemaTest extends JsonSchemaTest {
         Symbol symbol1 = new SimpleLineSymbol(SimpleLineSymbolEnum.DASH, color1, 1);
         int[] color2 = { 115, 76, 0, 255 };
         Symbol symbol2 = new SimpleLineSymbol(SimpleLineSymbolEnum.DOT, color2, 1);
-        List<UniqueValueInfo> uniqueValueInfos = new ArrayList<UniqueValueInfo>();
+        List<UniqueValueInfo> uniqueValueInfos = new ArrayList<>();
         UniqueValueInfo valueInfo1 = new UniqueValueInfo("1", "Duct Bank", "Duct Bank description", symbol1);
         UniqueValueInfo valueInfo2 = new UniqueValueInfo("2", "Trench", "Trench description", symbol2);
         uniqueValueInfos.add(valueInfo1);
@@ -72,7 +72,7 @@ public class RendererSchemaTest extends JsonSchemaTest {
         ClassBreakInfo classBreakInfo2 = new ClassBreakInfo(null, 5000, "1000.00001 - 5000.0000",
                 "1000 to 5000", symbol2);
 
-        List<ClassBreakInfo> classBreakInfos = new ArrayList<ClassBreakInfo>();
+        List<ClassBreakInfo> classBreakInfos = new ArrayList<>();
         classBreakInfos.add(classBreakInfo1);
         classBreakInfos.add(classBreakInfo2);
         ClassBreaksRenderer renderer = new ClassBreaksRenderer("Shape.area", 10.3906320193541,

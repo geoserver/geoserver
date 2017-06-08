@@ -29,7 +29,7 @@ public enum GeometryTypeEnum {
         return geometryType;
     }
 
-    private GeometryTypeEnum(String geomType) {
+    GeometryTypeEnum(String geomType) {
         this.geometryType = geomType;
     }
 

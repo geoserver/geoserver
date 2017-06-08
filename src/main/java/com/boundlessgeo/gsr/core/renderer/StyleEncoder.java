@@ -10,9 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 
@@ -47,9 +45,6 @@ import org.opengis.style.Fill;
 import org.opengis.style.GraphicalSymbol;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import net.sf.json.util.JSONBuilder;
 
@@ -171,8 +166,8 @@ public class StyleEncoder {
     }
 
     private static Renderer rulesToClassBreaksRenderer(List<Rule> rules) {
-        List<Rule> rulesOther = new LinkedList<Rule>();
-        Map<String, ClassBreaksRenderer> map = new LinkedHashMap<String, ClassBreaksRenderer>();
+        List<Rule> rulesOther = new LinkedList<>();
+        Map<String, ClassBreaksRenderer> map = new LinkedHashMap<>();
         for (Rule rule : rules) {
             ClassBreakInfoMeta meta = ruleToClassBreakInfoMeta(rule);
             if (meta != null) {
@@ -181,7 +176,7 @@ public class StyleEncoder {
                     double minValue = 0;
                     renderer = new ClassBreaksRenderer(meta.propertyName,
                             minValue,
-                            new LinkedList<ClassBreakInfo>());
+                            new LinkedList<>());
                     map.put(meta.propertyName, renderer);
                 }
                 renderer.getClassBreakInfos().add(meta.classBreakInfo);
@@ -195,7 +190,10 @@ public class StyleEncoder {
             if (rulesOther.size() == 1) {
                 // assuming remaining rule is the default.
                 Rule rule = rulesOther.get(0);
-                String title = rule.getTitle();
+                String title = null;
+                if (rule.getDescription() != null && rule.getDescription().getTitle() != null) {
+                    title = rule.getDescription().getTitle().toString();
+                }
                 if (title == null) title = "";
                 // classBreaksRenderer.setDefaultLabel(title);
                 // classBreaksRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
@@ -252,13 +250,13 @@ public class StyleEncoder {
         if (!(min instanceof Literal)) {
             return null;
         }
-        Double minAsDouble = ((Literal)min).evaluate(null, double.class);
+        Double minAsDouble = min.evaluate(null, double.class);
 
         Expression max = upperBound.getExpression2();
         if (!(max instanceof Literal)) {
             return null;
         }
-        Double maxAsDouble = ((Literal)max).evaluate(null, double.class);
+        Double maxAsDouble = max.evaluate(null, double.class);
 
         String title = null, description = null;
         Description desc = rule.getDescription();
@@ -276,23 +274,24 @@ public class StyleEncoder {
     }
 
     private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
-        List<Rule> rulesOther = new LinkedList<Rule>();
-        Map<String, UniqueValueRenderer> map = new LinkedHashMap<String, UniqueValueRenderer>();
+        List<Rule> rulesOther = new LinkedList<>();
+        Map<String, UniqueValueRenderer> map = new LinkedHashMap<>();
         for (Rule rule : rules) {
             UniqueValueInfoMeta meta = ruleToUniqueValueInfoMeta(rule);
             if (meta != null) {
-                UniqueValueRenderer renderer = map.get(meta.propertyName);
-                if (renderer == null) {
-                    renderer = new UniqueValueRenderer(
-                            meta.propertyName,
-                            null, // field 2
-                            null, // field 3
-                            ", ", // delimiter, required even with single field
-                            null, // default symbol (set later)
-                            null, // default label (set later)
-                            new LinkedList<UniqueValueInfo>());
-                    map.put(meta.propertyName, renderer);
-                }
+                // field 2
+// field 3
+// delimiter, required even with single field
+// default symbol (set later)
+// default label (set later)
+                UniqueValueRenderer renderer = map.computeIfAbsent(meta.propertyName, k -> new UniqueValueRenderer(
+                        meta.propertyName,
+                        null, // field 2
+                        null, // field 3
+                        ", ", // delimiter, required even with single field
+                        null, // default symbol (set later)
+                        null, // default label (set later)
+                        new LinkedList<>()));
                 renderer.getUniqueValueInfos().add(meta.uniqueValueInfo);
             } else {
                 rulesOther.add(rule);
@@ -306,7 +305,10 @@ public class StyleEncoder {
                 // Robust programatic parsing of typical defaults written in SLD
                 // will be a PITA, let's defer.
                 Rule rule = rulesOther.get(0);
-                String title = rule.getTitle();
+                String title = null;
+                if (rule.getDescription() != null && rule.getDescription().getTitle() != null) {
+                    title = rule.getDescription().getTitle().toString();
+                }
                 if (title == null) title = "";
                 uniqueValueRenderer.setDefaultLabel(title);
                 uniqueValueRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
@@ -347,9 +349,17 @@ public class StyleEncoder {
                 ((Literal)expression2).getValue().toString() : null;
         if (valueAsString == null) return null;
 
-        String title = rule.getTitle();
+        String title = null;
+        String description = null;
+        if (rule.getDescription() != null) {
+            if (rule.getDescription().getTitle() != null) {
+                title = rule.getDescription().getTitle().toString();
+            }
+            if (rule.getDescription().getAbstract() != null) {
+                description = rule.getDescription().getAbstract().toString();
+            }
+        }
         if (title == null) title = "";
-        String description = rule.getAbstract();
         if (description == null) description = "";
 
         return new UniqueValueInfoMeta(propertyName,
@@ -518,9 +528,7 @@ public class StyleEncoder {
                     pos += read;
                     if (pos == rawData.length) {
                         byte[] grown = new byte[rawData.length * 2];
-                        for (int i = 0; i < pos; i++) {
-                            grown[i] = rawData[i];
-                        }
+                        System.arraycopy(rawData, 0, grown, 0, pos);
                         rawData = grown;
                     }
                 }
@@ -573,23 +581,23 @@ public class StyleEncoder {
         final Color color;
         final double opacity;
         final double width;
-        float[] dashArray;
+        List<Float> dashArray;
         final SimpleLineSymbolEnum lineStyle;
         if (stroke != null) {
             opacity = evaluateWithDefault(stroke.getOpacity(), 1d);
             color = evaluateWithDefault(stroke.getColor(), Color.BLACK);
             width = evaluateWithDefault(stroke.getWidth(), 1d);
-            dashArray = stroke.getDashArray();
+            dashArray = evaluateWithDefault(stroke.dashArray(), null, Float.class);
         } else {
             color = Color.BLACK;
             opacity = 1d;
             width = 1d;
             dashArray = null;
         }
-        if (dashArray == null || dashArray.length == 1) {
+        if (dashArray == null || dashArray.size() == 1) {
             lineStyle = SimpleLineSymbolEnum.SOLID;
         } else {
-            Set<Float> uniqueValues = new java.util.HashSet<Float>();
+            Set<Float> uniqueValues = new java.util.HashSet<>();
             for (float f : dashArray) {
                 uniqueValues.add(f);
             }
@@ -741,9 +749,19 @@ public class StyleEncoder {
         if (exp == null || def == null) return def;
         try {
             return (T)exp.evaluate(null, def.getClass());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ClassCastException e) {
             return def;
-        } catch (ClassCastException e) {
+        }
+    }
+    private static <T> List<T> evaluateWithDefault(List<Expression> exps, List<T> def, Class<T> clazz) {
+        if (exps == null) return def;
+        try {
+            List<T> list = new ArrayList<>();
+            for (Expression exp : exps) {
+                list.add(exp.evaluate(null, clazz));
+            }
+            return list;
+        } catch (IllegalArgumentException | ClassCastException e) {
             return def;
         }
     }

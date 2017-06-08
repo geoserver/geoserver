@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -45,14 +44,14 @@ public class LegendController extends AbstractGSRController {
             throw new NoSuchElementException("No workspace known by name: " + workspaceName);
         }
 
-        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
+        List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
             if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }
-        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
-        List<LayerLegend> legends = new ArrayList<LayerLegend>();
+        layersInWorkspace.sort(LayerNameComparator.INSTANCE);
+        List<LayerLegend> legends = new ArrayList<>();
         for (int i = 0; i < layersInWorkspace.size(); i++) {
             legends.add(new LayerLegend(layersInWorkspace.get(i), i));
 

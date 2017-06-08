@@ -10,7 +10,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class FeatureRootResourceTest extends ResourceTest {
-    private final String query(String service, String params) {
+    private String query(String service, String params) {
         return baseURL + service + "/FeatureServer" + params;
     }
 

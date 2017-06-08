@@ -18,7 +18,7 @@ public enum FontDecorationEnum {
         return style;
     }
 
-    private FontDecorationEnum(String style) {
+    FontDecorationEnum(String style) {
         this.style = style;
     }
 }

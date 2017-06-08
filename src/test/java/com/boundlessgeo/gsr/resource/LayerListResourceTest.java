@@ -13,7 +13,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LayerListResourceTest extends ResourceTest {
-    private final String query(String service, String params) {
+    private String query(String service, String params) {
         return baseURL + service + "/MapServer/layers" + params;
     }
 

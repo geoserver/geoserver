@@ -12,7 +12,7 @@ import net.sf.json.JSONObject;
 import static org.junit.Assert.*;
 
 public class FeatureResourceTest extends ResourceTest {
-    private final String query(String service, String layer, String feature, String params) {
+    private String query(String service, String layer, String feature, String params) {
         return baseURL + service + "/FeatureServer/" + layer + "/" + feature + params;
     }
 

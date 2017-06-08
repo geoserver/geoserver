@@ -32,9 +32,9 @@ public class ImageResourceController extends AbstractController {
     private static final String HTTP_HEADER_ETAG = "ETag";
     private static final String HTTP_HEADER_CACHE_CONTROL = "Cache-Control";
 
-    private static final Map<String, String> defaultMimeTypes = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+    private static final Map<String, String> defaultMimeTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-    {
+    static {
         defaultMimeTypes.put(".gif", "image/gif");
         defaultMimeTypes.put(".jpeg", "image/jpeg");
         defaultMimeTypes.put(".jpg", "image/jpeg");
@@ -51,7 +51,7 @@ public class ImageResourceController extends AbstractController {
     public ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response)
             throws Exception {
 
-        final String path = (String) request.getRequestURI();
+        final String path = request.getRequestURI();
 
         int index = path.lastIndexOf('/');
         String fileName = index < 0 ? path : path.substring(index + 1);
@@ -100,7 +100,7 @@ public class ImageResourceController extends AbstractController {
             final int extIndex = imagePath.lastIndexOf('.');
             if (extIndex != -1) {
                 String extension = imagePath.substring(extIndex);
-                mimetype = (String) defaultMimeTypes.get(extension.toLowerCase());
+                mimetype = defaultMimeTypes.get(extension.toLowerCase());
             }
         }
 

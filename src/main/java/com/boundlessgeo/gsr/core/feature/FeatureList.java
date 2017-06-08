@@ -1,13 +1,11 @@
 package com.boundlessgeo.gsr.core.feature;
 
 import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.SpatialReference;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
@@ -31,7 +29,6 @@ public class FeatureList implements GSRModel {
     public final ArrayList<Feature> features = new ArrayList<>();
 
     public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(FeatureCollection<T, F> collection, boolean returnGeometry) throws IOException {
-        FeatureIterator<F> iterator = collection.features();
 
         T schema = collection.getSchema();
 
@@ -70,13 +67,11 @@ public class FeatureList implements GSRModel {
             }
         }
 
-        try {
+        try (FeatureIterator<F> iterator = collection.features()) {
             while (iterator.hasNext()) {
                 org.opengis.feature.Feature feature = iterator.next();
                 features.add(FeatureEncoder.feature(feature, returnGeometry));
             }
-        } finally {
-            iterator.close();
         }
     }
 }

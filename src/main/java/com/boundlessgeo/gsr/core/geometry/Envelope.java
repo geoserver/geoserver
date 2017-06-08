@@ -110,11 +110,7 @@ public class Envelope implements Geometry {
     }
 
     public boolean isValid() {
-        if (this.xmin <= this.xmax && this.ymin <= this.ymax) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.xmin <= this.xmax && this.ymin <= this.ymax;
     }
 
 }

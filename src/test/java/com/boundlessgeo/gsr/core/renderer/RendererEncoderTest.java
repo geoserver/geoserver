@@ -62,7 +62,7 @@ public class RendererEncoderTest extends ResourceTest {
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         SLDParser parser = new SLDParser(factory, getClass().getResource(sldPath));
         org.geotools.styling.Style sld = parser.readXML()[0];
-        return StyleEncoder.styleToRenderer((org.geotools.styling.Style) sld);
+        return StyleEncoder.styleToRenderer(sld);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class RendererEncoderTest extends ResourceTest {
         SLDParser parser = new SLDParser(factory, getClass().getResource("mark.sld"));
         org.geotools.styling.Style sld = parser.readXML()[0];
         JSONBuilder json = new JSONStringer();
-        Renderer renderer = StyleEncoder.styleToRenderer((org.geotools.styling.Style) sld);
+        Renderer renderer = StyleEncoder.styleToRenderer(sld);
         assertNotNull(renderer);
         StyleEncoder.encodeRenderer(json, renderer);
         JSONObject object = JSONObject.fromObject(json.toString());

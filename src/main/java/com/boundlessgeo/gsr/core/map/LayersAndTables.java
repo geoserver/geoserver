@@ -5,9 +5,6 @@
 package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
-import com.boundlessgeo.gsr.core.renderer.Renderer;
-import com.boundlessgeo.gsr.core.renderer.StyleEncoder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -16,14 +13,12 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,7 +48,7 @@ public class LayersAndTables implements GSRModel {
      */
     public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id) throws IOException{
         // short list all layers
-        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
+        List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
             if (l.enabled() && l.getType() == PublishedType.VECTOR &&
                     l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
@@ -61,7 +56,7 @@ public class LayersAndTables implements GSRModel {
             }
         }
         // sort for "consistent" order
-        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+        layersInWorkspace.sort(LayerNameComparator.INSTANCE);
 
         // retrieve indicated layer as LayerOrTable
         if (id < layersInWorkspace.size()){
@@ -118,16 +113,16 @@ public class LayersAndTables implements GSRModel {
      * @return GeoServer Layers gathered into GSR layers (with at least one geometry column) or tables.
      */
     public static LayersAndTables find(Catalog catalog, String workspaceName) {
-        List<LayerOrTable> layers = new ArrayList<LayerOrTable>();
-        List<LayerOrTable> tables = new ArrayList<LayerOrTable>();
+        List<LayerOrTable> layers = new ArrayList<>();
+        List<LayerOrTable> tables = new ArrayList<>();
         int idCounter = 0;
-        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
+        List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
             if (l.enabled() && l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }
-        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+        layersInWorkspace.sort(LayerNameComparator.INSTANCE);
         for (LayerInfo l : layersInWorkspace) {
             try {
                 LayerOrTable entry = entry( l, idCounter);

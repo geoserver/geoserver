@@ -5,17 +5,8 @@
 package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.renderer.*;
-import com.boundlessgeo.gsr.core.symbol.*;
 import org.geoserver.catalog.LayerInfo;
-import org.geotools.data.Base64;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +21,7 @@ public class LayerLegend {
     String layerType = "Feature Layer";
     Integer minScale = 0;
     Integer maxScale = 0;
-    List<LegendEntry> legend = new ArrayList<LegendEntry>();
+    List<LegendEntry> legend = new ArrayList<>();
 
 
     public LayerLegend(LayerInfo layer, int id) throws IOException {

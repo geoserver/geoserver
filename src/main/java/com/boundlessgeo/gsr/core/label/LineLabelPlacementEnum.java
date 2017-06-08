@@ -22,7 +22,7 @@ public enum LineLabelPlacementEnum {
         return placement;
     }
 
-    private LineLabelPlacementEnum(String placement) {
+    LineLabelPlacementEnum(String placement) {
         this.placement = placement;
     }
 }

@@ -68,7 +68,7 @@ public class LabelSchemaTest extends JsonSchemaTest {
 
     @Test
     public void testLabelInfoJsonSchema() throws Exception {
-        List<Label> labels = new ArrayList<Label>();
+        List<Label> labels = new ArrayList<>();
         int[] color = { 78, 78, 78, 255 };
         int[] lineColor = { 78, 78, 78, 255 };
         int[] polygonColor = { 78, 78, 78, 255 };

@@ -9,7 +9,6 @@ import com.boundlessgeo.gsr.core.feature.Field;
 import com.boundlessgeo.gsr.core.feature.FieldTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.Envelope;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
-import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 import com.boundlessgeo.gsr.core.renderer.DrawingInfo;
 import com.boundlessgeo.gsr.core.renderer.Renderer;
 import com.boundlessgeo.gsr.core.GSRModel;
@@ -17,7 +16,6 @@ import com.boundlessgeo.gsr.core.renderer.StyleEncoder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.*;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -123,7 +121,6 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Omitting fields for PropertyDescriptor: " + desc, e);
-                        continue;
                     }
                 }
 

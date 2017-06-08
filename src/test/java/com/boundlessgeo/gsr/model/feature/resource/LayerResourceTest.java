@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  */
 public class LayerResourceTest extends ResourceTest {
 
-    private final String query(String service, String layer, String params) {
+    private String query(String service, String layer, String params) {
         return baseURL + service + "/FeatureServer/" + layer + params;
     }
 

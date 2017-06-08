@@ -30,7 +30,7 @@ import java.util.List;
 public class MapServiceRoot implements GSRModel {
 
     public final String mapName;
-    public final List<LayerEntry> layers = new ArrayList<LayerEntry>();
+    public final List<LayerEntry> layers = new ArrayList<>();
     public final DateRange timeInfo;
     public final Boolean singleFusedMapCache;
     public final String capabilities;
@@ -54,7 +54,7 @@ public class MapServiceRoot implements GSRModel {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final Date[] getCumulativeDateRange(List<LayerInfo> layers) throws IOException {
+    private static Date[] getCumulativeDateRange(List<LayerInfo> layers) throws IOException {
         Comparable overallMin = null;
         Comparable overallMax = null;
         for (LayerInfo l : layers) {

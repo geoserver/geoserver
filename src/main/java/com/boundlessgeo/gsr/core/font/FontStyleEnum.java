@@ -18,7 +18,7 @@ public enum FontStyleEnum {
         return style;
     }
 
-    private FontStyleEnum(String style) {
+    FontStyleEnum(String style) {
         this.style = style;
     }
 

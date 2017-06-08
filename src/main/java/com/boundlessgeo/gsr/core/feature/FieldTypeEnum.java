@@ -35,7 +35,7 @@ public enum FieldTypeEnum {
         return fieldType;
     }
 
-    private FieldTypeEnum(String fieldType) {
+    FieldTypeEnum(String fieldType) {
         this.fieldType = fieldType;
     }
 

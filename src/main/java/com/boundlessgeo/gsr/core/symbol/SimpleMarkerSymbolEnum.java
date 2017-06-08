@@ -18,7 +18,7 @@ public enum SimpleMarkerSymbolEnum {
         return style;
     }
 
-    private SimpleMarkerSymbolEnum(String style) {
+    SimpleMarkerSymbolEnum(String style) {
         this.style = style;
     }
 }

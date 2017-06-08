@@ -20,7 +20,7 @@ public enum PointLabelPlacementEnum {
         return placement;
     }
 
-    private PointLabelPlacementEnum(String placement) {
+    PointLabelPlacementEnum(String placement) {
         this.placement = placement;
     }
 

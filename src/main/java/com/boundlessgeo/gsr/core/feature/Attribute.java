@@ -8,7 +8,6 @@ package com.boundlessgeo.gsr.core.feature;
  *
  * @author Juan Marin, OpenGeo
  *
- * @param <T>
  */
 public class Attribute {
 

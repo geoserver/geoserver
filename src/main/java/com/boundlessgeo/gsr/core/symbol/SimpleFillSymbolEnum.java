@@ -26,7 +26,7 @@ public enum SimpleFillSymbolEnum {
         return style;
     }
 
-    private SimpleFillSymbolEnum(String style) {
+    SimpleFillSymbolEnum(String style) {
         this.style = style;
     }
 }

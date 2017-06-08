@@ -94,7 +94,7 @@ public class QueryController extends AbstractGSRController {
 
         LayerInfo l = null;
         for (LayerOrTable layerOrTable : layersAndTables.layers) {
-            if (layerOrTable.getId() == layerId) {
+            if (Objects.equals(layerOrTable.getId(), layerId)) {
                 l = layerOrTable.layer;
                 break;
             }
@@ -102,7 +102,7 @@ public class QueryController extends AbstractGSRController {
 
         if (l == null) {
             for (LayerOrTable layerOrTable : layersAndTables.tables) {
-                if (layerOrTable.getId() == layerId) {
+                if (Objects.equals(layerOrTable.getId(), layerId)) {
                     l = layerOrTable.layer;
                     break;
                 }
@@ -198,7 +198,7 @@ public class QueryController extends AbstractGSRController {
             return Filter.INCLUDE;
         } else {
             String[] parts = objectIdsText.split(",");
-            Set<FeatureId> fids = new HashSet<FeatureId>();
+            Set<FeatureId> fids = new HashSet<>();
             for (String part : parts) {
                 fids.add(FILTERS.featureId(part));
             }
@@ -438,7 +438,7 @@ public class QueryController extends AbstractGSRController {
     }
 
     private String adjustOneProperty(String name, FeatureType schema) {
-        List<String> candidates = new ArrayList<String>();
+        List<String> candidates = new ArrayList<>();
         for (PropertyDescriptor d : schema.getDescriptors()) {
             String pname = d.getName().getLocalPart();
             if (pname.equals(name)) {

@@ -20,7 +20,7 @@ public class ExceptionJSONSchemaTest extends JsonSchemaTest {
 
     @Test
     public void testServiceErrorJSONSchema() throws Exception {
-        List<String> details = new ArrayList<String>();
+        List<String> details = new ArrayList<>();
         details.add("Bad request details");
         ServiceError error = new ServiceError(400, "Bad Request", details);
         String json = getJson(error);
@@ -29,7 +29,7 @@ public class ExceptionJSONSchemaTest extends JsonSchemaTest {
 
     @Test
     public void testServiceExceptionJSONSchema() throws Exception {
-        List<String> details = new ArrayList<String>();
+        List<String> details = new ArrayList<>();
         details.add("Bad request details");
         ServiceError error = new ServiceError(400, "Bad Request", details);
         ServiceException serviceException = new ServiceException(error);

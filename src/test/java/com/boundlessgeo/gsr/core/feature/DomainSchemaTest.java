@@ -32,7 +32,7 @@ public class DomainSchemaTest extends JsonSchemaTest {
         CodedValue v2 = new CodedValue("Copper", "CU");
         CodedValue v3 = new CodedValue("Steel", "STEEL");
         CodedValue v4 = new CodedValue("Not Applicable", "NA");
-        Set<CodedValue> codedValues = new HashSet<CodedValue>();
+        Set<CodedValue> codedValues = new HashSet<>();
         codedValues.add(v1);
         codedValues.add(v2);
         codedValues.add(v3);

@@ -24,7 +24,7 @@ public class FeatureSchemaTest extends JsonSchemaTest {
     @Test
     public void testFeatureJsonSchema() throws Exception {
         Geometry geometry = new Point(-118.5, 33.80, new SpatialReferenceWKID(4326));
-        List<Attribute> attr = new ArrayList<Attribute>();
+        List<Attribute> attr = new ArrayList<>();
         AttributeList attributes = new AttributeList(attr);
         //TODO: for some reason this throws an exception in the JSON validator. Investigate
         attributes.add(new Attribute("OWNER", "Joe Smith"));

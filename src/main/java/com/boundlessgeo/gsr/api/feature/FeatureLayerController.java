@@ -4,8 +4,6 @@ import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.feature.FeatureLayer;
 import com.boundlessgeo.gsr.core.map.LayerOrTable;
 import com.boundlessgeo.gsr.core.map.LayersAndTables;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

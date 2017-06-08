@@ -31,7 +31,7 @@ public class FeatureEncoder {
      */
     public static AttributeList attributeList(org.opengis.feature.Feature feature) {
         GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
-        AttributeList attributes = new AttributeList(new ArrayList<Attribute>());
+        AttributeList attributes = new AttributeList(new ArrayList<>());
         for(Property prop :feature.getProperties()) {
             if (geometryAttribute == null || !prop.getName().equals(geometryAttribute.getName())) {
                 final Object value;
@@ -89,15 +89,12 @@ public class FeatureEncoder {
 
         // TODO: Advertise "real" identifier property
 
-        FeatureIterator<F> iterator = features.features();
         List<Long> objectIds = new ArrayList<>();
-        try {
+        try (FeatureIterator<F> iterator = features.features()) {
             while (iterator.hasNext()) {
                 F feature = iterator.next();
                 objectIds.add(adaptId(feature.getIdentifier().getID()));
             }
-        } finally {
-            iterator.close();
         }
         return new FeatureIdSet("objectId", objectIds.stream().mapToLong(i->i).toArray());
     }
@@ -109,7 +106,7 @@ public class FeatureEncoder {
         if (matcher.matches()) {
             return Long.parseLong(matcher.group(1));
         } else {
-            return Long.valueOf(featureId.hashCode());
+            return (long) featureId.hashCode();
         }
     }
 }

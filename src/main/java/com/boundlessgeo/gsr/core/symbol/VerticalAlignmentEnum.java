@@ -18,7 +18,7 @@ public enum VerticalAlignmentEnum {
         return alignment;
     }
 
-    private VerticalAlignmentEnum(String align) {
+    VerticalAlignmentEnum(String align) {
         this.alignment = align;
     }
 

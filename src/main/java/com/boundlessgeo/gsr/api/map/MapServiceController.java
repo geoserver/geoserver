@@ -48,13 +48,13 @@ public class MapServiceController extends AbstractGSRController {
         if (service == null) {
             service = geoServer.getService(WMSInfo.class);
         }
-        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
+        List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : geoServer.getCatalog().getLayers()) {
             if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
                 layersInWorkspace.add(l);
             }
         }
-        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+        layersInWorkspace.sort(LayerNameComparator.INSTANCE);
 
         return new MapServiceRoot(service, Collections.unmodifiableList(layersInWorkspace));
     }

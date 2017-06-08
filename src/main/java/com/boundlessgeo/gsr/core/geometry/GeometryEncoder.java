@@ -18,7 +18,6 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
-import org.opengis.referencing.ReferenceIdentifier;
 
 import java.util.*;
 

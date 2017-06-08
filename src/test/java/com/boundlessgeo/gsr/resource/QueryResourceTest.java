@@ -14,7 +14,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class QueryResourceTest extends ResourceTest {
-    private final String query(String service, int layerId, String params) {
+    private String query(String service, int layerId, String params) {
         return baseURL + service + "/MapServer/" + layerId + "/query" + params;
     }
 
@@ -188,7 +188,7 @@ public class QueryResourceTest extends ResourceTest {
         assertFalse("Results should be a JSON Object (" + json +")", json.isArray() || json.isNullObject());
         assertFalse("spatialReference should be a JSON Object (" + json + ")", json.getJSONObject("spatialReference").isArray() || json.getJSONObject("spatialReference").isNullObject());
         assertFalse("spatialReference.wkid should be a JSON Object (" + json.getJSONObject("spatialReference") + ")", json.getJSONObject("spatialReference").get("wkid") == null);
-        assertTrue("Results not in requested spatial reference; json was " + result, json.getJSONObject("spatialReference").get("wkid").equals(Integer.valueOf(3857)));
+        assertTrue("Results not in requested spatial reference; json was " + result, json.getJSONObject("spatialReference").get("wkid").equals(3857));
 
         result = getAsString(query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90&outSR=2147483647"));
         assertTrue("Request for unknown WKID produces error; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
@@ -198,7 +198,7 @@ public class QueryResourceTest extends ResourceTest {
         result = getAsString(query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-45,265,-44,264&inSR=3785"));
         assertTrue("Request explicitly including geometries; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
         json = JSONObject.fromObject(result);
-        assertTrue("Results not in requested spatial reference; json was " + result, json.getJSONObject("spatialReference").get("wkid").equals(Integer.valueOf(4326)));
+        assertTrue("Results not in requested spatial reference; json was " + result, json.getJSONObject("spatialReference").get("wkid").equals(4326));
     }
 
     @Test

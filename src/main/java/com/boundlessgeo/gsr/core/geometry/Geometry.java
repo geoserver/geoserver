@@ -11,7 +11,7 @@ package com.boundlessgeo.gsr.core.geometry;
  */
 public interface Geometry {
 
-    public GeometryTypeEnum getGeometryType();
+    GeometryTypeEnum getGeometryType();
 
     // protected GeometryTypeEnum geometryType;
     //

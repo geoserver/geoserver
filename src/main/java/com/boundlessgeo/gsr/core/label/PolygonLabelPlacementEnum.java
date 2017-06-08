@@ -18,7 +18,7 @@ public enum PolygonLabelPlacementEnum {
         return placement;
     }
 
-    private PolygonLabelPlacementEnum(String placement) {
+    PolygonLabelPlacementEnum(String placement) {
         this.placement = placement;
     }
 }

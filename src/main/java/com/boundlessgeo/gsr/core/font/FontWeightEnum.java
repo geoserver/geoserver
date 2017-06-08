@@ -18,7 +18,7 @@ public enum FontWeightEnum {
         return weight;
     }
 
-    private FontWeightEnum(String weight) {
+    FontWeightEnum(String weight) {
         this.weight = weight;
     }
 }

@@ -256,6 +256,31 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
     }
 
     /**
+     * Initialize a repository with the given name. Does not register it with the Catalog or
+     * associate it to a DataStore.
+     *
+     * @param name the repository name
+     *
+     * @throws Exception
+     */
+    void initRepo(String name) throws Exception {
+        testData.setUp(name);
+        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
+    }
+
+    @Override
+    protected TestData createUnmanagedRepo(String name) throws Exception {
+        initRepo(name);
+        return new TestData(testData.getGeogig());
+    }
+
+    protected TestData createUnManagedRepoWithAltRoot(String name) throws Exception {
+        File unmanagedRoot = testData.tmpFolder().newFolder("unmanagedRoot");
+        testData.setUp(name, unmanagedRoot);
+        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
+        return new TestData(testData.getGeogig());
+    }
+    /**
      * Create a repository with the given name for testing.
      *
      * @param name the repository name
@@ -266,8 +291,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
-        testData.setUp(name);
-        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
+        initRepo(name);
         GeoGIG geogig = testData.getGeogig();
 
         Catalog catalog = helper.getCatalog();

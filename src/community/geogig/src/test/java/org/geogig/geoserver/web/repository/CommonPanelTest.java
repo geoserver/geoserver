@@ -7,6 +7,7 @@ package org.geogig.geoserver.web.repository;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,7 +18,10 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geogig.geoserver.web.RepositoriesPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -29,11 +33,23 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
 
     protected RepositoriesPage repoPage;
 
+    @Rule
+    public TemporaryFolder temp;
+
+    @After
+    public void after() {
+        if (temp != null) {
+            temp.delete();
+            temp = null;
+        }
+    }
+
     /**
      * Before method that navigates all subclass tests to their respective starting pages.
+     * @throws java.io.IOException
      */
     @Before
-    public void navigateToStartPage() {
+    public void navigateToStartPage() throws IOException {
         // login
         login();
         // create RepositoriesPage
@@ -44,6 +60,8 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
         tester.clickLink(getStartPage());
         // verify the page is the correct type
         tester.assertRenderedPage(getStartPageClass());
+        temp = new TemporaryFolder();
+        temp.create();
     }
 
     /**

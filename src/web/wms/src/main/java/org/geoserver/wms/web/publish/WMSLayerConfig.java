@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -15,6 +17,7 @@ import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.image.Image;
@@ -22,12 +25,14 @@ import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
@@ -114,6 +119,38 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         styleContainer.add(renderingBuffer);
         
         add(new TextField<String>("wmsPath", new PropertyModel<String>(layerModel, "path")));
-        
+
+        List<WMSInterpolation> interpolChoices = Arrays.asList(WMSInterpolation.values());
+
+        PropertyModel<WMSInterpolation> defaultInterpolModel = new PropertyModel<WMSInterpolation>(
+                layerModel, "defaultWMSInterpolationMethod");
+        DropDownChoice<WMSInterpolation> interpolDropDown = new DropDownChoice<WMSInterpolation>(
+                "defaultInterpolationMethod", defaultInterpolModel, interpolChoices,
+                new InterpolationRenderer(this));
+        interpolDropDown.setNullValid(true);
+        add(interpolDropDown);
+
+    }
+
+    private class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
+
+        private static final long serialVersionUID = 4230274692882585457L;
+
+        private Component parent;
+
+        public InterpolationRenderer(Component parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public Object getDisplayValue(WMSInterpolation interpolationMethod) {
+            return new StringResourceModel(interpolationMethod.name(), parent).getString();
+        }
+
+        @Override
+        public String getIdValue(WMSInterpolation object, int index) {
+            return object.name();
+        }
+
     }
 }

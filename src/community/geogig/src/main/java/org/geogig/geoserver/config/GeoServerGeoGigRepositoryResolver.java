@@ -41,15 +41,8 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
         String name = getName(repoURI);
         RepositoryManager repoMgr = RepositoryManager.get();
         // get the repo by name
-        RepositoryInfo repoInfo;
-        try {
-            repoInfo = repoMgr.getByRepoName(name);
-            // if it doesn't throw an exception, it exists
-            return repoInfo != null;
-        } catch (Exception ex) {
-            // doesn't exist
-            return false;
-        }
+        RepositoryInfo repoInfo = repoMgr.getByRepoName(name);
+        return repoInfo != null;
     }
 
     @Override
@@ -79,8 +72,8 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
         // get a handle to the RepositoryManager
         RepositoryManager repoMgr = RepositoryManager.get();
         // get the repo by name
-        try {
-            RepositoryInfo info = repoMgr.getByRepoName(name);
+        RepositoryInfo info = repoMgr.getByRepoName(name);
+        if (info != null) {
             // get the native RepositoryResolver for the location and open it directly
             // Using the RepositryManager to get the repo would cause the repo to be managed by the RepositoryManager,
             // when this repo should be managed by the DataStore. The DataStore will close this repo instance when
@@ -89,11 +82,10 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
             checkState(repo.isOpen(), "RepositoryManager returned a closed repository for %s",
                     name);
             return repo;
-        } catch (Exception ex) {
+        } else {
             // didn't find a repo
             RepositoryConnectionException rce = new RepositoryConnectionException(
                     "No GeoGig repository found with NAME or ID: " + name);
-            rce.initCause(ex);
             throw rce;
         }
     }

@@ -159,8 +159,8 @@ The context details that are provided are as follows:
       - Same as above, the scale denominator (not scale) for the current rendering. 
         Supported for backwards compatibility 
 
-The scale value can be expressed as a plain number, for for brevity and readability,
-usage of prefixes such as k (kilo), M (mega), G (giga), for example::
+The scale value can be expressed as a plain number, for for brevity and readability
+the suffixes k (kilo), M (mega), G (giga) can be used, for example::
 
   [@sd > 100k]
   [@sd < 12M]

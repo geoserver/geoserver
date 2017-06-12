@@ -25,7 +25,6 @@ Extensions are available at the `GeoServer download page <http://geoserver.org/d
    :maxdepth: 1
 
    gml
-   vpf
    featurepregen
 
 

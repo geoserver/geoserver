@@ -6,7 +6,6 @@
 package org.geoserver.web.services;
 
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.MenuPageInfo;
 
 /**
@@ -15,7 +14,7 @@ import org.geoserver.web.MenuPageInfo;
  * @author David Winslow <dwinslow@opengeo.org>
  */
 @SuppressWarnings("serial")
-public class ServiceMenuPageInfo<T extends GeoServerBasePage> extends MenuPageInfo<T> {
+public class ServiceMenuPageInfo extends MenuPageInfo {
 
     Class<? extends ServiceInfo> serviceClass;
 

@@ -513,16 +513,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>dem</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-dem</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>feature-pregeneralized</id>
       <dependencies>
         <dependency>

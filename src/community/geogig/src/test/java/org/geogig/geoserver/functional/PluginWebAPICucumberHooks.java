@@ -10,6 +10,7 @@ import org.geogig.web.functional.WebAPICucumberHooks;
 import org.locationtech.geogig.repository.Repository;
 
 import com.google.inject.Inject;
+import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
 import cucumber.runtime.java.StepDefAnnotation;
 import cucumber.runtime.java.guice.ScenarioScoped;
@@ -45,7 +46,7 @@ public class PluginWebAPICucumberHooks {
         return context.getTempFolder().getCanonicalPath().replace("\\", "/");
     }
 
-    @Given("I have \"([^\"]*)\" that is not managed by GeoServer$")
+    @Given("^I have \"([^\"]*)\" that is not managed by GeoServer$")
     public void setupExtraUnMangedRepo(String repoName) throws Exception {
         context.createUnManagedRepoWithAltRoot(repoName)
                 .init("geogigUser", "repo1_Owner@geogig.org")
@@ -54,7 +55,7 @@ public class PluginWebAPICucumberHooks {
         this.repoName = repoName;
     }
 
-    @cucumber.api.java.After
+    @After
     public void after() {
         if (repoName != null) {
             try {

@@ -28,12 +28,14 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
+import org.geotools.renderer.lite.VectorMapRenderUtils;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -114,71 +116,42 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             }
 
             sourceCrs = geometryDescriptor.getType().getCoordinateReferenceSystem();
-
-            PipelineBuilder builder;
-            try {
-                builder = PipelineBuilder.newBuilder(renderingArea, paintArea, sourceCrs,
-                        overSamplingFactor);
-            } catch (FactoryException e) {
-                throw new ServiceException(e);
-            }
-
-            Pipeline pipeline = builder.preprocess().transform(transformToScreenCoordinates)
-                    .simplify(transformToScreenCoordinates)
-                    .clip(clipToMapBounds, transformToScreenCoordinates).collapseCollections()
-                    .build();
-
+            int buffer = VectorMapRenderUtils.getComputedBuffer(mapContent.getBuffer(), 
+                    VectorMapRenderUtils.getFeatureStyles(layer, paintArea, 
+                        VectorMapRenderUtils.getMapScale(mapContent, renderingArea), 
+                        (FeatureType)featureSource.getSchema()));
+            Pipeline pipeline = getPipeline(mapContent, renderingArea, paintArea, sourceCrs, buffer);
+            
             Query query = getStyleQuery(layer, mapContent);
             query.getHints().remove(Hints.SCREENMAP);
 
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
-            Feature feature;
-            Stopwatch sw = Stopwatch.createStarted();
-            int count = 0;
-            int total = 0;
-
-            try (FeatureIterator<?> it = features.features()) {
-                while (it.hasNext()) {
-                    feature = it.next();
-                    total++;
-                    Geometry originalGeom;
-                    Geometry finalGeom;
-
-                    originalGeom = (Geometry) feature.getDefaultGeometryProperty().getValue();
-                    try {
-                        finalGeom = pipeline.execute(originalGeom);
-                    } catch (Exception processingException) {
-                        processingException.printStackTrace();
-                        continue;
-                    }
-                    if (finalGeom.isEmpty()) {
-                        continue;
-                    }
-
-                    final String layerName = feature.getName().getLocalPart();
-                    final String featureId = feature.getIdentifier().toString();
-                    final String geometryName = geometryDescriptor.getName().getLocalPart();
-
-                    final Map<String, Object> properties = getProperties(feature);
-
-                    vectorTileBuilder.addFeature(layerName, featureId, geometryName, finalGeom,
-                            properties);
-                    count++;
-                }
-            }
-            sw.stop();
-            if (LOGGER.isLoggable(Level.FINE)) {
-                String msg = String.format("Added %,d out of %,d features of '%s' in %s", count,
-                        total, layer.getTitle(), sw);
-                // System.err.println(msg);
-                LOGGER.fine(msg);
-            }
+            
+            run(features, pipeline, geometryDescriptor, vectorTileBuilder, layer);
         }
-
+        
         WebMap map = vectorTileBuilder.build(mapContent);
         return map;
     }
 
+    protected Pipeline getPipeline(final WMSMapContent mapContent,
+            final ReferencedEnvelope renderingArea, final Rectangle paintArea,
+            CoordinateReferenceSystem sourceCrs, int buffer) {
+        Pipeline pipeline;
+        try {
+            final PipelineBuilder builder = PipelineBuilder.newBuilder(renderingArea, paintArea, sourceCrs,
+                    overSamplingFactor, buffer);
+            
+            pipeline = builder.preprocess().transform(transformToScreenCoordinates)
+                    .simplify(transformToScreenCoordinates)
+                    .clip(clipToMapBounds, transformToScreenCoordinates).collapseCollections()
+                    .build();
+        } catch (FactoryException e) {
+            throw new ServiceException(e);
+        }
+        return pipeline;
+    }
+    
     private Map<String, Object> getProperties(ComplexAttribute feature) {
         Map<String, Object> props = new TreeMap<>();
         for (Property p : feature.getProperties()) {
@@ -199,6 +172,52 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         return props;
     }
 
+    void run(FeatureCollection<?, ?> features, Pipeline pipeline, 
+            GeometryDescriptor geometryDescriptor, 
+            VectorTileBuilder vectorTileBuilder, Layer layer){
+        Stopwatch sw = Stopwatch.createStarted();
+        int count = 0;
+        int total = 0;
+        Feature feature;
+        
+        try (FeatureIterator<?> it = features.features()) {
+            while (it.hasNext()) {
+                feature = it.next();
+                total++;
+                Geometry originalGeom;
+                Geometry finalGeom;
+
+                originalGeom = (Geometry) feature.getDefaultGeometryProperty().getValue();
+                try {
+                    finalGeom = pipeline.execute(originalGeom);
+                } catch (Exception processingException) {
+                    processingException.printStackTrace();
+                    continue;
+                }
+                if (finalGeom.isEmpty()) {
+                    continue;
+                }
+
+                final String layerName = feature.getName().getLocalPart();
+                final String featureId = feature.getIdentifier().toString();
+                final String geometryName = geometryDescriptor.getName().getLocalPart();
+
+                final Map<String, Object> properties = getProperties(feature);
+
+                vectorTileBuilder.addFeature(layerName, featureId, geometryName, finalGeom,
+                        properties);
+                count++;
+            }
+        }
+        sw.stop();
+        if (LOGGER.isLoggable(Level.FINE)) {
+            String msg = String.format("Added %,d out of %,d features of '%s' in %s", count,
+                    total, layer.getTitle(), sw);
+            // System.err.println(msg);
+            LOGGER.fine(msg);
+        }
+    }
+    
     /**
      * @return {@code null}, not a raster format.
      */

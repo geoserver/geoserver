@@ -112,3 +112,14 @@ To remove a layer group, select it by clicking the checkbox next to the layer gr
 .. figure:: img/data_layergroups_delete.png
   
    Removing a layer group
+
+Layer Group Keywords
+--------------------
+
+Is possible to associate a layer group with some keywords that will be used to assist catalog searching. 
+ 
+.. figure:: img/data_layergroups_keywords.png
+  
+   Layer groups keywords editor
+
+Layer groups keywords will no be merged with contained layers keywords but keywords of a layer group should be logically inherited by contained layers.

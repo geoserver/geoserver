@@ -76,12 +76,10 @@ paths:
             Location:
               description: The location of the newly created collection
               type: string
-        404:
-          description: Returned if the specified workspace could not be found
-        409:
-          description: Returned if the target collection or layer is already there
         400:
           description: If any error is found in the collection json payload
+        409:
+          description: Returned if the target collection or layer is already there
   /collections/{collection}:
     parameters:
     - name: collection
@@ -120,10 +118,10 @@ paths:
                 "eoSecurityConstraints" : null
                 "eoDissemination" : null
                 "eoAcquisitionStation" : null
-                "ogcLinks": "http://geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
-                "metadata": "http://geoserver/rest/oseo/collection/SENTINEL2/metadata",
-                "description": "http://geoserver/rest/oseo/collection/SENTINEL2/description",
-                "thumbnail": "http://geoserver/rest/oseo/collection/SENTINEL2/thumbnail"
+                "ogcLinks": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
+                "metadata": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/metadata",
+                "description": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/description",
+                "thumbnail": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/thumbnail"
               }
         404:
           description: The specified collection cannot be found
@@ -134,6 +132,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: If any error is found in the json payload (details will be provided in the error message)
         404:
           description: The specified collection cannot be found
     delete:
@@ -178,6 +178,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: The metadata is not a match for the target schema
         404:
           description: The specified collection cannot be found
     delete:
@@ -201,6 +203,50 @@ paths:
       responses:
         200:
           description: Success
+          examples:
+            text/html: |
+                <table xmlns="">
+                  <tr valign="top">
+                    <td>
+                      <b>Title</b>
+                    </td>
+                    <td>Sentinel-2</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>
+                      <b>Description</b>
+                    </td>
+                    <td>The SENTINEL-2 mission is a land monitoring constellation of two satellites each equipped with a MSI (Multispectral Imager) instrument covering 13 spectral bands providing high resolution optical imagery (i.e., 10m, 20m, 60 m) every 10 days with one satellite and 5 days with two satellites.</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>
+                      <b>Type</b>
+                    </td>
+                    <td>Collection</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>
+                      <b>Date</b>
+                    </td>
+                    <td>2015-06-23T00:00:00Z/</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>
+                      <b>Media Type</b>
+                    </td>
+                    <td>
+                      <a href="${ATOM_URL}" title="ATOM format">ATOM</a>
+                    </td>
+                  </tr>
+                  <tr valign="top">
+                    <td>
+                      <b>Metadata</b>
+                    </td>
+                    <td>
+                      <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
+                    </td>
+                  </tr>
+                </table>
         404:
           description: The specified collection cannot be found
     put:
@@ -217,6 +263,8 @@ paths:
       responses:
         200:
           description: OK
+        400:
+          description: Returned if the target collection or layer is already there
         404:
           description: The specified product cannot be found
   /collections/{collection}/ogcLinks:
@@ -241,14 +289,14 @@ paths:
                  "method": "GET",
                  "code": "GetCapabilities",
                  "type": "application/xml",
-                 "href": "${host}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities"
+                 "href": "${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities"
                },
                {
                  "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
                  "method": "GET",
                  "code": "GetMap",
                  "type": "image/jpeg",
-                 "href": "${host}/landsat8/LS8_RGB/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=landsat8%3ALS8_RGB&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
+                 "href": "${BASE_URL}/landsat8/LS8_RGB/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=landsat8%3ALS8_RGB&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
                }
               ]
         404:
@@ -260,6 +308,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: The payload does not match the expected structure (
         404:
           description: The specified collection cannot be found
     delete:
@@ -289,6 +339,7 @@ paths:
       description: Updates/creates a collection thumbnail
       consumes:
         - image/png
+        - image/jpeg
       responses:
         200:
           description: Success
@@ -348,7 +399,7 @@ paths:
           description: The specified collection cannot be found
     post:
       description: |
-       Creates a new collection via its search attributes and ogc links. The zip format accepts 
+       Creates a new product via its search attributes and ogc links. The zip format accepts 
        a set of files creating the collection in a single shot, and will contain the following files: 
        * product.json: the list of searchable attributes and eventual OGC links
        * description.html: the HTML description for the product
@@ -364,7 +415,12 @@ paths:
             Location:
               description: The location of the newly created collection
               type: string        
-              
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified collection cannot be found
+        409:
+          description: Returned if the target collection or layer is already there
   /collections/{collection}/products/{product}:
     parameters:
       - name: collection
@@ -433,11 +489,11 @@ paths:
                 "sarDopplerFrequency" : null,
                 "sarIncidenceAngleVariation" : null,
                 "eoResolution" : null,
-                "ogcLinks": "http://geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ogcLinks",
-                "metadata": "http://geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04metadata",
-                "description": "http://geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/description",
-                "thumbnail": "http://geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/thumbnail",
-                "granules": "http://geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/granules"
+                "ogcLinks": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ogcLinks",
+                "metadata": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04metadata",
+                "description": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/description",
+                "thumbnail": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/thumbnail",
+                "granules": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/granules"
               }
         404:
           description: The specified product cannot be found
@@ -449,6 +505,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
         404:
           description: The specified product cannot be found
     delete:
@@ -517,6 +575,43 @@ paths:
       responses:
         200:
           description: Success
+          examples:
+            text/html: |
+              <table xmlns="">
+                  <tr>
+                      <td valign="top" width="10%">
+                          <a href="${QUICKLOOK_URL}" target="_blank" title="View quicklook image">
+                              <img align="left" border="0" height="66" hspace="8" src="${THUMB_URL}" width="66" />
+                          </a>
+                      </td>
+                      <td valign="top" width="90%">
+                          <table>
+                              <tr valign="top">
+                                  <td>
+                                      <b>Date </b>
+                                  </td>
+                                  <td>2016-01-17T10:10:30.743Z / 2016-01-17T10:10:30.743Z</td>
+                              </tr>
+                              <tr valign="top">
+                                  <td>
+                                      <b>Media Type</b>
+                                  </td>
+                                  <td>
+                                      <a href="${ATOM_URL}" title="Atom format">ATOM</a>
+                                  </td>
+                              </tr>
+                              <tr valign="top">
+                                  <td>
+                                      <b>Metadata </b>
+                                  </td>
+                                  <td>
+                                      <a href="${OM_METADATA_URL}" title="O&amp;M format">O&amp;M</a>
+                                  </td>
+                              </tr>
+                          </table>
+                      </td>
+                  </tr>
+              </table>
         404:
           description: The specified product cannot be found
     put:
@@ -551,6 +646,7 @@ paths:
       description: Returns the thumbnail of this product
       produces:
         - image/png
+        - image/jpeg
       responses:
         200:
           description: Success
@@ -599,14 +695,14 @@ paths:
                  "method": "GET",
                  "code": "GetCapabilities",
                  "type": "application/xml",
-                 "href": "${host}/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities"
+                 "href": "${BASE_URL}/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities"
                },
                {
                  "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
                  "method": "GET",
                  "code": "GetMap",
                  "type": "image/jpeg",
-                 "href": "${host}/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=SENTINEL2-TCI&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
+                 "href": "${BASE_URL}/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=SENTINEL2-TCI&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
                }
               ]
         404:

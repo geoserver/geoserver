@@ -5,10 +5,16 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -16,12 +22,14 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.EnvelopePanel;
+import org.geoserver.web.wicket.KeywordsEditor;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Before;
 import org.junit.Test;
@@ -261,5 +269,76 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         assertEquals(2, info.getMetadataLinks().size());
         assertEquals("http://test.me", info.getMetadataLinks().get(0).getContent());
         
+    }
+
+    @Test
+    public void testKeywords() {
+        // create a new layer group page
+        LayerGroupEditPage page = new LayerGroupEditPage();
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // check that keywords editor panel was rendered
+        tester.assertComponent("publishedinfo:tabs:panel:keywords", KeywordsEditor.class);
+        // add layer group entries
+        page.lgEntryPanel.getEntries().add(new LayerGroupEntry(
+                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+        // add layer group mandatory parameters
+        FormTester form = tester.newFormTester("publishedinfo");
+        form.setValue("tabs:panel:name", "keywords-layer-group");
+        form.setValue("tabs:panel:bounds:minX", "-180");
+        form.setValue("tabs:panel:bounds:minY", "-90");
+        form.setValue("tabs:panel:bounds:maxX", "180");
+        form.setValue("tabs:panel:bounds:maxY", "90");
+        form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+        // add a keyword
+        form.setValue("tabs:panel:keywords:newKeyword", "keyword1");
+        form.setValue("tabs:panel:keywords:lang", "en");
+        form.setValue("tabs:panel:keywords:vocab", "vocab1");
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:keywords:addKeyword", "click");
+        // add another keyword
+        form.setValue("tabs:panel:keywords:newKeyword", "keyword2");
+        form.setValue("tabs:panel:keywords:lang", "pt");
+        form.setValue("tabs:panel:keywords:vocab", "vocab2");
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:keywords:addKeyword", "click");
+        // save the layer group
+        form = tester.newFormTester("publishedinfo");
+        form.submit("save");
+        // get the create layer group from the catalog
+        LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName("keywords-layer-group");
+        assertThat(layerGroup, notNullValue());
+        // check the keywords
+        List<KeywordInfo> keywords = layerGroup.getKeywords();
+        assertThat(keywords, notNullValue());
+        assertThat(keywords.size(), is(2));
+        // check that the first keyword is present
+        assertElementExist(keywords, (keyword) -> {
+            assertThat(keyword, notNullValue());
+            return Objects.equals(keyword.getValue(), "keyword1")
+                    && Objects.equals(keyword.getLanguage(), "en")
+                    && Objects.equals(keyword.getVocabulary(), "vocab1");
+        });
+        // check that the second keyword is present
+        assertElementExist(keywords, (keyword) -> {
+            assertThat(keyword, notNullValue());
+            return Objects.equals(keyword.getValue(), "keyword2")
+                    && Objects.equals(keyword.getLanguage(), "pt")
+                    && Objects.equals(keyword.getVocabulary(), "vocab2");
+        });
+
+    }
+
+    /**
+     * Checks that an element that match the provided matcher exists.
+     */
+    private <T> void assertElementExist(List<T> elements, Function<T, Boolean> matcher) {
+        boolean found = false;
+        for (T element : elements) {
+            if (matcher.apply(element)) {
+                // element found
+                found = true;
+                break;
+            }
+        }
+        assertThat(found, is(true));
     }
 }

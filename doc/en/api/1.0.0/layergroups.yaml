@@ -132,6 +132,10 @@ paths:
                 <metadata>
                   <entry key="rawStyleList"></entry>
                 </metadata>
+                <keywords>
+                  <keyword>keyword1\@language=en\;\@vocabulary=vocabulary1\;</keyword>
+                  <keyword>keyword2\@language=pt\;\@vocabulary=vocabulary2\;</keyword>
+                </keywords>
               </layerGroup>
               
             application/json: |
@@ -486,6 +490,16 @@ definitions:
           crs:
             type: string
             description: CRS code, usually in the form EPSG:####
+      keywords:
+        type: object
+        description: A collection of keywords associated with the resource.
+        properties:
+          keyword:
+            type: array
+            description: List of keyword values with internationalization and vocabulary
+            items:
+              type: string 
+              description: A single keyword value
 
   LayergroupPublished:
     type: object

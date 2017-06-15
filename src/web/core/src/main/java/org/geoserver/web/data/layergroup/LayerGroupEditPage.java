@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
@@ -26,6 +27,7 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
@@ -35,6 +37,8 @@ import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.KeywordsEditor;
+import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -227,6 +231,10 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             add(lgEntryPanel = new LayerGroupEntryPanel( "layers", getPublishedInfo(), wsChoice.getModel()));
             
             add(new MetadataLinkEditor("metadataLinks", myModel));
+
+            // add keywords editor
+            add(new KeywordsEditor("keywords", LiveCollectionModel.list(
+                    new PropertyModel<List<KeywordInfo>>(myModel, "keywords"))));
             
             if (!isAuthenticatedAsAdmin()) {
                 if (isNew) {

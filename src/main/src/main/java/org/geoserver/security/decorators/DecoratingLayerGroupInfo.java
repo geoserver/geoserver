@@ -10,6 +10,7 @@ import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -216,5 +217,10 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     @Override
     public int hashCode() {
         return LayerGroupInfo.hashCode(this);
+    }
+
+    @Override
+    public List<KeywordInfo> getKeywords() {
+        return delegate.getKeywords();
     }
 }

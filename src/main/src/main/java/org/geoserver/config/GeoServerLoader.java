@@ -190,12 +190,15 @@ public abstract class GeoServerLoader {
                 ft = depersist(xp, lc.contents,clazz);
                 catalog.add(ft);
             } catch( Exception e ) {
-                LOGGER.log( Level.WARNING, "Failed to load feature type", e);
+                LOGGER.log( Level.WARNING, "Failed to load resource", e);
                 return;
             }
             
             if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info( "Loaded feature type '" + lc.resource.name() +"'");
+                String type = ft instanceof CoverageInfo ? "coverage" : 
+                    ft instanceof FeatureTypeInfo ? "feature type" : "resource";
+                LOGGER.info( "Loaded " + type + " '" + lc.resource.name() +
+                        "', " + (ft.isEnabled() ? "enabled" : "disabled"));
             }
             
             try {
@@ -589,7 +592,8 @@ public abstract class GeoServerLoader {
             wms = depersist( xp, storeContents.contents, WMSStoreInfo.class );
             catalog.add( wms );
         
-            LOGGER.info( "Loaded wmsstore '" + wms.getName() +"'");
+            LOGGER.info( "Loaded wmsstore '" + wms.getName() +
+                    "', " + (wms.isEnabled() ? "enabled" : "disabled"));
         } catch( Exception e ) {
             LOGGER.log( Level.WARNING, "Failed to load wms store '" + storeResource.name() +"'", e);
             return;
@@ -614,7 +618,8 @@ public abstract class GeoServerLoader {
             catalog.add( cs );
 
             if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info( "Loaded coverage store '" + cs.getName() +"'");
+                LOGGER.info( "Loaded coverage store '" + cs.getName() +
+                        "', " + (cs.isEnabled() ? "enabled" : "disabled"));
             }
         } catch( Exception e ) {
             LOGGER.log( Level.WARNING, "Failed to load coverage store '" + storeResource.name() +"'", e);
@@ -642,7 +647,8 @@ public abstract class GeoServerLoader {
             catalog.add( ds );
             
             if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info( "Loaded data store '" + ds.getName() +"'");
+                LOGGER.info( "Loaded data store '" + ds.getName() 
+                    + "', " + (ds.isEnabled() ? "enabled" : "disabled"));
             }
             
             if (checkStores && ds.isEnabled()) {

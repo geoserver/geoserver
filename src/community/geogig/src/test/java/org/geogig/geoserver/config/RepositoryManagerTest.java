@@ -159,7 +159,9 @@ public class RepositoryManagerTest extends GeoServerSystemTestSupport {
             fail();
         } catch (IllegalArgumentException e) {
             //expected
-            assertEquals("Unsupported repository URI scheme: unknown", e.getMessage());
+            assertEquals(
+                    "No repository initializer found capable of handling this kind of URI: unknown://repo1",
+                    e.getMessage());
         }
     }
     

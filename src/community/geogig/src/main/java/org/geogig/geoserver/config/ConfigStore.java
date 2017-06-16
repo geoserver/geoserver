@@ -34,10 +34,10 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
-import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
+import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -228,7 +228,9 @@ public class ConfigStore {
     private void loadResource(Resource resource) {
         try {
             RepositoryInfo info = load(resource);
-            cache.put(info.getId(), info);
+            if (info != null) {
+                cache.put(info.getId(), info);
+            }
         } catch (IOException e) {
             // log the bad info
             LOGGER.log(Level.WARNING, "Error loading RepositoryInfo", e);
@@ -318,7 +320,8 @@ public class ConfigStore {
 
     public RepositoryInfo getByName(final String name) {
         for (RepositoryInfo cached : cache.values()) {
-            if (cached.getRepoName().equals(name)) {
+            final String cachedRepoName = cached.getRepoName();
+            if (cachedRepoName != null && cachedRepoName.equals(name)) {
                 return cached;
             }
         }
@@ -350,6 +353,12 @@ public class ConfigStore {
         }
         if (info.getLocation() == null) {
             throw new IOException("Repository info has incomplete information: " + info);
+        }
+        // we have a location, make sure we have a resolver for the scheme
+        if (!RepositoryResolver.resolverAvailableForURIScheme(info.getLocation().getScheme())) {
+            LOGGER.log(Level.WARNING, "No RepositoryResolver available for URI: {0}",
+                    info.getLocation().toString());
+            return null;
         }
         return info;
     }

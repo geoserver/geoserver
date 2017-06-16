@@ -164,9 +164,6 @@ public class RepositoryManager implements GeoServerInitializer {
             hints.set(Hints.REPOSITORY_URL, repoURI);
         }
 
-        String scheme = repoURI.getScheme();
-        Preconditions.checkArgument(RepositoryResolver.resolverAvailableForURIScheme(scheme),
-                "Unsupported repository URI scheme: " + scheme);
         Context context = GlobalContextBuilder.builder().build(hints);
         RepositoryResolver repositoryResolver = RepositoryResolver.lookup(repoURI);
         final boolean exists = repositoryResolver.repoExists(repoURI);

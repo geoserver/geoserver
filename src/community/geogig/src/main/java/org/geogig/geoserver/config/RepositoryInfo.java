@@ -107,8 +107,10 @@ public class RepositoryInfo implements Serializable {
         if (this.location != null) {
             if (this.repoName == null) {
                 // lookup the resolver
-                RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
-                this.repoName = resolver.getName(this.location);
+                if (RepositoryResolver.resolverAvailableForURIScheme(this.location.getScheme())) {
+                    RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
+                    this.repoName = resolver.getName(this.location);
+                }
             }
         }
         return this.repoName;

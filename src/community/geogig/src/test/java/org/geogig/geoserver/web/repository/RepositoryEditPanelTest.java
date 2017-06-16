@@ -5,8 +5,10 @@
 package org.geogig.geoserver.web.repository;
 
 import static org.geoserver.web.GeoServerWicketTestSupport.tester;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Page;
@@ -15,6 +17,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geogig.geoserver.model.DropDownModel;
+import org.geogig.geoserver.model.DropDownTestUtil;
 import org.geogig.geoserver.web.RepositoriesPage;
 import org.geogig.geoserver.web.RepositoryEditPage;
 import org.geoserver.web.data.store.panel.TextParamPanel;
@@ -59,13 +62,12 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
     }
 
     @Test
-    public void testPGAddWithEmptyFields() {
+    public void testPGAddWithEmptyFields() throws IOException {
+        navigateToStartPage();
         // select PG config from the dropdown
         select(DropDownModel.PG_CONFIG);
         // verify the PG config components are visible
-        tester.assertInvisible(SETTINGS_PREFIX + "parentDirectory");
-        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
-        tester.assertVisible(SETTINGS_PREFIX + "pgPanel");
+        verifyPostgreSQLBackendComponents();
         // click the Save button
         tester.executeAjaxEvent(SAVE_LINK, "click");
         tester.assertRenderedPage(getStartPageClass());
@@ -80,13 +82,12 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
     }
 
     @Test
-    public void testDirectoryAddWithEmptyFields() {
+    public void testDirectoryAddWithEmptyFields() throws IOException {
+        navigateToStartPage();
         // select Directory from the dropdown
         select(DropDownModel.DIRECTORY_CONFIG);
         // verify Directory config components are visible
-        tester.assertVisible(SETTINGS_PREFIX + "parentDirectory");
-        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
-        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
+        verifyDirectoryBackendComponents();
         // click the Save button
         tester.executeAjaxEvent(SAVE_LINK, "click");
         tester.assertRenderedPage(getStartPageClass());
@@ -101,13 +102,11 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
 
     @Test
     public void testAddNewRocksDBRepo() throws IOException {
+        navigateToStartPage();
         // select Directory from the dropdown
         select(DropDownModel.DIRECTORY_CONFIG);
         // verify Directory config components are visible
-        tester.assertVisible(SETTINGS_PREFIX + "parentDirectory");
-        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
-        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
-        tester.assertVisible(SAVE_LINK);
+        verifyDirectoryBackendComponents();
         // get the form
         FormTester formTester = tester.newFormTester(getFrom());
         // now set a name
@@ -123,5 +122,32 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
         tester.executeAjaxEvent(SAVE_LINK, "click");
         // get the page. It should be a RepositoriesPage if the SAVE was successful
         tester.assertRenderedPage(RepositoriesPage.class);
+    }
+
+    @Override
+    protected void verifyDirectoryBackendComponents() {
+        // verify Directory config components are visible
+        tester.assertVisible(SETTINGS_PREFIX + "parentDirectory");
+        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
+        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
+        tester.assertVisible(SAVE_LINK);
+    }
+
+    @Override
+    protected void verifyPostgreSQLBackendComponents() {
+        // verify PostgreSQL config components are visible
+        tester.assertInvisible(SETTINGS_PREFIX + "parentDirectory");
+        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
+        tester.assertVisible(SETTINGS_PREFIX + "pgPanel");
+        tester.assertVisible(SAVE_LINK);
+    }
+
+    @Override
+    protected void verifyNoBackendComponents() {
+        // verify Directory and PostgreSQL config components are invisible
+        tester.assertInvisible(SETTINGS_PREFIX + "parentDirectory");
+        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
+        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
+        tester.assertVisible(SAVE_LINK);
     }
 }

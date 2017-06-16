@@ -6,11 +6,14 @@ package org.geogig.geoserver.model;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.model.IModel;
 import org.geogig.geoserver.config.RepositoryInfo;
+import org.locationtech.geogig.repository.RepositoryResolver;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Data model for the drop-down choice for GeoGig repository configuration. Currently, either a
@@ -19,12 +22,25 @@ import org.geogig.geoserver.config.RepositoryInfo;
 public class DropDownModel implements IModel<Serializable> {
 
     private static final long serialVersionUID = 1L;
+    static final String NO_DEFAULT_AVAILABLE = "No available repository types";
 
     public static final String PG_CONFIG = "PostgreSQL";
     public static final String DIRECTORY_CONFIG = "Directory";
-    public static final String DEFAULT_CONFIG = DIRECTORY_CONFIG;
-    public static final List<String> CONFIG_LIST = Arrays.asList(DropDownModel.DIRECTORY_CONFIG,
-            DropDownModel.PG_CONFIG);
+    static String DEFAULT_CONFIG;
+    public static final List<String> CONFIG_LIST = new ArrayList<>(2);
+    static {
+        if (RepositoryResolver.resolverAvailableForURIScheme("file")) {
+            CONFIG_LIST.add(DIRECTORY_CONFIG);
+        }
+        if (RepositoryResolver.resolverAvailableForURIScheme("postgresql")) {
+            CONFIG_LIST.add(PG_CONFIG);
+        }
+        if (!CONFIG_LIST.isEmpty()) {
+            DEFAULT_CONFIG = CONFIG_LIST.get(0);
+        } else {
+            DEFAULT_CONFIG = NO_DEFAULT_AVAILABLE;
+        }
+    }
 
     private final IModel<RepositoryInfo> repoModel;
     private String type;
@@ -73,5 +89,19 @@ public class DropDownModel implements IModel<Serializable> {
             }
         }
         return DEFAULT_CONFIG;
+    }
+
+    @VisibleForTesting
+    static void setConfigList(List<String> configs, String defaultConfig) {
+        // clear the existing list
+        CONFIG_LIST.clear();
+        // re-populate with provided configs
+        CONFIG_LIST.addAll(configs);
+        // set the default
+        if (null != defaultConfig) {
+            DEFAULT_CONFIG = defaultConfig;
+        } else {
+            DEFAULT_CONFIG = NO_DEFAULT_AVAILABLE;
+        }
     }
 }

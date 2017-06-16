@@ -6,10 +6,12 @@ package org.geogig.geoserver.web.repository;
 
 import static org.geoserver.web.GeoServerWicketTestSupport.tester;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Page;
@@ -19,6 +21,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geogig.geoserver.model.DropDownModel;
+import org.geogig.geoserver.model.DropDownTestUtil;
 import org.geogig.geoserver.web.RepositoriesPage;
 import org.geogig.geoserver.web.RepositoryImportPage;
 import org.junit.Test;
@@ -66,13 +69,12 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
     }
 
     @Test
-    public void testPGImportMissingFields() {
+    public void testPGImportMissingFields() throws IOException {
+        navigateToStartPage();
         // select PG config from the dropdown
         select(DropDownModel.PG_CONFIG);
         // verify the PG config components are visible
-        tester.assertInvisible(SETTINGS_PREFIX + "repoDirectoryPanel");
-        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
-        tester.assertVisible(SETTINGS_PREFIX + "pgPanel");
+        verifyPostgreSQLBackendComponents();
         // click the Import button
         tester.executeAjaxEvent(IMPORT_LINK, "click");
         tester.assertRenderedPage(getStartPageClass());
@@ -87,13 +89,12 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
     }
 
     @Test
-    public void testDirectoryImportMissingFields() {
+    public void testDirectoryImportMissingFields() throws IOException {
+        navigateToStartPage();
         // select Directory from the dropdown
         select(DropDownModel.DIRECTORY_CONFIG);
         // verify Directory config components are visible
-        tester.assertVisible(SETTINGS_PREFIX + "repoDirectoryPanel");
-        tester.assertInvisible(SETTINGS_PREFIX + "repositoryNamePanel");
-        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
+        verifyDirectoryBackendComponents();
         // click the Import button
         tester.executeAjaxEvent(IMPORT_LINK, "click");
         tester.assertRenderedPage(getStartPageClass());
@@ -122,14 +123,12 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
 
     @Test
     public void testImportExistingRocksDBRepo() throws IOException {
+        navigateToStartPage();
         final File repoDir = setupExistingRocksDBRepo();
         // select Directory from the dropdown
         select(DropDownModel.DIRECTORY_CONFIG);
         // verify Directory config components are visible
-        tester.assertVisible(SETTINGS_PREFIX + "repoDirectoryPanel");
-        tester.assertInvisible(SETTINGS_PREFIX + "repositoryNamePanel");
-        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
-        tester.assertVisible(IMPORT_LINK);
+        verifyDirectoryBackendComponents();
         // get the form
         FormTester formTester = tester.newFormTester(getFrom());
         // and a directory
@@ -141,5 +140,32 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
         tester.executeAjaxEvent(IMPORT_LINK, "click");
         // get the page. It should be a RepositoriesPage if the SAVE was successful
         tester.assertRenderedPage(RepositoriesPage.class);
+    }
+
+    @Override
+    protected void verifyDirectoryBackendComponents() {
+        // verify Directory config components are visible
+        tester.assertVisible(SETTINGS_PREFIX + "repoDirectoryPanel");
+        tester.assertInvisible(SETTINGS_PREFIX + "repositoryNamePanel");
+        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
+        tester.assertVisible(IMPORT_LINK);
+    }
+
+    @Override
+    protected void verifyPostgreSQLBackendComponents() {
+        // verify the PG config components are visible
+        tester.assertInvisible(SETTINGS_PREFIX + "repoDirectoryPanel");
+        tester.assertVisible(SETTINGS_PREFIX + "repositoryNamePanel");
+        tester.assertVisible(SETTINGS_PREFIX + "pgPanel");
+        tester.assertVisible(IMPORT_LINK);
+    }
+
+    @Override
+    protected void verifyNoBackendComponents() {
+        // verify Directory and PostgreSQL config components are invisible
+        tester.assertInvisible(SETTINGS_PREFIX + "repoDirectoryPanel");
+        tester.assertInvisible(SETTINGS_PREFIX + "repositoryNamePanel");
+        tester.assertInvisible(SETTINGS_PREFIX + "pgPanel");
+        tester.assertVisible(IMPORT_LINK);
     }
 }

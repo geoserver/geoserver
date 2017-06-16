@@ -62,8 +62,11 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     GeoServer geoServer;
 
-    public DefaultOpenSearchEoService(GeoServer geoServer) {
+    OpenSearchAccessProvider accessProvider;
+
+    public DefaultOpenSearchEoService(GeoServer geoServer, OpenSearchAccessProvider accessProvider) {
         this.geoServer = geoServer;
+        this.accessProvider = accessProvider;
     }
 
     @Override
@@ -233,31 +236,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     }
 
     OpenSearchAccess getOpenSearchAccess() throws IOException {
-        OSEOInfo service = getService();
-        String openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
-        if (openSearchAccessStoreId == null) {
-            throw new OWS20Exception("OpenSearchAccess is not configured in the"
-                    + " OpenSearch for EO panel, please do so");
-        }
-        DataStoreInfo dataStore = this.geoServer.getCatalog().getDataStore(openSearchAccessStoreId);
-        if (dataStore == null) {
-            throw new OWS20Exception("Could not locate OpenSearch data access with identifier "
-                    + openSearchAccessStoreId
-                    + ", please correct the configuration in the OpenSearch for EO panel");
-        }
-
-        DataAccess result = dataStore.getDataStore(null);
-        if (result == null) {
-            throw new OWS20Exception("Failed to locate OpenSearch data access with identifier "
-                    + openSearchAccessStoreId
-                    + ", please correct the configuration in the OpenSearch for EO panel");
-        } else if (!(result instanceof OpenSearchAccess)) {
-            throw new OWS20Exception("Data access with identifier " + openSearchAccessStoreId
-                    + " does not point to a valid OpenSearchDataAccess, "
-                    + "please correct the configuration in the OpenSearch for EO panel");
-        }
-
-        return (OpenSearchAccess) result;
+        return accessProvider.getOpenSearchAccess();
     }
 
     private OSEOInfo getService() {

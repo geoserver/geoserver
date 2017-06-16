@@ -22,6 +22,7 @@
 
     <modules>
       <module>oseo-core</module> 
+      <module>oseo-rest</module>
       <module>web-oseo</module>
     </modules>
 </project>

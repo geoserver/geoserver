@@ -378,7 +378,10 @@
       <!-- Profile to build in RocksDB backend module. This profile is active by default. -->
       <id>geogig-rocksdb</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>disableRocksDBBackend</name>
+          <value>!true</value>
+        </property>
       </activation>
       <dependencies>
         <dependency>
@@ -393,7 +396,10 @@
       <!-- Profile to build in PostgreSQL backend module. This profile is active by default. -->
       <id>geogig-postgresql</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>disablePostgreSQLBackend</name>
+          <value>!true</value>
+        </property>
       </activation>
       <dependencies>
         <dependency>

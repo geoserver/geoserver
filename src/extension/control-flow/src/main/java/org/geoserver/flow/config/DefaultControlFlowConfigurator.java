@@ -119,7 +119,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             try {
                 // some properties are not integers
-                if("ip.blacklist".equals(key) && "ip.whitelist".equals(key)) {
+                if("ip.blacklist".equals(key) || "ip.whitelist".equals(key)) {
                     continue;
                 } else {
                     if (!key.startsWith("user.ows") && !key.startsWith("ip.ows")) {

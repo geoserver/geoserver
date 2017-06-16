@@ -43,6 +43,8 @@ public class DefaultControlFlowConfigurationTest {
         p.put("ip", "12");
         p.put("ip.192.168.1.8", "14");
         p.put("ip.192.168.1.10", "15");
+        p.put("ip.blacklist", "192.168.1.1,192.168.1.2");
+        p.put("ip.whitelist", "192.168.1.3,192.168.1.4");
         p.put("user.ows", "20/s");
         p.put("user.ows.wms", "300/m;3s");
         p.put("ip.ows.wms.getmap", "100/m;3s");

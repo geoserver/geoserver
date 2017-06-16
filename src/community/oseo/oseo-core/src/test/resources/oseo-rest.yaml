@@ -45,12 +45,13 @@ paths:
               }
     post:
       description: |
-                   Creates a new collection via its search attributes and ogc links. The zip format accepts 
-                   a set of files creating the collection in a single shot, and will contain the following files: 
+                   Creates a new collection via its search attributes and ogc links. 
+                   The zip format accepts a set of files creating the collection in a single shot, and will contain the following files: 
                    * collection.json: the list of searchable attributes and eventual OGC links
                    * description.html: the HTML description for the product
                    * metadata.xml: the ISO metadata for the collection
                    * thumbnail.png: the collection thumbnail (ignored at the time of writing)
+                   The JSON format is the same as the one returned by a GET on a collection, the "*HRef" properties should be omitted 
       parameters:
         - name: ogc_publish
           in: query
@@ -97,31 +98,37 @@ paths:
           examples:
             application/json: |
               {
-                "name": "SENTINEL2",
-                "primary": true,
-                "footprint" : {"type":"Polygon","coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]},
-                "timeStart" : "2012-04-23T18:25:43.511Z",
-                "timeEnd" : null,
-                "productcqlfilter" : null,
-                "masked" : false,
-                "eoIdentifier" : "SENTINEL2",
-                "eoProductType" : "S2MS1C",
-                "eoPlatform" : "Sentinel-2",
-                "eoPlatformSerialIdentifier" : "A",
-                "eoInstrument" : "MSI",
-                "eoSensorType" : "OPTICAL",
-                "eoCompositeType" : null,
-                "eoProcessingLevel" : "Level-1C",
-                "eoOrbitType" : "LEO"
-                "eoSpectralRange" : null
-                "eoWavelength" : null
-                "eoSecurityConstraints" : null
-                "eoDissemination" : null
-                "eoAcquisitionStation" : null
-                "ogcLinks": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
-                "metadata": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/metadata",
-                "description": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/description",
-                "thumbnail": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/thumbnail"
+                "type": "Feature",
+                "geometry": {
+                  "type":"Polygon",
+                  "coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]
+                },
+                "properties": {
+                  "name": "SENTINEL2",
+                  "primary": true,
+                  "timeStart" : "2012-04-23T18:25:43.511Z",
+                  "timeEnd" : null,
+                  "productcqlfilter" : null,
+                  "masked" : false,
+                  "eo:Identifier" : "SENTINEL2",
+                  "eo:ProductType" : "S2MS1C",
+                  "eo:Platform" : "Sentinel-2",
+                  "eo:PlatformSerialIdentifier" : "A",
+                  "eo:Instrument" : "MSI",
+                  "eo:SensorType" : "OPTICAL",
+                  "eo:CompositeType" : null,
+                  "eo:ProcessingLevel" : "Level-1C",
+                  "eo:OrbitType" : "LEO",
+                  "eo:SpectralRange" : null,
+                  "eo:Wavelength" : null,
+                  "eo:SecurityConstraints" : null,
+                  "eo:Dissemination" : null,
+                  "eo:AcquisitionStation" : null,
+                  "ogcLinksHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
+                  "metadataHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/metadata",
+                  "descriptionHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/description",
+                  "thumbnailHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/thumbnail"
+                }
               }
         404:
           description: The specified collection cannot be found
@@ -405,6 +412,7 @@ paths:
        * description.html: the HTML description for the product
        * metadata.xml: the O&M metadata for the collection
        * thumbnail.png: the product thumbnail (ignored at the time of writing)
+       The JSON format is the same as the one returned by a GET on an existing product, the "*Href" properties should be omitted 
       consumes:
         - application/json
         - application/zip
@@ -446,54 +454,61 @@ paths:
           examples:
             application/json: |
               {
-                "eoIdentifier" : "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
-                "footprint" : {"type":"Polygon","coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]},
-                "timeStart" : "2016-09-29T18:59:02Z",,
-                "timeEnd" : "2016-09-29T18:59:02Z",
-                "originalPackageLocation" : "/var/data/sentinel2/2017/04/23/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04.zip",
-                "thumbnailURL" : null,
-                "quicklookURL" : null,
-                "eoParentIdentifier" : "SENTINEL2",
-                "eoProductionStatus" : null,
-                "eoAcquisitionType" : "NOMINAL",
-                "eoOrbitNumber" : 65,
-                "eoOrbitDirection" : "DESCENDING",
-                "eoTrack" : null,
-                "eoFrame" : null,
-                "eoSwathIdentifier" : null,
-                "optCloudCover" : 0,
-                "optSnowCover" : null,
-                "eoProductQualityStatus" : null,
-                "eoProductQualityDegradationStatus" : null,
-                "eoProcessorName" : null,
-                "eoProcessingCenter" : null,
-                "eoCreationDate" : "2016-09-29T18:59:02Z",
-                "eoModificationDate" : null,
-                "eoProcessingDate" : null,
-                "eoSensorMode" : null,
-                "eoArchivingCenter" : "DPA"
-                "eoProcessingMode" : "DATA_DRIVEN",
-                "eoAvailabilityTime" : null,
-                "eoAcquisitionStation" : null,
-                "eoAcquisitionSubtype" : null,
-                "eoStartTimeFromAscendingNode" : null,
-                "eoCompletionTimeFromAscendingNode" : null,
-                "eoIlluminationAzimuthAngle" : null,
-                "eoIlluminationZenithAngle" : null,
-                "eoIlluminationElevationAngle" : null,
-                "sarPolarisationMode" : null,
-                "sarPolarisationChannels" : null,
-                "sarAntennaLookDirection" : null,
-                "sarMinimumIncidenceAngle" : null,
-                "sarMaximumIncidenceAngle" : null,
-                "sarDopplerFrequency" : null,
-                "sarIncidenceAngleVariation" : null,
-                "eoResolution" : null,
-                "ogcLinks": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ogcLinks",
-                "metadata": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04metadata",
-                "description": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/description",
-                "thumbnail": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/thumbnail",
-                "granules": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/granules"
+                "type": "Feature",
+                "geometry": {
+                    "type":"Polygon",
+                    "coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]
+                },
+                "properties": {
+                  "eo:Identifier" : "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                  "footprint" : 
+                  "timeStart" : "2016-09-29T18:59:02Z",
+                  "timeEnd" : "2016-09-29T18:59:02Z",
+                  "originalPackageLocation" : "/var/data/sentinel2/2017/04/23/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04.zip",
+                  "thumbnailURL" : null,
+                  "quicklookURL" : null,
+                  "eo:ParentIdentifier" : "SENTINEL2",
+                  "eo:ProductionStatus" : null,
+                  "eo:AcquisitionType" : "NOMINAL",
+                  "eo:OrbitNumber" : 65,
+                  "eo:OrbitDirection" : "DESCENDING",
+                  "eo:Track" : null,
+                  "eo:Frame" : null,
+                  "eo:SwathIdentifier" : null,
+                  "opt:CloudCover" : 0,
+                  "opt:SnowCover" : null,
+                  "eo:ProductQualityStatus" : null,
+                  "eo:ProductQualityDegradationStatus" : null,
+                  "eo:ProcessorName" : null,
+                  "eo:ProcessingCenter" : null,
+                  "eo:CreationDate" : "2016-09-29T18:59:02Z",
+                  "eo:ModificationDate" : null,
+                  "eo:ProcessingDate" : null,
+                  "eo:SensorMode" : null,
+                  "eo:ArchivingCenter" : "DPA"
+                  "eo:ProcessingMode" : "DATA_DRIVEN",
+                  "eo:AvailabilityTime" : null,
+                  "eo:AcquisitionStation" : null,
+                  "eo:AcquisitionSubtype" : null,
+                  "eo:StartTimeFromAscendingNode" : null,
+                  "eo:CompletionTimeFromAscendingNode" : null,
+                  "eo:IlluminationAzimuthAngle" : null,
+                  "eo:IlluminationZenithAngle" : null,
+                  "eo:IlluminationElevationAngle" : null,
+                  "sar:PolarisationMode" : null,
+                  "sar:PolarisationChannels" : null,
+                  "sar:AntennaLookDirection" : null,
+                  "sar:MinimumIncidenceAngle" : null,
+                  "sar:MaximumIncidenceAngle" : null,
+                  "sar:DopplerFrequency" : null,
+                  "sar:IncidenceAngleVariation" : null,
+                  "eoResolution" : null,
+                  "ogcLinksHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ogcLinks",
+                  "metadataHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04metadata",
+                  "descriptionHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/description",
+                  "thumbnailHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/thumbnail",
+                  "granulesHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/granules"
+                }
               }
         404:
           description: The specified product cannot be found

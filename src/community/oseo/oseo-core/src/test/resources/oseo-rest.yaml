@@ -51,7 +51,8 @@ paths:
                    * description.html: the HTML description for the product
                    * metadata.xml: the ISO metadata for the collection
                    * thumbnail.png: the collection thumbnail (ignored at the time of writing)
-                   The JSON format is the same as the one returned by a GET on a collection, the "*HRef" properties should be omitted 
+                   The JSON format is the same as the one returned by a GET on a collection, the "*HRef" properties should be omitted.
+                   A creation with ZIP is recommend.
       parameters:
         - name: ogc_publish
           in: query
@@ -94,7 +95,7 @@ paths:
         - application/json
       responses:
         200:
-          description: Success. The response contains cross links to ogcLinks/metadata/description/thumnail sub-resources, when the same JSON is used to create a new collection the associated can be omitted, or if everything needs to be put in the JSON, the associated representations can be inlined instead (the thumbnail image can be BASE64 encded). A creation with ZIP is recommend
+          description: Success. The response contains cross links to ogcLinks/metadata/description/thumnail sub-resources.
           examples:
             application/json: |
               {

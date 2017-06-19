@@ -9,6 +9,8 @@ import java.io.IOException;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.RestException;
+import org.springframework.http.HttpStatus;
 
 /**
  * Base class for OpenSearch related REST controllers
@@ -26,5 +28,18 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
     protected OpenSearchAccess getOpenSearchAccess() throws IOException {
         return accessProvider.getOpenSearchAccess();
     }
+    
+    protected void validateMin(Integer value, int min, String name) {
+        if(value != null && value < min) {
+            throw new RestException("Invalid parameter " + name + ", should be at least " + min, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    protected void validateMax(Integer value, int max, String name) {
+        if(value != null && value > max) {
+            throw new RestException("Invalid parameter " + name + ", should be at most " + max, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }

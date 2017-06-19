@@ -14,11 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.RestException;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -28,11 +26,10 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,23 +44,11 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections")
 public class CollectionsController extends AbstractOpenSearchController {
-    
+
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public CollectionsController(OpenSearchAccessProvider accessProvider) {
         super(accessProvider);
-    }
-    
-    private void validateMin(Integer value, int min, String name) {
-        if(value != null && value < min) {
-            throw new RestException("Invalid parameter " + name + ", should be at least " + min, HttpStatus.BAD_REQUEST);
-        }
-    }
-    
-    private void validateMax(Integer value, int max, String name) {
-        if(value != null && value > max) {
-            throw new RestException("Invalid parameter " + name + ", should be at most " + max, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -89,10 +74,10 @@ public class CollectionsController extends AbstractOpenSearchController {
         }
         query.setSortBy(new SortBy[] {FF.sort("name", SortOrder.ASCENDING)});
         query.setPropertyNames(new String[] { "name" });
+        FeatureCollection<FeatureType, Feature> features = fs.getFeatures(query);
         
         // map to java beans for JSON encoding
         String baseURL = ResponseUtils.baseURL(request);
-        FeatureCollection<FeatureType, Feature> features = fs.getFeatures(query);
         List<CollectionReference> list = new ArrayList<>();
         features.accepts(f -> {
             String name = (String) f.getProperty("name").getValue();
@@ -103,5 +88,22 @@ public class CollectionsController extends AbstractOpenSearchController {
         }, null);
         return new CollectionReferences(list);
     }
+
+    @GetMapping(path = "{collection}",  produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    public FeatureCollection getCollection(@PathVariable(name="collection", required=true) String collection) throws IOException {
+        // query the collections for their names
+        OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+        FeatureSource<FeatureType, Feature> fs = access.getCollectionSource();
+        Query query = new Query();
+        query.setFilter(FF.equal(FF.property("name"), FF.literal("collection"), true));
+        FeatureCollection<FeatureType, Feature> fc = fs.getFeatures(query);
+        if(fc.isEmpty()) {
+            throw new ResourceNotFoundException("Could not find a collection named '" + collection + "'");
+        }
+        
+        return fc;
+    }
+    
 
 }

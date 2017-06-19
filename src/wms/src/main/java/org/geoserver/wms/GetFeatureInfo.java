@@ -73,20 +73,23 @@ public class GetFeatureInfo {
         List<LayerIdentifier> identifiers = GeoServerExtensions.extensions(LayerIdentifier.class);
         for (int i = 0; i < requestedLayers.size(); i++) {
             final MapLayerInfo layer = requestedLayers.get(i);
-
-            LayerIdentifier identifier = getLayerIdentifier(layer, identifiers);
-            List<FeatureCollection> identifiedCollections = identifier.identify(requestParams,
-                    maxFeatures);
-            if (identifiedCollections != null) {
-                for (FeatureCollection identifierCollection : identifiedCollections) {
-                    FeatureCollection fc = selectProperties(requestParams, identifierCollection);
-                    maxFeatures = addToResults(fc, results, layer, request, maxFeatures);
+            try {
+                LayerIdentifier identifier = getLayerIdentifier(layer, identifiers);
+                List<FeatureCollection> identifiedCollections = identifier.identify(requestParams,
+                        maxFeatures);
+                if (identifiedCollections != null) {
+                    for (FeatureCollection identifierCollection : identifiedCollections) {
+                        FeatureCollection fc = selectProperties(requestParams, identifierCollection);
+                        maxFeatures = addToResults(fc, results, layer, request, maxFeatures);
+                    }
+    
+                    // exit when we have collected enough features
+                    if (maxFeatures <= 0) {
+                        break;
+                    }
                 }
-
-                // exit when we have collected enough features
-                if (maxFeatures <= 0) {
-                    break;
-                }
+            } catch(Exception e) {
+                throw new ServiceException("Failed to run GetFeatureInfo on layer " + layer.getName());
             }
 
             requestParams.nextLayer();

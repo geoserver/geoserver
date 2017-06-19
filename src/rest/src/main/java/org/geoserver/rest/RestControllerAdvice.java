@@ -86,7 +86,11 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         LOGGER.log(Level.SEVERE, e.getMessage(), e);
         notifyExceptionToCallbacks(request, response, e);
 
-        response.setStatus(e.getStatus().value());
+        if(e.getStatus().is4xxClientError()) {
+            response.sendError(e.getStatus().value(), e.getMessage());
+        } else {
+            response.setStatus(e.getStatus().value());
+        }
         StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
     }
 

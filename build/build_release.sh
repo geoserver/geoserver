@@ -297,9 +297,9 @@ if [ -z $SKIP_BUILD ]; then
   pdflatex -interaction batchmode manual.tex
   set -e
 
-  if [ ! -f build/latex/manual.pdf ]; then
+  if [ ! -f manual.pdf ]; then
     echo "Failed to build pdf manual. Printing latex log:"
-    cat build/latex/manual.log
+    cat manual.log
   fi
 
   cd ../../../developer

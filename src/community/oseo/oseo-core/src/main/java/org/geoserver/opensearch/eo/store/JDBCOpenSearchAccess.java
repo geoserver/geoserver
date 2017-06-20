@@ -113,7 +113,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
-        TypeBuilder typeBuilder = new TypeBuilder(CommonFactoryFinder.getFeatureTypeFactory(null));
+        TypeBuilder typeBuilder = new OrderedTypeBuilder();
 
         // map the source attributes
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
@@ -184,7 +184,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(PRODUCT);
 
-        TypeBuilder typeBuilder = new TypeBuilder(CommonFactoryFinder.getFeatureTypeFactory(null));
+        TypeBuilder typeBuilder = new OrderedTypeBuilder();
 
         // map the source attributes
         AttributeTypeBuilder ab = new AttributeTypeBuilder();

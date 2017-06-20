@@ -314,9 +314,11 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
             return includedByDefault;
         }
 
+        final String localPart = property.getLocalPart();
+        final String namespaceURI = property.getNamespaceURI();
         for (PropertyName pn : query.getProperties()) {
-            if (property.getLocalPart().equals(pn.getPropertyName())
-                    && property.getNamespaceURI().equals(pn.getNamespaceContext().getURI(""))) {
+            if (localPart.equals(pn.getPropertyName())
+                    && namespaceURI.equals(pn.getNamespaceContext().getURI(""))) {
                 return true;
             }
         }

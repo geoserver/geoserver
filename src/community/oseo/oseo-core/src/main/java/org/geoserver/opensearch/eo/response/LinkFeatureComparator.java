@@ -21,7 +21,7 @@ import org.springframework.util.comparator.NullSafeComparator;
  */
 public class LinkFeatureComparator implements Comparator<SimpleFeature> {
 
-    static final LinkFeatureComparator INSTANCE = new LinkFeatureComparator();
+    public static final LinkFeatureComparator INSTANCE = new LinkFeatureComparator();
 
     private LinkFeatureComparator() {
     };

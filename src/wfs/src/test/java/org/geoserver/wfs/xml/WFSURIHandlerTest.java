@@ -166,9 +166,11 @@ public class WFSURIHandlerTest {
         final URI wrongHost = URI.createURI("http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         final URI notDFT = URI.createURI("http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
         final URI fooDFT = URI.createURI("http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+        final URI uppercaseFooDFT = URI.createURI("http://FOO/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         assertThat(handler.canHandle(wrongHost), is(false));
         assertThat(handler.canHandle(notDFT), is(false));
         assertThat(handler.canHandle(fooDFT), is(true));
+        assertThat(handler.canHandle(uppercaseFooDFT), is(true));
     }
 
 }

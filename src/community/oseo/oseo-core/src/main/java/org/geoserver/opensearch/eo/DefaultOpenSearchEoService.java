@@ -14,19 +14,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
-import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
-import org.geotools.data.memory.MemoryFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -300,7 +297,12 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return new QuicklookResults(request, payload, guessImageMimeType(payload));
     }
 
-    private String guessImageMimeType(byte[] payload) {
+    /**
+     * Used to guess the mime type of an encoded image until we start storing the mime in the db
+     * @param payload
+     * @return
+     */
+    public static String guessImageMimeType(byte[] payload) {
         // guesses jpeg and png by the magic number
         if (payload.length >= 4 && //
                 (payload[0] == (byte) 0xFF) && //

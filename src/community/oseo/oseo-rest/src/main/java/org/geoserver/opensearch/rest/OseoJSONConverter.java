@@ -21,24 +21,30 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
 
 @Component
 public class OseoJSONConverter extends BaseMessageConverter<Object> {
-    
+
+    private XStream xs;
+
     public OseoJSONConverter() {
         super(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON_UTF8);
+
+        xs = new SecureXStream(new JsonHierarchicalStreamDriver() {
+            public HierarchicalStreamWriter createWriter(Writer writer) {
+                return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE | JsonWriter.STRICT_MODE);
+            }
+        });
+
     }
 
     @Override
     protected boolean supports(Class clazz) {
-        return CollectionReferences.class.isAssignableFrom(clazz) || OgcLinks.class.isAssignableFrom(clazz);
+        return CollectionReferences.class.isAssignableFrom(clazz)
+                || ProductReferences.class.isAssignableFrom(clazz)
+                || OgcLinks.class.isAssignableFrom(clazz);
     }
-    
+
     @Override
     protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        XStream xs = new SecureXStream(new JsonHierarchicalStreamDriver() {
-            public HierarchicalStreamWriter createWriter(Writer writer) {
-                return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE | JsonWriter.STRICT_MODE );
-            }
-        });
         xs.toXML(t, outputMessage.getBody());
     }
 

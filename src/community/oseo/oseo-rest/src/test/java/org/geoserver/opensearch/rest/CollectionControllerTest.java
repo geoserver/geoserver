@@ -11,32 +11,12 @@ import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
-import org.geoserver.opensearch.eo.OSEOTestSupport;
-import org.geoserver.security.impl.GeoServerRole;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 
-public class CollectionControllerTest extends OSEOTestSupport {
-
-    @Before
-    public void loginAdmin() {
-        login("admin", "geoserver", GeoServerRole.ADMIN_ROLE.getAuthority());
-    }
-
-    protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(path);
-        if (!isQuietTests()) {
-            System.out.println(response.getContentAsString());
-        }
-
-        assertEquals(expectedHttpCode, response.getStatus());
-        assertEquals("application/json", response.getContentType());
-        return JsonPath.parse(response.getContentAsString());
-    }
+public class CollectionControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testGetCollections() throws Exception {
@@ -136,7 +116,7 @@ public class CollectionControllerTest extends OSEOTestSupport {
     public void testGetCollectionThumbnail() throws Exception {
         // missing from the DB right now
         MockHttpServletResponse response = getAsServletResponse(
-                "/rest/oseo/collections/SENTINEL2/thumnail");
+                "/rest/oseo/collections/SENTINEL2/thumbnail");
         assertEquals(404, response.getStatus());
     }
 }

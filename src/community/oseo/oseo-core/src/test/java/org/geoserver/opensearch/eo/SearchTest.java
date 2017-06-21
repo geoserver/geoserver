@@ -390,7 +390,6 @@ public class SearchTest extends OSEOTestSupport {
 
         // check the HTML
         String summary = getXPath().compile("/at:feed/at:entry[1]/at:summary").evaluate(dom);
-        System.out.println(summary);
         // parse html using JSoup (DOM not usable, HTML is not valid/well formed XML in general
         org.jsoup.nodes.Document sd = Jsoup.parse(summary);
         String isoHRef = sd.select("a[title=O&M format]").attr("href");

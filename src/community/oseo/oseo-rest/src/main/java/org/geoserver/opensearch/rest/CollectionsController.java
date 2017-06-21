@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +22,6 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
@@ -65,18 +63,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             @RequestParam(name = "limit", required = false) Integer limit) throws IOException {
         // query the collections for their names
         Query query = new Query();
-        if (offset != null) {
-            validateMin(offset, 0, "offset");
-            query.setStartIndex(offset);
-        }
-        final int maximumRecordsPerPage = accessProvider.getService().getMaximumRecordsPerPage();
-        if (limit != null) {
-            validateMin(limit, 0, "limit");
-            validateMax(limit, maximumRecordsPerPage, "limit");
-            query.setMaxFeatures(limit);
-        } else {
-            query.setMaxFeatures(maximumRecordsPerPage);
-        }
+        setupQueryPaging(query, offset, limit);
         query.setSortBy(new SortBy[] { FF.sort("name", SortOrder.ASCENDING) });
         query.setPropertyNames(new String[] { "name" });
         OpenSearchAccess access = accessProvider.getOpenSearchAccess();
@@ -144,22 +131,8 @@ public class CollectionsController extends AbstractOpenSearchController {
                     .singletonList(FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
         });
 
-        // map to a list of beans
-        List<OgcLink> links = Collections.emptyList();
-        Collection<Property> linkProperties = feature
-                .getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
-        if (linkProperties != null) {
-            links = linkProperties.stream().map(p -> (SimpleFeature) p)
-                    .sorted(LinkFeatureComparator.INSTANCE).map(sf -> {
-                        String offering = (String) sf.getAttribute("offering");
-                        String method = (String) sf.getAttribute("method");
-                        String code = (String) sf.getAttribute("code");
-                        String type = (String) sf.getAttribute("type");
-                        String href = (String) sf.getAttribute("href");
-                        return new OgcLink(offering, method, code, type, href);
-                    }).collect(Collectors.toList());
-        }
-        return new OgcLinks(links);
+        OgcLinks links = buildOgcLinksFromFeature(feature);
+        return links;
     }
     
     @GetMapping(path = "{collection}/metadata", produces = { MediaType.TEXT_XML_VALUE })
@@ -204,27 +177,5 @@ public class CollectionsController extends AbstractOpenSearchController {
         }
     }
 
-    protected FeatureCollection<FeatureType, Feature> queryCollections(Query query)
-            throws IOException {
-        OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-        FeatureSource<FeatureType, Feature> fs = access.getCollectionSource();
-        FeatureCollection<FeatureType, Feature> fc = fs.getFeatures(query);
-        return fc;
-    }
-
-    protected Feature queryCollection(String collectionName, Consumer<Query> queryDecorator)
-            throws IOException {
-        Query query = new Query();
-        query.setFilter(FF.equal(FF.property("name"), FF.literal(collectionName), true));
-        queryDecorator.accept(query);
-        FeatureCollection<FeatureType, Feature> fc = queryCollections(query);
-        Feature feature = DataUtilities.first(fc);
-        if (feature == null) {
-            throw new ResourceNotFoundException(
-                    "Could not find a collection named '" + collectionName + "'");
-        }
-
-        return feature;
-    }
 
 }

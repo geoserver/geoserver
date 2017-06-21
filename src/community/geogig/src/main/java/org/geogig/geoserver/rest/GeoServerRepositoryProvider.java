@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
@@ -72,7 +71,7 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
             } else {
                 return Optional.absent();
             }
-        } catch (NoSuchElementException | IOException e) {
+        } catch (RuntimeException e) {
             return Optional.absent();
         }
     }

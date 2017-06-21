@@ -128,20 +128,16 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
                 ValidationError error = new ValidationError();
                 RepositoryInfo repo = validatable.getValue();
                 // block duplicate names first
-                if (null != RepositoryManager.get().getByRepoName(repo.getRepoName())) {
+                if (RepositoryManager.get().repoExistsByName(repo.getRepoName())) {
                     error.addKey("errRepositoryNameExists");
                     validatable.error(error);
                     return;
                 }
                 final URI location = repo.getLocation();
                 // look for already configured repos
-                List<RepositoryInfo> existingRepos = RepositoryManager.get().getAll();
-                for (RepositoryInfo configuredRepo : existingRepos) {
-                    if (configuredRepo.getLocation().equals(location)) {
-                        error.addKey("errRepositoryAlreadyConfigured");
-                        // quit looking
-                        break;
-                    }
+                if (RepositoryManager.get().repoExistsByLocation(location)) {
+                    error.addKey("errRepositoryAlreadyConfigured");
+                    return;
                 }
                 if (error.getKeys().isEmpty()) {
                     final RepositoryResolver resolver = RepositoryResolver.lookup(location);

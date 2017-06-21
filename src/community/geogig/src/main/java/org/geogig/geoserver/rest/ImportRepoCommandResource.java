@@ -35,13 +35,11 @@ public class ImportRepoCommandResource extends CommandResource {
         // before importing the repository, extract the repository name from the request and see if
         // a repository with that name already exists
         final String repoName = RESTUtils.getStringAttribute(request, "repository");
-        if (repoName != null) {
-            if (RepositoryManager.get().getByRepoName(repoName) != null) {
-                // repo already exists
-                throw new CommandSpecException(
+        if (repoName != null && RepositoryManager.get().repoExistsByName(repoName)) {
+            // repo already exists
+            throw new CommandSpecException(
                     "The specified repository name is already in use, please try a different name",
                     Status.CLIENT_ERROR_CONFLICT);
-            }
         }
         // all good
         return super.runCommand(variant, request, outputFormat);

@@ -4,42 +4,53 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.METADATA_PROPERTY_NAME;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.OGC_LINKS_PROPERTY_NAME;
-import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 
 import java.awt.RenderingHints.Key;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataSourceException;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.data.FeatureListener;
-import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureReader;
+import org.geotools.data.FeatureStore;
 import org.geotools.data.Join;
 import org.geotools.data.Join.Type;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
+import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.FeatureFactory;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -47,7 +58,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
@@ -58,9 +68,11 @@ import org.opengis.filter.sort.SortOrder;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public abstract class AbstractMappingSource implements FeatureSource<FeatureType, Feature> {
+public abstract class AbstractMappingStore implements FeatureStore<FeatureType, Feature> {
 
-    static final Logger LOGGER = Logging.getLogger(AbstractMappingSource.class);
+    static final FeatureFactory FEATURE_FACTORY = CommonFactoryFinder.getFeatureFactory(null);
+
+    static final Logger LOGGER = Logging.getLogger(AbstractMappingStore.class);
 
     protected JDBCOpenSearchAccess openSearchAccess;
 
@@ -72,7 +84,9 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
     private SimpleFeatureType linkFeatureType;
 
-    public AbstractMappingSource(JDBCOpenSearchAccess openSearchAccess,
+    private Transaction transaction;
+
+    public AbstractMappingStore(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         this.openSearchAccess = openSearchAccess;
         this.schema = collectionFeatureType;
@@ -127,9 +141,14 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
     }
 
     /*
-     * + Returns the underlying delegate source
+     * Returns the underlying delegate source
      */
     protected abstract SimpleFeatureSource getDelegateCollectionSource() throws IOException;
+    
+    protected SimpleFeatureStore getDelegateCollectionStore() throws IOException {
+        SimpleFeatureStore fs = (SimpleFeatureStore) getDelegateCollectionSource();
+        return fs;
+    }
 
     @Override
     public DataAccess<FeatureType, Feature> getDataStore() {
@@ -363,7 +382,7 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
         ComplexFeatureBuilder builder = new ComplexFeatureBuilder(schema);
 
         // allow subclasses to perform custom mappings while reusing the common ones
-        mapProperties(builder, fi);
+        mapPropertiesToComplex(builder, fi);
         
         // the OGC links can be more than one
         Object link = fi.getAttribute("link");
@@ -402,8 +421,8 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
      * @param builder
      * @param fi
      */
-    protected void mapProperties(ComplexFeatureBuilder builder, SimpleFeature fi) {
-        AttributeBuilder ab = new AttributeBuilder(CommonFactoryFinder.getFeatureFactory(null));
+    protected void mapPropertiesToComplex(ComplexFeatureBuilder builder, SimpleFeature fi) {
+        AttributeBuilder ab = new AttributeBuilder(FEATURE_FACTORY);
         for (PropertyDescriptor pd : schema.getDescriptors()) {
             if (!(pd instanceof AttributeDescriptor)) {
                 continue;
@@ -431,6 +450,124 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
             builder.append(METADATA_PROPERTY_NAME, attribute);
         }
 
+    }
+    
+    /**
+     * Maps a complex feature back to one or more simple features
+     * 
+     * @param it
+     * @return
+     * @throws IOException 
+     */
+    protected SimpleFeature mapToMainSimpleFeature(Feature feature) throws IOException {
+        // map the primary simple feature
+        final SimpleFeatureType simpleSchema = getDelegateCollectionSource().getSchema();
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(simpleSchema);
+        for (PropertyDescriptor pd : schema.getDescriptors()) {
+            if (!(pd instanceof AttributeDescriptor)) {
+                continue;
+            }
+            String localName = (String) pd.getUserData().get(JDBCOpenSearchAccess.SOURCE_ATTRIBUTE);
+            if (localName == null) {
+                continue;
+            }
+            Property property = feature.getProperty(pd.getName());
+            if(property == null || property.getValue() == null) {
+                continue;
+            }
+            fb.set(localName, property.getValue());
+        }
+        SimpleFeature sf = fb.buildFeature(null);
+        
+        return sf;
+    }
+    
+    protected List<SimpleFeature> mapToSecondarySimpleFeatures(Feature feature) {
+     // TODO: handle OGC links, but for the moment the code uses modifyFeatures to add those
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<FeatureId> addFeatures(FeatureCollection<FeatureType, Feature> featureCollection)
+            throws IOException {
+        // silly implementation assuming there will be only one insert at a time (which is
+        // indeed the case for the current REST API), needs to be turned into a streaming 
+        // approach in case we want to handle larger data volumes
+        final DataStore delegateStore = openSearchAccess.getDelegateStore();
+        List<FeatureId> result = new ArrayList<>();
+        try(FeatureIterator it = featureCollection.features()) {
+            Feature feature = it.next();
+            SimpleFeature simpleFeature = mapToMainSimpleFeature(feature);
+            SimpleFeatureStore store = getDelegateCollectionStore();
+            store.setTransaction(getTransaction());
+            List<FeatureId> ids = store.addFeatures(DataUtilities.collection(simpleFeature));
+            result.addAll(ids);
+            
+            List<SimpleFeature> simpleFeatures = mapToSecondarySimpleFeatures(feature);
+            for (SimpleFeature sf : simpleFeatures) {
+                SimpleFeatureStore fs = (SimpleFeatureStore) delegateStore.getFeatureSource(sf.getType().getTypeName());
+                if(fs == null) {
+                    throw new IOException("Could not find a delegate feature store for unmapped feature " + sf);
+                }
+                fs.setTransaction(getTransaction());
+                fs.addFeatures(DataUtilities.collection(sf));
+            }
+        }
+        
+        return result;
+    }
+
+    @Override
+    public void removeFeatures(Filter filter) throws IOException {
+        MappingFilterVisitor visitor = new MappingFilterVisitor(propertyMapper);
+        Filter mappedFilter = (Filter) filter.accept(visitor, null);
+        SimpleFeatureStore store = getDelegateCollectionStore();
+        store.removeFeatures(mappedFilter);
+    }
+    
+    @Override
+    public void modifyFeatures(AttributeDescriptor[] types, Object[] values, Filter filter)
+            throws IOException {
+        Name[] names = Stream.of(types).map(type -> type.getName()).toArray(size -> new Name[size]);
+        modifyFeatures(names, values, filter);
+    }
+
+    @Override
+    public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
+            throws IOException {
+        modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
+    }
+    
+    @Override
+    public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
+            throws IOException {
+        modifyFeatures(type.getName(), value, filter);
+    }
+
+    @Override
+    public void modifyFeatures(Name[] attributeNames, Object[] attributeValues, Filter filter)
+            throws IOException {
+        throw new UnsupportedOperationException();
+        
+    }
+
+    @Override
+    public void setFeatures(FeatureReader<FeatureType, Feature> reader) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+
+    @Override
+    public Transaction getTransaction() {
+        if(transaction == null) {
+            return Transaction.AUTO_COMMIT;
+        } else {
+            return this.transaction;
+        }
     }
 
 }

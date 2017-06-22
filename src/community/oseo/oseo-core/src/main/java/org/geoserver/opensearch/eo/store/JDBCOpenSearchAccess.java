@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.Repository;
 import org.geotools.data.ServiceInfo;
@@ -474,7 +475,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         
         // is it a virtual collection?
         if(!primaryTable) {
-            String cqlFilter = (String) collectionFeature.getAttribute("productcqlfilter");
+            String cqlFilter = (String) collectionFeature.getAttribute("productCqlFilter");
             if(cqlFilter != null) {
                 try {
                     Filter filter = ECQL.toFilter(cqlFilter);
@@ -531,12 +532,12 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         }
     }
 
-    public FeatureSource<FeatureType, Feature> getProductSource() throws IOException {
+    public FeatureStore<FeatureType, Feature> getProductSource() throws IOException {
         return new JDBCProductFeatureSource(this, productFeatureType);
     }
 
-    public FeatureSource<FeatureType, Feature> getCollectionSource() throws IOException {
-        return new JDBCCollectionFeatureSource(this, collectionFeatureType);
+    public FeatureStore<FeatureType, Feature> getCollectionSource() throws IOException {
+        return new JDBCCollectionFeatureStore(this, collectionFeatureType);
     }
 
     @Override

@@ -111,20 +111,20 @@ paths:
                   "timeEnd" : null,
                   "productcqlfilter" : null,
                   "masked" : false,
-                  "eo:Identifier" : "SENTINEL2",
-                  "eo:ProductType" : "S2MS1C",
-                  "eo:Platform" : "Sentinel-2",
-                  "eo:PlatformSerialIdentifier" : "A",
-                  "eo:Instrument" : "MSI",
-                  "eo:SensorType" : "OPTICAL",
-                  "eo:CompositeType" : null,
-                  "eo:ProcessingLevel" : "Level-1C",
-                  "eo:OrbitType" : "LEO",
-                  "eo:SpectralRange" : null,
-                  "eo:Wavelength" : null,
-                  "eo:SecurityConstraints" : null,
-                  "eo:Dissemination" : null,
-                  "eo:AcquisitionStation" : null,
+                  "eo:identifier" : "SENTINEL2",
+                  "eo:productType" : "S2MS1C",
+                  "eo:platform" : "Sentinel-2",
+                  "eo:platformSerialIdentifier" : "A",
+                  "eo:instrument" : "MSI",
+                  "eo:sensorType" : "OPTICAL",
+                  "eo:compositeType" : null,
+                  "eo:processingLevel" : "Level-1C",
+                  "eo:orbitType" : "LEO",
+                  "eo:spectralRange" : null,
+                  "eo:wavelength" : null,
+                  "eo:securityConstraints" : null,
+                  "eo:dissemination" : null,
+                  "eo:acquisitionStation" : null,
                   "ogcLinksHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
                   "metadataHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/metadata",
                   "descriptionHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/description",
@@ -565,6 +565,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
         404:
           description: The specified product cannot be found
     delete:
@@ -674,9 +676,12 @@ paths:
       description: Updates/creates a product thumbnail
       consumes:
         - image/png
+        - image/jpeg
       responses:
         200:
           description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
         404:
           description: The specified product cannot be found
     delete:
@@ -732,6 +737,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
         404:
           description: The specified collection or product cannot be found
     delete:
@@ -781,6 +788,8 @@ paths:
       responses:
         200:
           description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
         404:
           description: The specified collection or product cannot be found
     delete:

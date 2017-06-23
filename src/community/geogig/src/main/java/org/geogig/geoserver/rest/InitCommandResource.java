@@ -24,13 +24,11 @@ public class InitCommandResource extends org.locationtech.geogig.rest.repository
         // before running the Init command, extract the repository name from the request and see if
         // a repository with that name already exists
         final String repoName = RESTUtils.getStringAttribute(request, "repository");
-        if (repoName != null) {
-            if (RepositoryManager.get().getByRepoName(repoName) != null) {
-                // repo already exists
-                throw new CommandSpecException(
-                        "The specified repository name is already in use, please try a different name",
-                        Status.CLIENT_ERROR_CONFLICT);
-            }
+        if (repoName != null && RepositoryManager.get().repoExistsByName(repoName)) {
+            // repo already exists
+            throw new CommandSpecException(
+                    "The specified repository name is already in use, please try a different name",
+                    Status.CLIENT_ERROR_CONFLICT);
         }
         Representation representation = super.runCommand(variant, request, outputFormat);
 

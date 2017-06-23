@@ -50,7 +50,9 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
                 final URI location = repo.getLocation();
                 final RepositoryResolver resolver = RepositoryResolver.lookup(location);
                 final String scheme = location.getScheme();
-                if (isNew && repoNameExists(repo.getRepoName())) {
+                final boolean nameExists = RepositoryManager.get()
+                        .repoExistsByName(repo.getRepoName());
+                if (isNew && nameExists) {
                     error.addKey("errRepositoryNameExists");
                 } else if ("file".equals(scheme)) {
                     File repoDir = new File(location);
@@ -97,9 +99,5 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
     public void convertInput() {
         RepositoryInfo modelObject = getModelObject();
         setConvertedInput(modelObject);
-    }
-
-    private boolean repoNameExists(String repoName) {
-        return RepositoryManager.get().getByRepoName(repoName) != null;
     }
 }

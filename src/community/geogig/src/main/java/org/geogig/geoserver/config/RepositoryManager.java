@@ -9,7 +9,6 @@ import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -54,11 +53,11 @@ import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
 import org.opengis.filter.Filter;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
@@ -70,35 +69,19 @@ public class RepositoryManager implements GeoServerInitializer {
         }
     }
 
-    private static class StaticSupplier implements Supplier<RepositoryManager>, Serializable {
-        private static final long serialVersionUID = 3706728433275296134L;
+    private static final String REPO_ROOT = "geogig/repos";
 
-        @Override
-        public RepositoryManager get() {
-            return RepositoryManager.get();
-        }
-    }
+    private ConfigStore configStore;
 
-    private final ConfigStore configStore;
+    private ResourceStore resourceStore;
 
-    private final ResourceStore resourceStore;
-
-    private final RepositoryCache repoCache;
+    private RepositoryCache repoCache;
 
     private static RepositoryManager INSTANCE;
 
     private Catalog catalog;
 
-    private static final String REPO_ROOT = "geogig/repos";
-
-    private static final RepositoryInfoChangedCallback REPO_CHANGED_CALLBACK = new RepositoryInfoChangedCallback() {
-        @Override
-        public void repositoryInfoChanged(String repoId) {
-            if (INSTANCE != null && INSTANCE.repoCache != null) {
-                INSTANCE.repoCache.invalidate(repoId);
-            }
-        }
-    };
+    private RepositoryInfoChangedCallback REPO_CHANGED_CALLBACK;
 
     public static synchronized RepositoryManager get() {
         if (INSTANCE == null) {
@@ -108,24 +91,35 @@ public class RepositoryManager implements GeoServerInitializer {
         return INSTANCE;
     }
 
-    public static void close() {
+    public void dispose() {
+        configStore.removeRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
+        repoCache.invalidateAll();
+    }
+
+    public synchronized static void close() {
         if (INSTANCE != null) {
-            INSTANCE.configStore.removeRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
-            INSTANCE.repoCache.invalidateAll();
+            INSTANCE.dispose();
             INSTANCE = null;
         }
     }
 
-    public static Supplier<RepositoryManager> supplier() {
-        return new StaticSupplier();
+    public RepositoryManager(ConfigStore configStore, ResourceStore resourceStore) {
+        init(configStore, resourceStore);
     }
 
-    public RepositoryManager(ConfigStore configStore, ResourceStore resourceStore) {
+    @VisibleForTesting
+    RepositoryManager() {
+
+    }
+
+    @VisibleForTesting
+    void init(ConfigStore configStore, ResourceStore resourceStore) {
         checkNotNull(configStore);
         checkNotNull(resourceStore);
         this.configStore = configStore;
         this.resourceStore = resourceStore;
         this.repoCache = new RepositoryCache(this);
+        REPO_CHANGED_CALLBACK = (repoId) -> invalidate(repoId);
         this.configStore.addRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
     }
 
@@ -153,8 +147,10 @@ public class RepositoryManager implements GeoServerInitializer {
         } else {
             // no location set yet, generate one
             // NOTE: If the resource store does not support a file system, the repository will be
-            // created in a temporary directory. If this is the case, remove any repository
-            // resolvers that can resolve a 'file' URI to prevent the creation of such repos.
+            // created
+            // in a temporary directory. If this is the case, remove any repository resolvers that
+            // can
+            // resolve a 'file' URI to prevent the creation of such repos.
             Resource root = resourceStore.get(REPO_ROOT);
             File repoDir = root.get(UUID.randomUUID().toString()).dir();
             if (!repoDir.exists()) {
@@ -178,12 +174,8 @@ public class RepositoryManager implements GeoServerInitializer {
         return repository;
     }
 
-    public RepositoryInfo get(final String repoId) throws IOException {
-        try {
-            return configStore.get(repoId);
-        } catch (FileNotFoundException e) {
-            throw new NoSuchElementException("No repository with ID " + repoId + " exists");
-        }
+    public RepositoryInfo get(final String repoId) throws NoSuchElementException {
+        return configStore.get(repoId);
     }
 
     /**
@@ -193,9 +185,22 @@ public class RepositoryManager implements GeoServerInitializer {
      *
      * @return a RepositoryInfo object, if found. If not found, returns null.
      */
-    public RepositoryInfo getByRepoName(final String name) {
+    public @Nullable RepositoryInfo getByRepoName(final String name) {
         RepositoryInfo info = configStore.getByName(name);
         return info;
+    }
+
+    public @Nullable RepositoryInfo getByRepoLocation(final URI repoURI) {
+        RepositoryInfo info = configStore.getByLocation(repoURI);
+        return info;
+    }
+
+    public boolean repoExistsByName(final String name) {
+        return configStore.repoExistsByName(name);
+    }
+
+    public boolean repoExistsByLocation(URI location) {
+        return configStore.repoExistsByLocation(location);
     }
 
     public List<DataStoreInfo> findGeogigStores() {
@@ -231,7 +236,7 @@ public class RepositoryManager implements GeoServerInitializer {
         String repoName = null;
         try {
             repoName = this.get(repoId).getRepoName();
-        } catch (IOException ioe) {
+        } catch (NoSuchElementException ioe) {
             Throwables.propagate(ioe);
         }
         Filter filter = equal("type", GeoGigDataStoreFactory.DISPLAY_NAME);
@@ -309,13 +314,8 @@ public class RepositoryManager implements GeoServerInitializer {
             create(info);
         } else {
             // see if the name has changed. If so, update the repo config
-            try {
-                RepositoryInfo currentInfo = get(info.getId());
-                handleRepoRename(currentInfo, info);
-            } catch (IOException ioe) {
-
-            }
-
+            RepositoryInfo currentInfo = get(info.getId());
+            handleRepoRename(currentInfo, info);
         }
         // so far we don't need to invalidate the GeoGIG instance from the cache here... re-evaluate
         // if any configuration option would require so in the future

@@ -162,6 +162,8 @@ public class HeapResourceStore implements ResourceStore {
         private Type type;
 
         private byte[] bytes;
+        
+        private long lastModified;
 
         final private HeapResourceStore store;
 
@@ -181,6 +183,7 @@ public class HeapResourceStore implements ResourceStore {
                 this.parent = parent;
                 this.path = buildPath();
             }
+            this.lastModified = 0L;// no timestamp until it's first written
             this.bytes = null;
             this.children = new LinkedList<>();
         }
@@ -255,6 +258,7 @@ public class HeapResourceStore implements ResourceStore {
                         // close the stream first
                         delegate.close();
                         bytes = delegate.toByteArray();
+                        lastModified = System.currentTimeMillis();
                         // fire any deferred create events stored
                         if (createNotification != null) {
                             dispatcher.changed(createNotification);
@@ -306,7 +310,7 @@ public class HeapResourceStore implements ResourceStore {
 
         @Override
         public long lastmodified() {
-            return 0;
+            return lastModified;
         }
 
         @Override

@@ -34,7 +34,7 @@ public class BranchSelectionPanel extends FormComponentPanel<String> {
 
     private final IModel<String> repositoryUriModel;
 
-    private Supplier<RepositoryManager> manager = RepositoryManager.supplier();
+    private Supplier<RepositoryManager> manager = () -> RepositoryManager.get();
 
     public BranchSelectionPanel(String id, IModel<String> repositoryUriModel,
             IModel<String> branchNameModel, Form<DataStoreInfo> storeEditForm) {
@@ -103,7 +103,7 @@ public class BranchSelectionPanel extends FormComponentPanel<String> {
                 if (reportError) {
                     form.error("Could not list branches: " + e.getMessage());
                 }
-            } 
+            }
             String current = (String) choice.getModelObject();
             if (current != null && !branchNames.contains(current)) {
                 branchNames.add(0, current);

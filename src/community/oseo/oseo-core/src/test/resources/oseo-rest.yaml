@@ -292,7 +292,7 @@ paths:
           examples:
             application/json: |
               {
-                links: [
+                "links": [
                    {
                      "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
                      "method": "GET",

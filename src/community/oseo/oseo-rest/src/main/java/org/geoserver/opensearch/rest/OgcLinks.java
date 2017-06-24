@@ -11,11 +11,25 @@ import java.util.List;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class OgcLinks {
+class OgcLinks {
+
     List<OgcLink> links;
+
+    public OgcLinks() {
+        super();
+    }
 
     public OgcLinks(List<OgcLink> links) {
         this.links = links;
     }
+    
+    public List<OgcLink> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<OgcLink> links) {
+        this.links = links;
+    }
+
 
 }

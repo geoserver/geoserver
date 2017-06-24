@@ -17,7 +17,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.jayway.jsonpath.DocumentContext;
 
-public class ProductControllerTest extends OSEORestTestSupport {
+public class ProductsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testGetProductsForNonExistingCollection() throws Exception {

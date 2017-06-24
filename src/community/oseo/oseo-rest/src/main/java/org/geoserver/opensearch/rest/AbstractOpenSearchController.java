@@ -5,12 +5,17 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.response.LinkFeatureComparator;
@@ -40,6 +45,9 @@ import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.http.HttpStatus;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Base class for OpenSearch related REST controllers
@@ -155,7 +163,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         return targetSchema;
     }
     
-    protected OgcLinks buildOgcLinksFromFeature(Feature feature) {
+    protected OgcLinks buildOgcLinksFromFeature(Feature feature, boolean notFoundOnEmpty) {
         // map to a list of beans
         List<OgcLink> links = Collections.emptyList();
         Collection<Property> linkProperties = feature
@@ -170,6 +178,9 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                         String href = (String) sf.getAttribute("href");
                         return new OgcLink(offering, method, code, type, href);
                     }).collect(Collectors.toList());
+        }
+        if(links.isEmpty() && notFoundOnEmpty) {
+            throw new ResourceNotFoundException();
         }
         return new OgcLinks(links);
     }
@@ -237,6 +248,25 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                 };
             }
         };
+    }
+    
+    /**
+     * Checks XML well formedness (TODO: check against actual schemas)
+     * 
+     * @param xml
+     * @throws IOException 
+     * @throws SAXException 
+     */
+    protected void checkWellFormedXML(String xml)  {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder;
+        try {
+            dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new InputSource(new StringReader(xml)));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RestException("XML document is not well formed", HttpStatus.BAD_REQUEST);
+        }
+        
     }
 
 }

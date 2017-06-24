@@ -4,10 +4,14 @@
  */
 package org.geoserver.opensearch.rest;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.geoserver.opensearch.eo.OSEOTestSupport;
 import org.geoserver.security.impl.GeoServerRole;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -28,7 +32,7 @@ public class OSEORestTestSupport extends OSEOTestSupport {
         }
 
         assertEquals(expectedHttpCode, response.getStatus());
-        assertEquals("application/json", response.getContentType());
+        assertThat(response.getContentType(), startsWith("application/json"));
         return JsonPath.parse(response.getContentAsString());
     }
 

@@ -5,47 +5,52 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
-import java.io.Writer;
 
-import org.geoserver.config.util.SecureXStream;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.json.JsonWriter;
-
+/**
+ * This one exists solely to have a converter that will care for the collection objects without hitting GeoServer own xstream converter, which is
+ * generating an ugly output
+ *
+ * @author Andrea Aime - GeoSolutions
+ */
 @Component
-public class OseoJSONConverter extends BaseMessageConverter<Object> {
+public class OseoJSONConverter extends BaseMessageConverter {
 
-    private XStream xs;
+    MappingJackson2HttpMessageConverter delegate = new MappingJackson2HttpMessageConverter();
 
     public OseoJSONConverter() {
-        super(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON_UTF8);
-
-        xs = new SecureXStream(new JsonHierarchicalStreamDriver() {
-            public HierarchicalStreamWriter createWriter(Writer writer) {
-                return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE | JsonWriter.STRICT_MODE);
-            }
-        });
-
+        super(MediaType.APPLICATION_JSON);
+    }
+    
+    @Override
+    protected boolean supports(Class clazz) {
+        return (OgcLinks.class.isAssignableFrom(clazz)
+                || (ProductReferences.class.isAssignableFrom(clazz)));
     }
 
     @Override
-    protected boolean supports(Class clazz) {
-        return CollectionReferences.class.isAssignableFrom(clazz)
-                || ProductReferences.class.isAssignableFrom(clazz)
-                || OgcLinks.class.isAssignableFrom(clazz);
+    public int getPriority() {
+        return ExtensionPriority.HIGHEST;
+    }
+
+    @Override
+    protected Object readInternal(Class clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
+        return delegate.read(clazz, inputMessage);
     }
 
     @Override
     protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        xs.toXML(t, outputMessage.getBody());
+        delegate.write(t, MediaType.APPLICATION_JSON, outputMessage);
     }
-
 }

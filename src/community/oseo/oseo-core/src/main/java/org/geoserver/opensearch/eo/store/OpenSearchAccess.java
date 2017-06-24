@@ -82,6 +82,11 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     }
 
     /**
+     * Local part of the HTML description property. The namespace is the one assigned to the store, this is not an EO property
+     */
+    public static String DESCRIPTION = "htmlDescription";
+
+    /**
      * Returns the feature source backing collections (dynamic, as the store has to respect the namespace URI given by GeoServer)
      * 
      * @throws IOException

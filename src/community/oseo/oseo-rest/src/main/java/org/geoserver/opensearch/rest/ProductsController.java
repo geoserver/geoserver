@@ -162,7 +162,7 @@ public class ProductsController extends AbstractOpenSearchController {
                     .singletonList(FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
         });
 
-        OgcLinks links = buildOgcLinksFromFeature(feature);
+        OgcLinks links = buildOgcLinksFromFeature(feature, true);
         return links;
     }
 

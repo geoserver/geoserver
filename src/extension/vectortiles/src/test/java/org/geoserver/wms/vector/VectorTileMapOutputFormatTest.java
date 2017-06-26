@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.wicket.spring.test.ApplicationContextMock;
 import org.geoserver.catalog.SLDHandler;
@@ -59,7 +60,7 @@ public class VectorTileMapOutputFormatTest {
 
     private WMS wmsMock;
 
-    private VectorTileMapOutputFormat outptFormat;
+    private VectorTileMapOutputFormat outputFormat;
 
     private VectorTileBuilder tileBuilderMock;
 
@@ -75,7 +76,7 @@ public class VectorTileMapOutputFormatTest {
         GeoServerExtensionsHelper.init(new ApplicationContextMock());
 
         WEB_MERCATOR = CRS.decode("EPSG:3857");
-        WGS84 = CRS.decode("EPSG:4326", true);
+        WGS84 = CRS.decode("urn:x-ogc:def:crs:EPSG:4326");
     }
 
     @Before
@@ -92,7 +93,8 @@ public class VectorTileMapOutputFormatTest {
         when(tileBuilderFactory.newBuilder(any(Rectangle.class), any(ReferencedEnvelope.class)))
                 .thenReturn(tileBuilderMock);
 
-        outptFormat = new VectorTileMapOutputFormat(wmsMock, tileBuilderFactory);
+        outputFormat = new VectorTileMapOutputFormat(wmsMock, tileBuilderFactory);
+        outputFormat.setClipToMapBounds(true);
 
         MemoryDataStore ds = new MemoryDataStore();
 
@@ -107,6 +109,9 @@ public class VectorTileMapOutputFormatTest {
         ds.addFeature(feature(pointType, "point1", "StringProp1_1", 1000, "POINT(1 1)"));
         ds.addFeature(feature(pointType, "point2", "StringProp1_2", 2000, "POINT(2 2)"));
         ds.addFeature(feature(pointType, "point3", "StringProp1_3", 3000, "POINT(3 3)"));
+        double bufferBoundary = -180.0/256*32;
+        ds.addFeature(feature(pointType, "pointNear", "StringProp1_4", 3000, String.format("POINT(3 %s)", bufferBoundary+0.1)));
+        ds.addFeature(feature(pointType, "pointFar", "StringProp1_5", 3000, String.format("POINT(3 %s)", bufferBoundary-1.0)));
 
         ds.addFeature(feature(lineType, "line1", "StringProp2_1", 1000, "LINESTRING (1 1, 2 2)"));
         ds.addFeature(feature(lineType, "line1", "StringProp2_2", 2000, "LINESTRING (3 3, 4 4)"));
@@ -125,26 +130,87 @@ public class VectorTileMapOutputFormatTest {
     }
 
     @Test
-    public void testSimple() throws Exception {
+    public void testBuffer() throws Exception {
 
-        ReferencedEnvelope mapBounds = new ReferencedEnvelope(0, 180, -90, 90, WGS84);
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(-90, 90, 0, 180, WGS84);
         Rectangle renderingArea = new Rectangle(256, 256);
 
-        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, pointLayer);
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 32, pointLayer);
 
         WebMap mockMap = mock(WebMap.class);
         when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
 
-        assertSame(mockMap, outptFormat.produceMap(mapContent));
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
 
         verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point1"), eq("geom"),
                 any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point2"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point3"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("pointFar"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("pointNear"), eq("geom"),
+                any(Geometry.class), any(Map.class));
     }
 
-    private WMSMapContent createMapContent(ReferencedEnvelope mapBounds, Rectangle renderingArea,
-            Layer... layers) throws Exception {
+    @Test
+    public void testBufferProject() throws Exception {
 
-        GetMapRequest mapRequest = createGetMapRequest(mapBounds, renderingArea);
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(0, 20_037_508.34, 0, 20_037_508.34, WEB_MERCATOR);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        ReferencedEnvelope qbounds = new ReferencedEnvelope(mapBounds);
+        qbounds.expandBy(20_037_508.34/256*32);
+        
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 32, pointLayer);
+
+        WebMap mockMap = mock(WebMap.class);
+        when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
+
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
+
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point1"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point2"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point3"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("pointFar"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("pointNear"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+    }
+    
+    @Test
+    public void testSimple() throws Exception {
+
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(-90, 90, 0, 180, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, null, pointLayer);
+
+        WebMap mockMap = mock(WebMap.class);
+        when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
+
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
+
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point1"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point2"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point3"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("pointFar"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("pointNear"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+    }
+
+    private WMSMapContent createMapContent(ReferencedEnvelope mapBounds, Rectangle renderingArea, 
+            Integer buffer, Layer... layers) throws Exception {
+
+        GetMapRequest mapRequest = createGetMapRequest(mapBounds, renderingArea, buffer);
 
         WMSMapContent map = new WMSMapContent(mapRequest);
         map.getViewport().setBounds(mapBounds);
@@ -155,12 +221,15 @@ public class VectorTileMapOutputFormatTest {
         }
         map.setMapWidth(renderingArea.width);
         map.setMapHeight(renderingArea.height);
+        if(Objects.nonNull(buffer)) {
+            map.setBuffer(buffer);
+        }
 
         return map;
     }
 
     protected GetMapRequest createGetMapRequest(ReferencedEnvelope requestEnvelope,
-            Rectangle renderingArea) {
+            Rectangle renderingArea, Integer buffer) {
         GetMapRequest request = new GetMapRequest();
         request.setBaseUrl("http://localhost:8080/geoserver");
 
@@ -191,6 +260,7 @@ public class VectorTileMapOutputFormatTest {
         request.setWidth(renderingArea.width);
         request.setHeight(renderingArea.height);
         request.setRawKvp(new HashMap<String, String>());
+        request.setBuffer(buffer);
         return request;
     }
 

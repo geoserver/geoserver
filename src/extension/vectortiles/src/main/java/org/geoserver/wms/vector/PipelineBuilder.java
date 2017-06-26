@@ -72,6 +72,7 @@ class PipelineBuilder {
 
         public double pixelSizeInTargetCRS; // approximate size of a pixel in the Target CRS
 
+        public int queryBuffer;
     }
 
     Context context;
@@ -98,20 +99,24 @@ class PipelineBuilder {
      * @throws FactoryException
      */
     public static PipelineBuilder newBuilder(ReferencedEnvelope renderingArea, Rectangle paintArea,
-            CoordinateReferenceSystem sourceCrs, double overSampleFactor) throws FactoryException {
+            CoordinateReferenceSystem sourceCrs, double overSampleFactor, int queryBuffer)
+                    throws FactoryException {
 
-        Context context = createContext(renderingArea, paintArea, sourceCrs, overSampleFactor);
+        Context context = createContext(renderingArea, paintArea, sourceCrs, overSampleFactor, 
+                queryBuffer);
         return new PipelineBuilder(context);
     }
 
     private static Context createContext(ReferencedEnvelope mapArea, Rectangle paintArea,
-            CoordinateReferenceSystem sourceCrs, double overSampleFactor) throws FactoryException {
+            CoordinateReferenceSystem sourceCrs, double overSampleFactor, int queryBuffer)
+                    throws FactoryException {
 
         Context context = new Context();
         context.renderingArea = mapArea;
         context.paintArea = paintArea;
         context.sourceCrs = sourceCrs;
         context.worldToScreen = RendererUtilities.worldToScreenTransform(mapArea, paintArea);
+        context.queryBuffer = queryBuffer;
 
         final boolean wrap = false;
         context.projectionHandler = ProjectionHandlerFinder.getHandler(mapArea, sourceCrs, wrap);
@@ -288,12 +293,12 @@ class PipelineBuilder {
                 Rectangle screen = context.paintArea;
 
                 Envelope paintArea = new Envelope(0, screen.getWidth(), 0, screen.getHeight());
-                paintArea.expandBy(clipBBOXSizeIncreasePixels);
+                paintArea.expandBy(clipBBOXSizeIncreasePixels+context.queryBuffer);
 
                 clippingEnvelope = paintArea;
             } else {
                 ReferencedEnvelope renderingArea = context.renderingArea;
-                renderingArea.expandBy(clipBBOXSizeIncreasePixels * context.pixelSizeInTargetCRS);
+                renderingArea.expandBy((clipBBOXSizeIncreasePixels+context.queryBuffer) * context.pixelSizeInTargetCRS);
                 clippingEnvelope = renderingArea;
             }
 

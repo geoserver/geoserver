@@ -45,4 +45,9 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
         return "collection_id";
     }
 
+    @Override
+    protected String getThumbnailTable() {
+        return "collection_thumb";
+    }
+
 }

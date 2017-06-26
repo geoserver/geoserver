@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
@@ -25,30 +24,19 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
-import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.AttributeBuilder;
-import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureFactory;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -86,8 +74,6 @@ public class CollectionsController extends AbstractOpenSearchController {
 
     static final List<String> COLLECTION_HREFS = Arrays.asList("ogcLinksHref", "metadataHref",
             "descriptionHref", "thumbnailHref");
-
-    static final FeatureFactory FEATURE_FACTORY = CommonFactoryFinder.getFeatureFactory(null);
 
     static final Name COLLECTION_ID = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
 
@@ -130,7 +116,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             @RequestBody(required = true) SimpleFeature feature)
             throws IOException, URISyntaxException {
         String eoId = checkCollectionIdentifier(feature);
-        Feature collectionFeature = simpleToComplex(feature);
+        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
 
         // insert the new feature
         runTransactionOnCollectionStore(fs -> fs.addFeatures(singleton(collectionFeature)));
@@ -190,7 +176,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         String eoId = checkCollectionIdentifier(feature);
 
         // prepare the update, need to convert each field into a Name/Value couple
-        Feature collectionFeature = simpleToComplex(feature);
+        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
         List<Name> names = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         for (Property p : collectionFeature.getProperties()) {
@@ -247,34 +233,11 @@ public class CollectionsController extends AbstractOpenSearchController {
         // check the collection is there
         queryCollection(collection, q -> {});
 
-        SimpleFeatureType schema = buildOgcLinksType();
-        ListFeatureCollection linksCollection = new ListFeatureCollection(schema);
-        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
-        for (OgcLink link : links.links) {
-            fb.set("offering", link.offering);
-            fb.set("method", link.method);
-            fb.set("code", link.code);
-            fb.set("type", link.type);
-            fb.set("href", link.href);
-            SimpleFeature sf = fb.buildFeature(null);
-            linksCollection.add(sf);
-        }
+        ListFeatureCollection linksCollection = beansToLinksCollection(links);
+        
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(
                 fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
-    }
-    
-    private SimpleFeatureType buildOgcLinksType() throws IOException {
-        String ns = getOpenSearchAccess().getCollectionSource().getName().getNamespaceURI();
-        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.setName("ogc_links");
-        tb.setNamespaceURI(ns);
-        tb.add("offering", String.class);
-        tb.add("method", String.class);
-        tb.add("code", String.class);
-        tb.add("type", String.class);
-        tb.add("href", String.class);
-        return tb.buildFeatureType();
     }
     
     @DeleteMapping(path = "{collection}/ogcLinks")
@@ -410,92 +373,7 @@ public class CollectionsController extends AbstractOpenSearchController {
     private void runTransactionOnCollectionStore(IOConsumer<FeatureStore> featureStoreConsumer)
             throws IOException {
         FeatureStore store = (FeatureStore) getOpenSearchAccess().getCollectionSource();
-        try (Transaction t = new DefaultTransaction()) {
-            store.setTransaction(t);
-            try {
-                featureStoreConsumer.accept(store);
-                t.commit();
-            } catch (Exception e) {
-                t.rollback();
-                throw new IOException(
-                        "Failed to run modification on collection store:" + e.getMessage(), e);
-            }
-        }
-    }
-
-    /**
-     * Converts the simple feature representatin of a collection into a complex feature suitable for OpenSearchAccess usage
-     * 
-     * @param feature
-     * @return
-     * @throws IOException
-     */
-    private Feature simpleToComplex(SimpleFeature feature) throws IOException {
-        OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-        final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
-        final FeatureType schema = collectionSource.getSchema();
-        ComplexFeatureBuilder builder = new ComplexFeatureBuilder(schema);
-        AttributeBuilder ab = new AttributeBuilder(FEATURE_FACTORY);
-        for (AttributeDescriptor ad : feature.getType().getAttributeDescriptors()) {
-            String sourceName = ad.getLocalName();
-            // ignore links
-            if (COLLECTION_HREFS.contains(sourceName)) {
-                continue;
-            }
-            // map to complex feature attribute and check
-            Name pname = toName(sourceName, schema.getName().getNamespaceURI());
-            PropertyDescriptor pd = schema.getDescriptor(pname);
-            if (pd == null) {
-                throw new RestException("Unexpected attribute found: '" + sourceName + "'",
-                        HttpStatus.BAD_REQUEST);
-            }
-
-            ab.setDescriptor((AttributeDescriptor) pd);
-            Attribute attribute = ab.buildSimple(null, feature.getAttribute(sourceName));
-            builder.append(pd.getName(), attribute);
-        }
-        Feature collectionFeature = builder.buildFeature(feature.getID());
-        return collectionFeature;
-    }
-
-    private FeatureCollection singleton(Feature f) {
-        ListComplexFeatureCollection fc = new ListComplexFeatureCollection(f);
-        return fc;
-
-    }
-
-    private Name toName(String sourceName, String defaultNamespace) {
-        String[] split = sourceName.split(":");
-        switch (split.length) {
-        case 1:
-            if ("geometry".equals(sourceName)) {
-                return new NameImpl(defaultNamespace, "footprint");
-            } else {
-                return new NameImpl(defaultNamespace, sourceName);
-            }
-        case 2:
-            String prefix = split[0];
-            String localName = split[1];
-            String namespaceURI = null;
-            if ("eo".equals(prefix)) {
-                namespaceURI = OpenSearchAccess.EO_NAMESPACE;
-            } else {
-                for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
-                    if (prefix.equals(pc.getPrefix())) {
-                        namespaceURI = pc.getNamespace();
-                    }
-                }
-            }
-
-            if (namespaceURI == null) {
-                throw new RestException("Unrecognized attribute prefix in property " + sourceName,
-                        HttpStatus.BAD_REQUEST);
-            }
-
-            return new NameImpl(namespaceURI, localName);
-        default:
-            throw new RestException("Unrecognized attribute " + sourceName, HttpStatus.BAD_REQUEST);
-        }
+        super.runTransactionOnStore(store, featureStoreConsumer);
     }
 
     private String checkCollectionIdentifier(SimpleFeature feature) {
@@ -514,6 +392,13 @@ public class CollectionsController extends AbstractOpenSearchController {
                     HttpStatus.BAD_REQUEST);
         }
         return eoId;
+    }
+    
+    FeatureType getCollectionSchema() throws IOException {
+        final OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+        final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
+        final FeatureType schema = collectionSource.getSchema();
+        return schema;
     }
 
 }

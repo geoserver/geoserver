@@ -7,11 +7,14 @@ package org.geoserver.opensearch.eo.store;
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.geotools.data.Join;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
@@ -30,10 +33,21 @@ import org.opengis.filter.Filter;
 public class JDBCProductFeatureSource extends AbstractMappingStore {
 
     static final Logger LOGGER = Logging.getLogger(JDBCProductFeatureSource.class);
+    
+    String granuleForeignKey; 
 
     public JDBCProductFeatureSource(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         super(openSearchAccess, collectionFeatureType);
+        
+        for (AttributeDescriptor ad : getFeatureStoreForTable("granule").getSchema().getAttributeDescriptors()) {
+            if(ad.getLocalName().equalsIgnoreCase("product_id")) {
+                granuleForeignKey = ad.getLocalName();
+            }
+        }
+        if(granuleForeignKey == null) {
+            throw new IllegalStateException("Could not locate a column named 'product'_id in table 'granule'");
+        }
     }
 
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
@@ -86,6 +100,35 @@ public class JDBCProductFeatureSource extends AbstractMappingStore {
             Attribute attribute = ab.buildSimple(null, quicklookFeature.getAttribute("thumb"));
             builder.append(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, attribute);
         }
+    }
+    
+    @Override
+    protected void removeChildFeatures(List<String> collectionIdentifiers) throws IOException {
+        super.removeChildFeatures(collectionIdentifiers);
+        
+        // remove thumbnail
+        List<Filter> filters = collectionIdentifiers.stream()
+                .map(id -> FF.equal(FF.property("tid"), FF.literal(id), false))
+                .collect(Collectors.toList());
+        Filter metadataFilter = FF.or(filters);
+        SimpleFeatureStore thumbStore = getFeatureStoreForTable("product_thumb");
+        thumbStore.setTransaction(getTransaction());
+        thumbStore.removeFeatures(metadataFilter);
+        
+        // remove granules
+        filters = collectionIdentifiers.stream()
+                .map(id -> FF.equal(FF.property(granuleForeignKey), FF.literal(id), false))
+                .collect(Collectors.toList());
+        Filter granulesFilter = FF.or(filters);
+        SimpleFeatureStore granuleStore = getFeatureStoreForTable("granule");
+        granuleStore.setTransaction(getTransaction());
+        granuleStore.removeFeatures(granulesFilter);
+
+    }
+
+    @Override
+    protected String getThumbnailTable() {
+        return "product_thumb";
     }
 
 }

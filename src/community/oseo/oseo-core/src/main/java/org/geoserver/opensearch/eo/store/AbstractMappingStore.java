@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -78,6 +80,16 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     static final FeatureFactory FEATURE_FACTORY = CommonFactoryFinder.getFeatureFactory(null);
 
     static final Logger LOGGER = Logging.getLogger(AbstractMappingStore.class);
+
+    /**
+     * Like {@link BiFunction} but allowed to throw {@link IOException}
+     *
+     * @author Andrea Aime - GeoSolutions
+     */
+    @FunctionalInterface
+    public interface IOBiFunction<T, U, R> {
+        R apply(T t, U u) throws IOException;
+    }
 
     protected JDBCOpenSearchAccess openSearchAccess;
 
@@ -334,6 +346,13 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     protected abstract String getLinkForeignKey();
 
     /**
+     * Name of the thumbnail table
+     * 
+     * @return
+     */
+    protected abstract String getThumbnailTable();
+
+    /**
      * Searches for an optional property among the query attributes. Returns true only if the property is explicitly listed
      * 
      * @param query
@@ -534,9 +553,24 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     @Override
     public void removeFeatures(Filter filter) throws IOException {
         Filter mappedFilter = mapFilterToDelegateSchema(filter);
+        final List<String> collectionIdentifiers = getMainTypeDatabaseIdentifiers(mappedFilter);
 
+        removeChildFeatures(collectionIdentifiers);
+
+        // finally drop the collections themselves
+        SimpleFeatureStore store = getDelegateCollectionStore();
+        store.removeFeatures(mappedFilter);
+    }
+
+    /**
+     * Removes the child features associated to a given main feature, the subclasses can override to customize
+     * 
+     * @param collectionIdentifiers
+     * @throws IOException
+     */
+    protected void removeChildFeatures(final List<String> collectionIdentifiers)
+            throws IOException {
         // remove all related metadata
-        final List<String> collectionIdentifiers = getCollectionDatabaseIdentifiers(mappedFilter);
         List<Filter> filters = collectionIdentifiers.stream()
                 .map(id -> FF.equal(FF.property("mid"), FF.literal(id), false))
                 .collect(Collectors.toList());
@@ -547,16 +581,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
         // remove all related OGC links
         filters = collectionIdentifiers.stream()
-                .map(id -> FF.equal(FF.property("collection_id"), FF.literal(id), false))
+                .map(id -> FF.equal(FF.property(getLinkForeignKey()), FF.literal(id), false))
                 .collect(Collectors.toList());
         Filter linksFilter = FF.or(filters);
-        metadataStore = getFeatureStoreForTable(getLinkTable());
-        metadataStore.setTransaction(getTransaction());
-        metadataStore.removeFeatures(linksFilter);
-
-        // finally drop the collections themselves
-        SimpleFeatureStore store = getDelegateCollectionStore();
-        store.removeFeatures(mappedFilter);
+        SimpleFeatureStore linkStore = getFeatureStoreForTable(getLinkTable());
+        linkStore.setTransaction(getTransaction());
+        linkStore.removeFeatures(linksFilter);
     }
 
     @Override
@@ -592,55 +622,58 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             // sub-table related updates
             if (OpenSearchAccess.METADATA_PROPERTY_NAME.equals(name)) {
                 final String tableName = getMetadataTable();
-                SimpleFeatureStore metadataStore = getFeatureStoreForTable(tableName);
-                metadataStore.setTransaction(getTransaction());
-                for (String id : getCollectionDatabaseIdentifiers(mappedFilter)) {
-                    Id secondaryTableFilter = FF.id(FF.featureId(tableName + "." + id));
-                    // make it a delete and eventually insert case, easier to code and no more queries
-                    // than checking if the metadata was already there to perform an update
-                    metadataStore.removeFeatures(secondaryTableFilter);
-                    if (value != null) {
-                        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(
-                                metadataStore.getSchema());
-                        fb.set("mid", id);
-                        fb.set("metadata", value);
-                        SimpleFeature metadataFeature = fb.buildFeature(tableName + "." + id);
-                        metadataFeature.getUserData().put(Hints.USE_PROVIDED_FID, true);
-                        metadataStore.addFeatures(DataUtilities.collection(metadataFeature));
-                    }
-                }
+                modifySecondaryTable(mappedFilter, value, tableName,
+                        id -> FF.id(FF.featureId(tableName + "." + id)), (id, secondaryStore) -> {
+                            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(
+                                    secondaryStore.getSchema());
+                            fb.set("mid", id);
+                            fb.set("metadata", value);
+                            SimpleFeature metadataFeature = fb.buildFeature(tableName + "." + id);
+                            metadataFeature.getUserData().put(Hints.USE_PROVIDED_FID, true);
+                            return DataUtilities.collection(metadataFeature);
+                        });
 
                 // this one has been handled
                 continue;
             }
             if (OpenSearchAccess.QUICKLOOK_PROPERTY_NAME.equals(name)) {
-                throw new UnsupportedOperationException("Still cannot update the quicklook");
+                final String tableName = getThumbnailTable();
+                modifySecondaryTable(mappedFilter, value, tableName,
+                        id -> FF.id(FF.featureId(tableName + "." + id)), (id, secondaryStore) -> {
+                            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(
+                                    secondaryStore.getSchema());
+                            fb.set("tid", id);
+                            fb.set("thumb", value);
+                            SimpleFeature thumbnailFeature = fb.buildFeature(tableName + "." + id);
+                            thumbnailFeature.getUserData().put(Hints.USE_PROVIDED_FID, true);
+                            return DataUtilities.collection(thumbnailFeature);
+                        });
+
+                // this one done
+                continue;
             }
             if (OpenSearchAccess.OGC_LINKS_PROPERTY_NAME.equals(name)) {
-                final String table = getLinkTable();
-                SimpleFeatureStore linksStore = getFeatureStoreForTable(table);
-                linksStore.setTransaction(getTransaction());
-                for (String id : getCollectionDatabaseIdentifiers(mappedFilter)) {
-                    Filter linkTableFilter = FF.equal(FF.property("collection_id"), FF.literal(id), true);
-                    // make it a delete and eventually insert case, easier to code and no more queries
-                    // than checking if the metadata was already there to perform an update
-                    linksStore.removeFeatures(linkTableFilter);
-                    if (value != null) {
-                        SimpleFeatureCollection links = (SimpleFeatureCollection) value;
-                        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(linksStore.getSchema());
-                        ListFeatureCollection mappedLinks = new ListFeatureCollection(linksStore.getSchema());
-                        links.accepts(f -> {
-                            SimpleFeature sf = (SimpleFeature) f;
-                            for (AttributeDescriptor ad : linksStore.getSchema().getAttributeDescriptors()) {
-                                fb.set(ad.getLocalName(), sf.getAttribute(ad.getLocalName()));
-                            }
-                            fb.set("collection_id", id);
-                            SimpleFeature mappedLink = fb.buildFeature(null);
-                            mappedLinks.add(mappedLink);
-                        }, null);
-                        linksStore.addFeatures(mappedLinks);
-                    }
-                }
+                final String tableName = getLinkTable();
+                modifySecondaryTable(mappedFilter, value, tableName,
+                        id -> FF.equal(FF.property(getLinkForeignKey()), FF.literal(id), true),
+                        (id, linksStore) -> {
+                            SimpleFeatureCollection links = (SimpleFeatureCollection) value;
+                            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(
+                                    linksStore.getSchema());
+                            ListFeatureCollection mappedLinks = new ListFeatureCollection(
+                                    linksStore.getSchema());
+                            links.accepts(f -> {
+                                SimpleFeature sf = (SimpleFeature) f;
+                                for (AttributeDescriptor ad : linksStore.getSchema()
+                                        .getAttributeDescriptors()) {
+                                    fb.set(ad.getLocalName(), sf.getAttribute(ad.getLocalName()));
+                                }
+                                fb.set(getLinkForeignKey(), id);
+                                SimpleFeature mappedLink = fb.buildFeature(null);
+                                mappedLinks.add(mappedLink);
+                            }, null);
+                            return mappedLinks;
+                        });
 
                 // this one has been handled
                 continue;
@@ -669,13 +702,31 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
     }
 
+    private void modifySecondaryTable(Filter mainTypeFilter, Object value, final String tableName,
+            Function<String, Filter> secondaryTableFilterSupplier,
+            IOBiFunction<String, SimpleFeatureStore, SimpleFeatureCollection> featureBuilder)
+            throws IOException {
+        SimpleFeatureStore secondaryStore = getFeatureStoreForTable(tableName);
+        secondaryStore.setTransaction(getTransaction());
+        for (String id : getMainTypeDatabaseIdentifiers(mainTypeFilter)) {
+            Filter secondaryTableFilter = secondaryTableFilterSupplier.apply(id);
+            // make it a delete and eventually insert case, easier to code and no more queries
+            // than checking if the metadata was already there to perform an update
+            secondaryStore.removeFeatures(secondaryTableFilter);
+            if (value != null) {
+                SimpleFeatureCollection collection = featureBuilder.apply(id, secondaryStore);
+                secondaryStore.addFeatures(collection);
+            }
+        }
+    }
+
     protected SimpleFeatureStore getFeatureStoreForTable(final String table) throws IOException {
         SimpleFeatureStore featureStore = (SimpleFeatureStore) openSearchAccess.getDelegateStore()
                 .getFeatureSource(table);
         return featureStore;
     }
 
-    public List<String> getCollectionDatabaseIdentifiers(Filter filter) throws IOException {
+    public List<String> getMainTypeDatabaseIdentifiers(Filter filter) throws IOException {
         SimpleFeatureCollection idFeatureCollection = getDelegateCollectionSource()
                 .getFeatures(filter);
         List<String> result = new ArrayList<>();

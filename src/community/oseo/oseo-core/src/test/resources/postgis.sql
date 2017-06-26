@@ -194,7 +194,7 @@ create table product_ogclink (
 -- the granules table (might be abstract, and we can use partitioning)
 create table granule (
   "gid" serial primary key,
-  product_id int references product("id"),
-  location varchar,
-  the_geom geometry(Polygon, 4326)
+  "product_id" int not null references product("id"),
+  "location" varchar not null,
+  "the_geom" geometry(Polygon, 4326) not null
 );

@@ -12,15 +12,12 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geotools.data.FeatureStore;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -30,11 +27,9 @@ import net.sf.json.JSONObject;
 
 public class CollectionsControllerTest extends OSEORestTestSupport {
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-
     @Override
     protected String getLogConfiguration() {
-//         return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
+        // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
         return super.getLogConfiguration();
     }
 
@@ -235,7 +230,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
     }
-    
+
     @Test
     public void testPutCollectionLinks() throws Exception {
         // create the collection
@@ -249,26 +244,27 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         response = putAsServletResponse("rest/oseo/collections/TEST123/ogcLinks",
                 getTestData("/test123-links.json"), MediaType.APPLICATION_JSON_VALUE);
         assertEquals(200, response.getStatus());
-        
+
         // check they are there
-        DocumentContext json = getAsJSONPath("/rest/oseo/collections/SENTINEL2/ogcLinks", 200);
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123/ogcLinks", 200);
         assertEquals("http://www.opengis.net/spec/owc/1.0/req/atom/wms",
                 json.read("$.links[0].offering"));
         assertEquals("GET", json.read("$.links[0].method"));
         assertEquals("GetCapabilities", json.read("$.links[0].code"));
         assertEquals("application/xml", json.read("$.links[0].type"));
-        assertEquals("${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities",
+        assertEquals("${BASE_URL}/test123/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
     }
-    
+
     @Test
     public void testDeleteCollectionLinks() throws Exception {
         testPutCollectionLinks();
-        
+
         // delete the links
-        MockHttpServletResponse response = deleteAsServletResponse("rest/oseo/collections/TEST123/ogcLinks");
+        MockHttpServletResponse response = deleteAsServletResponse(
+                "rest/oseo/collections/TEST123/ogcLinks");
         assertEquals(200, response.getStatus());
-        
+
         // check they are gone
         response = getAsServletResponse("rest/oseo/collections/TEST123/ogcLinks");
         assertEquals(404, response.getStatus());
@@ -331,7 +327,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertThat(response.getContentAsString(),
                 both(containsString("<table>")).and(containsString("Sentinel-2")));
     }
-    
+
     @Test
     public void testPutCollectionDescription() throws Exception {
         // create the collection
@@ -377,8 +373,5 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
                 "/rest/oseo/collections/SENTINEL2/thumbnail");
         assertEquals(404, response.getStatus());
     }
-    
-    byte[] getTestData(String location) throws IOException {
-        return IOUtils.toByteArray(getClass().getResourceAsStream(location));
-    }
+
 }

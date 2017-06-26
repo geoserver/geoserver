@@ -107,5 +107,6 @@ class RepositoryCache {
 
     public void invalidateAll() {
         repoCache.invalidateAll();
+        repoCache.cleanUp();
     }
 }

@@ -52,6 +52,7 @@ import org.locationtech.geogig.repository.impl.ContextBuilder;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
 import org.opengis.filter.Filter;
+import org.springframework.beans.factory.DisposableBean;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
@@ -61,7 +62,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
-public class RepositoryManager implements GeoServerInitializer {
+public class RepositoryManager implements GeoServerInitializer, DisposableBean {
     static {
         if (GlobalContextBuilder.builder() == null
                 || GlobalContextBuilder.builder().getClass().equals(ContextBuilder.class)) {
@@ -89,11 +90,6 @@ public class RepositoryManager implements GeoServerInitializer {
             Preconditions.checkState(INSTANCE != null);
         }
         return INSTANCE;
-    }
-
-    public void dispose() {
-        configStore.removeRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
-        repoCache.invalidateAll();
     }
 
     public synchronized static void close() {
@@ -127,6 +123,16 @@ public class RepositoryManager implements GeoServerInitializer {
     public void initialize(GeoServer geoServer) {
         // set the catalog\
         setCatalog(geoServer.getCatalog());
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        dispose();
+    }
+
+    public void dispose() {
+        configStore.removeRepositoryInfoChangedCallback(REPO_CHANGED_CALLBACK);
+        repoCache.invalidateAll();
     }
 
     public List<RepositoryInfo> getAll() {

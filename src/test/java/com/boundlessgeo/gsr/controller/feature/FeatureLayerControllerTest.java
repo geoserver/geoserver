@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 public class FeatureLayerControllerTest extends ControllerTest {
 
     private String query(String service, String layer, String params) {
-        return baseURL + service + "/FeatureServer/" + layer + params;
+        return getBaseURL() + service + "/FeatureServer/" + layer + params;
     }
 
     @Test

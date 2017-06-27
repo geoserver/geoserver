@@ -14,8 +14,8 @@ public class CatalogServiceControllerTest extends ControllerTest {
 
     @Test
     public void testServiceException() throws Exception {
-        if (baseURL != null) {
-            JSON json = getAsJSON(baseURL + "?f=xxx");
+        if (getBaseURL() != null) {
+            JSON json = getAsJSON(getBaseURL() + "?f=xxx");
             assertTrue(json instanceof JSONObject);
             JSONObject jsonObject = (JSONObject) json;
             JSONObject error = (JSONObject) jsonObject.get("error");
@@ -36,7 +36,7 @@ public class CatalogServiceControllerTest extends ControllerTest {
      */
     @Test
     public void testCatalogResponse() throws Exception {
-        JSON json = getAsJSON(baseURL + "?f=json");
+        JSON json = getAsJSON(getBaseURL() + "?f=json");
         assertTrue(json instanceof JSONObject);
         JSONObject jsonObject = (JSONObject) json;
         JSONArray services = (JSONArray) jsonObject.get("services");
@@ -53,7 +53,7 @@ public class CatalogServiceControllerTest extends ControllerTest {
 
     @Test
     public void testCatalogResponseSchema() throws Exception {
-        JSON json = getAsJSON(baseURL + "?f=json");
+        JSON json = getAsJSON(getBaseURL() + "?f=json");
         assertTrue(json instanceof JSONObject);
         String jsonString = json.toString();
         System.out.println(jsonString);

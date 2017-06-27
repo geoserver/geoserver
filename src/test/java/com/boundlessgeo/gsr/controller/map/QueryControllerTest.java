@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 public class QueryControllerTest extends ControllerTest {
     private String query(String service, int layerId, String params) {
-        return baseURL + service + "/MapServer/" + layerId + "/query" + params;
+        return getBaseURL() + service + "/MapServer/" + layerId + "/query" + params;
     }
 
     @Test

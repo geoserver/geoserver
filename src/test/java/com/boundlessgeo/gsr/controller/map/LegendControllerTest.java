@@ -12,7 +12,7 @@ import org.junit.Ignore;
 public class LegendControllerTest extends ControllerTest {
     @Ignore
     public void testStreamsLegend() throws Exception {
-        String result = getAsString(baseURL + "cite/MapServer/legend?f=json");
+        String result = getAsString(getBaseURL() + "cite/MapServer/legend?f=json");
         fail(result);
     }
 }

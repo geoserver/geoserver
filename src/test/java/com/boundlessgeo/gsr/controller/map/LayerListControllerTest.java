@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class LayerListControllerTest extends ControllerTest {
     private String query(String service, String params) {
-        return baseURL + service + "/MapServer/layers" + params;
+        return getBaseURL() + service + "/MapServer/layers" + params;
     }
 
     @Test

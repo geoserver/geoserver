@@ -63,7 +63,7 @@ public class QueryControllerTimeTest extends ControllerTest {
         assertTrue(dimensionInfo.isEnabled());
         assertEquals("time", dimensionInfo.getAttribute());
         assertNotNull(getCatalog().getLayerByName(TIME_ELEVATION.getLocalPart()));
-        String rootResource = getAsString(baseURL + "cite/MapServer?f=json");
+        String rootResource = getAsString(getBaseURL() + "cite/MapServer?f=json");
         assertTrue(JsonSchemaTest.validateJSON(rootResource, "gsr-ms/1.0/root.json"));
         JSONObject json = JSONObject.fromObject(rootResource);
         assertTrue(json.containsKey("timeInfo"));
@@ -72,7 +72,7 @@ public class QueryControllerTimeTest extends ControllerTest {
     @Test
     public void testTimeQuery() throws Exception {
         String query =
-                baseURL +
+                getBaseURL() +
                 "cite" +
                 "/MapServer/" +
                 "12" +

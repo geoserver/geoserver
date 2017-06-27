@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class FeatureServiceControllerTest extends ControllerTest {
     private String query(String service, String params) {
-        return baseURL + service + "/FeatureServer" + params;
+        return getBaseURL() + service + "/FeatureServer" + params;
     }
 
     @Test

@@ -22,9 +22,9 @@ import static org.junit.Assert.*;
 
 public class ControllerTest extends CatalogRESTTestSupport {
 
-    protected Catalog catalog;
+    private Catalog catalog;
 
-    protected String baseURL = "/gsr/services/";
+    private String baseURL = "/gsr/services/";
 
     @Override
     final protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -89,5 +89,9 @@ public class ControllerTest extends CatalogRESTTestSupport {
     protected boolean validateJSON(String json, String schemaPath) {
         String workingDir = System.getProperty("user.dir") + "/src/test/resources/schemas/";
         return JSONValidator.isValidSchema(json, new File(workingDir + schemaPath));
+    }
+
+    public String getBaseURL() {
+        return baseURL;
     }
 }

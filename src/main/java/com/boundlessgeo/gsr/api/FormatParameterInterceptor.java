@@ -34,6 +34,10 @@ public class FormatParameterInterceptor extends HandlerInterceptorAdapter {
             } else if ("json".equals(format)) {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 return true;
+            } else if ("image".equals(format)) {
+                //don't do anything, image requests don't use mime type since the actual
+                //format of the image is specified in a different parameter
+                return true;
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.BAD_REQUEST.value());

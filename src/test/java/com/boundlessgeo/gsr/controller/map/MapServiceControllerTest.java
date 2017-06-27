@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 public class MapServiceControllerTest extends ControllerTest {
     private String query(String service, String params) {
-        return baseURL + service + "/MapServer" + params;
+        return getBaseURL() + service + "/MapServer" + params;
     }
 
     @Test

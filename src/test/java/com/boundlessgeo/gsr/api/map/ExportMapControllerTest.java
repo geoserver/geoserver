@@ -1,0 +1,55 @@
+package com.boundlessgeo.gsr.api.map;
+
+import static org.junit.Assert.*;
+
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.SystemTest;
+import org.geotools.image.test.ImageAssert;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import com.boundlessgeo.gsr.controller.ControllerTest;
+
+/**
+ * Basic tests for export map
+ */
+public class ExportMapControllerTest extends ControllerTest {
+
+    @Test
+    public void exportMap() throws Exception {
+        String exportMapUrl = getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix()
+            + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:" + SystemTestData.BASIC_POLYGONS
+            .getLocalPart() + "&width=150&height=150&format=png";
+        MockHttpServletResponse servletResponse = getAsServletResponse(exportMapUrl);
+        RenderedImage image = ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
+        File resultsFile = new File("src/test/resources/images/export_result1.png");
+        ImageAssert.assertEquals(resultsFile, image, 20);
+    }
+
+    @Test
+    public void exportMapJSON() throws Exception {
+        String exportMapUrl = getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix()
+            + "/MapServer/export?f=json&bbox=-180.0,-90.0,180.0,90.0&layers=show:" + SystemTestData.BASIC_POLYGONS
+            .getLocalPart() + "&width=150&height=150";
+
+        MockHttpServletRequest request = createRequest(exportMapUrl);
+        request.setMethod( "GET" );
+        request.setContent(new byte[]{});
+        request.addHeader("Accept", "application/json");
+
+        MockHttpServletResponse servletResponse = dispatch(request, null);
+        assertTrue(servletResponse.getContentAsString().contains("f=image")
+            && servletResponse.getContentAsString().contains("format=png"));
+    }
+
+}

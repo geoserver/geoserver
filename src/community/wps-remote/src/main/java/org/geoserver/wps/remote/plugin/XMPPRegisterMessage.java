@@ -6,6 +6,7 @@ package org.geoserver.wps.remote.plugin;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -68,7 +69,7 @@ public class XMPPRegisterMessage implements XMPPMessage {
             JSONArray output = (JSONArray) serviceDescriptorJSON.get("output");
 
             // INPUTS
-            Map<String, Parameter<?>> inputs = new HashMap<String, Parameter<?>>();
+            Map<String, Parameter<?>> inputs = new LinkedHashMap<String, Parameter<?>>();
             if (input != null) {
                 for (int ii = 0; ii < input.size(); ii++) {
                     final Object obj = input.get(ii);
@@ -85,6 +86,20 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                 className, XMPPClient.class.getClassLoader(),
                                 paramType.get("default"));
 
+                        final String choosenInputMimeTypeParam = paramName + "InputMimeType";
+                        if (paramTemplate.getMeta() != null
+                                && paramTemplate.getMeta().get("mimeTypes") != null
+                                && (paramType.get("input_mime_type") instanceof String)) {
+                            paramTemplate.getMeta().put("chosenMimeType",
+                                    choosenInputMimeTypeParam);
+
+                            final Parameter inputChoosenMimeTypeParam = new Parameter(
+                                    choosenInputMimeTypeParam, String.class, Text.text(""),
+                                    Text.text(""), false, 0, 1,
+                                    paramType.get("input_mime_type").toString(), null);
+                            inputs.put(choosenInputMimeTypeParam, inputChoosenMimeTypeParam);
+                        }
+                        
                         final InternationalString inputTitle = (paramType.get("title") != null
                                 && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
@@ -102,13 +117,13 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                                 || (Integer) paramType.get("min") > 0,
                                 paramType.get("min") != null ? (Integer) paramType.get("min") : 1,
                                 paramType.get("max") != null ? (Integer) paramType.get("max") : -1,
-                                paramTemplate.getDefaultValue(), null));
+                                paramTemplate.getDefaultValue(), paramTemplate.getMeta()));
                     }
                 }
             }
 
             // OUTPUTS
-            Map<String, Parameter<?>> outputs = new HashMap<String, Parameter<?>>();
+            Map<String, Parameter<?>> outputs = new LinkedHashMap<String, Parameter<?>>();
             if (output != null) {
                 for (int oo = 0; oo < output.size(); oo++) {
                     Object obj = output.get(oo);

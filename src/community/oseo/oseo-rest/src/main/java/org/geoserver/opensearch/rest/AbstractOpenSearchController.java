@@ -4,24 +4,35 @@
  */
 package org.geoserver.opensearch.rest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.response.LinkFeatureComparator;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
+import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.opensearch.rest.CollectionsController.IOConsumer;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -44,6 +55,8 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.BaseSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureFactory;
@@ -55,6 +68,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.FilterFactory2;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -66,6 +81,18 @@ import org.xml.sax.SAXException;
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractOpenSearchController extends RestBaseController {
+    
+    interface ZipPart {
+
+        /**
+         * Returns true if the part matches the provided name
+         * @param name
+         * @return
+         */
+        public boolean matches(String name);
+    }
+    
+    static final Logger LOGGER = Logging.getLogger(CollectionsController.class);
 
     static final String SOURCE_NAME = "SourceName";
 
@@ -75,8 +102,11 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
     protected OpenSearchAccessProvider accessProvider;
 
-    public AbstractOpenSearchController(OpenSearchAccessProvider accessProvider) {
+    protected OseoJSONConverter jsonConverter;
+
+    public AbstractOpenSearchController(OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
         this.accessProvider = accessProvider;
+        this.jsonConverter = jsonConverter;
     }
 
     protected OpenSearchAccess getOpenSearchAccess() throws IOException {
@@ -417,5 +447,76 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         }
         return linksCollection;
     }
+    
+    protected <T extends ZipPart> Map<T, byte[]> parsePartsFromZip(InputStream body, T[] parts)
+            throws IOException {
+        // check the zip contents and map to the expected parts
+        Map<T, byte[]> result = new HashMap<>();
+        try {
+            ZipInputStream zis = new ZipInputStream(body);
+            ZipEntry entry = null;
+
+            while ((entry = zis.getNextEntry()) != null) {
+                String name = entry.getName();
+                T part = null;
+                for (T zp : parts) {
+                    if (zp.matches(name)) {
+                        part = zp;
+                        break;
+                    }
+                }
+                if (part != null) {
+                    result.put(part, IOUtils.toByteArray(zis));
+                } else {
+                    LOGGER.warning("Ignoring un-recognized entry in zip file:" + name);
+                }
+            }
+        } catch (ZipException e) {
+            throw new RestException(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T> T parseJSON(Class<T> clazz, byte[] rawData) throws IOException {
+        T links = (T) jsonConverter.read(clazz, new HttpInputMessage() {
+
+            @Override
+            public HttpHeaders getHeaders() {
+                return new HttpHeaders();
+            }
+
+            @Override
+            public InputStream getBody() throws IOException {
+                return new ByteArrayInputStream(rawData);
+            }
+        });
+        return links;
+    }
+
+    protected SimpleFeature parseGeoJSONFeature(String fileReference, final byte[] payload) {
+        try {
+            SimpleFeature jsonFeature = new FeatureJSON().readFeature(new ByteArrayInputStream(payload));
+            return jsonFeature;
+        } catch (IOException e) {
+            throw new RestException(
+                    fileReference + " contains invalid GeoJSON: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST, e);
+        }
+    }
+    
+    protected SimpleFeatureCollection parseGeoJSONFeatureCollection(String fileReference, final byte[] payload) {
+        try {
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) new FeatureJSON()
+                    .readFeatureCollection(new ByteArrayInputStream(payload));
+            return fc;
+        } catch (IOException e) {
+            throw new RestException(
+                    fileReference + " contains invalid GeoJSON: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST, e);
+        }
+    }
+
+
 
 }

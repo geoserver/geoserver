@@ -408,16 +408,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         }
     }
     
-    @Test
-    public void testCreateCollectionAsZip23() throws Exception {
-        // build all possible combinations of elements in the zip and check they all work
-                HashSet<CollectionPart> parts = new HashSet<>(Arrays.asList(CollectionPart.Collection, CollectionPart.Description,
-                        CollectionPart.Metadata, CollectionPart.OwsLinks));
-
-            testCreateCollectionAsZip(parts);
-    }
-
-
     private void testCreateCollectionAsZip(Set<CollectionPart> parts) throws Exception {
         LOGGER.info("Testing: " + parts);
         byte[] zip = null;

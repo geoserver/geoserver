@@ -11,11 +11,22 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
+import org.geoserver.opensearch.rest.ProductsController.ProductPart;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
@@ -23,6 +34,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 
 import net.sf.json.JSONObject;
@@ -156,6 +168,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 response.getHeader("location"));
 
         // check it's really there
+        assertProductCreated();
+    }
+
+    private void assertProductCreated() throws Exception {
         DocumentContext json = getAsJSONPath(
                 "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
                 200);
@@ -252,6 +268,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // check they are there
+        assertProductLinks();
+    }
+
+    private void assertProductLinks() throws Exception {
         DocumentContext json = getAsJSONPath(
                 "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ogcLinks",
                 200);
@@ -301,6 +321,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
+        assertProductMetadata();
+    }
+
+    private void assertProductMetadata() throws Exception, UnsupportedEncodingException {
+        MockHttpServletResponse response;
         response = getAsServletResponse(
                 "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/metadata");
         assertEquals(200, response.getStatus());
@@ -346,6 +371,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
+        assertProductDescription();
+    }
+
+    private void assertProductDescription() throws Exception, UnsupportedEncodingException {
+        MockHttpServletResponse response;
         response = getAsServletResponse(
                 "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/description");
         assertEquals(200, response.getStatus());
@@ -399,6 +429,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
+        assertProductThumbnail();
+    }
+
+    private void assertProductThumbnail() throws Exception {
         getAsImage(
                 "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/thumbnail",
                 "image/jpeg");
@@ -442,6 +476,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 getTestData("/product-granules.json"), MediaType.APPLICATION_JSON_VALUE);
         assertEquals(200, response.getStatus());
 
+        assertProductGranules();
+    }
+
+    private void assertProductGranules() throws Exception {
         // grab and check
         DocumentContext json = getAsJSONPath(
                 "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/granules",
@@ -485,6 +523,102 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("FeatureCollection", json.read("$.type"));
         assertEquals(new Integer(0), json.read("$.features.length()"));
+    }
+    
+    
+    @Test
+    public void testCreateProductAsZip() throws Exception {
+        // build all possible combinations of elements in the zip and check they all work
+        Set<Set<ProductPart>> sets = Sets
+                .powerSet(new HashSet<>(Arrays.asList(ProductPart.Product, ProductPart.Description,
+                        ProductPart.Metadata, ProductPart.Thumbnail, ProductPart.OwsLinks, ProductPart.OwsLinks)));
+
+        for (Set<ProductPart> parts : sets) {
+            if (parts.isEmpty()) {
+                continue;
+            }
+
+            cleanupTestProduct();
+            testCreateProductAsZip(parts);
+        }
+    }
+    
+    private void testCreateProductAsZip(Set<ProductPart> parts) throws Exception {
+        LOGGER.info("Testing: " + parts);
+        byte[] zip = null;
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ZipOutputStream zos = new ZipOutputStream(bos)) {
+            for (ProductPart part : parts) {
+                String resource, name;
+                switch (part) {
+                case Product:
+                    resource = "/product.json";
+                    name = "product.json";
+                    break;
+                case Description:
+                    resource = "/product-description.html";
+                    name = "description.html";
+                    break;
+                case Metadata:
+                    resource = "/product-metadata.xml";
+                    name = "metadata.xml";
+                    break;
+                case Thumbnail:
+                    resource = "/product-thumb.jpeg";
+                    name = "thumbnail.jpeg";
+                    break;
+                case OwsLinks:
+                    resource = "/product-links.json";
+                    name = "owsLinks.json";
+                    break;
+                case Granules:
+                    resource = "/product-granules.json";
+                    name = "granules.json";
+                    break;
+                default:
+                    throw new RuntimeException("Unexpected part " + part);
+                }
+
+                ZipEntry entry = new ZipEntry(name);
+                zos.putNextEntry(entry);
+                IOUtils.copy(getClass().getResourceAsStream(resource), zos);
+                zos.closeEntry();
+            }
+            zip = bos.toByteArray();
+        }
+        
+        MockHttpServletResponse response = postAsServletResponse(
+                "rest/oseo/collections/SENTINEL2/products", zip,
+                MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+        if (parts.contains(ProductPart.Product)) {
+            assertEquals(201, response.getStatus());
+            assertEquals(
+                    "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                    response.getHeader("location"));
+
+            assertProductCreated();            
+        } else {
+            assertEquals(400, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("product.json"));
+            // failed, nothing else to check
+            return;
+        }
+
+        if (parts.contains(ProductPart.Description)) {
+            assertProductDescription();
+        }
+        if (parts.contains(ProductPart.Metadata)) {
+            assertProductMetadata();
+        }
+        if (parts.contains(ProductPart.Thumbnail)) {
+            assertProductThumbnail();
+        }
+        if (parts.contains(ProductPart.OwsLinks)) {
+            assertProductLinks();
+        }
+        if (parts.contains(ProductPart.Granules)) {
+            assertProductGranules();
+        }
     }
     
 }

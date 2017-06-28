@@ -80,12 +80,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections")
 public class CollectionsController extends AbstractOpenSearchController {
     
-    static final Logger LOGGER = Logging.getLogger(CollectionsController.class);
-
     /**
-     * Parses components of
+     * List of parts making up a zipfile for a collection
      */
-    enum CollectionPart {
+    enum CollectionPart implements ZipPart {
         Collection("collection.json"), Description("description.html"), Metadata(
                 "metadata.xml"), Thumbnail("thumbnail\\.[png|jpeg|jpg]"), OwsLinks("owsLinks.json");
 
@@ -95,6 +93,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         }
 
+        @Override
         public boolean matches(String name) {
             return pattern.matcher(name).matches();
         }
@@ -110,12 +109,10 @@ public class CollectionsController extends AbstractOpenSearchController {
 
     static final Name COLLECTION_ID = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
 
-    OseoJSONConverter jsonConverter;
-
     public CollectionsController(OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
-        super(accessProvider);
-        this.jsonConverter = jsonConverter;
+        super(accessProvider, jsonConverter);
     }
+
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
@@ -159,6 +156,12 @@ public class CollectionsController extends AbstractOpenSearchController {
         runTransactionOnCollectionStore(fs -> fs.addFeatures(singleton(collectionFeature)));
 
         // if got here, all is fine
+        return returnCreatedCollectionReference(request, eoId);
+    }
+
+
+    private ResponseEntity<String> returnCreatedCollectionReference(HttpServletRequest request,
+            String eoId) throws URISyntaxException {
         String baseURL = ResponseUtils.baseURL(request);
         String newCollectionLocation = ResponseUtils.buildURL(baseURL,
                 "/rest/oseo/collections/" + eoId, null, URLType.RESOURCE);
@@ -171,7 +174,7 @@ public class CollectionsController extends AbstractOpenSearchController {
     public ResponseEntity<String> postCollectionZip(HttpServletRequest request, InputStream body)
             throws IOException, URISyntaxException {
 
-        Map<CollectionPart, byte[]> parts = parseCollectionPartsFromZip(body);
+        Map<CollectionPart, byte[]> parts = parsePartsFromZip(body, CollectionPart.values());
 
         // process the collection part
         final byte[] collectionPayload = parts.get(CollectionPart.Collection);
@@ -179,15 +182,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             throw new RestException("collection.json file is missing from the zip",
                     HttpStatus.BAD_REQUEST);
         }
-        SimpleFeature jsonFeature;
-        try {
-            jsonFeature = new FeatureJSON()
-                    .readFeature(new ByteArrayInputStream(collectionPayload));
-        } catch (IOException e) {
-            throw new RestException(
-                    "collection.json file contains invalid GeoJSON: " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST, e);
-        }
+        SimpleFeature jsonFeature = parseGeoJSONFeature("collection.json", collectionPayload);
         String eoId = checkCollectionIdentifier(jsonFeature);
         Feature collectionFeature = simpleToComplex(jsonFeature, getCollectionSchema(),
                 COLLECTION_HREFS);
@@ -198,18 +193,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         byte[] rawLinks = parts.get(CollectionPart.OwsLinks);
         SimpleFeatureCollection linksCollection;
         if(rawLinks != null) {
-            OgcLinks links = (OgcLinks) jsonConverter.read(OgcLinks.class, new HttpInputMessage() {
-                
-                @Override
-                public HttpHeaders getHeaders() {
-                    return new HttpHeaders();
-                }
-                
-                @Override
-                public InputStream getBody() throws IOException {
-                    return new ByteArrayInputStream(rawLinks);
-                }
-            });
+            OgcLinks links = parseJSON(OgcLinks.class, rawLinks);
             linksCollection = beansToLinksCollection(links);
         } else {
             linksCollection = null;
@@ -240,42 +224,7 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         });
 
-        // if got here, all is fine
-        String baseURL = ResponseUtils.baseURL(request);
-        String newCollectionLocation = ResponseUtils.buildURL(baseURL,
-                "/rest/oseo/collections/" + eoId, null, URLType.RESOURCE);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(new URI(newCollectionLocation));
-        return new ResponseEntity<>(eoId, headers, HttpStatus.CREATED);
-    }
-
-    private Map<CollectionPart, byte[]> parseCollectionPartsFromZip(InputStream body)
-            throws IOException {
-        // check the zip contents and map to the expected parts
-        Map<CollectionPart, byte[]> parts = new HashMap<>();
-        try {
-            ZipInputStream zis = new ZipInputStream(body);
-            ZipEntry entry = null;
-
-            while ((entry = zis.getNextEntry()) != null) {
-                String name = entry.getName();
-                CollectionPart part = null;
-                for (CollectionPart zp : CollectionPart.values()) {
-                    if (zp.matches(name)) {
-                        part = zp;
-                        break;
-                    }
-                }
-                if (part != null) {
-                    parts.put(part, IOUtils.toByteArray(zis));
-                } else {
-                    LOGGER.warning("Ignoring un-recognized entry in zip file:" + name);
-                }
-            }
-        } catch (ZipException e) {
-            throw new RestException(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        return parts;
+        return returnCreatedCollectionReference(request, eoId);
     }
 
     @GetMapping(path = "{collection}", produces = { MediaType.APPLICATION_JSON_VALUE })

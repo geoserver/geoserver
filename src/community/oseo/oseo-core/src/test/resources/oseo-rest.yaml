@@ -414,7 +414,9 @@ paths:
        * product.json: the list of searchable attributes and eventual OGC links
        * description.html: the HTML description for the product
        * metadata.xml: the O&M metadata for the collection
-       * thumbnail.png: the product thumbnail (ignored at the time of writing)
+       * thumbnail.png: the product thumbnail (can also have jpeg or jpg extension)
+       * owsLinks.json: the list of OWS links, in the same JSON format as the associated resource 
+       * granules.json: the list of granules, in the same JSON format as the associated resource
        The JSON format is the same as the one returned by a GET on an existing product, the "*Href" properties should be omitted 
       consumes:
         - application/json

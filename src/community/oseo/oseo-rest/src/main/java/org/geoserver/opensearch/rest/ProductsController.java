@@ -5,6 +5,7 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -12,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +29,8 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
@@ -34,8 +39,6 @@ import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.data.transform.Definition;
-import org.geotools.data.transform.TransformFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
@@ -76,6 +79,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections/{collection}/products")
 public class ProductsController extends AbstractOpenSearchController {
 
+    /**
+     * List of parts making up a zipfile for a collection
+     */
+    enum ProductPart implements ZipPart {
+        Product("product.json"), Description("description.html"), Metadata(
+                "metadata.xml"), Thumbnail("thumbnail\\.(png|jpeg|jpg)"), OwsLinks(
+                        "owsLinks.json"), Granules("granules.json");
+
+        Pattern pattern;
+
+        ProductPart(String pattern) {
+            this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        }
+
+        public boolean matches(String name) {
+            return pattern.matcher(name).matches();
+        }
+    }
+
     static final Name PRODUCT_ID = new NameImpl(
             OpenSearchAccess.ProductClass.EOP_GENERIC.getNamespace(), "identifier");
 
@@ -84,10 +106,8 @@ public class ProductsController extends AbstractOpenSearchController {
     static final List<String> PRODUCT_HREFS = Arrays.asList("ogcLinksHref", "metadataHref",
             "descriptionHref", "thumbnailHref", "granulesHref");
 
-    public ProductsController(
-
-            OpenSearchAccessProvider accessProvider) {
-        super(accessProvider);
+    public ProductsController(OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
+        super(accessProvider, jsonConverter);
     }
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -142,7 +162,91 @@ public class ProductsController extends AbstractOpenSearchController {
         // insert the new feature
         runTransactionOnProductStore(fs -> fs.addFeatures(singleton(productFeature)));
 
+        return returnCreatedProductReference(collection, request, productId);
+    }
+
+    @PostMapping(consumes = MediaTypeExtensions.APPLICATION_ZIP_VALUE)
+    public ResponseEntity<String> postProductZip(
+            @PathVariable(name = "collection", required = true) String collection,
+            HttpServletRequest request, InputStream body)
+            throws IOException, URISyntaxException {
+
+        Map<ProductPart, byte[]> parts = parsePartsFromZip(body, ProductPart.values());
+
+        // process the product part
+        final byte[] productPayload = parts.get(ProductPart.Product);
+        if (productPayload == null) {
+            throw new RestException("product.json file is missing from the zip",
+                    HttpStatus.BAD_REQUEST);
+        }
+        SimpleFeature jsonFeature = parseGeoJSONFeature("product.json", productPayload);
+        String productId = (String) jsonFeature.getAttribute("eop:identifier");
+        Feature productFeature = simpleToComplex(jsonFeature, getProductSchema(), PRODUCT_HREFS);
+
+        // grab the other parts
+        byte[] description = parts.get(ProductPart.Description);
+        byte[] metadata = parts.get(ProductPart.Metadata);
+        byte[] thumbnail = parts.get(ProductPart.Thumbnail);
+        byte[] rawLinks = parts.get(ProductPart.OwsLinks);
+        SimpleFeatureCollection linksCollection;
+        if (rawLinks != null) {
+            OgcLinks links = parseJSON(OgcLinks.class, rawLinks);
+            linksCollection = beansToLinksCollection(links);
+        } else {
+            linksCollection = null;
+        }
+        byte[] rawGranules = parts.get(ProductPart.Granules);
+        SimpleFeatureCollection granulesCollection;
+        if(rawGranules != null) {
+            granulesCollection = parseGeoJSONFeatureCollection("granules.json", rawGranules);
+        } else {
+            granulesCollection = null;
+        }
+
+        // insert the new feature and accessory bits
+        runTransactionOnProductStore(fs -> {
+            fs.addFeatures(singleton(productFeature));
+
+            final String nsURI = fs.getSchema().getName().getNamespaceURI();
+            Filter filter = getProductFilter(collection, productId);
+
+            if (description != null) {
+                String descriptionString = new String(description);
+                fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
+                        descriptionString, filter);
+            }
+
+            if (metadata != null) {
+                String descriptionString = new String(metadata);
+                fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, descriptionString,
+                        filter);
+            }
+
+            if (linksCollection != null) {
+                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection,
+                        filter);
+            }
+            
+            if(thumbnail != null) {
+                fs.modifyFeatures(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
+            }
+            
+            if(granulesCollection != null) {
+                SimpleFeatureStore store = (SimpleFeatureStore) getOpenSearchAccess()
+                        .getGranules(collection, productId);
+                store.setTransaction(fs.getTransaction());
+                store.removeFeatures(Filter.INCLUDE);
+                store.addFeatures(granulesCollection);
+            }
+
+        });
+
         // if got here, all is fine
+        return returnCreatedProductReference(collection, request, productId);
+    }
+
+    private ResponseEntity<String> returnCreatedProductReference(String collection,
+            HttpServletRequest request, String productId) throws URISyntaxException {
         String baseURL = ResponseUtils.baseURL(request);
         String newCollectionLocation = ResponseUtils.buildURL(baseURL,
                 "/rest/oseo/collections/" + collection + "/products/" + productId, null,
@@ -483,7 +587,7 @@ public class ProductsController extends AbstractOpenSearchController {
             s.addFeatures(granules);
         });
     }
-    
+
     @DeleteMapping(path = "{product:.+}/granules")
     public void putProductGranules(
             @PathVariable(name = "collection", required = true) String collection,
@@ -501,8 +605,6 @@ public class ProductsController extends AbstractOpenSearchController {
         Filter filter = getProductFilter(collection, product);
         runTransactionOnProductStore(fs -> {
             // set the description to the specified value
-            final FeatureType schema = fs.getSchema();
-            final String nsURI = schema.getName().getNamespaceURI();
             fs.modifyFeatures(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
         });
     }

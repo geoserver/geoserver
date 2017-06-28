@@ -4,14 +4,23 @@
  */
 package org.geoserver.opensearch.rest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,13 +33,16 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -41,6 +53,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +79,26 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections")
 public class CollectionsController extends AbstractOpenSearchController {
+    
+    static final Logger LOGGER = Logging.getLogger(CollectionsController.class);
+
+    /**
+     * Parses components of
+     */
+    enum CollectionPart {
+        Collection("collection.json"), Description("description.html"), Metadata(
+                "metadata.xml"), Thumbnail("thumbnail\\.[png|jpeg|jpg]"), OwsLinks("owsLinks.json");
+
+        Pattern pattern;
+
+        CollectionPart(String pattern) {
+            this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        }
+
+        public boolean matches(String name) {
+            return pattern.matcher(name).matches();
+        }
+    }
 
     @FunctionalInterface
     public interface IOConsumer<T> {
@@ -77,8 +110,11 @@ public class CollectionsController extends AbstractOpenSearchController {
 
     static final Name COLLECTION_ID = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
 
-    public CollectionsController(OpenSearchAccessProvider accessProvider) {
+    OseoJSONConverter jsonConverter;
+
+    public CollectionsController(OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
         super(accessProvider);
+        this.jsonConverter = jsonConverter;
     }
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -116,7 +152,8 @@ public class CollectionsController extends AbstractOpenSearchController {
             @RequestBody(required = true) SimpleFeature feature)
             throws IOException, URISyntaxException {
         String eoId = checkCollectionIdentifier(feature);
-        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
+        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(),
+                COLLECTION_HREFS);
 
         // insert the new feature
         runTransactionOnCollectionStore(fs -> fs.addFeatures(singleton(collectionFeature)));
@@ -128,6 +165,117 @@ public class CollectionsController extends AbstractOpenSearchController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(new URI(newCollectionLocation));
         return new ResponseEntity<>(eoId, headers, HttpStatus.CREATED);
+    }
+
+    @PostMapping(consumes = MediaTypeExtensions.APPLICATION_ZIP_VALUE)
+    public ResponseEntity<String> postCollectionZip(HttpServletRequest request, InputStream body)
+            throws IOException, URISyntaxException {
+
+        Map<CollectionPart, byte[]> parts = parseCollectionPartsFromZip(body);
+
+        // process the collection part
+        final byte[] collectionPayload = parts.get(CollectionPart.Collection);
+        if (collectionPayload == null) {
+            throw new RestException("collection.json file is missing from the zip",
+                    HttpStatus.BAD_REQUEST);
+        }
+        SimpleFeature jsonFeature;
+        try {
+            jsonFeature = new FeatureJSON()
+                    .readFeature(new ByteArrayInputStream(collectionPayload));
+        } catch (IOException e) {
+            throw new RestException(
+                    "collection.json file contains invalid GeoJSON: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST, e);
+        }
+        String eoId = checkCollectionIdentifier(jsonFeature);
+        Feature collectionFeature = simpleToComplex(jsonFeature, getCollectionSchema(),
+                COLLECTION_HREFS);
+
+        // grab the other parts
+        byte[] description = parts.get(CollectionPart.Description);
+        byte[] metadata = parts.get(CollectionPart.Metadata);
+        byte[] rawLinks = parts.get(CollectionPart.OwsLinks);
+        SimpleFeatureCollection linksCollection;
+        if(rawLinks != null) {
+            OgcLinks links = (OgcLinks) jsonConverter.read(OgcLinks.class, new HttpInputMessage() {
+                
+                @Override
+                public HttpHeaders getHeaders() {
+                    return new HttpHeaders();
+                }
+                
+                @Override
+                public InputStream getBody() throws IOException {
+                    return new ByteArrayInputStream(rawLinks);
+                }
+            });
+            linksCollection = beansToLinksCollection(links);
+        } else {
+            linksCollection = null;
+        }
+
+        // insert the new feature and accessory bits
+        runTransactionOnCollectionStore(fs -> {
+            fs.addFeatures(singleton(collectionFeature));
+            
+            final String nsURI = fs.getSchema().getName().getNamespaceURI();
+            Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(eoId), true);
+            
+            if (description != null) {
+                String descriptionString = new String(description);
+                fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
+                        descriptionString, filter);
+            }
+            
+            if (metadata != null) {
+                String descriptionString = new String(metadata);
+                fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME,
+                        descriptionString, filter);
+            }
+            
+            if(linksCollection != null) {
+                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
+            }
+
+        });
+
+        // if got here, all is fine
+        String baseURL = ResponseUtils.baseURL(request);
+        String newCollectionLocation = ResponseUtils.buildURL(baseURL,
+                "/rest/oseo/collections/" + eoId, null, URLType.RESOURCE);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(new URI(newCollectionLocation));
+        return new ResponseEntity<>(eoId, headers, HttpStatus.CREATED);
+    }
+
+    private Map<CollectionPart, byte[]> parseCollectionPartsFromZip(InputStream body)
+            throws IOException {
+        // check the zip contents and map to the expected parts
+        Map<CollectionPart, byte[]> parts = new HashMap<>();
+        try {
+            ZipInputStream zis = new ZipInputStream(body);
+            ZipEntry entry = null;
+
+            while ((entry = zis.getNextEntry()) != null) {
+                String name = entry.getName();
+                CollectionPart part = null;
+                for (CollectionPart zp : CollectionPart.values()) {
+                    if (zp.matches(name)) {
+                        part = zp;
+                        break;
+                    }
+                }
+                if (part != null) {
+                    parts.put(part, IOUtils.toByteArray(zis));
+                } else {
+                    LOGGER.warning("Ignoring un-recognized entry in zip file:" + name);
+                }
+            }
+        } catch (ZipException e) {
+            throw new RestException(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return parts;
     }
 
     @GetMapping(path = "{collection}", produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -176,7 +324,8 @@ public class CollectionsController extends AbstractOpenSearchController {
         String eoId = checkCollectionIdentifier(feature);
 
         // prepare the update, need to convert each field into a Name/Value couple
-        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
+        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(),
+                COLLECTION_HREFS);
         List<Name> names = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         for (Property p : collectionFeature.getProperties()) {
@@ -224,22 +373,22 @@ public class CollectionsController extends AbstractOpenSearchController {
         OgcLinks links = buildOgcLinksFromFeature(feature, true);
         return links;
     }
-    
-    @PutMapping(path = "{collection}/ogcLinks", consumes = MediaType.APPLICATION_JSON_VALUE )
+
+    @PutMapping(path = "{collection}/ogcLinks", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void putCollectionOgcLinks(HttpServletRequest request,
             @PathVariable(name = "collection", required = true) String collection,
-            @RequestBody OgcLinks links)
-            throws IOException {
+            @RequestBody OgcLinks links) throws IOException {
         // check the collection is there
-        queryCollection(collection, q -> {});
+        queryCollection(collection, q -> {
+        });
 
         ListFeatureCollection linksCollection = beansToLinksCollection(links);
-        
+
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
-        runTransactionOnCollectionStore(
-                fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
+        runTransactionOnCollectionStore(fs -> fs
+                .modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
     }
-    
+
     @DeleteMapping(path = "{collection}/ogcLinks")
     public void deleteCollectionLinks(
             @PathVariable(name = "collection", required = true) String collection)
@@ -253,8 +402,6 @@ public class CollectionsController extends AbstractOpenSearchController {
         runTransactionOnCollectionStore(
                 fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, null, filter));
     }
-
-    
 
     @GetMapping(path = "{collection}/metadata", produces = { MediaType.TEXT_XML_VALUE })
     public void getCollectionMetadata(
@@ -365,8 +512,8 @@ public class CollectionsController extends AbstractOpenSearchController {
                     .getCollectionSource();
             final FeatureType schema = collectionSource.getSchema();
             final String nsURI = schema.getName().getNamespaceURI();
-            fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
-                    description, filter);
+            fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION), description,
+                    filter);
         });
     }
 
@@ -393,7 +540,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         }
         return eoId;
     }
-    
+
     FeatureType getCollectionSchema() throws IOException {
         final OpenSearchAccess access = accessProvider.getOpenSearchAccess();
         final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();

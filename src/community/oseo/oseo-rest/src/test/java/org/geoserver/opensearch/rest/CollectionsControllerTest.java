@@ -9,11 +9,21 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
@@ -21,6 +31,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 
 import net.sf.json.JSONObject;
@@ -160,15 +171,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
                 response.getHeader("location"));
 
-        // check it's really there
-        DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123", 200);
-        assertEquals("TEST123", json.read("$.id"));
-        assertEquals("Feature", json.read("$.type"));
-        assertEquals("TEST123", json.read("$.properties.name"));
-        assertEquals("S2MS1C", json.read("$.properties['eo:productType']"));
-        assertEquals("A", json.read("$.properties['eo:platformSerialIdentifier']"));
-        assertEquals("MSI", json.read("$.properties['eo:instrument']"));
-        assertEquals("2012-04-23T18:25:43.511+0000", json.read("$.properties['timeStart']"));
+        assertTest123CollectionCreated();
     }
 
     @Test
@@ -246,6 +249,10 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // check they are there
+        assertTest123Links();
+    }
+
+    private void assertTest123Links() throws Exception {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123/ogcLinks", 200);
         assertEquals("http://www.opengis.net/spec/owc/1.0/req/atom/wms",
                 json.read("$.links[0].offering"));
@@ -295,6 +302,11 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
+        assertTest123Metadata();
+    }
+
+    private void assertTest123Metadata() throws Exception, UnsupportedEncodingException {
+        MockHttpServletResponse response;
         response = getAsServletResponse("rest/oseo/collections/TEST123/metadata");
         assertEquals(200, response.getStatus());
         assertEquals("text/xml", response.getContentType());
@@ -337,12 +349,17 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
                 response.getHeader("location"));
 
-        // create the descrption
+        // create the description
         response = putAsServletResponse("rest/oseo/collections/TEST123/description",
                 getTestData("/test123-description.html"), MediaType.TEXT_HTML_VALUE);
         assertEquals(200, response.getStatus());
 
         // grab and check
+        assertTest123Description();
+    }
+
+    private void assertTest123Description() throws Exception, UnsupportedEncodingException {
+        MockHttpServletResponse response;
         response = getAsServletResponse("rest/oseo/collections/TEST123/description");
         assertEquals(200, response.getStatus());
         assertEquals("text/html", response.getContentType());
@@ -372,6 +389,108 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         MockHttpServletResponse response = getAsServletResponse(
                 "/rest/oseo/collections/SENTINEL2/thumbnail");
         assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    public void testCreateCollectionAsZip() throws Exception {
+        // build all possible combinations of elements in the zip and check they all work
+        Set<Set<CollectionPart>> sets = Sets
+                .powerSet(new HashSet<>(Arrays.asList(CollectionPart.Collection, CollectionPart.Description,
+                        CollectionPart.Metadata, CollectionPart.OwsLinks)));
+
+        for (Set<CollectionPart> parts : sets) {
+            if (parts.isEmpty()) {
+                continue;
+            }
+
+            cleanupTestCollection();
+            testCreateCollectionAsZip(parts);
+        }
+    }
+    
+    @Test
+    public void testCreateCollectionAsZip23() throws Exception {
+        // build all possible combinations of elements in the zip and check they all work
+                HashSet<CollectionPart> parts = new HashSet<>(Arrays.asList(CollectionPart.Collection, CollectionPart.Description,
+                        CollectionPart.Metadata, CollectionPart.OwsLinks));
+
+            testCreateCollectionAsZip(parts);
+    }
+
+
+    private void testCreateCollectionAsZip(Set<CollectionPart> parts) throws Exception {
+        LOGGER.info("Testing: " + parts);
+        byte[] zip = null;
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ZipOutputStream zos = new ZipOutputStream(bos)) {
+            for (CollectionPart part : parts) {
+                String resource, name;
+                switch (part) {
+                case Collection:
+                    resource = "/collection.json";
+                    name = "collection.json";
+                    break;
+                case Description:
+                    resource = "/test123-description.html";
+                    name = "description.html";
+                    break;
+                case Metadata:
+                    resource = "/test123-metadata.xml";
+                    name = "metadata.xml";
+                    break;
+                case OwsLinks:
+                    resource = "/test123-links.json";
+                    name = "owsLinks.json";
+                    break;
+                default:
+                    throw new RuntimeException("Unexpected part " + part);
+                }
+
+                ZipEntry entry = new ZipEntry(name);
+                zos.putNextEntry(entry);
+                IOUtils.copy(getClass().getResourceAsStream(resource), zos);
+                zos.closeEntry();
+            }
+            zip = bos.toByteArray();
+        }
+
+        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections", zip,
+                MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+        if (parts.contains(CollectionPart.Collection)) {
+            assertEquals(201, response.getStatus());
+            assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
+                    response.getHeader("location"));
+
+            assertTest123CollectionCreated();            
+        } else {
+            assertEquals(400, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("collection.json"));
+            // failed, nothing else to check
+            return;
+        }
+
+        if (parts.contains(CollectionPart.Description)) {
+            assertTest123Description();
+        }
+        if (parts.contains(CollectionPart.Metadata)) {
+            assertTest123Metadata();
+        }
+        if (parts.contains(CollectionPart.OwsLinks)) {
+            assertTest123Links();
+        }
+
+    }
+
+    private void assertTest123CollectionCreated() throws Exception {
+        // check it's really there
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123", 200);
+        assertEquals("TEST123", json.read("$.id"));
+        assertEquals("Feature", json.read("$.type"));
+        assertEquals("TEST123", json.read("$.properties.name"));
+        assertEquals("S2MS1C", json.read("$.properties['eo:productType']"));
+        assertEquals("A", json.read("$.properties['eo:platformSerialIdentifier']"));
+        assertEquals("MSI", json.read("$.properties['eo:instrument']"));
+        assertEquals("2012-04-23T18:25:43.511+0000", json.read("$.properties['timeStart']"));
     }
 
 }

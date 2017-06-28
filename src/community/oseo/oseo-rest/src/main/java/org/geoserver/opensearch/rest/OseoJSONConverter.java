@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * @author Andrea Aime - GeoSolutions
  */
 @Component
-public class OseoJSONConverter extends BaseMessageConverter {
+public class OseoJSONConverter extends BaseMessageConverter<Object> {
 
     MappingJackson2HttpMessageConverter delegate = new MappingJackson2HttpMessageConverter();
 

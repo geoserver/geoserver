@@ -4,16 +4,18 @@
  */
 package com.boundlessgeo.gsr.api;
 
-import com.boundlessgeo.gsr.core.exception.ServiceError;
-import com.boundlessgeo.gsr.core.exception.ServiceException;
+import java.util.Collections;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
+import com.boundlessgeo.gsr.core.exception.ServiceError;
+import com.boundlessgeo.gsr.core.exception.ServiceException;
 
 /**
  * Handles the "f" parameter for all gsr api requests
@@ -23,14 +25,14 @@ import java.util.Collections;
 public class FormatParameterInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
-    GeoServicesJacksonJsonConverter converter;
+    private GeoServicesJacksonJsonConverter converter;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if ("/gsr".equals(request.getServletPath())) {
             String format = request.getParameter("f");
             if (null == format) {
-                //TODO: What do we do if no format is set? Choose a default?
+                return true;
             } else if ("json".equals(format)) {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 return true;
@@ -47,6 +49,14 @@ public class FormatParameterInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
         return true;
+    }
+
+    public GeoServicesJacksonJsonConverter getConverter() {
+        return converter;
+    }
+
+    public void setConverter(GeoServicesJacksonJsonConverter converter) {
+        this.converter = converter;
     }
 }
 

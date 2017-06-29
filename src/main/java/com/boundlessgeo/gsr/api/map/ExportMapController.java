@@ -1,12 +1,8 @@
 package com.boundlessgeo.gsr.api.map;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boundlessgeo.gsr.MutableRequestProxy;
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 
 /**
@@ -64,8 +61,8 @@ public class ExportMapController extends AbstractGSRController {
 
     /**
      * Translate the ArcGis image SR parameter into CRS compatible parameter. Only supports EPSG for now.
-     * @param imageSR
-     * @return
+     * @param imageSR the image SR parameter
+     * @return an EPSG code matching that parameter
      */
     private String[] translateImageSRParam(String imageSR) {
         if (StringUtils.isNotEmpty(imageSR)) {
@@ -95,28 +92,4 @@ public class ExportMapController extends AbstractGSRController {
             .map(layerName -> workspaceName + ":" + layerName).toArray(String[]::new);
     }
 
-    private static class MutableRequestProxy extends HttpServletRequestWrapper {
-
-        private Map<String, String[]> mutableParams = new HashMap<>();
-
-        /**
-         * Constructs a request object wrapping the given request.
-         *
-         * @param request
-         * @throws IllegalArgumentException if the request is null
-         */
-        public MutableRequestProxy(HttpServletRequest request) {
-            super(request);
-            mutableParams.putAll(request.getParameterMap());
-        }
-
-        @Override
-        public Map<String, String[]> getParameterMap() {
-            return Collections.unmodifiableMap(mutableParams);
-        }
-
-        public Map<String, String[]> getMutableParams() {
-            return mutableParams;
-        }
-    }
 }

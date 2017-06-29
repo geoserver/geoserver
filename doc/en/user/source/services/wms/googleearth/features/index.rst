@@ -12,6 +12,7 @@ This section delves into greater detail about the various functionality and opti
    kmlreflector.rst
    togglingplacemarks.rst
    customizingplacemarks.rst
+   kmlcentroids.rst
    kmlheighttime.rst
    kmllegends.rst
    filters.rst

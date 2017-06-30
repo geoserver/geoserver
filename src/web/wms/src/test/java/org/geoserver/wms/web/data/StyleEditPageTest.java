@@ -647,4 +647,16 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
     }
     
+    @Test
+    public void testLayerPreviewTab() {
+
+        LayerInfo l = getCatalog().getLayers().get(0);
+        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        // used to fail with an exception here because the template file cannot be found
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
+        print(tester.getLastRenderedPage(), true, true);
+        tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
+    }
+
+    
 }

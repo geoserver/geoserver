@@ -9,7 +9,7 @@ var source = new ol.source.ImageWMS({
     'LAYERS': '${layer}',
     'STYLES': '${style}',
     'FORMAT': 'image/png',
-    'FORMAT_OPTIONS': "layout:css-legend;fontAntiAliasing:true",
+    'FORMAT_OPTIONS': "layout:style-editor-legend;fontAntiAliasing:true",
     'RANDOM': ${cachebuster?c}
   },
   serverType: 'geoserver',

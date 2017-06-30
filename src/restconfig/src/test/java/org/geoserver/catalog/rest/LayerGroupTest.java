@@ -36,8 +36,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
     @Before
     public void revertChanges() throws Exception {
         removeLayerGroup(null, "nestedLayerGroupTest");
-        removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup(null, "citeLayerGroup");
+        removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup("sf", "foo");
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
@@ -127,6 +127,21 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("citeLayerGroup", "/layerGroup/name", dom );
         assertXpathEvaluatesTo( "6", "count(//published)", dom );
         assertXpathEvaluatesTo( "6", "count(//style)", dom );
+    }
+
+    @Test
+    public void testGetAsXMLNestedLinks() throws Exception {
+        LayerGroupInfo cite = catalog.getLayerGroupByName("citeLayerGroup");
+        cite.getLayers().add(catalog.getLayerGroupByName("sfLayerGroup"));
+        cite.getStyles().add(null);
+        catalog.save(cite);
+
+        Document dom = getAsDOM( "rest/layergroups/citeLayerGroup.xml");
+        assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
+        assertXpathEvaluatesTo("citeLayerGroup", "/layerGroup/name", dom );
+        assertXpathEvaluatesTo( "7", "count(//published)", dom );
+        assertXpathEvaluatesTo( "7", "count(//style)", dom );
+        assertXpathEvaluatesTo( "7", "count(//published/atom:link)", dom );
     }
 
     @Test

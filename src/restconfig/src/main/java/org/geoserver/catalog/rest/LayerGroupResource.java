@@ -162,6 +162,13 @@ public class LayerGroupResource extends AbstractCatalogResource {
                }
                if ( obj instanceof LayerInfo ) {
                    encodeLink("/layers/" + encode(ref), writer);
+               }  else if ( obj instanceof LayerGroupInfo) {
+                   LayerGroupInfo lg = (LayerGroupInfo) obj;
+                   if (lg.getWorkspace() != null) {
+                       encodeLink("/workspaces/"+lg.getWorkspace().getName()+"/layergroups/" + encode(ref), writer);
+                   } else {
+                       encodeLink("/layergroups/" + encode(ref), writer);
+                   }
                }
            } 
         });

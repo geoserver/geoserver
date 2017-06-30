@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence.rest.xml;
+package org.geoserver.rest.security.xml;
 
 import java.io.IOException;
 

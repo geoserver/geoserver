@@ -28,5 +28,6 @@ This section describes the GeoServer REST configuration API.
    masterpassword
    selfadmin
    accesscontrol
+   userrole
    resources
 

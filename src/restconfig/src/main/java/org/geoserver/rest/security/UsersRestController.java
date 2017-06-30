@@ -2,16 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence.rest;
+package org.geoserver.rest.security;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.geoserver.geofence.rest.xml.JaxbGroupList;
-import org.geoserver.geofence.rest.xml.JaxbUser;
-import org.geoserver.geofence.rest.xml.JaxbUserList;
+import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.security.xml.JaxbGroupList;
+import org.geoserver.rest.security.xml.JaxbUser;
+import org.geoserver.rest.security.xml.JaxbUserList;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -19,16 +15,14 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.PasswordPolicyException;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@RestController(value = "usergroupRestController")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/usergroup")
 public class UsersRestController {
 
     protected GeoServerSecurityManager securityManager;
@@ -36,12 +30,8 @@ public class UsersRestController {
     private static final String DEFAULT_ROLE_SERVICE_NAME = "default";
     
     private String getDefaultServiceName() {
-        if (this.securityManager != null &&
-                this.securityManager.getActiveRoleService() != null) {
-            return this.securityManager.getActiveRoleService().getName();
-        }
-        
-        return DEFAULT_ROLE_SERVICE_NAME;
+        String defaultServiceName = System.getProperty("org.geoserver.rest.DefaultUserGroupServiceName");
+        return defaultServiceName == null ? DEFAULT_ROLE_SERVICE_NAME : defaultServiceName;
     }
 
     public UsersRestController(GeoServerSecurityManager securityManager) {
@@ -49,105 +39,103 @@ public class UsersRestController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
     	response.sendError(404, exception.getMessage());
     }
 
-    @RequestMapping(value = "/rest/usergroup/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbUserList getUsers() throws IOException {
+    @GetMapping(value = "/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbUserList getUsers() throws IOException {
         return getUsers(getDefaultServiceName());
     }
 
-    @RequestMapping(value = "/rest/usergroup/groups", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbGroupList getGroups() throws IOException {
+    @GetMapping(value = "/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbGroupList getGroups() throws IOException {
         return getGroups(getDefaultServiceName());
     }
 
-    @RequestMapping(value = "/rest/usergroup/group/{group}/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbUserList getUsersFromGroup(@PathVariable("group") String groupName)
+    @GetMapping(value = "/group/{group}/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbUserList getUsersFromGroup(@PathVariable("group") String groupName)
             throws IOException {
         return getUsersFromGroup(getDefaultServiceName(), groupName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/user/{user}/groups", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbGroupList getGroupsFromUser(@PathVariable("user") String userName)
+    @GetMapping(value = "/user/{user}/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbGroupList getGroupsFromUser(@PathVariable("user") String userName)
             throws IOException {
         return getGroupsFromUser(getDefaultServiceName(), userName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/users", method = RequestMethod.POST)
+    @PostMapping(value = "/users")
     public @ResponseStatus(HttpStatus.CREATED) void insertUser(@RequestBody JaxbUser user)
             throws PasswordPolicyException, IOException {
         insertUser(getDefaultServiceName(), user);
     }
 
-    @RequestMapping(value = "/rest/usergroup/user/{user}", method = RequestMethod.POST)
+    @PostMapping(value = "/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void updateUser(@PathVariable("user") String userName,
             @RequestBody JaxbUser user) throws PasswordPolicyException, IOException {
         updateUser(getDefaultServiceName(), userName, user);
     }
 
-    @RequestMapping(value = "/rest/usergroup/user/{user}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void deleteUser(@PathVariable("user") String userName)
             throws IOException {
         deleteUser(getDefaultServiceName(), userName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/group/{group}", method = RequestMethod.POST)
+    @PostMapping(value = "/group/{group}")
     public @ResponseStatus(HttpStatus.CREATED) void insertGroup(
             @PathVariable("group") String groupName) throws PasswordPolicyException, IOException {
         insertGroup(getDefaultServiceName(), groupName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/group/{group}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void deleteGroup(@PathVariable("group") String groupName)
             throws IOException {
         deleteGroup(getDefaultServiceName(), groupName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/user/{user}/group/{group}", method = RequestMethod.POST)
+    @PostMapping(value = "/user/{user}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void associateUserToGroup(
             @PathVariable("user") String userName, @PathVariable("group") String groupName)
             throws IOException {
         associateUserToGroup(getDefaultServiceName(), userName, groupName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/user/{user}/group/{group}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/user/{user}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void disassociateUserFromGroup(
             @PathVariable("user") String userName, @PathVariable("group") String groupName)
             throws IOException {
         disassociateUserFromGroup(getDefaultServiceName(), userName, groupName);
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbUserList getUsers(@PathVariable("serviceName") String serviceName)
+    @GetMapping(value = "/service/{serviceName}/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbUserList getUsers(@PathVariable("serviceName") String serviceName)
             throws IOException {
         return new JaxbUserList(getService(serviceName).getUsers());
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/groups", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbGroupList getGroups(@PathVariable("serviceName") String serviceName)
+    @GetMapping(value = "/service/{serviceName}/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbGroupList getGroups(@PathVariable("serviceName") String serviceName)
             throws IOException {
         return new JaxbGroupList(getService(serviceName).getUserGroups());
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/group/{group}/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbUserList getUsersFromGroup(
-            @PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
+    @GetMapping(value = "/service/{serviceName}/group/{group}/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbUserList getUsersFromGroup(@PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
             throws IOException {
         GeoServerUserGroupService service = getService(serviceName);
         return new JaxbUserList(service.getUsersForGroup(getGroup(service, groupName)));
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/user/{user}/groups", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbGroupList getGroupsFromUser(
-            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
+    @GetMapping(value = "/service/{serviceName}/user/{user}/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbGroupList getGroupsFromUser(@PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
             throws IOException {
         GeoServerUserGroupService service = getService(serviceName);
         return new JaxbGroupList(service.getGroupsForUser(getUser(service, userName)));
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/users", method = RequestMethod.POST)
+    @PostMapping(value = "/service/{serviceName}/users")
     public @ResponseStatus(HttpStatus.CREATED) void insertUser(
             @PathVariable("serviceName") String serviceName, @RequestBody JaxbUser user)
             throws PasswordPolicyException, IOException {
@@ -159,7 +147,7 @@ public class UsersRestController {
         }
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/user/{user}", method = RequestMethod.POST)
+    @PostMapping(value = "/service/{serviceName}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void updateUser(
             @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName,
             @RequestBody JaxbUser user) throws PasswordPolicyException, IOException {
@@ -171,7 +159,7 @@ public class UsersRestController {
         }
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/user/{user}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/service/{serviceName}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void deleteUser(
             @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
             throws IOException {
@@ -183,7 +171,7 @@ public class UsersRestController {
         }
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/group/{group}", method = RequestMethod.POST)
+    @PostMapping(value = "/service/{serviceName}/group/{group}")
     public @ResponseStatus(HttpStatus.CREATED) void insertGroup(
             @PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
             throws PasswordPolicyException, IOException {
@@ -195,7 +183,7 @@ public class UsersRestController {
         }
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/group/{group}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/service/{serviceName}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void deleteGroup(
             @PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
             throws IOException {
@@ -207,7 +195,7 @@ public class UsersRestController {
         }
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/user/{user}/group/{group}", method = RequestMethod.POST)
+    @PostMapping(value = "/service/{serviceName}/user/{user}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void associateUserToGroup(
             @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName,
             @PathVariable("group") String groupName) throws IOException {
@@ -220,7 +208,7 @@ public class UsersRestController {
         }
     }
 
-    @RequestMapping(value = "/rest/usergroup/service/{serviceName}/user/{user}/group/{group}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/service/{serviceName}/user/{user}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void disassociateUserFromGroup(
             @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName,
             @PathVariable("group") String groupName) throws IOException {

@@ -2,28 +2,23 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence.rest;
+package org.geoserver.rest.security;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.geoserver.geofence.rest.xml.JaxbRoleList;
+import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.security.xml.JaxbRoleList;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@RestController(value = "rolesRestController")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/roles")
 public class RolesRestController {
 
     protected GeoServerSecurityManager securityManager;
@@ -31,81 +26,81 @@ public class RolesRestController {
     public RolesRestController(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
     }
-    
+
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
     	response.sendError(404, exception.getMessage());
     }
 
-    @RequestMapping(value = "/rest/roles", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    public @ResponseBody JaxbRoleList get() throws IOException {
+    @GetMapping(value = "", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public JaxbRoleList get() throws IOException {
         return get(securityManager.getActiveRoleService());
     }
 
-    @RequestMapping(value = "/rest/roles/user/{user}", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    protected @ResponseBody JaxbRoleList getUser(@PathVariable("user") String userName)
+    @GetMapping(value = "/user/{user}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    protected JaxbRoleList getUser(@PathVariable("user") String userName)
             throws IOException {
         return getUser(securityManager.getActiveRoleService(), userName);
     }
 
-    @RequestMapping(value = "/rest/roles/role/{role}", method = RequestMethod.POST, produces = {"application/xml", "application/json"})
+    @PostMapping(value = "/role/{role}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseStatus(HttpStatus.CREATED) void insert(@PathVariable("role") String roleName)
             throws IOException {
         insert(securityManager.getActiveRoleService(), roleName);
     }
 
-    @RequestMapping(value = "/rest/roles/role/{role}", method = RequestMethod.DELETE, produces = {"application/xml", "application/json"})
+    @DeleteMapping(value = "/role/{role}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("role") String roleName)
             throws IOException {
         delete(securityManager.getActiveRoleService(), roleName);
     }
 
-    @RequestMapping(value = "/rest/roles/role/{role}/user/{user}", method = RequestMethod.POST)
+    @PostMapping(value = "/role/{role}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void associate(@PathVariable("role") String roleName,
             @PathVariable("user") String userName) throws IOException {
         associate(securityManager.getActiveRoleService(), roleName, userName);
     }
 
-    @RequestMapping(value = "/rest/roles/role/{role}/user/{user}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/role/{role}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void disassociate(@PathVariable("role") String roleName,
             @PathVariable("user") String userName) throws IOException {
         disassociate(securityManager.getActiveRoleService(), roleName, userName);
     }
 
-    @RequestMapping(value = "/rest/roles/service/{serviceName}", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    protected @ResponseBody JaxbRoleList get(@PathVariable("serviceName") String serviceName)
+    @GetMapping(value = "/service/{serviceName}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    protected JaxbRoleList get(@PathVariable("serviceName") String serviceName)
             throws IOException {
         return get(getService(serviceName));
     }
 
-    @RequestMapping(value = "/rest/roles/service/{serviceName}/user/{user}", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
-    protected @ResponseBody JaxbRoleList getUser(@PathVariable("serviceName") String serviceName,
+    @GetMapping(value = "/service/{serviceName}/user/{user}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    protected JaxbRoleList getUser(@PathVariable("serviceName") String serviceName,
             @PathVariable("user") String userName) throws IOException {
         return getUser(getService(serviceName), userName);
     }
 
-    @RequestMapping(value = "/rest/roles/service/{serviceName}/role/{role}", method = RequestMethod.POST)
+    @PostMapping(value = "/service/{serviceName}/role/{role}")
     public @ResponseStatus(HttpStatus.CREATED) void insert(
             @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName)
             throws IOException {
         insert(getService(serviceName), roleName);
     }
 
-    @RequestMapping(value = "/rest/roles/service/{serviceName}/role/{role}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/service/{serviceName}/role/{role}")
     public @ResponseStatus(HttpStatus.OK) void delete(
             @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName)
             throws IOException {
         delete(getService(serviceName), roleName);
     }
 
-    @RequestMapping(value = "/rest/roles/service/{serviceName}/role/{role}/user/{user}", method = RequestMethod.POST)
+    @PostMapping(value = "/service/{serviceName}/role/{role}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void associate(
             @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName,
             @PathVariable("user") String userName) throws IOException {
         associate(getService(serviceName), roleName, userName);
     }
 
-    @RequestMapping(value = "/rest/roles/service/{serviceName}/role/{role}/user/{user}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/service/{serviceName}/role/{role}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void disassociate(
             @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName,
             @PathVariable("user") String userName) throws IOException {
@@ -114,11 +109,11 @@ public class RolesRestController {
 
     protected JaxbRoleList getUser(GeoServerRoleService roleService, String userName)
             throws IOException {
-        return new JaxbRoleList(roleService.getRolesForUser(userName));
+        return JaxbRoleList.fromGS(roleService.getRolesForUser(userName));
     }
 
     protected JaxbRoleList get(GeoServerRoleService roleService) throws IOException {
-        return new JaxbRoleList(roleService.getRoles());
+        return JaxbRoleList.fromGS(roleService.getRoles());
     }
 
     protected void insert(GeoServerRoleService roleService, String roleName) throws IOException {

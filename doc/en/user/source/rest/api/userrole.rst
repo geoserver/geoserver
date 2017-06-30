@@ -1,7 +1,7 @@
 .. _rest_api_user_roles:
 
-Users/Groups and Roles Rest API
-===============================
+Users/Groups and Roles
+======================
 
 Security
 --------
@@ -72,10 +72,9 @@ Configuration
 The default user/group service is by default the service named "default". This can be 
 altered in the following manner: 
 
-    #. Edit or create the file '/geofence/geofence-server.properties' in the geoserver data directory.
-    #. Modify or add the following line::
+    #. Start geoserver with the following java system property present::
 
-        defaultUserGroupServiceName= ..
+          org.geoserver.rest.DefaultUserGroupServiceName=<name_of_usergroupservice>
 
 Requests
 --------

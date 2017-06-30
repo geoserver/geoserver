@@ -2,19 +2,20 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence.rest;
+package org.geoserver.rest.security;
 
 import java.io.IOException;
 
-import org.geoserver.geofence.GeofenceBaseTest;
-import org.geoserver.geofence.rest.xml.JaxbGroupList;
-import org.geoserver.geofence.rest.xml.JaxbRoleList;
-import org.geoserver.geofence.rest.xml.JaxbUser;
-import org.geoserver.geofence.rest.xml.JaxbUserList;
+import org.geoserver.rest.security.xml.JaxbGroupList;
+import org.geoserver.rest.security.xml.JaxbRoleList;
+import org.geoserver.rest.security.xml.JaxbUser;
+import org.geoserver.rest.security.xml.JaxbUserList;
 import org.geoserver.security.validation.PasswordPolicyException;
+import org.geoserver.test.GeoServerTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 
-public class UserRoleRestControllerTest extends GeofenceBaseTest {
+public class UserRoleRestControllerTest extends GeoServerTestSupport {
     
     private static final String USER_SERVICE = "default";
 
@@ -22,12 +23,12 @@ public class UserRoleRestControllerTest extends GeofenceBaseTest {
 
     protected RolesRestController rolesController;    
 
-    @Override
+    @Before
     public void oneTimeSetUp() throws Exception {
         setValidating(true);
         super.oneTimeSetUp();
-        usersController = (UsersRestController) applicationContext.getBean("usersRestController");
-        rolesController = (RolesRestController) applicationContext.getBean("rolesRestController");
+        usersController = applicationContext.getBean(UsersRestController.class);
+        rolesController = applicationContext.getBean(RolesRestController.class);
     }
 
     @Test
@@ -132,35 +133,35 @@ public class UserRoleRestControllerTest extends GeofenceBaseTest {
         //not found errors - will be translated by spring exception handler to code 404 
         boolean notfound = false;
         try {
-        	usersController.getUsers("blabla");
+                usersController.getUsers("blabla");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+                notfound = true;
         }
         assertTrue(notfound);
         
         notfound = false;
         try {
-        	usersController.getGroupsFromUser(USER_SERVICE, "niemand");
+                usersController.getGroupsFromUser(USER_SERVICE, "niemand");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+                notfound = true;
         }
         assertTrue(notfound);
         
 
         notfound = false;
         try {
-        	usersController.getUsersFromGroup(USER_SERVICE, "onbestaand");
+                usersController.getUsersFromGroup(USER_SERVICE, "onbestaand");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+                notfound = true;
         }
         assertTrue(notfound);
 
 
         notfound = false;
         try {
-        	rolesController.delete("onbestaand");
+                rolesController.delete("onbestaand");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+                notfound = true;
         }
         assertTrue(notfound);
     }

@@ -96,7 +96,7 @@ public class ImageUtils {
      *         image or not depending on the <code>transparent</code>
      *         parameter.
      */
-    public static BufferedImage createImage(final int width, final int height,
+    public static BufferedImage createImage(final int width, int height,
             final IndexColorModel palette, final boolean transparent) {
         // WARNING: whenever this method is changed, change getDrawingSurfaceMemoryUse
         // accordingly
@@ -114,6 +114,13 @@ public class ImageUtils {
         if (transparent) {
             return new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         }
+        
+        // in case there was no active rule, the height is going to be zero, push it up
+        // so that we build a transparent image
+        if(height == 0) {
+            height = 1;
+        }
+        
         // don't use alpha channel if the image is not transparent (load testing shows this
         // image setup is the fastest to draw and encode on
         return new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);

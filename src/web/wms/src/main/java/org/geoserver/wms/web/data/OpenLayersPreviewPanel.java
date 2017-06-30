@@ -98,9 +98,9 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     private void ensureLegendDecoration() throws IOException {
         GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         Resource layouts = dd.get("layouts");
-        Resource legend = layouts.get("css-legend.xml");
+        Resource legend = layouts.get("style-editor-legend.xml");
         if(!Resources.exists(legend)) {
-            String legendLayout = IOUtils.toString(OpenLayersPreviewPanel.class.getResourceAsStream("css-legend.xml"));
+            String legendLayout = IOUtils.toString(OpenLayersPreviewPanel.class.getResourceAsStream("style-editor-legend.xml"));
             OutputStream os = legend.out();
             try {
                 IOUtils.write(legendLayout, os);

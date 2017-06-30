@@ -163,6 +163,20 @@ public class ConfigDatabaseTest {
     }
 
     @Test
+    public void testRemoveWorkspace() {
+        WorkspaceInfo ws = new WorkspaceInfoImpl();
+        ((WorkspaceInfoImpl) ws).setId("removeid");
+        ws.setName("remove");
+        ws = database.add(ws);
+        assertNotNull(database.getById(ws.getId(), WorkspaceInfo.class));
+        // org.geoserver.catalog.NamespaceWorkspaceConsistencyListener.handleRemoveEvent(CatalogRemoveEvent)
+        // can cause remove to actually be called twice on the workspace.
+        database.remove(ws);
+        database.remove(ws);
+        assertNull(database.getById(ws.getId(), WorkspaceInfo.class));
+    }
+
+    @Test
     public void testModifyService(){
         
         // Create a service to modify
@@ -251,6 +265,7 @@ public class ConfigDatabaseTest {
         assertEquals("Bar", service.getMaintainer());
     }
 
+    @Test
     public void testGetServiceWithGeoServerRef() {
         WMSInfo service = new WMSInfoImpl();
         ((WMSInfoImpl) service).setId("WMS-TEST");

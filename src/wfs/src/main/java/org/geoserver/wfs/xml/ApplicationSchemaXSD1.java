@@ -12,6 +12,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.gml3.GML;
 import org.geotools.xml.XSD;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -146,6 +147,8 @@ public class ApplicationSchemaXSD1 extends XSD {
         synchronized (wfsSchema.eAdapters()) {
             ((XSDSchemaImpl) wfsSchema).imported(wfsImport);
         }
+        // make sure that GML 3.1 namespace is used
+        schema.getQNamePrefixToNamespaceMap().put("gml", GML.NAMESPACE);
         return schema;
     }
 }

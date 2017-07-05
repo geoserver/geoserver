@@ -711,6 +711,12 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     } else {
                         copyFileToFeatureTypeDir(namespacePrefix, typeName, propertyFileName);
                         if (propertyFileName.endsWith(".properties")) {
+                            // extract the file name if needed
+                            File file = new File(propertyFileName);
+                            if (file.exists()) {
+                                // extract the file name
+                                propertyFileName = file.getName();
+                            }
                             propertiesFiles.put(propertyFileName, getFeatureTypeDir(
                                     featureTypesBaseDir, namespacePrefix, typeName));
                         }

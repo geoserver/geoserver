@@ -4,12 +4,19 @@
  */
 package com.boundlessgeo.gsr.core.map;
 
-import com.boundlessgeo.gsr.core.renderer.*;
-import org.geoserver.catalog.LayerInfo;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.geoserver.catalog.LayerInfo;
+
+import com.boundlessgeo.gsr.core.renderer.ClassBreakInfo;
+import com.boundlessgeo.gsr.core.renderer.ClassBreaksRenderer;
+import com.boundlessgeo.gsr.core.renderer.Renderer;
+import com.boundlessgeo.gsr.core.renderer.SimpleRenderer;
+import com.boundlessgeo.gsr.core.renderer.StyleEncoder;
+import com.boundlessgeo.gsr.core.renderer.UniqueValueInfo;
+import com.boundlessgeo.gsr.core.renderer.UniqueValueRenderer;
 
 /**
  * A layer legend entry, usually contained in a {@link Legends} object
@@ -43,5 +50,53 @@ public class LayerLegend {
                 legend.add(new LegendEntry(uniqueValueInfo.getLabel(), uniqueValueInfo.getSymbol()));
             }
         }
+    }
+
+    public Integer getLayerId() {
+        return layerId;
+    }
+
+    public void setLayerId(Integer layerId) {
+        this.layerId = layerId;
+    }
+
+    public String getLayerName() {
+        return layerName;
+    }
+
+    public void setLayerName(String layerName) {
+        this.layerName = layerName;
+    }
+
+    public String getLayerType() {
+        return layerType;
+    }
+
+    public void setLayerType(String layerType) {
+        this.layerType = layerType;
+    }
+
+    public Integer getMinScale() {
+        return minScale;
+    }
+
+    public void setMinScale(Integer minScale) {
+        this.minScale = minScale;
+    }
+
+    public Integer getMaxScale() {
+        return maxScale;
+    }
+
+    public void setMaxScale(Integer maxScale) {
+        this.maxScale = maxScale;
+    }
+
+    public List<LegendEntry> getLegend() {
+        return legend;
+    }
+
+    public void setLegend(List<LegendEntry> legend) {
+        this.legend = legend;
     }
 }

@@ -4,15 +4,35 @@
  */
 package com.boundlessgeo.gsr.controller.map;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
-import org.junit.Ignore;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class LegendControllerTest extends ControllerTest {
-    @Ignore
+
+    @Test
     public void testStreamsLegend() throws Exception {
-        String result = getAsString(getBaseURL() + "cite/MapServer/legend?f=json");
-        fail(result);
+        JSON result = getAsJSON(getBaseURL() + "cite/MapServer/legend?f=json");
+        assertTrue(result instanceof JSONObject);
+
+        JSONObject jObject = (JSONObject) result;
+
+        JSONArray legends = (JSONArray) jObject.get("legends");
+        JSONObject firstLegend = (JSONObject) legends.get(0);
+        assertNotNull(firstLegend.get("layerId"));
+
+        JSONArray legend = (JSONArray) firstLegend.get("legend");
+        JSONObject l = (JSONObject) legend.get(0);
+        Object contentType = l.get("contentType");
+        assertNotNull(contentType);
+
+        System.out.println(result.toString());
     }
 }

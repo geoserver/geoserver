@@ -10,7 +10,14 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -28,6 +35,21 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.opengis.filter.And;
+import org.opengis.filter.BinaryComparisonOperator;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.PropertyIsGreaterThan;
+import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
+import org.opengis.filter.PropertyIsLessThan;
+import org.opengis.filter.PropertyIsLessThanOrEqualTo;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.style.Description;
+import org.opengis.style.Fill;
+import org.opengis.style.GraphicalSymbol;
+
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.symbol.MarkerSymbol;
 import com.boundlessgeo.gsr.core.symbol.Outline;
@@ -39,25 +61,8 @@ import com.boundlessgeo.gsr.core.symbol.SimpleLineSymbolEnum;
 import com.boundlessgeo.gsr.core.symbol.SimpleMarkerSymbol;
 import com.boundlessgeo.gsr.core.symbol.SimpleMarkerSymbolEnum;
 import com.boundlessgeo.gsr.core.symbol.Symbol;
-import org.opengis.filter.expression.Expression;
-import org.opengis.style.Description;
-import org.opengis.style.Fill;
-import org.opengis.style.GraphicalSymbol;
-
-import java.net.URI;
 
 import net.sf.json.util.JSONBuilder;
-
-import org.opengis.filter.And;
-import org.opengis.filter.BinaryComparisonOperator;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.PropertyIsGreaterThan;
-import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
-import org.opengis.filter.PropertyIsLessThan;
-import org.opengis.filter.PropertyIsLessThanOrEqualTo;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 public class StyleEncoder {
 //    public static void defaultFillStyle(JSONBuilder json) {
@@ -403,24 +408,26 @@ public class StyleEncoder {
 
         if (renderer == null) {
             GeometryTypeEnum gtype = GeometryTypeEnum.forResourceDefaultGeometry(layer.getResource());
-            switch (gtype) {
-            case ENVELOPE:
-            case POLYGON:
-                if (layer.getResource() instanceof CoverageInfo) {
-                    renderer = defaultRasterRenderer();
-                } else {
-                    renderer = defaultPolyRenderer(); // TODO: Generate default polygon style
+            if (gtype != null) {
+                switch (gtype) {
+                case ENVELOPE:
+                case POLYGON:
+                    if (layer.getResource() instanceof CoverageInfo) {
+                        renderer = defaultRasterRenderer();
+                    } else {
+                        renderer = defaultPolyRenderer(); // TODO: Generate default polygon style
+                    }
+                    break;
+                case MULTIPOINT:
+                case POINT:
+                    renderer = defaultMarkRenderer(); // TODO: Generate default point style
+                    break;
+                case POLYLINE:
+                    renderer = defaultLineRenderer(); // TODO: Generate default line style;
+                    break;
+                default:
+                    renderer = null;
                 }
-                break;
-            case MULTIPOINT:
-            case POINT:
-                renderer = defaultMarkRenderer(); // TODO: Generate default point style
-                break;
-            case POLYLINE:
-                renderer = defaultLineRenderer(); // TODO: Generate default line style;
-                break;
-            default:
-                renderer = null;
             }
         }
 

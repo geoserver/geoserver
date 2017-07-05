@@ -4,18 +4,26 @@
  */
 package com.boundlessgeo.gsr.core.map;
 
-import com.boundlessgeo.gsr.core.GSRModel;
-
 import java.util.List;
+
+import com.boundlessgeo.gsr.core.GSRModel;
 
 /**
  * List of {@link Legends}
  */
 public class Legends implements GSRModel {
 
-    List<LayerLegend> legends;
+    private List<LayerLegend> legends;
 
     public Legends(List<LayerLegend> legends) {
+        this.legends = legends;
+    }
+
+    public List<LayerLegend> getLegends() {
+        return legends;
+    }
+
+    public void setLegends(List<LayerLegend> legends) {
         this.legends = legends;
     }
 }

@@ -4,17 +4,29 @@
  */
 package com.boundlessgeo.gsr.core.map;
 
-import com.boundlessgeo.gsr.core.symbol.*;
-import org.geotools.data.Base64;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.geotools.data.Base64;
+
+import com.boundlessgeo.gsr.core.symbol.PictureMarkerSymbol;
+import com.boundlessgeo.gsr.core.symbol.SimpleFillSymbol;
+import com.boundlessgeo.gsr.core.symbol.SimpleLineSymbol;
+import com.boundlessgeo.gsr.core.symbol.SimpleMarkerSymbol;
+import com.boundlessgeo.gsr.core.symbol.SimpleMarkerSymbolEnum;
+import com.boundlessgeo.gsr.core.symbol.Symbol;
+import com.boundlessgeo.gsr.core.symbol.TextSymbol;
 
 class LegendEntry {
 
@@ -182,5 +194,29 @@ class LegendEntry {
 
     private static BufferedImage prepareImage() {
         return new BufferedImage(16, 16, BufferedImage.TYPE_4BYTE_ABGR);
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(String imageData) {
+        this.imageData = imageData;
     }
 }

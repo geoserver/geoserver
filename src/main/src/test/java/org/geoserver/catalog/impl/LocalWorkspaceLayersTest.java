@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -65,7 +66,7 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGroupLayerInWorkspace() {
-        System.out.println(catalog.getLayerGroups());
+        // System.out.println(catalog.getLayerGroups());
         
         WorkspaceInfo workspace = catalog.getWorkspaceByName("sf");
         WorkspaceInfo workspace2 = catalog.getWorkspaceByName("cite");
@@ -275,12 +276,7 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         CatalogFactory factory = catalog.getFactory();
         WorkspaceInfo citeWs = catalog.getWorkspaceByName("cite");
 
-        LayerGroupInfo localGroup = factory.createLayerGroup();
-        localGroup.setName(LOCAL_GROUP);
-        localGroup.setWorkspace(citeWs);
-        localGroup.getLayers().add(getBuildingsLayer());
-        localGroup.getLayers().add(getBridgesLayer());
-        catalog.add(localGroup);
+        addLocalGroup(factory, citeWs);
         
         LayerGroupInfo globalGroup = factory.createLayerGroup();
         globalGroup.setName(GLOBAL_GROUP);
@@ -315,7 +311,47 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         LocalPublished.remove();
         LocalWorkspace.remove();
     }
+
+    @Test
+    public void testLayerLocalWithContainingGroup() throws Exception {
+        CatalogFactory factory = catalog.getFactory();
+        WorkspaceInfo citeWs = catalog.getWorkspaceByName("cite");
+        addLocalGroup(factory, citeWs);
+        
+        // set a local layer that's in the group
+        final LayerInfo buildingsLayer = getBuildingsLayer();
+        LocalPublished.set(buildingsLayer);
+        assertNotNull(catalog.getLayerByName(buildingsLayer.prefixedName()));
+        assertNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertNull(catalog.getLayerGroupByName(LOCAL_GROUP));
+        assertEquals(1, catalog.getLayers().size());
+        assertThat(catalog.getLayerGroups(), empty());
+    }
     
+    @Test
+    public void testLayerLocalWithNonContainingGroup() throws Exception {
+        CatalogFactory factory = catalog.getFactory();
+        WorkspaceInfo citeWs = catalog.getWorkspaceByName("cite");
+        addLocalGroup(factory, citeWs);
+        
+        // set a local layer that's not in the group
+        final LayerInfo dividedRoutes = catalog.getLayerByName(getLayerId(SystemTestData.DIVIDED_ROUTES));
+        LocalPublished.set(dividedRoutes);
+        assertNotNull(catalog.getLayerByName(dividedRoutes.prefixedName()));
+        assertNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertNull(catalog.getLayerGroupByName(LOCAL_GROUP));
+        assertEquals(1, catalog.getLayers().size());
+        assertThat(catalog.getLayerGroups(), empty());      
+    }
+
+    private void addLocalGroup(CatalogFactory factory, WorkspaceInfo citeWs) {
+        LayerGroupInfo localGroup = factory.createLayerGroup();
+        localGroup.setName(LOCAL_GROUP);
+        localGroup.setWorkspace(citeWs);
+        localGroup.getLayers().add(getBuildingsLayer());
+        localGroup.getLayers().add(getBridgesLayer());
+        catalog.add(localGroup);
+    }
     
     private LayerInfo getBridgesLayer() {
         return catalog.getLayerByName(getLayerId(SystemTestData.BRIDGES));

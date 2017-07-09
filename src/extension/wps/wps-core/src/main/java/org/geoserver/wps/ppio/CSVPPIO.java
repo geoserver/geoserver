@@ -27,6 +27,7 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.Transaction;
 import org.geotools.data.csv.CSVDataStore;
 import org.geotools.data.csv.CSVDataStoreFactory;
 import org.geotools.data.csv.CSVFeatureStore;
@@ -109,7 +110,9 @@ public class CSVPPIO extends CDataPPIO {
         params.put(CSVDataStoreFactory.STRATEGYP.key, "CSVAttributesOnlyStrategy");
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
         store.createSchema(collection.getSchema());
-        SimpleFeatureSource featureSource = store.getFeatureSource();
+        String name = store.getTypeName().getLocalPart();
+        Transaction transaction = Transaction.AUTO_COMMIT;
+        SimpleFeatureSource featureSource = store.getFeatureSource(name,transaction );
         if(featureSource instanceof FeatureStore) {
             CSVFeatureStore csvFeatureStore = (CSVFeatureStore)featureSource;
             

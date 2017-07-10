@@ -34,12 +34,6 @@ import org.geotools.data.csv.CSVFeatureStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Logging;
-import org.springframework.core.io.FileSystemResource;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.util.logging.Logging;
-import org.springframework.core.io.FileSystemResource;
-
-import org.geotools.util.logging.Logging;
 import org.geotools.xml.Text;
 
 

@@ -362,7 +362,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         Boolean enabled;
 
         /** the admin page for the service */ 
-        ServiceMenuPageInfo adminPage;
+        ServiceMenuPageInfo<?> adminPage;
 
         /** created service, not yet added to configuration */
         IModel<ServiceInfo> model;

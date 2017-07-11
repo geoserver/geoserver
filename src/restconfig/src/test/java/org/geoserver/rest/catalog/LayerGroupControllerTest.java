@@ -41,8 +41,8 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
     @Before
     public void revertChanges() throws Exception {
         removeLayerGroup(null, "nestedLayerGroupTest");
-        removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup(null, "citeLayerGroup");
+        removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup("sf", "workspaceLayerGroup");
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
@@ -155,6 +155,21 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "1", "count(//layerGroup/keywords[string='keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;'])", dom );
         // check keywords were encoded
 
+    }
+
+    @Test
+    public void testGetAsXMLNestedLinks() throws Exception {
+        LayerGroupInfo cite = catalog.getLayerGroupByName("citeLayerGroup");
+        cite.getLayers().add(catalog.getLayerGroupByName("sfLayerGroup"));
+        cite.getStyles().add(null);
+        catalog.save(cite);
+
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup.xml");
+        assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
+        assertXpathEvaluatesTo("citeLayerGroup", "/layerGroup/name", dom );
+        assertXpathEvaluatesTo( "7", "count(//published)", dom );
+        assertXpathEvaluatesTo( "7", "count(//style)", dom );
+        assertXpathEvaluatesTo( "7", "count(//published/atom:link)", dom );
     }
 
     @Test

@@ -171,7 +171,12 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
                 i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
                     WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get( i );
-                    Resource newDir = dd.getStyles(newWorkspace);
+                    Resource newDir;
+                    if (newWorkspace == null) {
+                        newDir = dd.getStyles();
+                    } else {
+                        newDir = dd.getStyles(newWorkspace);
+                    }
 
                     // look for any resource files (image, etc...) and copy them over, don't move 
                     // since they could be shared among other styles

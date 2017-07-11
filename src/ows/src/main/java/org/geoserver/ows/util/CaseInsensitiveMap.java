@@ -96,4 +96,16 @@ public class CaseInsensitiveMap implements Map {
     public String toString() {
         return delegate.toString();
     }
+
+    /**
+     * Wraps a map in case insensitive one.
+     * 
+     * If the instance is already a case insensitive map it is returned as is.
+     */
+    public static Map wrap(Map other) {
+        if (other instanceof CaseInsensitiveMap) {
+            return other;
+        }
+        return new CaseInsensitiveMap(other);
+    }
 }

@@ -61,6 +61,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -387,6 +388,8 @@ public class GetMap {
         
         final Style[] styles = request.getStyles().toArray(new Style[] {});
         final Filter[] filters = buildLayersFilters(request.getFilter(), layers);
+        final List<SortBy[]> sorts = request.getSortByArrays();
+        
 
         // if there's a crs in the request, use that. If not, assume its 4326
         final CoordinateReferenceSystem mapcrs = request.getCrs();
@@ -444,6 +447,7 @@ public class GetMap {
 
             final Style layerStyle = styles[i];
             final Filter layerFilter = SimplifyingFilterVisitor.simplify(filters[i]);
+            final SortBy[] layerSort = sorts != null ? sorts.get(i) : null;
 
             final org.geotools.map.Layer layer;
 
@@ -457,6 +461,7 @@ public class GetMap {
                 final Query definitionQuery = new Query(source.getSchema().getTypeName());
                 definitionQuery.setFilter(layerFilter);
                 definitionQuery.setVersion(featureVersion);
+                definitionQuery.setSortBy(layerSort);
                 int maxFeatures = request.getMaxFeatures() != null ? request.getMaxFeatures()
                         : Integer.MAX_VALUE;
                 definitionQuery.setMaxFeatures(maxFeatures);
@@ -474,6 +479,12 @@ public class GetMap {
                 // /////////////////////////////////////////////////////////
                 try {
                     source = mapLayerInfo.getFeatureSource(true);
+                    
+                    if (layerSort != null) {
+                        // filter gets validated down in the renderer, but
+                        // sorting is done without the renderer knowing, perform validation here
+                        validateSort(source, layerSort, mapLayerInfo);
+                    }
 
                     // NOTE for the feature. Here there was some code that
                     // sounded like:
@@ -508,6 +519,7 @@ public class GetMap {
                 final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
                 definitionQuery.setVersion(featureVersion);
                 definitionQuery.setFilter(filter);
+                definitionQuery.setSortBy(layerSort);
             	if (viewParams != null) {
                     definitionQuery.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams.get(i)));
             	}
@@ -549,7 +561,7 @@ public class GetMap {
 
                     // get the group of parameters tha this reader supports
                     GeneralParameterValue[] readParameters = wms.getWMSReadParameters(request,
-                            mapLayerInfo, layerFilter, times, elevations, reader, false);
+                            mapLayerInfo, layerFilter, layerSort, times, elevations, reader, false);
                     try {
 
                         try {
@@ -633,6 +645,19 @@ public class GetMap {
         }
 
         return map;
+    }
+
+    private void validateSort(FeatureSource<? extends FeatureType, ? extends Feature> source,
+            SortBy[] sort, MapLayerInfo mapLayerInfo) {
+        FeatureType ft = source.getSchema();
+        for (SortBy sortBy : sort) {
+            if (sortBy.getPropertyName().evaluate(ft) == null) {
+                throw new ServiceException(
+                        "Sort property '" + sortBy.getPropertyName().getPropertyName()
+                                + "' not available in " + mapLayerInfo.getName(),
+                        ServiceException.INVALID_PARAMETER_VALUE, "sortBy");
+            }
+        }
     }
 
     /**
@@ -750,7 +775,7 @@ public class GetMap {
     }
 
     /**
-     * Returns the list of filters resulting of comining the layers definition filters with the per
+     * Returns the list of filters resulting of combining the layers definition filters with the per
      * layer filters made by the user.
      * <p>
      * If <code>requestFilters != null</code>, it shall contain the same number of elements than

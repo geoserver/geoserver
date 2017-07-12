@@ -30,6 +30,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
 
     protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION_STACKED = new QName(MockData.SF_URI, "TimeElevationStacked", MockData.SF_PREFIX);
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
     
@@ -89,6 +90,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         wms.getSRS().add("EPSG:4326");
         getGeoServer().save(wms);
         
+        // vector time-elevation
         Map map = new HashMap();
         map.put(MockData.KEY_STYLE, "TimeElevation");
         Catalog catalog = getCatalog();
@@ -96,9 +98,18 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         testData.addVectorLayer(V_TIME_ELEVATION,map,
                 "TimeElevation.properties",
                 WMSDimensionsTestSupport.class,catalog);
+        
+        // vector time-elevation, emtpy
         testData.addVectorLayer(V_TIME_ELEVATION_EMPTY,map,
                 "TimeElevationEmpty.properties",
-                WMSDimensionsTestSupport.class,catalog);        
+                WMSDimensionsTestSupport.class,catalog);
+        
+        // vector time-elevation, stacked (all polys covering the whole planet)
+        map.put(MockData.KEY_STYLE, "TimeElevationStacked");
+        testData.addStyle("TimeElevationStacked","TimeElevationStacked.sld",WMSDimensionsTestSupport.class,catalog);
+        testData.addVectorLayer(V_TIME_ELEVATION_STACKED,map,
+                "TimeElevationStacked.properties",
+                WMSDimensionsTestSupport.class,catalog);
         
         
         testData.addStyle("temperature", "temperature.sld", WMSDimensionsTestSupport.class, catalog);

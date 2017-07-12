@@ -887,6 +887,7 @@ public class WCSDimensionsSubsetHelper {
         subsettingRequest.setTemporalSubset(temporalSubset);
         subsettingRequest.setDimensionsSubset(dimensionsSubset);
         subsettingRequest.setFilter(request.getFilter());
+        subsettingRequest.setSortBy(request.getSortBy());
 
         // Handle default values and update subsetting values if needed
         String coverageName =  getCoverageName();

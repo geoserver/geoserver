@@ -10,9 +10,11 @@ import java.nio.file.Files;
 
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.PointSymbolizer;
@@ -49,6 +51,13 @@ public class GeoServerDataDirectoryTest {
     @After
     public void tearDown() throws Exception {
         ctx.destroy();
+    }
+
+    @Test
+    public void testNullWorkspace() {
+        assertEquals(dataDir.get((WorkspaceInfo) null, "test").path(), dataDir.get("test").path());
+        assertEquals(dataDir.getStyles((WorkspaceInfo) null, "test").path(), dataDir.getStyles("test").path());
+        assertEquals(dataDir.getLayerGroups((WorkspaceInfo) null, "test").path(), dataDir.getLayerGroups("test").path());
     }
     
     @Test

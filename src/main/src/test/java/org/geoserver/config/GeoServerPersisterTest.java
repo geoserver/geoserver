@@ -637,6 +637,28 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testModifyStyleChangeWorkspaceToGlobal() throws Exception {
+        testAddStyleWithWorkspace();
+
+        //copy an sld into place
+        FileUtils.copyURLToFile(getClass().getResource("default_line.sld"),
+                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"));
+
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
+
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        s.setWorkspace(null);
+        catalog.save( s );
+
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
+
+        assertFalse(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertFalse(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
+    }
+
+    @Test
     public void testModifyStyleWithResourceChangeWorkspace() throws Exception {
         testAddStyle();
 

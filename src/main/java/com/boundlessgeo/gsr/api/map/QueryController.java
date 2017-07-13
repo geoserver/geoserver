@@ -4,21 +4,17 @@
  */
 package com.boundlessgeo.gsr.api.map;
 
-import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.feature.FeatureList;
-import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
-import com.boundlessgeo.gsr.core.geometry.SpatialReferenceEncoder;
-import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -50,11 +46,28 @@ import org.opengis.temporal.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.GSRModel;
+import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.core.feature.FeatureList;
+import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
+import com.boundlessgeo.gsr.core.geometry.SpatialReferenceEncoder;
+import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 /**
  * Controller for the Map Service query endpoint
@@ -63,7 +76,7 @@ import java.util.logging.Logger;
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryController extends AbstractGSRController {
 
-    private static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
+    protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
     private static final Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.global");
 
     @Autowired
@@ -185,7 +198,7 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
-    private String[] parseOutFields(String outFieldsText) {
+    protected String[] parseOutFields(String outFieldsText) {
         if ("*".equals(outFieldsText)) {
             return null;
         } else {
@@ -193,7 +206,7 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
-    private Filter parseObjectIdFilter(String objectIdsText) {
+    protected Filter parseObjectIdFilter(String objectIdsText) {
         if (null == objectIdsText) {
             return Filter.INCLUDE;
         } else {
@@ -206,7 +219,9 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
-    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, SpatialRelationship spatialRel, String relationPattern, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
+    protected static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText,
+        SpatialRelationship spatialRel, String relationPattern, CoordinateReferenceSystem requestCRS,
+        CoordinateReferenceSystem nativeCRS) {
         LOG.info("Transforming geometry filter: " + requestCRS + " => " + nativeCRS);
         final MathTransform mathTx;
         if (requestCRS != null) {
@@ -330,7 +345,7 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
-    private static CoordinateReferenceSystem parseSpatialReference(String srText) {
+    protected static CoordinateReferenceSystem parseSpatialReference(String srText) {
         if (srText == null) {
             return null;
         } else {
@@ -359,7 +374,7 @@ public class QueryController extends AbstractGSRController {
      * of the geometry (if the geometry is sent as JSON) or else in the 'inSR'
      * query parameter. If both are provided, the JSON property wins.
      */
-    private static CoordinateReferenceSystem parseSpatialReference(String srText, String geometryText) {
+    protected static CoordinateReferenceSystem parseSpatialReference(String srText, String geometryText) {
         try {
             JSONObject jsonObject = JSONObject.fromObject(geometryText);
             Object sr = jsonObject.get("spatialReference");
@@ -374,7 +389,7 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
-    private static Filter parseTemporalFilter(String temporalProperty, String filterText) {
+    protected static Filter parseTemporalFilter(String temporalProperty, String filterText) {
         if (null == temporalProperty || null == filterText || filterText.equals("")) {
             return Filter.INCLUDE;
         } else {
@@ -419,7 +434,7 @@ public class QueryController extends AbstractGSRController {
         }
     }
 
-    private String[] adjustProperties(boolean addGeometry, String[] originalProperties, FeatureType schema) {
+    protected String[] adjustProperties(boolean addGeometry, String[] originalProperties, FeatureType schema) {
         if (originalProperties == null) {
             return null;
         }

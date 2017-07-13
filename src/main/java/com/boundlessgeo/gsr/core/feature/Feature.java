@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.core.feature;
 
+import java.util.Map;
+
 import com.boundlessgeo.gsr.core.geometry.Geometry;
 
 /**
@@ -15,7 +17,7 @@ public class Feature {
 
     private Geometry geometry;
 
-    private AttributeList attributes;
+    private Map<String, Object> attributes;
 
     public Geometry getGeometry() {
         return geometry;
@@ -25,18 +27,18 @@ public class Feature {
         this.geometry = geometry;
     }
 
-    public AttributeList getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(AttributeList attributes) {
-        this.attributes = attributes;
-    }
-
-    public Feature(Geometry geometry, AttributeList attributes) {
+    public Feature(Geometry geometry, Map<String, Object> attributes) {
 
         super();
         this.geometry = geometry;
+        this.attributes = attributes;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 }

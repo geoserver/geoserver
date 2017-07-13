@@ -4,15 +4,16 @@
  */
 package com.boundlessgeo.gsr.controller.map;
 
-import com.boundlessgeo.gsr.JsonSchemaTest;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
+
+import com.boundlessgeo.gsr.JsonSchemaTest;
 import com.boundlessgeo.gsr.controller.ControllerTest;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class QueryControllerTest extends ControllerTest {
     private String query(String service, int layerId, String params) {
@@ -96,6 +97,7 @@ public class QueryControllerTest extends ControllerTest {
         assertTrue("Request with short envelope; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
         JSONObject json = JSONObject.fromObject(result);
         assertTrue("Request with short envelope; returend " + result, json.containsKey("features") && json.getJSONArray("features").size() == 2);
+        System.out.println(result);
 
         result = getAsString(query("cite", 11, "?f=json&geometryType=esriGeometryPoint&geometry=-0.0001,0.0012"));
         assertTrue("Request with short point; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));

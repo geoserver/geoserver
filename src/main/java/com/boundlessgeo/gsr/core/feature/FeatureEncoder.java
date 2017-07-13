@@ -4,7 +4,13 @@
  */
  package com.boundlessgeo.gsr.core.feature;
 
-import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
@@ -13,10 +19,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 
 public class FeatureEncoder {
     private FeatureEncoder() {
@@ -29,9 +32,9 @@ public class FeatureEncoder {
      * @param feature
      * @return
      */
-    public static AttributeList attributeList(org.opengis.feature.Feature feature) {
+    public static Map<String, Object> attributeList(org.opengis.feature.Feature feature) {
         GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
-        AttributeList attributes = new AttributeList(new ArrayList<>());
+        Map<String, Object> attributes = new HashMap<>();
         for(Property prop :feature.getProperties()) {
             if (geometryAttribute == null || !prop.getName().equals(geometryAttribute.getName())) {
                 final Object value;
@@ -42,10 +45,10 @@ public class FeatureEncoder {
                 } else {
                     value = prop.getValue();
                 }
-                attributes.add(new Attribute(prop.getName().getLocalPart(), value));
+                attributes.put(prop.getName().getLocalPart(), value);
             }
         }
-        attributes.add(new Attribute("objectid", adaptId(feature.getIdentifier().getID())));
+        attributes.put("objectid", adaptId(feature.getIdentifier().getID()));
 
         return attributes;
     }

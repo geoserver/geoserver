@@ -83,6 +83,7 @@
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
           <descriptor>release/ext-jdbc-metrics.xml</descriptor>
           <descriptor>release/ext-opensearch-eo.xml</descriptor>  
+          <descriptor>release/ext-wmts.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -531,5 +532,14 @@
         <module>jdbc-metrics</module>
       </modules>
     </profile>
+    <profile>
+      <id>wmts</id>
+      <modules>
+  	     <module>gs-wmts</module>
+      </modules>
+
+    </profile>
   </profiles>
+  
+  
 </project>

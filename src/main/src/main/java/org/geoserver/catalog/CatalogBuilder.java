@@ -26,6 +26,7 @@ import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.ows.util.OwsUtils;
@@ -175,6 +176,18 @@ public class CatalogBuilder {
     }
 
     /**
+     * Updates a wmts store with the properties of another.
+     *
+     * @param original
+     *            The wmts store being updated.
+     * @param update
+     *            The wmts store containing the new values.
+     */
+    public void updateWMTSStore(WMTSStoreInfo original, WMTSStoreInfo update) {
+        update(original, update, WMTSStoreInfo.class);
+    }
+
+    /**
      * Updates a coveragestore with the properties of another.
      * 
      * @param original
@@ -221,7 +234,17 @@ public class CatalogBuilder {
     public void updateWMSLayer(WMSLayerInfo original, WMSLayerInfo update) {
         update(original, update, WMSLayerInfo.class);
     }
-
+    /**
+     * Updates a WMTS layer with the properties of another.
+     * 
+     * @param original
+     *            The wmts layer being updated.
+     * @param update
+     *            The wmts layer containing the new values.
+     */
+    public void updateWMTSLayer(WMTSLayerInfo original, WMTSLayerInfo update) {
+        update(original, update, WMTSLayerInfo.class);
+    }
     /**
      * Updates a layer with the properties of another.
      * 
@@ -299,6 +322,20 @@ public class CatalogBuilder {
         info.setMaxConnections(WMSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS);
         info.setConnectTimeout(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT);
         info.setReadTimeout(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
+
+        return info;
+    }
+    
+    /**
+     * Builds a new WMTS store
+     */
+    public WMTSStoreInfo buildWMTSStore(String name) throws IOException {
+        WMTSStoreInfo info = catalog.getFactory().createWebMapTileServer();
+        buildStore(info, name);
+        info.setType("WMTS");
+        info.setMaxConnections(WMTSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS);
+        info.setConnectTimeout(WMTSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT);
+        info.setReadTimeout(WMTSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
 
         return info;
     }
@@ -610,6 +647,12 @@ public class CatalogBuilder {
             // let's rebuild the layer info
             WMSLayerInfo rebuilt = buildWMSLayer(rinfo.getStore(), rinfo.getNativeName());
             bounds = rebuilt.getNativeBoundingBox();
+
+        } else if(rinfo instanceof WMTSLayerInfo) {
+            // the logic to compute the native bounds is pretty convoluted,
+            // let's rebuild the layer info
+            WMTSLayerInfo rebuilt = buildWMTSLayer(rinfo.getStore(), rinfo.getNativeName());
+            bounds = rebuilt.getNativeBoundingBox();
         }
 
         // apply the bounds, taking into account the reprojection policy if need be
@@ -770,6 +813,59 @@ public class CatalogBuilder {
         }
         if (wmsLayer.getKeywords().isEmpty()) {
             wmsLayer.getKeywords().addAll(full.getKeywords());
+        }
+    }
+
+    /**
+     * Initializes a wmts layer object setting any info that has not been set.
+     */
+    public void initWMTSLayer(WMTSLayerInfo layer) throws Exception {
+        layer.setCatalog(catalog);
+
+        initResourceInfo(layer);
+        OwsUtils.resolveCollections(layer);
+
+        // get a fully initialized version we can copy from
+        WMTSLayerInfo full = buildWMTSLayer(store, layer.getNativeName());
+
+        // setup the srs if missing
+        if (layer.getSRS() == null) {
+            layer.setSRS(full.getSRS());
+        }
+        if (layer.getNativeCRS() == null) {
+            layer.setNativeCRS(full.getNativeCRS());
+        }
+        if (layer.getProjectionPolicy() == null) {
+            layer.setProjectionPolicy(full.getProjectionPolicy());
+        }
+
+        // deal with bounding boxes as possible
+        if (layer.getLatLonBoundingBox() == null
+                && layer.getNativeBoundingBox() == null) {
+            // both missing, we copy them
+            layer.setLatLonBoundingBox(full.getLatLonBoundingBox());
+            layer.setNativeBoundingBox(full.getNativeBoundingBox());
+        } else if (layer.getLatLonBoundingBox() == null) {
+            // native available but geographic to be computed
+            setupBounds(layer);
+        } else if (layer.getNativeBoundingBox() == null && layer.getNativeCRS() != null) {
+            // we know the geographic and we can reproject back to native
+            ReferencedEnvelope boundsLatLon = layer.getLatLonBoundingBox();
+            layer.setNativeBoundingBox(boundsLatLon.transform(layer.getNativeCRS(), true));
+        }
+
+        //fill in missing metadata
+        if (layer.getTitle() == null) {
+            layer.setTitle(full.getTitle());
+        }
+        if (layer.getDescription() == null) {
+            layer.setDescription(full.getDescription());
+        }
+        if (layer.getAbstract() == null) {
+            layer.setAbstract(full.getAbstract());
+        }
+        if (layer.getKeywords().isEmpty()) {
+            layer.getKeywords().addAll(full.getKeywords());
         }
     }
 
@@ -1187,7 +1283,7 @@ public class CatalogBuilder {
     public WMSLayerInfo buildWMSLayer(String layerName) throws IOException {
         return buildWMSLayer(this.store, layerName);
     }
-
+    
     WMSLayerInfo buildWMSLayer(StoreInfo store, String layerName) throws IOException {
         if (store == null || !(store instanceof WMSStoreInfo)) {
             throw new IllegalStateException("WMS store not set.");
@@ -1287,6 +1383,110 @@ public class CatalogBuilder {
         return wli;
     }
     
+    public WMTSLayerInfo buildWMTSLayer(String layerName) throws IOException {
+        return buildWMTSLayer(this.store, layerName);
+    }
+
+    WMTSLayerInfo buildWMTSLayer(StoreInfo store, String layerName) throws IOException {
+        if (store == null || !(store instanceof WMTSStoreInfo)) {
+            throw new IllegalStateException("WMTS store not set.");
+        }
+
+        WMTSLayerInfo wli = catalog.getFactory().createWMTSLayer();
+
+        wli.setName(layerName);
+        wli.setNativeName(layerName);
+
+        wli.setStore(store);
+        wli.setEnabled(true);
+
+        WorkspaceInfo workspace = store.getWorkspace();
+        NamespaceInfo namespace = catalog.getNamespaceByPrefix(workspace.getName());
+        if (namespace == null) {
+            namespace = catalog.getDefaultNamespace();
+        }
+        wli.setNamespace(namespace);
+
+        Layer layer = wli.getWMTSLayer(null);
+        //TODO: handle axis order here ?
+        // try to get the native SRS -> we use the bounding boxes, GeoServer will publish all of the
+        // supported SRS in the root, if we use getSRS() we'll get them all
+        for (String srs : layer.getBoundingBoxes().keySet()) {
+            try {
+                CoordinateReferenceSystem crs = CRS.decode(srs);
+                wli.setSRS(srs);
+                wli.setNativeCRS(crs);
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, "Skipping " + srs
+                        + " definition, it was not recognized by the referencing subsystem");
+            }
+        }
+        
+        // fall back on WGS84 if necessary, and handle well known WMS CRS codes
+        String srs = wli.getSRS();
+        try {
+            if (srs == null || srs.equals("CRS:84")) {
+                wli.setSRS("EPSG:4326");
+                srs = "EPSG:4326";
+                wli.setNativeCRS(CRS.decode("EPSG:4326"));
+            } else if(srs.equals("CRS:83")) {
+                wli.setSRS("EPSG:4269");
+                srs = "EPSG:4269";
+                wli.setNativeCRS(CRS.decode("EPSG:4269"));
+            } else if(srs.equals("CRS:27")) {
+                wli.setSRS("EPSG:4267");
+                srs = "EPSG:4267";
+                wli.setNativeCRS(CRS.decode("EPSG:4267"));
+            }
+        } catch(Exception e) {
+            throw (IOException) new IOException("Failed to compute the layer declared SRS code").initCause(e);
+        }
+        wli.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+
+        // try to grab the envelope
+        GeneralEnvelope envelope = layer.getEnvelope(wli.getNativeCRS());
+        if (envelope != null) {
+            ReferencedEnvelope re = new ReferencedEnvelope(envelope.getMinimum(0), envelope
+                    .getMaximum(0), envelope.getMinimum(1), envelope.getMaximum(1), wli
+                    .getNativeCRS());
+            wli.setNativeBoundingBox(re);
+        }
+        CRSEnvelope llbbox = layer.getLatLonBoundingBox();
+        if (llbbox != null) {
+            ReferencedEnvelope re = new ReferencedEnvelope(llbbox.getMinX(), llbbox.getMaxX(),
+                    llbbox.getMinY(), llbbox.getMaxY(), DefaultGeographicCRS.WGS84);
+            wli.setLatLonBoundingBox(re);
+        } else if (wli.getNativeBoundingBox() != null) {
+            try {
+                wli.setLatLonBoundingBox(wli.getNativeBoundingBox().transform(
+                        DefaultGeographicCRS.WGS84, true));
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, "Could not transform native bbox into a lat/lon one", e);
+            }
+        }
+
+        // reflect all the metadata that we can grab
+        wli.setAbstract(layer.get_abstract());
+        wli.setDescription(layer.get_abstract());
+        wli.setTitle(layer.getTitle());
+        if (layer.getKeywords() != null) {
+            for (String kw : layer.getKeywords()) {
+                if(kw != null){
+                    wli.getKeywords().add(new Keyword(kw));
+                }
+            }
+        }
+
+        // strip off the prefix if we're cascading from a server that does add them
+        String published = wli.getName();
+        if (published.contains(":")) {
+            wli.setName(published.substring(published.lastIndexOf(':') + 1));
+        }
+
+        return wli;
+    }
+
+    
     private boolean axisFlipped(Version version, String srsName) {
         if(version.compareTo(new Version("1.3.0")) < 0) {
             // aah, sheer simplicity
@@ -1375,7 +1575,7 @@ public class CatalogBuilder {
      */
     public StyleInfo getDefaultStyle(ResourceInfo resource) throws IOException {
         // raster wise, only one style
-        if (resource instanceof CoverageInfo || resource instanceof WMSLayerInfo)
+        if (resource instanceof CoverageInfo || resource instanceof WMSLayerInfo || resource instanceof WMTSLayerInfo)
             return catalog.getStyleByName(StyleInfo.DEFAULT_RASTER);
 
         // for vectors we depend on the the nature of the default geometry
@@ -1419,6 +1619,8 @@ public class CatalogBuilder {
             layer.setType(PublishedType.VECTOR);
         } else if (layer.getResource() instanceof CoverageInfo) {
             layer.setType(PublishedType.RASTER);
+        } else if (layer.getResource() instanceof WMTSLayerInfo) {
+            layer.setType(PublishedType.WMTS);
         } else if (layer.getResource() instanceof WMSLayerInfo) {
             layer.setType(PublishedType.WMS);
         }

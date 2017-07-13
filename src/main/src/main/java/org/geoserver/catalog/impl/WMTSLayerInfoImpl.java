@@ -1,0 +1,42 @@
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.catalog.impl;
+
+import java.io.IOException;
+
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geotools.data.ows.Layer;
+import org.opengis.util.ProgressListener;
+
+@SuppressWarnings("serial")
+public class WMTSLayerInfoImpl extends ResourceInfoImpl implements WMTSLayerInfo {
+
+    
+    protected WMTSLayerInfoImpl() {
+    }
+    
+    public WMTSLayerInfoImpl(Catalog catalog) {
+        super(catalog);
+    }
+
+    public Layer getWMTSLayer(ProgressListener listener) throws IOException {
+        return catalog.getResourcePool().getWMTSLayer(this);
+    }
+
+    public void accept(CatalogVisitor visitor) {
+        visitor.visit( this);
+    }
+
+    @Override
+    public WMTSStoreInfo getStore() {
+        return (WMTSStoreInfo) super.getStore();
+    }
+
+}

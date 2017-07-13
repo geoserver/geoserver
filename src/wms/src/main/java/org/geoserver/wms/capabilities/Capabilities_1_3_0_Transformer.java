@@ -1000,6 +1000,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 dimensionHelper.handleVectorLayerDimensions(layer);
             } else if (layer.getType() == PublishedType.RASTER) {
                 dimensionHelper.handleRasterLayerDimensions(layer);
+            } else if (layer.getType() == PublishedType.WMTS) {
+                dimensionHelper.handleWMTSLayerDimensions(layer);
             }
 
             // handle data attribution

@@ -24,6 +24,8 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
 public class CatalogFactoryImpl implements CatalogFactory {
@@ -54,6 +56,11 @@ public class CatalogFactoryImpl implements CatalogFactory {
         return new WMSStoreInfoImpl(catalog);
     }
     
+    @Override
+    public WMTSStoreInfo createWebMapTileServer() {
+        return (WMTSStoreInfo) new WMTSStoreInfoImpl(catalog);
+    }
+
     public AttributeTypeInfo createAttribute() {
         return new AttributeTypeInfoImpl();
     }
@@ -64,6 +71,11 @@ public class CatalogFactoryImpl implements CatalogFactory {
     
     public WMSLayerInfo createWMSLayer() {
         return new WMSLayerInfoImpl(catalog);
+    }
+
+    @Override
+    public WMTSLayerInfo createWMTSLayer() {
+        return new WMTSLayerInfoImpl(catalog);
     }
 
     public AttributionInfo createAttribution() {

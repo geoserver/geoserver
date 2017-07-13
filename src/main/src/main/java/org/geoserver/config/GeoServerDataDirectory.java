@@ -757,9 +757,11 @@ public class GeoServerDataDirectory {
     static final String DATASTORE_XML = "datastore.xml";
     static final String COVERAGESTORE_XML = "coveragestore.xml";
     static final String WMSSTORE_XML = "wmsstore.xml";
+    static final String WMTSSTORE_XML = "wmtsstore.xml";
     static final String FEATURETYPE_XML = "featuretype.xml";
     static final String COVERAGE_XML = "coverage.xml";
     static final String WMSLAYER_XML = "wmslayer.xml";
+    static final String WMTSLAYER_XML = "wmtslayer.xml";
     static final String LAYER_XML = "layer.xml";
     static final String WORKSPACE_DIR = "workspaces";
     static final String LAYERGROUP_DIR = "layergroups";
@@ -914,6 +916,17 @@ public class GeoServerDataDirectory {
     }
     
     /**
+     * Retrieve the WMTS store configuration XML as a Resource
+     * @param wmss The coverage store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WMTSStoreInfo wmss) {
+        Resource r = get(wmss, WMTSSTORE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
      * Retrieve the WMS store configuration XML as a Resource
      * @param wmss The coverage store
      * @return A {@link Resource}
@@ -924,12 +937,14 @@ public class GeoServerDataDirectory {
             r=config((DataStoreInfo) si);
         } else if(si instanceof CoverageStoreInfo) {
             r=config((CoverageStoreInfo) si);
+        } else if(si instanceof WMTSStoreInfo) {
+            r=config((WMTSStoreInfo) si);
         } else if(si instanceof WMSStoreInfo) {
             r=config((WMSStoreInfo) si);
         } else {
             // It'd be nice if we could be generic and cover potential future StoreInfo types.
             throw new IllegalArgumentException(
-                    "Only DataStoreInfo, CoverageStoreInfo, and WMSStoreInfo are supported.");
+                    "Only DataStoreInfo, CoverageStoreInfo, and WMS/WMTSStoreInfo are supported.");
         }
         assert r!=null;
         return r;
@@ -946,12 +961,14 @@ public class GeoServerDataDirectory {
             r=config((FeatureTypeInfo) si);
         } else if(si instanceof CoverageInfo) {
             r=config((CoverageInfo) si);
+        } else if(si instanceof WMTSLayerInfo) {
+            r=config((WMTSLayerInfo) si);
         } else if(si instanceof WMSLayerInfo) {
             r=config((WMSLayerInfo) si);
         } else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
-                    "Only FeatureTypeInfo, CoverageInfo, and WMSLayerInfo are supported.");
+                    "Only FeatureTypeInfo, CoverageInfo, and WMS/WMTSLayerInfo are supported.");
         }
         assert r!=null;
         return r;
@@ -1003,6 +1020,17 @@ public class GeoServerDataDirectory {
     }
     
     /**
+     * Retrieve the WMS layer configuration XML as a Resource
+     * @param wmsl The feature type
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WMTSLayerInfo wmsl) {
+        Resource r = get(wmsl, WMTSLAYER_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
      * Retrieve a resource in the the configuration directory of a Layer.  An empty path will 
      * retrieve the directory itself.
      * @param li The store
@@ -1015,14 +1043,15 @@ public class GeoServerDataDirectory {
         }
         else if ( l.getResource() instanceof CoverageInfo ) {
             r = get( l.getResource(), path );
-        }
-        else if ( l.getResource() instanceof WMSLayerInfo ) {
+        } else if ( l.getResource() instanceof WMTSLayerInfo ) {
+            r = get( l.getResource(), path );
+        } else if ( l.getResource() instanceof WMSLayerInfo ) {
             r = get( l.getResource(), path );
         }
         else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
-                    "Only FeatureTypeInfo, CoverageInfo, and WMSLayerInfo are supported.");
+                    "Only FeatureTypeInfo, CoverageInfo, and WMS/WMTSLayerInfo are supported.");
         }
         assert r!=null;
         return r;

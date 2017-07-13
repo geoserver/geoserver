@@ -17,6 +17,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -171,7 +172,9 @@ public class GeoServerTemplateLoader implements TemplateLoader {
     public void setWMSLayer(WMSLayerInfo wms){
         this.resource = wms;
     }
-    
+    public void setWMTSLayer(WMTSLayerInfo wms){
+        this.resource = wms;
+    }
     /**
      * Sets the coverage info
      * @deprecated use {@link #setCoverage(CoverageInfo)}

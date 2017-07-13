@@ -30,6 +30,8 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.Wrapper;
 import org.geoserver.catalog.event.CatalogListener;
@@ -165,7 +167,8 @@ public abstract class GeoServerLoader {
     static final ResourceLayerMapper COVERAGE_LAYER_MAPPER = new ResourceLayerMapper("coverage.xml", "coverage");
     /** WMS Layer IO resource mapper */
     static final ResourceLayerMapper WMS_LAYER_MAPPER = new ResourceLayerMapper("wmslayer.xml", "wms layer");
-    
+    /** WMTS Layer IO resource mapper */
+    static final ResourceLayerMapper WMTS_LAYER_MAPPER = new ResourceLayerMapper("wmtslayer.xml", "wmts layer");
     /**
      * Generic layer catalog loader for all types of IO resources
      *
@@ -527,6 +530,10 @@ public abstract class GeoServerLoader {
                 if(Resources.exists(f)) {
                     return new StoreContents(f, f.getContents());
                 }
+                f = sd.get("wmtsstore.xml");
+                if(Resources.exists(f)) {
+                    return new StoreContents(f, f.getContents());
+                }
                 if(!isConfigDirectory(sd)) {
                     LOGGER.warning( "Ignoring store directory '" + sd.name() +  "'");
                 }
@@ -548,7 +555,9 @@ public abstract class GeoServerLoader {
                             loadCoverageStore(storeContents, catalog, xp);
                         } else if ("wmsstore.xml".equals(resourceName)) {
                             loadWmsStore(storeContents, catalog, xp);
-                        } else if (!isConfigDirectory(storeContents.resource)) {
+                        } else if ("wmtsstore.xml".equals(resourceName)) {
+                            loadWmtsStore(storeContents, catalog, xp);
+                        }else if (!isConfigDirectory(storeContents.resource)) {
                             LOGGER.warning("Ignoring store directory '"
                                     + storeContents.resource.name() + "'");
                             continue;
@@ -598,6 +607,29 @@ public abstract class GeoServerLoader {
         // load wms layers
         LayerLoader<WMSLayerInfo> coverageLoader = new LayerLoader<>(WMSLayerInfo.class, xp, catalog);
         try(AsynchResourceIterator<LayerContents> it = new AsynchResourceIterator<>(storeResource.parent(), Resources.DirectoryFilter.INSTANCE, WMS_LAYER_MAPPER)) {
+            while(it.hasNext()) {
+                LayerContents lc = it.next();
+                coverageLoader.accept(lc);
+            }
+        }
+    }
+    private void loadWmtsStore(StoreContents storeContents, CatalogImpl catalog,
+            XStreamPersister xp) {
+        final Resource storeResource = storeContents.resource;
+        WMTSStoreInfo wmts = null;
+        try {
+            wmts = depersist( xp, storeContents.contents, WMTSStoreInfo.class );
+            catalog.add( wmts );
+        
+            LOGGER.info( "Loaded wmtsstore '" + wmts.getName() +"'");
+        } catch( Exception e ) {
+            LOGGER.log( Level.WARNING, "Failed to load wmts store '" + storeResource.name() +"'", e);
+            return;
+        }
+        
+        // load wms layers
+        LayerLoader<WMTSLayerInfo> coverageLoader = new LayerLoader<>(WMTSLayerInfo.class, xp, catalog);
+        try(AsynchResourceIterator<LayerContents> it = new AsynchResourceIterator<>(storeResource.parent(), Resources.DirectoryFilter.INSTANCE, WMTS_LAYER_MAPPER)) {
             while(it.hasNext()) {
                 LayerContents lc = it.next();
                 coverageLoader.accept(lc);

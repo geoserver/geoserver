@@ -10,7 +10,6 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,12 +37,12 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
-import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -990,6 +989,8 @@ public class WMS implements ApplicationContextAware {
                         .contains("application/vnd.ogc.gml")) {
                     return false;
                 }
+            } else if (layer.getResource() instanceof WMTSLayerInfo) {
+                return false;
             }
 
             return layer.isQueryable();
@@ -1659,7 +1660,7 @@ public class WMS implements ApplicationContextAware {
      * @return
      */
     public static boolean isWmsExposable(LayerInfo lyr) {
-        if (lyr.getType() == PublishedType.RASTER || lyr.getType() == PublishedType.WMS) {
+        if (lyr.getType() == PublishedType.RASTER || lyr.getType() == PublishedType.WMS || lyr.getType() == PublishedType.WMTS) {
             return true;
         }
 

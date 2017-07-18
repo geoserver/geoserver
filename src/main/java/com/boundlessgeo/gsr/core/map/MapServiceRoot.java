@@ -5,6 +5,10 @@
 package com.boundlessgeo.gsr.core.map;
 
 import com.boundlessgeo.gsr.core.GSRModel;
+import com.boundlessgeo.gsr.core.geometry.Envelope;
+import com.boundlessgeo.gsr.core.geometry.SpatialReference;
+import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
+
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -34,6 +38,7 @@ public class MapServiceRoot implements GSRModel {
     public final DateRange timeInfo;
     public final Boolean singleFusedMapCache;
     public final String capabilities;
+    private SpatialReference spatialReference;
 
     public MapServiceRoot(WMSInfo service, List<LayerInfo> layers) throws IOException {
         this.mapName = service.getTitle() != null ? service.getTitle() : service.getName();
@@ -51,6 +56,8 @@ public class MapServiceRoot implements GSRModel {
         }
         this.singleFusedMapCache = false;
         this.capabilities = "Query";
+        //TODO HACK HACK HACk, it's not clear what this should actually be in a GeoServer context
+        this.spatialReference = new SpatialReferenceWKID(4326);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -90,5 +97,9 @@ public class MapServiceRoot implements GSRModel {
         } else {
             return new Date[] { (Date) overallMin, (Date) overallMax };
         }
+    }
+
+    public SpatialReference getSpatialReference() {
+        return spatialReference;
     }
 }

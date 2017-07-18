@@ -6,6 +6,8 @@ package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.core.map.LayerNameComparator;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
 import com.boundlessgeo.gsr.core.map.MapServiceRoot;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
@@ -57,5 +59,10 @@ public class MapServiceController extends AbstractGSRController {
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
 
         return new MapServiceRoot(service, Collections.unmodifiableList(layersInWorkspace));
+    }
+
+    @GetMapping(path = {"/{layerId}"})
+    public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
+        return LayersAndTables.find(catalog, workspaceName, layerId);
     }
 }

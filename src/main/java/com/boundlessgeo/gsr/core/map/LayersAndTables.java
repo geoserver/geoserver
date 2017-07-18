@@ -145,4 +145,15 @@ public class LayersAndTables implements GSRModel {
     public String toString() {
         return layers.toString() + ";" + tables.toString();
     }
+
+    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName)
+    {
+        LayerOrTable layerOrTable = null;
+        try {
+            layerOrTable = find(catalog, workspaceName, Integer.parseInt(layerName));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return workspaceName + ":" + layerOrTable.getName();
+    }
 }

@@ -78,7 +78,7 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
     private String capabilities = "Query,Time,Data";
 
     public AbstractLayerOrTable(LayerInfo layer, int id) throws IOException {
-        this(layer, id, new Envelope(LayersAndTables.sphericalMercator(layer, layer.getResource().getLatLonBoundingBox())), StyleEncoder.effectiveRenderer(layer));
+        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer));
     }
 
     protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable) throws IOException {

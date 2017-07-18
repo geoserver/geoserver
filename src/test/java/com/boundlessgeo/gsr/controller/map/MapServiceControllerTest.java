@@ -30,4 +30,10 @@ public class MapServiceControllerTest extends ControllerTest {
         JSONObject error = result.getJSONObject("error");
         assertEquals(500, error.getInt("code"));
     }
+
+    @Test
+    public void testLayerGet() throws Exception {
+        JSONObject result = (JSONObject) getAsJSON(getBaseURL() + "cite/MapServer/0");
+        System.out.println(result.toString());
+    }
 }

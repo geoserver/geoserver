@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.MutableRequestProxy;
 import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
 /**
  * Handles ArcGIS ExportMap requests
@@ -47,6 +48,7 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     private void exportMapImage(String workspaceName, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
         Dispatcher dispatcher = GeoServerExtensions.bean(Dispatcher.class);
         MutableRequestProxy requestProxy = new MutableRequestProxy(request);
         requestProxy.getMutableParams().put("service", new String[]{"WMS"});
@@ -56,6 +58,10 @@ public class ExportMapController extends AbstractGSRController {
         requestProxy.getMutableParams().put("format", translateImageFormatParam(request.getParameter("format")));
         requestProxy.getMutableParams().put("crs", translateImageSRParam(request.getParameter("imageSR")));
 
+        String sizeParam = request.getParameter("size");
+        String[] sizeParts = sizeParam.split(",");
+        requestProxy.getMutableParams().put("width", new String[]{sizeParts[0]});
+        requestProxy.getMutableParams().put("height", new String[]{sizeParts[1]});
         dispatcher.handleRequest(requestProxy, response);
     }
 
@@ -73,7 +79,8 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     private String[] translateImageFormatParam(String format) {
-        return new String[]{"image/" + format};
+        String jpgFixedFormat = format.replaceAll("jpg", "jpeg");
+        return new String[]{"image/" + jpgFixedFormat};
     }
 
     private String[] translateLayersParam(String layers, String workspaceName) {
@@ -88,8 +95,10 @@ public class ExportMapController extends AbstractGSRController {
             throw new UnsupportedOperationException("Only SHOW layer spec is currently supported");
         }
 
+        //We look up each layer individually to get its name. This has the potential to be slow in non FS based catalogs
         return Arrays.stream(layersSpecAndLayers[1].split(","))
-            .map(layerName -> workspaceName + ":" + layerName).toArray(String[]::new);
+            .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
+            .toArray(String[]::new);
     }
 
 }

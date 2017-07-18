@@ -2,6 +2,7 @@ package com.boundlessgeo.gsr.api;
 
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.HttpInputMessage;
@@ -25,6 +26,7 @@ public class GeoServicesJacksonJsonConverter extends AbstractGeoServicesConverte
     public GeoServicesJacksonJsonConverter() {
         super(MediaType.APPLICATION_JSON);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.getFactory().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
     }
 
     @Override
@@ -50,6 +52,6 @@ public class GeoServicesJacksonJsonConverter extends AbstractGeoServicesConverte
 
     @Override
     public void writeToOutputStream(OutputStream os, Object o) throws IOException {
-        mapper.writerWithDefaultPrettyPrinter().writeValue(os, o);
+        mapper.writeValue(os, o);
     }
 }

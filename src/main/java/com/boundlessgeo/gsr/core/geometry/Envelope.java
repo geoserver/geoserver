@@ -4,10 +4,14 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
+import java.util.Formattable;
 import java.util.Set;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.metadata.iso.citation.Citations;
 import org.opengis.referencing.ReferenceIdentifier;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -101,14 +105,17 @@ public class Envelope implements Geometry {
             }
         }
 
-        if(EPSGid < 0) {
+        if(EPSGid > 0) {
             this.spatialReference = new SpatialReferenceWKID(EPSGid);
         }
         else {
-            this.spatialReference = new SpatialReferenceWKT(envelope.getCoordinateReferenceSystem().toWKT());
+            String wkt = ((org.geotools.referencing.wkt.Formattable)envelope.getCoordinateReferenceSystem())
+                .toWKT(Citations.ESRI, 0);
+            this.spatialReference = new SpatialReferenceWKT(wkt);
         }
     }
 
+    @JsonIgnore
     public boolean isValid() {
         return this.xmin <= this.xmax && this.ymin <= this.ymax;
     }

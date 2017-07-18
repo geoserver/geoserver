@@ -29,7 +29,7 @@ public class WMSLayerListResource extends AbstractCatalogListResource {
         String wms = getAttribute( "wmsstore" );
         
         if ( wms != null ) {
-            WMSStoreInfo dataStore = catalog.getStoreByName( wms, WMSStoreInfo.class );
+            WMSStoreInfo dataStore = catalog.getStoreByName(ws, wms, WMSStoreInfo.class);
             return catalog.getResourcesByStore(dataStore, WMSLayerInfo.class);    
         }
         

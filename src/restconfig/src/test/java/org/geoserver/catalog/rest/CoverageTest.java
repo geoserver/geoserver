@@ -22,21 +22,29 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.xml.namespace.QName;
 
 public class CoverageTest extends CatalogRESTTestSupport {
 
@@ -122,6 +130,44 @@ public class CoverageTest extends CatalogRESTTestSupport {
       Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html" );
       assertEquals( "html", dom.getDocumentElement().getNodeName() );
   }
+
+    @Test
+    public void testGetInWorkspace() throws Exception {
+        Catalog catalog = getCatalog();
+
+        List<WorkspaceInfo> workspaces = catalog.getWorkspaces();
+
+        //The default workspace
+        WorkspaceInfo ws1 = catalog.getDefaultWorkspace();
+        //Some other workspace, not the default
+        WorkspaceInfo ws2 = workspaces.get(0);
+        if (ws1.equals(ws2)) {
+            ws2 = workspaces.get(1);
+        }
+        NamespaceInfo ns1 = catalog.getNamespaceByPrefix(ws1.getName());
+        NamespaceInfo ns2 = catalog.getNamespaceByPrefix(ws2.getName());
+
+        //Add an identically named store to each workspace.
+        getTestData().addRasterLayer(new QName(ns1.getURI(), "world", ns1.getPrefix()), "world.tiff", null, catalog);
+        getTestData().addRasterLayer(new QName(ns2.getURI(), "world", ns2.getPrefix()), "world.tiff", null, catalog);
+
+        //rename the layers so they are different
+        CoverageInfo cov1 = catalog.getCoverageByName(ns1, "world");
+        cov1.setName("foo");
+        catalog.save(cov1);
+
+        CoverageInfo cov2 = catalog.getCoverageByName(ns2, "world");
+        cov2.setName("bar");
+        catalog.save(cov2);
+
+        //Try to get the one in ws2 (the non-default workspace)
+        Document dom = getAsDOM( "/rest/workspaces/" + ws2.getName() + "/coveragestores/world/coverages.xml");
+
+        //make sure we've got the one in the right workspace (not the default)
+        assertXpathEvaluatesTo( "1", "count(//coverage/name[text()='bar'])", dom );
+        assertXpathEvaluatesTo( "0", "count(//coverage/atom:link[contains(@href,'"+ws1.getName()+"')])", dom );
+        assertXpathEvaluatesTo( "1", "count(//coverage/atom:link[contains(@href,'"+ws2.getName()+"')])", dom );
+    }
   
   @Test
   public void testGetWrongCoverage() throws Exception {

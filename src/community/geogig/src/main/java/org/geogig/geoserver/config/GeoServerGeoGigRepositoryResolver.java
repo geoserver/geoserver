@@ -33,7 +33,12 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
 
     @Override
     public boolean canHandle(URI repoURI) {
-        return repoURI != null && GEOSERVER_URI_SCHEME.equals(repoURI.getScheme());
+        return repoURI != null && canHandleURIScheme(repoURI.getScheme());
+    }
+
+    @Override
+    public boolean canHandleURIScheme(String scheme) {
+        return scheme != null && GEOSERVER_URI_SCHEME.equals(scheme);
     }
 
     @Override
@@ -75,8 +80,10 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
         RepositoryInfo info = repoMgr.getByRepoName(name);
         if (info != null) {
             // get the native RepositoryResolver for the location and open it directly
-            // Using the RepositryManager to get the repo would cause the repo to be managed by the RepositoryManager,
-            // when this repo should be managed by the DataStore. The DataStore will close this repo instance when
+            // Using the RepositryManager to get the repo would cause the repo to be managed by the
+            // RepositoryManager,
+            // when this repo should be managed by the DataStore. The DataStore will close this repo
+            // instance when
             // GeoServer decides to dispose the DataStore.
             Repository repo = RepositoryResolver.load(info.getLocation());
             checkState(repo.isOpen(), "RepositoryManager returned a closed repository for %s",
@@ -104,5 +111,4 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
     public List<String> listRepoNamesUnderRootURI(URI rootRepoURI) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }

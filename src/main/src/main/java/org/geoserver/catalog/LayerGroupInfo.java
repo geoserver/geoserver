@@ -198,6 +198,16 @@ public interface LayerGroupInfo extends PublishedInfo {
     List<MetadataLinkInfo> getMetadataLinks();
 
     /**
+     * Return the keywords associated with this layer group. If no keywords are available
+     * an empty list should be returned.
+     *
+     * @return a non NULL list containing the keywords associated with this layer group
+     */
+    default List<KeywordInfo> getKeywords() {
+        return new ArrayList<>();
+    }
+
+    /**
      * A way to compare two LayerGroupInfo instances that works around all the wrappers we have
      * around (secured, decorating ecc) all changing some aspects of the bean and breaking
      * usage of "common" equality). This method only uses getters to fetch the fields.

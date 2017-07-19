@@ -678,6 +678,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                 // this one has been handled
                 continue;
             }
+            if(modifySecondaryAttribute(name, value, mappedFilter)) {
+                continue;
+            }
 
             PropertyDescriptor descriptor = schema.getDescriptor(name);
             if (!(descriptor instanceof AttributeDescriptor)) {
@@ -702,7 +705,19 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
     }
 
-    private void modifySecondaryTable(Filter mainTypeFilter, Object value, final String tableName,
+    /**
+     * Allows subclasses to handle other attributes mapped in secondary tables
+     * @param name
+     * @param value
+     * @param mappedFilter
+     * @return
+     * @throws IOException
+     */
+    protected boolean modifySecondaryAttribute(Name name, Object value, Filter mappedFilter) throws IOException {
+        return false;
+    }
+
+    protected void modifySecondaryTable(Filter mainTypeFilter, Object value, final String tableName,
             Function<String, Filter> secondaryTableFilterSupplier,
             IOBiFunction<String, SimpleFeatureStore, SimpleFeatureCollection> featureBuilder)
             throws IOException {
@@ -727,7 +742,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     }
 
     public List<String> getMainTypeDatabaseIdentifiers(Filter filter) throws IOException {
-        SimpleFeatureCollection idFeatureCollection = getDelegateCollectionSource()
+        SimpleFeatureSource fs = getDelegateCollectionSource();
+        Transaction t = getTransaction();
+        if(t != Transaction.AUTO_COMMIT && t != null)  {
+            ((SimpleFeatureStore) fs).setTransaction(transaction);
+        }
+        SimpleFeatureCollection idFeatureCollection = fs
                 .getFeatures(filter);
         List<String> result = new ArrayList<>();
         try (SimpleFeatureIterator fi = idFeatureCollection.features()) {

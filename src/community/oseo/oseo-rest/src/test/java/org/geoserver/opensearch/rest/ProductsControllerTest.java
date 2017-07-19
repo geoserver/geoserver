@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -531,7 +532,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // build all possible combinations of elements in the zip and check they all work
         Set<Set<ProductPart>> sets = Sets
                 .powerSet(new HashSet<>(Arrays.asList(ProductPart.Product, ProductPart.Description,
-                        ProductPart.Metadata, ProductPart.Thumbnail, ProductPart.OwsLinks, ProductPart.OwsLinks)));
+                        ProductPart.Metadata, ProductPart.Thumbnail, ProductPart.OwsLinks, ProductPart.Granules)));
 
         for (Set<ProductPart> parts : sets) {
             if (parts.isEmpty()) {
@@ -619,6 +620,15 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         if (parts.contains(ProductPart.Granules)) {
             assertProductGranules();
         }
+    }
+    
+    @Test
+    public void testProduct() throws Exception {
+        byte[] payload = FileUtils.readFileToByteArray(new java.io.File("/home/aaime/Scaricati/product.zip"));
+        MockHttpServletResponse response = postAsServletResponse(
+                "rest/oseo/collections/SENTINEL2/products", payload,
+                MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+        System.out.println(response.getStatus());
     }
     
 }

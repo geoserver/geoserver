@@ -13,16 +13,20 @@ import java.util.stream.Collectors;
 
 import org.geotools.data.Join;
 import org.geotools.data.Query;
+import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
 /**
@@ -123,7 +127,38 @@ public class JDBCProductFeatureSource extends AbstractMappingStore {
         SimpleFeatureStore granuleStore = getFeatureStoreForTable("granule");
         granuleStore.setTransaction(getTransaction());
         granuleStore.removeFeatures(granulesFilter);
+    }
+    
+    @Override
+    protected boolean modifySecondaryAttribute(Name name, Object value, Filter mappedFilter) throws IOException {
+        if (OpenSearchAccess.GRANULES.equals(name.getLocalPart())) {
+            final String tableName = "granule";
+            modifySecondaryTable(mappedFilter, value, tableName,
+                    id -> FF.equal(FF.property("product_id"), FF.literal(id), true),
+                    (id, granulesStore) -> {
+                        SimpleFeatureCollection granules = (SimpleFeatureCollection) value;
+                        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(
+                                granulesStore.getSchema());
+                        ListFeatureCollection mappedGranules = new ListFeatureCollection(
+                                granulesStore.getSchema());
+                        granules.accepts(f -> {
+                            SimpleFeature sf = (SimpleFeature) f;
+                            for (AttributeDescriptor ad : granulesStore.getSchema()
+                                    .getAttributeDescriptors()) {
+                                fb.set(ad.getLocalName(), sf.getAttribute(ad.getLocalName()));
+                            }
+                            fb.set("product_id", id);
+                            SimpleFeature mappedGranule = fb.buildFeature(null);
+                            mappedGranules.add(mappedGranule);
+                        }, null);
+                        return mappedGranules;
+                    });
 
+            // this one has been handled
+            return true;
+        }
+        
+        return false;
     }
 
     @Override

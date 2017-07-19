@@ -329,7 +329,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             } catch (Exception e) {
                 t.rollback();
                 throw new IOException(
-                        "Failed to run modification on collection store:" + e.getMessage(), e);
+                        "Failed to run modification on storage:" + e.getMessage(), e);
             }
         }
     }

@@ -181,6 +181,9 @@ public class ProductsController extends AbstractOpenSearchController {
         }
         SimpleFeature jsonFeature = parseGeoJSONFeature("product.json", productPayload);
         String productId = (String) jsonFeature.getAttribute("eop:identifier");
+        String parentId = (String) jsonFeature.getAttribute("eop:parentIdentifier");
+        queryCollection(parentId, q -> {});
+        
         Feature productFeature = simpleToComplex(jsonFeature, getProductSchema(), PRODUCT_HREFS);
 
         // grab the other parts
@@ -232,11 +235,12 @@ public class ProductsController extends AbstractOpenSearchController {
             }
             
             if(granulesCollection != null) {
-                SimpleFeatureStore store = (SimpleFeatureStore) getOpenSearchAccess()
-                        .getGranules(collection, productId);
-                store.setTransaction(fs.getTransaction());
-                store.removeFeatures(Filter.INCLUDE);
-                store.addFeatures(granulesCollection);
+//                SimpleFeatureStore store = (SimpleFeatureStore) getOpenSearchAccess()
+//                        .getGranules(collection, productId);
+//                store.setTransaction(fs.getTransaction());
+//                store.removeFeatures(Filter.INCLUDE);
+//                store.addFeatures(granulesCollection);
+                fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.GRANULES), granulesCollection, filter);
             }
 
         });

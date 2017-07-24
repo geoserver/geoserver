@@ -4,6 +4,9 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -18,8 +21,6 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
-
-import java.util.*;
 
 public final class GeometryEncoder implements Converter {
 
@@ -101,9 +102,12 @@ public final class GeometryEncoder implements Converter {
                 paths.add(embeddedLineString(line));
             }
             return new Polyline(paths.toArray(new double[paths.size()][][]), spatialReference);
+
         } else if (geom instanceof com.vividsolutions.jts.geom.Polygon) {
             com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geom;
             List<double[][]> rings = new ArrayList<>();
+            rings.add(embeddedLineString(polygon.getExteriorRing()));
+
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 rings.add(embeddedLineString(polygon.getInteriorRingN(i)));
             }

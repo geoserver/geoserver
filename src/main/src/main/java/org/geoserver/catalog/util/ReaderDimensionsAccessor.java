@@ -565,6 +565,8 @@ public class ReaderDimensionsAccessor {
                 Class<?> type = Class.forName(typeName);
                 if (type == java.util.Date.class) {
                     result.addAll(new TimeParser().parse(value));
+                } else if (Number.class.isAssignableFrom(type) && !value.contains(",")) {
+                    result.add(parseNumberOrRange(value));
                 } else {
                     for (String element : value.split(",")) {
                         result.add(Converters.convert(element, type));

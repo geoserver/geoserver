@@ -12,6 +12,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.opengis.feature.type.GeometryDescriptor;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author Juan Marin - OpenGeo
  */
@@ -68,5 +70,10 @@ public enum GeometryTypeEnum {
         } else {
             return null;
         }
+    }
+
+    @JsonValue
+    public String value() {
+        return this.geometryType;
     }
 }

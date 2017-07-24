@@ -39,6 +39,7 @@ public class FeatureServiceControllerTest extends ControllerTest {
         JSON result = getAsJSON(queryServiceUrl());
         System.out.println(result.toString());
         JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
         JSONArray layers = (JSONArray) object.get("layers");
         assertTrue(layers.size() > 0);
     }

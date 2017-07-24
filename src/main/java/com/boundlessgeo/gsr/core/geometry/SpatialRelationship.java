@@ -12,7 +12,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 
 public enum SpatialRelationship {
-    INTERSECTS("SpatialRelIntersects") {
+    INTERSECTS("esriSpatialRelIntersects") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return filters.intersects(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
@@ -24,7 +24,7 @@ public enum SpatialRelationship {
         }
     },
 
-    CONTAINS("SpatialRelContains") {
+    CONTAINS("esriSpatialRelContains") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return filters.contains(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
@@ -36,7 +36,7 @@ public enum SpatialRelationship {
         }
     },
 
-    CROSSES("SpatialRelCrosses") {
+    CROSSES("esriSpatialRelCrosses") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return filters.crosses(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
@@ -48,7 +48,7 @@ public enum SpatialRelationship {
         }
     },
 
-    ENVELOPE_INTERSECTS("SpatialRelEnvelopeIntersects") {
+    ENVELOPE_INTERSECTS("esriSpatialRelEnvelopeIntersects") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return filters.bbox(geometryProperty, envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY(), null);
@@ -60,7 +60,7 @@ public enum SpatialRelationship {
         }
     },
 
-    INDEX_INTERSECTS("SpatialRelIndexIntersects") {
+    INDEX_INTERSECTS("esriSpatialRelIndexIntersects") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return ENVELOPE_INTERSECTS.createEnvelopeFilter(geometryProperty, envelope, relationParam);
@@ -72,7 +72,7 @@ public enum SpatialRelationship {
         }
     },
 
-    OVERLAPS("SpatialRelOverlaps") {
+    OVERLAPS("esriSpatialRelOverlaps") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return filters.overlaps(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
@@ -84,7 +84,7 @@ public enum SpatialRelationship {
         }
     },
 
-    TOUCHES("SpatialRelTouches") {
+    TOUCHES("esriSpatialRelTouches") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return createGeometryFilter(geometryProperty, JTS.toGeometry(envelope), relationParam);
@@ -96,7 +96,7 @@ public enum SpatialRelationship {
         }
     },
 
-    WITHIN("SpatialRelWithin") {
+    WITHIN("esriSpatialRelWithin") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return createGeometryFilter(geometryProperty, JTS.toGeometry(envelope), relationParam);
@@ -108,7 +108,7 @@ public enum SpatialRelationship {
         }
     },
 
-    RELATION("SpatialRelRelation") {
+    RELATION("esriSpatialRelRelation") {
         @Override
         public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
             return createGeometryFilter(geometryProperty, JTS.toGeometry(envelope), relationParam);

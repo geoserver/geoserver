@@ -6,7 +6,6 @@ package com.boundlessgeo.gsr.api.map;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -23,8 +23,6 @@ import org.geoserver.config.GeoServer;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.temporal.object.DefaultInstant;
@@ -86,11 +84,13 @@ public class QueryController extends AbstractGSRController {
 
     @GetMapping(path = "/{layerId}/query")
     public GSRModel queryGet(@PathVariable String workspaceName, @PathVariable Integer layerId,
-                             @RequestParam(name = "geometryType", defaultValue = "GeometryPoint") String geometryTypeName,
-                             @RequestParam(name = "geometry") String geometryText,
+        @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryEnvelope") String
+            geometryTypeName,
+        @RequestParam(name = "geometry", required = false) String geometryText,
                              @RequestParam(name = "inSR", required = false) String inSRText,
                              @RequestParam(name = "outSR", required = false) String outSRText,
-                             @RequestParam(name = "spatialRel", required = false, defaultValue = "SpatialRelIntersects") String spatialRelText,
+        @RequestParam(name = "spatialRel", required = false, defaultValue = "esriSpatialRelIntersects") String
+            spatialRelText,
                              @RequestParam(name = "objectIds", required = false) String objectIdsText,
                              @RequestParam(name = "relationPattern", required = false) String relatePattern,
                              @RequestParam(name = "time", required = false) String time,
@@ -150,12 +150,24 @@ public class QueryController extends AbstractGSRController {
 
 
         //Query Parameters
-        final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
-        SpatialRelationship spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
+        // TODO update this to match outSR spec
+        // "If outSR is not specified, the geometry is returned in the spatial reference of the map."
+        final CoordinateReferenceSystem outSR = parseSpatialReference(
+            StringUtils.isNotEmpty(outSRText) ? outSRText : "4326");
+        SpatialRelationship spatialRel = null;
+        if (StringUtils.isNotEmpty(spatialRelText)) {
+            spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
+        }
         Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
 
-        final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText, geometryText);
-        Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
+        String inSRCode = StringUtils.isNotEmpty(inSRText) ? inSRText : "4326";
+        final CoordinateReferenceSystem inSR = parseSpatialReference(inSRCode, geometryText);
+        Filter filter = Filter.INCLUDE;
+
+        if (StringUtils.isNotEmpty(geometryText)) {
+            filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern,
+                inSR, nativeCRS);
+        }
 
         if (time != null) {
             filter = FILTERS.and(filter, parseTemporalFilter(temporalProperty, time));
@@ -166,16 +178,18 @@ public class QueryController extends AbstractGSRController {
         if (maxAllowableOffsets != null) {
             throw new UnsupportedOperationException("Generalization (via 'maxAllowableOffsets' parameter) not implemented");
         }
-        if (whereClause != null) {
-            final Filter whereFilter;
-            try {
-                whereFilter = ECQL.toFilter(whereClause);
-            } catch (CQLException e) {
-                throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);
-            }
-            List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
-            filter = FILTERS.and(children);
-        }
+        //        if (whereClause != null) {
+        //            Filter whereFilter = Filter.INCLUDE;
+        //            try {
+        //                whereFilter = ECQL.toFilter(whereClause);
+        //            } catch (CQLException e) {
+        //                //TODO Ignore for now. Some clients send basic queries that we can't handle right now
+        ////                throw new IllegalArgumentException("'where' parameter must be valid CQL; was " +
+        // whereClause, e);
+        //            }
+        //            List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
+        //            filter = FILTERS.and(children);
+        //        }
         String[] properties = parseOutFields(outFieldsText);
 
         FeatureSource<? extends FeatureType, ? extends Feature> source =
@@ -194,7 +208,8 @@ public class QueryController extends AbstractGSRController {
             return FeatureEncoder.objectIds(source.getFeatures(query));
         } else {
             final boolean reallyReturnGeometry = returnGeometry || properties == null;
-            return new FeatureList(source.getFeatures(query), reallyReturnGeometry);
+            FeatureList featureList = new FeatureList(source.getFeatures(query), reallyReturnGeometry);
+            return featureList;
         }
     }
 
@@ -442,7 +457,10 @@ public class QueryController extends AbstractGSRController {
         String[] effectiveProperties =
                 new String[originalProperties.length + (addGeometry ? 1 : 0)];
         for (int i = 0; i < originalProperties.length; i++) {
-            effectiveProperties[i] = adjustOneProperty(originalProperties[i], schema);
+            //todo skip synthetic id for now
+            if (!originalProperties[i].equals("objectid")) {
+                effectiveProperties[i] = adjustOneProperty(originalProperties[i], schema);
+            }
         }
         if (addGeometry){
             effectiveProperties[effectiveProperties.length - 1] =

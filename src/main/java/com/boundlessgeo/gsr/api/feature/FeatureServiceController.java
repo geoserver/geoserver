@@ -77,11 +77,11 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
     @GetMapping(path = { "/query" })
     public FeatureServiceQueryResult query(@PathVariable String workspaceName,
-        @RequestParam(name = "geometryType", defaultValue = "GeometryPoint") String geometryTypeName,
+        @RequestParam(name = "geometryType", required = false) String geometryTypeName,
         @RequestParam(name = "geometry", required = false) String geometryText,
         @RequestParam(name = "inSR", required = false) String inSRText,
         @RequestParam(name = "outSR", required = false) String outSRText,
-        @RequestParam(name = "spatialRel", required = false, defaultValue = "SpatialRelIntersects") String
+        @RequestParam(name = "spatialRel", required = false) String
             spatialRelText,
         @RequestParam(name = "objectIds", required = false) String objectIdsText,
         @RequestParam(name = "relationPattern", required = false) String relatePattern,
@@ -127,7 +127,11 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
             //Query Parameters
             final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
-            SpatialRelationship spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
+
+            SpatialRelationship spatialRel = null;
+            if (StringUtils.isNotEmpty(spatialRelText)) {
+                spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
+            }
             Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
             Filter filter = Filter.INCLUDE;
 

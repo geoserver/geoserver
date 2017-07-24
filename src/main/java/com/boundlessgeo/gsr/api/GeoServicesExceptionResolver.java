@@ -4,9 +4,14 @@
  */
 package com.boundlessgeo.gsr.api;
 
-import com.boundlessgeo.gsr.core.exception.ServiceError;
-import com.boundlessgeo.gsr.core.exception.ServiceException;
-import com.boundlessgeo.gsr.core.map.AbstractLayerOrTable;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,12 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.boundlessgeo.gsr.core.exception.ServiceError;
+import com.boundlessgeo.gsr.core.exception.ServiceException;
 
 /**
  * Resolves unhandled exceptions by converting them to {@link ServiceException}, then encoding that to json via
@@ -59,7 +60,8 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
         try {
             converter.writeToOutputStream(response.getOutputStream(), exception);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error writing exception response", e);
+            LOGGER.log(Level.SEVERE, "Error writing exception response", e);
+            e.printStackTrace();
         }
         return new ModelAndView();
     }

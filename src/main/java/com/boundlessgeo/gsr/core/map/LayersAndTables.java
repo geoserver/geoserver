@@ -4,24 +4,25 @@
  */
 package com.boundlessgeo.gsr.core.map;
 
-import com.boundlessgeo.gsr.core.GSRModel;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.boundlessgeo.gsr.core.GSRModel;
 
 /**
  * A list of {@link LayerOrTable}
@@ -146,14 +147,27 @@ public class LayersAndTables implements GSRModel {
         return layers.toString() + ";" + tables.toString();
     }
 
-    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName)
-    {
-        LayerOrTable layerOrTable = null;
+    /**
+     * Layer names are just integers IDs in Esri, but not in GeoServer. This method is basically a hack and really ought
+     * to be rethought.
+     * <p>
+     * TODO
+     *
+     * @param catalog
+     * @param layerName
+     * @param workspaceName
+     * @return
+     */
+    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName) {
+        String name = layerName;
         try {
-            layerOrTable = find(catalog, workspaceName, Integer.parseInt(layerName));
+            LayerOrTable layerOrTable = find(catalog, workspaceName, Integer.parseInt(layerName));
+            name = layerOrTable.getName();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
+        } catch (NumberFormatException e) {
+            //Just use string layer name for now.
         }
-        return workspaceName + ":" + layerOrTable.getName();
+        return workspaceName + ":" + name;
     }
 }

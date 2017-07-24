@@ -15,7 +15,7 @@ public class Field implements GSRModel {
 
     private String name;
 
-    private FieldTypeEnum type;
+    private String type;
 
     private String alias;
     private Integer length;
@@ -32,11 +32,11 @@ public class Field implements GSRModel {
         this.name = name;
     }
 
-    public FieldTypeEnum getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(FieldTypeEnum type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -74,7 +74,7 @@ public class Field implements GSRModel {
 
     public Field(String name, FieldTypeEnum type, String alias, Integer length, Boolean editable, Boolean nullable) {
         this.name = name;
-        this.type = type;
+        this.type = type.getFieldType();
         this.alias = alias;
         this.length = length;
         this.editable = editable;

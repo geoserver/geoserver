@@ -640,9 +640,9 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         CoverageDimensionInfo dimension = dimensions.get(0);
         assertEquals( "GRAY_INDEX", dimension.getName());
         NumberRange range = dimension.getRange();
-        assertEquals( -9999.0, range.getMinimum(), DELTA);
-        assertEquals( -9999.0, range.getMaximum(), DELTA);
-        assertEquals("GridSampleDimension[-9999.0,-9999.0]", dimension.getDescription());
+        assertEquals( Double.NEGATIVE_INFINITY, range.getMinimum(), DELTA);
+        assertEquals( Double.POSITIVE_INFINITY, range.getMaximum(), DELTA);
+        assertEquals("GridSampleDimension[-Infinity,Infinity]", dimension.getDescription());
         List<Double> nullValues = dimension.getNullValues();
         assertEquals( -9999.0, nullValues.get(0), DELTA);
         

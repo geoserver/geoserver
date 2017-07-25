@@ -8,9 +8,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
@@ -19,12 +21,17 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.IllegalFilterException;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.filter.visitor.SpatialFilterVisitor;
+import org.geotools.geometry.jts.Decimator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
+import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
@@ -66,25 +73,27 @@ public class VectorMapRenderUtils {
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final Rectangle screenSize = new Rectangle(mapContent.getMapWidth(),
                 mapContent.getMapHeight());
-        final double mapScale;
-        try {
-            mapScale = RendererUtilities.calculateScale(renderingArea, mapContent.getMapWidth(),
-                    mapContent.getMapHeight(), null);
-        } catch (TransformException | FactoryException e) {
-            throw Throwables.propagate(e);
-        }
+        final double mapScale = getMapScale(mapContent, renderingArea);
+        
+        final int requestBufferScreen = mapContent.getBuffer();
+        
+        double[] pixelSize = getPixelSize(renderingArea, screenSize);
 
         FeatureSource<?, ?> featureSource = layer.getFeatureSource();
         FeatureType schema = featureSource.getSchema();
+        List<LiteFeatureTypeStyle> styleList = getFeatureStyles(layer, screenSize, mapScale,
+                schema);
+        
+        final int bufferScreen = getComputedBuffer(requestBufferScreen, styleList);
+        
+        final ReferencedEnvelope queryArea = new ReferencedEnvelope(renderingArea);
+        queryArea.expandBy(bufferScreen * Math.max(pixelSize[0], pixelSize[1]));
+
         GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
 
-        Style style = layer.getStyle();
-        List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
-        List<LiteFeatureTypeStyle> styleList = createLiteFeatureTypeStyles(layer, featureStyles,
-                schema, mapScale, screenSize);
         Query styleQuery;
         try {
-            styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList, renderingArea,
+            styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList, queryArea,
                     screenSize, geometryDescriptor);
         } catch (IllegalFilterException | FactoryException e1) {
             throw Throwables.propagate(e1);
@@ -95,11 +104,70 @@ public class VectorMapRenderUtils {
         Hints hints = query.getHints();
         hints.put(Hints.FEATURE_2D, Boolean.TRUE);
 
+        
         return query;
     }
 
+    public static double getMapScale(WMSMapContent mapContent,
+            final ReferencedEnvelope renderingArea) {
+        final double mapScale;
+        try {
+            mapScale = RendererUtilities.calculateScale(renderingArea, mapContent.getMapWidth(),
+                    mapContent.getMapHeight(), null);
+        } catch (TransformException | FactoryException e) {
+            throw Throwables.propagate(e);
+        }
+        return mapScale;
+    }
+
+    public static int getComputedBuffer(final int requestBufferScreen,
+            List<LiteFeatureTypeStyle> styleList) {
+        final int bufferScreen;
+        if(requestBufferScreen<=0) {
+            MetaBufferEstimator bufferEstimator = new MetaBufferEstimator();
+            styleList.stream()
+                .flatMap(fts->Stream.concat(Arrays.stream(fts.elseRules), Arrays.stream(fts.ruleList)))
+                .forEach(bufferEstimator::visit);
+            bufferScreen = bufferEstimator.getBuffer();
+        } else {
+            bufferScreen = requestBufferScreen;
+        }
+        return bufferScreen;
+    }
+
+    public static List<LiteFeatureTypeStyle> getFeatureStyles(Layer layer,
+            final Rectangle screenSize, final double mapScale, FeatureType schema)
+            throws IOException {
+        Style style = layer.getStyle();
+        List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
+        List<LiteFeatureTypeStyle> styleList = createLiteFeatureTypeStyles(layer, featureStyles,
+                schema, mapScale, screenSize);
+        return styleList;
+    }
+
+    protected static double[] getPixelSize(final ReferencedEnvelope renderingArea,
+            final Rectangle screenSize) {
+        double[] pixelSize;
+        try{
+            pixelSize = Decimator.computeGeneralizationDistances(
+                    ProjectiveTransform.create(
+                            RendererUtilities.worldToScreenTransform(renderingArea, screenSize)).inverse(),
+                    screenSize,
+                    1.0);
+        } catch(TransformException ex) {
+            if(LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Error while computing pixel size", ex);
+            }
+            pixelSize = new double[] {
+                    renderingArea.getWidth()/screenSize.getWidth(), 
+                    renderingArea.getHeight()/screenSize.getHeight()
+                };
+        }
+        return pixelSize;
+    }
+
     private static Query getStyleQuery(FeatureSource<?, ?> source,
-            List<LiteFeatureTypeStyle> styleList, ReferencedEnvelope mapArea, Rectangle screenSize,
+            List<LiteFeatureTypeStyle> styleList, ReferencedEnvelope queryArea, Rectangle screenSize,
             GeometryDescriptor geometryAttribute)
                     throws IllegalFilterException, IOException, FactoryException {
 
@@ -108,7 +176,11 @@ public class VectorMapRenderUtils {
         query.setProperties(Query.ALL_PROPERTIES);
 
         String geomName = geometryAttribute.getLocalName();
-        Filter filter = FF.bbox(FF.property(geomName), mapArea);
+        Filter filter = reprojectSpatialFilter(
+                queryArea.getCoordinateReferenceSystem(), 
+                schema, 
+                FF.bbox(FF.property(geomName), queryArea));
+        
         query.setFilter(filter);
 
         LiteFeatureTypeStyle[] styles = styleList
@@ -127,7 +199,35 @@ public class VectorMapRenderUtils {
         query.setFilter(simplifiedFilter);
         return query;
     }
-
+    
+    /*
+     * Reprojects spatial filters so that they match the feature source native CRS, and assuming all literal
+     * geometries are specified in the specified declaredCRS
+     * 
+     * Modified from StreamingRenderer
+     */
+    static private Filter reprojectSpatialFilter(CoordinateReferenceSystem declaredCRS,
+            FeatureType schema, Filter filter) {
+        // NPE avoidance
+        if(filter == null) {
+            return null;
+        }
+        
+        // do we have any spatial filter?
+        SpatialFilterVisitor sfv = new SpatialFilterVisitor();
+        filter.accept(sfv, null);
+        if(!sfv.hasSpatialFilter()) {
+            return filter;
+        }
+        
+        // all right, we need to default the literals to the declaredCRS and then reproject to
+        // the native one
+        DefaultCRSFilterVisitor defaulter = new DefaultCRSFilterVisitor(FF, declaredCRS);
+        Filter defaulted = (Filter) filter.accept(defaulter, null);
+        ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, schema);
+        Filter reprojected = (Filter) defaulted.accept(reprojector, null);
+        return reprojected;
+    }
     /**
      * Builds the transform from sourceCRS to destCRS/
      * <p>
@@ -239,7 +339,7 @@ public class VectorMapRenderUtils {
         }
     }
 
-    private static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(Layer layer,
+    static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(Layer layer,
             List<FeatureTypeStyle> featureStyles, FeatureType ftype, double scaleDenominator,
             Rectangle screenSize) throws IOException {
 

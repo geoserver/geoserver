@@ -393,7 +393,7 @@ Keep the following properties in the main (``*``) rule::
 
 Remove all the rest, moving them into a new rule::
 
-    [@scale < 20000000] {
+    [@sd < 20M] {
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
@@ -458,7 +458,7 @@ The final CSS should looks like this::
       fill-opacity: 0.7;
     }
     
-    [@scale < 20000000] {
+    [@sd < 20M] {
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
@@ -495,7 +495,7 @@ As a final variation, the style can be made more compact by leveraging rule nest
     };
     
     /* Labelling */
-    [@scale < 20000000] {
+    [@sd < 20M] {
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";

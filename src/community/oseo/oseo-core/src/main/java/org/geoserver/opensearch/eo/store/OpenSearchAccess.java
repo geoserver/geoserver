@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -48,6 +49,18 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * The optional property in product containing the quicklook
      */
     public static Name QUICKLOOK_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "quicklook");
+    
+    /**
+     * Local part of the HTML description property. The namespace is the one assigned to the store, this is not an EO property
+     */
+    public static String DESCRIPTION = "htmlDescription";
+    
+    /**
+     * Local part of the product granules property. The namespace is the one assigned to the store, this is not an EO property
+     */
+    public static String GRANULES = "granules";
+    
+
 
     /**
      * Classes of products
@@ -95,6 +108,13 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      */
     FeatureSource<FeatureType, Feature> getProductSource() throws IOException;
     
-    
+    /**
+     * Returns a feature source to access the granules of a particular product
+     * @param collectionId
+     * @param productId
+     * @return
+     * @throws IOException
+     */
+    SimpleFeatureSource getGranules(String collectionId, String productId) throws IOException;
 
 }

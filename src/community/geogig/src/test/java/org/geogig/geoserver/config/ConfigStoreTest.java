@@ -11,14 +11,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -32,16 +31,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 public class ConfigStoreTest {
-
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -135,7 +130,7 @@ public class ConfigStoreTest {
         try {
             store.get(dummyId);
             fail("Expected FileNotFoundException");
-        } catch (FileNotFoundException e) {
+        } catch (NoSuchElementException e) {
             assertTrue(e.getMessage().startsWith("Repository not found: "));
         }
 
@@ -156,7 +151,7 @@ public class ConfigStoreTest {
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
         try (OutputStream out = resource.out()) {
-        	out.write(expected.getBytes(Charsets.UTF_8));
+            out.write(expected.getBytes(Charsets.UTF_8));
         }
 
         RepositoryInfo info = store.get(dummyId);
@@ -177,7 +172,7 @@ public class ConfigStoreTest {
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
         try (OutputStream out = resource.out()) {
-        	out.write(expected.getBytes(Charsets.UTF_8));
+            out.write(expected.getBytes(Charsets.UTF_8));
         }
 
         RepositoryInfo info = store.get(dummyId);
@@ -199,10 +194,10 @@ public class ConfigStoreTest {
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
         try (OutputStream out = resource.out()) {
-        	out.write(expected.getBytes(Charsets.UTF_8));
+            out.write(expected.getBytes(Charsets.UTF_8));
         }
-        thrown.expect(FileNotFoundException.class);
-        thrown.expectMessage("Repository not found: " + dummyId);
+        thrown.expect(NoSuchElementException.class);
+        thrown.expectMessage("Unable to load repo config " + dummyId);
         store.get(dummyId);
     }
 
@@ -235,12 +230,16 @@ public class ConfigStoreTest {
         store.save(dummy);
         Resource breakIt = dataDir.get(ConfigStore.path(dummy.getId()));
         byte[] bytes = IOUtils.toByteArray(breakIt.in());
-        byte[] from = new byte[bytes.length - 5];
+        byte[] from = new byte[bytes.length - 10];
         System.arraycopy(bytes, 0, from, 0, from.length);
-        try (OutputStream out = breakIt.out()) {
-        	out.write(from);
-        }
 
+        // make sure the test doesn't run so fast that the lastModified timestamp doesn't change and
+        // hence the ConfigStore ignores the change event issued by the ResourceStore when the
+        // Resource output stream is closed...
+        Thread.sleep(50);
+        try (OutputStream out = breakIt.out()) {
+            out.write(from);
+        }
         List<RepositoryInfo> all = store.getRepositories();
         assertNotNull(all);
         assertEquals(3, all.size());
@@ -260,12 +259,12 @@ public class ConfigStoreTest {
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
         try (OutputStream out = resource.out()) {
-        	out.write(expected.getBytes(Charsets.UTF_8));
+            out.write(expected.getBytes(Charsets.UTF_8));
         }
 
         assertNotNull(store.get(dummyId));
         assertTrue(store.delete(dummyId));
-        thrown.expect(FileNotFoundException.class);
+        thrown.expect(NoSuchElementException.class);
         assertNull(store.get(dummyId));
     }
 
@@ -287,6 +286,77 @@ public class ConfigStoreTest {
     public void deleteNonExistent() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
         assertFalse(store.delete(dummyId));
+    }
+
+    public @Test void testPreload() throws Exception {
+        store.save(dummy(1));
+        store.save(dummy(2));
+        store.save(dummy(3));
+        ConfigStore store2 = new ConfigStore(dataDir);
+
+        assertEquals(3, store2.getRepositories().size());
+    }
+
+    public @Test void testPreloadIgnoresMalformed() throws Exception {
+        store.save(dummy(7));
+        store.save(dummy(8));
+        store.save(dummy(9));
+
+        RepositoryInfo dummy = dummy(5);
+        store.save(dummy);
+        Resource breakIt = dataDir.get(ConfigStore.path(dummy.getId()));
+        byte[] bytes = IOUtils.toByteArray(breakIt.in());
+        byte[] from = new byte[bytes.length - 5];
+        System.arraycopy(bytes, 0, from, 0, from.length);
+        try (OutputStream out = breakIt.out()) {
+            out.write(from);
+        }
+
+        ConfigStore store2 = new ConfigStore(dataDir);
+
+        assertEquals(3, store2.getRepositories().size());
+    }
+
+    public @Test void testGetByName() throws Exception {
+        store.save(dummy(1));
+        store.save(dummy(2));
+
+        assertNull(store.getByName("name-3"));
+        RepositoryInfo info = dummy(3);
+        store.save(info);
+        assertEquals(info, store.getByName("name-3"));
+    }
+
+    public @Test void testRepoExistsByName() throws Exception {
+        store.save(dummy(1));
+        store.save(dummy(2));
+
+        assertFalse(store.repoExistsByName("name-3"));
+        RepositoryInfo info = dummy(3);
+        store.save(info);
+        assertTrue(store.repoExistsByName("name-3"));
+    }
+
+    public @Test void testGetByLocation() throws Exception {
+        store.save(dummy(1));
+        store.save(dummy(2));
+
+        URI uri = URI.create("file:/parent/directory/3/name-3");
+        assertNull(store.getByLocation(uri));
+        RepositoryInfo info = dummy(3);
+        store.save(info);
+        assertEquals(info, store.getByLocation(uri));
+    }
+
+    public @Test void testRepoExistsByLocation() throws Exception {
+        store.save(dummy(1));
+        store.save(dummy(2));
+
+        URI uri = URI.create("file:/parent/directory/3/name-3");
+        assertFalse(store.repoExistsByLocation(uri));
+        RepositoryInfo info = dummy(3);
+        store.save(info);
+        assertTrue(store.repoExistsByLocation(uri));
     }
 
     private RepositoryInfo dummy(int i) {

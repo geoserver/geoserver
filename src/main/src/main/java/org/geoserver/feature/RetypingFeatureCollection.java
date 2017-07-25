@@ -24,6 +24,7 @@ import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
@@ -35,6 +36,8 @@ import org.opengis.filter.identity.FeatureId;
  * 
  */
 public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection {
+
+
     SimpleFeatureType target;
 
     public RetypingFeatureCollection(SimpleFeatureCollection delegate,
@@ -56,6 +59,13 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
         return ReTypingFeatureCollection.isTypeCompatible(visitor, target);
     }
 
+    @Override
+    public SimpleFeatureCollection subCollection(Filter filter) {
+        
+        SimpleFeatureCollection delegateCollection = delegate.subCollection(filter);
+        
+        return new ReTypingFeatureCollection(delegateCollection, target);
+    }
 
     static SimpleFeature retype(SimpleFeature source, SimpleFeatureBuilder builder)
             throws IllegalAttributeException {

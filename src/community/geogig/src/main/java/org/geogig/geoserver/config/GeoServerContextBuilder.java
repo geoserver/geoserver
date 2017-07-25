@@ -6,6 +6,10 @@ package org.geogig.geoserver.config;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.di.GeogigModule;
 import org.locationtech.geogig.di.HintsModule;
 import org.locationtech.geogig.di.PluginsModule;
@@ -15,6 +19,7 @@ import org.locationtech.geogig.repository.impl.ContextBuilder;
 import org.locationtech.geogig.storage.GraphDatabase;
 import org.locationtech.geogig.storage.IndexDatabase;
 import org.locationtech.geogig.storage.ObjectDatabase;
+import org.locationtech.geogig.storage.PluginDefaults;
 import org.locationtech.geogig.storage.RefDatabase;
 import org.locationtech.geogig.storage.StorageProvider;
 import org.locationtech.geogig.storage.VersionedFormat;
@@ -27,6 +32,8 @@ import com.google.inject.util.Modules;
 
 public class GeoServerContextBuilder extends ContextBuilder {
 
+    private static final Logger LOGGER = Logging.getLogger(GeoServerContextBuilder.class);
+
     @Override
     public Context build(Hints hints) {
         return Guice
@@ -38,8 +45,35 @@ public class GeoServerContextBuilder extends ContextBuilder {
 
     public static class DefaultPlugins extends AbstractModule {
 
+        private static final StorageProvider DEFAULT_PROVIDER;
+
+        static {
+            // hack to set a PluginDefaults to rocksDB without having an explicit dependency
+            // on RocksDB modules. This should be removed once the StroageProvider/Plugin
+            // mechanisms are reworked.
+            StorageProvider storageProvider = null;
+            for (StorageProvider provider : StorageProvider.findProviders()) {
+                if ("rocksdb".equals(provider.getName())) {
+                    // we have a RocksDB provider available, use it as the default
+                    storageProvider = provider;
+                    break;
+                }
+            }
+            // set the default to the provider found, or null
+            DEFAULT_PROVIDER = storageProvider;
+            if (null == DEFAULT_PROVIDER && LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "No Default StorageProvider available");
+            }
+        }
+
         @Override
         protected void configure() {
+
+            if (null != DEFAULT_PROVIDER) {
+                // set a PluginDefaults using the default provider
+                PluginDefaults pluginDefaults = new PluginDefaults(DEFAULT_PROVIDER);
+                bind(PluginDefaults.class).toInstance(pluginDefaults);
+            }
 
             MapBinder<VersionedFormat, RefDatabase> refPlugins = MapBinder
                     .newMapBinder(binder(), VersionedFormat.class, RefDatabase.class)
@@ -66,16 +100,16 @@ public class GeoServerContextBuilder extends ContextBuilder {
                 VersionedFormat refsDatabaseFormat = sp.getRefsDatabaseFormat();
 
                 if (objectDatabaseFormat != null) {
-                	GeoServerContextBuilder.bind(objectPlugins, objectDatabaseFormat);
+                    GeoServerContextBuilder.bind(objectPlugins, objectDatabaseFormat);
                 }
                 if (indexDatabaseFormat != null) {
-                	GeoServerContextBuilder.bind(indexPlugins, indexDatabaseFormat);
+                    GeoServerContextBuilder.bind(indexPlugins, indexDatabaseFormat);
                 }
                 if (graphDatabaseFormat != null) {
-                	GeoServerContextBuilder.bind(graphPlugins, graphDatabaseFormat);
+                    GeoServerContextBuilder.bind(graphPlugins, graphDatabaseFormat);
                 }
                 if (refsDatabaseFormat != null) {
-                	GeoServerContextBuilder.bind(refPlugins, refsDatabaseFormat);
+                    GeoServerContextBuilder.bind(refPlugins, refsDatabaseFormat);
                 }
             }
         }

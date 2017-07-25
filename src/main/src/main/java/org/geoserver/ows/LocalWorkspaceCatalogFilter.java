@@ -122,14 +122,22 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     @Override
     public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
         PublishedInfo local = LocalPublished.get();
-        if(local != null && local instanceof LayerGroupInfo) {
-            LayerGroupInfo lg = (LayerGroupInfo) local;
-            Request request = Dispatcher.REQUEST.get();
-            if(request != null && "WMS".equalsIgnoreCase(request.getService()) && "GetCapabilities".equals(request.getRequest()) && lg.getMode() == Mode.SINGLE) {
-                return !lg.equals(layerGroup);
-            } else if(!lg.equals(layerGroup) && !new LayerGroupHelper(lg).allGroups().contains(layerGroup)) {
+        if (local != null) {
+            if (local instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) local;
+                Request request = Dispatcher.REQUEST.get();
+                if (request != null && "WMS".equalsIgnoreCase(request.getService())
+                        && "GetCapabilities".equals(request.getRequest())
+                        && lg.getMode() == Mode.SINGLE) {
+                    return !lg.equals(layerGroup);
+                } else if (!lg.equals(layerGroup)
+                        && !new LayerGroupHelper(lg).allGroups().contains(layerGroup)) {
+                    return true;
+                }
+            } else {
+                // simple layer, not a layer group
                 return true;
-            } 
+            }
         }
 
         if (layerGroup.getWorkspace() == null) {

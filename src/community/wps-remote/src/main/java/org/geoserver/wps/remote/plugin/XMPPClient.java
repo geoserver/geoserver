@@ -153,6 +153,8 @@ public class XMPPClient extends RemoteProcessClient {
     private static double DEFAULT_CPU_PERCENT_THRESHOLD = 82.0;
 
     private static double DEFAULT_MEM_PERCENT_THRESHOLD = 82.0;
+    
+    private static Boolean DEFAULT_XMPP_FORCE_EXECUTION = Boolean.FALSE;
 
     /** Setup the primitives map. */
     static enum CType {
@@ -958,6 +960,7 @@ public class XMPPClient extends RemoteProcessClient {
         /** Thresholds indicating overloaded resources */
         Double cpuLoadPercThreshold = DEFAULT_CPU_PERCENT_THRESHOLD;
         Double vmemPercThreshold = DEFAULT_MEM_PERCENT_THRESHOLD;
+        Boolean forceExecutionIfNoCandidate = DEFAULT_XMPP_FORCE_EXECUTION;
         
         if (getConfiguration().get("xmpp_cpu_perc_threshold") != null) {
             cpuLoadPercThreshold = Double.valueOf(getConfiguration().get("xmpp_cpu_perc_threshold"));
@@ -965,6 +968,10 @@ public class XMPPClient extends RemoteProcessClient {
         
         if (getConfiguration().get("xmpp_mem_perc_threshold") != null) {
             vmemPercThreshold = Double.valueOf(getConfiguration().get("xmpp_mem_perc_threshold"));
+        }
+        
+        if (getConfiguration().get("xmpp_force_execution") != null) {
+            forceExecutionIfNoCandidate = Boolean.valueOf(getConfiguration().get("xmpp_force_execution"));
         }
 
         synchronized (registeredProcessingMachines) {
@@ -991,7 +998,26 @@ public class XMPPClient extends RemoteProcessClient {
 
         // Return the candidate remote processing node JID or null
         if (candidateNode != null) {
+            LOGGER.info(
+                    "XMPPClient::getFlattestMachine - ... found new candidate: " + candidateNode.getNodeJID());
+
             return candidateNode.getNodeJID();
+        }
+
+        LOGGER.info(
+                "XMPPClient::getFlattestMachine - ... no candidate found!");
+        
+        if (forceExecutionIfNoCandidate) {
+            if (registeredProcessingMachines.size() > 0) {
+                LOGGER.info(
+                        "XMPPClient::getFlattestMachine - Forced Execution: falling back to first machine!");
+                
+                candidateNode = registeredProcessingMachines.get(0);
+                return candidateNode.getNodeJID();
+            } else {
+                LOGGER.info(
+                        "XMPPClient::getFlattestMachine - Forced Execution: no machine available STALLED!");
+            }
         }
 
         return null;
@@ -1512,14 +1538,12 @@ class XMPPPacketListener implements PacketListener {
                 }
 
                 if (!signalArgs.isEmpty() && signalArgs.containsKey("topic")) {
-
                     for (XMPPMessage xmppMessage : GeoServerExtensions
                             .extensions(XMPPMessage.class)) {
                         if (xmppMessage.canHandle(signalArgs)) {
                             xmppMessage.handleSignal(xmppClient, packet, message, signalArgs);
                         }
                     }
-
                 }
             }
         }

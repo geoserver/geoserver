@@ -55,6 +55,7 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -639,6 +640,49 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         // check the correct style modified event was published
         assertThat(gotValidEvent[0], is(true));
     }
+
+    //Test that a user can non-destructively move the style out of a workspace.
+    @Test
+    public void testMoveFromWorkspace() throws Exception {
+        //Move into sf
+        Catalog catalog = getCatalog();
+        StyleInfo si = catalog.getStyleByName(STYLE_TO_MOVE_NAME);
+        si.setWorkspace(catalog.getWorkspaceByName("sf"));
+        catalog.save(si);
+
+        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
+        //verify move to workspace was successful
+        assertEquals(Resource.Type.UNDEFINED, dataDir.get("styles/"+STYLE_TO_MOVE_FILENAME).getType());
+        assertEquals(Resource.Type.RESOURCE, dataDir.get("workspaces/sf/styles/"+STYLE_TO_MOVE_FILENAME).getType());
+
+        // test moving back to default workspace using the UI
+        edit = new StyleEditPage(si);
+        tester.startPage(edit);
+
+        // Before the edit, the style should have one <FeatureTypeStyle> and be in the sf workspace
+        assertEquals(1, si.getStyle().featureTypeStyles().size());
+        assertEquals("sf", si.getWorkspace().getName());
+
+        FormTester form = tester.newFormTester("styleForm", false);
+
+        // Update the workspace (select "sf" from the dropdown)
+        DropDownChoice<WorkspaceInfo> typeDropDown = (DropDownChoice<WorkspaceInfo>) tester
+                .getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
+
+        form.setValue("context:panel:workspace", "");
+
+
+        // Submit the form and verify that both the new workspace and new rawStyle saved.
+        form.submit();
+
+        si = getCatalog().getStyleByName(STYLE_TO_MOVE_NAME);
+        assertNotNull(si);
+        assertNull(si.getWorkspace());
+
+        //verify move out of the workspace was successful
+        assertEquals(Resource.Type.RESOURCE, dataDir.get("styles/"+STYLE_TO_MOVE_FILENAME).getType());
+        assertEquals(Resource.Type.UNDEFINED, dataDir.get("workspaces/sf/styles/"+STYLE_TO_MOVE_FILENAME).getType());
+    }
     
     @Test
     public void applyThenSubmit() throws Exception {
@@ -646,5 +690,17 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("submit", "click");
         tester.assertNoErrorMessage();
     }
+    
+    @Test
+    public void testLayerPreviewTab() {
+
+        LayerInfo l = getCatalog().getLayers().get(0);
+        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        // used to fail with an exception here because the template file cannot be found
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
+        print(tester.getLastRenderedPage(), true, true);
+        tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
+    }
+
     
 }

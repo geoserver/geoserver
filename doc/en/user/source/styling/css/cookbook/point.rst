@@ -423,15 +423,15 @@ Code
       fill: #CC3300;
     }
 
-    [@scale < 16000000] {
+    [@sd < 16M] {
       mark-size: 12;
     }
 
-    [@scale > 16000000] [@scale < 32000000] {
+    [@sd > 16M] [@sd < 32M] {
       mark-size: 8;
     }
 
-    [@scale > 32000000] {
+    [@sd > 32M] {
       mark-size: 4;
     }
 
@@ -468,7 +468,7 @@ This style contains three rules matching the scale.  The three rules are designe
 
 The order of these rules does not matter since the scales denominated in each rule do not overlap.
 
-The rules use the "@scale" pseudo-attribute, which refers to the current scale denominator, and which can be compared using the '<' and '>' operators only (using any other operator or function will result in errors). 
+The rules use the "@sd" pseudo-attribute, which refers to the current scale denominator, and which can be compared using the '<' and '>' operators only (using any other operator or function will result in errors). 
 
 The result of this style is that points are drawn larger as one zooms in and smaller as one zooms out. 
 
@@ -482,13 +482,13 @@ While this example uses on purpose cascading to show a different possible setup,
       :mark {
         fill: #CC3300;
       };
-      [@scale < 16000000] {
+      [@sd < 16M] {
         mark-size: 12;
       };
-      [@scale > 16000000] [@scale < 32000000] {
+      [@sd > 16M] [@sd < 32M] {
         mark-size: 8;
       };
-      [@scale > 32000000] {
+      [@sd > 32M] {
         mark-size: 4;
       }
     }

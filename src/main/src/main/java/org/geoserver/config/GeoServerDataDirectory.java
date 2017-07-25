@@ -813,13 +813,14 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve a resource in the the workspace configuration directory. An empty path will retrieve
      * the directory itself.
+     * A null workspace will retrieve the resouce in the global configuration directory.
      * @param ws The workspace
      * @return A {@link Resource}
      */
     public @Nonnull Resource get(WorkspaceInfo ws, String... path) {
         Resource r;
         if(ws==null) {
-            return resourceLoader.get("");
+            r = get(Paths.path(path));
         } else {
             r = getWorkspaces(  ws.getName(), Paths.path(path));
         }
@@ -841,11 +842,17 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve a resource in the the configuration directory of the workspace associated with a 
      * namespace.  An empty path will retrieve the directory itself.
-     * @param ws The namespace
+     * A null namespace will retrieve the resouce in the global configuration directory.
+     * @param ns The namespace
      * @return A {@link Resource}
      */
     public @Nonnull Resource get(NamespaceInfo ns, String... path) {
-        Resource r = getWorkspaces(ns.getPrefix(), Paths.path(path));
+        Resource r;
+        if(ns==null) {
+            r = get(Paths.path(path));
+        } else {
+            r = getWorkspaces(ns.getPrefix(), Paths.path(path));
+        }
         assert r!=null;
         return r;
     }
@@ -1038,7 +1045,7 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource getLayerGroups(String... path) {
-        Resource r = get(  Paths.path( LAYERGROUP_DIR, Paths.path(path)));
+        Resource r = getLayerGroups(null, path);
         assert r!=null;
         return r;
     }
@@ -1046,6 +1053,7 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve a resource in the the layer groups directory of a workspace. An empty path will retrieve
      * the directory itself.
+     * A null workspace will return the resource in the global layer groups directory
      * @return A {@link Resource}
      */
     public @Nonnull Resource getLayerGroups(WorkspaceInfo wsi, String... path) {
@@ -1062,12 +1070,7 @@ public class GeoServerDataDirectory {
      */
     public @Nonnull Resource get(LayerGroupInfo lgi, String... path) {
         WorkspaceInfo wsi = lgi.getWorkspace();
-        final Resource r;
-        if(wsi==null) {
-            r = getLayerGroups(path);
-        } else {
-            r = getLayerGroups(wsi, path);
-        }
+        Resource r = getLayerGroups(wsi, path);
         assert r!=null;
         return r;
     }
@@ -1090,7 +1093,7 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource getStyles(String... path) {
-        Resource r = get(  Paths.path( STYLE_DIR, Paths.path(path)));
+        Resource r = getStyles(null, path);
         assert r!=null;
         return r;
     }
@@ -1098,6 +1101,7 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve a resource in the the styles directory of a workspace. An empty path will retrieve
      * the directory itself.
+     * A null workspace will return the resource in the global styles directory
      * @return A {@link Resource}
      */
     public @Nonnull Resource getStyles(WorkspaceInfo wsi, String... path) {
@@ -1114,12 +1118,7 @@ public class GeoServerDataDirectory {
      */
     public @Nonnull Resource get(StyleInfo si, String... path) {
         WorkspaceInfo workspace = si != null ? si.getWorkspace() : null;
-        final Resource r;
-        if (workspace == null) {
-            r = getStyles(path);
-        } else {
-            r = getStyles(workspace, path);
-        }
+        final Resource r = getStyles(workspace, path);
         assert r!=null;
         return r;
     }

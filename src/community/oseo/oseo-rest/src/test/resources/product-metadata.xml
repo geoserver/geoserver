@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opt:EarthObservation xmlns:opt="http://www.opengis.net/opt/2.1" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:eop="http://www.opengis.net/eop/2.1" xmlns:gmlov="http://www.opengis.net/gml" xmlns:om="http://www.opengis.net/om/2.0"
+  xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:wrs="http://www.opengis.net/cat/wrs/1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  gml:id="IDN10020" xsi:schemaLocation="http://www.opengis.net/opt/2.1 http://geo.spacebel.be/opensearch/xsd/opt.xsd"
+>
+  <om:phenomenonTime>
+    <gml:TimePeriod gml:id="TPN10020">
+      <gml:beginPosition>2018-01-01T00:00:0.00Z</gml:beginPosition>
+      <gml:endPosition>2018-01-01T00:00:0.00Z</gml:endPosition>
+    </gml:TimePeriod>
+  </om:phenomenonTime>
+  <om:resultTime>
+    <gml:TimeInstant gml:id="instantIdentifier">
+      <gml:timePosition></gml:timePosition>
+    </gml:TimeInstant>
+  </om:resultTime>
+  <om:procedure>
+    <eop:EarthObservationEquipment gml:id="EOEN10020">
+      <eop:platform>
+        <eop:Platform>
+          <eop:shortName>Sentinel-2</eop:shortName>
+          <eop:serialIdentifier>A</eop:serialIdentifier>
+          <eop:orbitType>LEO</eop:orbitType>
+        </eop:Platform>
+      </eop:platform>
+      <eop:instrument>
+        <eop:Instrument>
+          <eop:shortName></eop:shortName>
+        </eop:Instrument>
+      </eop:instrument>
+      <eop:sensor>
+        <eop:Sensor>
+          <eop:sensorType>OPTICAL</eop:sensorType>
+          <eop:operationalMode></eop:operationalMode>
+          <eop:resolution uom="m"></eop:resolution>
+          <eop:swathIdentifier></eop:swathIdentifier>
+          <eop:wavelengthInformation>
+            <eop:WavelengthInformation>
+              <eop:discreteWavelengths uom="nm">
+              </eop:discreteWavelengths>
+              <eop:spectralRange></eop:spectralRange>
+            </eop:WavelengthInformation>
+          </eop:wavelengthInformation>
+        </eop:Sensor>
+      </eop:sensor>
+      <eop:acquisitionParameters>
+        <eop:Acquisition>
+          <eop:orbitNumber>65</eop:orbitNumber>
+          <eop:orbitDirection>DESCENDING</eop:orbitDirection>
+          <eop:wrsLongitudeGrid codeSpace=""></eop:wrsLongitudeGrid>
+          <eop:wrsLatitudeGrid codeSpace=""></eop:wrsLatitudeGrid>
+          <eop:startTimeFromAscendingNode uom="s"></eop:startTimeFromAscendingNode>
+          <eop:completionTimeFromAscendingNode uom="s"></eop:completionTimeFromAscendingNode>
+          <eop:illuminationAzimuthAngle uom="deg"></eop:illuminationAzimuthAngle>
+          <eop:illuminationZenithAngle uom="deg"></eop:illuminationZenithAngle>
+          <eop:illuminationElevationAngle uom="deg"></eop:illuminationElevationAngle>
+        </eop:Acquisition>
+      </eop:acquisitionParameters>
+    </eop:EarthObservationEquipment>
+  </om:procedure>
+  <om:observedProperty xlink:href="#phenom1" />
+  <om:featureOfInterest>
+    <eop:Footprint gml:id="FPN10020">
+      <eop:multiExtentOf>
+        <gml:MultiSurface gml:id="MULSFN10021" srsName="EPSG:4326">
+          <gml:surfaceMembers>
+            <Polygon xmlns="http://www.opengis.net/gml/3.2" gml:id="PON10074"
+              srsName="urn:ogc:def:crs:EPSG:6.15:4326"
+            >
+              <exterior>
+                <LinearRing>
+                  <pos>72.663 18.116</pos>
+                  <pos>72.112 17.123</pos>
+                  <pos>71.801 18.922</pos>
+                  <pos>72.343 19.953</pos>
+                  <pos>72.663 18.116</pos>
+                </LinearRing>
+              </exterior>
+            </Polygon>
+          </gml:surfaceMembers>
+        </gml:MultiSurface>
+      </eop:multiExtentOf>
+    </eop:Footprint>
+  </om:featureOfInterest>
+  <om:result>
+    <opt:EarthObservationResult gml:id="EORN10020">
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>QUICKLOOK</eop:type>
+          <eop:subType>LISS-IV.P-QL</eop:subType>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326
+          </eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <!-- This will link to the WMS service -->
+            <ows:ServiceReference
+              xlink:href="$baseUrl/ows?service=WMS&amp;version=1.1.0&amp;....">
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>THUMBNAIL</eop:type>
+          <eop:subType>LISS-IV.P-QL</eop:subType>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326</eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <!--  This will link back to the opensearch server -->
+            <ows:ServiceReference
+              xlink:href="$baseUl/oseo?request=GetThumbnail&amp;id=...">
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:parameter>
+        <eop:ParameterInformation>
+          <eop:unitOfMeasure uom="c" />
+          <eop:phenomenon>
+            <swe:Phenomenon xmlns:ns1="http://www.opengis.net/gml" ns1:id="phenom1">
+              <name xmlns="http://www.opengis.net/gml">xyzdef</name>
+            </swe:Phenomenon>
+          </eop:phenomenon>
+        </eop:ParameterInformation>
+      </eop:parameter>
+      <opt:cloudCoverPercentage uom="%"></opt:cloudCoverPercentage>
+      <opt:snowCoverPercentage uom="%"></opt:snowCoverPercentage>
+    </opt:EarthObservationResult>
+  </om:result>
+  <eop:metaDataProperty>
+    <eop:EarthObservationMetaData>
+      <eop:identifier>S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04</eop:identifier>
+      <eop:creationDate>2018-01-01T00:00:0.00Z</eop:creationDate>
+      <eop:modificationDate></eop:modificationDate>
+      <eop:parentIdentifier>S2_MSI_L1C</eop:parentIdentifier>
+      <eop:acquisitionType>NOMINAL</eop:acquisitionType>
+      <eop:acquisitionSubType codeSpace=""></eop:acquisitionSubType>
+      <eop:productType>S2MSI1C</eop:productType>
+      <eop:status></eop:status>
+      <eop:downlinkedTo>
+        <eop:DownlinkInformation>
+          <eop:acquisitionStation codeSpace="urn:eop:PHR:stationCode"></eop:acquisitionStation>
+          <eop:acquisitionDate></eop:acquisitionDate>
+        </eop:DownlinkInformation>
+      </eop:downlinkedTo>
+      <eop:archivedIn>
+        <eop:ArchivingInformation>
+          <eop:archivingCenter codeSpace="urn:eop:PHR:stationCode"></eop:archivingCenter>
+          <eop:archivingDate></eop:archivingDate>
+          <eop:archivingIdentifier codeSpace="urn:eop:PHR:stationCode">041028P600160013MC_00_4</eop:archivingIdentifier>
+        </eop:ArchivingInformation>
+      </eop:archivedIn>
+      <eop:productQualityDegradation uom=""></eop:productQualityDegradation>
+      <eop:productQualityDegradationTag codeSpace=""></eop:productQualityDegradationTag>
+      <eop:processing>
+        <eop:ProcessingInformation>
+          <eop:processingCenter></eop:processingCenter>
+          <eop:processingDate></eop:processingDate>
+          <eop:compositeType></eop:compositeType>
+          <eop:processorName></eop:processorName>
+          <eop:processingLevel>Level-1C</eop:processingLevel>
+          <eop:processingMode>DATA_DRIVEN</eop:processingMode>
+        </eop:ProcessingInformation>
+      </eop:processing>
+    </eop:EarthObservationMetaData>
+  </eop:metaDataProperty>
+</opt:EarthObservation>

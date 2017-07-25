@@ -57,8 +57,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         try {
             OS_SCHEMA = factory
                     .newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
-            ATOM_SCHEMA = factory
-                    .newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
+            ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }
@@ -77,7 +76,15 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        setupBasicOpenSearch(testData, getCatalog(), getGeoServer());
+        setupBasicOpenSearch(testData, getCatalog(), getGeoServer(), populateGranulesTable());
+    }
+
+    /**
+     * Allows subclasses to decide if to populate the granules table, or not
+     * @return
+     */
+    protected boolean populateGranulesTable() {
+        return false;
     }
 
     /**
@@ -86,10 +93,11 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
      * @param testData
      * @param cat
      * @param gs
+     * @param populateGranulesTable TODO
      * @throws IOException
      * @throws SQLException
      */
-    public static void setupBasicOpenSearch(SystemTestData testData, Catalog cat, GeoServer gs)
+    public static void setupBasicOpenSearch(SystemTestData testData, Catalog cat, GeoServer gs, boolean populateGranulesTable)
             throws IOException, SQLException {
         // create the plain database
         DataStoreInfo jdbcDs = cat.getFactory().createDataStore();
@@ -109,7 +117,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         cat.add(jdbcDs);
 
         JDBCDataStore h2 = (JDBCDataStore) jdbcDs.getDataStore(null);
-        JDBCOpenSearchAccessTest.populateTestDatabase(h2, false);
+        JDBCOpenSearchAccessTest.populateTestDatabase(h2, populateGranulesTable);
 
         // create the OpenSeach wrapper store
         DataStoreInfo osDs = cat.getFactory().createDataStore();

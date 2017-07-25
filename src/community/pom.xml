@@ -456,12 +456,6 @@
       </modules>
     </profile>
     <profile>
-      <id>dem</id>
-      <modules>
-        <module>dem</module>
-      </modules>
-    </profile>
-    <profile>
       <id>backup-restore</id>
       <modules>
         <module>backup-restore</module>

@@ -11,6 +11,7 @@ import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -75,9 +76,24 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      * @since 2.1.3
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
-    
-        
-    
+
+    private List<KeywordInfo> keywords = new ArrayList<>();
+
+    @Override
+    public List<KeywordInfo> getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * Set the keywords of this layer group. The provided keywords will override any existing
+     * keywords no merge will be done.
+     *
+     * @param keywords new keywords of this layer group
+     */
+    public void setKeywords(List<KeywordInfo> keywords) {
+        this.keywords = keywords == null ? new ArrayList<>() : keywords;
+    }
+
     public LayerGroupInfoImpl() {
         mode = Mode.SINGLE;
         publishables = new ArrayList<PublishedInfo>();        

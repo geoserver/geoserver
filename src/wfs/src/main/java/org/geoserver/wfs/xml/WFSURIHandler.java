@@ -187,7 +187,7 @@ public class WFSURIHandler extends URIHandlerImpl {
         if (proxyBaseUrl != null) {
             try {
                 URI proxyBaseUri = URI.createURI(proxyBaseUrl);
-                if(uri.host().equals(proxyBaseUri.host())) {
+                if(uri.host().equalsIgnoreCase(proxyBaseUri.host())) {
                     return true;
                 }
             }
@@ -201,7 +201,7 @@ public class WFSURIHandler extends URIHandlerImpl {
         }
         //check the network interfaces to see if the host matches
         for (InetAddress add : ADDRESSES) {
-            if (uri.host().equals(add.getHostAddress()) || uri.host().equals(add.getHostName())) {
+            if (uri.host().equals(add.getHostAddress()) || uri.host().equalsIgnoreCase(add.getHostName())) {
                 LOGGER.log(Level.FINE, "Hostname {0} identifies local network interface {1} {2}", new Object[]{uri.host(), add.getHostAddress(), add.getHostName()});
                 return true;
             }

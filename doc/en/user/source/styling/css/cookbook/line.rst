@@ -615,15 +615,15 @@ Code
       stroke: #009933;
     }
 
-    [@scale < 180000000] {
+    [@sd < 180M] {
       stroke-width: 6;
     }
 
-    [@scale > 180000000] [@scale < 360000000] {
+    [@sd > 180M] [@sd < 360M] {
       stroke-width: 4;
     }
 
-    [@scale > 360000000] {
+    [@sd > 360M] {
       stroke-width: 2;
     }
 
@@ -661,7 +661,7 @@ This style contains three rules.  The three rules are designed as follows:
 
 The order of these rules does not matter since the scales denominated in each rule do not overlap.
 
-The first rule provides the stroke color used at all zoom levels, dark gray, while the other three rules cascade over it applying the different stroke widths based on the current zoom level leveraging the "@scale" pseudo attribute. The "@scale" pseudo attribute can only be compared using the "<" and ">" operators, using any other operator will result in errors.
+The first rule provides the stroke color used at all zoom levels, dark gray, while the other three rules cascade over it applying the different stroke widths based on the current zoom level leveraging the "@sd" pseudo attribute. The "@sd" pseudo attribute can only be compared using the "<" and ">" operators, using any other operator will result in errors.
 
 The result of this style is that lines are drawn with larger widths as one zooms in and smaller widths as one zooms out.
 

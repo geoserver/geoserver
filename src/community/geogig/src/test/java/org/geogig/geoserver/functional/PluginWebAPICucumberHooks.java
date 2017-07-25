@@ -1,21 +1,19 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geogig.geoserver.functional;
 
-import com.google.inject.Inject;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
-import cucumber.runtime.java.guice.ScenarioScoped;
-import org.geogig.web.functional.WebAPICucumberHooks;
-import org.locationtech.geogig.web.api.TestData;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
 import java.io.IOException;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import org.geogig.web.functional.WebAPICucumberHooks;
+import org.locationtech.geogig.repository.Repository;
+
+import com.google.inject.Inject;
+import cucumber.api.java.After;
+import cucumber.api.java.en.Given;
+import cucumber.runtime.java.StepDefAnnotation;
+import cucumber.runtime.java.guice.ScenarioScoped;
 
 /**
  * Extensions to the GeoGig Web API Functional tests. These these are specific to the GeoServer
@@ -26,6 +24,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class PluginWebAPICucumberHooks {
 
     public GeoServerFunctionalTestContext context;
+
+    private String repoName;
 
     /**
      * Create an instance of this set of Steps with the GeoGig Web API Hooks as a parent. Since you
@@ -46,8 +46,27 @@ public class PluginWebAPICucumberHooks {
         return context.getTempFolder().getCanonicalPath().replace("\\", "/");
     }
 
-    @Given("^A repository named \"([^\"]*)\" is initialized$")
-    public void initEmptyRepo(String repoName) throws Exception {
-        context.createRepo(repoName);
+    @Given("^I have \"([^\"]*)\" that is not managed by GeoServer$")
+    public void setupExtraUnMangedRepo(String repoName) throws Exception {
+        context.createUnManagedRepoWithAltRoot(repoName)
+                .init("geogigUser", "repo1_Owner@geogig.org")
+                .loadDefaultData()
+                .getRepo().close();
+        this.repoName = repoName;
+    }
+
+    @After
+    public void after() {
+        if (repoName != null) {
+            try {
+                Repository repo = this.context.getRepo(repoName);
+                if (repo != null) {
+                    repo.close();
+                }
+            } catch (Exception ex) {
+                // repo doesn't exist
+            }
+        }
+        context.after();
     }
 }

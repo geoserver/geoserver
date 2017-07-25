@@ -15,11 +15,19 @@
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.1-SNAPSHOT</geogig.version>
+    <geogig.version>1.2-SNAPSHOT</geogig.version>
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
     <logback.version>1.1.2</logback.version>
     <cucumber-java.version>1.2.4</cucumber-java.version>
+    <!--
+      The PostgreSQL version should match the version as depended upon transitively by
+      geogig-postgresql. It is set here because it is not a managed dependency in the POM
+      hierarchy and we need it to compile and run tests. It is marked as "provided" in
+      the dependency seciton below.
+    -->
+    <postgresql.version>42.1.1</postgresql.version>
+    <hikaricp.version>2.4.2</hikaricp.version>
   </properties>
 
   <repositories>
@@ -51,11 +59,6 @@
     </dependency>
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
-      <artifactId>geogig-cli</artifactId>
-      <version>${geogig.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-geotools</artifactId>
       <version>${geogig.version}</version>
     </dependency>
@@ -70,9 +73,9 @@
       <version>${geogig.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.locationtech.geogig</groupId>
-      <artifactId>geogig-postgres</artifactId>
-      <version>${geogig.version}</version>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>${hikaricp.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -93,43 +96,46 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <!--
+      This is an explicit "provided" dependency as the PostgreSQL library is a transitive dependency provided by
+      the GeoTools version of gt-jdbc-postgis and geogig-postgresql.
+    -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-sqlserver</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-oracle</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-referencing</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -148,13 +154,11 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -165,25 +169,21 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-gwc</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -250,6 +250,13 @@
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-web-api-functional-tests</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-api</artifactId>
       <version>${geogig.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -366,6 +373,42 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <!-- Profile to build in RocksDB backend module. This profile is active by default. -->
+      <id>geogig-rocksdb</id>
+      <activation>
+        <property>
+          <name>disableRocksDBBackend</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.locationtech.geogig</groupId>
+          <artifactId>geogig-rocksdb</artifactId>
+          <version>${geogig.version}</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <!-- Profile to build in PostgreSQL backend module. This profile is active by default. -->
+      <id>geogig-postgresql</id>
+      <activation>
+        <property>
+          <name>disablePostgreSQLBackend</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.locationtech.geogig</groupId>
+          <artifactId>geogig-postgres</artifactId>
+          <version>${geogig.version}</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>

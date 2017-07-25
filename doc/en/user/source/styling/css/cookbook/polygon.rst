@@ -416,7 +416,7 @@ Code
       stroke: black;
     }
     
-    [@scale < 100000000] {
+    [@sd < 100M] {
        stroke-width: 7;
        label: [name];
        label-anchor: 0.5 0.5;
@@ -426,11 +426,11 @@ Code
        font-weight: bold;
     }
     
-    [@scale > 100000000] [@scale < 200000000] {
+    [@sd > 100M] [@sd < 200M] {
        stroke-width: 4;
     }
     
-    [@scale > 200000000] {
+    [@sd > 200M] {
        stroke-width: 1;
     }
 

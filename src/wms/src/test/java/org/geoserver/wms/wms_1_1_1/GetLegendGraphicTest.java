@@ -46,6 +46,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         testData.addStyle("rasterScales","rasterScales.sld",getClass(),catalog);
         testData.addStyle("Population","Population.sld",getClass(),catalog);
         testData.addStyle("uom","uomStroke.sld",getClass(),catalog);
+        testData.addStyle("scaleDependent","scaleDependent.sld",getClass(),catalog);
         
         
         testData.addVectorLayer(new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
@@ -255,4 +256,19 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertThat(content, containsString("/this/file/does/not/exist"));
     }
     
+    @Test
+    public void testNoLegendBelowMinScaleDenominator() throws Exception {
+        BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+                        "&layer=" + getLayerId(MockData.LAKES) + "&style=scaleDependent" +
+                        "&format=image/png&width=20&height=20&scale=5000", "image/png");
+        assertEquals(1, image.getHeight());
+    }
+    
+    @Test
+    public void testNoLegendAboveMinScaleDenominator() throws Exception {
+        BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+                        "&layer=" + getLayerId(MockData.LAKES) + "&style=scaleDependent" +
+                        "&format=image/png&width=20&height=20&scale=150000", "image/png");
+        assertEquals(1, image.getHeight());
+    }
 }

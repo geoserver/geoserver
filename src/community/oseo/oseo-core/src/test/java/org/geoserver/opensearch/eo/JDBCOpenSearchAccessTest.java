@@ -255,25 +255,28 @@ public class JDBCOpenSearchAccessTest {
         FeatureType schema = osAccess.getSchema(new NameImpl(TEST_NAMESPACE, "SENTINEL2"));
         assertGranulesViewSchema(schema, OPTICAL);
     }
-    
+
     @Test
     public void testLandsat8Schema() throws Exception {
         FeatureType schema = osAccess.getSchema(new NameImpl(TEST_NAMESPACE, "LANDSAT8"));
         assertGranulesViewSchema(schema, OPTICAL);
     }
-    
+
     @Test
     public void testSentinel1Granules() throws Exception {
-        FeatureSource<FeatureType, Feature> featureSource = osAccess.getFeatureSource(new NameImpl(TEST_NAMESPACE, "SENTINEL1"));
+        FeatureSource<FeatureType, Feature> featureSource = osAccess
+                .getFeatureSource(new NameImpl(TEST_NAMESPACE, "SENTINEL1"));
         assertEquals(0, featureSource.getCount(Query.ALL));
         FeatureCollection<FeatureType, Feature> fc = featureSource.getFeatures();
         assertEquals(0, fc.size());
-        fc.accepts(f -> {}, null); // just check trying to scroll over the feature does not make it blow  
+        fc.accepts(f -> {
+        }, null); // just check trying to scroll over the feature does not make it blow
     }
-    
+
     @Test
     public void testSentinel2Granules() throws Exception {
-        FeatureSource<FeatureType, Feature> featureSource = osAccess.getFeatureSource(new NameImpl(TEST_NAMESPACE, "SENTINEL2"));
+        FeatureSource<FeatureType, Feature> featureSource = osAccess
+                .getFeatureSource(new NameImpl(TEST_NAMESPACE, "SENTINEL2"));
         FeatureCollection<FeatureType, Feature> fc = featureSource.getFeatures();
         assertGranulesViewSchema(fc.getSchema(), OPTICAL);
         assertThat(fc.size(), greaterThan(1));
@@ -283,10 +286,11 @@ public class JDBCOpenSearchAccessTest {
             SimpleFeature sf = (SimpleFeature) f;
             final String id = sf.getID();
             assertTrue(id.matches("\\w+\\.\\d+"));
-        }, null); 
+        }, null);
     }
 
-    private void assertGranulesViewSchema(FeatureType schema, ProductClass expectedClass) throws IOException {
+    private void assertGranulesViewSchema(FeatureType schema, ProductClass expectedClass)
+            throws IOException {
         assertThat(schema, instanceOf(SimpleFeatureType.class));
         SimpleFeatureType ft = (SimpleFeatureType) schema;
         // check there are no foreign attributes
@@ -294,7 +298,7 @@ public class JDBCOpenSearchAccessTest {
         for (AttributeDescriptor ad : ft.getAttributeDescriptors()) {
             final String adName = ad.getLocalName();
             for (ProductClass pc : ProductClass.values()) {
-                if(pc == EOP_GENERIC || pc == expectedClass) {
+                if (pc == EOP_GENERIC || pc == expectedClass) {
                     continue;
                 } else {
                     assertThat(adName, not(startsWith(pc.getPrefix())));

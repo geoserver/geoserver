@@ -41,6 +41,7 @@ public class LayerGroupTest extends CSWInternalTestSupport {
         id_forestsandstreams = addLayerGroup(NAME_FORESTSANDSTREAMS, 
                 getCatalog().getLayerByName("Forests"), 
                 getCatalog().getLayerByName("Streams") );
+        addKeywordsToLayerGroup(NAME_FORESTSANDSTREAMS);
         id_buildingsandbridges = addLayerGroup(NAME_BUILDINGSANDBRIDGES, 
                 getCatalog().getLayerByName("Buildings"), 
                 getCatalog().getLayerByName("Bridges") );
@@ -56,8 +57,11 @@ public class LayerGroupTest extends CSWInternalTestSupport {
         
 
         assertXpathExists("//csw:Record[dc:title='"+ NAME_BUILDINGSANDBRIDGES + "']", d);   
-        assertXpathExists("//csw:Record[dc:title='"+ NAME_FORESTSANDSTREAMS + "']", d);        
-        
+        assertXpathExists("//csw:Record[dc:title='"+ NAME_FORESTSANDSTREAMS + "']", d);
+
+        // check that layer groups keywords were encoded
+        assertXpathExists("//csw:Record[dc:subject='keyword1']", d);
+        assertXpathExists("//csw:Record[dc:subject='keyword2']", d);
     }
     
     @Test
@@ -82,5 +86,4 @@ public class LayerGroupTest extends CSWInternalTestSupport {
         assertXpathExists("//csw:SummaryRecord[dc:title='"+ NAME_BUILDINGSANDBRIDGES + "']", d);   
         assertXpathExists("//csw:SummaryRecord[dc:title='Buildings']", d);        
     }
-    
 }

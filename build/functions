@@ -50,7 +50,7 @@ function setup_artifacts() {
 function upload_installer() {
   local tag=$1
   local file=$2
-  local ssh_opts="-i '$DIST_PK' -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+  local ssh_opts="-i $DIST_PK -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
   if [ -z $SKIP_UPLOAD ]; then
     echo "uploading $file"

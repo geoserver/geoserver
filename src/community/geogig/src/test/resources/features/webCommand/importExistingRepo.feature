@@ -9,11 +9,11 @@ Feature: Import an Existing GeoGig repository
   The response should be a 200 OK and contain the name of the new repository as well as
   an href URL.
 
-  @newtest
+  @ImportExisting @Plugin
   Scenario: Import of non existent repository fails
     Given There is a default multirepo server
-    Given A repository named "geogigRepo" is initialized
-    When I post content-type "application/json" to "/repos/nonExistentRepo/importExistingRepo" with
+    And I have "geogigRepo" that is not managed
+    When I "POST" content-type "application/json" to "/repos/nonExistentRepo/importExistingRepo" with
       """
       {
         "parentDirectory":"{@systemTempPath}",
@@ -25,11 +25,11 @@ Feature: Import an Existing GeoGig repository
     Then there should be no "nonExistentRepo" created
     And the response body should contain "Repository not found"
 
-  @newtest
+  @ImportExisting @Plugin
   Scenario: Import of existent repository succeeds with an XML response
     Given There is a default multirepo server
-    Given A repository named "geogigRepo" is initialized
-    When I post content-type "application/json" to "/repos/geogigRepo/importExistingRepo" with
+    And I have "geogigRepo" that is not managed
+    When I "POST" content-type "application/json" to "/repos/geogigRepo/importExistingRepo" with
       """
       {
         "parentDirectory":"{@systemTempPath}",
@@ -41,11 +41,11 @@ Feature: Import an Existing GeoGig repository
     Then the response status should be '200'
     And the response body should contain "http://localhost:8080/geoserver/geogig/repos/geogigRepo.xml"
 
-  @newtest
+  @ImportExisting @Plugin
   Scenario: Import of existent repository succeeds with a JSON response
     Given There is a default multirepo server
-    Given A repository named "geogigRepo" is initialized
-    When I post content-type "application/json" to "/repos/geogigRepo/importExistingRepo.json" with
+    And I have "geogigRepo" that is not managed
+    When I "POST" content-type "application/json" to "/repos/geogigRepo/importExistingRepo.json" with
       """
       {
         "parentDirectory":"{@systemTempPath}",
@@ -56,3 +56,21 @@ Feature: Import an Existing GeoGig repository
       """
     Then the response status should be '200'
     And the response body should contain "http://localhost:8080/geoserver/geogig/repos/geogigRepo.json"
+
+  @ImportExisting @Plugin
+  Scenario: Import of existent repository with a name already in use fails with a 409 Conflict
+    Given There is a default multirepo server
+    And I have "repo1" that is not managed by GeoServer
+    When I "POST" content-type "application/json" to "/repos/repo1/importExistingRepo.json" with
+      """
+      {
+        "parentDirectory":"{@systemTempPath}",
+        "leafDirectory":"geogigRepo",
+        "authorName":"GeoGig User",
+        "authorEmail":"geogig@geogig.org"
+      }
+      """
+    Then the response status should be '409'
+    And the response ContentType should be "application/json"
+    And the json object "response.success" equals "false"
+    And the json object "response.error" equals "The specified repository name is already in use, please try a different name"

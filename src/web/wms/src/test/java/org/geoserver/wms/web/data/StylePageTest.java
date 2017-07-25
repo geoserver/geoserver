@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -74,5 +75,18 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         }
         // Ensure equality
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testIsDefaultStyle() {
+        Catalog cat = getCatalog();
+        assertTrue(StylePage.isDefaultStyle(cat.getStyleByName("line")));
+
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName("line");
+        s.setFilename("line.sld");
+        s.setWorkspace(cat.getDefaultWorkspace());
+
+        assertFalse(StylePage.isDefaultStyle(s));
     }
 }

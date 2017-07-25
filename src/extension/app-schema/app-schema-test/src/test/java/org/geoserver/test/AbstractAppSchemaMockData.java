@@ -8,6 +8,8 @@ package org.geoserver.test;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -260,6 +262,27 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     protected abstract void addContent();
 
     /**
+     * Helper method the will first try to resolve the resource as an existing file
+     * and open it otherwise the resource will be open as an app-schema test data
+     * resource.
+     */
+    private InputStream openResource(String resource) {
+        File resourceFile = new File(resource);
+        if (resourceFile.exists()) {
+            try {
+                // the resource is a file so read from it
+                return new FileInputStream(resourceFile);
+            } catch (Exception exception) {
+                throw new RuntimeException(String.format(
+                        "Error reading file '%s'.", resourceFile.getAbsolutePath()), exception);
+            }
+        } else {
+            // considering the resource to be an app-schema test data resource
+            return AppSchemaDataAccessTest.class.getResourceAsStream(TEST_DATA + resource);
+        }
+    }
+
+    /**
      * Copy a file from the test-data directory to a feature type directory. if fileName contains
      * directory path eg, dir1/dir2/file.xml, the full path will be used to locate the resource.
      * After which the directory will be ignored.
@@ -274,8 +297,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *            mock data root directory
      */
     private void copyFileToFeatureTypeDir(String namespacePrefix, String typeName, String fileName) {
-        copy(AppSchemaDataAccessTest.class.getResourceAsStream(TEST_DATA + fileName),
-                "featureTypes" + "/" + getDataStoreName(namespacePrefix, typeName) + "/"
+        InputStream input = openResource(fileName);
+        copy(input, "featureTypes" + "/" + getDataStoreName(namespacePrefix, typeName) + "/"
                         + fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length()));
     }
 
@@ -688,6 +711,12 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     } else {
                         copyFileToFeatureTypeDir(namespacePrefix, typeName, propertyFileName);
                         if (propertyFileName.endsWith(".properties")) {
+                            // extract the file name if needed
+                            File file = new File(propertyFileName);
+                            if (file.exists()) {
+                                // extract the file name
+                                propertyFileName = file.getName();
+                            }
                             propertiesFiles.put(propertyFileName, getFeatureTypeDir(
                                     featureTypesBaseDir, namespacePrefix, typeName));
                         }
@@ -703,7 +732,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             }
         }
     }
-    
+
     /**
      * Modify the mapping file stream that is to be copied to the target directory. This is so the
      * mapping file copy has the right datastore parameters to use the test database.
@@ -714,8 +743,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @throws IOException
      */
     private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
-        InputStream is = AppSchemaDataAccessTest.class.getResourceAsStream(TEST_DATA
-                + mappingFileName);
+        InputStream is = openResource(mappingFileName);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         StringBuffer content = new StringBuffer();
         boolean parametersStartFound = false;

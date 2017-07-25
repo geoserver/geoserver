@@ -14,8 +14,9 @@ import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
+import com.google.common.base.Throwables;
 
-public class RepositoryInfo implements Serializable {
+public class RepositoryInfo implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -5946705936987075713L;
 
@@ -36,6 +37,7 @@ public class RepositoryInfo implements Serializable {
     private java.net.URI location;
 
     private String maskedLocation;
+
     /**
      * Stores the "nice" name for a repo. This is the name that is shown in the Repository list, as
      * well as what is stored in the GeoGIG repository config. It is transient, as we don't want to
@@ -44,12 +46,22 @@ public class RepositoryInfo implements Serializable {
      */
     private transient String repoName;
 
+    private transient long lastModified;
+
     public RepositoryInfo() {
         this(null);
     }
 
     RepositoryInfo(String id) {
         this.id = id;
+    }
+
+    public @Override RepositoryInfo clone() {
+        try {
+            return (RepositoryInfo) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw Throwables.propagate(e);
+        }
     }
 
     private Object readResolve() {
@@ -107,8 +119,10 @@ public class RepositoryInfo implements Serializable {
         if (this.location != null) {
             if (this.repoName == null) {
                 // lookup the resolver
-                RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
-                this.repoName = resolver.getName(this.location);
+                if (RepositoryResolver.resolverAvailableForURIScheme(this.location.getScheme())) {
+                    RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
+                    this.repoName = resolver.getName(this.location);
+                }
             }
         }
         return this.repoName;
@@ -132,5 +146,13 @@ public class RepositoryInfo implements Serializable {
     public String toString() {
         return new StringBuilder("[id:").append(getId()).append(", URI:").append(getLocation())
                 .append("]").toString();
+    }
+
+    long getLastModified() {
+        return lastModified;
+    }
+
+    void setLastModified(long timestamp) {
+        this.lastModified = timestamp;
     }
 }

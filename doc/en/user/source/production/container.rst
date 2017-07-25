@@ -63,6 +63,7 @@ In order to enable it add the following among the JVM startup options::
 
 where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory.
 
+.. _production_container.enable_cors:
 Enable CORS
 -----------
 

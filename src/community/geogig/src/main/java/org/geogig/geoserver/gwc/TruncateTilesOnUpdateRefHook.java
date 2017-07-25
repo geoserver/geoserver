@@ -35,6 +35,7 @@ import org.locationtech.geogig.plumbing.RefParse;
 import org.locationtech.geogig.plumbing.UpdateRef;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
+import org.locationtech.geogig.repository.impl.GeogigTransaction;
 import org.opengis.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,12 @@ public class TruncateTilesOnUpdateRefHook implements CommandHook {
         Map<String, Object> params = Scripting.getParamMap(command);
         String refName = (String) params.get("name");
         command.getClientData().put("name", refName);
-        if (Ref.WORK_HEAD.equals(refName) || Ref.STAGE_HEAD.equals(refName)) {
+
+        //ignore if still inside a transaction or updating a known symref
+        boolean ignore = command.context() instanceof GeogigTransaction;
+        ignore |= (Ref.WORK_HEAD.equals(refName) || Ref.STAGE_HEAD.equals(refName));
+        
+        if (ignore) {
             command.getClientData().put("ignore", Boolean.TRUE);
             // ignore updates to work/stage heads, we only care of updates to branches
             return command;
@@ -138,7 +144,7 @@ public class TruncateTilesOnUpdateRefHook implements CommandHook {
         Stopwatch sw = Stopwatch.createStarted();
         affectedLayers = findAffectedLayers(mediator, command.context(), newRefName);
         LOGGER.debug(String.format(
-            "GWC geogig truncate post-hook found %s affected layers on branch %s in %s.",
+                "GWC geogig truncate post-hook found %s affected layers on branch %s in %s.",
                 affectedLayers.size(), refName, sw.stop()));
 
         for (LayerInfo layer : affectedLayers) {

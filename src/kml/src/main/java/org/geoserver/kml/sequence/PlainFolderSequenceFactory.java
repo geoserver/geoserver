@@ -73,7 +73,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
          * @param folder
          */
         private void addFeatureCentroids(Layer layer, Folder folder) {
-            SimpleFeatureCollection centroids = new KMLCentroidFeatureCollection(context.getCurrentFeatureCollection());
+            SimpleFeatureCollection centroids = new KMLCentroidFeatureCollection(context.getCurrentFeatureCollection(), context);
             context.setCurrentFeatureCollection(centroids);
             FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
             List<Feature> features = new SequenceList<Feature>(

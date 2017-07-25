@@ -331,6 +331,8 @@ public class CapabilitiesTest extends WMSTestSupport {
         info.setContent("http://my/metadata/link");
         lg.getMetadataLinks().add(info);
         getCatalog().add(lg);
+        // add keywords to layer group
+        addKeywordsToLayerGroup("MyLayerGroup");
         
         try {
             Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
@@ -339,6 +341,10 @@ public class CapabilitiesTest extends WMSTestSupport {
             assertXpathEvaluatesTo("My Attribution", "//Layer[Name='MyLayerGroup']/Attribution/Title", doc);
             assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/MetadataURL)", doc);
             assertXpathEvaluatesTo("http://my/metadata/link", "//Layer[Name='MyLayerGroup']/MetadataURL/OnlineResource/@xlink:href", doc);
+            // check keywords are present
+            assertXpathEvaluatesTo("2", "count(//Layer[Name='MyLayerGroup']/KeywordList/Keyword)", doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/KeywordList[Keyword='keyword1'])", doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/KeywordList[Keyword='keyword2'])", doc);
         } finally {
             //clean up
             getCatalog().remove(lg);

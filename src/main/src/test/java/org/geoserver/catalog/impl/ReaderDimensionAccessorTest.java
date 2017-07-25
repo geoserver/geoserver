@@ -107,7 +107,7 @@ public class ReaderDimensionAccessorTest {
     }
 
     @Test
-    public void testCustomDimensionConvertion() throws IOException, ParseException {
+    public void testCustomTimeDimensionConvertion() throws IOException, ParseException {
         MockDimensionReader reader = new MockDimensionReader();
         reader.metadata.put("HAS_MYDIM_DOMAIN", "true");
         reader.metadata.put("MYDIM_DOMAIN_DATATYPE", "java.util.Date");
@@ -119,4 +119,31 @@ public class ReaderDimensionAccessorTest {
         assertEquals(DF.parse("2001-05-02 00:00:00"), converted.get(1));
         assertEquals(DF.parse("2001-05-03 00:00:00"), converted.get(2));
     }
+
+    @Test
+    public void testCustomDepthDimensionConvertion() throws IOException, ParseException {
+        MockDimensionReader reader = new MockDimensionReader();
+        reader.metadata.put("HAS_MYDIM_DOMAIN", "true");
+        reader.metadata.put("MYDIM_DOMAIN_DATATYPE", "java.lang.Double");
+        ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
+        List<Object> converted = accessor.convertDimensionValue("MYDIM",
+                Arrays.asList("10/20"));
+        assertEquals(1, converted.size());
+        NumberRange<Double> expected = new NumberRange<Double>(Double.class, 10d, 20d);
+        assertEquals(expected, converted.get(0));
+    }
+
+    @Test
+    public void testCustomCloudCoverDimensionConvertion() throws IOException, ParseException {
+        MockDimensionReader reader = new MockDimensionReader();
+        reader.metadata.put("HAS_MYDIM_DOMAIN", "true");
+        reader.metadata.put("MYDIM_DOMAIN_DATATYPE", "java.lang.Integer");
+        ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
+        List<Object> converted = accessor.convertDimensionValue("MYDIM",
+                Arrays.asList("75/100"));
+        assertEquals(1, converted.size());
+        NumberRange<Double> expected = new NumberRange<Double>(Double.class, 75d, 100d);
+        assertEquals(expected, converted.get(0));
+    }
+
 }

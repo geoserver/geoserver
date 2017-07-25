@@ -450,6 +450,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "publishables", new ReferenceCollectionConverter( PublishedInfo.class, LayerInfo.class, LayerGroupInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "styles", new ReferenceCollectionConverter( StyleInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "metadata", new MetadataMapConverter() );
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "keywords", new KeywordListConverter());
         
         //ReferencedEnvelope
         xs.registerLocalConverter( ReferencedEnvelope.class, "crs", new SRSConverter() );
@@ -1188,10 +1189,8 @@ public class XStreamPersister {
                     if (nodes.peek() instanceof JSONArray) {
                         nodes.pop();
                     }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    LOGGER.log(Level.WARNING, "Unexpected reflection error serializing json array", e);
                 }
             }
             writer.endNode();

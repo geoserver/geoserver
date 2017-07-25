@@ -34,7 +34,7 @@ public class BranchSelectionPanel extends FormComponentPanel<String> {
 
     private final IModel<String> repositoryUriModel;
 
-    private Supplier<RepositoryManager> manager = RepositoryManager.supplier();
+    private transient Supplier<RepositoryManager> manager = () -> RepositoryManager.get();
 
     public BranchSelectionPanel(String id, IModel<String> repositoryUriModel,
             IModel<String> branchNameModel, Form<DataStoreInfo> storeEditForm) {
@@ -92,17 +92,18 @@ public class BranchSelectionPanel extends FormComponentPanel<String> {
                 RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
                 String repoName = resolver.getName(repoURI);
                 RepositoryInfo repoInfo = manager.getByRepoName(repoName);
-                String repoId = repoInfo.getId();
-                List<Ref> branchRefs = manager.listBranches(repoId);
-                for (Ref branch : branchRefs) {
-                    branchNames.add(branch.localName());
+                if (repoInfo != null) {
+                    String repoId = repoInfo.getId();
+                    List<Ref> branchRefs = manager.listBranches(repoId);
+                    for (Ref branch : branchRefs) {
+                        branchNames.add(branch.localName());
+                    }
                 }
             } catch (IOException | URISyntaxException e) {
                 if (reportError) {
                     form.error("Could not list branches: " + e.getMessage());
                 }
-                branchNames = new ArrayList<String>();
-            } 
+            }
             String current = (String) choice.getModelObject();
             if (current != null && !branchNames.contains(current)) {
                 branchNames.add(0, current);

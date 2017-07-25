@@ -31,7 +31,7 @@ below)::
 When writing a selector that uses both *and* and *or* combinators, remember that the *and*
 combinator has higher precedence. For example::
 
-    restricted [cat='2'], [cat='3'], [cat='4'] [ @scale <= 200000] [@scale > 100000] {
+    restricted [cat='2'], [cat='3'], [cat='4'] [@sd <= 200k] [@sd > 100k] {
       fill: #EE0000;
     }
     
@@ -44,7 +44,7 @@ The above selector should be read as:
 If instead the intention was to combine in or just the three cat filters, the right syntax would
 have been::
 
-    restricted [cat='2' or cat='3' or cat='4'] [ @scale <= 200000] [@scale > 100000] {
+    restricted [cat='2' or cat='3' or cat='4'] [@sd <= 200k] [@sd > 100k] {
       fill: #EE0000;
     }
 
@@ -140,7 +140,7 @@ neighborhood level.  Details such as scale level are presented as
 pseudo-attributes; they look like property filters, but the property names
 start with an ``@`` symbol::
 
-    [roadtype='Residential'][@scale>100000] {
+    [roadtype = 'Residential'][@sd > 100k] {
         stroke: black;
     }
 
@@ -152,9 +152,19 @@ The context details that are provided are as follows:
 
     * - Pseudo-Attribute
       - Meaning
-    * - @scale
+    * - @sd
       - The scale denominator for the current rendering.  More explicitly, this
-        is the ratio of real-world distance to screen/rendered distance.
+        is the ratio of real-world distance to screen/rendered distance. 
+    * - @scale
+      - Same as above, the scale denominator (not scale) for the current rendering. 
+        Supported for backwards compatibility 
+
+The scale value can be expressed as a plain number, for for brevity and readability
+the suffixes k (kilo), M (mega), G (giga) can be used, for example::
+
+  [@sd > 100k]
+  [@sd < 12M]
+  [@sd < 1G]
 
 .. note:: 
     While property filters (currently) use the more complex ECQL syntax,

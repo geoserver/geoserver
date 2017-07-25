@@ -5,6 +5,7 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,10 +30,10 @@ import org.opengis.feature.type.FeatureType;
  * @source $URL$
  */
 @SuppressWarnings("unchecked")
-class ListComplexFeatureCollection extends BaseFeatureCollection {
+public class ListComplexFeatureCollection extends BaseFeatureCollection {
 
     /** wrapped list of features containing the contents */
-    private List<? extends Feature> list;
+    private List<Feature> list;
 
     /** Cached bounds */
     private ReferencedEnvelope bounds = null;
@@ -50,10 +51,22 @@ class ListComplexFeatureCollection extends BaseFeatureCollection {
      * @param schema
      * @param list
      */
-    public ListComplexFeatureCollection(FeatureType schema, List<? extends Feature> list) {
+    public ListComplexFeatureCollection(FeatureType schema, List<Feature> list) {
         super(schema);
         this.list = list;
     }
+    
+   /**
+    * Create a ListFeatureCollection around the provided feature.
+    * 
+    * @param schema
+    * @param list
+    */
+   public ListComplexFeatureCollection(Feature feature) {
+       super(feature.getType());
+       this.list = new ArrayList<>();
+       this.list.add(feature);
+   }
 
     @Override
     public int size() {

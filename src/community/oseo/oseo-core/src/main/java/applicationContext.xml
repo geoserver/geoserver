@@ -13,11 +13,16 @@
 
   <!-- A way to avoid security wrapping of OpenSearchDataAccess -->
   <bean id="openSearchSecureDataFactory" class="org.geoserver.opensearch.eo.OpenSearchSecureDataFactory" />
+  
+  <bean id="openSearchAccessProvider" class="org.geoserver.opensearch.eo.OpenSearchAccessProvider">
+    <constructor-arg ref="geoServer" />
+  </bean>
 
   <bean id="openSearchEoServiceTarget" class="org.geoserver.opensearch.eo.DefaultOpenSearchEoService"
     lazy-init="false"
   >
     <constructor-arg ref="geoServer" />
+    <constructor-arg ref="openSearchAccessProvider" />
   </bean>
 
   <bean id="oseoLoader" class="org.geoserver.opensearch.eo.OSEOXStreamLoader">

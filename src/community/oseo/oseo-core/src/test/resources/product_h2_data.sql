@@ -1052,7 +1052,7 @@ VALUES(353, '<?xml version="1.0" encoding="UTF-8"?>
   </om:result>
   <eop:metaDataProperty>
     <eop:EarthObservationMetaData>
-      <eop:identifier></eop:identifier>
+      <eop:identifier>S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01</eop:identifier>
       <eop:creationDate>2016-01-18T21:05:18.000706Z</eop:creationDate>
       <eop:modificationDate></eop:modificationDate>
       <eop:parentIdentifier>S2_MSI_L1C</eop:parentIdentifier>

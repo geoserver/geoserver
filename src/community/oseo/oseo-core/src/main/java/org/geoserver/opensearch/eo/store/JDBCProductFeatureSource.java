@@ -7,19 +7,26 @@ package org.geoserver.opensearch.eo.store;
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.geotools.data.Join;
 import org.geotools.data.Query;
+import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
 /**
@@ -27,13 +34,24 @@ import org.opengis.filter.Filter;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class JDBCProductFeatureSource extends AbstractMappingSource {
+public class JDBCProductFeatureSource extends AbstractMappingStore {
 
     static final Logger LOGGER = Logging.getLogger(JDBCProductFeatureSource.class);
+    
+    String granuleForeignKey; 
 
     public JDBCProductFeatureSource(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         super(openSearchAccess, collectionFeatureType);
+        
+        for (AttributeDescriptor ad : getFeatureStoreForTable("granule").getSchema().getAttributeDescriptors()) {
+            if(ad.getLocalName().equalsIgnoreCase("product_id")) {
+                granuleForeignKey = ad.getLocalName();
+            }
+        }
+        if(granuleForeignKey == null) {
+            throw new IllegalStateException("Could not locate a column named 'product'_id in table 'granule'");
+        }
     }
 
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
@@ -72,9 +90,9 @@ public class JDBCProductFeatureSource extends AbstractMappingSource {
     }
 
     @Override
-    protected void mapProperties(ComplexFeatureBuilder builder, SimpleFeature fi) {
+    protected void mapPropertiesToComplex(ComplexFeatureBuilder builder, SimpleFeature fi) {
         // basic mappings
-        super.mapProperties(builder, fi);
+        super.mapPropertiesToComplex(builder, fi);
 
         // quicklook extraction
         Object metadataValue = fi.getAttribute("quicklook");
@@ -86,6 +104,66 @@ public class JDBCProductFeatureSource extends AbstractMappingSource {
             Attribute attribute = ab.buildSimple(null, quicklookFeature.getAttribute("thumb"));
             builder.append(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, attribute);
         }
+    }
+    
+    @Override
+    protected void removeChildFeatures(List<String> collectionIdentifiers) throws IOException {
+        super.removeChildFeatures(collectionIdentifiers);
+        
+        // remove thumbnail
+        List<Filter> filters = collectionIdentifiers.stream()
+                .map(id -> FF.equal(FF.property("tid"), FF.literal(id), false))
+                .collect(Collectors.toList());
+        Filter metadataFilter = FF.or(filters);
+        SimpleFeatureStore thumbStore = getFeatureStoreForTable("product_thumb");
+        thumbStore.setTransaction(getTransaction());
+        thumbStore.removeFeatures(metadataFilter);
+        
+        // remove granules
+        filters = collectionIdentifiers.stream()
+                .map(id -> FF.equal(FF.property(granuleForeignKey), FF.literal(id), false))
+                .collect(Collectors.toList());
+        Filter granulesFilter = FF.or(filters);
+        SimpleFeatureStore granuleStore = getFeatureStoreForTable("granule");
+        granuleStore.setTransaction(getTransaction());
+        granuleStore.removeFeatures(granulesFilter);
+    }
+    
+    @Override
+    protected boolean modifySecondaryAttribute(Name name, Object value, Filter mappedFilter) throws IOException {
+        if (OpenSearchAccess.GRANULES.equals(name.getLocalPart())) {
+            final String tableName = "granule";
+            modifySecondaryTable(mappedFilter, value, tableName,
+                    id -> FF.equal(FF.property("product_id"), FF.literal(id), true),
+                    (id, granulesStore) -> {
+                        SimpleFeatureCollection granules = (SimpleFeatureCollection) value;
+                        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(
+                                granulesStore.getSchema());
+                        ListFeatureCollection mappedGranules = new ListFeatureCollection(
+                                granulesStore.getSchema());
+                        granules.accepts(f -> {
+                            SimpleFeature sf = (SimpleFeature) f;
+                            for (AttributeDescriptor ad : granulesStore.getSchema()
+                                    .getAttributeDescriptors()) {
+                                fb.set(ad.getLocalName(), sf.getAttribute(ad.getLocalName()));
+                            }
+                            fb.set("product_id", id);
+                            SimpleFeature mappedGranule = fb.buildFeature(null);
+                            mappedGranules.add(mappedGranule);
+                        }, null);
+                        return mappedGranules;
+                    });
+
+            // this one has been handled
+            return true;
+        }
+        
+        return false;
+    }
+
+    @Override
+    protected String getThumbnailTable() {
+        return "product_thumb";
     }
 
 }

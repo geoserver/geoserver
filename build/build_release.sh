@@ -297,6 +297,11 @@ if [ -z $SKIP_BUILD ]; then
   pdflatex -interaction batchmode manual.tex
   set -e
 
+  if [ ! -f manual.pdf ]; then
+    echo "Failed to build pdf manual. Printing latex log:"
+    cat manual.log
+  fi
+
   cd ../../../developer
   make clean html
 
@@ -351,11 +356,11 @@ unlink readme
 popd > /dev/null
 
 echo "copying artifacts to $dist"
-cp $artifacts/../../../doc/en/user/build/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
 cp $artifacts/*-plugin.zip $dist/plugins
 for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
+cp $artifacts/../../../doc/en/user/build/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
 
 # git commit changes on the release branch
 pushd .. > /dev/null

@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -73,6 +74,8 @@ import static org.geoserver.data.test.CiteTestData.STREAMS;
 import static org.junit.Assert.*;
 
 public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
+
+    public static QName TAZ_BYTE = new QName(MockData.WCS_URI, "tazbyte", MockData.WCS_PREFIX);
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging
             .getLogger(RenderedImageMapOutputFormatTest.class.getPackage().getName());
@@ -290,6 +293,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addDefaultRasterLayer(MockData.TASMANIA_DEM, getCatalog());
+        testData.addRasterLayer(TAZ_BYTE, "tazbyte.tiff", null, getCatalog());
     }
 
     
@@ -346,10 +350,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
         // test some sample pixels to check rendering is different using different interpolations
-        assertNotEquals(getPixelColor(imageNearest, 200, 200).getRGB(),
-                getPixelColor(imageBicubic, 200, 200).getRGB());
-        assertNotEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
-                getPixelColor(imageBicubic, 300, 300).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 160, 160).getRGB(),
+                getPixelColor(imageBicubic, 160, 160).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 300, 450).getRGB(),
+                getPixelColor(imageBicubic, 300, 450).getRGB());
     }
 
     @Test
@@ -405,10 +409,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
         // test some sample pixels to check rendering is different using different interpolations
-        assertNotEquals(getPixelColor(imageNearest, 200, 200).getRGB(),
-                getPixelColor(imageBicubic, 200, 200).getRGB());
-        assertNotEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
-                getPixelColor(imageBicubic, 300, 300).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 160, 160).getRGB(),
+                getPixelColor(imageBicubic, 160, 160).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 300, 450).getRGB(),
+                getPixelColor(imageBicubic, 300, 450).getRGB());
 
         // check also the *non* direct raster render path
         request = new GetMapRequest();
@@ -825,6 +829,40 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
     }
 
+    @Test
+    public void testGetMapOnByteNodataGrayScale() throws Exception {
+
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        ReferencedEnvelope bbox = new ReferencedEnvelope(new Envelope(145, 146, -43, -41), crs);
+        request.setBbox(bbox);
+        request.setHeight(768);
+        request.setWidth(384);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+        request.setTransparent(true);
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapHeight(768);
+        map.setMapWidth(384);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        map.getViewport().setBounds(bbox);
+        addRasterToMap(map, TAZ_BYTE);
+
+        map.getViewport().setBounds(bbox);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedOp op = (RenderedOp)imageMap.getImage();
+        BufferedImage image = op.getAsBufferedImage();
+        imageMap.dispose();
+
+        // check that a pixel in nodata area is transparent
+        assertEquals(0, image.getRaster().getSample(40, 400, 0));
+        assertEquals(0, image.getRaster().getSample(40, 400, 1));
+
+        }
+    
     /**
      * Sets up a rendering loop and throws {@code renderExceptionToThrow} wrapped to a
      * RuntimeException when the renderer tries to get a Feature to render.

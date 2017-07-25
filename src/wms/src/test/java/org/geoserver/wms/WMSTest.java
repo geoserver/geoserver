@@ -5,17 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Date;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -25,11 +14,23 @@ import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
+import org.geotools.renderer.style.ExternalGraphicFactory;
+import org.geotools.renderer.style.ImageGraphicFactory;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
+
+import javax.xml.namespace.QName;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.sql.Date;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -158,6 +159,27 @@ public class WMSTest extends WMSTestSupport {
                 results.containsAll(Arrays.asList(expectedIds)));
         assertTrue("expected " + Arrays.toString(expectedIds) + " but got " + results,
                 Arrays.asList(expectedIds).containsAll(results));
+    }
+
+    @Test
+    public void testWMSLifecycleHandlerGraphicCacheReset() throws Exception {
+
+        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+        Map<URL, BufferedImage> imageCache = null;
+        while (it.hasNext()) {
+            ExternalGraphicFactory egf = it.next();
+            if (egf instanceof ImageGraphicFactory) {
+                Field cache = egf.getClass().getDeclaredField("imageCache");
+                cache.setAccessible(true);
+                imageCache = (Map) cache.get(egf);
+                URL u = new URL("http://boundless.org");
+                BufferedImage b = new BufferedImage(6, 6, 8);
+                imageCache.put(u, b);
+            }
+        }
+        assertNotEquals(0, imageCache.size());
+        getGeoServer().reload();
+        assertEquals(0, imageCache.size());
     }
     
 }

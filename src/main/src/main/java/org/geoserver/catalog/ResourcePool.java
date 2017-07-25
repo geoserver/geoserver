@@ -202,7 +202,6 @@ public class ResourcePool {
     Map<String, FeatureType> featureTypeCache;
     Map<String, List<AttributeTypeInfo>> featureTypeAttributeCache;
     Map<String, WebMapServer> wmsCache;
-    Map<String, GridCoverageReader>  coverageReaderCache;
     Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
     Map<StyleInfo,Style> styleCache;
     List<Listener> listeners;
@@ -231,7 +230,6 @@ public class ResourcePool {
         featureTypeCache = createFeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
         
         featureTypeAttributeCache = createFeatureTypeAttributeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
-        coverageReaderCache = createCoverageReaderCache();
         hintCoverageReaderCache = createHintCoverageReaderCache();
         
         wmsCache = createWmsCache();
@@ -340,23 +338,6 @@ public class ResourcePool {
         // for each feature type we cache two versions, one with the projection policy applied, one
         // without it
         return new FeatureTypeAttributeCache(size * 2);
-    }
-
-    /**
-     * Returns the cache for {@link GridCoverageReader} objects for a particular coverage.
-     * <p>
-     * The cache key is the corresponding Coverage id ({@link CatalogInfo#getId()}.
-     * </p>
-     * <p>
-     * The concrete Map implementation is determined by {@link #createCoverageReaderCache()}
-     * </p>
-     */
-    public Map<String, GridCoverageReader> getCoverageReaderCache() {
-        return coverageReaderCache;
-    }
-
-    protected Map<String, GridCoverageReader> createCoverageReaderCache() {
-        return new CoverageReaderCache();
     }
 
     /**
@@ -1461,42 +1442,26 @@ public class ResourcePool {
             throw new IOException("Could not find the raster plugin for format " + info.getType());
         }
         
-        // look into the cache
-        GridCoverageReader reader = null;
-        Object key;
-        if ( hints != null && info.getId() != null) {
-            // expand the hints if necessary
-            final String formatName = gridFormat.getName();
-            if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
-                if (coverageExecutor != null){
-                    if (hints != null) {
-                        // do not modify the caller hints
-                        hints = new Hints(hints);
-                        hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
-                    } else {
-                        hints = new Hints(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
-                    }
-                }
-            }
-            
-            key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = hintCoverageReaderCache.get( key );
+        // we are going to add the repository anyways, but we don't want to modify the original hints
+        // and need to ensure they are not null
+        if (hints != null) {
+            hints = new Hints(hints);
         } else {
-            key = info.getId();
-            if(key != null) {
-                reader = coverageReaderCache.get( key );
-            }
+            hints = new Hints();
         }
+        hints.add(new RenderingHints(Hints.REPOSITORY, repository));
+        if (coverageExecutor != null){
+            hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
+        }
+        // look into the cache
+        Object key = new CoverageHintReaderKey(info.getId(), hints);
+        GridCoverageReader reader = hintCoverageReaderCache.get( key );
         
         // if not found in cache, create it
-        if(reader == null) {
-            synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
+        if (reader == null) {
+            synchronized ( hintCoverageReaderCache ) {
                 if (key != null) {
-                    if (hints != null) {
-                        reader = hintCoverageReaderCache.get(key);
-                    } else {
-                        reader = coverageReaderCache.get(key);
-                    }
+                    reader = hintCoverageReaderCache.get(key);
                 }
                 if (reader == null) {
                     /////////////////////////////////////////////////////////
@@ -1508,16 +1473,12 @@ public class ResourcePool {
                     Object readObject = getObjectToRead(urlString);
 
                     // readers might change the provided hints, pass down a defensive copy
-                    reader = gridFormat.getReader(readObject, new Hints(hints));
-                    if(reader == null) {
+                    reader = gridFormat.getReader(readObject, hints);
+                    if (reader == null) {
                         throw new IOException("Failed to create reader from " + urlString + " and hints " + hints);
                     }
-                    if(key != null) {
-                        if(hints != null) {
-                            hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
-                        } else {
-                            coverageReaderCache.put((String) key, reader);
-                        }
+                    if (key != null) {
+                        hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
                     }
                 }
             }
@@ -1600,7 +1561,6 @@ public class ResourcePool {
      */
     public void clear(CoverageStoreInfo info) {
         String storeId = info.getId();
-        coverageReaderCache.remove(storeId);
         HashSet<CoverageHintReaderKey> keys = new HashSet<CoverageHintReaderKey>(hintCoverageReaderCache.keySet());
         for (CoverageHintReaderKey key : keys) {
             if(key.id != null && key.id.equals(storeId)) {
@@ -2033,7 +1993,6 @@ public class ResourcePool {
         dataStoreCache.clear();
         featureTypeCache.clear();
         featureTypeAttributeCache.clear();
-        coverageReaderCache.clear();
         hintCoverageReaderCache.clear();
         wmsCache.clear();
         styleCache.clear();

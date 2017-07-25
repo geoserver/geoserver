@@ -16,11 +16,11 @@ import org.opengis.feature.type.FeatureType;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class JDBCCollectionFeatureSource extends AbstractMappingSource {
+public class JDBCCollectionFeatureStore extends AbstractMappingStore {
 
-    static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureSource.class);
+    static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureStore.class);
 
-    public JDBCCollectionFeatureSource(JDBCOpenSearchAccess openSearchAccess,
+    public JDBCCollectionFeatureStore(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         super(openSearchAccess, collectionFeatureType);
     }
@@ -43,6 +43,11 @@ public class JDBCCollectionFeatureSource extends AbstractMappingSource {
     @Override
     protected String getLinkForeignKey() {
         return "collection_id";
+    }
+
+    @Override
+    protected String getThumbnailTable() {
+        return "collection_thumb";
     }
 
 }

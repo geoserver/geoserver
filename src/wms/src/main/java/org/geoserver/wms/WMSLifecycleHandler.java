@@ -5,11 +5,19 @@
  */
 package org.geoserver.wms;
 
-import java.awt.Font;
-import java.io.File;
-import java.io.IOException;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geotools.renderer.style.*;
+import org.geotools.util.logging.Logging;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -17,19 +25,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.io.FileUtils;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.impl.GeoServerLifecycleHandler;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resources;
-import org.geotools.renderer.style.FontCache;
-import org.geotools.renderer.style.ImageGraphicFactory;
-import org.geotools.renderer.style.SVGGraphicFactory;
-import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * Drops imaging caches
@@ -64,8 +59,13 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
 
     public void onReset() {
         // kill the image caches
-        ImageGraphicFactory.resetCache();
-        SVGGraphicFactory.resetCache();
+        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+        while (it.hasNext()) {
+            ExternalGraphicFactory egf = it.next();
+            if (egf instanceof GraphicCache) {
+                ((GraphicCache) egf).clearCache();
+            }
+        }
 
         // reloads the font cache
         reloadFontCache();

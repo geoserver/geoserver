@@ -1228,6 +1228,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.marlin</groupId>
+      <artifactId>marlin</artifactId>
+      <version>${marlin.version}</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1854,6 +1859,7 @@
   <jackson1.version>1.9.13</jackson1.version>
   <jackson2.version>2.5.0</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
+  <marlin.version>0.7.5-Unsafe</marlin.version>
  </properties>
 
  <profiles>

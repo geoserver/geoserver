@@ -18,6 +18,8 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -30,6 +32,8 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Andrea Aime - GeoSolutions
  */
 public class FeatureInfoRequestParameters {
+    
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     int x;
 
@@ -53,6 +57,8 @@ public class FeatureInfoRequestParameters {
     
     List<Filter> filters;
     
+    List<SortBy[]> sorts;
+    
     List<MapLayerInfo> layers;
     
     List<Style> styles;
@@ -74,6 +80,7 @@ public class FeatureInfoRequestParameters {
         this.layers = request.getQueryLayers();
         
         this.filters = request.getGetMapRequest().getFilter();
+        this.sorts = request.getGetMapRequest().getSortByArrays();
         this.styles = getStyles(request, layers);
         this.x = request.getXPixel();
         this.y = request.getYPixel();
@@ -174,8 +181,38 @@ public class FeatureInfoRequestParameters {
             return filters.get(currentLayer);
         }
     }
-
     
+    public SortBy[] getSort() {
+        if (sorts == null || sorts.size() <= currentLayer) {
+            return null;
+        } else {
+            SortBy[] layerSort = sorts.get(currentLayer);
+            final MapLayerInfo layer = layers.get(currentLayer);
+            if (layer.getType() == MapLayerInfo.TYPE_VECTOR
+                    || layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR) {
+                // for visual consistency, we must return the information that is on top of the
+                // map first, to get this we just need to invert the sort (the code returns the
+                // features it encounters first, until FEATURE_COUNT is reached).
+                // Failing to do so will result in the user seeing one feature but getting information
+                // on those below it (given the sort has been specified, it should be considered
+                // as particularly important for the user, unlike a normal info request in which
+                // performance and backwards compatibility are favored).
+                SortBy[] result = new SortBy[layerSort.length];
+                for (int i = 0; i < layerSort.length; i++) {
+                    SortBy sb = layerSort[i];
+                    SortOrder order = sb.getSortOrder();
+                    SortBy reverse = FF.sort(sb.getPropertyName().getPropertyName(),
+                            order == SortOrder.ASCENDING || order == null ? SortOrder.DESCENDING
+                                    : SortOrder.ASCENDING);
+                    result[i] = reverse;
+                }
+                return result;
+            } else {
+                // for rasters no need to invert
+                return layerSort;
+            }
+        }
+    }    
 
     /**
      * The property names for the specified layer (if any, null otherwise)

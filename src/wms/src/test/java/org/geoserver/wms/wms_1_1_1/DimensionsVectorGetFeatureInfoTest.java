@@ -5,31 +5,39 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport {
 
     String baseFeatureInfo;
 
     XpathEngine xpath;
+
+    String baseFeatureInfoStacked;
+    
+    @After 
+    public void cleanup() {
+        VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
+    }
 
     @Before
     public void setXpahEngine() throws Exception {
@@ -40,8 +48,28 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
                 + "&query_layers="
                 + getLayerId(V_TIME_ELEVATION)
                 + "&feature_count=50";
+        
+        baseFeatureInfoStacked = "wms?service=WMS&version=1.1.1&request=GetFeatureInfo&bbox=-180,-90,180,90"
+                + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
+                + getLayerId(V_TIME_ELEVATION_STACKED)
+                + "&query_layers="
+                + getLayerId(V_TIME_ELEVATION_STACKED)
+                + "&feature_count=1";
+
 
         xpath = XMLUnit.newXpathEngine();
+    }
+    
+    /**
+     * Ensures there is at most one feature at the specified location, and returns its feature id
+     * 
+     * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
+     * @param x
+     * @param y
+     *
+     */
+    String getFeatureAt(String baseFeatureInfo, int x, int y) throws Exception {
+        return getFeatureAt(baseFeatureInfo, x, y, "sf:TimeElevation");
     }
 
     /**
@@ -52,18 +80,19 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
      * @param y
      *
      */
-    String getFeatureAt(String baseFeatureInfo, int x, int y) throws Exception {
+    String getFeatureAt(String baseFeatureInfo, int x, int y, String typeName) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(baseFeatureInfo
                 + "&info_format=application/vnd.ogc.gml&x=" + x + "&y=" + y);
         assertEquals("application/vnd.ogc.gml", response.getContentType());
         Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
-        String sCount = xpath.evaluate("count(//sf:TimeElevation)", doc);
+        // print(doc);
+        String sCount = xpath.evaluate("count(//" + typeName + ")", doc);
         int count = Integer.valueOf(sCount);
 
         if (count == 0) {
             return null;
         } else if (count == 1) {
-            return xpath.evaluate("//sf:TimeElevation/@fid", doc);
+            return xpath.evaluate("//" + typeName + "/@fid", doc);
         } else {
             fail("Found more than one feature: " + count);
             return null; // just to make the compiler happy, fail throws an unchecked exception
@@ -276,5 +305,38 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.2", getFeatureAt(baseFeatureInfo, 20, 30));
         assertNull(getFeatureAt(baseFeatureInfo, 60, 30));
     }
+    
+    @Test
+    public void testSortTimeElevationAscending() throws Exception {
+        // check consistency with the visual output of GetMap
+        assertEquals("TimeElevationStacked.3",
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time,elevation", 20, 10,
+                        "sf:TimeElevationStacked"));
+    }
+
+    @Test
+    public void testSortTimeElevationDescending() throws Exception {
+        // check consistency with the visual output of GetMap
+        assertEquals("TimeElevationStacked.0",
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time D,elevation D", 20, 10,
+                        "sf:TimeElevationStacked"));
+    }
+
+    @Test
+    public void testSortTimeElevationAscendingLegacyIdentifier() throws Exception {
+        VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
+        assertEquals("TimeElevationStacked.3",
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time,elevation", 20, 10,
+                        "sf:TimeElevationStacked"));
+    }
+
+    @Test
+    public void testSortTimeElevationDescendingLegacyIdentifier() throws Exception {
+        VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
+        assertEquals("TimeElevationStacked.0",
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time D,elevation D", 20, 10,
+                        "sf:TimeElevationStacked"));
+    }
+    
 
 }

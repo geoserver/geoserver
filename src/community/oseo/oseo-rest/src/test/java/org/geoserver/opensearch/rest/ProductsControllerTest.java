@@ -188,6 +188,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("NOMINAL", json.read("$.properties['eop:acquisitionType']"));
         assertEquals(Integer.valueOf(65), json.read("$.properties['eop:orbitNumber']"));
         assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+        
+        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
+        assertTrue(new Envelope(-180,180,-90,90).equals(bounds));
     }
 
     @Test

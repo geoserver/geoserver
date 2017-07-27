@@ -61,6 +61,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
@@ -503,6 +504,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                 continue;
             }
             Property property = feature.getProperty(pd.getName());
+            if (pd instanceof GeometryDescriptor && property == null) {
+                property = feature.getDefaultGeometryProperty();
+            }
             if (property == null || property.getValue() == null) {
                 continue;
             }

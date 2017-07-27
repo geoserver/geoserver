@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,13 +27,17 @@ import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.NameImpl;
+import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
+import com.vividsolutions.jts.geom.Envelope;
 
 import net.sf.json.JSONObject;
 
@@ -481,6 +486,11 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("A", json.read("$.properties['eo:platformSerialIdentifier']"));
         assertEquals("MSI", json.read("$.properties['eo:instrument']"));
         assertEquals("2012-04-23T18:25:43.511+0000", json.read("$.properties['timeStart']"));
+        
+        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
+        assertTrue(new Envelope(-180,180,-90,90).equals(bounds));
+
     }
 
 }

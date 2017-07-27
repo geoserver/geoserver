@@ -165,6 +165,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     protected SimpleFeatureStore getDelegateCollectionStore() throws IOException {
         SimpleFeatureStore fs = (SimpleFeatureStore) getDelegateCollectionSource();
+        if(transaction != null) {
+            fs.setTransaction(transaction);
+        }
         return fs;
     }
 

@@ -4,12 +4,12 @@
  */
 package org.geoserver.opensearch.rest;
 
-import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.*;
-
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.EOP_GENERIC;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,18 +25,23 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
-import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.opensearch.rest.ProductsController.ProductPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.NameImpl;
+import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
+import com.vividsolutions.jts.geom.Envelope;
 
 import net.sf.json.JSONObject;
 
@@ -495,6 +500,14 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("Polygon", json.read("$.features[1].geometry.type"));
         assertEquals("/efs/geoserver_data/coverages/sentinel/california/R1C2.tif",
                 json.read("$.features[1].properties.location"));
+        // parse the geojson, check the geometries have been parsed correctly
+        SimpleFeatureCollection fc = (SimpleFeatureCollection) new FeatureJSON().readFeatureCollection(json.jsonString());
+        assertEquals(2, fc.size());
+        final SimpleFeatureIterator it = fc.features();
+        SimpleFeature sf = it.next();
+        assertTrue(new Envelope(10,12,40,42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+        sf = it.next();
+        assertTrue(new Envelope(10,12,40,42).contains(ReferencedEnvelope.reference(sf.getBounds())));
 
         // check no other granule has been harmed
         json = getAsJSONPath(
@@ -620,15 +633,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         if (parts.contains(ProductPart.Granules)) {
             assertProductGranules();
         }
-    }
-    
-    @Test
-    public void testProduct() throws Exception {
-        byte[] payload = FileUtils.readFileToByteArray(new java.io.File("/home/aaime/Scaricati/product.zip"));
-        MockHttpServletResponse response = postAsServletResponse(
-                "rest/oseo/collections/SENTINEL2/products", payload,
-                MediaTypeExtensions.APPLICATION_ZIP_VALUE);
-        System.out.println(response.getStatus());
     }
     
 }

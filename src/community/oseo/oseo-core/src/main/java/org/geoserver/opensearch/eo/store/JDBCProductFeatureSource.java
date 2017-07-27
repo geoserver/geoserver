@@ -147,6 +147,7 @@ public class JDBCProductFeatureSource extends AbstractMappingStore {
                                     .getAttributeDescriptors()) {
                                 fb.set(ad.getLocalName(), sf.getAttribute(ad.getLocalName()));
                             }
+                            fb.set("the_geom", sf.getDefaultGeometry());
                             fb.set("product_id", id);
                             SimpleFeature mappedGranule = fb.buildFeature(null);
                             mappedGranules.add(mappedGranule);

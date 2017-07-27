@@ -235,11 +235,6 @@ public class ProductsController extends AbstractOpenSearchController {
             }
             
             if(granulesCollection != null) {
-//                SimpleFeatureStore store = (SimpleFeatureStore) getOpenSearchAccess()
-//                        .getGranules(collection, productId);
-//                store.setTransaction(fs.getTransaction());
-//                store.removeFeatures(Filter.INCLUDE);
-//                store.addFeatures(granulesCollection);
                 fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.GRANULES), granulesCollection, filter);
             }
 

@@ -83,7 +83,15 @@ public class VectorMapRenderUtils {
         FeatureType schema = featureSource.getSchema();
         List<LiteFeatureTypeStyle> styleList = getFeatureStyles(layer, screenSize, mapScale,
                 schema);
-        
+
+        //if there aren't any styles to render, we don't need to get any data....
+        if (styleList.isEmpty()) {
+            Query query = new Query(schema.getName().getLocalPart());
+            query.setProperties(Query.NO_PROPERTIES);
+            query.setFilter(Filter.EXCLUDE);
+            return query;
+        }
+
         final int bufferScreen = getComputedBuffer(requestBufferScreen, styleList);
         
         final ReferencedEnvelope queryArea = new ReferencedEnvelope(renderingArea);

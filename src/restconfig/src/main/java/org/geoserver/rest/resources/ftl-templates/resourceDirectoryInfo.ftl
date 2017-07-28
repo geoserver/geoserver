@@ -7,11 +7,11 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 </head>
 <body>
-<h1>Resource Directory '${properties.parent.path}${properties.name}'</h1>
+<h1>Resource Directory <#if properties.parent.path??>'${properties.parent.path}${properties.name}'<#else>'/'</#if></h1>
 
 <ul>
     <li>Name: '${properties.name}'</li>
-    <li>Parent: <#if properties.parent??><a href="${properties.parent.link.href}">${properties.parent.path}</a></#if></li>
+    <li>Parent: <#if properties.parent.path??><a href="${properties.parent.link.href}">${properties.parent.path}</a></#if></li>
     <li>Last modified: ${properties.lastModified}</li>
     <li>Children:
         <ul>

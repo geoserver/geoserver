@@ -161,14 +161,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         final List<Serializable> options = paramMetadata.getOptions();
 
         Panel parameterPanel;
-        if("dbtype".equals(paramName) || "filetype".equals(paramName)) {
-            // skip the two well known discriminators
-            IModel model = new MapModel(paramsModel, paramName);
-            TextParamPanel tp = new TextParamPanel(componentId,
-                    model, new ResourceModel(paramLabel, paramLabel), required);
-            tp.setVisible(false);
-            parameterPanel = tp;
-        } else  if ("namespace".equals(paramName)) {
+        if ("namespace".equals(paramName)) {
             IModel namespaceModel = new NamespaceParamModel(paramsModel, paramName);
             IModel paramLabelModel = new ResourceModel(paramLabel, paramLabel);
             parameterPanel = new NamespacePanel(componentId, namespaceModel, paramLabelModel, true);
@@ -231,7 +224,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         }
         
         Object parameterValue = parameterPanel.getDefaultModelObject();
-        boolean visible = !(deprecated && isEmpty(parameterValue));
+        boolean visible = !(deprecated && isEmpty(parameterValue)) && !paramMetadata.getLevel().equals("program");
         parameterPanel.setVisible(visible);
         parameterPanel.setVisibilityAllowed(visible);
         

@@ -34,6 +34,8 @@ public class ParamInfo implements Serializable {
     
     private boolean largeText;
 
+    private String level;
+
     private Class<?> binding;
 
     private boolean required;
@@ -53,6 +55,7 @@ public class ParamInfo implements Serializable {
         this.title = param.title != null && !param.title.toString().equals(param.key) ? param.title
                 .toString() : param.getDescription().toString();
         this.password = param.isPassword();
+        this.level = param.getLevel();
         this.largeText = param.metadata != null && Boolean.TRUE.equals(param.metadata.get(Param.IS_LARGE_TEXT));
         Object defaultValue = this.deprecated ? null : param.sample;
         if (Serializable.class.isAssignableFrom(param.type)) {
@@ -105,7 +108,11 @@ public class ParamInfo implements Serializable {
     public boolean isPassword() {
         return password;
     }
-    
+
+    public String getLevel() {
+        return level;
+    }
+
     public boolean isLargeText() {
         return largeText;
     }

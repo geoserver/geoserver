@@ -1659,7 +1659,6 @@ public class XStreamPersister {
                 secMgr.getConfigPasswordEncryptionHelper().decode(store);
             }
 
-            log(Level.INFO, "Loaded store '" +  store.getName() +  "', " + (store.isEnabled() ? "enabled" : "disabled"));
             return store;
         }
     }
@@ -1798,12 +1797,6 @@ public class XStreamPersister {
         public Object doUnmarshal(Object result,
                 HierarchicalStreamReader reader, UnmarshallingContext context) {
             ResourceInfo obj = (ResourceInfo) super.doUnmarshal(result, reader, context);
-            
-            String enabled = obj.isEnabled() ? "enabled" : "disabled";
-            String type = obj instanceof CoverageInfo ? "coverage" : 
-                obj instanceof FeatureTypeInfo ? "feature type" : "resource";
-            
-            log(Level.INFO, "Loaded " + type + " '" + obj.getName() + "', " + enabled);
             return obj;
         }
     }

@@ -12,12 +12,14 @@ import net.sf.json.JSONObject;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.feature.NameImpl;
@@ -30,6 +32,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.util.List;
 
 public class WMSLayerTest extends CatalogRESTTestSupport {
     
@@ -233,7 +237,77 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers/states.html");
         // print(dom);
     }
-    
+
+
+    @Test
+    public void testGetInWorkspace() throws Exception {
+        Catalog catalog = getCatalog();
+
+        List<WorkspaceInfo> workspaces = catalog.getWorkspaces();
+
+        //The default workspace
+        WorkspaceInfo ws1 = catalog.getDefaultWorkspace();
+        //Some other workspace, not the default
+        WorkspaceInfo ws2 = workspaces.get(0);
+        if (ws1.equals(ws2)) {
+            ws2 = workspaces.get(1);
+        }
+
+        //Add an identically named store to each workspace
+
+        // we need to add a wms store
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setWorkspace(ws1);
+        WMSStoreInfo wms = cb.buildWMSStore("ws_demo");
+        wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+        catalog.add(wms);
+
+        // and a wms layer as well (cannot use the builder, would turn this test into an online one)
+        WMSLayerInfo wml = catalog.getFactory().createWMSLayer();
+        wml.setName("foo");
+        wml.setNativeName("topp:states");
+        wml.setStore(catalog.getStoreByName(ws1, "ws_demo", WMSStoreInfo.class));
+        wml.setCatalog(catalog);
+        wml.setNamespace(catalog.getNamespaceByPrefix(ws1.getName()));
+        wml.setSRS("EPSG:4326");
+        CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+        wml.setNativeCRS(wgs84);
+        wml.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
+        wml.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+
+        catalog.add(wml);
+
+        // repeat for ws2
+        cb.setWorkspace(ws2);
+        wms = cb.buildWMSStore("ws_demo");
+        wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+        catalog.add(wms);
+
+
+        //use a different name for the layer
+        wml = catalog.getFactory().createWMSLayer();
+        wml.setName("bar");
+        wml.setNativeName("topp:states");
+        wml.setStore(catalog.getStoreByName(ws2, "ws_demo", WMSStoreInfo.class));
+        wml.setCatalog(catalog);
+        wml.setNamespace(catalog.getNamespaceByPrefix(ws2.getName()));
+        wml.setSRS("EPSG:4326");
+        wml.setNativeCRS(wgs84);
+        wml.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
+        wml.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+
+        catalog.add(wml);
+
+        //Try to get the one in ws2 (the non-default workspace
+        Document dom = getAsDOM( "/rest/workspaces/" + ws2.getName() + "/wmsstores/ws_demo/wmslayers.xml");
+
+        //make sure we've got the one in the right workspace (not the default)
+        assertXpathEvaluatesTo( "1", "count(//wmsLayer/name[text()='bar'])", dom );
+        assertXpathEvaluatesTo( "0", "count(//wmsLayer/atom:link[contains(@href,'"+ws1.getName()+"')])", dom );
+        assertXpathEvaluatesTo( "1", "count(//wmsLayer/atom:link[contains(@href,'"+ws2.getName()+"')])", dom );
+
+    }
+
     @Test
     public void testGetWrongWMSLayer() throws Exception {
         // Parameters for the request

@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -46,19 +47,19 @@ public class LayerGroupEntryPanel extends Panel {
 
     private static final long serialVersionUID = -5483938812185582866L;
 
-    public static Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<LayerGroupEntry>(
+    public static final Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<LayerGroupEntry>(
             "layer");
 
-    public static Property<LayerGroupEntry> DEFAULT_STYLE = new PropertyPlaceholder<LayerGroupEntry>(
+    public static final Property<LayerGroupEntry> DEFAULT_STYLE = new PropertyPlaceholder<LayerGroupEntry>(
             "defaultStyle");
 
-    public static Property<LayerGroupEntry> STYLE = new PropertyPlaceholder<LayerGroupEntry>(
+    public static final Property<LayerGroupEntry> STYLE = new PropertyPlaceholder<LayerGroupEntry>(
             "style");
 
-    public static Property<LayerGroupEntry> REMOVE = new PropertyPlaceholder<LayerGroupEntry>(
+    public static final Property<LayerGroupEntry> REMOVE = new PropertyPlaceholder<LayerGroupEntry>(
             "remove");
 
-    static List<Property<LayerGroupEntry>> PROPERTIES = Arrays.asList(LAYER, DEFAULT_STYLE, STYLE, REMOVE);
+    static final List<Property<LayerGroupEntry>> PROPERTIES = Arrays.asList(LAYER, DEFAULT_STYLE, STYLE, REMOVE);
 
     ModalWindow popupWindow;
     GeoServerTablePanel<LayerGroupEntry> layerTable;
@@ -79,8 +80,16 @@ public class LayerGroupEntryPanel extends Panel {
         add(dialog = new GeoServerDialog("dialog"));
         add(new HelpLink("layersHelp").setDialog(dialog));
         
-        //layers
-        add(layerTable = new ReorderableTablePanel<LayerGroupEntry>("layers", items, PROPERTIES) {
+        // make sure we don't end up serializing the list, but get it fresh from the dataProvider, 
+        // to avoid serialization issues seen in GEOS-8273
+        LoadableDetachableModel<List<Property<LayerGroupEntry>>> propertiesModel = new LoadableDetachableModel<List<Property<LayerGroupEntry>>>() {
+            @Override
+            protected List<Property<LayerGroupEntry>> load() {
+                return PROPERTIES;
+            }
+        };
+        // layers
+        add(layerTable = new ReorderableTablePanel<LayerGroupEntry>("layers", items, propertiesModel) {
 
             private static final long serialVersionUID = -3270471094618284639L;
 

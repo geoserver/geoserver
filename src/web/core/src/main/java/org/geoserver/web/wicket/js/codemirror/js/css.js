@@ -717,13 +717,13 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   // Definition of GeoCSS
   
   var geoPropertyKeywords_ = [ "fill","fill-geometry","fill-mime","fill-opacity","fill-rotation",
-    "fill-size","font-family","font-fill","font-size","font-style","font-weight","geometry","-gt-fill-label-obstacle",
-    "-gt-graphic-margin","-gt-label-all-group","-gt-label-allow-overruns","-gt-label-auto-wrap","-gt-label-conflict-resolution",
-    "-gt-label-fit-goodness","-gt-label-follow-line","-gt-label-force-ltr","-gt-label-group","-gt-label-max-angle-delta",
-    "-gt-label-max-displacement","-gt-label-min-group-distance","-gt-label-padding","-gt-label-priority",
-    "-gt-label-remove-overlaps","-gt-label-repeat","-gt-label-underline-text","-gt-mark-label-obstacle","-gt-random",
-    "-gt-random-rotation","-gt-random-seed","-gt-random-symbol-count","-gt-random-tile-size","-gt-shield-margin",
-    "-gt-shield-resize", "-gt-stroke-label-obstacle","halo-color",
+    "fill-size","font-family","font-fill","font-size","font-style","font-weight","geometry","fill-label-obstacle",
+    "graphic-margin","label-all-group","label-allow-overruns","label-auto-wrap","label-conflict-resolution",
+    "label-fit-goodness","label-follow-line","label-force-ltr","label-group","label-max-angle-delta",
+    "label-max-displacement","label-min-group-distance","label-padding","label-priority",
+    "label-remove-overlaps","label-repeat","label-underline-text","mark-label-obstacle","random",
+    "random-rotation","random-seed","random-symbol-count","random-tile-size","shield-margin",
+    "shield-resize", "stroke-label-obstacle","halo-color",
     "halo-opacity","halo-radius","label","label-anchor","label-geometry","label-offset","label-rotation","label-z-index",
     "mark","mark-geometry","mark-mime","mark-rotation","mark-size" ,"raster-channels","raster-color-map",
     "raster-color-map-type","raster-contrast-enhancement","raster-gamma","raster-geometry","raster-opacity",
@@ -732,15 +732,6 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "stroke-opacity","stroke-repeat","stroke-rotation","stroke-size","stroke-width","transform", "z-index", "composite", 
     "composite-base" ],
     geoPropertyKeywords = keySet(geoPropertyKeywords_);
-    
-  var geoNonStandardPropertyKeywords_ = [ "-gt-fill-label-obstacle",
-    "-gt-graphic-margin","-gt-label-all-group","-gt-label-allow-overruns","-gt-label-auto-wrap","-gt-label-conflict-resolution",
-    "-gt-label-fit-goodness","-gt-label-follow-line","-gt-label-force-ltr","-gt-label-group","-gt-label-max-angle-delta",
-    "-gt-label-max-displacement","-gt-label-min-group-distance","-gt-label-padding","-gt-label-priority",
-    "-gt-label-remove-overlaps","-gt-label-repeat","-gt-label-underline-text","-gt-mark-label-obstacle","-gt-random",
-    "-gt-random-rotation","-gt-random-seed","-gt-random-symbol-count","-gt-random-tile-size","-gt-shield-margin",
-    "-gt-shield-resize", "-gt-stroke-label-obstacle" ],
-    geoNonStandardPropertyKeywords = keySet(geoNonStandardPropertyKeywords_);
     
   var geoValueKeywords_ = [ "auto","bevel","color-map-entry(","false","free","grid","histogram","image/jpeg","image/png"
     ,"image/svg+xml","intervals","italic","miter","none","normal","normalize","oblique","proportional","ramp","repeat",
@@ -752,7 +743,6 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     mediaTypes: keySet([]),
     mediaFeatures: keySet([]),
     propertyKeywords: geoPropertyKeywords,
-    nonStandardPropertyKeywords: geoNonStandardPropertyKeywords,
     colorKeywords: colorKeywords,
     valueKeywords: geoValueKeywords,
     fontProperties: keySet([]),

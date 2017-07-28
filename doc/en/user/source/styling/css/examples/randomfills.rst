@@ -22,11 +22,11 @@ Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixe
         stroke-linecap: round;
       };
       stroke: black;
-      -gt-fill-random: grid;
-      -gt-fill-random-seed: 5;
-      -gt-fill-random-rotation: free;
-      -gt-fill-random-symbol-count: 50;
-      -gt-fill-random-tile-size: 100;
+      fill-random: grid;
+      fill-random-seed: 5;
+      fill-random-rotation: free;
+      fill-random-symbol-count: 50;
+      fill-random-tile-size: 100;
     }
     
 .. figure:: ../../sld/extensions/images/random-slash.png
@@ -44,8 +44,8 @@ Randomized distributions can also be used for thematic mapping, for example, her
     * { 
       fill: symbol("circle");
       stroke: black;
-      -gt-fill-random: grid; 
-      -gt-fill-random-tile-size: 100;
+      fill-random: grid; 
+      fill-random-tile-size: 100;
     
       :fill {
         size: 2;
@@ -53,15 +53,15 @@ Randomized distributions can also be used for thematic mapping, for example, her
       };
       /* @title low */
       [PERSONS < 2000000] {
-        -gt-fill-random-symbol-count: 50;
+        fill-random-symbol-count: 50;
       };
       /* @title mid */
       [PERSONS >= 2000000] [PERSONS < 4000000] {
-        -gt-fill-random-symbol-count: 150;
+        fill-random-symbol-count: 150;
       };
       /* @title high */
       [PERSONS >= 4000000] {
-        -gt-fill-random-symbol-count: 500;
+        fill-random-symbol-count: 500;
       }
     }
 

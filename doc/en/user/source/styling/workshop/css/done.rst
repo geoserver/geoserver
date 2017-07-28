@@ -380,9 +380,9 @@ Answer for :ref:`Challenge Layer Group <css.point.q3>`:
          halo-color: lightgray;
          halo-opacity:0.7;
 
-         -gt-mark-label-obstacle: true;
-         -gt-label-max-displacement: 90;
-         -gt-label-priority: [0 - LABELRANK];
+         mark-label-obstacle: true;
+         label-max-displacement: 90;
+         label-priority: [0 - LABELRANK];
       }
       :symbol {
         fill: black;

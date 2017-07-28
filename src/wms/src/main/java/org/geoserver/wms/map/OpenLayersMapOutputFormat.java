@@ -262,7 +262,10 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
 
     private boolean isWms13FlippedCRS(CoordinateReferenceSystem crs) {
         try {
-            String code = "EPSG:" + CRS.lookupIdentifier(crs, false);
+            String code = CRS.lookupIdentifier(crs, false);
+            if (!code.contains("EPSG:")) {
+                code = "EPGS:" + code;
+            }
             code = WMS.toInternalSRS(code, WMS.version("1.3.0"));
             CoordinateReferenceSystem crs13 = CRS.decode(code);
             return CRS.getAxisOrder(crs13) == AxisOrder.NORTH_EAST;

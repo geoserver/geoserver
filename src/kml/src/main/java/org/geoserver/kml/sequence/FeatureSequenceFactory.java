@@ -7,6 +7,7 @@ package org.geoserver.kml.sequence;
 
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
@@ -18,6 +19,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
@@ -44,6 +46,8 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
     private Style simplified;
 
     private KmlEncodingContext context;
+    
+    private boolean hasActiveRules;
 
     public FeatureSequenceFactory(KmlEncodingContext context, FeatureLayer layer) {
         this.context = context;
@@ -59,10 +63,22 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
         // prepare the style for this layer
         simplified = getSimplifiedStyle(mapContent, layer);
+        
+        AtomicBoolean rulesFound = new AtomicBoolean(false);
+        if(simplified != null) {
+            simplified.accept(new AbstractStyleVisitor() {
+                public void visit(org.geotools.styling.Rule rule) {
+                    rulesFound.set(true);
+                    // no need to scan inside rules
+                }
+            });
+        }
+        this.hasActiveRules = rulesFound.get();
     }
 
     private Style getSimplifiedStyle(WMSMapContent mc, Layer layer) {
-        ScaleStyleVisitor visitor = new ScaleStyleVisitor(mc.getScaleDenominator(), 
+        final double scaleDenominator = mc.getScaleDenominator();
+        ScaleStyleVisitor visitor = new ScaleStyleVisitor(scaleDenominator, 
                 (SimpleFeatureType) layer.getFeatureSource().getSchema());
         try {
             layer.getStyle().accept(visitor);
@@ -74,7 +90,7 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
     @Override
     public Sequence<Feature> newSequence() {
-        return new FeatureGenerator(simplified != null ? context.openIterator(features) : null);
+        return new FeatureGenerator(hasActiveRules ? context.openIterator(features) : null);
     }
 
     public class FeatureGenerator implements Sequence<Feature> {

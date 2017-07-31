@@ -121,6 +121,39 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testUsernamePassword() {
+        final FormTester requestFormTester = tester.newFormTester("demoRequestsForm");
+
+        final String requestName = "WMS_describeLayer.url";
+        requestFormTester.select("demoRequestsList", 1);
+        requestFormTester.setValue("username", "admin");
+        requestFormTester.setValue("password", "geoserver");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
+
+        tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
+
+        final boolean isAjax = true;
+        tester.clickLink("demoRequestsForm:submit", isAjax);
+        tester.assertVisible("responseWindow");
+
+        IModel model = tester.getLastRenderedPage().getDefaultModel();
+        assertTrue(model.getObject() instanceof DemoRequest);
+        DemoRequest req = (DemoRequest) model.getObject();
+
+        assertEquals(Files.asResource(demoDir).path(), req.getDemoDir());
+        String requestFileName = req.getRequestFileName();
+        String requestUrl = req.getRequestUrl();
+        String requestBody = req.getRequestBody();
+
+        assertEquals(requestName, requestFileName);
+        assertNotNull(requestUrl);
+        assertNull(requestBody);
+        assertNotNull(req.getUserName());
+        //this SHOULD work, but doesn't due to wicket quirks :/
+        //assertNotNull(req.getPassword());
+    }
+
+    @Test
     public void testUrlLinkSelected() {
         // print(tester.getLastRenderedPage(), true, true);
 

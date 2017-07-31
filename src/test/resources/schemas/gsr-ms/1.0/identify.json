@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {},
+  "id": "http://example.com/example.json",
+  "properties": {
+    "results": {
+      "id": "/properties/results",
+      "items": {
+        "id": "/properties/results/items",
+        "properties": {
+          "attributes": {
+            "id": "/properties/results/items/properties/attributes",
+            "properties": {},
+            "type": "object"
+          },
+          "displayFieldName": {
+            "id": "/properties/results/items/properties/displayFieldName",
+            "type": "string"
+          },
+          "geometry": {
+            "id": "/properties/results/items/properties/geometry",
+            "properties": {
+              "rings": {
+                "id": "/properties/results/items/properties/geometry/properties/rings",
+                "items": {},
+                "type": "array"
+              },
+              "spatialReference": {
+                "id": "/properties/results/items/properties/geometry/properties/spatialReference",
+                "properties": {
+                  "wkid": {
+                    "id": "/properties/results/items/properties/geometry/properties/spatialReference/properties/wkid",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "geometryType": {
+            "id": "/properties/results/items/properties/geometryType",
+            "type": "string"
+          },
+          "layerId": {
+            "id": "/properties/results/items/properties/layerId",
+            "type": "integer"
+          },
+          "layerName": {
+            "id": "/properties/results/items/properties/layerName",
+            "type": "string"
+          },
+          "value": {
+            "id": "/properties/results/items/properties/value",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "type": "object"
+}

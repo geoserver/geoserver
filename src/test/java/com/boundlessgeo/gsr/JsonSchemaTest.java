@@ -8,9 +8,10 @@ import java.io.File;
 
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.validation.JSONValidator;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.sf.json.JSON;
 
 public abstract class JsonSchemaTest {
 
@@ -27,5 +28,11 @@ public abstract class JsonSchemaTest {
 //        File schemaFile = new java.io.File(System.getProperty("user.dir") + "/src/test/resources/schemas/" + schemaPath);
 //        return JSONValidator.isValidSchema(json, schemaFile);
         return true;
+    }
+
+    public static boolean validateJSON(JSON json, String schemaPath) {
+        File schemaFile = new java.io.File(
+            System.getProperty("user.dir") + "/src/test/resources/schemas/" + schemaPath);
+        return JSONValidator.isValidSchema(json.toString(), schemaFile);
     }
 }

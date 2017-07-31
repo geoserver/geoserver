@@ -4,11 +4,12 @@
  */
 package com.boundlessgeo.gsr.api.map;
 
-import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.map.LayerNameComparator;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
-import com.boundlessgeo.gsr.core.map.MapServiceRoot;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -22,11 +23,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.map.LayerNameComparator;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.core.map.MapServiceRoot;
 
 /**
  * Controller for the root Map Service endpoint
@@ -64,5 +65,13 @@ public class MapServiceController extends AbstractGSRController {
     @GetMapping(path = {"/{layerId}"})
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         return LayersAndTables.find(catalog, workspaceName, layerId);
+    }
+
+    @GetMapping(path = "/identify")
+    public IdentifyServiceResult identify() {
+
+        IdentifyServiceResult result = new IdentifyServiceResult();
+
+        return result;
     }
 }

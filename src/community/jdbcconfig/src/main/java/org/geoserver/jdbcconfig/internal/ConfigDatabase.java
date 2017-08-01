@@ -590,9 +590,10 @@ public class ConfigDatabase {
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void remove(Info info) {
-
-        final Integer oid = findObjectId(info);
-        if (oid == null) {
+        Integer oid;
+        try {
+            oid = findObjectId(info);
+        } catch (EmptyResultDataAccessException notFound) {
             return;
         }
         cache.invalidate(info.getId());

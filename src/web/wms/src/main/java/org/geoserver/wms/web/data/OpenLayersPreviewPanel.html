@@ -6,7 +6,18 @@
   </head>
   <body>
     <wicket:panel>
-      <div>Previewing on layer: <a wicket:id="change.layer" href="#"></a></div>
+      <ul>
+        <li>
+          <wicket:message key="previewOnLayer">Preview on layer: </wicket:message><a wicket:id="change.layer" href="#"></a>
+        </li>
+        <li>
+          <label for="previewStyleGroup">
+            <wicket:message key="previewAsStyleGroup">Preview as style group: </wicket:message>
+            <input wicket:id="previewStyleGroup" id="previewStyleGroup" type="checkbox"/>
+            <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+          </label>
+        </li>
+      </ul>
       <div wicket:id="olPreview" style="margin-bottom: 1em"/>
     </wicket:panel>
   </body>

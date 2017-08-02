@@ -45,6 +45,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.ComponentAuthorizer;
@@ -544,6 +545,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     @Override
     protected Catalog getCatalog() {
         return super.getCatalog();
+    }
+    @Override
+    protected GeoServer getGeoServer() {
+        return super.getGeoServer();
     }
     
     @Override

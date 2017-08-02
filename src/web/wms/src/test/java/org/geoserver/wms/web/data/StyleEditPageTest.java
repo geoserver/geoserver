@@ -702,5 +702,22 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
     }
 
-    
+    @Test
+    public void testLayerPreviewTabStyleGroup() {
+
+        LayerInfo l = getCatalog().getLayers().get(0);
+        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        // used to fail with an exception here because the template file cannot be found
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
+
+        tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
+        OpenLayersPreviewPanel previewPanel = (OpenLayersPreviewPanel) tester.getComponentFromLastRenderedPage("styleForm:context:panel");
+        assertFalse(previewPanel.isPreviewStyleGroup);
+
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:previewStyleGroup", true);
+        form.submit();
+
+        assertTrue(previewPanel.isPreviewStyleGroup);
+    }
 }

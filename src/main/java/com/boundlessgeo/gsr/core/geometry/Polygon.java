@@ -9,7 +9,7 @@ package com.boundlessgeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  *
  */
-public class Polygon implements Geometry {
+public class Polygon extends Geometry {
 
     protected GeometryTypeEnum geometryType;
 

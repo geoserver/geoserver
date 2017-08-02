@@ -4,7 +4,6 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
-import java.util.Formattable;
 import java.util.Set;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -18,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Juan Marin - OpenGeo
  *
  */
-public class Envelope implements Geometry {
+public class Envelope extends Geometry {
 
     protected GeometryTypeEnum geometryType;
 

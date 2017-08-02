@@ -4,26 +4,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.Feature;
+
+import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
 import com.boundlessgeo.gsr.core.geometry.Geometry;
+import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
+import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
 
 /**
  * Holder for identify results
  */
-public class IdentifyServiceResult {
+class IdentifyServiceResult {
 
-    public List<IdentifyResult> results = new ArrayList<>();
+    private List<IdentifyResult> results = new ArrayList<>();
 
-    public List<IdentifyResult> getResults() {
+    List<IdentifyResult> getResults() {
         return results;
     }
 
-    public void setResults(List<IdentifyResult> results) {
-        this.results = results;
+    public static List<IdentifyResult> encode(FeatureCollection collection, LayerOrTable layer) {
+        final List<IdentifyResult> results = new ArrayList<>();
+        FeatureIterator iterator = collection.features();
+        while (iterator.hasNext()) {
+            Feature feature = iterator.next();
+            IdentifyResult result = new IdentifyResult();
+            result.setLayerName(layer.getName());
+            result.setLayerId(layer.getId());
+            result.setGeometry(GeometryEncoder.toRepresentation(
+                (com.vividsolutions.jts.geom.Geometry) feature.getDefaultGeometryProperty().getValue()));
+            result.setAttributes(FeatureEncoder.attributeList(feature));
+            result.setGeometryType(result.getGeometry().getGeometryType());
+            result.getGeometry().setSpatialReference(new SpatialReferenceWKID(4326)); //todo ack!
+            result.setValue(feature.getIdentifier().toString());
+            result.getAttributes().put("synthetic_id", feature.getIdentifier().toString());
+            result.setDisplayFieldName("synthetic_id");
+            results.add(result);
+        }
+
+        return results;
     }
 
     public static class IdentifyResult {
-        private String layerId;
+        private Integer layerId;
 
         private String layerName;
 
@@ -41,11 +67,11 @@ public class IdentifyServiceResult {
 
         private boolean hasM = false;
 
-        public String getLayerId() {
+        public Integer getLayerId() {
             return layerId;
         }
 
-        public void setLayerId(String layerId) {
+        public void setLayerId(Integer layerId) {
             this.layerId = layerId;
         }
 

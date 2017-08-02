@@ -9,21 +9,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.feature.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
 import com.boundlessgeo.gsr.core.map.LayerNameComparator;
 import com.boundlessgeo.gsr.core.map.LayerOrTable;
 import com.boundlessgeo.gsr.core.map.LayersAndTables;
@@ -35,6 +40,8 @@ import com.boundlessgeo.gsr.core.map.MapServiceRoot;
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MapServiceController extends AbstractGSRController {
+
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(MapServiceController.class);
 
     @Autowired
     public MapServiceController(@Qualifier("geoServer") GeoServer geoServer) {
@@ -68,9 +75,28 @@ public class MapServiceController extends AbstractGSRController {
     }
 
     @GetMapping(path = "/identify")
-    public IdentifyServiceResult identify() {
+    public IdentifyServiceResult identify(@PathVariable String workspaceName,
+        @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryPoint") String
+            geometryTypeName,
+        @RequestParam(name = "geometry", required = false) String geometryText,
+        @RequestParam(name = "sr", required = false) String inSRCode,
+        @RequestParam(name = "time", required = false) String time) {
 
         IdentifyServiceResult result = new IdentifyServiceResult();
+
+        LayersAndTables.find(catalog, workspaceName).layers.forEach(layer -> {
+            try {
+                FeatureCollection collection = LayersAndTables
+                    .getFeatureCollectionForLayer(workspaceName, layer.getId(), geometryTypeName, geometryText,
+                        inSRCode, null, SpatialRelationship.INTERSECTS.getName(), null, null, time, null, null, true,
+                        null, layer.layer);
+
+                result.getResults().addAll(IdentifyServiceResult.encode(collection, layer));
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Exception generated getting features for layer: " + layer, e);
+                throw new RuntimeException(e);
+            }
+        });
 
         return result;
     }

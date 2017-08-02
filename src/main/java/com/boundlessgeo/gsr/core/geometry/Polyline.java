@@ -9,7 +9,7 @@ package com.boundlessgeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  *
  */
-public class Polyline implements Geometry {
+public class Polyline extends Geometry {
 
     protected GeometryTypeEnum geometryType;
 

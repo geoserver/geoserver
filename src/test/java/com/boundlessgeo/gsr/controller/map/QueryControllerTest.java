@@ -26,6 +26,7 @@ public class QueryControllerTest extends ControllerTest {
         JSON json = getAsJSON(query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90"));
         assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);
         JSONObject jsonObject = (JSONObject) json;
+        System.out.println(json.toString());
 //        assertTrue("objectIdFieldName is not present", jsonObject.containsKey("objectIdFieldName"));
 //        assertTrue("globalIdFieldName is not present", jsonObject.containsKey("globalIdFieldName"));
         assertEquals("geometryType for Streams should be esriGeometryPolyline", "esriGeometryPolyline", jsonObject.get("geometryType"));
@@ -211,6 +212,7 @@ public class QueryControllerTest extends ControllerTest {
     public void testSpatialRel() throws Exception {
         String result = getAsString(
             query("cite", 11, "?f=json&geometryType=esriGeometryPolyline&geometry={paths:[[[-0.001,0],[0,0.0015]]]}"));
+        System.out.println(result);
         assertTrue("Request with implicit spatialRel; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
         JSONObject json = JSONObject.fromObject(result);
         JSONArray features = json.getJSONArray("features");

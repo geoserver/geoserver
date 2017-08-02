@@ -43,7 +43,7 @@ public class FeatureEncoder {
                 } else if (prop.getValue() instanceof java.lang.Boolean) {
                     value = ((Boolean) prop.getValue()) ? Integer.valueOf(1) : Integer.valueOf(0);
                 } else {
-                    value = prop.getValue();
+                    value = prop.getValue().toString();
                 }
                 attributes.put(prop.getName().getLocalPart(), value);
             }

@@ -5,21 +5,27 @@
 package com.boundlessgeo.gsr.core.geometry;
 
 /**
- *
  * @author Juan Marin - OpenGeo
- *
  */
-public interface Geometry {
+public class Geometry {
 
-    GeometryTypeEnum getGeometryType();
+    protected GeometryTypeEnum geometryType;
 
-    // protected GeometryTypeEnum geometryType;
-    //
-    // public GeometryTypeEnum getGeometryType() {
-    // return geometryType;
-    // }
-    //
-    // public void setGeometryType(GeometryTypeEnum geometryType) {
-    // this.geometryType = geometryType;
-    // }
+    protected SpatialReference spatialReference;
+
+    public GeometryTypeEnum getGeometryType() {
+        return geometryType;
+    }
+
+    public void setGeometryType(GeometryTypeEnum geometryType) {
+        this.geometryType = geometryType;
+    }
+
+    public SpatialReference getSpatialReference() {
+        return spatialReference;
+    }
+
+    public void setSpatialReference(SpatialReference spatialReference) {
+        this.spatialReference = spatialReference;
+    }
 }

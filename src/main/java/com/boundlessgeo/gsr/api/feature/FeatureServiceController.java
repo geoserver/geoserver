@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boundlessgeo.gsr.Utils;
 import com.boundlessgeo.gsr.api.map.QueryController;
 import com.boundlessgeo.gsr.core.feature.FeatureList;
 import com.boundlessgeo.gsr.core.feature.FeatureServiceRoot;
@@ -126,23 +127,23 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
             }
 
             //Query Parameters
-            final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
+            final CoordinateReferenceSystem outSR = Utils.parseSpatialReference(outSRText);
 
             SpatialRelationship spatialRel = null;
             if (StringUtils.isNotEmpty(spatialRelText)) {
                 spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
             }
-            Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
+            Filter objectIdFilter = LayersAndTables.parseObjectIdFilter(objectIdsText);
             Filter filter = Filter.INCLUDE;
 
-            final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText, geometryText);
+            final CoordinateReferenceSystem inSR = Utils.parseSpatialReference(inSRText, geometryText);
             if (StringUtils.isNotEmpty(geometryText)) {
-                filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel,
+                filter = Utils.buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel,
                     relatePattern, inSR, nativeCRS);
             }
 
             if (time != null) {
-                filter = FILTERS.and(filter, parseTemporalFilter(temporalProperty, time));
+                filter = FILTERS.and(filter, Utils.parseTemporalFilter(temporalProperty, time));
             }
             if (text != null) {
                 throw new UnsupportedOperationException("Text filter not implemented");
@@ -161,10 +162,11 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
                 List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
                 filter = FILTERS.and(children);
             }
-            String[] properties = parseOutFields(outFieldsText);
+            String[] properties = LayersAndTables.parseOutFields(outFieldsText);
 
             FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);
-            final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
+            final String[] effectiveProperties = LayersAndTables
+                .adjustProperties(returnGeometry, properties, source.getSchema());
 
             final Query query;
             if (effectiveProperties == null) {

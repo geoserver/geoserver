@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 
-public class Point implements Geometry {
+public class Point extends Geometry {
 
     protected GeometryTypeEnum geometryType;
 

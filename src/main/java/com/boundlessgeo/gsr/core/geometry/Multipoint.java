@@ -9,7 +9,7 @@ package com.boundlessgeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  *
  */
-public class Multipoint implements Geometry {
+public class Multipoint extends Geometry {
 
     protected GeometryTypeEnum geometryType;
 
@@ -22,8 +22,6 @@ public class Multipoint implements Geometry {
     }
 
     private double[][] points;
-
-    private SpatialReference spatialReference;
 
     public double[][] getPoints() {
         return points;
@@ -41,7 +39,7 @@ public class Multipoint implements Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Multipoint(double[][] coords, SpatialReference spatialReference) {
+    Multipoint(double[][] coords, SpatialReference spatialReference) {
         this.points = coords;
         this.spatialReference = spatialReference;
         this.geometryType = GeometryTypeEnum.MULTIPOINT;

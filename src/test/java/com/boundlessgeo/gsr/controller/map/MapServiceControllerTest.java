@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.boundlessgeo.gsr.JsonSchemaTest;
 import com.boundlessgeo.gsr.controller.ControllerTest;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class MapServiceControllerTest extends ControllerTest {
@@ -48,5 +49,14 @@ public class MapServiceControllerTest extends ControllerTest {
         System.out.println(result.toString());
         assertFalse(result.has("error"));
         assertTrue("Result validates against schema", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/identify.json"));
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        JSONObject result = (JSONObject) getAsJSON(
+            getBaseURL() + "/cite/MapServer/find?f=json&searchText=Ash&layers=8");
+        System.out.println(result.toString());
+        JSONArray results = (JSONArray) result.get("results");
+        assertTrue("Results should have one element", results.size() == 1);
     }
 }

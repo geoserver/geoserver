@@ -22,7 +22,7 @@ class IdentifyServiceResult {
 
     private List<IdentifyResult> results = new ArrayList<>();
 
-    List<IdentifyResult> getResults() {
+    public List<IdentifyResult> getResults() {
         return results;
     }
 

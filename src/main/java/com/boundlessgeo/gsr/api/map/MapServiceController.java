@@ -6,18 +6,28 @@ package com.boundlessgeo.gsr.api.map;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -98,6 +108,58 @@ public class MapServiceController extends AbstractGSRController {
             }
         });
 
+        return result;
+    }
+
+    @GetMapping(path = "/find")
+    public IdentifyServiceResult search(@PathVariable String workspaceName, @RequestParam String searchText,
+        @RequestParam(required = false, defaultValue = "true") boolean contains,
+        @RequestParam(required = false) String searchField,
+        @RequestParam(required = false, defaultValue = "true") boolean returnGeometries, @RequestParam String layers) {
+
+        IdentifyServiceResult result = new IdentifyServiceResult();
+        Set<String> searchFields = null;
+
+        if (StringUtils.isNotEmpty(searchField)) {
+            searchFields = Arrays.stream(searchField.split(",")).collect(Collectors.toSet());
+        }
+
+        for (String s : layers.split(",")) {
+            Integer layerId = Integer.parseInt(s);
+            try {
+                LayerOrTable layerOrTable = LayersAndTables.find(catalog, workspaceName, layerId);
+                if (layerOrTable != null && layerOrTable.layer != null) {
+                    FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerOrTable.layer.getResource();
+                    FeatureType featureType = featureTypeInfo.getFeatureType();
+                    Filter filter = Filter.EXCLUDE;
+
+                    for (PropertyDescriptor propertyDescriptor : featureType.getDescriptors()) {
+                        if (searchFields == null || searchFields.contains(propertyDescriptor.getName().toString())) {
+                            Class<?> binding = propertyDescriptor.getType().getBinding();
+                            if (binding.equals(String.class)) {
+                                if (contains) {
+                                    filter = FILTERS.or(filter, FILTERS
+                                        .like(FILTERS.property(propertyDescriptor.getName()), "%" + searchText + "%",
+                                            "%", "?", "\\"));
+
+                                } else {
+                                    filter = FILTERS.or(filter, FILTERS
+                                        .equal(FILTERS.property(propertyDescriptor.getName()),
+                                            FILTERS.literal(searchText)));
+                                }
+                            }
+                        }
+                    }
+                    Query query = new Query(featureTypeInfo.getName(), filter);
+                    FeatureSource source = featureTypeInfo.getFeatureSource(null, null);
+                    FeatureCollection features = source.getFeatures(query);
+                    result.getResults().addAll(IdentifyServiceResult.encode(features, layerOrTable));
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return result;
     }
 }

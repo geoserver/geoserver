@@ -69,6 +69,27 @@ An example of a simple CQL filter is::
    cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
    
 
+sortBy
+------
+
+The ``sortBy`` parameter allows to control the order of features/rasters displayed in the map, using the same
+syntax as WFS 1.0, that is:
+
+* ``&sortBy=att1 A|D,att2 A|D, ...`` for a single layer request
+* ``&sortBy=(att1Layer1 A|D,att2Layer1 A|D, ...)(att1Layer2 A|D,att2Layer2 A|D, ...)...`` when requesting multiple layers
+
+Care should be taken when using it as it has different behavior for raster layers, vector layers, and layer groups.
+In particular:
+
+* | For **raster layers**, ``sortBy`` maps to a "SORTING" read parameter that the reader might expose (image mosaic exposes such parameter).
+  | In image mosaic, this causes the first granule found in the sorting will display on top, and then the others will follow.
+  | Thus, to sort a scattered mosaic of satellite images so that the most recent image shows on top, and assuming the time attribute is called ``ingestion`` in the mosaic index, the specification will be ``&sortBy=ingestion D``.
+* | For **vector layers**, ``sortBy`` maps to a sort by clause in the vector data source, and then painting happens using the normal "painter model" rules, so the first item returned is painted first, and then all others on top of it.
+  | Thus, to sort a set of event points so that the most recent event is painted on top, and assuming the attribute is called "date" in the vector layer, the specification will be ``&sortBy=date`` or ``&sortBy=date A`` (ascending direction being the default one).
+* | For **layer groups**, the sort specification is going to be copied over all internal layers, so the spec has to be valid for all of them, or an error will be reported. 
+  | An empty spec can be used for layer groups in this case, for example, ``layers=theGroup,theLayer&sortBy=(),(date A)``
+ 
+
 env
 ---
 

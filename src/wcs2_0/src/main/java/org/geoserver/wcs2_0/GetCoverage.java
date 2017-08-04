@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.media.jai.BorderExtender;
 import javax.media.jai.Interpolation;
@@ -584,6 +585,7 @@ public class GetCoverage {
         gcr.setElevationSubset(requestSubset.getElevationSubset());
         gcr.setDimensionsSubset(requestSubset.getDimensionsSubset());
         gcr.setFilter(request.getFilter());
+        gcr.setSortBy(request.getSortBy());
         gcr.setOverviewPolicy(overviewPolicy);
         subsetHelper.setGridCoverageRequest(gcr);
         return subsetHelper;
@@ -865,9 +867,24 @@ public class GetCoverage {
         }
 
         // handle filter
-        if(request.getFilter() != null) {
-            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor().descriptors();
-            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters, request.getFilter(), "Filter");
+        if (request.getFilter() != null) {
+            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor()
+                    .descriptors();
+            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters,
+                    request.getFilter(), "Filter");
+        }
+        
+        // handle sorting
+        if (request.getSortBy() != null) {
+            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor()
+                    .descriptors();
+            String sortBySpec = request.getSortBy().stream()
+                    .map(sb -> sb.getPropertyName().getPropertyName() + " "
+                            + sb.getSortOrder().name().charAt(0))
+                    .collect(Collectors.joining(","));
+
+            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters, sortBySpec,
+                    "SORTING");
         }
 
         // handle additional dimensions through dynamic parameters

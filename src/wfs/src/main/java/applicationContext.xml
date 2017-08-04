@@ -382,7 +382,7 @@
     </bean>
 	
 	<bean id="srsNameKvpParser" class="org.geoserver.wfs.kvp.SrsNameKvpParser"/>
-	<bean id="sortByKvpParser" class="org.geoserver.wfs.kvp.SortByKvpParser">
+	<bean id="sortByKvpParser" class="org.geoserver.ows.kvp.SortByKvpParser">
 		<constructor-arg ref="filterFactory"/>
 	</bean>
 	<bean id="expiryKvpParser" class="org.geoserver.ows.util.NumericKvpParser">

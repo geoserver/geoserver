@@ -339,6 +339,27 @@ Function FindDataDirPath
 
 FunctionEnd
 
+; Find Marlin JAR file and write service wrapper configuration to enable the Marlin renderer
+Function SetServiceMarlinRenderer
+
+  ClearErrors
+  FindFirst $0 $1 "$INSTDIR\webapps\geoserver\WEB-INF\lib\marlin*.jar"  
+  IfErrors End
+
+  FileOpen $9 "$INSTDIR\wrapper\marlin.conf" w ; Opens a Empty File and fills it
+  FileWrite $9 '# Marlin Renderer$\r$\n'
+  FileWrite $9 'set.default.MARLIN_JAR=$1$\r$\n'
+  FileWrite $9 'set.default.GEOSERVER_HOME=$INSTDIR$\r$\n'
+  FileWrite $9 'wrapper.java.additional.4=-Xbootclasspath/a:"%GEOSERVER_HOME%\webapps\geoserver\WEB-INF\lib\%MARLIN_JAR%"$\r$\n'
+  FileWrite $9 'wrapper.java.additional.5=-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine'
+  FileClose $9 ; Closes the file
+
+  End:
+    FindClose $0
+    ClearErrors
+
+FunctionEnd
+
 ; Runs before the page is loaded to ensure that the better value (if any) is always reset
 Function GetDataDir
 
@@ -803,7 +824,9 @@ Section "Main" SectionMain
     File /a wrapper.dll
 
     CreateDirectory "$INSTDIR\work"
-	
+
+    Call SetServiceMarlinRenderer
+    
     ; Install the service (and start it)
     nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.app.parameter.4=jetty.port=$Port"
 
@@ -834,16 +857,7 @@ Section -FinishSection
 	
   NoWriteCreds:
 
-  ;Start Menu
-  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-
-  ;Create shortcuts
-  CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\GeoServer Homepage.lnk" "http://geoserver.org"
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\GeoServer Web Admin Page.lnk" "http://localhost:$Port/geoserver/web"
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\GeoServer Data Directory.lnk" "$DataDir"
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-
+  ; Startup and Shutdown batch files
   CreateDirectory "$INSTDIR\bin"
   SetOutPath "$INSTDIR\bin"
 
@@ -860,7 +874,9 @@ Section -FinishSection
   ${ElseIf} $IsManual == 1 ; manual
 
     FileOpen $9 startup.bat w ; Opens a Empty File and fills it
-    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.base="$INSTDIR" -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar" --module=http jetty.port=$Port'
+    FileWrite $9 'for /f "delims=" %%i in ($\'dir /b/s "%~dp0..\webapps\geoserver\WEB-INF\lib\marlin*.jar"$\') do set MARLIN_JAR=%%i$\r$\n'
+    FileWrite $9 'if not "%MARLIN_JAR%" == "" set MARLIN_ENABLER=-Xbootclasspath/a:"%MARLIN_JAR%" -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine$\r$\n$\r$\n'
+    FileWrite $9 'call "$JavaHome\bin\java.exe" %MARLIN_ENABLER% -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.base="$INSTDIR" -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar" --module=http jetty.port=$Port'
     FileClose $9 ; Closes the file
 
     FileOpen $9 shutdown.bat w ; Opens a Empty File and fills it
@@ -868,6 +884,16 @@ Section -FinishSection
     FileClose $9 ; Closes the file
 
   ${EndIf}
+  
+  ;Start Menu
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+  ;Create shortcuts
+  CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\GeoServer Homepage.lnk" "http://geoserver.org"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\GeoServer Web Admin Page.lnk" "http://localhost:$Port/geoserver/web"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\GeoServer Data Directory.lnk" "$DataDir"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   SetOutPath "$INSTDIR"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Start GeoServer.lnk" "$INSTDIR\bin\startup.bat" \

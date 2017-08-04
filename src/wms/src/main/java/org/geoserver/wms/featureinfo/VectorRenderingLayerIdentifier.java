@@ -96,7 +96,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     static final Logger LOGGER = Logging.getLogger(VectorRenderingLayerIdentifier.class);
     private static final String FEATURE_INFO_RENDERING_ENABLED_KEY = "org.geoserver.wms.featureinfo.render.enabled";
     protected static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.render.minBuffer", 3);
-    protected static boolean RENDERING_FEATUREINFO_ENABLED;
+    public static boolean RENDERING_FEATUREINFO_ENABLED;
     
     private WMS wms;
     private VectorBasicLayerIdentifier fallback;
@@ -347,6 +347,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         final Query definitionQuery = new Query(featureSource.getSchema().getName().getLocalPart());
         definitionQuery.setVersion(getMap.getFeatureVersion());
         definitionQuery.setFilter(filter);
+        definitionQuery.setSortBy(params.getSort());
         Map<String, String> viewParams = params.getViewParams();
         if (viewParams != null) {
             definitionQuery.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));

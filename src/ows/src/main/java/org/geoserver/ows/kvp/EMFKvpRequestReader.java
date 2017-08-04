@@ -88,13 +88,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
             
             if (EMFUtils.has(eObject, property)) {
                 try {
-                    //check for a collection
-                    if ( EMFUtils.isCollection(eObject, property) ) {
-                        EMFUtils.add(eObject, property, value);
-                    }
-                    else {
-                        EMFUtils.set(eObject, property, value);    
-                    }
+                    setValue(eObject, property, value);
                 } catch(Exception ex) {
                     throw new ServiceException("Failed to set property " + property 
                             + " in request object using value " + value 
@@ -105,5 +99,18 @@ public class EMFKvpRequestReader extends KvpRequestReader {
         }
 
         return request;
+    }
+
+    /**
+     * Sets a value in the target EMF object, adding it to a collection if the target is a collection,
+     * setting it otherwise. Subclasses can override this behavior
+     */
+    protected void setValue(EObject eObject, String property, Object value) {
+        // check for a collection
+        if (EMFUtils.isCollection(eObject, property)) {
+            EMFUtils.add(eObject, property, value);
+        } else {
+            EMFUtils.set(eObject, property, value);
+        }
     }
 }

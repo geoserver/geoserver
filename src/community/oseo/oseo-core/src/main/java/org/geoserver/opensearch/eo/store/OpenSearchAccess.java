@@ -58,7 +58,7 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     /**
      * Local part of the product granules property. The namespace is the one assigned to the store, this is not an EO property
      */
-    public static String GRANULES = "htmlDescription";
+    public static String GRANULES = "granules";
     
 
 

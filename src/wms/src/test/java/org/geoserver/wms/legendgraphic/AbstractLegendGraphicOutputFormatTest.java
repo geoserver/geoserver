@@ -11,13 +11,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,24 +20,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
-import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
-import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
-import org.geoserver.wms.legendgraphic.Cell.SingleColorMapEntryLegendBuilder;
-import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
@@ -63,9 +50,6 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
-import org.geotools.util.logging.Logging;
-import org.junit.After;
-import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
@@ -365,6 +349,8 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
 
     }
     
+    
+    
     /**
      * Tests that the legend graphic is produced for multiple layers
      * with vector and coverage layers.
@@ -426,6 +412,8 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
 
     }
     
+
+    
     /**
      * Tests that the legend graphic is produced for multiple layers
      * with vector and coverage layers, when coverage is not visible
@@ -485,6 +473,45 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
 	            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
 	        }
 	    }
+    }
+    
+    /**
+     * Tests that the legend graphic is produced for multiple layers, one of which cannot be seen at the current scale
+     */
+    @org.junit.Test
+    public void testMultipleLayersWithVectorAndInvisibleVector() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setScale(1000);
+        int titleHeight = getTitleHeight(req);
+
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+
+        List<Style> styles = new ArrayList<Style>();
+        final StyleInfo roadStyle = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        styles.add(roadStyle.getStyle());
+        styles.add(readSLD("InvisibleLine.sld"));
+
+        req.setStyles(styles);
+
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        // vector layer
+        assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+        // no second vector layer
+        assertTrue(image.getHeight() < 70 + titleHeight * 2);
+
     }
 
 	public void testMixedGeometry() throws Exception {

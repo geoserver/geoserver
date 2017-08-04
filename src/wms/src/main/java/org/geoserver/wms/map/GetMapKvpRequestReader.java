@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -40,6 +41,7 @@ import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.LocalHttpServletRequest;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -68,7 +70,6 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
-import org.geoserver.util.EntityResolverProvider;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -76,6 +77,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
@@ -254,6 +256,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             new ArrayList<Filter>(getMap.getFilter()) : Collections.emptyList());
         List<Filter> cqlFilters = ((getMap.getCQLFilter() != null) ?
             new ArrayList<Filter>(getMap.getCQLFilter()) : Collections.emptyList());
+        List<List<SortBy>> rawSortBy = Optional.ofNullable(getMap.getSortBy()).orElse(Collections.emptyList());
 
         // remove skipped resources along with their corresponding parameters
         List<MapLayerInfo> newLayers = new ArrayList<>();
@@ -274,6 +277,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 if (i < cqlFilters.size()) {
                     cqlFilters.remove(i);
                 }
+                if (i < rawSortBy.size()) {
+                    rawSortBy.remove(i);
+                }
             } else {
                 if (o instanceof LayerInfo) {
                     newLayers.add(new MapLayerInfo((LayerInfo) o));
@@ -289,13 +295,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             }
         }
         getMap.setLayers(newLayers);
-        
+
         if(interpolationList.size() > 0) {
             getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
         }
         
         // pre parse filters
         List<Filter> filters = parseFilters(getMap, rawFilters, cqlFilters);
+        List<List<SortBy>> sortBy = rawSortBy.isEmpty() ? null : rawSortBy;
 
         if ((getMap.getSldBody() != null || getMap.getSld() != null) && wms.isDynamicStylingDisabled()) {
             throw new ServiceException("Dynamic style usage is forbidden");
@@ -325,6 +332,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // set filter in, we'll check consistency later
             getMap.setFilter(filters);
+            getMap.setSortBy(sortBy);
         } else if (getMap.getSld() != null) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Getting layers and styles from reomte SLD");
@@ -380,6 +388,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // set filter in, we'll check consistency later
             getMap.setFilter(filters);
+            getMap.setSortBy(sortBy);
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Getting layers and styles from LAYERS and STYLES");
@@ -396,7 +405,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 List<Style> oldStyles = getMap.getStyles() != null ? new ArrayList(
                         getMap.getStyles()) : new ArrayList();
                 List<Style> newStyles = new ArrayList<Style>();
-                List<Filter> newFilters = filters == null ? null : new ArrayList<Filter>();
+                List<Filter> newFilters = filters == null ? null : new ArrayList<>();
+                List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();                
 
                 for (int i = 0; i < requestedLayerInfos.size(); i++) {
                     Object o = requestedLayerInfos.get(i);
@@ -421,6 +431,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                                 newFilters.add(getFilter(filters, i));
                             }
                         }
+                        if (sortBy != null) {
+                            for (int j = 0; j < layers.size(); j++) {
+                                newSortBy.add(getSortBy(sortBy, i));
+                            }
+                        }
+
                     } else if (o instanceof LayerInfo) {
                         style = oldStyles.size() > 0 ? oldStyles.get(i) : null;
                         if (style != null) {
@@ -430,8 +446,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                             newStyles.add(getDefaultStyle(layer));
                         }
                         // add filter if needed
-                        if (filters != null)
+                        if (filters != null) {
                             newFilters.add(getFilter(filters, i));
+                        }
+                        if (sortBy != null) {
+                            newSortBy.add(getSortBy(sortBy, i));
+                        }
                     } else if (o instanceof MapLayerInfo) {
                         style = oldStyles.size() > 0 ? oldStyles.get(i) : null;
                         if (style != null) {
@@ -441,12 +461,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                                     + ((MapLayerInfo) o).getName(), "NoDefaultStyle");
                         }
                         // add filter if needed
-                        if (filters != null)
+                        if (filters != null) {
                             newFilters.add(getFilter(filters, i));
+                        }
+                        if (sortBy != null) {
+                            newSortBy.add(getSortBy(sortBy, i));
+                        }
                     }
                 }
                 getMap.setStyles(newStyles);
                 getMap.setFilter(newFilters);
+                getMap.setSortBy(newSortBy);
             }
 
             // then proceed with standard processing
@@ -482,6 +507,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             if (mapFilters != null && mapFilters.size() != mapLayers.size()) {
                 String msg = mapLayers.size() + " layers requested, but found " + mapFilters.size()
                         + " filters specified. ";
+                throw new ServiceException(msg, getClass().getName());
+            }
+            // do the same with sortBy
+            List<List<SortBy>> mapSortBy = getMap.getSortBy();
+            if (mapSortBy != null && mapSortBy.size() != mapLayers.size()) {
+                String msg = mapLayers.size() + " layers requested, but found " + mapSortBy.size()
+                        + " sortBy specified. ";
                 throw new ServiceException(msg, getClass().getName());
             }
         }
@@ -615,6 +647,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                     + "you need to provide one filter for each layer");
         }
     }
+    
+    List<SortBy> getSortBy(List<List<SortBy>> items, int index) {
+        if (index < items.size()) {
+            return items.get(index);
+        } else {
+            throw new ServiceException("Layers and sortBy are mismatched, "
+                    + "you need to provide one sortBy for each layer");
+        }
+    }
+    
+    
 
     /**
      * Checks the various options, OGC filter, fid filter, CQL filter, and returns a list of parsed

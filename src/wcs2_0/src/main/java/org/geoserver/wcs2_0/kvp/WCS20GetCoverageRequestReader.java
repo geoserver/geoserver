@@ -1,8 +1,22 @@
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs2_0.kvp;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.emf.ecore.EObject;
+import org.geoserver.ows.kvp.EMFKvpRequestReader;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.OWS20Exception;
+import org.geoserver.wcs2_0.WCS20Const;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geotools.wcs.v2_0.Interpolation;
+import org.geotools.wcs.v2_0.RangeSubset;
+import org.geotools.wcs.v2_0.Scaling;
 
 import net.opengis.wcs20.DimensionSubsetType;
 import net.opengis.wcs20.ExtensionItemType;
@@ -13,13 +27,6 @@ import net.opengis.wcs20.ScaleToExtentType;
 import net.opengis.wcs20.ScaleToSizeType;
 import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.Wcs20Factory;
-
-import org.geoserver.ows.kvp.EMFKvpRequestReader;
-import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.wcs2_0.WCS20Const;
-import org.geotools.wcs.v2_0.Interpolation;
-import org.geotools.wcs.v2_0.RangeSubset;
-import org.geotools.wcs.v2_0.Scaling;
 
 /**
  * KVP reader for WCS 2.0 GetCoverage request
@@ -153,6 +160,25 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
             if (item instanceof ExtensionItemType) {
                 gc.getExtension().getContents().add((ExtensionItemType) item);
             }
+        }
+    }
+    
+    @Override
+    protected void setValue(EObject eObject, String property, Object value) {
+        if ("sortBy".equalsIgnoreCase(property)) {
+            // we get an arraylist of arraylists
+            List sorts = (List) value;
+            final int sortsSize = sorts.size();
+            if (sortsSize != 1) {
+                throw new OWS20Exception(
+                        "Invalid sortBy specification, expecting sorts for just one coverage, but got "
+                                + sortsSize + " instead",
+                        WCS20Exception.WCS20ExceptionCode.InvalidParameterValue, "sortBy");
+            }
+            final GetCoverageType getCoverage = (GetCoverageType) (eObject);
+            getCoverage.getSortBy().addAll((List) sorts.get(0));
+        } else {
+            super.setValue(eObject, property, value);
         }
     }
 }

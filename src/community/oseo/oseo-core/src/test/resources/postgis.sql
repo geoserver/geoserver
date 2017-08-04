@@ -159,20 +159,20 @@ create index "idx_product_footprint" on product using GIST("footprint");
 
  -- the eo metadata storage (large files, not used for search, thus separate table)
 create table product_metadata (
-  "mid" int primary key references product("id"),
+  "mid" int primary key references product("id") on delete cascade,
   "metadata" text
 );
 
 -- the eo thumbs storage (small binary files, not used for search, thus separate table)
 create table product_thumb (
-	"tid" int primary key references product("id"),
+	"tid" int primary key references product("id") on delete cascade,
 	"thumb" bytea
 );
 
 -- links for collections
 create table collection_ogclink (
   "lid" serial primary key,
-  "collection_id" int references collection("id"),
+  "collection_id" int references collection("id") on delete cascade,
   "offering" varchar,
   "method" varchar,
   "code" varchar,
@@ -183,7 +183,7 @@ create table collection_ogclink (
 -- links for products
 create table product_ogclink (
   "lid" serial primary key,
-  "product_id" int references product("id"),
+  "product_id" int references product("id") on delete cascade,
   "offering" varchar,
   "method" varchar,
   "code" varchar,
@@ -194,7 +194,7 @@ create table product_ogclink (
 -- the granules table (might be abstract, and we can use partitioning)
 create table granule (
   "gid" serial primary key,
-  "product_id" int not null references product("id"),
+  "product_id" int not null references product("id") on delete cascade,
   "location" varchar not null,
   "the_geom" geometry(Polygon, 4326) not null
 );

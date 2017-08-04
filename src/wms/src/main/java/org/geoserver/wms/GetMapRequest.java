@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.media.jai.Interpolation;
 
@@ -27,6 +28,7 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -54,7 +56,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     private Map<String, Object> formatOptions = new CaseInsensitiveMap(new HashMap());
 
     /** SLD replacement */
-    private Map /* <String,Object> */env = new HashMap();
+    private Map /* <String,Object> */ env = new HashMap();
 
     /** sql view parameters */
     private List<Map<String, String>> viewParams = null;
@@ -74,12 +76,10 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * DJB: spec says SRS is *required*, so if they dont specify one, we should throw an error
-     * instead we use "NONE" - which is no-projection. Previous behavior was to the WSG84 lat/long
-     * (4326)
+     * DJB: spec says SRS is *required*, so if they dont specify one, we should throw an error instead we use "NONE" - which is no-projection.
+     * Previous behavior was to the WSG84 lat/long (4326)
      * 
-     * @return request CRS, or <code>null</code> if not set. TODO: make CRS manditory as for spec
-     *         conformance
+     * @return request CRS, or <code>null</code> if not set. TODO: make CRS manditory as for spec conformance
      */
     public CoordinateReferenceSystem getCrs() {
         return this.optionalParams.crs;
@@ -142,7 +142,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     public List<Style> getStyles() {
         return this.mandatoryParams.styles;
     }
-    
+
     /**
      * Gets a list of the interpolation methods to be returned by the server.
      * 
@@ -205,9 +205,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Gets the String specified by the "STYLE_VERSION" parameter.
      * <p>
-     * This parameter is used to supply a version of the style language being specified.
-     * It only applies when the style is being supplied directly in the request with one
-     * of the "STYLE_URL", "STYLE_BODY" parameters.
+     * This parameter is used to supply a version of the style language being specified. It only applies when the style is being supplied directly in
+     * the request with one of the "STYLE_URL", "STYLE_BODY" parameters.
      *
      * </p>
      */
@@ -230,8 +229,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the "SLD
-     * paramter is schema validated.
+     * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the "SLD paramter is schema validated.
      */
     public Boolean getValidateSchema() {
         return this.optionalParams.validateSLD;
@@ -281,8 +279,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * <a href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C
-     * specification</a> tiling hint
+     * <a href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C specification</a> tiling hint
      * 
      */
     public boolean isTiled() {
@@ -306,16 +303,14 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects, 
-     * or null to indicate the default value
+     * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects, or null to indicate the default value
      */
     public List<Object> getTime() {
         return this.optionalParams.time;
     }
 
     /**
-     * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange} objects,
-     * or null to indicate the default value
+     * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange} objects, or null to indicate the default value
      *
      */
     public List<Object> getElevation() {
@@ -370,8 +365,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Sets the GetMap request value for the FORMAT parameter, which is the MIME type for the kind
-     * of image required.
+     * Sets the GetMap request value for the FORMAT parameter, which is the MIME type for the kind of image required.
      */
     public void setFormat(String format) {
         this.mandatoryParams.format = format;
@@ -380,8 +374,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets the format options.
      * 
-     * @param formatOptions
-     *            A map of String,Object
+     * @param formatOptions A map of String,Object
      * @see #getFormatOptions()
      */
     public void setFormatOptions(Map formatOptions) {
@@ -432,7 +425,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         this.optionalParams.interpolationMethods = interpolations == null ? Collections.EMPTY_LIST
                 : interpolations;
     }
-    
+
     /**
      * Sets the url specified by the "SLD" parameter.
      */
@@ -492,8 +485,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets a list of filters, one for each layer
      * 
-     * @param filters
-     *            A list of {@link Filter}.
+     * @param filters A list of {@link Filter}.
      * @deprecated use {@link #setFilter(List)}.
      */
     public void setFilters(List filters) {
@@ -503,8 +495,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets a list of filters, one for each layer
      * 
-     * @param filters
-     *            A list of {@link Filter}.
+     * @param filters A list of {@link Filter}.
      */
     public void setFilter(List filters) {
         this.optionalParams.filters = filters;
@@ -513,8 +504,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets a list of filters ( cql ), one for each layer.
      * 
-     * @param cqlFilters
-     *            A list of {@link Filter}.
+     * @param cqlFilters A list of {@link Filter}.
      */
     public void setCQLFilter(List cqlFilters) {
         this.optionalParams.cqlFilters = cqlFilters;
@@ -523,8 +513,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets a list of feature ids, one for each layer.
      * 
-     * @param featureIds
-     *            A list of {@link String}.
+     * @param featureIds A list of {@link String}.
      */
     public void setFeatureId(List featureIds) {
         this.optionalParams.featureIds = featureIds;
@@ -631,8 +620,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets the offset or start index at which to start returning features in the request.
      * <p>
-     * It is used in conjunction with {@link #getMaxFeatures()} to page through a feature set. This
-     * property only applies if the request is for a vector layer.
+     * It is used in conjunction with {@link #getMaxFeatures()} to page through a feature set. This property only applies if the request is for a
+     * vector layer.
      * </p>
      */
     public void setStartIndex(Integer startIndex) {
@@ -658,6 +647,24 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     public void setAngle(double rotation) {
         this.optionalParams.angle = rotation;
     }
+    
+    public List<List<SortBy>> getSortBy() {
+        return this.optionalParams.sortBy;
+    }
+    
+    public List<SortBy[]> getSortByArrays() {
+        if (this.optionalParams.sortBy == null) {
+            return null;
+        } else {
+            return this.optionalParams.sortBy.stream().map(l -> l.toArray(new SortBy[l.size()]))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public void setSortBy(List<List<SortBy>> sortBy) {
+        this.optionalParams.sortBy = sortBy;
+    }
+
 
     public ScaleComputationMethod getScaleMethod() {
         return this.optionalParams.scaleMethod;
@@ -677,8 +684,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         List<MapLayerInfo> layers = Collections.emptyList();
 
         /**
-         * ordered list of requested layers' styles, in a one to one relationship with
-         * <code>layers</code>
+         * ordered list of requested layers' styles, in a one to one relationship with <code>layers</code>
          */
         List<Style> styles = Collections.emptyList();
 
@@ -689,16 +695,16 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         int height;
 
         String format;
-        
+
         @Override
         public Object clone() throws CloneNotSupportedException {
-        	return super.clone();
-        } 
+            return super.clone();
+        }
 
     }
 
     private class OptionalParameters implements Cloneable {
-    	
+
         /**
          * Tells us whether or not we should loop forever in an ani,mated gif
          * <p>
@@ -713,7 +719,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
          * Default to 1s
          */
         Integer animatedGIFDelay;
-    	
+
         /**
          * the map's background color requested, or the default (white) if not specified
          */
@@ -733,21 +739,22 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         /** feature id filters */
         List featureIds;
+        
+        /** Layer sorting  */
+        List<List<SortBy>> sortBy;
 
         String exceptions = SE_XML;
 
         boolean transparent = false;
 
         /**
-         * Tiling hint, according to the <a
-         * href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C
-         * specification</a>
+         * Tiling hint, according to the <a href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C specification</a>
          */
         boolean tiled;
 
         /**
-         * Temporary hack since finding a good tiling origin would require us to compute the bbox on
-         * the fly TODO: remove this once we cache the real bbox of vector layers
+         * Temporary hack since finding a good tiling origin would require us to compute the bbox on the fly TODO: remove this once we cache the real
+         * bbox of vector layers
          */
         public Point2D tilesOrigin;
 
@@ -758,9 +765,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         IndexColorModel icm;
 
         /**
-         * time parameter, a list since many pattern setup can be possible, see for
-         * example http://mapserver.gis.umn.edu/docs/howto/wms_time_support/#time-patterns.
-         * Can contain {@link Date} or {@link DateRange} objects.
+         * time parameter, a list since many pattern setup can be possible, see for example
+         * http://mapserver.gis.umn.edu/docs/howto/wms_time_support/#time-patterns. Can contain {@link Date} or {@link DateRange} objects.
          */
         List<Object> time = Collections.emptyList();
 
@@ -777,7 +783,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
          */
         String styleBody;
 
-        /** 
+        /**
          * STYLE_VERSION parameter
          */
         String styleVersion;
@@ -806,18 +812,18 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         /** map rotation */
         double angle;
-        
+
         /** scale computation method */
         ScaleComputationMethod scaleMethod;
-        
+
         /** by layer interpolation methods **/
         List<Interpolation> interpolationMethods = Collections.EMPTY_LIST;
 
         @Override
         public Object clone() throws CloneNotSupportedException {
-        	return super.clone();
-        	
-        } 
+            return super.clone();
+
+        }
 
     }
 
@@ -830,8 +836,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         StringBuffer returnString = new StringBuffer("\nGetMap Request");
         returnString.append("\n version: " + version);
         returnString.append("\n output format: " + mandatoryParams.format);
-        returnString.append("\n width height: " + mandatoryParams.width + ","
-                + mandatoryParams.height);
+        returnString
+                .append("\n width height: " + mandatoryParams.width + "," + mandatoryParams.height);
         returnString.append("\n bbox: " + mandatoryParams.bbox);
         returnString.append("\n layers: ");
 
@@ -868,18 +874,18 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         }
         httpRequestHeaders.put(headerName, value);
     }
-    
+
     @Override
     public Object clone() {
-    	try {
-			GetMapRequest copy = (GetMapRequest) super.clone();
-			copy.mandatoryParams = (MandatoryParameters) mandatoryParams.clone();
-			copy.optionalParams = (OptionalParameters) optionalParams.clone();
-			
-			return copy;
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
-		}
+        try {
+            GetMapRequest copy = (GetMapRequest) super.clone();
+            copy.mandatoryParams = (MandatoryParameters) mandatoryParams.clone();
+            copy.optionalParams = (OptionalParameters) optionalParams.clone();
+
+            return copy;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
+        }
     }
 
     public List<String> getCustomDimension(String dimensionName) {

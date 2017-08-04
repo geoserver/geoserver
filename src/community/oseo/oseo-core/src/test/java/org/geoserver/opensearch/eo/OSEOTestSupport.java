@@ -57,7 +57,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         try {
             OS_SCHEMA = factory
                     .newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
-            ATOM_SCHEMA = null; // factory                     .newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
+            ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }

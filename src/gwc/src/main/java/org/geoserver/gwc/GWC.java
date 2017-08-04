@@ -910,6 +910,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 return false;
             }
         }
+        if (null != request.getSortBy() && !request.getSortBy().isEmpty()) {
+            if (!filterApplies(filters, request, "SORTBY", requestMistmatchTarget)) {
+                return false;
+            }
+        }
         if (null != request.getPalette()) {
             if (!filterApplies(filters, request, "PALETTE", requestMistmatchTarget)) {
                 return false;

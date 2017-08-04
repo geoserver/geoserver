@@ -40,7 +40,7 @@ import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.repository.impl.GeoGIG;
-import org.locationtech.geogig.web.api.TestData;
+import org.locationtech.geogig.test.TestData;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.restlet.data.Method;

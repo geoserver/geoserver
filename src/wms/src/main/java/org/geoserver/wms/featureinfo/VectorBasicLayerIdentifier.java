@@ -138,6 +138,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         String typeName = schema.getName().getLocalPart();
         Query q = new Query(typeName, null, getFInfoFilter, maxFeatures, params.getPropertyNames(),
                 null);
+        q.setSortBy(params.getSort());
 
         // handle sql view params
         final Map<String, String> viewParams = params.getViewParams();

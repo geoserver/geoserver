@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -67,6 +68,7 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
@@ -81,6 +83,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -1046,14 +1049,23 @@ public class WMS implements ApplicationContextAware {
      * Returns the read parameters for the specified layer, merging some well known request
      * parameters into the read parameters if possible
      * 
-     * @param request
-     * @param mapLayerInfo
-     * @param layerFilter
-     * @param reader
-     *
+     * @deprecated Use {@link #getWMSReadParameters(GetMapRequest, MapLayerInfo, Filter, SortBy[], List, List, GridCoverage2DReader, boolean)} instead
      */
+    @Deprecated
     public GeneralParameterValue[] getWMSReadParameters(final GetMapRequest request,
             final MapLayerInfo mapLayerInfo, final Filter layerFilter, final List<Object> times,
+            final List<Object> elevations, final GridCoverage2DReader reader,
+            boolean readGeom) throws IOException {
+        return getWMSReadParameters(request, mapLayerInfo, layerFilter, null, times, elevations, reader, readGeom);
+    }
+
+    
+    /**
+     * Returns the read parameters for the specified layer, merging some well known request
+     * parameters into the read parameters if possible
+     */
+    public GeneralParameterValue[] getWMSReadParameters(final GetMapRequest request,
+            final MapLayerInfo mapLayerInfo, final Filter layerFilter, SortBy[] sortBy, final List<Object> times,
             final List<Object> elevations, final GridCoverage2DReader reader,
             boolean readGeom) throws IOException {
         // setup the scene
@@ -1118,8 +1130,34 @@ public class WMS implements ApplicationContextAware {
             }
         }
         
-        // custom dimensions
+        if (sortBy != null && readParameters != null) {
+            // test for default sortBy
+            for (int i = 0; i < readParameters.length; i++) {
 
+                GeneralParameterValue param = readParameters[i];
+                GeneralParameterDescriptor pd = param.getDescriptor();
+
+                if (pd.getName().getCode().equalsIgnoreCase("SORTING")) {
+                    final ParameterValue pv = (ParameterValue) pd.createValue();
+                    if (pd instanceof ParameterDescriptor
+                            && String.class.equals(((ParameterDescriptor) pd).getValueClass())) {
+                        // convert down to string
+                        String sortBySpec = Arrays.stream(sortBy)
+                                .map(sb -> sb.getPropertyName().getPropertyName() + " "
+                                        + sb.getSortOrder().name().charAt(0))
+                                .collect(Collectors.joining(","));
+                        pv.setValue(sortBySpec);
+                    } else {
+                        pv.setValue(sortBy);
+                    }
+                    readParameters[i] = pv;
+                    break;
+                }
+                
+            }
+        }
+        
+        // custom dimensions
         List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
         for (String domain : new ArrayList<String>(customDomains)) {
             List<String> values = request.getCustomDimension(domain);

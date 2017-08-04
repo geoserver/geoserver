@@ -157,7 +157,12 @@ public class WCSDefaultValuesHelper {
             Query query = new Query();
 
             // Set sorting order (default Policy is using Max... therefore Descending order)
-            sortBy(query, timeDimension, elevationDimension);
+            final List<SortBy> requestedSort = subsettingRequest.getSortBy();
+            if (requestedSort == null) {
+                sortBy(query, timeDimension, elevationDimension);
+            } else {
+                query.setSortBy(requestedSort.toArray(new SortBy[requestedSort.size()]));
+            }
             query.setFilter(finalFilter);
 
             // Returning a single feature matching the filtering

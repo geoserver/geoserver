@@ -5,8 +5,12 @@
  */
 package org.geoserver.wms.map;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -20,8 +24,6 @@ import java.util.TimeZone;
 import javax.media.jai.InterpolationBicubic;
 import javax.media.jai.InterpolationBilinear;
 import javax.media.jai.InterpolationNearest;
-
-import junit.framework.Test;
 
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
@@ -48,6 +50,10 @@ import org.geotools.util.DateRange;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
+
+import junit.framework.Test;
 
 @SuppressWarnings("unchecked")
 public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
@@ -358,6 +364,59 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(1, request.getFeatureId().size());
 
         assertEquals("foo", request.getFeatureId().get(0));
+    }
+    
+    public void testSortBy() throws Exception {
+        HashMap kvp = new HashMap();
+        kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS));
+        kvp.put("sortBy", "FID D");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+
+        assertEquals(1, request.getSortBy().size());
+
+        List<SortBy> sort = request.getSortBy().get(0);
+        assertEquals(1, sort.size());
+        assertSortBy(sort.get(0), "FID", SortOrder.DESCENDING);
+    }
+    
+    public void testSortByGroup() throws Exception {
+        HashMap kvp = new HashMap();
+        kvp.put("layers", "testGroup2");
+        kvp.put("sortBy", "FID D");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+
+        assertEquals(2, request.getSortBy().size());
+
+        List<SortBy> sort1 = request.getSortBy().get(0);
+        assertEquals(1, sort1.size());
+        assertSortBy(sort1.get(0), "FID", SortOrder.DESCENDING);
+        
+        List<SortBy> sort2 = request.getSortBy().get(0);
+        assertEquals(1, sort2.size());
+        assertSortBy(sort2.get(0), "FID", SortOrder.DESCENDING);
+    }
+    
+    public void testSortByLessThanRequired() throws Exception {
+        HashMap<String, Serializable> kvp = new HashMap<>();
+        kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS) + "," + getLayerId(MockData.LAKES));
+        kvp.put("sortBy", "FID D");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        try {
+            reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        } catch(Exception e) {
+            assertThat(e.getMessage(), containsString("sortBy"));
+        }
+    }
+
+
+    private void assertSortBy(SortBy sort, String propertyName, SortOrder direction) {
+        assertEquals(propertyName, sort.getPropertyName().getPropertyName());
+        assertEquals(direction, sort.getSortOrder());
     }
 
     public void testSldNoDefault() throws Exception {

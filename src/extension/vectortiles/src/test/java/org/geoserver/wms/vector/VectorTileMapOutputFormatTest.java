@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.vector;
 
+import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -27,6 +28,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -43,6 +45,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.collect.ImmutableSet;
@@ -56,7 +59,7 @@ public class VectorTileMapOutputFormatTest {
 
     private static CoordinateReferenceSystem WGS84;
 
-    private static Style defaultPointStyle, defaultLineStyle, defaultPolygonStyle;
+    private static Style defaultPointStyle, defaultLineStyle, defaultPolygonStyle, scaleDependentPolygonStyle;
 
     private WMS wmsMock;
 
@@ -64,13 +67,14 @@ public class VectorTileMapOutputFormatTest {
 
     private VectorTileBuilder tileBuilderMock;
 
-    private FeatureLayer pointLayer, lineLayer, polygonLayer;
+    private FeatureLayer pointLayer, lineLayer, polygonLayer,scaleDependentPolygonLayer;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         defaultPointStyle = parseStyle("default_point.sld");
         defaultLineStyle = parseStyle("default_line.sld");
         defaultPolygonStyle = parseStyle("default_polygon.sld");
+        scaleDependentPolygonStyle = parseStyle("scaleDependentPolygonStyle.sld");
 
         // avoid lots of application context unset warnings in the console
         GeoServerExtensionsHelper.init(new ApplicationContextMock());
@@ -127,6 +131,35 @@ public class VectorTileMapOutputFormatTest {
         pointLayer = new FeatureLayer(ds.getFeatureSource("points"), defaultPointStyle);
         lineLayer = new FeatureLayer(ds.getFeatureSource("lines"), defaultLineStyle);
         polygonLayer = new FeatureLayer(ds.getFeatureSource("polygons"), defaultPolygonStyle);
+        scaleDependentPolygonLayer = new FeatureLayer(ds.getFeatureSource("polygons"), scaleDependentPolygonStyle);
+    }
+
+
+    //Test case for when a style has no active rules (i.e. when the current map scale is not
+    //compatible with the Min/MaxScaleDenominator in the SLD Rule).
+    @Test
+    public void testNoRulesByScale() throws Exception {
+        //----------- normal case, there is a rule that draws
+
+        //this has map scale denominator of about 1:7,700, rule will draw
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(0, 0.005, 0, 0.005, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
+
+        Query q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
+        assertTrue(q.getFilter() != Filter.EXCLUDE);
+
+        //------------------- abnormal case, there are no rules in the sld that will draw
+
+        //this has map scale denominator of about 1:77k, rule will NOT draw
+        mapBounds = new ReferencedEnvelope(0, 0.05, 0, 0.05, WGS84);
+        renderingArea = new Rectangle(256, 256);
+
+        mapContent = createMapContent(mapBounds, renderingArea,0, scaleDependentPolygonLayer);
+
+        q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
+        assertTrue(q.getFilter() == Filter.EXCLUDE);
     }
 
     @Test

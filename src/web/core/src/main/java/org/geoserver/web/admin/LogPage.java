@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
@@ -31,6 +32,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geotools.util.logging.Logging;
+
 
 /**
  * Shows the log file contents
@@ -38,6 +41,9 @@ import org.geoserver.web.GeoServerSecuredPage;
  * @author Andrea Aime - OpenGeo
  */
 public class LogPage extends GeoServerSecuredPage {
+    
+    static final Logger LOGGER = Logging.getLogger(LogPage.class);
+    
     private static final long serialVersionUID = 4742103132576413211L;
 
     static final String LINES = "lines";
@@ -132,6 +138,10 @@ public class LogPage extends GeoServerSecuredPage {
             try {
                 // load the logs line by line, keep only the last 1000 lines
                 LinkedList<String> lineList = new LinkedList<String>();
+                
+                if (!logFile.exists()) {
+                    return "";
+                }
 
                 br = new BufferedReader(new FileReader(logFile));
                 String line;
@@ -148,7 +158,7 @@ public class LogPage extends GeoServerSecuredPage {
                 }
                 return result.toString();
             } catch (Exception e) {
-                error(e);
+                LOGGER.log(Level.SEVERE, "Failed to load log file contents", e);
                 return e.getMessage();
             } finally {
                 if (br != null) {

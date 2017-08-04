@@ -14,6 +14,7 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -42,6 +43,8 @@ public class GridCoverageRequest {
     OverviewPolicy overviewPolicy;
 
     Filter filter;
+    
+    List<SortBy> sortBy;
 
     public WCSEnvelope getSpatialSubset() {
         return spatialSubset;
@@ -97,6 +100,14 @@ public class GridCoverageRequest {
 
     public void setFilter(Filter filter) {
         this.filter = filter;
+    }
+    
+    public List<SortBy> getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(List<SortBy> sortBy) {
+        this.sortBy = sortBy;
     }
 
     public Map<String, List<Object>> getDimensionsSubset() {

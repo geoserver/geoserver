@@ -24,8 +24,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 
 /**
@@ -40,6 +42,9 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     List<CoverageBand> currentOutputBands;
     ListMultipleChoice<String> coveragesChoice;
     CompositionType compositionType;
+
+//    List<EnvelopeCompositionType> envelopeCompositionModes;
+//    private DropDownChoice<EnvelopeCompositionType> envelopeComposition;
 
     ListMultipleChoice<CoverageBand> outputBandsChoice;
 

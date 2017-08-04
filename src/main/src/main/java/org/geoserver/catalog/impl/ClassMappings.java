@@ -21,6 +21,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
@@ -93,6 +95,17 @@ public enum ClassMappings {
             return WMSStoreInfoImpl.class;
         };
     },
+    WMTSSTORE {
+        @Override
+        public Class getInterface() {
+            return WMTSStoreInfo.class;
+        }
+
+        @Override
+        public Class getImpl() {
+            return WMTSStoreInfoImpl.class;
+        };
+    },
     STORE {
         @Override
         public Class getInterface() {
@@ -106,7 +119,7 @@ public enum ClassMappings {
 
         @Override
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] { CoverageStoreInfo.class, DataStoreInfo.class, WMSStoreInfo.class };
+            return new Class[] { CoverageStoreInfo.class, DataStoreInfo.class, WMSStoreInfo.class, WMTSStoreInfo.class };
         }
     },
 
@@ -144,6 +157,17 @@ public enum ClassMappings {
             return WMSLayerInfoImpl.class;
         };
     },
+    WMTSLAYER {
+        @Override
+        public Class getInterface() {
+            return WMTSLayerInfo.class;
+        }
+
+        @Override
+        public Class getImpl() {
+            return WMTSLayerInfoImpl.class;
+        };
+    },
     RESOURCE {
         @Override
         public Class getInterface() {
@@ -157,7 +181,7 @@ public enum ClassMappings {
 
         @Override
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] { CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class };
+            return new Class[] { CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class, WMTSLayerInfo.class };
         }
     },
     PUBLISHED {

@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 
 /**
  * Utility visitor that will extract the differences between catalog objects.
@@ -311,5 +313,15 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
         }
         // the two maps contain the same elements
         return true;
+    }
+
+    @Override
+    public void visit(WMTSStoreInfo wmsStore) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void visit(WMTSLayerInfo wmtsLayerInfo) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

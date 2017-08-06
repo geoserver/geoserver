@@ -8,8 +8,10 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.security.AccessLimits;
 import org.geoserver.security.Response;
 import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -62,7 +64,21 @@ public class ReadOnlyDataStore extends DecoratingDataStore {
         if (fs == null)
             return null;
         
-        return DataUtilities.simple((FeatureSource) SecuredObjects.secure(fs, policy));
+        WrapperPolicy childPolicy = buildPolicyForFeatureSource();
+        return DataUtilities.simple((FeatureSource) SecuredObjects.secure(fs, childPolicy));
+    }
+
+    private WrapperPolicy buildPolicyForFeatureSource() {
+        WrapperPolicy childPolicy;
+        if (policy.getLimits() instanceof VectorAccessLimits) {
+            childPolicy = policy;
+        } else {
+            final AccessLimits limits = policy.getLimits();
+            VectorAccessLimits vectorLimits = new VectorAccessLimits(limits.getMode(), null,
+                    Filter.INCLUDE, null, Filter.EXCLUDE);
+            childPolicy = this.policy.derive(vectorLimits);
+        }
+        return childPolicy;
     }
 
     @Override

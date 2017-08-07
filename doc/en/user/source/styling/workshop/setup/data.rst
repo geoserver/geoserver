@@ -38,7 +38,6 @@ To set up GeoServer yourself:
    
    * `styling-workshop-vector.zip <http://echobase.boundlessgeo.com/~jgarnett/GeoServerStyling/styling-workshop-vector.zip>`__
    * `styling-workshop-raster.zip <styling-workshop-raster.zip>`_
-   * `W100N40.TIF <W100N40.TIF>` (digital elevation model converted to geotiff using gdal)
    
    This will produce a :file:`raster` and :file:`vector` folder referenced in the following steps.
    

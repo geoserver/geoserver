@@ -663,6 +663,12 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             if (checked != null) {
                 wrapped.add(checked);
                 selectedStyles.add(style);
+            } else if (layer == null) {
+                StyleInfo styleGroup = checkAccess(user, style, MixedModeBehavior.HIDE);
+                if (styleGroup != null) {
+                    wrapped.add(null);
+                    selectedStyles.add(styleGroup);
+                }
             }
         }
         

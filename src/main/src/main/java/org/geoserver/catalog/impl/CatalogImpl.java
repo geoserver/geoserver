@@ -905,7 +905,7 @@ public class CatalogImpl implements Catalog {
             for (PublishedInfo p : layerGroup.getLayers()) {
                 if (p instanceof LayerGroupInfo) {
                     checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
-                } else {
+                } else if (p instanceof LayerInfo) {
                     checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
                 }
             }

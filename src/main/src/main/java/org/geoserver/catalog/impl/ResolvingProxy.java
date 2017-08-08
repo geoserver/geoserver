@@ -12,18 +12,7 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 
 
 /**
@@ -150,7 +139,13 @@ public class ResolvingProxy extends ProxyBase {
                         g = catalog.getLayerGroupByName( ref );
                     }
                     return (T) g; 
-                }                
+                }
+                if ( object instanceof PublishedInfo) {
+                    //This can happen if you have a layer group with a null layer (style group)
+                    if (null == ref || "".equals(ref)) {
+                        return null;
+                    }
+                }
                 if ( object instanceof StyleInfo ) {
                     Object s = catalog.getStyle( ref );
                     if ( s == null ) {

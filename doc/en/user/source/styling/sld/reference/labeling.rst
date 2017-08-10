@@ -640,3 +640,19 @@ Some underlines examples:
 
 .. figure:: img/label_underlines.png
    :align: center
+
+.. _labeling_strikethrough_text:
+
+strikethroughText
+^^^^^^^^^^^^^^^^^^
+
+The ``strikethroughText`` option instruct the renderer to strikethrough labels. The strikethrough will work like a typical word processor text strikethrough. The thickness and position of the line will be defined by the font and color will be the same as the text. Spaces will also be stroken.
+
+.. code-block:: xml
+
+  <VendorOption name="strikethroughText">true</VendorOption>
+
+Some strikethrough examples:
+
+.. figure:: img/label_strikethrough.png
+   :align: center

@@ -430,8 +430,13 @@ Text symbology (labeling) - part 3
       * none
     - * ``label-underline-text``
       * one of ``true`` or ``false``
-      * If enabled, the render will underline labels. This is equivalent to the :ref:`underlineText <labeling_underline_text>` vendor parameter.
+      * If enabled, the renderer will underline labels. This is equivalent to the :ref:`underlineText <labeling_underline_text>` vendor parameter.
       * no
+    - * ``label-strikethrough-text``
+      * one of ``true`` or ``false``
+      * If enabled, the renderer will strikethrough labels. This is equivalent to the :ref:`strikethroughText <labeling_strikethrough_text>` vendor parameter.
+      * no
+
 
 .. _css_properties_raster:
 

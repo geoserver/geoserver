@@ -65,6 +65,7 @@ The full syntax of a text symbolizer is::
       x-polygonAlign: <boolean>
       x-spaceAround: <expression>
       x-underlineText: <boolean>
+      x-strikethroughText: <boolean>
 
 where:
 
@@ -289,6 +290,11 @@ The following properties are equivalent to SLD "vendor options".
      - No
      - Instruct the renderer to underline labels.
      - ``false``
+   * - ``x-strikethroughText``
+     - No
+     - Instruct the renderer to strikethrough labels.
+     - ``false``
+
 
 .. include:: include/composite.txt
 

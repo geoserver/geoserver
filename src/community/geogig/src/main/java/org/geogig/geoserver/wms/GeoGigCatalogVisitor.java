@@ -159,7 +159,8 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
             Serializable autoIndexingParam = connectionParams
                     .get(GeoGigDataStoreFactory.AUTO_INDEXING.key);
             
-            final boolean autoIndexing = Boolean.TRUE.equals(autoIndexingParam);
+            final boolean autoIndexing = autoIndexingParam != null && Boolean.TRUE.equals(
+                    Boolean.valueOf(autoIndexingParam.toString()));
 
             if (!autoIndexing) {
                 if (LOGGER.isLoggable(Level.FINE)) {

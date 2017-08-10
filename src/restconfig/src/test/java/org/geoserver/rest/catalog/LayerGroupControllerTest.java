@@ -47,6 +47,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
         removeLayerGroup(null, "newLayerGroupWithTypeEO");
+        removeLayerGroup(null, "newLayerGroupWithStyleGroup");
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName("sfLayerGroup");
@@ -369,6 +370,61 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertEquals( 2, lg.getLayers().size() );
         assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
         assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
+
+        assertEquals( 2, lg.getStyles().size() );
+        assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
+        assertEquals( "point", lg.getStyles().get( 1 ).getName() );
+
+        assertNotNull( lg.getBounds() );
+
+        // expected keywords
+        Keyword keyword1 = new Keyword("keyword1");
+        keyword1.setLanguage("en");
+        keyword1.setVocabulary("vocabulary1");
+        Keyword keyword2 = new Keyword("keyword2");
+        keyword2.setLanguage("pt");
+        keyword2.setVocabulary("vocabulary2");
+        // check that the keywords were correctly added
+        assertThat(lg.getKeywords().size(), is(2));
+        assertThat(lg.getKeywords(), containsInAnyOrder(keyword1, keyword2));
+    }
+
+    @Test
+    public void testPostWithStyleGroups() throws Exception{
+        // right now styleGroups need declared bounds to work
+        String xml = "<layerGroup>" +
+                "    <name>newLayerGroupWithStyleGroup</name>" +
+                "    <layers>" +
+                "        <layer>Ponds</layer>" +
+                "        <styleGroup></styleGroup>" +
+                "    </layers>" +
+                "    <styles>" +
+                "        <style>polygon</style>" +
+                "        <style>point</style>" +
+                "    </styles>" +
+                "    <bounds>" +
+                "       <minx>-180</minx>" +
+                "       <maxx>180</maxx>" +
+                "       <miny>-90</miny>" +
+                "       <maxy>90</maxy>" +
+                "    </bounds>" +
+                "    <keywords>" +
+                "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>" +
+                "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>" +
+                "    </keywords>" +
+                "</layerGroup>";
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml );
+        assertEquals( 201, response.getStatus() );
+
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/layergroups/newLayerGroupWithStyleGroup" ) );
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName( "newLayerGroupWithStyleGroup");
+        assertNotNull( lg );
+
+        assertEquals( 2, lg.getLayers().size() );
+        assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
+        assertNull( lg.getLayers().get( 1 ) );
 
         assertEquals( 2, lg.getStyles().size() );
         assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );

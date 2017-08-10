@@ -5,10 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -16,6 +12,10 @@ import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 
 /**
@@ -51,7 +51,12 @@ public class LayerGroupHelper {
         }
         
         for (PublishedInfo p : group.getLayers()) {
-            if (p instanceof LayerInfo) {
+            // if p is null here add layer as null and it will be treated as styleGroup
+            if (p == null){
+                LayerInfo l = (LayerInfo) p;
+                layers.add(l);
+            }
+            else if (p instanceof LayerInfo) {
                 LayerInfo l = (LayerInfo) p;
                 layers.add(l);
             } else {

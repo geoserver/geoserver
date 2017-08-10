@@ -7,7 +7,9 @@ package org.geoserver.kml.sequence;
 
 import java.util.NoSuchElementException;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.KmlCentroidBuilder;
+import org.geoserver.kml.utils.KmlCentroidOptions;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
@@ -33,10 +35,12 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
     
 
     private SimpleFeatureType schema;
+    private KmlEncodingContext context;
 
     protected KMLCentroidFeatureCollection(
-            FeatureCollection<SimpleFeatureType, SimpleFeature> delegate) {
+        FeatureCollection<SimpleFeatureType, SimpleFeature> delegate, KmlEncodingContext context) {
         super(delegate);
+        this.context = context;
 
         // build the centroid collection schema
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -62,7 +66,7 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
     
     @Override
     public SimpleFeatureIterator features() {
-        return new KMLCentroidFeatureIterator(delegate.features(), this.schema);
+        return new KMLCentroidFeatureIterator(delegate.features(), this.schema, this.context);
     }
     
     static class KMLCentroidFeatureIterator implements SimpleFeatureIterator {
@@ -70,11 +74,15 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
         private SimpleFeatureIterator delegate;
         private SimpleFeatureBuilder builder;
         private KmlCentroidBuilder centroids;
+        private KmlEncodingContext context;
+        private KmlCentroidOptions centroidOpts;
 
-        public KMLCentroidFeatureIterator(SimpleFeatureIterator features, SimpleFeatureType schema) {
+        public KMLCentroidFeatureIterator(SimpleFeatureIterator features, SimpleFeatureType schema, KmlEncodingContext context) {
             this.delegate = features;
             this.builder = new SimpleFeatureBuilder(schema);
             this.centroids = new KmlCentroidBuilder();
+            this.context = context;
+            this.centroidOpts = KmlCentroidOptions.create(context);
         }
 
         @Override
@@ -89,7 +97,7 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
                 if ((attribute instanceof Geometry) &&
                     !(attribute instanceof Point)) {
                     Geometry geom = (Geometry) attribute;
-                    Coordinate point = centroids.geometryCentroid(geom);
+                    Coordinate point = centroids.geometryCentroid(geom, context.getRequest().getBbox(), centroidOpts);
                     attribute = geom.getFactory().createPoint(point);
                 }
                 builder.add(attribute);

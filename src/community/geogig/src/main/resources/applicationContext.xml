@@ -2,6 +2,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <bean class="org.geogig.geoserver.config.GeogigModuleStatus">
+  </bean>
+
   <bean id="geogigConfigStore" class="org.geogig.geoserver.config.ConfigStore">
     <constructor-arg ref="resourceLoader"/>
   </bean>

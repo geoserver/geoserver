@@ -411,4 +411,32 @@
       </dependencies>
     </profile>
   </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>process-resources</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+	      <replace dir="${project.build.outputDirectory}/org/geogig/geoserver/config" encoding="UTF-8">
+                  <include name="module_version.properties"/> 
+                  <replacefilter token="@project.version@" value="${project.version}"/>
+                  <replacefilter token="@build.revision@" value="${build.commit.id}"/>
+                  <replacefilter token="@build.timestamp@" value="${build.timestamp}"/>
+                </replace>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

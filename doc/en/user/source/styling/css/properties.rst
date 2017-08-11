@@ -436,7 +436,14 @@ Text symbology (labeling) - part 3
       * one of ``true`` or ``false``
       * If enabled, the renderer will strikethrough labels. This is equivalent to the :ref:`strikethroughText <labeling_strikethrough_text>` vendor parameter.
       * no
-
+    - * ``label-char-spacing``
+      * an amount of pixels, can be negative
+      * If present, expands or shrinks the space between subsequent characters in a label according to the value specified
+      * no
+    - * ``label-word-spacing``
+      * an amount of pixels, must be zero or positive
+      * If present, expands the space between subsequent words in a label according to the value specified
+      * no
 
 .. _css_properties_raster:
 

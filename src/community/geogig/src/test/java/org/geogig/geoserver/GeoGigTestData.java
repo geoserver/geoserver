@@ -488,6 +488,19 @@ public class GeoGigTestData extends ExternalResource {
             return catalog;
         }
 
+        public Catalog buildWithoutDataStores() {
+            setUpNamespace(workspace, nsUri);
+            setUpWorkspace(workspace);
+            return catalog;
+        }
+
+        public Catalog setUpLayers(DataStoreInfo ds) {
+            for (String layerName : layerNames) {
+                setUpLayer(ds, layerName);
+            }
+            return catalog;
+        }
+
         private LayerInfo setUpLayer(DataStoreInfo ds, String layerName) {
             FeatureTypeInfo ft = setUpFeatureType(ds, layerName);
             LayerInfo li = catalog.getFactory().createLayer();

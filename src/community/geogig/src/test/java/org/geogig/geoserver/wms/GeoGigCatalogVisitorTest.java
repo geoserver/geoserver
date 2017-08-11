@@ -14,31 +14,32 @@ import java.util.List;
 import java.util.Set;
 
 import org.geogig.geoserver.GeoGigTestData;
+import org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver;
+import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.IndexInfo;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.storage.IndexDatabase;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  *
  */
 @TestSetup(run = TestSetupFrequency.REPEAT)
-public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
+public class GeoGigCatalogVisitorTest extends CatalogRESTTestSupport {
 
     @Rule
     public GeoGigTestData geogigData = new GeoGigTestData();
@@ -60,7 +61,7 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
         geogigData.add().commit("Added test features");
         // need to instantiate the listerner so it can register with the test GeoServer instance
         new GeogigLayerIntegrationListener(getGeoServer());
-
+        catalog = getCatalog();
     }
 
     @After
@@ -93,7 +94,6 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAttribute_SapitalIndexOnly() throws Exception {
         addAvailableGeogigLayers();
-        Catalog catalog = getCatalog();
         GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         String layerName = catalogBuilder.workspaceName() + ":lines";
         LayerInfo lineLayerInfo = catalog.getLayerByName(layerName);
@@ -110,7 +110,6 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAttribute_SpatialIndexWithExtraAttributes() throws Exception {
         addAvailableGeogigLayers();
-        Catalog catalog = getCatalog();
         GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         String layerName = catalogBuilder.workspaceName() + ":lines";
         LayerInfo lineLayerInfo = catalog.getLayerByName(layerName);
@@ -136,7 +135,6 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
     }
 
     private void addAvailableGeogigLayers() throws IOException {
-        Catalog catalog = getCatalog();
         GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         catalogBuilder.addAllRepoLayers().build();
         // set the DataStore to auto-index
@@ -144,5 +142,50 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
                 GeoGigTestData.CatalogBuilder.STORE);
         dataStore.getConnectionParameters().put(GeoGigDataStoreFactory.AUTO_INDEXING.key, true);
         catalog.save(dataStore);
+    }
+
+    @Test
+    public void testGetAttribute_SapitalIndexOnlyUsingRest() throws Exception {
+        addAvailableGeoGigLayersWithDataStoreAddedViaRest();
+        GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
+        String layerName = catalogBuilder.workspaceName() + ":lines";
+        LayerInfo lineLayerInfo = catalog.getLayerByName(layerName);
+        GeoGigCatalogVisitor visitor = new GeoGigCatalogVisitor();
+        visitor.visit(lineLayerInfo);
+        GeoGIG geoGig = geogigData.getGeogig();
+        IndexDatabase indexDatabase = geoGig.getRepository().indexDatabase();
+        List<IndexInfo> indexInfos = waitForIndexes(indexDatabase, "lines", 1);
+        IndexInfo indexInfo = indexInfos.get(0);
+        Set<String> materializedAttributeNames = IndexInfo.getMaterializedAttributeNames(indexInfo);
+        assertTrue("Expected empty extra Attributes set", materializedAttributeNames.isEmpty());
+    }
+
+    private void addAvailableGeoGigLayersWithDataStoreAddedViaRest() throws Exception {
+        GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
+        catalogBuilder.addAllRepoLayers().buildWithoutDataStores();
+        // create dtatastore via REST, with autoIndexing
+        String message = "<dataStore>\n"//
+                + " <name>" + GeoGigTestData.CatalogBuilder.STORE + "</name>\n"//
+                + " <type>GeoGIG</type>\n"//
+                + " <connectionParameters>\n"//
+                + "   <entry key=\"geogig_repository\">${repository}</entry>\n"//
+                + "   <entry key=\"autoIndexing\">true</entry>\n"
+                + " </connectionParameters>\n"//
+                + "</dataStore>\n";
+        GeoGIG geogig = geogigData.getGeogig();
+        // make sure the Repository is in the Repo Manager
+        RepositoryInfo info = new RepositoryInfo();
+        info.setLocation(geogig.getRepository().getLocation());
+        RepositoryManager.get().save(info);
+        final String repoName = info.getRepoName();
+        message = message.replace("${repository}",
+                GeoServerGeoGigRepositoryResolver.getURI(repoName));
+        final String uri = "/rest/workspaces/" + GeoGigTestData.CatalogBuilder.WORKSPACE + "/datastores";
+        MockHttpServletResponse response = postAsServletResponse(uri, message, "text/xml");
+        assertEquals("POST new DataStore config failed: " + response.getContentAsString(),
+                201, response.getStatus());
+        // now add the layers
+        DataStoreInfo ds = catalog.getDataStoreByName(GeoGigTestData.CatalogBuilder.STORE);
+        catalogBuilder.setUpLayers(ds);
     }
 }

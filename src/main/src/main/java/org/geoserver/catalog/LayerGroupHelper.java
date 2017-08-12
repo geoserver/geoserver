@@ -5,23 +5,33 @@
  */
 package org.geoserver.catalog;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.*;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
 
 
 /**
  * Utility class to work with nested layer groups and extract selected sub-parts of it
  */
 public class LayerGroupHelper {
+
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
 
     private LayerGroupInfo group;
     
@@ -49,18 +59,18 @@ public class LayerGroupHelper {
         if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
             layers.add(group.getRootLayer());
         }
-        
-        for (PublishedInfo p : group.getLayers()) {
-            // if p is null here add layer as null and it will be treated as styleGroup
-            if (p == null){
+        int size = group.getLayers().size();
+        for (int i = 0; i < size; i++) {
+            PublishedInfo p = group.getLayers().get(i);
+            StyleInfo s = group.getStyles().get(i);
+            if (p instanceof LayerInfo) {
                 LayerInfo l = (LayerInfo) p;
                 layers.add(l);
-            }
-            else if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
-                layers.add(l);
-            } else {
+            } else if (p instanceof LayerGroupInfo) {
                 allLayers((LayerGroupInfo) p, layers);
+            } else if (p == null && s != null) {
+                expandStyleGroup(s, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem(),
+                        layers, null);
             }
         }        
     }
@@ -103,10 +113,14 @@ public class LayerGroupHelper {
         int size = group.getLayers().size();
         for (int i = 0; i < size; i++) {
             PublishedInfo p = group.getLayers().get(i);
+            StyleInfo s = group.getStyles().get(i);
             if (p instanceof LayerInfo) {
                 styles.add(group.getStyles().get(i));
-            } else {
+            } else if (p instanceof LayerGroupInfo){
                 allStyles((LayerGroupInfo) p, styles);
+            } else if (p == null && s != null) {
+                expandStyleGroup(s, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem(),
+                        null, styles);
             }
         }
     }    
@@ -129,12 +143,18 @@ public class LayerGroupHelper {
             }
             // continue to default behaviour:
         default:
-            for (PublishedInfo p : group.getLayers()) {
+            int size = group.getLayers().size();
+            for (int i = 0; i < size; i++) {
+                PublishedInfo p = group.getLayers().get(i);
+                StyleInfo s = group.getStyles().get(i);
                 if (p instanceof LayerInfo) {
                     LayerInfo l = (LayerInfo) p;
                     layers.add(l);
-                } else {
+                } else if (p instanceof LayerGroupInfo) {
                     allLayersForRendering((LayerGroupInfo) p, layers, false);
+                }  else if (p == null && s != null) {
+                    expandStyleGroup(s, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem(),
+                            layers, null);
                 }
             }
         }
@@ -161,10 +181,14 @@ public class LayerGroupHelper {
             int size = group.getLayers().size();
             for (int i = 0; i < size; i++) {
                 PublishedInfo p = group.getLayers().get(i);
+                StyleInfo s = group.getStyles().get(i);
                 if (p instanceof LayerInfo) {
                     styles.add(group.getStyles().get(i));
-                } else {
+                } else if (p instanceof LayerGroupInfo) {
                     allStylesForRendering((LayerGroupInfo) p, styles, false);
+                }  else if (p == null && s != null) {
+                    expandStyleGroup(s, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem(),
+                            null, styles);
                 }
             }
         }
@@ -175,7 +199,7 @@ public class LayerGroupHelper {
      * @param crs
      */
     public void calculateBounds(CoordinateReferenceSystem crs) throws Exception {
-        List<LayerInfo> layers = allLayers();        
+        List<LayerInfo> layers = allLayers();
         if (layers.isEmpty()) {
             return;
         }        
@@ -289,20 +313,66 @@ public class LayerGroupHelper {
     private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         path.push(group);
         if (group.getLayers() != null) {
-            for (PublishedInfo child : group.getLayers()) {
+            int size = group.getLayers().size();
+            for (int i = 0; i < size; i++) {
+                PublishedInfo child = group.getLayers().get(i);
+                StyleInfo s = group.getStyles().get(i);
                 if (child instanceof LayerGroupInfo) {
                     if (isGroupInStack((LayerGroupInfo) child, path)) {
                         path.push((LayerGroupInfo) child);
                         return true;
                     } else if (checkLoops((LayerGroupInfo) child, path)) {
                         return true;
-                    }                
+                    }
+                } else if (child == null && s != null) {
+                    if (checkStyleGroupLoops(s, group, path)) {
+                        return true;
+                    }
                 }
             }
         }
         
         path.pop();
         return false;
+    }
+
+    private static boolean checkStyleGroupLoops(StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+        try {
+            Catalog catalog = getCatalogFromStyle(styleGroup);
+            StyledLayerDescriptor sld = new GeoServerDataDirectory(catalog.getResourceLoader()).parsedSld(styleGroup);
+
+            final boolean[] hasLoop = {false};
+            new SLDVisitorAdapter(catalog, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
+                @Override
+                public SLDVisitor apply(StyledLayerDescriptor sld) throws IOException {
+                    try {
+                        super.apply(sld);
+                    } catch (IllegalStateException e) {
+                        hasLoop[0] = true;
+                    }
+                    return this;
+                }
+
+                @Override
+                public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+                    LayerGroupInfo child = catalog.getLayerGroupByName(namedLayer.getName());
+                    if (child != null) {
+                        if (isGroupInStack(child, path)) {
+                            path.push(child);
+                            throw new IllegalStateException("Style group contains recursive structure");
+                        } else if (checkLoops(child, path)) {
+                            throw new IllegalStateException("Style group contains recursive structure");
+                        }
+                        return child;
+                    }
+                    return null;
+                }
+            }.apply(sld);
+            return hasLoop[0];
+        } catch (IOException | ServiceException e) {
+            LOGGER.log(Level.WARNING, "Error extracting layers from Style Group '" + styleGroup.getName() + "'. Skipping...", e);
+            return false;
+        }
     }
     
     private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
@@ -313,5 +383,85 @@ public class LayerGroupHelper {
         }
         
         return false;
+    }
+
+    private static Catalog getCatalogFromStyle(StyleInfo info) {
+        info = ModificationProxy.unwrap(info);
+        if (info instanceof StyleInfoImpl) {
+            return ((StyleInfoImpl) info).getCatalog();
+        }
+        throw new IllegalStateException("Could not get catalog from style group");
+    }
+
+    private static void expandStyleGroup(StyleInfo styleGroup, CoordinateReferenceSystem crs, List<LayerInfo> layers, List<StyleInfo> styles) {
+        if (layers == null) {
+            layers = new ArrayList<>();
+        }
+        if (styles == null) {
+            styles = new ArrayList<>();
+        }
+
+        try {
+            Catalog catalog = getCatalogFromStyle(styleGroup);
+            StyledLayerDescriptor sld = ResourcePool.create(catalog).dataDir().parsedSld(styleGroup);
+            StyleGroupHelper helper = new StyleGroupHelper(catalog, crs);
+            helper.apply(sld);
+            layers.addAll(helper.getLayers());
+            styles.addAll(helper.getStyles());
+        } catch (IOException | ServiceException e) {
+            LOGGER.log(Level.WARNING, "Error extracting styles from Style Group '" + styleGroup.getName() + "'. Skipping...", e);
+        }
+    }
+
+    protected static class StyleGroupHelper extends SLDVisitorAdapter {
+
+        List<LayerInfo> layers;
+        List<StyleInfo> styles;
+        public StyleGroupHelper(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
+            super(catalog, fallbackCrs);
+        }
+
+        @Override
+        public StyleGroupHelper apply(StyledLayerDescriptor sld) throws IOException {
+            layers = new ArrayList<>();
+            styles = new ArrayList<>();
+            super.apply(sld);
+            return this;
+        }
+
+        public List<LayerInfo> getLayers() {
+            return layers;
+        }
+
+        public List<StyleInfo> getStyles() {
+            return styles;
+        }
+
+        @Override
+        public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+            LayerGroupInfo lg = catalog.getLayerGroupByName(namedLayer.getName());
+            if (lg == null) {
+                return catalog.getLayerByName(namedLayer.getName());
+            }
+            return lg;
+        }
+
+        @Override
+        public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info) {
+            StyleInfo s = catalog.getStyleByName(namedStyle.getName());
+            layers.add(info);
+            styles.add(s);
+            try {
+                return s.getStyle();
+            } catch (IOException e) {
+                throw new ServiceException(e);
+            }
+        }
+
+        @Override
+        public void visitUserStyle(StyledLayer layer, Style userStyle, LayerInfo info) {
+            layers.add(info);
+            styles.add(new StyleWrappingStyleInfoImpl(userStyle));
+        }
     }
 }

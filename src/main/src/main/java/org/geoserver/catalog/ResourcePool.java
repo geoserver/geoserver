@@ -107,6 +107,7 @@ import org.geotools.gml2.GML;
 import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -147,8 +148,8 @@ import org.xml.sax.EntityResolver;
  * <li>{@link #featureTypeCache} </li>
  * <li>{@link #featureTypeAttributeCache} </li>
  * <li>{@link #wmsCache} </li>
- * <li>{@link #coverageReaderCache} </li>
  * <li>{@link #hintCoverageReaderCache} </li>
+ * <li>{@link #sldCache} </li>
  * <li>{@link #styleCache} </li>
  * </p>
  * 
@@ -207,6 +208,7 @@ public class ResourcePool {
     Map<String, WebMapServer> wmsCache;
     Map<String, WebMapTileServer> wmtsCache;
     Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
+    Map<StyleInfo,StyledLayerDescriptor> sldCache;
     Map<StyleInfo,Style> styleCache;
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
@@ -238,6 +240,7 @@ public class ResourcePool {
         
         wmsCache = createWmsCache();
         wmtsCache = createWmtsCache();
+        sldCache = createSldCache();
         styleCache = createStyleCache();
 
         listeners = new CopyOnWriteArrayList<Listener>();
@@ -357,6 +360,20 @@ public class ResourcePool {
     
     protected Map<CoverageHintReaderKey, GridCoverageReader> createHintCoverageReaderCache() {
         return new CoverageHintReaderCache();
+    }
+
+    /**
+     * Returns the cache for {@link StyledLayerDescriptor} objects for a particular style.
+     * <p>
+     * The concrete Map implementation is determined by {@link #createSldCache()}
+     * </p>
+     */
+    public Map<StyleInfo, Style> getSldCache() {
+        return styleCache;
+    }
+
+    protected Map<StyleInfo, StyledLayerDescriptor> createSldCache() {
+        return new HashMap<StyleInfo, StyledLayerDescriptor>();
     }
 
     /**
@@ -1915,13 +1932,52 @@ public class ResourcePool {
     public void clear( WMTSStoreInfo info ) {
         wmtsCache.remove( info.getId() );
     }
+
     /**
      * Returns a style resource, caching the result. Any associated images should
      * also be unpacked onto the local machine. ResourcePool will watch the style
      * for changes and invalidate the cache as needed.
      * <p>
+     * The resource is loaded by parsing {@link StyleInfo#getFilename()} as an
+     * SLD. The SLD is prepared for direct use by GeoTools, making use of absolute
+     * file paths where possible.
+     * </p>
+     * @param info The style metadata.
+     *
+     * @throws IOException Any parsing errors.
+     */
+    public StyledLayerDescriptor getSld( final StyleInfo info) throws IOException {
+        StyledLayerDescriptor sld = sldCache.get( info );
+        if ( sld== null ) {
+            synchronized (sldCache) {
+                sld = sldCache.get( info );
+                if ( sld == null ) {
+                    sld = dataDir().parsedSld(info);
+
+                    sldCache.put( info, sld );
+
+                    final Resource styleResource = dataDir().style(info);
+                    styleResource.addListener( new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            sldCache.remove(info);
+                            styleResource.removeListener( this );
+                        }
+                    });
+
+                }
+            }
+        }
+
+        return sld;
+    }
+    /**
+     * Returns the first {@link Style} in a style resource, caching the result. Any associated images should
+     * also be unpacked onto the local machine. ResourcePool will watch the style
+     * for changes and invalidate the cache as needed.
+     * <p>
      * The resource is loaded by parsing {@link StyleInfo#getFilename()} as an 
-     * SLD. The SLD is prepaired for direct use by GeoTools, making use of absolute
+     * SLD. The SLD is prepared for direct use by GeoTools, making use of absolute
      * file paths where possible.
      * </p>
      * @param info The style metadata.
@@ -1934,7 +1990,12 @@ public class ResourcePool {
             synchronized (styleCache) {
                 style = styleCache.get( info );
                 if ( style == null ) {
+                    //TODO: Do we want to be caching the SLD, or not here?
+                    /*
                     style = dataDir().parsedStyle(info);
+                     */
+                    StyledLayerDescriptor sld = getSld(info);
+                    style = Styles.style(sld);
 
                     if (style == null) {
                         throw new ServiceException("Could not extract a UserStyle definition from "

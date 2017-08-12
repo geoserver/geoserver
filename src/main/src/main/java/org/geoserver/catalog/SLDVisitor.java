@@ -2,8 +2,10 @@ package org.geoserver.catalog;
 
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.ServiceException;
 import org.geotools.data.*;
+import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -87,8 +89,9 @@ public abstract class SLDVisitor {
      * @param namedStyle The named style
      * @param info Layer that the style is paired with
      * @return The resolved catalog style
+     * @throws IOException if there was an error reading the named style
      */
-    public abstract Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info);
+    public abstract Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info) throws IOException;
 
     /**
      * Called on each named style for each styled layer. In cases where the styled layer references multiple layers,
@@ -101,9 +104,8 @@ public abstract class SLDVisitor {
      * @param layer The styled layer containing this style
      * @param userStyle The user style
      * @param info Layer that the style is paired with
-     * @throws IOException
      */
-    public abstract void visitUserStyle(StyledLayer layer, Style userStyle, LayerInfo info) throws IOException;
+    public abstract void visitUserStyle(StyledLayer layer, Style userStyle, LayerInfo info);
 
     /**
      * Apply the visitor to a SLD
@@ -116,8 +118,9 @@ public abstract class SLDVisitor {
      *
      * @param sld The sld the visitor is applied to
      * @throws ServiceException If the SLD document is invalid
+     * @throws IOException
      */
-    public void apply(StyledLayerDescriptor sld) throws IOException {
+    public SLDVisitor apply(StyledLayerDescriptor sld) throws IOException {
         final StyledLayer[] styledLayers = sld.getStyledLayers();
         final int slCount = styledLayers.length;
 
@@ -209,6 +212,7 @@ public abstract class SLDVisitor {
                 }
             }
         }
+        return this;
     }
 
     /**
@@ -372,12 +376,61 @@ public abstract class SLDVisitor {
         LayerInfo layerInfo = catalog.getFactory().createLayer();
         layerInfo.setResource(featureTypeInfo);
         layerInfo.setEnabled(true);
-        if (featureSource.getDataStore() instanceof WFSDataStore) {
+        //CollectionFeatureSource doesn't support getDataStore
+        if (!(featureSource instanceof CollectionFeatureSource) && featureSource.getDataStore() instanceof WFSDataStore) {
             layerInfo.setType(PublishedType.REMOTE);
         } else {
             layerInfo.setType(PublishedType.VECTOR);
         }
 
         return layerInfo;
+    }
+    protected static class FeatureSourceWrappingFeatureTypeInfoImpl extends FeatureTypeInfoImpl {
+        FeatureSource featureSource;
+
+        public FeatureSourceWrappingFeatureTypeInfoImpl(FeatureSource featureSource) {
+            super();
+            this.featureSource = featureSource;
+            setName(featureSource.getName().getLocalPart());
+            setEnabled(true);
+        }
+        @Override
+        public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
+            return featureSource;
+        }
+        @Override
+        public Name getQualifiedName() {
+            return featureSource.getName();
+        }
+        @Override
+        public String prefixedName() {
+            return featureSource.getName().getNamespaceURI() + ":" + getName();
+        }
+        @Override
+        public boolean enabled() {
+            return true;
+        }
+        @Override
+        public DataStoreInfo getStore() {
+            return new DataStoreInfoImpl() {
+                @Override
+                public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
+                        ProgressListener listener) throws IOException {
+                    return featureSource.getDataStore();
+                }
+            };
+        }
+    }
+    protected static class StyleWrappingStyleInfoImpl extends StyleInfoImpl {
+        Style style;
+        public StyleWrappingStyleInfoImpl(Style style) {
+            super();
+            this.style = style;
+            setName(style.getName());
+        }
+        @Override
+        public Style getStyle() {
+            return style;
+        }
     }
 }

@@ -1209,15 +1209,15 @@ public class GeoServerDataDirectory {
         assert style!=null;
         return style;
     }
-    
+
     /**
-     * Retrieve the style prepared for direct GeoTools use. All file references
+     * Retrieve the styled layer descriptor prepared for direct GeoTools use. All file references
      * have been made absolute.
-     * 
+     *
      * @param s The style
-     * @return A {@link Resource}
+     * @return A {@link StyledLayerDescriptor}
      */
-    public @Nonnull Style parsedStyle(final StyleInfo s) throws IOException {
+    public @Nonnull StyledLayerDescriptor parsedSld(final StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
             throw new IOException( "No such resource: " + s.getFilename());
@@ -1225,7 +1225,7 @@ public class GeoServerDataDirectory {
         File input = styleResource.file();
 
         DefaultResourceLocator locator = new DefaultResourceLocator() {
-            
+
             @Override
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
@@ -1239,9 +1239,9 @@ public class GeoServerDataDirectory {
                         //GEOS-7025: Just get the path; don't try to create the file
                         file = Paths.toFile(root(), resource.path());
                     }
-                    
+
                     URL u = fileToUrlPreservingCqlTemplates(file);
-                    
+
                     if (url.getQuery() != null) {
                         try {
                             u = new URL(u.toString() + "?" + url.getQuery());
@@ -1250,7 +1250,7 @@ public class GeoServerDataDirectory {
                             return null;
                         }
                     }
-                    
+
                     if (url.getRef() != null) {
                         try {
                             u = new URL(u.toString() + "#" + url.getRef());
@@ -1259,13 +1259,13 @@ public class GeoServerDataDirectory {
                             return null;
                         }
                     }
-                    
+
                     return u;
                 } else {
                     return url;
                 }
             }
-            
+
             @Override
             protected URL validateRelativeURL(URL relativeUrl) {
                 // the resource:/ thing does not make for a valid url, so don't validate it
@@ -1280,9 +1280,21 @@ public class GeoServerDataDirectory {
         locator.setSourceUrl(Resources.toURL(styleResource));
         EntityResolver entityResolver = getEntityResolver();
         final StyledLayerDescriptor sld =
-            Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, getEntityResolver());
+                Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, getEntityResolver());
+
+        return sld;
+    }
+
+    /**
+     * Retrieve the style prepared for direct GeoTools use. All file references
+     * have been made absolute.
+     * 
+     * @param s The style
+     * @return A {@link Style}
+     */
+    public @Nonnull Style parsedStyle(final StyleInfo s) throws IOException {
+        final StyledLayerDescriptor sld = parsedSld(s);
         final Style style = Styles.style(sld);
-        
         assert style!=null;
         return style;
     }

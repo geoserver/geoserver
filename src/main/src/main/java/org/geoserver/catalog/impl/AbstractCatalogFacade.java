@@ -139,13 +139,20 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                 PublishedInfo resolved;
                 if (l instanceof LayerGroupInfo) {
                     resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerGroupInfo) l));
+                    //special case to handle catalog loading, when nested publishibles might not be loaded.
+                    if (resolved == null) {
+                        resolved = l;
+                    }
                 } else if (l instanceof LayerInfo) {
                     resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerInfo) l));
+                    //special case to handle catalog loading, when nested publishibles might not be loaded.
+                    if (resolved == null) {
+                        resolved = l;
+                    }
                 } else {
                     //Special case for null layer (style group)
                     resolved = unwrap(ResolvingProxy.resolve(getCatalog(), l));
                 }
-
                 lg.getLayers().set(i, resolved);
             }
         }

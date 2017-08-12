@@ -35,10 +35,11 @@ public class ProcessStandaloneSLDVisitor extends SLDVisitor {
     }
 
     @Override
-    public void apply(StyledLayerDescriptor sld) throws IOException {
+    public ProcessStandaloneSLDVisitor apply(StyledLayerDescriptor sld) throws IOException {
         super.apply(sld);
         request.setLayers(layers);
         request.setStyles(styles);
+        return this;
     }
     @Override
     public PublishedInfo visitNamedLayer(StyledLayer sl) {
@@ -90,35 +91,31 @@ public class ProcessStandaloneSLDVisitor extends SLDVisitor {
     }
 
     @Override
-    public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo obj) {
-        try {
-            Style s = wms.getStyleByName(namedStyle.getName());
+    public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo obj) throws IOException {
+        Style s = wms.getStyleByName(namedStyle.getName());
 
-            if (s == null) {
-                String failMessage = "couldn't find style named '" + namedStyle.getName() + "'";
-                if (currLayer.getType() == MapLayerInfo.TYPE_RASTER) {
-                    // hmm, well, the style they specified in the wms request wasn't found.
-                    // Let's try the default raster style named 'raster'
-                    s = wms.getStyleByName("raster");
-                    if (s == null) {
-                        // nope, no default raster style either. Give up.
-                        throw new ServiceException(failMessage + "  Also tried to use "
-                                + "the generic raster style 'raster', but it wasn't available.");
-                    }
-                } else {
-                    throw new ServiceException(failMessage);
+        if (s == null) {
+            String failMessage = "couldn't find style named '" + namedStyle.getName() + "'";
+            if (currLayer.getType() == MapLayerInfo.TYPE_RASTER) {
+                // hmm, well, the style they specified in the wms request wasn't found.
+                // Let's try the default raster style named 'raster'
+                s = wms.getStyleByName("raster");
+                if (s == null) {
+                    // nope, no default raster style either. Give up.
+                    throw new ServiceException(failMessage + "  Also tried to use "
+                            + "the generic raster style 'raster', but it wasn't available.");
                 }
+            } else {
+                throw new ServiceException(failMessage);
             }
-
-            if (currLayer != null) {
-                layers.add(currLayer);
-                styles.add(s);
-            }
-
-            return s;
-        } catch (IOException e) {
-            throw new ServiceException("Could not read the named style '"+namedStyle.getName()+"'", e);
         }
+
+        if (currLayer != null) {
+            layers.add(currLayer);
+            styles.add(s);
+        }
+
+        return s;
     }
 
     @Override

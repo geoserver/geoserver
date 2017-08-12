@@ -46,13 +46,13 @@ class LayerGroupContainmentCache {
     /**
      * Verifies a certain {@link PublishedInfo} is actually a {@link LayerInfo}
      */
-    static final Predicate<PublishedInfo> IS_LAYER = p -> p.getId() != null
+    static final Predicate<PublishedInfo> IS_LAYER = p -> p != null && p.getId() != null
             && p instanceof LayerInfo && ((LayerInfo) p).getResource() != null;
 
     /**
      * Verifies a certain {@link PublishedInfo} is actually a {@link LayerGroupInfo}
      */
-    static final Predicate<PublishedInfo> IS_GROUP = p -> p.getId() != null
+    static final Predicate<PublishedInfo> IS_GROUP = p -> p != null && p.getId() != null
             && p instanceof LayerGroupInfo;
 
     /**

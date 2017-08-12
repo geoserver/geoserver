@@ -39,7 +39,11 @@ public class StyleInfoImpl implements StyleInfo {
     public StyleInfoImpl( Catalog catalog ) {
         this.catalog = catalog;
     }
-    
+
+    public Catalog getCatalog() {
+        return catalog;
+    }
+
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
     }

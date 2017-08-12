@@ -355,6 +355,10 @@ public class LayerGroupHelper {
 
                 @Override
                 public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+                    //If this group hasn't been added to the catalog yet, make sure it is not referenced by a NamedLayer
+                    if (namedLayer.getName() != null && namedLayer.getName().equals(group.getName())) {
+                        throw new IllegalStateException("Style group contains recursive structure");
+                    }
                     LayerGroupInfo child = catalog.getLayerGroupByName(namedLayer.getName());
                     if (child != null) {
                         if (isGroupInStack(child, path)) {

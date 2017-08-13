@@ -3,12 +3,12 @@
 Web Coverage Service 2.0 Earth Observation extensions
 =====================================================
 
-The WCS 2.0 Earth Observation profile add temporal support and complex coverage structural description to the base WCS 2.0 protocol, in addition to requiring that a number of other extension are supported (the base GeoServer WCS 2.0 module already supports all of those, such as subsetting and reprojection for example). The full specification is, at the time of writing, undergoing public feedback, and can be downloaded from the `OGC web site <http://www.opengeospatial.org/standards/requests/81>`_.
+The WCS 2.0 Earth Observation application profile (EO-WCS, OGC 10-140r1) extends the base WCS 2.0 protocol by adding temporal support and complex coverage structural description to the base WCS 2.0 protocol, in addition to requiring that a number of other extensions are supported - the base GeoServer WCS 2.0 module already supports all of those, such as subsetting and reprojection for example). The full specification can be downloaded from the `OGC web site <https://portal.opengeospatial.org/files/42722>`_.
 
-In the WCS 2.0 EO data model we not only have coverages, but also stitched mosaics (set of coveages making up a mosaic of images, all granules having the same time and elevation) and dataset series, groups of coverages having different times and/or other attributes (elevation, custom dimensions). A dataset series is exposed in the capabilities document (inside the extension section) and its internal structure can be retrieved calling the new DescribeEOCoverageSet call.
+In the WCS 2.0 EO data model we not only have coverages, but also stitched mosaics (sets of coverages making up a mosaic of images, all granules having the same time and elevation) and dataset series, groups of coverages having different times and/or other attributes (elevation, custom dimensions). A dataset series is exposed in the capabilities document (inside the extension section) and its internal structure can be retrieved calling the new DescribeEOCoverageSet call.
 At the time of writing the EO extension adds support for dataset series, but does not provide direct support for stitched mosaic description.
 
-Each grid layer exposing its inner structure will then expose a flag to enable its exposure as a dataset series. At the time of writing, the only grid readers capable of exposing their internal structure are iamge mosaic and NetCDF.
+Each grid layer exposing its inner structure will then expose a flag to enable its exposure as a dataset series. At the time of writing, the only grid readers capable of exposing their internal structure are image mosaic and netCDF.
 
 Installing the WCS 2.0 EO extension
 -----------------------------------
@@ -31,8 +31,8 @@ The first step to work with EO is to go into the WCS service panel and enable th
 
    *Enabling the WCS 2.0 EO extensions*
 
-The second step is finding and activating the EO extensions for a suitable grid layer, which needs to be one with time dimension support and ability to describe its inner structure. At the time of writing, this means a image mosaic with time support or a NetCDF data layer with time dimension.
-Once located the layer, the EO extensions for it can be enabled by ticking a checkbox in the publishing tab:
+The second step is finding and activating the EO extensions for a suitable grid layer, which needs to be one with time dimension support and ability to describe its inner structure. At the time of writing, this means a image mosaic with time support or a netCDF data layer with time dimension.
+Once the layer is located, the EO extensions for it can be enabled by ticking a checkbox in the publishing tab:
 
 .. figure:: images/layerConfig.png
    :align: center

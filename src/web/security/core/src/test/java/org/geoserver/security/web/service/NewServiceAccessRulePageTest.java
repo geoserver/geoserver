@@ -93,7 +93,6 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         int index = indexOf(page.serviceChoice.getChoices(), "wfs");
         form.select("service", index);
         tester.executeAjaxEvent("form:service", "change");
-        form = tester.newFormTester("form");
 
         List<String> wfsOperations = (List<String>) page.methodChoice.getChoices();
         List<String> expectedWfsOperations = Arrays.asList(

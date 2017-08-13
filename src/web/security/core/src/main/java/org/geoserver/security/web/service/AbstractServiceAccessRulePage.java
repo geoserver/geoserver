@@ -134,13 +134,15 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
 
         @Override
         public List<String> getObject() {
-            ArrayList<String> result = new ArrayList<String>();
-            boolean flag = true;
+            List<String> result = new ArrayList<String>();
             for (Service ows : GeoServerExtensions.extensions(Service.class)) {
                 String service = rule.getService();
-                if (ows.getId().equals(service) && !result.contains(ows.getOperations()) && flag) {
-                    flag = false;
-                    result.addAll(ows.getOperations());
+                if (ows.getId().equals(service)) {
+                    for (String operation : ows.getOperations()) {
+                        if (!result.contains(operation)) {
+                            result.add(operation);
+                        }
+                    }
                 }
             }
             Collections.sort(result);

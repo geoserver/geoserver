@@ -1,8 +1,8 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 package org.geoserver.web.data.store;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -29,7 +29,8 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /**
  * Supports coverage store configuration
  * 
- * @author Andrea Aime
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
+ * 
  * @see StoreEditPanel
  */
 @SuppressWarnings("serial")

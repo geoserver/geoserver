@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,9 +14,7 @@ import org.geotools.data.ows.GetCapabilitiesRequest;
 import org.geotools.data.ows.GetCapabilitiesResponse;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.request.GetFeatureInfoRequest;
-import org.geotools.data.wms.request.GetLegendGraphicRequest;
 import org.geotools.data.wms.response.GetFeatureInfoResponse;
-import org.geotools.data.wms.response.GetLegendGraphicResponse;
 import org.geotools.data.wmts.model.WMTSCapabilities;
 import org.geotools.data.wmts.WebMapTileServer;
 import org.geotools.data.wmts.request.GetTileRequest;
@@ -27,9 +24,9 @@ import org.geotools.tile.Tile;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * Applies security around the web map server
- * @author Andrea Aime - GeoSolutions
+ * Applies security around the web map tile server.
  *
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class SecuredWebMapTileServer extends WebMapTileServer {
 

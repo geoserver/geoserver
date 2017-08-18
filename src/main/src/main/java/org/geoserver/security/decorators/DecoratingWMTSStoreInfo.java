@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,19 +11,18 @@ import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
-import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wmts.WebMapTileServer;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates every method to the delegate wmts store info. Subclasses will override selected methods
- * to perform their "decoration" job
+ * Delegates every method to the delegate wmts store info. 
  * 
- * @author Andrea Aime - GeoSolutions
+ * Subclasses will override selected methods to perform their "decoration" job.
+ * 
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo> implements WMTSStoreInfo {
 

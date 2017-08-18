@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,7 +16,7 @@ import org.opengis.util.ProgressListener;
 /**
  * Wraps a {@link WMSLayerInfo} so that it will return secured layers and WMS stores
  * 
- * @author Andrea Aime - TOPP
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class SecuredWMTSLayerInfo extends DecoratingWMTSLayerInfo {
 

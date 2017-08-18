@@ -1785,9 +1785,10 @@ public class ResourcePool {
                 synchronized (wmtsCache) {
                     wmts = (WebMapTileServer) wmtsCache.get(id);
                     if (wmts == null) {
+                        HTTPClient client = getHTTPClient(expandedStore); 
                         String capabilitiesURL = expandedStore.getCapabilitiesURL();
                         URL serverURL = new URL(capabilitiesURL);
-                        wmts = new WebMapTileServer(serverURL);
+                        wmts = new WebMapTileServer(serverURL, client, null);
                         
                         if(StringUtils.isNotEmpty(info.getHeaderName()) && StringUtils.isNotEmpty(info.getHeaderValue())) {
                             wmts.getHeaders().put(info.getHeaderName(), info.getHeaderValue());
@@ -1818,7 +1819,7 @@ public class ResourcePool {
         return entityResolver;
     }
     
-    private HTTPClient getHTTPClient(WMSStoreInfo info) {
+    private HTTPClient getHTTPClient(HTTPStoreInfo info) { 
         String capabilitiesURL = info.getCapabilitiesURL();
         
         // check for mock bindings. Since we are going to run this code in production as well,

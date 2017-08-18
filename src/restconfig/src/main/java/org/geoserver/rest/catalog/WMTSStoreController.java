@@ -64,7 +64,9 @@ import java.util.logging.Level;
 
 
 /**
- * WMTS store controller
+ * REST controller for WMTS stores.
+ *
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 @RestController
 @ControllerAdvice

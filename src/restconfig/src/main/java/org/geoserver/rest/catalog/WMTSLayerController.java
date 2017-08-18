@@ -34,6 +34,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.ows.Layer;
+import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.data.wmts.WebMapTileServer;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -68,8 +69,9 @@ import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 
 /**
+ * REST controller for WMTS resources.
  *
- * @author etj
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 @RestController
 @ControllerAdvice
@@ -126,7 +128,7 @@ public class WMTSLayerController extends AbstractCatalogController {
                 } catch (IOException e) {
                     throw new RestException( "Could not load wmts store: " + storeName, HttpStatus.INTERNAL_SERVER_ERROR, e );
                 }
-                final List<Layer> layerList = ds.getCapabilities().getLayerList();
+                final List<WMTSLayer> layerList = ds.getCapabilities().getLayerList();
                 return layerList.stream()
                     .map(Layer::getName)
                     .filter(Objects::nonNull)

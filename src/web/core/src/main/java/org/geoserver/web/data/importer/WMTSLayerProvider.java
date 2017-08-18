@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,12 +18,13 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.data.ows.Layer;
+import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.feature.NameImpl;
 
 /**
  * Provides a list of resources for a specific data store
- * @author Andrea Aime - OpenGeo
  *
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 @SuppressWarnings("serial")
 public class WMTSLayerProvider extends GeoServerDataProvider<LayerResource> {
@@ -46,19 +46,19 @@ public class WMTSLayerProvider extends GeoServerDataProvider<LayerResource> {
         if(items == null) {
             // return an empty list in case we still don't know about the store
             if(storeId == null)
-                return new ArrayList<LayerResource>();
+                return new ArrayList<>();
             
             // else, grab the resource list
             try {
                 List<LayerResource> result;
                 StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
                 
-                Map<String, LayerResource> resources = new HashMap<String, LayerResource>();
+                Map<String, LayerResource> resources = new HashMap<>();
                 WMTSStoreInfo wmtsInfo = (WMTSStoreInfo) store;
                 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
                 builder.setStore(store);
-                List<Layer> layers = wmtsInfo.getWebMapTileServer(null).getCapabilities().getLayerList();
+                List<WMTSLayer> layers = wmtsInfo.getWebMapTileServer(null).getCapabilities().getLayerList();
                 for(Layer l : layers) {
                     if(l.getName() == null) {
                         continue;

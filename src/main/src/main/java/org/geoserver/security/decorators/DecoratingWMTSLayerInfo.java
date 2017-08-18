@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -28,10 +27,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates every method to the delegate wms layer info. Subclasses will override selected methods
- * to perform their "decoration" job
+ * Delegates every method to the delegate wmts layer info.
+ *
+ * Subclasses will override selected methods to perform their "decoration" job
  * 
- * @author Andrea Aime - GeoSolutions
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo> implements WMTSLayerInfo {
     

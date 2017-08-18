@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.geoserver.security.WMTSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
@@ -24,7 +22,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer}
  * can apply it while performing the requests
  * 
- * @author Andrea Aime - GeoSolutions
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class SecuredWMTSLayer extends Layer {
     Layer delegate;
@@ -41,17 +39,11 @@ public class SecuredWMTSLayer extends Layer {
     }
     
     public boolean isQueryable() {
-        if(policy.getLimits() instanceof WMTSAccessLimits) {
-            WMTSAccessLimits wl = (WMTSAccessLimits) policy.getLimits();
-            if(!wl.isAllowFeatureInfo()) {
-                return false;
-            }
-        }
-        return delegate.isQueryable();
+        return false;
     }
     
     public String toString() {
-        return "SecuredLayer - " + delegate.toString();
+        return "SecuredWMTSLayer - " + delegate.toString();
     }
 
     @Override
@@ -173,10 +165,12 @@ public class SecuredWMTSLayer extends Layer {
         return delegate.getScaleDenominatorMin();
     }
 
+    @Deprecated
     public double getScaleHintMax() {
         return delegate.getScaleHintMax();
     }
 
+    @Deprecated
     public double getScaleHintMin() {
         return delegate.getScaleHintMin();
     }
@@ -261,10 +255,12 @@ public class SecuredWMTSLayer extends Layer {
         delegate.setScaleDenominatorMin(scaleDenominatorMin);
     }
 
+    @Deprecated
     public void setScaleHintMax(double scaleHintMax) {
         delegate.setScaleHintMax(scaleHintMax);
     }
 
+    @Deprecated
     public void setScaleHintMin(double scaleHintMin) {
         delegate.setScaleHintMin(scaleHintMin);
     }

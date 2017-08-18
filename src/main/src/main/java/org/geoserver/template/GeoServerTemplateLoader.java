@@ -172,9 +172,11 @@ public class GeoServerTemplateLoader implements TemplateLoader {
     public void setWMSLayer(WMSLayerInfo wms){
         this.resource = wms;
     }
-    public void setWMTSLayer(WMTSLayerInfo wms){
-        this.resource = wms;
+
+    public void setWMTSLayer(WMTSLayerInfo wmts){
+        this.resource = wmts;
     }
+    
     /**
      * Sets the coverage info
      * @deprecated use {@link #setCoverage(CoverageInfo)}

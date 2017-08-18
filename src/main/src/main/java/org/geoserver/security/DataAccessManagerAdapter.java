@@ -77,7 +77,7 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
         } else if (WMSLayerInfo.class.isAssignableFrom(resourceClass)) {
             return new WMSAccessLimits(mode, readFilter, null, true);
         } else if (WMTSLayerInfo.class.isAssignableFrom(resourceClass)) {
-            return new WMTSAccessLimits(mode, readFilter, null, true);
+            return new WMTSAccessLimits(mode, readFilter, null);
         } else {
             LOGGER.log(Level.INFO,
                     "Warning, adapting to generic access limits for unrecognized resource type "

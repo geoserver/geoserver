@@ -631,7 +631,7 @@ public abstract class GeoServerLoader {
             return;
         }
         
-        // load wms layers
+        // load wmts layers
         LayerLoader<WMTSLayerInfo> coverageLoader = new LayerLoader<>(WMTSLayerInfo.class, xp, catalog);
         try(AsynchResourceIterator<LayerContents> it = new AsynchResourceIterator<>(storeResource.parent(), Resources.DirectoryFilter.INSTANCE, WMTS_LAYER_MAPPER)) {
             while(it.hasNext()) {

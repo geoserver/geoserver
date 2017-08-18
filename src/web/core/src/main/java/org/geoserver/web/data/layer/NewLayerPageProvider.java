@@ -26,6 +26,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wmts.model.WMTSCapabilities;
 import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.feature.NameImpl;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
@@ -119,7 +120,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                 builder.setStore(store);
                 WebMapTileServer webMapTileServer = expandedStore.getWebMapTileServer(null);
                 WMTSCapabilities capabilities = webMapTileServer.getCapabilities();
-                List<Layer> layers = capabilities.getLayerList();
+                List<WMTSLayer> layers = capabilities.getLayerList();
                 for(Layer l : layers) {
                     if(l.getName() == null) {
                         continue;

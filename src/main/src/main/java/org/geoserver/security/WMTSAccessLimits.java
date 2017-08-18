@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,7 +11,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 /**
  * Describes access limits on a cascaded WMTS layer
  * 
- * @author Andrea Aime - GeoSolutions
+ * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class WMTSAccessLimits extends DataAccessLimits {
     private static final long serialVersionUID = -6566842877723378894L;
@@ -23,24 +22,20 @@ public class WMTSAccessLimits extends DataAccessLimits {
     MultiPolygon rasterFilter;
 
     /**
-     * Whether to allow feature info cascading or not
-     */
-    boolean allowFeatureInfo;
-
-    /**
-     * Builds a WMS limits
+     * Builds a WMTS limits
      * 
-     * @param filter
-     *            Used as a CQL filter on servers supporting it and on cascaded feature info
-     *            requests, and also to slice away feature info results
      * @param rasterFilter
      *            Used as a ROI on the returned data
+     * @param readFilter
+     *            generic filtering
+     * @param allowFeatureInfo
+     *            unused
+     *
+     * @deprecated use the 2 argument constructor
      */
-    public WMTSAccessLimits(CatalogMode mode, Filter filter, MultiPolygon rasterFilter,
-            boolean allowFeatureInfo) {
-        super(mode, filter);
+    public WMTSAccessLimits(CatalogMode mode, Filter readFilter, MultiPolygon rasterFilter) {
+        super(mode, readFilter);
         this.rasterFilter = rasterFilter;
-        this.allowFeatureInfo = allowFeatureInfo;
     }
 
     /**
@@ -52,26 +47,16 @@ public class WMTSAccessLimits extends DataAccessLimits {
         return rasterFilter;
     }
 
-    /**
-     * Whether to allow GetFeatureInfo cascading or not
-     * 
-     *
-     */
-    public boolean isAllowFeatureInfo() {
-        return allowFeatureInfo;
-    }
-
     @Override
     public String toString() {
-        return "WMTSAccessLimits [allowFeatureInfo=" + allowFeatureInfo + ", rasterFilter="
-                + rasterFilter + ", readFilter=" + readFilter + ", mode=" + mode + "]";
+        return "WMTSAccessLimits [rasterFilter="
+                + rasterFilter + ", mode=" + mode + "]";
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (allowFeatureInfo ? 1231 : 1237);
         result = prime * result + ((rasterFilter == null) ? 0 : rasterFilter.hashCode());
         return result;
     }
@@ -85,8 +70,6 @@ public class WMTSAccessLimits extends DataAccessLimits {
         if (getClass() != obj.getClass())
             return false;
         WMTSAccessLimits other = (WMTSAccessLimits) obj;
-        if (allowFeatureInfo != other.allowFeatureInfo)
-            return false;
         if (rasterFilter == null) {
             if (other.rasterFilter != null)
                 return false;
@@ -94,7 +77,4 @@ public class WMTSAccessLimits extends DataAccessLimits {
             return false;
         return true;
     }
-    
-    
-    
 }

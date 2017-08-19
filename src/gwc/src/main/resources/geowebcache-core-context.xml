@@ -134,6 +134,7 @@
     <constructor-arg ref="gwcXmlConfig"/>
     <constructor-arg ref="gwcRuntimeStats"/>
     <property name="defaultStorageFinder" ref="gwcDefaultStorageFinder"/>
+    <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
     <property name="servletPrefix" value="gwc"/>
   </bean>
 	
@@ -158,6 +159,8 @@
   <bean id="noLock" class="org.geowebcache.locks.NoOpLockProvider"/>
 
   <bean id="gwcURLMangler" class="org.geoserver.gwc.ResponseUtilsURLMangler" />
+
+  <bean id="gwcSecurityDispatcher" class="org.geowebcache.filter.security.SecurityDispatcher" />
 
   <bean id="memoryLock" class="org.geowebcache.locks.MemoryLockProvider"/>
   

@@ -23,7 +23,7 @@ import sys, os, string
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.todo']
+extensions = ['sphinx.ext.todo', 'sphinx.ext.extlinks']
 
 todo_include_todos = True
 
@@ -84,6 +84,23 @@ exclude_patterns = [
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# Options for extlinks
+#
+# :website:`license <License>`
+# :geos:`1234`
+# :wiki:`Proposals`
+# -----------------------------------
+
+extlinks = { 
+    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',''),
+    'website': ('http://geoserver.org/%s',''),
+    'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
+    'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
+    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
+    'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
+    'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
+    'api': ('http://docs.geoserver.org/api/#/1.0.0/%s','')
+}
 
 # Options for HTML output
 # -----------------------

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Adapter implementation of {@link SLDVisitor}
  */
-public class SLDVisitorAdapter extends SLDVisitor {
+public abstract class SLDVisitorAdapter extends SLDVisitor {
     public SLDVisitorAdapter(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
         super(catalog, fallbackCrs);
     }

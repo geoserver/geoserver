@@ -494,6 +494,49 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPutAsSLDNamedLayer() throws Exception {
+        String xml =
+                "<StyledLayerDescriptor version='1.0.0' " +
+                        " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' " +
+                        " xmlns='http://www.opengis.net/sld' " +
+                        " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>Streams</Name>\n" + //Reference the Streams layer
+                        "  </NamedLayer>\n" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>RoadSegments</Name>\n" + //2nd, valid layer
+                        "  </NamedLayer>\n" +
+                        "</StyledLayerDescriptor>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 200, response.getStatus() );
+
+        assertNotNull( catalog.getStyleByName( "Ponds" ) );
+    }
+
+    @Test
+    public void testPutAsSLDNamedLayerInvalid() throws Exception {
+        String xml =
+                "<StyledLayerDescriptor version='1.0.0' " +
+                        " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' " +
+                        " xmlns='http://www.opengis.net/sld' " +
+                        " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>Stream</Name>\n" + //invalid layer
+                        "  </NamedLayer>\n" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>Streams</Name>\n" + //valid layer
+                        "  </NamedLayer>\n" +
+                        "</StyledLayerDescriptor>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 400, response.getStatus() );
+        assertEquals("Invalid style:No layer or layer group named 'Stream' found in the catalog", response.getContentAsString());
+    }
+
+    @Test
     public void testStyleNotFoundGloballyWhenInWorkspace() throws Exception {
         testPostToWorkspace();
 

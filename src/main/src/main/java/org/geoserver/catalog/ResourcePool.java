@@ -2079,6 +2079,39 @@ public class ResourcePool {
             }
         }
     }
+
+    /**
+     * Serializes a style to configuration.
+     *
+     * @param info The configuration for the style.
+     * @param style The style object.
+     *
+     */
+    public void writeSLD( StyleInfo info, StyledLayerDescriptor style ) throws IOException {
+        writeSLD(info,style,false);
+    }
+
+    /**
+     * Serializes a style to configuration optionally formatting the style when writing it.
+     *
+     * @param info The configuration for the style.
+     * @param style The style object.
+     * @param format Whether to format the style
+     */
+    public void writeSLD( StyleInfo info, StyledLayerDescriptor style, boolean format) throws IOException {
+        synchronized ( sldCache ) {
+            Resource styleFile = dataDir().style(info);
+            BufferedOutputStream out = new BufferedOutputStream(styleFile.out());
+
+            try {
+                Styles.handler(info.getFormat()).encode(style, info.getFormatVersion(), format, out);
+                clear(info);
+            }
+            finally {
+                out.close();
+            }
+        }
+    }
     
     /**
      * Writes a raw style to configuration.

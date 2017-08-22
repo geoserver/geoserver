@@ -36,6 +36,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opengis.feature.Feature;
@@ -327,10 +328,10 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         LayerInfo l = catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS));
-        StyleInfo s = catalog.getStyleByName("threeTypeLayerGroup");
+        StyleInfo s = catalog.getStyleByName("singleStyleGroup");
 
         lg.setWorkspace(null);
-        lg.setName("layerGroup2");
+        lg.setName("threeTypeLayerGroup");
         //layer with default style
         lg.getLayers().add(l);
         lg.getStyles().add(null);
@@ -428,11 +429,11 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         lg.getLayers().add(null);
         lg.getStyles().add(s);
 
-        catalog.add(lg);
-        LayerGroupInfo resolved = catalog.getLayerGroupByName("recursiveLayerGroup");
-        LayerGroupHelper helper = new LayerGroupHelper(resolved);
-
-        //Verify the loop is recognized
-        assertNotNull(helper.checkLoops());
+        try {
+            catalog.add(lg);
+            Assert.fail("Should not be able to add invalid layer group to catalog");
+        } catch (IllegalArgumentException e) {
+            //expected
+        }
     }
 }

@@ -75,6 +75,12 @@ A layer group can be added by clicking the :guilabel:`Add Layer Group...` button
 
    Dialog for adding a layer group to a layer group
 
+A style group can be added by clicking the :guilabel:`Add Style Group...` button at the top of the table. From the list of styles, select the :ref:`style group <sld_working>` to be added by clicking its name. The selected style will be appended to the bottom of the :guilabel:`publishable` list.
+
+.. figure:: img/data_layergroups_add_stylegroup.png
+
+   Dialog for adding a style group to a layer group
+
 You can view layer groups in the :ref:`layerpreview` section of the web admin.
 
 .. figure:: img/data_layergroups_tasmania.png

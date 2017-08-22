@@ -507,7 +507,7 @@ definitions:
     properties:
       name:
         type: string
-        description: Name of the comprising layer
+        description: Name of the comprising layer, or empty to indicate a style group defined by the corresponding style. 
       link:
         type: string
         description: URL to the comprising layer
@@ -519,7 +519,7 @@ definitions:
     properties:
       name:
         type: string
-        description: Name of the style for the corresponding layer in the list
+        description: Name of the style for the corresponding layer in the list, or empty to use the default style of the corresponding layer.
       link:
         type: string
         description: URL of the style for the corresponding layer in the list

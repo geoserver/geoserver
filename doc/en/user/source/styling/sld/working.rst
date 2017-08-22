@@ -20,12 +20,17 @@ Catalog Styles
 Styles in the catalog can be viewed, edited and validated via the :ref:`styling_webadmin_styles` menu of the :ref:`web_admin`. 
 They may also be created and accessed via the REST :ref:`rest_api_styles` API.
 
-Catalog styles consist of a :ref:`sld_reference_sld` document 
+There are two types of Catalog Styles: Layer Styles (the default) and Style Groups.
+
+Layer Styles
+~~~~~~~~~~~~
+
+Layer styles consist of a :ref:`sld_reference_sld` document 
 containing a single ``<NamedLayer>`` element, 
 which contains a single ``<UserStyle>`` element to specify the styling.
 The layer name is ignored, since the style may be applied to many different layers.
 
-Every layer (featuretype) registered with GeoServer must have at least one catalog style associated with it,
+Every layer (featuretype) registered with GeoServer must have at least one layer style associated with it,
 which is the default style for rendering the layer.  
 Any number of additional styles can be associated with a layer.
 This allows layers to have appropriate styles advertised in the WMS ``GetCapabilities`` document.
@@ -35,7 +40,22 @@ using the :ref:`data_webadmin_layers` page of the :ref:`web_admin`.
 .. note:: When adding a layer and a style for it to GeoServer at the same time, the style should be added first, 
           so that the new layer can be associated with the style immediately. 
 
-          
+Style Groups
+~~~~~~~~~~~~
+
+Style groups consist of a :ref:`sld_reference_sld` document containing any number of ``<NamedLayer>`` and ``<UserLayer>`` elements, 
+each of which may contain any number of ``<UserStyle>`` or ``<NamedStyle>`` elements.
+
+Within a style group, the name of any ``<NamedLayer>`` elements should match a layer (or layer group) in the catalog. Likewise, 
+any ``<NamedStyle>`` elements should refer to a style in the catalog.
+
+Style groups can define new layers of styled data, by using the SLD :ref:`sld_reference_inlinefeature` element to provide feature data.
+
+Style Groups can be added to Layer Groups as an alternative way of defining a collection of styled layers, using either the :ref:`Web Administration interface <data_webadmin_layergroups>` or the :api:`REST API <layergroups.yaml>`.
+
+Style groups can still be assigned to layers and used like a layer style, in which case only the first ``<NamedLayer>`` will be used.
+Style groups can also be used as an External Style, via the geoserver styles endpoint (``/geoserver/styles``) or the geoserver REST api.
+
 External Styles
 ^^^^^^^^^^^^^^^
 

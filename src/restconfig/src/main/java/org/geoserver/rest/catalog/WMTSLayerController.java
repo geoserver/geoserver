@@ -76,7 +76,7 @@ import freemarker.template.SimpleHash;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = {
-    RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/layers",
+    RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmtslayers",
     RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmtsstores/{storeName}/layers"})
 public class WMTSLayerController extends AbstractCatalogController {
 

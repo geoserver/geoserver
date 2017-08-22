@@ -14,9 +14,13 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.ServiceException;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.*;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.UserLayer;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 

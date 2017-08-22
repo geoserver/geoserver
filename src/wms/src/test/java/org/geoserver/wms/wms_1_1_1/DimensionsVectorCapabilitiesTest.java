@@ -252,6 +252,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         catBuilder.calculateLayerGroupBounds(eoProduct);
         
         eoProduct.getLayers().add(rootLayer);
+        eoProduct.getStyles().add(null);
         getCatalog().add(eoProduct);
         try {
             Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);

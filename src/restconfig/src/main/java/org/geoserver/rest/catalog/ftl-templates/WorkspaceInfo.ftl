@@ -19,5 +19,11 @@ Workspace "${properties.name}"
   <li><a href="${page.pageURI('/wmsstores/' + s.properties.name + '.html')}">${s.properties.name}</a></li>
 </#list>
 </#if>
+<#if properties.wmtsStores??>
+<h2>WMTSStores</h2>
+<#list properties.wmtsStores as s>
+  <li><a href="${page.pageURI('/wmtsstores/' + s.properties.name + '.html')}">${s.properties.name}</a></li>
+</#list>
+</#if>
 </ul>
 <#include "tail.ftl">

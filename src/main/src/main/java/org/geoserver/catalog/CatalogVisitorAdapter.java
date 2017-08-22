@@ -37,6 +37,9 @@ public class CatalogVisitorAdapter implements CatalogVisitor {
     public void visit( WMSStoreInfo wmsStore ) {
         
     }
+    public void visit( WMTSStoreInfo wmsStore ) {
+        
+    }
    
     public void visit( FeatureTypeInfo featureType ) {
         
@@ -60,5 +63,8 @@ public class CatalogVisitorAdapter implements CatalogVisitor {
 
     public void visit(WMSLayerInfo wmsLayerInfoImpl) {
                 
+    }
+    public void visit(WMTSLayerInfo wmsLayerInfoImpl) {
+        
     }
 }

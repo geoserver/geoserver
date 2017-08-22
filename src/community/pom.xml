@@ -531,5 +531,5 @@
         <module>jdbc-metrics</module>
       </modules>
     </profile>
-  </profiles>
+  </profiles>  
 </project>

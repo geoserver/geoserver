@@ -34,6 +34,8 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/transforms <transforms.yaml>`
 * :api:`/wmslayers <wmslayers.yaml>`
 * :api:`/wmsstores <wmsstores.yaml>`
+* :api:`/wmtslayers <wmtslayers.yaml>`
+* :api:`/wmtsstores <wmtsstores.yaml>`
 * :api:`/workspaces <workspaces.yaml>`
 * Importer extension:
 

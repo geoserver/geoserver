@@ -9,6 +9,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.impl.AbstractCatalogValidator;
 import org.geotools.factory.GeoTools;
 
@@ -49,6 +51,14 @@ public class WMSValidator extends AbstractCatalogValidator {
             if (!(lyr.getResource() instanceof FeatureTypeInfo))
                 throw new RuntimeException("Layer with type VECTOR doesn't have a featuretype associated");
             FeatureTypeInfo ftinfo = (FeatureTypeInfo) lyr.getResource();
+        } else if (lyr.getType() == PublishedType.WMTS) { // this is mostly to avoid throwing a not RASTER nor VECTOR exception
+            if (!(lyr.getResource() instanceof WMTSLayerInfo )) {
+                throw new RuntimeException("WMTS Layer doesn't have the correct resource");
+            }
+        } else if (lyr.getType() == PublishedType.WMS) { // this is mostly to avoid throwing a not RASTER nor VECTOR exception
+            if (!(lyr.getResource() instanceof WMSLayerInfo )) {
+                throw new RuntimeException("WMS Layer doesn't have the correct resource");
+            }
         } else throw new RuntimeException("Layer is neither RASTER nor VECTOR type");
 
         // Style-dependent checks

@@ -15,6 +15,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -62,7 +63,9 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
         // allow the secure catalog to avoid any kind of wrapping if there are no limits
         if ((readFilter == null || readFilter == Filter.INCLUDE)
                 && (writeFilter == null || writeFilter == Filter.INCLUDE
-                        || WMSLayerInfo.class.isAssignableFrom(resourceClass) || CoverageInfo.class.isAssignableFrom(resourceClass))) {
+                        || WMSLayerInfo.class.isAssignableFrom(resourceClass)
+                        || WMTSLayerInfo.class.isAssignableFrom(resourceClass)
+                        || CoverageInfo.class.isAssignableFrom(resourceClass))) {
             return null;
         }
 
@@ -73,6 +76,8 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
             return new CoverageAccessLimits(mode, readFilter, null, null);
         } else if (WMSLayerInfo.class.isAssignableFrom(resourceClass)) {
             return new WMSAccessLimits(mode, readFilter, null, true);
+        } else if (WMTSLayerInfo.class.isAssignableFrom(resourceClass)) {
+            return new WMTSAccessLimits(mode, readFilter, null);
         } else {
             LOGGER.log(Level.INFO,
                     "Warning, adapting to generic access limits for unrecognized resource type "

@@ -33,12 +33,13 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
-import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -436,7 +437,100 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         
         assertFalse( d.exists() );
     }
-    
+
+    @Test
+    public void testAddWMTSStore() throws Exception {
+        testAddWorkspace();
+
+        File dir = new File( testData.getDataDirectoryRoot(), "workspaces/acme/demowmts");
+        assertFalse( dir.exists() );
+
+        WMTSStoreInfo wmts = catalog.getFactory().createWebMapTileServer();
+        wmts.setName( "demowmts" );
+        wmts.setWorkspace( catalog.getWorkspaceByName( "acme" ) );
+        catalog.add( wmts );
+
+        assertTrue( dir.exists() );
+        assertTrue( new File( dir, "wmtsstore.xml").exists() );
+    }
+
+    @Test
+    public void testModifyWMTSStore() throws Exception {
+        testAddWMTSStore();
+
+        WMTSStoreInfo wmts = catalog.getStoreByName( "acme", "demowmts", WMTSStoreInfo.class );
+        assertNull( wmts.getCapabilitiesURL() );
+
+        String capsURL = "http://demo.opengeo.org:8080/geoserver/gwc?request=GetCapabilites&service=WMTS";
+        wmts.setCapabilitiesURL(capsURL);
+        catalog.save( wmts );
+
+        File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/wmtsstore.xml");
+        Document dom = dom( f );
+        assertXpathEvaluatesTo(capsURL, "/wmtsStore/capabilitiesURL/text()", dom);
+    }
+
+    @Test
+    public void testRemoveWMTSStore() throws Exception {
+        testAddWMTSStore();
+
+        File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/demowmts");
+        assertTrue( f.exists() );
+
+        WMTSStoreInfo wmts = catalog.getStoreByName("acme", "demowmts", WMTSStoreInfo.class);
+        catalog.remove( wmts );
+        assertFalse( f.exists() );
+    }
+
+    @Test
+    public void testAddWMTSLayer() throws Exception {
+        testAddWMTSStore();
+
+        File d = new File( testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/foo_wmts");
+        assertFalse( d.exists() );
+
+        NamespaceInfo ns = catalog.getFactory().createNamespace();
+        ns.setPrefix( "bar" );
+        ns.setURI( "http://bar" );
+        catalog.add( ns );
+
+        WMTSLayerInfo wmts = catalog.getFactory().createWMTSLayer();
+        wmts.setName( "foo_wmts" );
+        wmts.setNamespace( ns );
+        wmts.setStore(catalog.getStoreByName("acme", "demowmts", WMTSStoreInfo.class));
+        catalog.add( wmts );
+
+        assertTrue( d.exists() );
+        assertTrue( new File( d, "wmtslayer.xml").exists() );
+    }
+
+    @Test
+    public void testModifyWMTSLayer() throws Exception {
+        testAddWMTSLayer();
+
+        WMTSLayerInfo wli = catalog.getResourceByName( "bar", "foo_wmts", WMTSLayerInfo.class );
+        wli.setTitle( "fooTitle" );
+        catalog.save( wli );
+
+        File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/foo_wmts/wmtslayer.xml");
+        Document dom = dom( f );
+
+        assertXpathEvaluatesTo( "fooTitle", "/wmtsLayer/title", dom );
+    }
+
+    @Test
+    public void testRemoveWMTSLayer() throws Exception {
+        testAddWMTSLayer();
+
+        File d = new File( testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/foo_wmts");
+        assertTrue( d.exists() );
+
+        WMTSLayerInfo wli = catalog.getResourceByName( "bar", "foo_wmts", WMTSLayerInfo.class );
+        catalog.remove( wli );
+
+        assertFalse( d.exists() );
+    }
+
     @Test
     public void testAddLayer() throws Exception {
         testAddFeatureType();

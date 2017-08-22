@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +29,6 @@ import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
 import com.thoughtworks.xstream.io.xml.StaxWriter;
 import org.apache.commons.collections.MultiHashMap;
 import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.codehaus.jettison.util.FastStack;
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -65,6 +62,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AttributeTypeInfoImpl;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
@@ -89,6 +88,8 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
+import org.geoserver.catalog.impl.WMTSLayerInfoImpl;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
@@ -200,6 +201,9 @@ public class XStreamPersister {
         
         protected void postEncodeWMSLayer( WMSLayerInfo ds, HierarchicalStreamWriter writer, MarshallingContext context ) {
         }
+
+        protected void postEncodeWMTSLayer( WMTSLayerInfo ds, HierarchicalStreamWriter writer, MarshallingContext context ) {
+        }
         
         protected void postEncodeCoverage( CoverageInfo ds, HierarchicalStreamWriter writer, MarshallingContext context ) {
         }
@@ -224,6 +228,9 @@ public class XStreamPersister {
         }
 
         protected void postEncodeWMSStore(WMSStoreInfo store, HierarchicalStreamWriter writer,  MarshallingContext context) {
+            
+        }
+        protected void postEncodeWMTSStore(WMTSStoreInfo store, HierarchicalStreamWriter writer,  MarshallingContext context) {
             
         }
     }
@@ -332,12 +339,14 @@ public class XStreamPersister {
         xs.alias("workspace", WorkspaceInfo.class);
         xs.alias("dataStore", DataStoreInfo.class);
         xs.alias("wmsStore", WMSStoreInfo.class);
+        xs.alias("wmtsStore", WMTSStoreInfo.class);
         xs.alias("coverageStore", CoverageStoreInfo.class);
         xs.alias("style",StyleInfo.class);
         xs.alias( "legend", LegendInfo.class);
         xs.alias( "featureType", FeatureTypeInfo.class);
         xs.alias( "coverage", CoverageInfo.class);
         xs.alias( "wmsLayer", WMSLayerInfo.class);
+        xs.alias( "wmtsLayer", WMTSLayerInfo.class);
         xs.alias( "coverageDimension", CoverageDimensionInfo.class);
         xs.alias( "coverageBand", CoverageBand.class);
         xs.alias( "inputCoverageBand", InputCoverageBand.class);
@@ -403,6 +412,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(StoreInfo.class), "connectionParameters", new BreifMapConverter() );
         xs.registerLocalConverter(impl(StoreInfo.class), "metadata", new MetadataMapConverter());
         xs.registerLocalConverter(impl(WMSStoreInfo.class), "password", new EncryptedFieldConverter());
+        xs.registerLocalConverter(impl(WMTSStoreInfo.class), "password", new EncryptedFieldConverter());
         
         // StyleInfo
         xs.omitField(impl(StyleInfo.class), "catalog");
@@ -666,12 +676,14 @@ public class XStreamPersister {
         xs.addDefaultImplementation(WorkspaceInfoImpl.class, WorkspaceInfo.class);
         xs.addDefaultImplementation(DataStoreInfoImpl.class, DataStoreInfo.class);
         xs.addDefaultImplementation(WMSStoreInfoImpl.class, WMSStoreInfo.class);
+        xs.addDefaultImplementation(WMTSStoreInfoImpl.class, WMTSStoreInfo.class);
         xs.addDefaultImplementation(CoverageStoreInfoImpl.class, CoverageStoreInfo.class);
         xs.addDefaultImplementation(StyleInfoImpl.class, StyleInfo.class);
         xs.addDefaultImplementation(LegendInfoImpl.class, LegendInfo.class);
         xs.addDefaultImplementation(FeatureTypeInfoImpl.class, FeatureTypeInfo.class );
         xs.addDefaultImplementation(CoverageInfoImpl.class, CoverageInfo.class);
         xs.addDefaultImplementation(WMSLayerInfoImpl.class, WMSLayerInfo.class);
+        xs.addDefaultImplementation(WMTSLayerInfoImpl.class, WMTSLayerInfo.class);
         xs.addDefaultImplementation(CoverageDimensionImpl.class, CoverageDimensionInfo.class);
         xs.addDefaultImplementation(MetadataLinkInfoImpl.class, MetadataLinkInfo.class);
         xs.addDefaultImplementation(AttributeTypeInfoImpl.class, AttributeTypeInfo.class );
@@ -1612,7 +1624,9 @@ public class XStreamPersister {
                 callback.postEncodeCoverageStore( (CoverageStoreInfo) store, writer, context );
             } else if (store instanceof WMSStoreInfo){
                 callback.postEncodeWMSStore( (WMSStoreInfo) store, writer, context );
-            } else {
+            } else if (store instanceof WMTSStoreInfo){
+                callback.postEncodeWMTSStore( (WMTSStoreInfo) store, writer, context );
+            }else {
                 throw new IllegalArgumentException("Unknown store type: "
                         + (store == null ? "null" : store.getClass().getName()));
             }
@@ -1650,6 +1664,34 @@ public class XStreamPersister {
                 if (wmsStore.getReadTimeout() <= 0) {
                     wmsStore.setReadTimeout(readTimeout != null && readTimeout.intValue() > 0 ? readTimeout
                             : WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
+                }
+            } else if (store instanceof WMTSStoreInfo) {
+                WMTSStoreInfo wmtsStore = (WMTSStoreInfo) store;
+                MetadataMap metadata = wmtsStore.getMetadata();
+                Integer maxConnections = null;
+                Integer connectTimeout = null;
+                Integer readTimeout = null;
+                if (metadata != null) {
+                    maxConnections = metadata.get("maxConnections", Integer.class);
+                    connectTimeout = metadata.get("connectTimeout", Integer.class);
+                    readTimeout = metadata.get("readTimeout", Integer.class);
+                    metadata.remove("maxConnections");
+                    metadata.remove("connectTimeout");
+                    metadata.remove("readTimeout");
+                }
+                if (wmtsStore.getMaxConnections() <= 0) {
+                    wmtsStore.setMaxConnections(maxConnections != null
+                            && maxConnections.intValue() > 0 ? maxConnections
+                            : WMTSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS);
+                }
+                if (wmtsStore.getConnectTimeout() <= 0) {
+                    wmtsStore.setConnectTimeout(connectTimeout != null
+                            && connectTimeout.intValue() > 0 ? connectTimeout
+                            : WMTSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT);
+                }
+                if (wmtsStore.getReadTimeout() <= 0) {
+                    wmtsStore.setReadTimeout(readTimeout != null && readTimeout.intValue() > 0 ? readTimeout
+                            : WMTSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
                 }
             }
 

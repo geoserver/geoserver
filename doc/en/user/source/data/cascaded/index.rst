@@ -14,7 +14,7 @@ GeoServer supports cascading the following services:
    wfs
    stored_query
    wms
-
+   wmts
 
 
 

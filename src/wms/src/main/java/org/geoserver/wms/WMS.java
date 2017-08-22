@@ -38,6 +38,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -991,6 +992,8 @@ public class WMS implements ApplicationContextAware {
                         .contains("application/vnd.ogc.gml")) {
                     return false;
                 }
+            } else if (layer.getResource() instanceof WMTSLayerInfo) {
+                return false;
             }
 
             return layer.isQueryable();
@@ -1695,7 +1698,7 @@ public class WMS implements ApplicationContextAware {
      * @return
      */
     public static boolean isWmsExposable(LayerInfo lyr) {
-        if (lyr.getType() == PublishedType.RASTER || lyr.getType() == PublishedType.WMS) {
+        if (lyr.getType() == PublishedType.RASTER || lyr.getType() == PublishedType.WMS || lyr.getType() == PublishedType.WMTS) {
             return true;
         }
 

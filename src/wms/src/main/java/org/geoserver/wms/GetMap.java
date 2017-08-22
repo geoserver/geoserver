@@ -28,6 +28,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.MetatileMapOutputFormat;
@@ -40,6 +41,8 @@ import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wms.WebMapServer;
+
+import org.geotools.data.wmts.WebMapTileServer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
@@ -48,6 +51,7 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.WMSLayer;
+import org.geotools.map.WMTSMapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.styling.FeatureTypeConstraint;
@@ -66,6 +70,7 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.ows.Dispatcher;
 
 /**
  * WMS GetMap operation default implementation.
@@ -613,8 +618,21 @@ public class GetMap {
                     Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }
+            } else if (layerType == MapLayerInfo.TYPE_WMTS) {
+                WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
+                WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
+                Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
+
+
+                WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer);
+                mapLayer.setTitle(wmtsLayer.prefixedName());
+
+                mapLayer.setRawTime((String)Dispatcher.REQUEST.get().getRawKvp().get("time"));
+
+                mapContent.addLayer(mapLayer);
+                
             } else {
-                throw new IllegalArgumentException("Unkown layer type " + layerType);
+                throw new IllegalArgumentException("Unknown layer type " + layerType);
             }
         }
 

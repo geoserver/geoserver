@@ -39,6 +39,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
@@ -89,6 +91,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             else if ( source instanceof DataStoreInfo ) {
                 addDataStore( (DataStoreInfo) source );
             }
+            else if ( source instanceof WMTSStoreInfo ) {
+                addWMTSStore( (WMTSStoreInfo) source );
+            }
             else if ( source instanceof WMSStoreInfo ) {
                 addWMSStore( (WMSStoreInfo) source );
             }
@@ -103,6 +108,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             }
             else if ( source instanceof WMSLayerInfo ) {
                 addWMSLayer( (WMSLayerInfo) source );
+            }
+            else if ( source instanceof WMTSLayerInfo ) {
+                addWMTSLayer( (WMTSLayerInfo) source );
             }
             else if ( source instanceof LayerInfo ) {
                 addLayer( (LayerInfo) source );
@@ -229,6 +237,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             else if ( source instanceof DataStoreInfo ) {
                 modifyDataStore( (DataStoreInfo) source );
             }
+            else if ( source instanceof WMTSStoreInfo ) {
+                modifyWMTSStore( (WMTSStoreInfo) source );
+            }
             else if ( source instanceof WMSStoreInfo ) {
                 modifyWMSStore( (WMSStoreInfo) source );
             }
@@ -246,6 +257,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             }
             else if ( source instanceof WMSLayerInfo ) {
                 modifyWMSLayer( (WMSLayerInfo) source );
+            }
+            else if ( source instanceof WMTSLayerInfo ) {
+                modifyWMTSLayer( (WMTSLayerInfo) source );
             }
             else if ( source instanceof LayerInfo ) {
                 modifyLayer( (LayerInfo) source );
@@ -282,6 +296,12 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             }
             else if ( source instanceof CoverageInfo ) {
                 removeCoverage( (CoverageInfo) source );
+            }
+            else if ( source instanceof WMTSStoreInfo ) {
+                removeWMTSStore( (WMTSStoreInfo) source );
+            }
+            else if ( source instanceof WMTSLayerInfo ) {
+                removeWMTSLayer( (WMTSLayerInfo) source );
             }
             else if ( source instanceof WMSStoreInfo ) {
                 removeWMSStore( (WMSStoreInfo) source );
@@ -547,6 +567,43 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         rmRes(directory);
     }
     
+  //wmts stores
+    private void addWMTSStore( WMTSStoreInfo wmss ) throws IOException {
+        LOGGER.fine( "Persisting wmts store " + wmss.getName() );
+        Resource xml = dd.config(wmss);
+        persist(wmss, xml);
+    }
+    
+    private void modifyWMTSStore( WMTSStoreInfo wmss ) throws IOException {
+        LOGGER.fine( "Persisting wmts store " + wmss.getName() );
+        Resource xml = dd.config(wmss);
+        persist(wmss, xml);
+    }
+    
+    private void removeWMTSStore( WMTSStoreInfo wmss ) throws IOException {
+        LOGGER.fine( "Removing  wmts datastore " + wmss.getName() );
+        Resource directory = dd.get(wmss);
+        rmRes(directory);
+    }
+    
+    //wmts layers
+    private void addWMTSLayer( WMTSLayerInfo wms ) throws IOException {
+        LOGGER.fine( "Persisting wmts layer " + wms.getName() );
+        Resource xml = dd.config(wms);
+        persist( wms, xml );
+    }
+    
+    private void modifyWMTSLayer( WMTSLayerInfo wms ) throws IOException {
+        LOGGER.fine( "Persisting wmts layer" + wms.getName() );
+        Resource xml = dd.config(wms);
+        persist( wms, xml );
+    }
+    
+    private void removeWMTSLayer( WMTSLayerInfo wms ) throws IOException {
+        LOGGER.fine( "Removing wms layer " + wms.getName() );
+        Resource directory = dd.get(wms);
+        rmRes(directory);
+    }
     //layers
     private void addLayer( LayerInfo l ) throws IOException {
         LOGGER.fine( "Persisting layer " + l.getName() );

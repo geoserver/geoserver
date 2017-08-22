@@ -25,12 +25,15 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.data.wms.xml.Dimension;
+import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
@@ -108,6 +111,32 @@ abstract class DimensionHelper {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    void handleWMTSLayerDimensions(LayerInfo layerInfo) {
+        try {
+            // do we have time?
+            WMTSLayerInfo wli = (WMTSLayerInfo) layerInfo.getResource();
+            WMTSLayer wl = (WMTSLayer)wli.getWMTSLayer(null);
+            for (String dimName : wl.getDimensions().keySet()) {
+                if("time".equalsIgnoreCase(dimName)) {
+                    Dimension timeDimension = wl.getDimension(dimName);
+
+                    if (mode == Mode.WMS11) {
+                        declareWMS11Dimensions(true, false, null, null, null);
+                    }
+
+                    writeTimeDimension(
+                            timeDimension.getExtent().getValue(),
+                            timeDimension.getExtent().getDefaultValue());
+                } else {
+                    //TODO: custom dimension handling
+                    LOGGER.log(Level.WARNING, "Skipping custom dimension " + dimName + " in layer " + layerInfo.getName());
+                }
+            }
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Error handling WMTS time dimension", ex);
         }
     }
 

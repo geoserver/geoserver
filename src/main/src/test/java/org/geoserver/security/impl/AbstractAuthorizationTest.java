@@ -38,6 +38,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
@@ -127,12 +129,18 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected SecureCatalogImpl sc;
 
     protected LayerInfo cascadedLayer;
-    
+
+    protected LayerInfo cascadedWmtsLayer;
+
     protected LayerInfo forestsLayer;
 
     protected WMSLayerInfo cascaded;
 
     protected List<WMSLayerInfo> wmsLayers;
+
+    protected WMTSLayerInfo cascadedWmts;
+
+    protected List<WMTSLayerInfo> wmtsLayers;
 
     protected LayerGroupInfo namedTreeA;
 
@@ -218,6 +226,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         // cascaded WMS layer
         cascadedLayer = buildLayer("cascaded", toppWs, WMSLayerInfo.class);
         cascaded = (WMSLayerInfo) cascadedLayer.getResource();
+
+        // cascaded WMTS layer
+        cascadedWmtsLayer = buildLayer("cascadedWmts", toppWs, WMTSLayerInfo.class);
+        cascadedWmts = (WMTSLayerInfo) cascadedWmtsLayer.getResource();
     }
 
     @After
@@ -250,6 +262,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
             store = createNiceMock(CoverageStoreInfo.class);
         } else if (resourceClass.equals(WMSLayerInfo.class)) {
             store = createNiceMock(WMSStoreInfo.class);
+        } else if (resourceClass.equals(WMTSLayerInfo.class)) {
+            store = createNiceMock(WMTSStoreInfo.class);
         } else {
             store = createNiceMock(DataStoreInfo.class);
             expect((DataStore)((DataStoreInfo) store).getDataStore(null)).andReturn(dstore);
@@ -387,16 +401,20 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
      */
     protected void populateCatalog() {
         // build resource collections
-        layers = Arrays.asList(statesLayer, roadsLayer, landmarksLayer, basesLayer, arcGridLayer, cascadedLayer);
+        layers = Arrays.asList(statesLayer, roadsLayer, landmarksLayer, basesLayer, arcGridLayer, cascadedLayer, cascadedWmtsLayer);
         featureTypes = new ArrayList<>();
         coverages = new ArrayList<>();
         wmsLayers = new ArrayList<>();
+        wmtsLayers = new ArrayList<>();
         for (LayerInfo layer : layers) {
             if (layer.getResource() instanceof FeatureTypeInfo) {
                 featureTypes.add((FeatureTypeInfo) layer.getResource());
             }
             else if (layer.getResource() instanceof WMSLayerInfo) {
                 wmsLayers.add((WMSLayerInfo) layer.getResource());
+            }
+            else if (layer.getResource() instanceof WMTSLayerInfo) {
+                wmtsLayers.add((WMTSLayerInfo) layer.getResource());
             }
             else {
                 coverages.add((CoverageInfo) layer.getResource());
@@ -411,6 +429,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getLayerByName("topp:cascaded")).andReturn(cascadedLayer)
                 .anyTimes();
         expect(catalog.getResourceByName("topp:cascaded", WMSLayerInfo.class)).andReturn(cascaded)
+                .anyTimes();
+        expect(catalog.getLayerByName("topp:cascadedWmts")).andReturn(cascadedWmtsLayer)
+                .anyTimes();
+        expect(catalog.getResourceByName("topp:cascadedWmts", WMTSLayerInfo.class)).andReturn(cascadedWmts)
                 .anyTimes();
         expect(catalog.getResourceByName("topp:states", FeatureTypeInfo.class)).andReturn(
                 states).anyTimes();

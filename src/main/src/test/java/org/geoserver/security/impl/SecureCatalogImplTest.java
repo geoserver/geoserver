@@ -49,6 +49,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractCatalogDecorator;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -70,6 +71,7 @@ import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
+import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -118,6 +120,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(states, sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
         assertSame(cascaded, sc.getResourceByName("topp:cascaded", WMSLayerInfo.class));
+        assertSame(cascadedWmts, sc.getResourceByName("topp:cascadedWmts", WMTSLayerInfo.class));
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(statesStore, sc.getDataStoreByName("states"));
         assertSame(roadsStore, sc.getDataStoreByName("roads"));
@@ -1379,6 +1382,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertThat(SecureCatalogImpl.unwrap(new SecuredFeatureTypeInfo(states, policy)), not(instanceOf(SecuredFeatureTypeInfo.class)));
         // test that a secured WMS layer info info is correctly unwrapped to a WMS layer info
         assertThat(SecureCatalogImpl.unwrap(new SecuredWMSLayerInfo(cascaded, policy)), not(instanceOf(SecuredWMSLayerInfo.class)));
+        // test that a secured WMTS layer info info is correctly unwrapped to a WMTS layer info
+        assertThat(SecureCatalogImpl.unwrap(new SecuredWMTSLayerInfo(cascadedWmts, policy)), not(instanceOf(SecuredWMTSLayerInfo.class)));
     }
 
     @Test
@@ -1403,6 +1408,12 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         secureWmsLayerInfo.setResource(new SecuredWMSLayerInfo(cascaded, policy));
         assertThat(wmsLayerInfo.getResource(), not(instanceOf(SecuredWMSLayerInfo.class)));
         assertThat(wmsLayerInfo.getResource(), instanceOf(WMSLayerInfo.class));
+        // testing for WMTS layers
+        LayerInfo wmtsLayerInfo = new LayerInfoImpl();
+        SecuredLayerInfo secureWmtsLayerInfo = new SecuredLayerInfo(wmtsLayerInfo, policy);
+        secureWmtsLayerInfo.setResource(new SecuredWMTSLayerInfo(cascadedWmts, policy));
+        assertThat(wmtsLayerInfo.getResource(), not(instanceOf(SecuredWMTSLayerInfo.class)));
+        assertThat(wmtsLayerInfo.getResource(), instanceOf(WMTSLayerInfo.class));
     }
     
     @Test

@@ -152,6 +152,12 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         visitStore(store);
     }
 
+    @Override
+    public void visit(WMTSStoreInfo store) {
+        visitStore(store);
+        
+    }
+
     void visitStore(StoreInfo dataStore) {
         // drill down into layers (into resources since we cannot scan layers)
         List<ResourceInfo> resources = catalog.getResourcesByStore(dataStore, ResourceInfo.class);
@@ -180,6 +186,12 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     
     public void visit(WMSLayerInfo wmsLayer) {
         add(wmsLayer, ModificationType.DELETE);
+    }
+
+    @Override
+    public void visit(WMTSLayerInfo wmtsLayer) {
+        add(wmtsLayer, ModificationType.DELETE);
+        
     }
 
     public void visit(LayerInfo layer) {

@@ -37,7 +37,7 @@ public class SimpleBookmarkableLink extends Panel {
             String name = pageParams[i];
             String value = pageParams[i+1];
             // starting with wicket 6 the value cannot be null, in that case the
-            // param sould not be provided
+            // param should not be provided
             if(value != null) {
                 result.add(name, value);
             }

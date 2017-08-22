@@ -616,6 +616,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                             fb.set("product_id", dbProductId);
                             fb.set("location", sf.getAttribute("location"));
                             fb.set("the_geom", sf.getDefaultGeometry());
+                            fb.set("band", sf.getAttribute("band"));
                             SimpleFeature mapped = fb.buildFeature(null);
                             fc.add(mapped);
                         }

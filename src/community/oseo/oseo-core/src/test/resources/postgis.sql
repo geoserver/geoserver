@@ -75,6 +75,7 @@ create table product (
   "originalPackageType" varchar,
   "thumbnailURL" varchar,
   "quicklookURL" varchar,
+  "crs" varchar,
   "eoIdentifier" varchar unique,
   "eoParentIdentifier" varchar references collection("eoIdentifier"),
   "eoProductionStatus" varchar,
@@ -195,6 +196,7 @@ create table product_ogclink (
 create table granule (
   "gid" serial primary key,
   "product_id" int not null references product("id") on delete cascade,
+  "band" varchar,
   "location" varchar not null,
   "the_geom" geometry(Polygon, 4326) not null
 );

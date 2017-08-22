@@ -62,7 +62,14 @@ public class LayerGroupHelper {
         int size = group.getLayers().size();
         for (int i = 0; i < size; i++) {
             PublishedInfo p = group.getLayers().get(i);
-            StyleInfo s = group.getStyles().get(i);
+            StyleInfo s;
+            //Handle incomplete layer groups, especially those constructed by the XStreamPersister
+            if (group.getStyles() == null || group.getStyles().size() == 0) {
+                s = null;
+            } else {
+                s = group.getStyles().get(i);
+            }
+
             if (p instanceof LayerInfo) {
                 LayerInfo l = (LayerInfo) p;
                 layers.add(l);
@@ -316,7 +323,13 @@ public class LayerGroupHelper {
             int size = group.getLayers().size();
             for (int i = 0; i < size; i++) {
                 PublishedInfo child = group.getLayers().get(i);
-                StyleInfo s = group.getStyles().get(i);
+                StyleInfo s;
+                //Handle incomplete layer groups, especially those constructed by the XStreamPersister
+                if (group.getStyles() == null || group.getStyles().size() == 0) {
+                    s = null;
+                } else {
+                    s = group.getStyles().get(i);
+                }
                 if (child instanceof LayerGroupInfo) {
                     if (isGroupInStack((LayerGroupInfo) child, path)) {
                         path.push((LayerGroupInfo) child);

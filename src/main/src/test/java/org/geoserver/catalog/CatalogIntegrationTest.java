@@ -32,6 +32,7 @@ import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.LineSymbolizer;
@@ -350,7 +351,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testSingleStyleGroup() throws IOException {
+    public void testSingleStyleGroup() throws Exception {
         Catalog catalog = getCatalog();
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
@@ -366,10 +367,14 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(1, resolved.layers().size());
         assertEquals(1, resolved.styles().size());
         assertEquals(s.getStyle(), resolved.styles().get(0).getStyle());
+
+        //Test bounds calculation
+        new LayerGroupHelper(lg).calculateBounds();
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.STREAMS))).getResource().getLatLonBoundingBox(), lg.getBounds());
     }
 
     @Test
-    public void testMultiStyleGroup() throws IOException {
+    public void testMultiStyleGroup() throws Exception {
         Catalog catalog = getCatalog();
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
@@ -415,6 +420,10 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(inlineFeature.getDefaultGeometry() instanceof Point);
         assertEquals("POINT (115.741666667 -64.6583333333)", ((Point)inlineFeature.getDefaultGeometry()).toText());
         assertTrue(styles.get(5).getStyle().featureTypeStyles().get(0).rules().get(0).getSymbolizers()[0] instanceof PointSymbolizer);
+
+        //Test bounds calculation
+        new LayerGroupHelper(lg).calculateBounds();
+        assertEquals(new ReferencedEnvelope(-180,180,-90,90, DefaultGeographicCRS.WGS84), lg.getBounds());
     }
 
     @Test

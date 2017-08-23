@@ -21,11 +21,8 @@ import static org.junit.Assert.assertTrue;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.Keyword;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.*;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -34,10 +31,18 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LayerGroupControllerTest extends CatalogRESTTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addStyle("singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
+    }
+
     @Before
     public void revertChanges() throws Exception {
         removeLayerGroup(null, "nestedLayerGroupTest");
@@ -396,18 +401,12 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
                 "    <name>newLayerGroupWithStyleGroup</name>" +
                 "    <layers>" +
                 "        <layer>Ponds</layer>" +
-                "        <styleGroup></styleGroup>" +
+                "        <layer></layer>" +
                 "    </layers>" +
                 "    <styles>" +
                 "        <style>polygon</style>" +
-                "        <style>point</style>" +
+                "        <style>singleStyleGroup</style>" +
                 "    </styles>" +
-                "    <bounds>" +
-                "       <minx>-180</minx>" +
-                "       <maxx>180</maxx>" +
-                "       <miny>-90</miny>" +
-                "       <maxy>90</maxy>" +
-                "    </bounds>" +
                 "    <keywords>" +
                 "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>" +
                 "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>" +
@@ -428,7 +427,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
 
         assertEquals( 2, lg.getStyles().size() );
         assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
-        assertEquals( "point", lg.getStyles().get( 1 ).getName() );
+        assertEquals( "singleStyleGroup", lg.getStyles().get( 1 ).getName() );
 
         assertNotNull( lg.getBounds() );
 

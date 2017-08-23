@@ -13,6 +13,7 @@ import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.Hints;
 import org.geotools.feature.SchemaException;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.*;
 import org.opengis.feature.Feature;
@@ -21,7 +22,9 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.ProgressListener;
 
 import java.io.IOException;
@@ -340,37 +343,12 @@ public abstract class SLDVisitor {
      */
     protected LayerInfo getLayerFromFeatureSource(final FeatureSource featureSource) {
         //TODO: Wrap info from GeoTools {@link FeatureSource#getInfo()} for GetFeatureInfo, etc.
-        FeatureTypeInfoImpl featureTypeInfo = new FeatureTypeInfoImpl(catalog) {
-            /**
-             * Override to avoid going down to the catalog and geoserver resource loader etc
-             */
-            @Override
-            public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
-                return featureSource;
-            }
-            @Override
-            public Name getQualifiedName() {
-                return featureSource.getName();
-            }
-            @Override
-            public String prefixedName() {
-                return featureSource.getName().getNamespaceURI() + ":" + getName();
-            }
-            @Override
-            public boolean enabled() {
-                return true;
-            }
-            @Override
-            public DataStoreInfo getStore() {
-                return new DataStoreInfoImpl() {
-                    @Override
-                    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
-                            ProgressListener listener) throws IOException {
-                        return featureSource.getDataStore();
-                    }
-                };
-            }
-        };
+        FeatureTypeInfoImpl featureTypeInfo = null;
+        try {
+            featureTypeInfo = new FeatureSourceWrappingFeatureTypeInfoImpl(featureSource);
+        } catch (IOException | TransformException | FactoryException e) {
+            throw new ServiceException("Error constructing wrapping feature source", e);
+        }
         featureTypeInfo.setName(featureSource.getName().getLocalPart());
         featureTypeInfo.setEnabled(true);
         LayerInfo layerInfo = catalog.getFactory().createLayer();
@@ -388,11 +366,12 @@ public abstract class SLDVisitor {
     protected static class FeatureSourceWrappingFeatureTypeInfoImpl extends FeatureTypeInfoImpl {
         FeatureSource featureSource;
 
-        public FeatureSourceWrappingFeatureTypeInfoImpl(FeatureSource featureSource) {
+        public FeatureSourceWrappingFeatureTypeInfoImpl(FeatureSource featureSource) throws IOException, TransformException, FactoryException {
             super();
             this.featureSource = featureSource;
             setName(featureSource.getName().getLocalPart());
             setEnabled(true);
+            setLatLonBoundingBox(featureSource.getBounds().transform(DefaultGeographicCRS.WGS84, true));
         }
         @Override
         public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {

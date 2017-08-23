@@ -16,6 +16,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -36,6 +37,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
@@ -166,7 +168,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         
         // adding the layer publishing property
         Name layerPropertyName = new NameImpl(this.namespaceURI, OpenSearchAccess.LAYER);
-        AttributeDescriptor layerDescriptor = buildSimpleDescriptor(layerPropertyName, String.class);
+        AttributeDescriptor layerDescriptor = buildFeatureDescriptor(layerPropertyName, buildCollectionLayerFeatureType(layerPropertyName), 0, 1);
         typeBuilder.add(layerDescriptor);
 
         // map OGC links
@@ -179,19 +181,42 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         return typeBuilder.feature();
     }
 
+    protected SimpleFeatureType buildCollectionLayerFeatureType(Name name) throws IOException {
+        SimpleFeatureType source = getDelegateStore().getSchema("collection_layer");
+        try {
+            SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
+            for (AttributeDescriptor ad : source.getAttributeDescriptors()) {
+                if("bands".equals(ad.getLocalName()) || "browseBands".equals(ad.getLocalName())) {
+                    b.add(ad.getLocalName(), String[].class);
+                } else {
+                    b.add(ad);
+                }
+            }
+            
+            b.setName(name);
+            return b.buildFeatureType();
+        } catch (Exception e) {
+            throw new DataSourceException("Could not build the renamed feature type.", e);
+        }
+    }
+
     private AttributeDescriptor buildSimpleDescriptor(Name name, Class binding) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
-        ab.setBinding(String.class);
+        ab.setBinding(binding);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, ab.buildType());
         return descriptor;
     }
 
     private AttributeDescriptor buildFeatureListDescriptor(Name name, SimpleFeatureType schema) {
+        return buildFeatureDescriptor(name, schema, 0, Integer.MAX_VALUE);
+    }
+    
+    private AttributeDescriptor buildFeatureDescriptor(Name name, SimpleFeatureType schema, int minOccurs, int maxOccurs) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
-        ab.setMinOccurs(0);
-        ab.setMaxOccurs(Integer.MAX_VALUE);
+        ab.setMinOccurs(minOccurs);
+        ab.setMaxOccurs(maxOccurs);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, schema);
         return descriptor;
     }
@@ -555,7 +580,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     public FeatureStore<FeatureType, Feature> getProductSource() throws IOException {
-        return new JDBCProductFeatureSource(this, productFeatureType);
+        return new JDBCProductFeatureStore(this, productFeatureType);
     }
 
     public FeatureStore<FeatureType, Feature> getCollectionSource() throws IOException {

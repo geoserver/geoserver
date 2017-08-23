@@ -13,10 +13,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -117,7 +119,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         this.propertyMapper = new SourcePropertyMapper(schema);
         this.defaultSort = buildDefaultSort(schema);
         this.linkFeatureType = buildLinkFeatureType();
-        this.collectionLayerFeatureType = buildCollectionLayerFeatureType();
+        this.collectionLayerFeatureType = (SimpleFeatureType) openSearchAccess.collectionFeatureType.getDescriptor(LAYER_PROPERTY_NAME).getType();
     }
 
     protected SimpleFeatureType buildLinkFeatureType() throws IOException {
@@ -132,25 +134,6 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
     }
     
-    protected SimpleFeatureType buildCollectionLayerFeatureType() throws IOException {
-        SimpleFeatureType source = openSearchAccess.getDelegateStore().getSchema(getCollectionLayerTable());
-        try {
-            SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
-            for (AttributeDescriptor ad : source.getAttributeDescriptors()) {
-                if("bands".equals(ad.getLocalName()) || "browseBands".equals(ad.getLocalName())) {
-                    b.add(ad.getLocalName(), String[].class);
-                } else {
-                    b.add(ad);
-                }
-            }
-            
-            b.setName(LAYER_PROPERTY_NAME);
-            return b.buildFeatureType();
-        } catch (Exception e) {
-            throw new DataSourceException("Could not build the renamed feature type.", e);
-        }
-    }
-
     /**
      * Builds the default sort for the underlying feature source query
      * 
@@ -537,9 +520,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             SimpleFeature retyped = retypeLayerFeature(layerFeature);
             
             ab.setDescriptor((AttributeDescriptor) schema.getDescriptor(LAYER_PROPERTY_NAME));
-            Attribute attribute = ab.buildSimple(null, retyped);
+            final Collection<Property> properties = retyped.getProperties();
+            Attribute attribute = ab.buildSimple(retyped.getID(), properties);
             builder.append(LAYER_PROPERTY_NAME, attribute);
-            
         }
 
     }
@@ -549,7 +532,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         for (AttributeDescriptor att : layerFeature.getType().getAttributeDescriptors()) {
             final Name attName = att.getName();
             Object value = layerFeature.getAttribute( attName );
-            if("bands".equals(att.getLocalName()) || "browseBands".equals(att.getLocalName())) {
+            final String localName = att.getLocalName();
+            if(value != null && ("bands".equals(localName) || "browseBands".equals(localName))) {
                 String[] split = ((String) value).split("\\s*,\\s*");
                 retypeBuilder.set(attName, split);
             } else {
@@ -725,6 +709,30 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                                     secondaryStore.getSchema());
                             fb.set("tid", id);
                             fb.set("thumb", value);
+                            SimpleFeature thumbnailFeature = fb.buildFeature(tableName + "." + id);
+                            thumbnailFeature.getUserData().put(Hints.USE_PROVIDED_FID, true);
+                            return DataUtilities.collection(thumbnailFeature);
+                        });
+
+                // this one done
+                continue;
+            }
+            if (LAYER_PROPERTY_NAME.equals(name)) {
+                final String tableName = getCollectionLayerTable();
+                modifySecondaryTable(mappedFilter, value, tableName,
+                        id -> FF.id(FF.featureId(tableName + "." + id)), (id, secondaryStore) -> {
+                            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(secondaryStore.getSchema());
+                            Feature f = (Feature) value;
+                            for (Property p : f.getProperties()) {
+                                String attributeName = p.getName().getLocalPart();
+                                Object attributeValue = p.getValue();
+                                if(("bands".equals(attributeName) || "browseBands".equals(attributeName)) && attributeValue instanceof String[]) {
+                                    final String[] stringArray = (String[]) attributeValue;
+                                    attributeValue = Arrays.stream(stringArray).collect(Collectors.joining(","));
+                                }
+                                fb.set(attributeName, attributeValue);
+                            }
+                            fb.set("cid", id);
                             SimpleFeature thumbnailFeature = fb.buildFeature(tableName + "." + id);
                             thumbnailFeature.getUserData().put(Hints.USE_PROVIDED_FID, true);
                             return DataUtilities.collection(thumbnailFeature);

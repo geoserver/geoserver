@@ -34,7 +34,8 @@ public class OseoJSONConverter extends BaseMessageConverter<Object> {
     @Override
     protected boolean supports(Class clazz) {
         return (OgcLinks.class.isAssignableFrom(clazz)
-                || (ProductReferences.class.isAssignableFrom(clazz)));
+                || (ProductReferences.class.isAssignableFrom(clazz))
+                || (CollectionLayer.class.isAssignableFrom(clazz)));
     }
 
     @Override

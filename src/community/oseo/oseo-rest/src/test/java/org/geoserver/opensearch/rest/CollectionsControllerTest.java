@@ -170,23 +170,16 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateCollection() throws Exception {
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
-        assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        MockHttpServletResponse response;
+        createSampleCollection();
 
         assertTest123CollectionCreated();
     }
 
     @Test
     public void testUpdateCollection() throws Exception {
-        // create the collection
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
-        assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        MockHttpServletResponse response;
+        createSampleCollection();
 
         // grab the JSON to modify some bits
         JSONObject feature = (JSONObject) getAsJSON("/rest/oseo/collections/TEST123");
@@ -208,12 +201,8 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testDeleteCollection() throws Exception {
-        // create the collection
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
-        assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        MockHttpServletResponse response;
+        createSampleCollection();
 
         // it's there
         getAsJSONPath("/rest/oseo/collections/TEST123", 200);
@@ -241,12 +230,8 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutCollectionLinks() throws Exception {
-        // create the collection
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
-        assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        MockHttpServletResponse response;
+        createSampleCollection();
 
         // create the links
         response = putAsServletResponse("rest/oseo/collections/TEST123/ogcLinks",
@@ -294,12 +279,8 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutCollectionMetadata() throws Exception {
-        // create the collection
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
-        assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        MockHttpServletResponse response;
+        createSampleCollection();
 
         // create the metadata
         response = putAsServletResponse("rest/oseo/collections/TEST123/metadata",
@@ -347,12 +328,8 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutCollectionDescription() throws Exception {
-        // create the collection
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
-        assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        MockHttpServletResponse response;
+        createSampleCollection();
 
         // create the description
         response = putAsServletResponse("rest/oseo/collections/TEST123/description",
@@ -426,6 +403,49 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
         assertEquals("EPSG:4326", json.read("$.mosaicCRS"));
     }
+    
+    @Test
+    public void testDeleteCollectionLayer() throws Exception {
+        // remove
+        MockHttpServletResponse response = deleteAsServletResponse("/rest/oseo/collections/SENTINEL2/layer");
+        assertEquals(200, response.getStatus());
+
+        // no more there
+        response = getAsServletResponse("/rest/oseo/collections/SENTINEL2/layer");
+        assertEquals(404, response.getStatus());
+    }
+    
+    @Test
+    public void testCreateCollectionLayer() throws Exception {
+        createSampleCollection();
+
+        // create the links
+        MockHttpServletResponse response = putAsServletResponse("rest/oseo/collections/TEST123/layer",
+                getTestData("/collection-layer-separatebands.json"), MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+
+        // check it has been created
+        DocumentContext json = getAsJSONPath("rest/oseo/collections/TEST123/layer", 200);
+        assertEquals("gs", json.read("$.workspace"));
+        assertEquals("test123", json.read("$.layer"));
+        assertEquals(Integer.valueOf(12), json.read("$.bands.length()"));
+        assertEquals(Boolean.TRUE, json.read("$.separateBands"));
+        assertEquals("B1", json.read("$.bands[0]"));
+        assertEquals(Integer.valueOf(3), json.read("$.browseBands.length()"));
+        assertEquals("B4", json.read("$.browseBands[0]"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+        assertEquals("EPSG:4326", json.read("$.mosaicCRS"));
+    }
+
+    private void createSampleCollection() throws Exception, IOException {
+        // create the collection
+        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
+                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
+                response.getHeader("location"));
+    }
+    
     
     private void testCreateCollectionAsZip(Set<CollectionPart> parts) throws Exception {
         LOGGER.info("Testing: " + parts);

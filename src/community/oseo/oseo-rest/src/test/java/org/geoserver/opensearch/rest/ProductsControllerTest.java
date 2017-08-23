@@ -576,7 +576,8 @@ public class ProductsControllerTest extends OSEORestTestSupport {
             if (parts.isEmpty()) {
                 continue;
             }
-
+            
+            LOGGER.info("Testing zip product creation with parts:" + parts);
             cleanupTestProduct();
             testCreateProductAsZip(parts);
         }
@@ -621,6 +622,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 ZipEntry entry = new ZipEntry(name);
                 zos.putNextEntry(entry);
                 IOUtils.copy(getClass().getResourceAsStream(resource), zos);
+                zos.flush();
                 zos.closeEntry();
             }
             zip = bos.toByteArray();

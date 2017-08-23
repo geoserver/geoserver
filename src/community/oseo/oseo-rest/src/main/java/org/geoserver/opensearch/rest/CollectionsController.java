@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -12,21 +11,19 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.response.LinkFeatureComparator;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -41,8 +38,6 @@ import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.geotools.geojson.feature.FeatureJSON;
-import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -50,10 +45,10 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -270,7 +265,7 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // check the id, mind, could be different from the collection one if the client
         // is trying to change
-        String eoId = checkCollectionIdentifier(feature);
+        checkCollectionIdentifier(feature);
 
         // prepare the update, need to convert each field into a Name/Value couple
         Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(),
@@ -307,6 +302,44 @@ public class CollectionsController extends AbstractOpenSearchController {
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(fs -> fs.removeFeatures(filter));
     }
+    
+    @GetMapping(path = "{collection}/layer", produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    public CollectionLayer getCollectionLayer(HttpServletRequest request,
+            @PathVariable(name = "collection", required = true) String collection)
+            throws IOException {
+        // query one collection and grab its OGC links
+        String namespaceURI = getOpenSearchAccess().getCollectionSource().getSchema().getName().getNamespaceURI();
+        Feature feature = queryCollection(collection, q -> {
+            final PropertyName layerProperty = FF.property(new NameImpl(namespaceURI, OpenSearchAccess.LAYER));
+            q.setProperties(Collections.singletonList(layerProperty));
+        });
+
+        CollectionLayer layer = buildCollectionLayerFromFeature(feature, true);
+        return layer;
+    }
+    
+    protected CollectionLayer buildCollectionLayerFromFeature(Feature feature, boolean notFoundOnEmpty) {
+        // map to a single bean
+        CollectionLayer layer = null;
+        Property p = feature.getProperty(OpenSearchAccess.LAYER);
+        if (p != null && p.getValue() instanceof SimpleFeature) {
+            SimpleFeature sf = (SimpleFeature) p.getValue();
+            layer = new CollectionLayer(); 
+            layer.setWorkspace((String) sf.getAttribute("workspace"));
+            layer.setLayer((String) sf.getAttribute("layer"));
+            layer.setSeparateBands(Boolean.TRUE.equals(sf.getAttribute("separateBands")));
+            layer.setBands((String[]) sf.getAttribute("bands"));
+            layer.setBrowseBands((String[]) sf.getAttribute("browseBands"));
+            layer.setHeterogeneousCRS(Boolean.TRUE.equals(sf.getAttribute("heterogeneousCRS")));
+            layer.setMosaicCRS((String) sf.getAttribute("mosaicCRS"));
+        }
+        if (layer == null && notFoundOnEmpty) {
+            throw new ResourceNotFoundException();
+        }
+        return layer;
+    }
+
 
     @GetMapping(path = "{collection}/ogcLinks", produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody

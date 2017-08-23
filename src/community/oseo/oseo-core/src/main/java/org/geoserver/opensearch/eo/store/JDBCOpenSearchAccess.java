@@ -116,6 +116,10 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         productFeatureType = buildProductFeatureType(delegate);
     }
 
+    String getNamespaceURI() {
+        return namespaceURI;
+    }
+
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
@@ -159,6 +163,11 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME,
                 String.class);
         typeBuilder.add(metadataDescriptor);
+        
+        // adding the layer publishing property
+        Name layerPropertyName = new NameImpl(this.namespaceURI, OpenSearchAccess.LAYER);
+        AttributeDescriptor layerDescriptor = buildSimpleDescriptor(layerPropertyName, String.class);
+        typeBuilder.add(layerDescriptor);
 
         // map OGC links
         AttributeDescriptor linksDescriptor = buildFeatureListDescriptor(OGC_LINKS_PROPERTY_NAME,
@@ -415,6 +424,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             final String localName = ad.getLocalName();
             if (localName.startsWith(JDBCOpenSearchAccess.EO_PREFIX)
                     || "timeStart".equals(localName) || "timeEnd".equals(localName)
+                    || "crs".equals(localName)
                     || (productClass != null && localName.startsWith(productClass.getPrefix()))
                     || (productClass == null && matchesAnyProductClass(localName))) {
                 String column = encodeColumn(dialect, "product", localName);

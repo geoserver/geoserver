@@ -413,6 +413,20 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         }
     }
     
+    @Test
+    public void testGetCollectionLayer() throws Exception {
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/SENTINEL2/layer", 200);
+        assertEquals("gs", json.read("$.workspace"));
+        assertEquals("sentinel2", json.read("$.layer"));
+        assertEquals(Integer.valueOf(12), json.read("$.bands.length()"));
+        assertEquals(Boolean.TRUE, json.read("$.separateBands"));
+        assertEquals("B1", json.read("$.bands[0]"));
+        assertEquals(Integer.valueOf(3), json.read("$.browseBands.length()"));
+        assertEquals("B4", json.read("$.browseBands[0]"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+        assertEquals("EPSG:4326", json.read("$.mosaicCRS"));
+    }
+    
     private void testCreateCollectionAsZip(Set<CollectionPart> parts) throws Exception {
         LOGGER.info("Testing: " + parts);
         byte[] zip = null;

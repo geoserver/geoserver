@@ -9,7 +9,10 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.EO
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.OPTICAL;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.RADAR;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +22,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,9 +37,11 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.jdbc.JDBCDataStore;
@@ -44,12 +50,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.Feature;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.FilterFactory2;
 
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -60,6 +68,8 @@ public class JDBCOpenSearchAccessTest {
     private static JDBCDataStore h2;
 
     private static OpenSearchAccess osAccess;
+    
+    private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     @BeforeClass
     public static void setupStore() throws IOException, SQLException {
@@ -319,12 +329,49 @@ public class JDBCOpenSearchAccessTest {
         assertThat(mappings.keySet(), hasItem("timeEnd"));
         // verify the geometry is properly mapped
         assertThat(mappings, hasEntry(equalToIgnoringCase("THE_GEOM"), equalTo(Polygon.class)));
+        // check that we have the extra properties for hetero mosaics and split-multiband case
+        assertThat(mappings, hasEntry(equalTo("band"), equalTo(String.class)));
+        assertThat(mappings, hasEntry(equalTo("crs"), equalTo(String.class)));
     }
 
     private void assertPropertyNamespace(FeatureType schema, String name, String namespaceURI) {
         PropertyDescriptor wl = schema.getDescriptor(name);
         assertNotNull(wl);
         assertEquals(namespaceURI, wl.getName().getNamespaceURI());
+    }
+    
+    @Test
+    public void testCollectionLayerInformation() throws Exception {
+        // check expected property is there
+        FeatureType schema = osAccess.getCollectionSource().getSchema();
+        Name name = schema.getName();
+        assertEquals(TEST_NAMESPACE, name.getNamespaceURI());
+        final Name LAYER_NAME = new NameImpl(TEST_NAMESPACE, OpenSearchAccess.LAYER);
+        final PropertyDescriptor layerDescriptor = schema.getDescriptor(LAYER_NAME);
+        assertNotNull(layerDescriptor);
+
+        // read it
+        FeatureSource<FeatureType, Feature> source = osAccess.getCollectionSource();
+        Query q = new Query();
+        q.setProperties(Arrays.asList(FF.property(LAYER_NAME)));
+        q.setFilter(FF.equal(FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")), FF.literal("SENTINEL2"), false));
+        FeatureCollection<FeatureType, Feature> features = source.getFeatures(q);
+        
+        // get the collection and check it
+        Feature collection = DataUtilities.first(features);
+        assertNotNull(collection);
+        Property layerProperty = collection.getProperty(LAYER_NAME);
+        assertThat(layerProperty, notNullValue());
+        final SimpleFeature layerValue = (SimpleFeature) layerProperty.getValue();
+        assertThat(layerValue, notNullValue());
+        
+        assertEquals("gs", layerValue.getAttribute("workspace"));
+        assertEquals("sentinel2", layerValue.getAttribute("layer"));
+        assertEquals(Boolean.TRUE, layerValue.getAttribute("separateBands"));
+        assertThat(layerValue.getAttribute("bands"), equalTo(new String[] {"B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12"}));
+        assertThat(layerValue.getAttribute("browseBands"), equalTo(new String[] {"B4","B3","B2"}));
+        assertEquals(Boolean.TRUE, layerValue.getAttribute("heterogeneousCRS"));
+        assertEquals("EPSG:4326", layerValue.getAttribute("mosaicCRS"));
     }
 
 }

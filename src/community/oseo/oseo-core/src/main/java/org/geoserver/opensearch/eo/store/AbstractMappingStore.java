@@ -49,6 +49,7 @@ import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -65,7 +66,6 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
-import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
@@ -101,16 +101,23 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     protected SortBy[] defaultSort;
 
     private SimpleFeatureType linkFeatureType;
+    
+    private SimpleFeatureType collectionLayerFeatureType;
 
     private Transaction transaction;
+    
+    private final Name LAYER_PROPERTY_NAME;
 
     public AbstractMappingStore(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
+        this.LAYER_PROPERTY_NAME = new NameImpl(openSearchAccess.getNamespaceURI(), OpenSearchAccess.LAYER);
+        
         this.openSearchAccess = openSearchAccess;
         this.schema = collectionFeatureType;
         this.propertyMapper = new SourcePropertyMapper(schema);
         this.defaultSort = buildDefaultSort(schema);
         this.linkFeatureType = buildLinkFeatureType();
+        this.collectionLayerFeatureType = buildCollectionLayerFeatureType();
     }
 
     protected SimpleFeatureType buildLinkFeatureType() throws IOException {
@@ -118,7 +125,26 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         try {
             SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
             b.init(source);
-            b.setName(openSearchAccess.OGC_LINKS_PROPERTY_NAME);
+            b.setName(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
+            return b.buildFeatureType();
+        } catch (Exception e) {
+            throw new DataSourceException("Could not build the renamed feature type.", e);
+        }
+    }
+    
+    protected SimpleFeatureType buildCollectionLayerFeatureType() throws IOException {
+        SimpleFeatureType source = openSearchAccess.getDelegateStore().getSchema(getCollectionLayerTable());
+        try {
+            SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
+            for (AttributeDescriptor ad : source.getAttributeDescriptors()) {
+                if("bands".equals(ad.getLocalName()) || "browseBands".equals(ad.getLocalName())) {
+                    b.add(ad.getLocalName(), String[].class);
+                } else {
+                    b.add(ad);
+                }
+            }
+            
+            b.setName(LAYER_PROPERTY_NAME);
             return b.buildFeatureType();
         } catch (Exception e) {
             throw new DataSourceException("Could not build the renamed feature type.", e);
@@ -301,6 +327,16 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                 join.setType(Type.OUTER);
                 result.getJoins().add(join);
             }
+            
+            // same for output layer, if necessary
+            if (hasOutputProperty(query, LAYER_PROPERTY_NAME, false)) {
+                Filter filter = FF.equal(FF.property("id"), FF.property("layer.cid"), true);
+                final String layerTable = getCollectionLayerTable();
+                Join join = new Join(layerTable, filter);
+                join.setAlias("layer");
+                join.setType(Type.OUTER);
+                result.getJoins().add(join);
+            }
 
             // same goes for OGC links (they might be missing, so outer join is used)
             if (hasOutputProperty(query, OGC_LINKS_PROPERTY_NAME, true)) {
@@ -326,6 +362,15 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         MappingFilterVisitor visitor = new MappingFilterVisitor(propertyMapper);
         Filter mappedFilter = (Filter) filter.accept(visitor, null);
         return mappedFilter;
+    }
+    
+    /**
+     * Name of the table to join in case the {@link OpenSearchAccess#LAYER} property is requested
+     * 
+     * @return
+     */
+    protected String getCollectionLayerTable() {
+        return "collection_layer";
     }
 
     /**
@@ -484,7 +529,36 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             Attribute attribute = ab.buildSimple(null, metadataFeature.getAttribute("metadata"));
             builder.append(METADATA_PROPERTY_NAME, attribute);
         }
+        
+        // handle joined layer if any
+        Object layerValue = fi.getAttribute(OpenSearchAccess.LAYER);
+        if(layerValue instanceof SimpleFeature) {
+            SimpleFeature layerFeature = (SimpleFeature) layerValue;
+            SimpleFeature retyped = retypeLayerFeature(layerFeature);
+            
+            ab.setDescriptor((AttributeDescriptor) schema.getDescriptor(LAYER_PROPERTY_NAME));
+            Attribute attribute = ab.buildSimple(null, retyped);
+            builder.append(LAYER_PROPERTY_NAME, attribute);
+            
+        }
 
+    }
+
+    private SimpleFeature retypeLayerFeature(SimpleFeature layerFeature) {
+        SimpleFeatureBuilder retypeBuilder = new SimpleFeatureBuilder(collectionLayerFeatureType);
+        for (AttributeDescriptor att : layerFeature.getType().getAttributeDescriptors()) {
+            final Name attName = att.getName();
+            Object value = layerFeature.getAttribute( attName );
+            if("bands".equals(att.getLocalName()) || "browseBands".equals(att.getLocalName())) {
+                String[] split = ((String) value).split("\\s*,\\s*");
+                retypeBuilder.set(attName, split);
+            } else {
+                retypeBuilder.set(attName, value);
+            }
+            
+        }
+        SimpleFeature retyped = retypeBuilder.buildFeature(layerFeature.getID());
+        return retyped;
     }
 
     /**

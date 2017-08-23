@@ -51,6 +51,11 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     public static Name QUICKLOOK_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "quicklook");
     
     /**
+     * Local part of the optional collection property containing the layer publishing information
+     */
+    public static String LAYER = "layer";
+    
+    /**
      * Local part of the HTML description property. The namespace is the one assigned to the store, this is not an EO property
      */
     public static String DESCRIPTION = "htmlDescription";
@@ -59,7 +64,6 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * Local part of the product granules property. The namespace is the one assigned to the store, this is not an EO property
      */
     public static String GRANULES = "granules";
-    
 
 
     /**

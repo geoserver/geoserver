@@ -57,7 +57,17 @@ CREATE INDEX "idx_collection_eoWavelength" ON collection ("eoWavelength");
 CREATE INDEX "idx_collection_eoSecurityConstraints" ON collection ("eoSecurityConstraints");
 CREATE INDEX "idx_collection_eoDissemination" ON collection ("eoDissemination");
 CREATE INDEX "idx_collection_eoAcquisitionStation" ON collection ("eoAcquisitionStation");
-
+-- the layer publishing information, if any
+create table collection_layer (
+  "cid" int primary key references collection("id") on delete cascade,
+  "workspace" varchar,
+  "layer" varchar,
+  "separateBands" boolean,
+  "bands" varchar,
+  "browseBands" varchar,
+  "heterogeneousCRS" boolean,
+  "mosaicCRS" varchar
+);
 -- the iso metadata storage (large files, not used for search, thus separate table)
 create table collection_metadata (
   "mid" int primary key references collection("id"),

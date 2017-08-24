@@ -6,6 +6,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -355,38 +356,43 @@ public class LayerGroupHelper {
             StyledLayerDescriptor sld = new GeoServerDataDirectory(catalog.getResourceLoader()).parsedSld(styleGroup);
 
             final boolean[] hasLoop = {false};
-            new SLDVisitorAdapter(catalog, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
+            sld.accept(new GeoServerSLDVisitorAdapter(catalog, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
+
+                private final IllegalStateException recursionException = new IllegalStateException("Style group contains recursive structure");
                 @Override
-                public SLDVisitor apply(StyledLayerDescriptor sld) throws IOException {
+                public void visit(StyledLayerDescriptor sld) {
                     try {
-                        super.apply(sld);
+                        super.visit(sld);
                     } catch (IllegalStateException e) {
-                        hasLoop[0] = true;
+                        if (recursionException.equals(e)) {
+                            hasLoop[0] = true;
+                        } else {
+                            throw e;
+                        }
                     }
-                    return this;
                 }
 
                 @Override
-                public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+                public PublishedInfo visitNamedLayerInternal(StyledLayer namedLayer) {
                     //If this group hasn't been added to the catalog yet, make sure it is not referenced by a NamedLayer
                     if (namedLayer.getName() != null && namedLayer.getName().equals(group.getName())) {
-                        throw new IllegalStateException("Style group contains recursive structure");
+                        throw recursionException;
                     }
                     LayerGroupInfo child = catalog.getLayerGroupByName(namedLayer.getName());
                     if (child != null) {
                         if (isGroupInStack(child, path)) {
                             path.push(child);
-                            throw new IllegalStateException("Style group contains recursive structure");
+                            throw recursionException;
                         } else if (checkLoops(child, path)) {
-                            throw new IllegalStateException("Style group contains recursive structure");
+                            throw recursionException;
                         }
                         return child;
                     }
                     return null;
                 }
-            }.apply(sld);
+            });
             return hasLoop[0];
-        } catch (IOException | ServiceException e) {
+        } catch (IllegalStateException | IOException | ServiceException | UncheckedIOException | UnsupportedOperationException e) {
             LOGGER.log(Level.WARNING, "Error extracting layers from Style Group '" + styleGroup.getName() + "'. Skipping...", e);
             return false;
         }
@@ -422,15 +428,15 @@ public class LayerGroupHelper {
             Catalog catalog = getCatalogFromStyle(styleGroup);
             StyledLayerDescriptor sld = ResourcePool.create(catalog).dataDir().parsedSld(styleGroup);
             StyleGroupHelper helper = new StyleGroupHelper(catalog, crs);
-            helper.apply(sld);
+            sld.accept(helper);
             layers.addAll(helper.getLayers());
             styles.addAll(helper.getStyles());
-        } catch (IOException | ServiceException e) {
+        } catch (IllegalStateException | IOException | ServiceException | UncheckedIOException | UnsupportedOperationException e) {
             LOGGER.log(Level.WARNING, "Error extracting styles from Style Group '" + styleGroup.getName() + "'. Skipping...", e);
         }
     }
 
-    protected static class StyleGroupHelper extends SLDVisitorAdapter {
+    protected static class StyleGroupHelper extends GeoServerSLDVisitorAdapter {
 
         List<LayerInfo> layers;
         List<StyleInfo> styles;
@@ -439,11 +445,10 @@ public class LayerGroupHelper {
         }
 
         @Override
-        public StyleGroupHelper apply(StyledLayerDescriptor sld) throws IOException {
+        public void visit(StyledLayerDescriptor sld) {
             layers = new ArrayList<>();
             styles = new ArrayList<>();
-            super.apply(sld);
-            return this;
+            super.visit(sld);
         }
 
         public List<LayerInfo> getLayers() {
@@ -455,7 +460,7 @@ public class LayerGroupHelper {
         }
 
         @Override
-        public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+        public PublishedInfo visitNamedLayerInternal(StyledLayer namedLayer) {
             LayerGroupInfo lg = catalog.getLayerGroupByName(namedLayer.getName());
             if (lg == null) {
                 return catalog.getLayerByName(namedLayer.getName());
@@ -464,20 +469,16 @@ public class LayerGroupHelper {
         }
 
         @Override
-        public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info) {
+        public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
             StyleInfo s = catalog.getStyleByName(namedStyle.getName());
-            layers.add(info);
+            layers.add((LayerInfo)info);
             styles.add(s);
-            try {
-                return s.getStyle();
-            } catch (IOException e) {
-                throw new ServiceException(e);
-            }
+            return s;
         }
 
         @Override
-        public void visitUserStyle(StyledLayer layer, Style userStyle, LayerInfo info) {
-            layers.add(info);
+        public void visitUserStyleInternal(Style userStyle) {
+            layers.add((LayerInfo)info);
             styles.add(new StyleWrappingStyleInfoImpl(userStyle));
         }
     }

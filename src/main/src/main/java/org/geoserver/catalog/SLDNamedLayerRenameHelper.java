@@ -4,7 +4,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 
@@ -115,7 +114,7 @@ public class SLDNamedLayerRenameHelper {
             SLDNamedLayerRenameVisitor visitor = new SLDNamedLayerRenameVisitor(catalog, doRename);
             try {
                 StyledLayerDescriptor sld = catalog.getResourcePool().getSld(style);
-                visitor.apply(sld);
+                sld.accept(visitor);
                 if (visitor.needsRename) {
                     stylesToUpdate.add(style);
                     if (doRename) {
@@ -171,7 +170,7 @@ public class SLDNamedLayerRenameHelper {
         return styleName;
     }
 
-    private class SLDNamedLayerRenameVisitor extends SLDVisitorAdapter {
+    private class SLDNamedLayerRenameVisitor extends GeoServerSLDVisitorAdapter {
 
         //Should the named layers in the styles be renamed when they are visited
         boolean doRename = false;
@@ -184,13 +183,7 @@ public class SLDNamedLayerRenameHelper {
         }
 
         @Override
-        public SLDNamedLayerRenameVisitor apply(StyledLayerDescriptor sld) throws IOException {
-            super.apply(sld);
-            return this;
-        }
-
-        @Override
-        public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+        public PublishedInfo visitNamedLayerInternal(StyledLayer namedLayer) {
             String layerName = namedLayer.getName();
             PublishedInfo p = catalog.getLayerGroupByName(layerName);
             if (p != null) {
@@ -211,7 +204,7 @@ public class SLDNamedLayerRenameHelper {
         }
 
         @Override
-        public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info) throws IOException {
+        public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
             String styleName = namedStyle.getName();
             StyleInfo s = catalog.getStyleByName(styleName);
             if (renamedStyles.get(styleName) != null) {
@@ -220,7 +213,7 @@ public class SLDNamedLayerRenameHelper {
                     namedStyle.setName(renamedStyles.get(styleName));
                 }
             }
-            return s.getStyle();
+            return s;
         }
     }
 }

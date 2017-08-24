@@ -745,7 +745,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             final StyledLayerDescriptor sld, final List styleNames) throws ServiceException,
             IOException {
         if (requestedLayers.size() == 0) {
-            new ProcessStandaloneSLDVisitor(wms, request).apply(sld);
+            sld.accept(new ProcessStandaloneSLDVisitor(wms, request));
         } else {
             processLibrarySld(request, sld, requestedLayers, styleNames);
         }

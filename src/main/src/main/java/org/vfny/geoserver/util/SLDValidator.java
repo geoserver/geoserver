@@ -15,15 +15,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.SLDVisitor;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.UserLayer;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;

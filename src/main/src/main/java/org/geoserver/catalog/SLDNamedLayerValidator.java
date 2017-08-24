@@ -1,20 +1,17 @@
 package org.geoserver.catalog;
 
-import org.geoserver.platform.ServiceException;
 import org.geotools.styling.NamedStyle;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by tbarsballe on 2017-08-21.
  */
-public class SLDNamedLayerValidator extends SLDVisitorAdapter {
+public class SLDNamedLayerValidator extends GeoServerSLDVisitorAdapter {
 
     public List<Exception> validationErrors = new ArrayList<>();
 
@@ -27,17 +24,16 @@ public class SLDNamedLayerValidator extends SLDVisitorAdapter {
     }
 
     @Override
-    public SLDNamedLayerValidator apply(StyledLayerDescriptor sld) {
+    public void visit(StyledLayerDescriptor sld) {
         try {
-            super.apply(sld);
+            super.visit(sld);
         } catch (Exception e) {
             validationErrors.add(e);
         }
-        return this;
     }
 
     @Override
-    public PublishedInfo visitNamedLayer(StyledLayer namedLayer) {
+    public PublishedInfo visitNamedLayerInternal(StyledLayer namedLayer) {
         PublishedInfo p =  catalog.getLayerGroupByName(namedLayer.getName());
         if (p == null) {
             p = catalog.getLayerByName(namedLayer.getName());
@@ -49,15 +45,17 @@ public class SLDNamedLayerValidator extends SLDVisitorAdapter {
     }
 
     @Override
-    public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info) throws IOException {
+    public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
         StyleInfo s = catalog.getStyleByName(namedStyle.getName());
         if (s == null) {
             validationErrors.add(new Exception("No style named '" + namedStyle.getName()+ "' found in the catalog"));
         }
-        return s.getStyle();
+        return s;
     }
 
     public static List<Exception> validate(Catalog catalog, StyledLayerDescriptor sld) {
-        return new SLDNamedLayerValidator(catalog, null).apply(sld).getValidationErrors();
+        SLDNamedLayerValidator validator = new SLDNamedLayerValidator(catalog, null);
+        sld.accept(validator);
+        return validator.getValidationErrors();
     }
 }

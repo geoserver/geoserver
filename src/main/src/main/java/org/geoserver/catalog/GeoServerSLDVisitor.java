@@ -4,7 +4,12 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.*;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataStore;
+import org.geotools.data.FeatureReader;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
@@ -13,9 +18,16 @@ import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.Hints;
 import org.geotools.feature.SchemaException;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.*;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.FeatureTypeConstraint;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.RemoteOWS;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayer;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.UserLayer;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -28,9 +40,15 @@ import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.ProgressListener;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -43,14 +61,20 @@ import java.util.logging.Logger;
  * Intended to provide a definitive, extensible approach to parsing standalone
  * {@link org.geotools.styling.StyledLayerDescriptor}s, including style groups and external SLDs.
  */
-public abstract class SLDVisitor {
+public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
     protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
 
     protected final Catalog catalog;
     protected final CoordinateReferenceSystem fallbackCrs;
 
-    public SLDVisitor(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
+    //Current state
+    protected PublishedInfo info;
+    protected StyledLayer layer;
+    protected int styleCount = 0;
+
+
+    public GeoServerSLDVisitor(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
         this.catalog = catalog;
         this.fallbackCrs = fallbackCrs;
     }
@@ -63,38 +87,33 @@ public abstract class SLDVisitor {
      * @param namedLayer The named layer
      * @return The resolved catalog layer
      */
-    public abstract PublishedInfo visitNamedLayer(StyledLayer namedLayer);
+    public abstract PublishedInfo visitNamedLayerInternal(StyledLayer namedLayer);
 
     /**
      * Called on each remote OWS user layer in the style
      *
      * @param userLayer The user layer
-     * @param layerInfos The layers representing the feature sources in the remote OWS
      */
-    public abstract void visitUserLayerRemoteOWS(UserLayer userLayer, List<LayerInfo> layerInfos);
+    public abstract void visitUserLayerRemoteOWS(UserLayer userLayer);
 
     /**
      * Called on each inline feature user layer in the style
      *
      * @param userLayer The user layer
-     * @param info The layer representing the inline feature
      */
-    public abstract void visitUserLayerInlineFeature(UserLayer userLayer, LayerInfo info);
+    public abstract void visitUserLayerInlineFeature(UserLayer userLayer);
 
     /**
      * Called on each named style for each styled layer. In cases where the styled layer references multiple layers,
      * such as a remote OWS user layer exposing multiple layers, this will be called for once of each of these layers,
      * which will be passed in through the info argument.
      *
-     * Implementations may resolve and return the corresponding Style
+     * Implementations may resolve and return the corresponding StyleInfo
      *
-     * @param layer The styled layer containing this style
      * @param namedStyle The named style
-     * @param info Layer that the style is paired with
      * @return The resolved catalog style
-     * @throws IOException if there was an error reading the named style
      */
-    public abstract Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo info) throws IOException;
+    public abstract StyleInfo visitNamedStyleInternal(NamedStyle namedStyle);
 
     /**
      * Called on each named style for each styled layer. In cases where the styled layer references multiple layers,
@@ -103,15 +122,13 @@ public abstract class SLDVisitor {
      *
      * Note: currently, in the case of a named layer referencing a layer group, any styles defined in the SLD will be
      * ignored, and the layer groups defined styles will be used instead, being handled as user layers.
+     *  @param userStyle The user style
      *
-     * @param layer The styled layer containing this style
-     * @param userStyle The user style
-     * @param info Layer that the style is paired with
      */
-    public abstract void visitUserStyle(StyledLayer layer, Style userStyle, LayerInfo info);
+    public abstract void visitUserStyleInternal(Style userStyle);
 
     /**
-     * Apply the visitor to a SLD
+     * Visit the SLD
      *
      * Visit each layer.
      * Construct temporary stores for inline features and remote OWS layers.
@@ -120,103 +137,138 @@ public abstract class SLDVisitor {
      * each style for each of these sublayers instead.
      *
      * @param sld The sld the visitor is applied to
-     * @throws ServiceException If the SLD document is invalid
-     * @throws IOException
+     *
+     * @throws UnsupportedOperationException, If the sld uses features not supported by GeoServer, such as if an OWS
+     *         service other than WFS is specified for a UserLayer
+     * @throws IllegalStateException If the sld is somehow invalid, such as if there is a NamedLayer without a name
+     * @throws ServiceException if there was a problem accessing a remote OWS service
+     * @throws UncheckedIOException if there is an underlying {@link IOException} when reading {@link Style} objects
+     *         from the catalog
      */
-    public SLDVisitor apply(StyledLayerDescriptor sld) throws IOException {
-        final StyledLayer[] styledLayers = sld.getStyledLayers();
-        final int slCount = styledLayers.length;
-
-        if (slCount == 0) {
-            throw new ServiceException("SLD document contains no layers");
+    @Override
+    public void visit(StyledLayerDescriptor sld) {
+        if (sld.getStyledLayers().length == 0) {
+            throw new IllegalStateException("SLD document contains no layers");
         }
+        super.visit(sld);
+    }
 
-        String layerName;
-        Style[] layerStyles = null;
+    @Override
+    public void visit(NamedLayer layer) {
+        if (null == layer.getName()) {
+            throw new ServiceException("A UserLayer or NamedLayer without layer name was passed");
+        }
+        setLayerState(visitNamedLayerInternal(layer) , layer);
+        if (!handleLayerGroup()) {
+            super.visit(layer);
+        }
+        handleNoStyles();
+        clearLayerState();
+    }
 
-        for (StyledLayer sl : styledLayers) {
-            layerName = sl.getName();
-            PublishedInfo info = null;
+    @Override
+    public void visit(UserLayer layer) {
+        if (null == layer.getName()) {
+            throw new ServiceException("A UserLayer or NamedLayer without layer name was passed");
+        }
+        if (layer.getRemoteOWS() != null) {
+            List<LayerInfo> layers = getRemoteLayersFromUserLayer(layer);
+            visitUserLayerRemoteOWS(layer);
 
-            if (null == layerName) {
-                throw new ServiceException("A UserLayer or NamedLayer without layer name was passed");
+            //UserLayer - Remote OWS: Apply each style to each layer
+            for (LayerInfo layerInfo : layers) {
+                setLayerState(layerInfo, layer);
+                super.visit(layer);
+                clearLayerState();
             }
+            //We've already handled the styles, don't need to do anything more
+            return;
 
-            if (sl instanceof NamedLayer) {
-                NamedLayer nl = (NamedLayer) sl;
-                info = visitNamedLayer(nl);
-                layerStyles = nl.getStyles();
-
-            } else if (sl instanceof UserLayer) {
-                UserLayer ul = (UserLayer) sl;
-                if (ul.getRemoteOWS() != null) {
-                    List<LayerInfo> layers = getRemoteLayersFromUserLayer((UserLayer)sl);
-                    visitUserLayerRemoteOWS(ul, layers);
-
-                    //UserLayer - Remote OWS: Apply each style to each layer
-                    for (LayerInfo layer : layers) {
-                        for (Style s : layerStyles) {
-                            if (s instanceof NamedStyle) {
-                                visitNamedStyle(sl, (NamedStyle) s, layer);
-                            } else {
-                                visitUserStyle(sl, s, layer);
-                            }
-                        }
-                    }
-                    //We've already handled the styles, don't need to do anything more
-                    continue;
-
-                } else if (ul.getInlineFeatureDatastore() != null) {
-                    try {
-                        info = getInlineFeatureLayer(ul, fallbackCrs);
-                    } catch (SchemaException e) {
-                        throw new ServiceException(e);
-                    }
-                    visitUserLayerInlineFeature(ul, (LayerInfo) info);
-                } else {
-                    //TODO: By the SLD spec, we shouldn't be supporting UserLayers as NamedLayers, but we do anyways.
-                    info = visitNamedLayer(ul);
-                }
-                layerStyles = ul.getUserStyles();
+        } else if (layer.getInlineFeatureDatastore() != null) {
+            try {
+                setLayerState(getInlineFeatureLayer(layer, fallbackCrs), layer);
+            } catch (SchemaException e) {
+                throw new IllegalStateException(e);
+            } catch (IOException io) {
+                throw new UncheckedIOException(io);
             }
-            // handle no styles -- use default
-            if ((layerStyles == null) || (layerStyles.length == 0)) {
-                if (info != null && info instanceof LayerInfo) {
-                    StyleInfo styleInfo = ((LayerInfo) info).getDefaultStyle();
-                    if (styleInfo != null) {
-                        layerStyles = new Style[]{styleInfo.getStyle()};
-                    }
-                }
-            }
-            //NamedLayer - LayerGroup: ignore any defined styles and use the layer group instead
-            if (info != null && info instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) info;
+            visitUserLayerInlineFeature(layer);
+        } else {
+            //TODO: By the SLD spec, we shouldn't be supporting UserLayers as NamedLayers, but we do anyways.
+            setLayerState(visitNamedLayerInternal(layer), layer);
+        }
+        super.visit(layer);
+        handleNoStyles();
+        clearLayerState();
+    }
 
-                LayerGroupHelper layerGroupHelper = new LayerGroupHelper(lg);
-                List<LayerInfo> layers = lg.layers();
-                List<StyleInfo> styles = lg.styles();
+    protected void setLayerState(PublishedInfo info, StyledLayer layer) {
+        this.info = info;
+        this.layer = layer;
+    }
 
+    protected void clearLayerState() {
+        this.info = null;
+        this.layer = null;
+    }
+
+    protected boolean handleLayerGroup() {
+        //NamedLayer - LayerGroup: ignore any defined styles and use the layer group instead
+        if (info != null && info instanceof LayerGroupInfo) {
+            LayerGroupInfo lg = (LayerGroupInfo) info;
+
+            LayerGroupHelper layerGroupHelper = new LayerGroupHelper(lg);
+            List<LayerInfo> layers = lg.layers();
+            List<StyleInfo> styles = lg.styles();
+
+            try {
                 for (int i = 0; i < layers.size(); i++) {
+                    info = layers.get(i);
                     StyleInfo style = styles.get(i);
                     if (style == null) {
-                        visitUserStyle(sl, layers.get(i).getDefaultStyle().getStyle(), layers.get(i));
+                        visit(layers.get(i).getDefaultStyle().getStyle());
                     } else {
-                        visitUserStyle(sl, styles.get(i).getStyle(), layers.get(i));
+                        visit(styles.get(i).getStyle());
                     }
                 }
-            //Otherwise, just a single layer; apply each style
-            } else {
-                for (Style s : layerStyles) {
-                    if (s instanceof NamedStyle) {
-                        visitNamedStyle(sl, (NamedStyle) s, (LayerInfo) info);
-                    } else {
-                        visitUserStyle(sl, s, (LayerInfo) info);
-                    }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected void handleNoStyles() {
+        // handle no styles -- use default
+        try {
+            if (styleCount == 0 && info != null && info instanceof LayerInfo) {
+                StyleInfo styleInfo = ((LayerInfo) info).getDefaultStyle();
+
+                if (styleInfo != null) {
+                    visit(styleInfo.getStyle());
                 }
             }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } finally {
+            //clean up state
+            styleCount = 0;
         }
-        return this;
+
     }
+
+    @Override
+    public void visit(Style style) {
+        styleCount++;
+        if (style instanceof NamedStyle) {
+            visitNamedStyleInternal((NamedStyle) style);
+        } else {
+            visitUserStyleInternal(style);
+        }
+        super.visit(style);
+    }
+
 
     /**
      * Constructs a {@link DataStore} from a remote OWS specified in a {@link UserLayer},
@@ -224,18 +276,20 @@ public abstract class SLDVisitor {
      *
      * @param ul
      * @return The list of layers wrapping the exposed features
-     * @throws ServiceException
+     * @throws UnsupportedOperationException, if an OWS service other than WFS is specified
+     * @throws IllegalStateException
+     * @throws ServiceException if there was a problem accessing the remote service
      */
     protected List<LayerInfo> getRemoteLayersFromUserLayer(UserLayer ul) throws ServiceException {
         try {
             RemoteOWS service = ul.getRemoteOWS();
             if (!service.getService().equalsIgnoreCase("WFS"))
-                throw new ServiceException("GeoServer only supports WFS as remoteOWS service");
+                throw new UnsupportedOperationException("GeoServer only supports WFS as remoteOWS service");
             if (service.getOnlineResource() == null)
-                throw new ServiceException("OnlineResource for remote WFS not specified in SLD");
+                throw new IllegalStateException("OnlineResource for remote WFS not specified in SLD");
             final FeatureTypeConstraint[] featureConstraints = ul.getLayerFeatureConstraints();
             if (featureConstraints == null || featureConstraints.length == 0)
-                throw new ServiceException(
+                throw new IllegalStateException(
                         "No FeatureTypeConstraint specified, no layer can be loaded for this UserStyle");
 
             DataStore remoteWFS = null;
@@ -248,7 +302,7 @@ public abstract class SLDVisitor {
 
 
             } catch (MalformedURLException e) {
-                throw new ServiceException("Invalid online resource url: '"
+                throw new IllegalStateException("Invalid online resource url: '"
                         + service.getOnlineResource() + "'");
             }
 
@@ -259,7 +313,7 @@ public abstract class SLDVisitor {
                 // make sure the layer is there
                 String name = featureConstraints[i].getFeatureTypeName();
                 if (Collections.binarySearch(remoteTypeNames, name) < 0) {
-                    throw new ServiceException("Could not find layer feature type '" + name
+                    throw new IllegalStateException("Could not find layer feature type '" + name
                             + "' on remote WFS '" + service.getOnlineResource());
                 }
                 layers.add(getLayerFromFeatureSource(remoteWFS.getFeatureSource(name)));
@@ -275,9 +329,9 @@ public abstract class SLDVisitor {
      *
      * @param remoteOwsUrl
      * @return
-     * @throws ServiceException
+     * @throws ServiceException if there was a problem accessing the remote service
      */
-    protected static DataStore connectRemoteWFS(URL remoteOwsUrl) throws ServiceException {
+    protected static DataStore connectRemoteWFS(URL remoteOwsUrl) {
         try {
             WFSDataStoreFactory storeFactory = new WFSDataStoreFactory();
             Map params = new HashMap(storeFactory.getImplementationHints());
@@ -347,7 +401,7 @@ public abstract class SLDVisitor {
         try {
             featureTypeInfo = new FeatureSourceWrappingFeatureTypeInfoImpl(featureSource);
         } catch (IOException | TransformException | FactoryException e) {
-            throw new ServiceException("Error constructing wrapping feature source", e);
+            throw new IllegalStateException("Error constructing wrapping feature source", e);
         }
         featureTypeInfo.setName(featureSource.getName().getLocalPart());
         featureTypeInfo.setEnabled(true);

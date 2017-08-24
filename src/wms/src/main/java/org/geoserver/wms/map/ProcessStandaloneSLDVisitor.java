@@ -9,15 +9,16 @@ import org.geotools.styling.*;
 import org.opengis.filter.Filter;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Processes a standalone SLD document for use in a WMS GetMap request
  *
- * Replacement for {@link org.geoserver.wms.map.GetMapKvpRequestReader#processStandaloneSld}, using {@link SLDVisitor}
+ * Replacement for org.geoserver.wms.map.GetMapKvpRequestReader#processStandaloneSld, using {@link GeoServerSLDVisitor}
  */
-public class ProcessStandaloneSLDVisitor extends SLDVisitor {
+public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
 
     final WMS wms;
     final GetMapRequest request;
@@ -35,14 +36,18 @@ public class ProcessStandaloneSLDVisitor extends SLDVisitor {
     }
 
     @Override
-    public ProcessStandaloneSLDVisitor apply(StyledLayerDescriptor sld) throws IOException {
-        super.apply(sld);
-        request.setLayers(layers);
-        request.setStyles(styles);
-        return this;
+    public void visit(StyledLayerDescriptor sld) {
+        try {
+            super.visit(sld);
+            request.setLayers(layers);
+            request.setStyles(styles);
+        //Convert various more specific exceptions into service exceptions
+        } catch (IllegalStateException  | UncheckedIOException | UnsupportedOperationException e) {
+            throw new ServiceException(e);
+        }
     }
     @Override
-    public PublishedInfo visitNamedLayer(StyledLayer sl) {
+    public PublishedInfo visitNamedLayerInternal(StyledLayer sl) {
         currLayer = null;
         String layerName = sl.getName();
 
@@ -66,7 +71,7 @@ public class ProcessStandaloneSLDVisitor extends SLDVisitor {
     }
 
     @Override
-    public void visitUserLayerRemoteOWS(UserLayer ul, List<LayerInfo> layers) {
+    public void visitUserLayerRemoteOWS(UserLayer ul) {
         currLayer = null;
         final FeatureTypeConstraint[] featureConstraints = ul.getLayerFeatureConstraints();
         if (request.getFilter() == null) {
@@ -86,20 +91,20 @@ public class ProcessStandaloneSLDVisitor extends SLDVisitor {
     }
 
     @Override
-    public void visitUserLayerInlineFeature(UserLayer ul, LayerInfo info) {
-        currLayer = new MapLayerInfo(info);
+    public void visitUserLayerInlineFeature(UserLayer ul) {
+        currLayer = new MapLayerInfo((LayerInfo)info);
     }
 
     @Override
-    public Style visitNamedStyle(StyledLayer layer, NamedStyle namedStyle, LayerInfo obj) throws IOException {
-        Style s = wms.getStyleByName(namedStyle.getName());
-
+    public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
+        StyleInfo s;
+        s = catalog.getStyleByName(namedStyle.getName());
         if (s == null) {
             String failMessage = "couldn't find style named '" + namedStyle.getName() + "'";
             if (currLayer.getType() == MapLayerInfo.TYPE_RASTER) {
                 // hmm, well, the style they specified in the wms request wasn't found.
                 // Let's try the default raster style named 'raster'
-                s = wms.getStyleByName("raster");
+                s = catalog.getStyleByName("raster");
                 if (s == null) {
                     // nope, no default raster style either. Give up.
                     throw new ServiceException(failMessage + "  Also tried to use "
@@ -111,20 +116,23 @@ public class ProcessStandaloneSLDVisitor extends SLDVisitor {
         }
 
         if (currLayer != null) {
-            layers.add(currLayer);
-            styles.add(s);
+            try {
+                layers.add(currLayer);
+                styles.add(s.getStyle());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
-
         return s;
     }
 
     @Override
-    public void visitUserStyle(StyledLayer layer, Style userStyle, LayerInfo obj) {
+    public void visitUserStyleInternal(Style userStyle) {
         if (currLayer != null) {
             layers.add(currLayer);
             styles.add(userStyle);
-        } else if (obj != null) {
-            layers.add(new MapLayerInfo(obj));
+        } else if (info != null && info instanceof LayerInfo) {
+            layers.add(new MapLayerInfo((LayerInfo)info));
             styles.add(userStyle);
         }
     }

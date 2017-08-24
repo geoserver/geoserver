@@ -110,6 +110,7 @@
             var untiled;
             var tiled;
             var pureCoverage = ${pureCoverage?string};
+            var supportsFiltering = ${supportsFiltering?string};
             // pink tile avoidance
             OpenLayers.IMAGE_RELOAD_ATTEMPTS = 5;
             // make OL compute scale according to WMS spec
@@ -120,13 +121,17 @@
                 // and default to jpeg format
                 format = 'image/png';
                 if(pureCoverage) {
-                    document.getElementById('filterType').disabled = true;
-                    document.getElementById('filter').disabled = true;
                     document.getElementById('antialiasSelector').disabled = true;
-                    document.getElementById('updateFilterButton').disabled = true;
-                    document.getElementById('resetFilterButton').disabled = true;
                     document.getElementById('jpeg').selected = true;
                     format = "image/jpeg";
+                }
+
+
+                if (!supportsFiltering) {
+                    document.getElementById('filterType').disabled = true;
+                    document.getElementById('filter').disabled = true;
+                    document.getElementById('updateFilterButton').disabled = true;
+                    document.getElementById('resetFilterButton').disabled = true;
                 }
             
                 var bounds = new OpenLayers.Bounds(
@@ -406,7 +411,7 @@
             }
             
             function updateFilter(){
-                if(pureCoverage)
+                if(!supportsFiltering)
                   return;
             
                 var filterType = document.getElementById('filterType').value;
@@ -431,7 +436,7 @@
             }
             
             function resetFilter() {
-                if(pureCoverage)
+                if(!supportsFiltering)
                   return;
             
                 document.getElementById('filter').value = "";

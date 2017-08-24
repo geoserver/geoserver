@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog;
 
 import org.geotools.styling.NamedStyle;
@@ -9,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tbarsballe on 2017-08-21.
+ * GeoServerSLDVisitor for collecting assorted validation errors and reporting them
  */
 public class SLDNamedLayerValidator extends GeoServerSLDVisitorAdapter {
 

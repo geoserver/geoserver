@@ -708,7 +708,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
             try {
                 verifyAccessLayer(layerName, bbox);
-            } catch (ServiceException e) {
+            } catch (ServiceException|SecurityException e) {
                 return null;
             }
         }

@@ -1,3 +1,8 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geoserver.gwc.dispatch;
 
 import java.util.Objects;
@@ -16,6 +21,12 @@ import org.geowebcache.layer.TileLayer;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 
+/**
+ * Filter which applies GeoServer security to GWC requests
+ * 
+ * @author Kevin Smith, Boundless
+ *
+ */
 public class GeoServerSecurityFilter implements SecurityFilter {
     
     private static final Logger log = Logging.getLogger(GWC.class);

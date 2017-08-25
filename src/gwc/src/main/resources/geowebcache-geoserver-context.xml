@@ -94,6 +94,7 @@
   
   <bean id="GWCSecurityFilter" class="org.geoserver.gwc.dispatch.GeoServerSecurityFilter">
     <description>
+      Applies GeoServer's security restrictions to GWC layers
     </description>
   </bean>
 

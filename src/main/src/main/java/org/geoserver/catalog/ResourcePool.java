@@ -107,6 +107,7 @@ import org.geotools.gml2.GML;
 import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleImpl;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.Utilities;
@@ -368,8 +369,8 @@ public class ResourcePool {
      * The concrete Map implementation is determined by {@link #createSldCache()}
      * </p>
      */
-    public Map<StyleInfo, Style> getSldCache() {
-        return styleCache;
+    public Map<StyleInfo, StyledLayerDescriptor> getSldCache() {
+        return sldCache;
     }
 
     protected Map<StyleInfo, StyledLayerDescriptor> createSldCache() {
@@ -1990,18 +1991,16 @@ public class ResourcePool {
             synchronized (styleCache) {
                 style = styleCache.get( info );
                 if ( style == null ) {
-                    //TODO: Do we want to be caching the SLD, or not here?
-                    /*
                     style = dataDir().parsedStyle(info);
-                     */
-                    StyledLayerDescriptor sld = getSld(info);
-                    style = Styles.style(sld);
 
                     if (style == null) {
                         throw new ServiceException("Could not extract a UserStyle definition from "
                                 + info.getName());
                     }
-
+                    //Make sure we don't change the name of an object in sldCache
+                    if (style instanceof StyleImpl) {
+                        style = (Style)((StyleImpl)style).clone();
+                    }
                     // remove this when wms works off style info
                     style.setName( info.getName() );
                     styleCache.put( info, style );

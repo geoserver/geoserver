@@ -3335,4 +3335,4 @@ VALUES(3, 32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCap
 -- collection publishing metadata
 INSERT into public.collection_layer
 ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS")
-VALUES(17, 'gs', 'sentinel2', true, 'B1,B2,B3,B4,B5,B6,B7,B8,B9,B10,B11,B12', 'B4,B3,B2', true, 'EPSG:4326');
+VALUES(17, 'gs', 'sentinel2', true, '1,2,3,4,5,6,7,8,9,10,11,12', '4,3,2', true, 'EPSG:4326');

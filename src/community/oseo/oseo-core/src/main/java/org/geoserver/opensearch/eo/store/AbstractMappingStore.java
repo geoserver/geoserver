@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -400,7 +399,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         final String namespaceURI = property.getNamespaceURI();
         for (PropertyName pn : query.getProperties()) {
             if (localPart.equals(pn.getPropertyName())
-                    && namespaceURI.equals(pn.getNamespaceContext().getURI(""))) {
+                    && (pn.getNamespaceContext() == null || namespaceURI.equals(pn.getNamespaceContext().getURI("")))) {
                 return true;
             }
         }
@@ -535,7 +534,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             final String localName = att.getLocalName();
             if(value != null && ("bands".equals(localName) || "browseBands".equals(localName))) {
                 String[] split = ((String) value).split("\\s*,\\s*");
-                retypeBuilder.set(attName, split);
+                int[] values = Arrays.stream(split).mapToInt(s -> Integer.valueOf(s)).toArray();
+                retypeBuilder.set(attName, values);
             } else {
                 retypeBuilder.set(attName, value);
             }
@@ -726,9 +726,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                             for (Property p : f.getProperties()) {
                                 String attributeName = p.getName().getLocalPart();
                                 Object attributeValue = p.getValue();
-                                if(("bands".equals(attributeName) || "browseBands".equals(attributeName)) && attributeValue instanceof String[]) {
-                                    final String[] stringArray = (String[]) attributeValue;
-                                    attributeValue = Arrays.stream(stringArray).collect(Collectors.joining(","));
+                                if(("bands".equals(attributeName) || "browseBands".equals(attributeName)) && attributeValue instanceof int[]) {
+                                    final int[] intArray = (int[]) attributeValue;
+                                    attributeValue = Arrays.stream(intArray).mapToObj(n -> String.valueOf(n)).collect(Collectors.joining(","));
                                 }
                                 fb.set(attributeName, attributeValue);
                             }

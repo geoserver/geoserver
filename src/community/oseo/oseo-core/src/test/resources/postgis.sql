@@ -87,7 +87,7 @@ create table product (
   "quicklookURL" varchar,
   "crs" varchar,
   "eoIdentifier" varchar unique,
-  "eoParentIdentifier" varchar references collection("eoIdentifier"),
+  "eoParentIdentifier" varchar references collection("eoIdentifier") on delete cascade,
   "eoProductionStatus" varchar,
   "eoAcquisitionType" varchar check ("eoAcquisitionType" in ('NOMINAL', 'CALIBRATION', 'OTHER')),
   "eoOrbitNumber" int,

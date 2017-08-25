@@ -295,8 +295,13 @@ public class LayerGroupHelper {
             return e.transform(crs, true);
         }
         return e;
-    }    
-    
+    }
+
+    /**
+     * Check if the LayerGroup contains recursive structures
+     *
+     * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
+     */
     public Stack<LayerGroupInfo> checkLoops() {
         Stack<LayerGroupInfo> path = new Stack<LayerGroupInfo>();
         if (checkLoops(group, path)) {
@@ -317,7 +322,14 @@ public class LayerGroupHelper {
         }        
         return s.toString();
     }
-    
+
+    /**
+     * Check if a layer group contains recursive structures
+     *
+     * @param group The current layer group
+     * @param path Stack of each visited/parent LayerGroup
+     * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
+     */
     private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         path.push(group);
         if (group.getLayers() != null) {
@@ -350,6 +362,14 @@ public class LayerGroupHelper {
         return false;
     }
 
+    /**
+     * Check if a style group contains the enclosing layer group, or other recursive structures.
+     *
+     * @param styleGroup The style group
+     * @param group The current layer group
+     * @param path Stack of each visited/parent LayerGroup
+     * @return true if the style group contains itself, or another LayerGroup contains itself
+     */
     private static boolean checkStyleGroupLoops(StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         try {
             Catalog catalog = getCatalogFromStyle(styleGroup);

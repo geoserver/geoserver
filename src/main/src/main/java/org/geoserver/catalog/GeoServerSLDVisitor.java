@@ -78,6 +78,13 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     protected int styleCount = 0;
 
 
+    /**
+     * Constructs a new GeoServerSLDVisitor
+     *
+     * @param catalog GeoServer catalog to use for looking up catalog objects (Layers, LayerGroups, Styles)
+     * @param fallbackCrs The CRS to use for inline features if it is not specified in the feature. Defaults to
+     *                    {@link DefaultGeographicCRS#WGS84}.
+     */
     public GeoServerSLDVisitor(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
         this.catalog = catalog;
         this.fallbackCrs = fallbackCrs;

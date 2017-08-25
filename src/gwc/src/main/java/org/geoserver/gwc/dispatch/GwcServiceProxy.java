@@ -106,10 +106,6 @@ public class GwcServiceProxy {
             throws Exception {
 
         ResponseWrapper responseWrapper = new ResponseWrapper(rawRespose);
-        
-        if (GWC.get().getConfig().isSecurityEnabled()) {
-            verifyAccess(rawRequest);
-        }
 
         gwcDispatcher.handleRequest(rawRequest, responseWrapper);
 
@@ -160,7 +156,7 @@ public class GwcServiceProxy {
      * @param rawRequest the request
      * @throws org.geotools.ows.ServiceException
      */
-    public void verifyAccess(HttpServletRequest rawRequest) throws org.geotools.ows.ServiceException {     
+    private void verifyAccess(HttpServletRequest rawRequest) throws org.geotools.ows.ServiceException {     
         Map parameters = KvpUtils.normalize(rawRequest.getParameterMap());            
 
         if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/wms")) {

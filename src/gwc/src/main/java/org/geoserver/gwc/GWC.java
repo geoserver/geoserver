@@ -2106,7 +2106,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param boundingBox bounding box
      * @throws ServiceException 
      */
-    public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException {
+    public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException, SecurityException {
         // get the list of internal layers corresponding to the advertised layer
         List<LayerInfo> layerInfos = null;
         LayerInfo li = getCatalog().getLayerByName(layerName);
@@ -2190,9 +2190,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     
                         if (!limitBox.covers(ReferencedEnvelope.EVERYTHING)
                                 && (boundingBox == null || !limitBox.contains(boundingBox))) {
-                            throw new ServiceException(
-                                    "Access denied to bounding box on layer " + layerName,
-                                    "AccessDenied");
+                            throw new SecurityException(
+                                    "Access denied to bounding box on layer " + layerName);
                         }
                     }
                 }

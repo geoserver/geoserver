@@ -1463,38 +1463,6 @@ public class GWCTest {
         }
     }
     
-    @Test
-    public void testVerifyAccessTiledLayerOutside() throws Exception {
-        Envelope filterBox = new Envelope(10, 11, 20, 21);
-        BoundingBox bounds = new BoundingBox(42.0, 33.0, 84.0, 66.0);
-        final String layerName = "testLayer";
-        final String gridName = "testGridSet";
-        final int zoom=0;
-        final long col=0;
-        final long row=0;
-        
-        mockCachedSecureLayer(filterBox, bounds, layerName, gridName, zoom, col,
-                row);
-        
-        expected.expect(org.geotools.ows.ServiceException.class);
-        expected.expect(hasProperty("code", equalTo("AccessDenied")));
-        mediator.verifyAccessTiledLayer(layerName, gridName, zoom, col, row);
-    }
-    
-    @Test
-    public void testVerifyAccessTiledLayerInside() throws Exception {
-        Envelope filterBox = new Envelope(10, 11, 20, 21);
-        BoundingBox bounds = new BoundingBox(10.1, 20.1, 10.2, 20.2);
-        final String layerName = "testLayer";
-        final String gridName = "testGridSet";
-        final int zoom=0;
-        final long col=0;
-        final long row=0;
-        
-        mockCachedSecureLayer(filterBox, bounds, layerName, gridName, zoom, col,
-                row);
-        mediator.verifyAccessTiledLayer(layerName, gridName, zoom, col, row);
-    }
 
     private void mockCachedSecureLayer(Envelope filterBox, BoundingBox bounds,
             final String layerName, final String gridName, final long zoom,

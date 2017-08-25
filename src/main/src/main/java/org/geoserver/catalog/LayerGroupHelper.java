@@ -17,6 +17,7 @@ import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -372,11 +373,10 @@ public class LayerGroupHelper {
      */
     private static boolean checkStyleGroupLoops(StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         try {
-            Catalog catalog = getCatalogFromStyle(styleGroup);
-            StyledLayerDescriptor sld = new GeoServerDataDirectory(catalog.getResourceLoader()).parsedSld(styleGroup);
+            StyledLayerDescriptor sld = styleGroup.getSLD();
 
             final boolean[] hasLoop = {false};
-            sld.accept(new GeoServerSLDVisitorAdapter(catalog, group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
+            sld.accept(new GeoServerSLDVisitorAdapter((Catalog) GeoServerExtensions.bean("catalog"), group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
 
                 private final IllegalStateException recursionException = new IllegalStateException("Style group contains recursive structure");
                 @Override
@@ -428,14 +428,6 @@ public class LayerGroupHelper {
         return false;
     }
 
-    private static Catalog getCatalogFromStyle(StyleInfo info) {
-        info = ModificationProxy.unwrap(info);
-        if (info instanceof StyleInfoImpl) {
-            return ((StyleInfoImpl) info).getCatalog();
-        }
-        throw new IllegalStateException("Could not get catalog from style group");
-    }
-
     private static void expandStyleGroup(StyleInfo styleGroup, CoordinateReferenceSystem crs, List<LayerInfo> layers, List<StyleInfo> styles) {
         if (layers == null) {
             layers = new ArrayList<>();
@@ -445,9 +437,8 @@ public class LayerGroupHelper {
         }
 
         try {
-            Catalog catalog = getCatalogFromStyle(styleGroup);
-            StyledLayerDescriptor sld = ResourcePool.create(catalog).dataDir().parsedSld(styleGroup);
-            StyleGroupHelper helper = new StyleGroupHelper(catalog, crs);
+            StyledLayerDescriptor sld = styleGroup.getSLD();
+            StyleGroupHelper helper = new StyleGroupHelper((Catalog) GeoServerExtensions.bean("catalog"), crs);
             sld.accept(helper);
             layers.addAll(helper.getLayers());
             styles.addAll(helper.getStyles());
@@ -456,6 +447,14 @@ public class LayerGroupHelper {
         }
     }
 
+    /**
+     * Converts a style group sld into a flat list of {@link LayerInfo}s and {@link StyleInfo}s.
+     *
+     * To handle styles and layers that are not in the catalog:
+     * User layers are wrapped in {@link GeoServerSLDVisitor.StyleWrappingStyleInfoImpl}.
+     * Inline features and remote OWS services are wrapped in
+     * {@link GeoServerSLDVisitor.FeatureSourceWrappingFeatureTypeInfoImpl}.
+     */
     protected static class StyleGroupHelper extends GeoServerSLDVisitorAdapter {
 
         List<LayerInfo> layers;

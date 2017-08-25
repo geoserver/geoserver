@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.geoserver.catalog.*;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 
 public class StyleInfoImpl implements StyleInfo {
@@ -106,6 +107,10 @@ public class StyleInfoImpl implements StyleInfo {
 
     public Style getStyle() throws IOException {
         return catalog.getResourcePool().getStyle( this );
+    }
+
+    public StyledLayerDescriptor getSLD() throws IOException {
+        return catalog.getResourcePool().getSld( this );
     }
     
     public LegendInfo getLegend() {

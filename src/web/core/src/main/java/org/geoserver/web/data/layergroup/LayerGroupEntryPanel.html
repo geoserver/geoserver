@@ -8,7 +8,11 @@
         </legend>
       <ul>
        <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
-       <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>       
+       <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
+       <li>
+           <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
+           <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+       </li>
        <li>
          <div wicket:id="layers"></div>
        </li>
@@ -17,7 +21,7 @@
      <div wicket:id="popup"></div>
      <div wicket:id="dialog"></div>
     </wicket:panel>
-    
+
     <wicket:fragment wicket:id="defaultStyle">
         <input type="checkbox" wicket:id="checkbox"/>
     </wicket:fragment>

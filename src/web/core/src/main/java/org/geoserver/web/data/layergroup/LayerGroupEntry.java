@@ -19,6 +19,23 @@ import org.geoserver.web.GeoServerApplication;
 public class LayerGroupEntry implements Serializable {
 
     private static final long serialVersionUID = -2212620293553872451L;
+
+    enum Type {
+        LAYER("Layer"),
+        LAYER_GROUP("Layer Group"),
+        STYLE_GROUP("Style Group");
+
+        String type;
+
+        Type(String type) {
+            this.type = type;
+        }
+
+        @Override
+        public String toString() {
+            return type;
+        }
+    }
 	
     String styleId;
     String layerId;
@@ -27,6 +44,16 @@ public class LayerGroupEntry implements Serializable {
     public LayerGroupEntry(PublishedInfo layer, StyleInfo style ) {
         setLayer(layer);
         setStyle(style);
+    }
+
+    public Type getType() {
+        if (layerId == null && layerGroupId == null) {
+            return Type.STYLE_GROUP;
+        } else if (layerGroupId != null) {
+            return  Type.LAYER_GROUP;
+        } else {
+            return Type.LAYER;
+        }
     }
     
     public StyleInfo getStyle() {
@@ -41,7 +68,9 @@ public class LayerGroupEntry implements Serializable {
     }
     
     public void setDefaultStyle(boolean defaultStyle) {
-        if(defaultStyle || (getLayer() instanceof LayerGroupInfo)) {
+        if (getLayer() == null) {
+            setStyle(getStyle());
+        } else if(defaultStyle || (getLayer() instanceof LayerGroupInfo)) {
             setStyle(null);
         } else {
             setStyle(((LayerInfo) getLayer()).getDefaultStyle());
@@ -58,16 +87,20 @@ public class LayerGroupEntry implements Serializable {
     public PublishedInfo getLayer() {
         if (layerGroupId != null) {
             return GeoServerApplication.get().getCatalog().getLayerGroup( layerGroupId );
-        } else {
+        } else if (layerId != null){
             return GeoServerApplication.get().getCatalog().getLayer( layerId );
+        } else {
+            return null;
         }
     }
     
     public void setLayer( PublishedInfo publishedInfo ) {
-        if (publishedInfo instanceof LayerGroupInfo) {
-            layerGroupId = publishedInfo.getId();
-        } else {
-            layerId = publishedInfo.getId();
+        if (publishedInfo != null) {
+            if (publishedInfo instanceof LayerGroupInfo) {
+                layerGroupId = publishedInfo.getId();
+            } else {
+                layerId = publishedInfo.getId();
+            }
         }
     }
 

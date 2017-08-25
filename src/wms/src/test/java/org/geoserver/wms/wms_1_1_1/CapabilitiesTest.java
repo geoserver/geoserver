@@ -322,6 +322,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         //attribution
         lg.setName("MyLayerGroup");
         lg.getLayers().add(points);
+        lg.getStyles().add(null);
         builder.calculateLayerGroupBounds(lg, CRS.decode("EPSG:4326"));
         lg.setAttribution(getCatalog().getFactory().createAttribution());
         lg.getAttribution().setTitle("My Attribution");

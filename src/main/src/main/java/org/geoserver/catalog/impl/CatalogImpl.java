@@ -838,7 +838,7 @@ public class CatalogImpl implements Catalog {
         List<PublishedInfo> layers = layerGroup.getLayers();
         List<StyleInfo> styles = layerGroup.getStyles();
         for (int i = 0; i < layers.size(); ) {
-            if(layers.get(i) == null) {
+            if(layers.get(i) == null && styles.get(i) == null) {
                 layers.remove(i);
                 styles.remove(i);
             } else {
@@ -905,7 +905,7 @@ public class CatalogImpl implements Catalog {
             for (PublishedInfo p : layerGroup.getLayers()) {
                 if (p instanceof LayerGroupInfo) {
                     checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
-                } else {
+                } else if (p instanceof LayerInfo) {
                     checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
                 }
             }

@@ -13,6 +13,7 @@ import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
+import org.geoserver.wms.map.ProcessStandaloneSLDVisitor;
 import org.geotools.styling.StyledLayerDescriptor;
 
 /**
@@ -38,8 +39,9 @@ public class SLDXmlRequestReader extends XmlRequestReader {
         StyledLayerDescriptor sld =
             Styles.handler(getMap.getStyleFormat()).parse(reader, getMap.styleVersion(), null, null);
 
-        //process the sld 
-        GetMapKvpRequestReader.processStandaloneSld(wms, getMap, sld);
+        //process the sld
+        sld.accept(new ProcessStandaloneSLDVisitor(wms, getMap));
+        //GetMapKvpRequestReader.processStandaloneSld(wms, getMap, sld);
     
         return getMap;
     }

@@ -17,9 +17,11 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
@@ -28,15 +30,24 @@ import org.apache.wicket.markup.head.JavaScriptUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
@@ -65,6 +76,10 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     
     final Random rand = new Random();
     final Component olPreview;
+
+    boolean isPreviewStyleGroup;
+    GeoServerDialog dialog;
+
     
     public OpenLayersPreviewPanel(String id, AbstractStylePage parent) {
         super(id, parent);
@@ -80,13 +95,28 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                 
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
-                popup.setTitle(new Model<String>("Choose layer to edit"));
+                popup.setTitle(new Model<String>("Choose layer to preview"));
                 popup.setContent(new LayerChooser(popup.getContentId(), parent));
                 popup.show(target);
             }
         });
         add(olPreview);
         setOutputMarkupId(true);
+
+        CheckBox previewStyleGroup = new CheckBox("previewStyleGroup", new PropertyModel<Boolean>(this, "isPreviewStyleGroup"));
+
+        previewStyleGroup.add(new AjaxFormComponentUpdatingBehavior("click") {
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    parent.configurationChanged();
+                    target.add(parent.getFeedbackPanel());
+                    target.add(parent.styleForm);
+                }
+            });
+        add(previewStyleGroup);
+
+        add(dialog = new GeoServerDialog("dialog"));
+        add(new HelpLink("styleGroupHelp").setDialog(dialog));
         
         try {
             ensureLegendDecoration();
@@ -147,9 +177,31 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         context.put("id", olPreview.getMarkupId());
         context.put("layer", getStylePage().getLayerInfo().getResource().getName());
         context.put("style", getStylePage().getStyleInfo().getName());
-        if (workspace != null) {
-          context.put("styleWorkspace", workspace.getName());
+
+        String styleUrl;
+        String proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
+        if (StringUtils.isEmpty(proxyBaseUrl)) {
+            GeoServer gs = stylePage.getGeoServer();
+            proxyBaseUrl = gs.getGlobal().getSettings().getProxyBaseUrl();
+            if (StringUtils.isEmpty(proxyBaseUrl)) {
+                Request r = getRequest();
+                Url clientUrl = r.getClientUrl();
+                styleUrl = clientUrl.getProtocol()+"://"+clientUrl.getHost()+":"+clientUrl.getPort()+r.getContextPath();
+            } else {
+                styleUrl = proxyBaseUrl;
+            }
+        } else {
+            styleUrl = proxyBaseUrl;
         }
+        styleUrl = styleUrl + "/styles";
+        if (workspace != null) {
+            context.put("styleWorkspace", workspace.getName());
+            styleUrl = styleUrl + "/" + workspace.getName();
+        }
+        styleUrl = styleUrl + "/" + getStylePage().getStyleInfo().getFilename();
+        context.put("styleUrl", styleUrl);
+        context.put("previewStyleGroup", isPreviewStyleGroup);
+
         context.put("cachebuster", rand.nextInt());
         context.put("resolution", Math.max(bbox.getSpan(0), bbox.getSpan(1)) / 256.0);
         HttpServletRequest req = GeoServerApplication.get().servletRequest();

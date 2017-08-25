@@ -210,6 +210,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         lg.setName(FLAT_LAYER_GROUP);
         lg.getLayers().add(getCatalog().getLayerByName(bpLayerId));
         lg.getLayers().add(getCatalog().getLayerByName(mpLayerId));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
         new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
         getCatalog().add(lg);        
         
@@ -235,6 +237,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo nested = getCatalog().getFactory().createLayerGroup();
         nested.setName(NESTED_LAYER_GROUP);
         nested.getLayers().add(getCatalog().getLayerByName(bpLayerId));
+        nested.getStyles().add(null);
         builder.calculateLayerGroupBounds(nested);
         getCatalog().add(nested);
         
@@ -243,6 +246,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         container.setName(CONTAINER_LAYER_GROUP);
         container.getLayers().add(getCatalog().getLayerByName(mpLayerId));
         container.getLayers().add(getCatalog().getLayerGroupByName(NESTED_LAYER_GROUP));
+        container.getStyles().add(null);
+        container.getStyles().add(null);
         builder.calculateLayerGroupBounds(container);
         getCatalog().add(container);
         
@@ -508,6 +513,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String mpLayerId = getLayerId(MockData.LAKES);
         lg.getLayers().add(getCatalog().getLayerByName(bpLayerId));
         lg.getLayers().add(getCatalog().getLayerByName(mpLayerId));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
 
         lg.setWorkspace(getCatalog().getWorkspaceByName(workspaceName));
         new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
@@ -1097,6 +1104,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // add the provided layers
         for (LayerInfo layerInfo : layers) {
             layerGroup.getLayers().add(layerInfo);
+            layerGroup.getStyles().add(null);
         }
         // set the layer group bounds by merging all layers bounds
         CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());

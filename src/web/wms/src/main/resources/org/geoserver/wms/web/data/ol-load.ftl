@@ -6,8 +6,12 @@ var source = new ol.source.ImageWMS({
   url: "${baseUrl}/wms",
 </#if>
   params: {
+<#if previewStyleGroup>
+    'SLD': '${styleUrl}',
+<#else>
     'LAYERS': '${layer}',
     'STYLES': '${style}',
+</#if>
     'FORMAT': 'image/png',
     'FORMAT_OPTIONS': "layout:style-editor-legend;fontAntiAliasing:true",
     'RANDOM': ${cachebuster?c}

@@ -283,6 +283,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         //attribution
         lg.setName("MyLayerGroup");
         lg.getLayers().add(points);
+        lg.getStyles().add(null);
         builder.calculateLayerGroupBounds(lg, CRS.decode("EPSG:4326"));
         lg.setAttribution(getCatalog().getFactory().createAttribution());
         lg.getAttribution().setTitle("My Attribution");
@@ -876,6 +877,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         // add the provided layers
         for (LayerInfo layerInfo : layers) {
             layerGroup.getLayers().add(layerInfo);
+            layerGroup.getStyles().add(null);
         }
         // set the layer group bounds by merging all layers bounds
         CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());

@@ -745,7 +745,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             final StyledLayerDescriptor sld, final List styleNames) throws ServiceException,
             IOException {
         if (requestedLayers.size() == 0) {
-            processStandaloneSld(wms, request, sld);
+            sld.accept(new ProcessStandaloneSLDVisitor(wms, request));
         } else {
             processLibrarySld(request, sld, requestedLayers, styleNames);
         }
@@ -831,179 +831,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }
 
     /**
-     * This one processes an SLD in non library mode, that is, it assumes it's the definition of the
-     * map
-     * 
-     * @param request
-     * @param sld
-     * @throws IOException
-     */
-    public static void processStandaloneSld(final WMS wms, final GetMapRequest request,
-            final StyledLayerDescriptor sld) throws IOException {
-        final StyledLayer[] styledLayers = sld.getStyledLayers();
-        final int slCount = styledLayers.length;
-
-        if (slCount == 0) {
-            throw new ServiceException("SLD document contains no layers");
-        }
-
-        final List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
-        final List<Style> styles = new ArrayList<Style>();
-        MapLayerInfo currLayer = null;
-        Style currStyle = null;
-
-        String layerName;
-        UserLayer ul;
-        for (StyledLayer sl : styledLayers) {
-            layerName = sl.getName();
-
-            if (null == layerName) {
-                throw new ServiceException("A UserLayer without layer name was passed");
-            }
-
-            if (sl instanceof UserLayer && ((((UserLayer) sl)).getRemoteOWS() != null)) {
-                // this beast can define multiple feature sources and multiple styles, we'll
-                // have to mix and match them (ugh)
-                ul = ((UserLayer) sl);
-                try {
-                    addRemoteLayersFromUserLayer(request, ul, layers, styles);
-                } catch (IOException e) {
-                    throw new ServiceException("Error accessing remote layers", e,
-                            "RemoteAccessFailed");
-                }
-            } else {
-                // simpler case, one layer, eventually multiple styles
-                currLayer = null;
-                // handle the InLineFeature stuff
-                if ((sl instanceof UserLayer)
-                        && ((((UserLayer) sl)).getInlineFeatureDatastore() != null)) {
-                    // SPECIAL CASE - we make the temporary version
-                    ul = ((UserLayer) sl);
-
-                    try {
-                        currLayer = initializeInlineFeatureLayer(request, ul);
-                    } catch (Exception e) {
-                        throw new ServiceException(e);
-                    }
-                } else {
-                    if (wms.getLayerGroupByName(layerName) != null) {
-                        LayerGroupInfo group = wms.getLayerGroupByName(layerName);
-                        List<LayerInfo> groupLayers = group.layers();
-                        List<StyleInfo> groupStyles = group.styles();
-                        for (int i = 0; i < groupLayers.size(); i++) {
-                            LayerInfo layer = groupLayers.get(i);
-                            layers.add(new MapLayerInfo(layer));
-                            StyleInfo style = groupStyles.get(i);
-                            if (style != null) {
-                                styles.add(style.getStyle());
-                            } else {
-                                styles.add(layer.getDefaultStyle().getStyle());
-                            }
-                        }
-                        // move to the next named layer
-                        continue;
-                    } else {
-                        LayerInfo layerInfo = wms.getLayerByName(layerName);
-
-                        if (layerInfo == null)
-                            throw new ServiceException("Unknown layer: " + layerName);
-
-                        currLayer = new MapLayerInfo(layerInfo);
-                        if (sl instanceof NamedLayer) {
-                            NamedLayer namedLayer = ((NamedLayer) sl);
-                            currLayer.setLayerFeatureConstraints(namedLayer
-                                    .getLayerFeatureConstraints());
-                        }
-                    }
-                }
-
-                if (currLayer.getType() == MapLayerInfo.TYPE_RASTER) {
-                    try {
-                        addStyles(wms, request, currLayer, sl, layers, styles);
-                    } catch (ServiceException wm) {
-                        // hmm, well, the style they specified in the wms
-                        // request
-                        // wasn't found. Let's try the default raster style
-                        // named 'raster'
-                        currStyle = findStyle(wms, request, "raster");
-                        if (currStyle == null) {
-                            // nope, no default raster style either. Give up.
-                            throw new ServiceException(wm.getMessage() + "  Also tried to use "
-                                    + "the generic raster style 'raster', but it wasn't available.");
-                        }
-                        layers.add(currLayer);
-                        styles.add(currStyle);
-                    }
-                } else {
-                    addStyles(wms, request, currLayer, sl, layers, styles);
-                }
-            }
-        }
-
-        request.setLayers(layers);
-        request.setStyles(styles);
-    }
-
-    private static void addRemoteLayersFromUserLayer(GetMapRequest request, UserLayer ul,
-            List layers, List styles) throws ServiceException, IOException {
-        RemoteOWS service = ul.getRemoteOWS();
-        if (!service.getService().equalsIgnoreCase("WFS"))
-            throw new ServiceException("GeoServer only supports WFS as remoteOWS service");
-        if (service.getOnlineResource() == null)
-            throw new ServiceException("OnlineResource for remote WFS not specified in SLD");
-        final FeatureTypeConstraint[] featureConstraints = ul.getLayerFeatureConstraints();
-        if (featureConstraints == null || featureConstraints.length == 0)
-            throw new ServiceException(
-                    "No FeatureTypeConstraint specified, no layer can be loaded for this UserStyle");
-
-        DataStore remoteWFS = null;
-        List remoteTypeNames = null;
-        try {
-            URL url = new URL(service.getOnlineResource());
-            remoteWFS = connectRemoteWFS(url);
-            remoteTypeNames = new ArrayList(Arrays.asList(remoteWFS.getTypeNames()));
-            Collections.sort(remoteTypeNames);
-        } catch (MalformedURLException e) {
-            throw new ServiceException("Invalid online resource url: '"
-                    + service.getOnlineResource() + "'");
-        }
-
-        Style[] layerStyles = ul.getUserStyles();
-        if (request.getFilter() == null)
-            request.setFilter(new ArrayList());
-        for (int i = 0; i < featureConstraints.length; i++) {
-            // make sure the layer is there
-            String name = featureConstraints[i].getFeatureTypeName();
-            if (Collections.binarySearch(remoteTypeNames, name) < 0) {
-                throw new ServiceException("Could not find layer feature type '" + name
-                        + "' on remote WFS '" + service.getOnlineResource());
-            }
-
-            // grab the filter
-            Filter filter = featureConstraints[i].getFilter();
-            if (filter == null)
-                filter = Filter.INCLUDE;
-
-            // connect the layer
-            SimpleFeatureSource fs = remoteWFS.getFeatureSource(name);
-
-            // this is messy, why the spec allows for multiple constraints and multiple
-            // styles is beyond me... we'll style each remote layer with all possible
-            // styles, feauture type style matching will do the rest during rendering
-            for (int j = 0; j < layerStyles.length; j++) {
-                Style style = layerStyles[i];
-                MapLayerInfo info = new MapLayerInfo(fs);
-                layers.add(info);
-                styles.add(style);
-                // treat it like an externally provided filter... ugly I know, but
-                // the sane thing (adding a filter as a MapLayerInfo field) would
-                // break havoc in GetFeatureInfo
-                request.getFilter().add(filter);
-            }
-        }
-    }
-
-    /**
      * the correct thing to do its grab the style from styledLayers[i] inside the styledLayers[i]
      * will either be : a) nothing - in which case grab the layer's default style b) a set of: i)
      * NameStyle -- grab it from the pre-loaded styles ii)UserStyle -- grab it from the sld the user
@@ -1022,49 +849,16 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * @throws IOException
      */
     public static void addStyles(WMS wms, GetMapRequest request, MapLayerInfo currLayer,
-            StyledLayer layer, List layers, List styles) throws ServiceException, IOException {
+            StyledLayer layer, List<MapLayerInfo> layers, List<Style> styles) throws ServiceException, IOException {
         if (currLayer == null) {
             return; // protection
         }
-
         Style[] layerStyles = null;
-        FeatureTypeConstraint[] ftcs = null;
 
         if (layer instanceof NamedLayer) {
-            ftcs = ((NamedLayer) layer).getLayerFeatureConstraints();
             layerStyles = ((NamedLayer) layer).getStyles();
         } else if (layer instanceof UserLayer) {
-            ftcs = ((UserLayer) layer).getLayerFeatureConstraints();
             layerStyles = ((UserLayer) layer).getUserStyles();
-        }
-
-        // DJB: TODO: this needs to do the whole thing, not just names
-        if (ftcs != null) {
-            FeatureTypeConstraint ftc;
-            final int length = ftcs.length;
-
-            for (int t = 0; t < length; t++) {
-                ftc = ftcs[t];
-
-                if (ftc.getFeatureTypeName() != null) {
-                    String ftc_name = ftc.getFeatureTypeName();
-
-                    // taken from lite renderer
-                    boolean matches;
-
-                    try {
-                        final FeatureType featureType = currLayer.getFeature().getFeatureType();
-                        matches = FeatureTypes.isDecendedFrom(featureType, null, ftc_name)
-                                || featureType.getName().getLocalPart().equalsIgnoreCase(ftc_name);
-                    } catch (Exception e) {
-                        matches = false; // bad news
-                    }
-
-                    if (!matches) {
-                        continue; // this layer is fitered out
-                    }
-                }
-            }
         }
 
         // handle no styles -- use default
@@ -1081,11 +875,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         for (int t = 0; t < length; t++) {
             if (layerStyles[t] instanceof NamedStyle) {
                 layers.add(currLayer);
-                s = findStyle(wms, request, ((NamedStyle) layerStyles[t]).getName());
+                s = findStyle(wms, request, (layerStyles[t]).getName());
 
                 if (s == null) {
-                    throw new ServiceException("couldnt find style named '"
-                            + ((NamedStyle) layerStyles[t]).getName() + "'");
+                    throw new ServiceException("couldn't find style named '" + (layerStyles[t]).getName() + "'");
                 }
 
                 styles.add(s);
@@ -1309,49 +1102,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 return true;
         }
         return false;
-    }
-    /**
-     * Method to initialize a user layer which contains inline features.
-     * 
-     * @param httpRequest
-     *            The request
-     * @param mapLayer
-     *            The map layer.
-     * 
-     */
-
-    // JD: the reason this method is static is to share logic among the xml
-    // and kvp reader, ugh...
-    private static MapLayerInfo initializeInlineFeatureLayer(GetMapRequest getMapRequest,
-            UserLayer ul) throws Exception {
-
-        SimpleFeatureSource featureSource;
-
-        // what if they didn't put an "srsName" on their geometry in their
-        // inlinefeature?
-        // I guess we should assume they mean their geometry to exist in the
-        // output SRS of the
-        // request they're making.
-        if (ul.getInlineFeatureType().getCoordinateReferenceSystem() == null) {
-            LOGGER.warning("No CRS set on inline features default geometry.  Assuming the requestor has their inlinefeatures in the boundingbox CRS.");
-
-            SimpleFeatureType currFt = ul.getInlineFeatureType();
-            Query q = new Query(currFt.getTypeName(), Filter.INCLUDE);
-            FeatureReader<SimpleFeatureType, SimpleFeature> ilReader;
-            DataStore inlineFeatureDatastore = ul.getInlineFeatureDatastore();
-            ilReader = inlineFeatureDatastore.getFeatureReader(q, Transaction.AUTO_COMMIT);
-            CoordinateReferenceSystem crs = (getMapRequest.getCrs() == null) ? DefaultGeographicCRS.WGS84
-                    : getMapRequest.getCrs();
-            String typeName = inlineFeatureDatastore.getTypeNames()[0];
-            MemoryDataStore reTypedDS = new MemoryDataStore(new ForceCoordinateSystemFeatureReader(
-                    ilReader, crs));
-            featureSource = reTypedDS.getFeatureSource(typeName);
-        } else {
-            DataStore inlineFeatureDatastore = ul.getInlineFeatureDatastore();
-            String typeName = inlineFeatureDatastore.getTypeNames()[0];
-            featureSource = inlineFeatureDatastore.getFeatureSource(typeName);
-        }
-        return new MapLayerInfo(featureSource);
     }
 
     /**

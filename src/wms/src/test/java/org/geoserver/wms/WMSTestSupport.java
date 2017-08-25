@@ -151,6 +151,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
             group.setName(NATURE_GROUP);
             group.getLayers().add(lakes);
             group.getLayers().add(forests);
+            group.getStyles().add(null);
+            group.getStyles().add(null);
             CatalogBuilder cb = new CatalogBuilder(catalog);
             cb.calculateLayerGroupBounds(group);
             catalog.add(group);
@@ -165,6 +167,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
             containerGroup.setName(CONTAINER_GROUP);
             containerGroup.setMode(Mode.CONTAINER);
             containerGroup.getLayers().add(nature);
+            containerGroup.getStyles().add(null);
             CatalogBuilder cb = new CatalogBuilder(catalog);
             cb.calculateLayerGroupBounds(containerGroup);
             catalog.add(containerGroup);
@@ -178,9 +181,11 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         LayerInfo neatline = catalog.getLayerByName(getLayerId(MockData.MAP_NEATLINE));
         if(roadSegments != null && neatline != null) {
             opaqueGroup.setName(OPAQUE_GROUP);
-            opaqueGroup.setMode(Mode.OPAQUE_CONTAINER);;
+            opaqueGroup.setMode(Mode.OPAQUE_CONTAINER);
             opaqueGroup.getLayers().add(roadSegments);
             opaqueGroup.getLayers().add(neatline);
+            opaqueGroup.getStyles().add(null);
+            opaqueGroup.getStyles().add(null);
 	        CatalogBuilder cb = new CatalogBuilder(catalog);
             cb.calculateLayerGroupBounds(opaqueGroup);
             catalog.add(opaqueGroup);
@@ -608,6 +613,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         
         group.getLayers().add(lakes);
         group.getLayers().add(places);
+        group.getStyles().add(null);
+        group.getStyles().add(null);
 
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.calculateLayerGroupBounds(group);

@@ -7,6 +7,7 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 
 /**
@@ -113,6 +114,11 @@ public interface StyleInfo extends CatalogInfo {
      * The style object.
      */
     Style getStyle() throws IOException;
+
+    /**
+     * The full sld object (which contains the style).
+     */
+    StyledLayerDescriptor getSLD() throws IOException;
 
     /**
      * The Legend for the style.

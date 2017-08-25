@@ -991,7 +991,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             // styles is beyond me... we'll style each remote layer with all possible
             // styles, feauture type style matching will do the rest during rendering
             for (int j = 0; j < layerStyles.length; j++) {
-                Style style = layerStyles[i];
+                Style style = layerStyles[j];
                 MapLayerInfo info = new MapLayerInfo(fs);
                 layers.add(info);
                 styles.add(style);

@@ -31,6 +31,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
@@ -38,6 +39,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -188,5 +190,46 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         // saving everything
         catalog.add(coverageInfo);
         catalog.add(layer);
+    }
+
+    /**
+     * Test for GEOS-8178: OpenLayersOutputFormat NoSuchAuthorityCodeExceptions being thrown due to
+     *  malformed URN codes.
+     *  
+     * Exception is thrown when decoding CRS in isWms13FlippedCRS which is called by produceMap,
+     * test uses produceMap and reads the resulting output steam to ensure "yx: true" is returned
+     * for EPSG:4326, output is false before fix
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUrnCodeFix() throws Exception{
+
+        Catalog catalog = getCatalog();
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+            MockData.BASIC_POLYGONS.getPrefix(),
+            MockData.BASIC_POLYGONS.getLocalPart())
+            .getFeatureSource(null, null);
+
+        final Envelope env = fs.getBounds();
+
+        LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
+
+        GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+
+        request.setCrs(crs);
+
+        final WMSMapContent map = new WMSMapContent();
+        map.setRequest(request);
+        request.setFormat("application/openlayers");
+
+        RawMap rawMap = this.mapProducer.produceMap(map);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        rawMap.writeTo(bos);
+        String htmlDoc = new String(bos.toByteArray(), "UTF-8");
+        int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}\n");
+
+        assertTrue(index > -1);
     }
 }

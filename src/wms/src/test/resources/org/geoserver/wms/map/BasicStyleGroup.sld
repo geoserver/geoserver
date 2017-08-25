@@ -17,14 +17,14 @@
       <Rule>
         <!-- like a linesymbolizer but with a fill too -->
         <PolygonSymbolizer>
-		<Fill>
-			<CssParameter name="fill">
-				<ogc:Literal>#0000C0</ogc:Literal>
-			</CssParameter>
-			<CssParameter name="fill-opacity">
-				<ogc:Literal>1.0</ogc:Literal>
-			</CssParameter>
-		</Fill>
+        <Fill>
+            <CssParameter name="fill">
+                <ogc:Literal>#0000C0</ogc:Literal>
+            </CssParameter>
+            <CssParameter name="fill-opacity">
+                <ogc:Literal>1.0</ogc:Literal>
+            </CssParameter>
+        </Fill>
            <Stroke>
              <CssParameter name="stroke">#000000</CssParameter>
              <CssParameter name="stroke-width">2</CssParameter>

@@ -5,17 +5,22 @@
  */
 package org.geoserver.web.data.store;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geotools.data.property.PropertyDataStoreFactory;
+import org.geotools.geopkg.GeoPkgDataStoreFactory;
+import org.geotools.geopkg.mosaic.GeoPackageFormatFactorySpi;
 import org.junit.Test;
 
 /**
@@ -135,6 +140,18 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         //
         // assertEquals(expectedNamespace, assignedNamespace);
 
+    }
+    
+    @Test
+    public void testGeoPackagePage() {
+        final String displayName = new GeoPkgDataStoreFactory().getDisplayName();
+        final AbstractDataAccessPage page = new DataAccessNewPage(displayName);
+        tester.startPage(page);
+        
+        tester.debugComponentTrees();
+        // the "database" key is the second, should be a file panel
+        Component component = tester.getComponentFromLastRenderedPage("dataStoreForm:parametersPanel:parameters:1:parameterPanel");
+        assertThat(component, instanceOf(FileParamPanel.class));
     }
 
 }

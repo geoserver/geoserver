@@ -134,6 +134,10 @@
     <groupId>com.github.svenmeier.wicket-dnd</groupId>
     <artifactId>wicket-dnd</artifactId>
   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-geopkg</artifactId>
+   </dependency>
   </dependencies>
 
   <build>

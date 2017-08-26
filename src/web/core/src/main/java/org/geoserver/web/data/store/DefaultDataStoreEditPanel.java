@@ -32,6 +32,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
+import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.LabelParamPanel;
 import org.geoserver.web.data.store.panel.NamespacePanel;
 import org.geoserver.web.data.store.panel.ParamPanel;
@@ -176,6 +177,10 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             // TODO Add prefix for better i18n?
             parameterPanel = new CheckBoxParamPanel(componentId, new MapModel(paramsModel,
                     paramName), new ResourceModel(paramLabel, paramLabel));
+
+        } else if (File.class == binding) {
+            parameterPanel = new FileParamPanel(componentId, new MapModel(paramsModel,
+                    paramName), new ResourceModel(paramLabel, paramLabel), required);
 
         } else if (String.class == binding && paramMetadata.isPassword()) {
             parameterPanel = new PasswordParamPanel(componentId, new MapModel(paramsModel,

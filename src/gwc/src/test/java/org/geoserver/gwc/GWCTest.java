@@ -8,10 +8,10 @@ package org.geoserver.gwc;
 import static com.google.common.collect.Iterators.forEnumeration;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.union;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.createMockBuilder;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.classextension.EasyMock.createMockBuilder;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.replay;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -1463,38 +1463,6 @@ public class GWCTest {
         }
     }
     
-    @Test
-    public void testVerifyAccessTiledLayerOutside() throws Exception {
-        Envelope filterBox = new Envelope(10, 11, 20, 21);
-        BoundingBox bounds = new BoundingBox(42.0, 33.0, 84.0, 66.0);
-        final String layerName = "testLayer";
-        final String gridName = "testGridSet";
-        final int zoom=0;
-        final long col=0;
-        final long row=0;
-        
-        mockCachedSecureLayer(filterBox, bounds, layerName, gridName, zoom, col,
-                row);
-        
-        expected.expect(org.geotools.ows.ServiceException.class);
-        expected.expect(hasProperty("code", equalTo("AccessDenied")));
-        mediator.verifyAccessTiledLayer(layerName, gridName, zoom, col, row);
-    }
-    
-    @Test
-    public void testVerifyAccessTiledLayerInside() throws Exception {
-        Envelope filterBox = new Envelope(10, 11, 20, 21);
-        BoundingBox bounds = new BoundingBox(10.1, 20.1, 10.2, 20.2);
-        final String layerName = "testLayer";
-        final String gridName = "testGridSet";
-        final int zoom=0;
-        final long col=0;
-        final long row=0;
-        
-        mockCachedSecureLayer(filterBox, bounds, layerName, gridName, zoom, col,
-                row);
-        mediator.verifyAccessTiledLayer(layerName, gridName, zoom, col, row);
-    }
 
     private void mockCachedSecureLayer(Envelope filterBox, BoundingBox bounds,
             final String layerName, final String gridName, final long zoom,

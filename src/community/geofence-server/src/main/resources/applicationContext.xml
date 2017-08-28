@@ -156,9 +156,6 @@
        <bean class="org.geoserver.geofence.rest.GeofenceSecurityInterceptor"/>
     </mvc:interceptors>
 
-                                    <value>org.geoserver.geofence.rest.xml.JaxbRoleList</value>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbUser</value>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbUserList</value>
     <!-- Resolve views based on string names -->
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
 

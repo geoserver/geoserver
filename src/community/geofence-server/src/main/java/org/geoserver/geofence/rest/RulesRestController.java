@@ -21,10 +21,12 @@ import org.geoserver.geofence.services.dto.RuleFilter.IdNameFilter;
 import org.geoserver.geofence.services.dto.RuleFilter.SpecialFilterType;
 import org.geoserver.geofence.services.dto.RuleFilter.TextFilter;
 import org.geoserver.geofence.services.dto.ShortRule;
+import org.geoserver.geofence.services.exception.BadRequestServiceEx;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +54,16 @@ public class RulesRestController {
     @ExceptionHandler(DuplicateKeyException.class)
     public void rule(DuplicateKeyException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
     	response.sendError(409, exception.getMessage());
+    }
+
+    @ExceptionHandler(BadRequestServiceEx.class)
+    public void badRequest(BadRequestServiceEx exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public void messageNotReadableException(HttpMessageNotReadableException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
     }
     
     @RequestMapping(value = "/rest/rules", method = RequestMethod.GET, produces={"application/xml", "application/json"})
@@ -131,8 +143,16 @@ public class RulesRestController {
             adminService.shift(priority, 1);
         }
 
-        return new ResponseEntity<Long>(adminService.insert(rule.toRule()),
-        		HttpStatus.CREATED);
+        Long id = adminService.insert(rule.toRule());
+        
+        if (rule.getLimits() != null) {
+            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+        }
+        if (rule.getLayerDetails() != null) {
+            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+        }
+        
+        return new ResponseEntity<Long>(id, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/rest/rules/id/{id}", method = RequestMethod.POST)
@@ -143,8 +163,39 @@ public class RulesRestController {
                 adminService.shift(rule.getPriority().longValue(), 1);
             }
         }        
-    	adminService.update(rule.toRule(adminService.get(id)));
+        Rule theRule = adminService.get(id);
+    	adminService.update(rule.toRule(theRule));
+    	if (rule.getLimits() != null) {
+    	    adminService.setLimits(id, rule.getLimits().toRuleLimits(theRule.getRuleLimits()));
+    	}
+    	if (rule.getLayerDetails() != null) {
+    	    adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(theRule.getLayerDetails()));
+    	}
     }
+    
+    @RequestMapping(value = "/rest/rules/id/{id}", method = RequestMethod.PUT)
+    public @ResponseStatus(HttpStatus.OK) void clearAndUpdate(@PathVariable ("id") Long id, @RequestBody JaxbRule rule) {
+        if (rule.getPriority() != null) {
+            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority().longValue());
+            if (priorityRule != null && priorityRule.getId() != id) {
+                adminService.shift(rule.getPriority().longValue(), 1);
+            }
+        }
+        Rule theRule = new Rule();
+        theRule.setId(id);
+        adminService.update(rule.toRule(theRule));
+        if (rule.getLimits() != null) {
+            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+        } else {
+            adminService.setLimits(id, null);
+        }
+        if (rule.getLayerDetails() != null) {
+            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+        } else {
+            adminService.setDetails(id, null);
+        }
+    }
+    
     
     @RequestMapping(value = "/rest/rules/id/{id}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("id") Long id) {
@@ -266,5 +317,7 @@ public class RulesRestController {
 
     @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Invalid rules ids")
     private class InvalidRulesIds extends RuntimeException {
+
+        private static final long serialVersionUID = -5682676569555830473L;
     }
 }

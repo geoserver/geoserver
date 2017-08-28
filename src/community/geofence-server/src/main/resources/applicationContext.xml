@@ -155,32 +155,10 @@
     <mvc:interceptors>
        <bean class="org.geoserver.geofence.rest.GeofenceSecurityInterceptor"/>
     </mvc:interceptors>
-  
-    <bean id="geofenceViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-        <property name="order" value="1" />
-        <property name="defaultViews">
-            <list>
-                <!-- XML view using a JAXB marshaller -->
-                <bean id="jaxbView" class="org.springframework.web.servlet.view.xml.MarshallingView">
-                    <constructor-arg>
-                        <bean id="jaxb2Marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-                            <property name="classesToBeBound">
-                                <list>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbRule</value>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbRuleList</value>
+
                                     <value>org.geoserver.geofence.rest.xml.JaxbRoleList</value>
                                     <value>org.geoserver.geofence.rest.xml.JaxbUser</value>
                                     <value>org.geoserver.geofence.rest.xml.JaxbUserList</value>
-                                </list>
-                            </property>
-                        </bean>
-                    </constructor-arg>
-                </bean>
-                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
-            </list>
-        </property>
-    </bean>
-
     <!-- Resolve views based on string names -->
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
 

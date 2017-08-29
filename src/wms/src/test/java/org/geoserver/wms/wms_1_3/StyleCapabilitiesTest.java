@@ -21,6 +21,7 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
+import org.geotools.styling.StyleImpl;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -32,20 +33,24 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
 
     private static final String LAYER_NAME_WITH_STYLE_TITLE = "states_with_style_title";
     private static final String LAYER_NAME_WITHOUT_STYLE_TITLE = "states_without_style_title";
+    private static final String LAYER_NAME_WITHOUT_STYLE_DESCRIPTION = "states_without_style_description";
 
     private static final String STYLE_NAME_WITH_TITLE = "style_with_style_title";
     private static final String STYLE_NAME_WITHOUT_TITLE = "style_without_style_title";
-    
+    private static final String STYLE_NAME_WITHOUT_DESCRIPTION = "style_without_style_description";
+
     private static final QName LAYER_WITH_SYTLE_TITLE = new QName(MockData.DEFAULT_URI, LAYER_NAME_WITH_STYLE_TITLE, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_WITHOUT_STYLE_TITLE = new QName(MockData.DEFAULT_URI, LAYER_NAME_WITHOUT_STYLE_TITLE, MockData.DEFAULT_PREFIX);
+    private static final QName LAYER_WITHOUT_STYLE_DESCRIPTION = new QName(MockData.DEFAULT_URI, LAYER_NAME_WITHOUT_STYLE_DESCRIPTION, MockData.DEFAULT_PREFIX);
 
     private static final String BASE = "src/test/resources/geoserver";
 
     /**
-     * Add 2 layers:
+     * Add 3 layers:
      * <ul>
      * <li>a layer with an sld with a title,
-     * <li>a layer with an sld without a title.
+     * <li>a layer with an sld without a title,
+     * <li>a layer with an sld without a description.
      * </ul>
      */
     @Override
@@ -57,6 +62,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         // add layers
         testData.addStyle(STYLE_NAME_WITH_TITLE, "styleWithTitle.sld", getClass(), catalog);
         testData.addStyle(STYLE_NAME_WITHOUT_TITLE, "styleWithoutTitle.sld", getClass(), catalog);
+        testData.addStyle(STYLE_NAME_WITHOUT_DESCRIPTION, "styleWithoutDescription.sld", getClass(), catalog);
 
         Map<LayerProperty, Object> properties = new HashMap<LayerProperty, Object>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITH_TITLE);
@@ -68,6 +74,16 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
 
         testData.addVectorLayer(LAYER_WITHOUT_STYLE_TITLE, properties, "states.properties", CapabilitiesTest.class, catalog);
 
+        properties = new HashMap<LayerProperty, Object>();
+        properties.put(LayerProperty.STYLE, STYLE_NAME_WITHOUT_DESCRIPTION);
+
+        testData.addVectorLayer(LAYER_WITHOUT_STYLE_DESCRIPTION, properties, "states.properties", CapabilitiesTest.class, catalog);        
+        
+        // force the style without description to be null, by default it is not null if not set
+        // https://github.com/geotools/geotools/blob/bdcdaeca35f0cb1c465f2e11dd1b04bb7fff30df/modules/library/main/src/main/java/org/geotools/styling/StyleImpl.java#L45
+        StyleImpl style = (StyleImpl)catalog.getStyleByName(STYLE_NAME_WITHOUT_DESCRIPTION).getStyle();
+        style.setDescription(null);
+        
         // For global set-up
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl(BASE);
@@ -100,7 +116,15 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         // check we have the style name
         assertXpathEvaluatesTo(STYLE_NAME_WITHOUT_TITLE, getLayerStyleTitleXPath(LAYER_NAME_WITHOUT_STYLE_TITLE), dom);
     }
-
+    
+    @Test
+    public void testLayerStyleWithoutDescription() throws Exception {
+        Document dom = dom(get(CAPABILITIES_REQUEST), false);
+        // print(dom);
+        // check we have the style name
+        assertXpathEvaluatesTo(STYLE_NAME_WITHOUT_DESCRIPTION, getLayerStyleTitleXPath(LAYER_NAME_WITHOUT_STYLE_DESCRIPTION), dom);
+    }
+    
     private String getLayerStyleTitleXPath(String layerName) {
         return "//wms:Layer[wms:Name='" + MockData.DEFAULT_PREFIX + ":" + layerName + "']/wms:Style/wms:Title";
     }

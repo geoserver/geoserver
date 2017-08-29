@@ -1061,7 +1061,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
-		private void handleStyles(final LayerInfo layer) {
+        private void handleStyles(final LayerInfo layer) {
             if (layer.getResource() instanceof WMSLayerInfo) {
                 // do nothing for the moment, we may want to list the set of cascaded named styles
                 // in the future (when we add support for that)
@@ -1074,24 +1074,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     throw new NullPointerException("Layer " + layer.getName()
                             + " has no default style");
                 }
-                Style ftStyle;
-                try {
-                    ftStyle = defaultStyle.getStyle();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                element("Name", defaultStyle.prefixedName());
-                if (ftStyle.getDescription() != null) {
-                    // PMT: WMS capabilities requires at least a title,
-                    // if description's title is null, use the name
-                    // for title.
-                    if (ftStyle.getDescription().getTitle() != null) {
-                        element("Title", ftStyle.getDescription().getTitle());
-                    } else {
-                        element("Title", defaultStyle.prefixedName());
-                    }
-                    element("Abstract", ftStyle.getDescription().getAbstract());
-                }
+                handleCommonStyleElements(defaultStyle);
                 handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
                 end("Style");
 
@@ -1099,21 +1082,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 if(styles != null){
                     for (StyleInfo styleInfo : styles) {
-                        try {
-                            ftStyle = styleInfo.getStyle();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
                         start("Style");
-                        element("Name", styleInfo.prefixedName());
-                        if (ftStyle.getDescription() != null) {
-                            if (ftStyle.getDescription().getTitle() != null) {
-                                element("Title", ftStyle.getDescription().getTitle());
-                            } else {
-                                element("Title", styleInfo.prefixedName());
-                            }
-                            element("Abstract", ftStyle.getDescription().getAbstract());
-                        }
+                        handleCommonStyleElements(styleInfo);
                         handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
                         end("Style");
                     }
@@ -1121,6 +1091,29 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
+        private void handleCommonStyleElements(StyleInfo defaultStyle) {
+            Style ftStyle;
+            try {
+                ftStyle = defaultStyle.getStyle();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            element("Name", defaultStyle.prefixedName());
+            if (ftStyle.getDescription() != null) {
+                // PMT: WMS capabilities requires at least a title,
+                // if description's title is null, use the name
+                // for title.
+                if (ftStyle.getDescription().getTitle() != null) {
+                    element("Title", ftStyle.getDescription().getTitle());
+                } else {
+                    element("Title", defaultStyle.prefixedName());
+                }
+                element("Abstract", ftStyle.getDescription().getAbstract());
+            } else {
+                element("Title", defaultStyle.prefixedName());
+            }
+        }
+        
         private void element(String element, InternationalString is) {
             if (is != null) {
                 element(element, is.toString());

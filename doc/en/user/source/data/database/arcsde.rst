@@ -78,7 +78,7 @@ There are two files that are required but are not packaged with the GeoServer ex
 You should always make sure the :file:`jsde_sdk.jar` and :file:`jpe_sdk.jar` versions match your ArcSDE server version, including 
 service pack, although client jar versions higher than the ArcSDE Server version usually work just fine.
 
-These two files are available on your installation of the ArcSDE Java SDK from the ArcSDE insatallation media
+These two files are available on your installation of the ArcSDE Java SDK from the ArcSDE installation media
 (usually ``C:\Program Files\ArcGIS\ArcSDE\lib``).
 They may also be available on ESRI's website if there's a service pack containing them, but this is not
 guaranteed. To download these files from ESRI's website:

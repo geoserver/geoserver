@@ -8,16 +8,12 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
-import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.data.Transaction;
+import org.geotools.data.*;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.Hints;
@@ -416,6 +412,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         }
         featureTypeInfo.setName(featureSource.getName().getLocalPart());
         featureTypeInfo.setEnabled(true);
+        featureTypeInfo.setCatalog(catalog);
         LayerInfo layerInfo = catalog.getFactory().createLayer();
         layerInfo.setResource(featureTypeInfo);
         layerInfo.setEnabled(true);
@@ -443,6 +440,10 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             return featureSource;
         }
         @Override
+        public FeatureType getFeatureType() throws IOException {
+            return featureSource.getSchema();
+        }
+        @Override
         public Name getQualifiedName() {
             return featureSource.getName();
         }
@@ -460,7 +461,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
                 @Override
                 public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
                         ProgressListener listener) throws IOException {
-                    return featureSource.getDataStore();
+                    return DataUtilities.dataStore((SimpleFeatureSource)featureSource);
                 }
             };
         }

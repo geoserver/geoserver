@@ -198,7 +198,10 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
             context.put("styleWorkspace", workspace.getName());
             styleUrl = styleUrl + "/" + workspace.getName();
         }
-        styleUrl = styleUrl + "/" + getStylePage().getStyleInfo().getFilename();
+        String styleFile = getStylePage().getStyleInfo().getFilename();
+        //If we are in a format other than sld, convert to sld
+        styleFile = styleFile.substring(0, styleFile.lastIndexOf(".")) + ".sld";
+        styleUrl = styleUrl + "/" + styleFile;
         context.put("styleUrl", styleUrl);
         context.put("previewStyleGroup", isPreviewStyleGroup);
 

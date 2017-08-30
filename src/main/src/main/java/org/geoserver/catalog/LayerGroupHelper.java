@@ -498,7 +498,9 @@ public class LayerGroupHelper {
         @Override
         public void visitUserStyleInternal(Style userStyle) {
             layers.add((LayerInfo)info);
-            styles.add(new StyleWrappingStyleInfoImpl(userStyle));
+            StyleInfoImpl style = new StyleWrappingStyleInfoImpl(userStyle);
+            style.setCatalog(catalog);
+            styles.add(style);
         }
     }
 }

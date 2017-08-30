@@ -5,47 +5,30 @@
  */
 package org.geoserver.gwc.dispatch;
 
+import com.google.common.collect.ImmutableList;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.gwc.config.GWCServiceEnablementInterceptor;
+import org.geoserver.ows.DisabledServiceCheck;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Response;
+import org.geotools.util.Version;
+import org.geowebcache.GeoWebCacheDispatcher;
+import org.geowebcache.GeoWebCacheExtensions;
+import org.geowebcache.service.tms.TMSDocumentFactory;
+import org.geowebcache.util.ServletUtils;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geoserver.gwc.GWC;
-import org.geoserver.gwc.config.GWCServiceEnablementInterceptor;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
-import org.geoserver.ows.DisabledServiceCheck;
-import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.Response;
-import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.kvp.BBoxKvpParser;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.geotools.util.Version;
-import org.geowebcache.GeoWebCacheDispatcher;
-import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.grid.GridSubset;
-import org.geowebcache.layer.TileLayer;
-import org.geowebcache.service.gmaps.GMapsConverter;
-import org.geowebcache.service.mgmaps.MGMapsConverter;
-import org.geowebcache.service.tms.TMSDocumentFactory;
-import org.geowebcache.service.ve.VEConverter;
-import org.geowebcache.util.ServletUtils;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Service bean used as service implementation for the GeoServer {@link Dispatcher} when processing
@@ -104,6 +87,8 @@ public class GwcServiceProxy {
      */
     public GwcOperationProxy dispatch(HttpServletRequest rawRequest, HttpServletResponse rawRespose)
             throws Exception {
+        
+//        DispatcherController.BASE_URL.set(ResponseUtils.baseURL(rawRequest));
 
         ResponseWrapper responseWrapper = new ResponseWrapper(rawRespose);
 

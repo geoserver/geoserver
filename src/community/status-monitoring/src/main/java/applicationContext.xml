@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Open Source Geospatial Foundation. All rights reserved. 
+    This code is licensed under the GPL 2.0 license, available at the root application 
+    directory. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/context 
+          http://www.springframework.org/schema/context/spring-context.xsd">
+
+   <bean id="systemStatusMonitor" class="org.geoserver.web.SystemPanelInfo">
+    <property name="id" value="systemStatusMonitor"/>
+    <property name="titleKey" value="MonitoringPanel.title"/>
+    <property name="order" value="1"/>
+    <property name="componentClass" value="org.geoserver.status.monitoring.web.SystemStatusMonitor"/>
+  </bean>
+
+</beans>

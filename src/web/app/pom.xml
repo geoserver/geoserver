@@ -143,6 +143,10 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
       <artifactId>gt-wfs-ng</artifactId>
     </dependency>
     <dependency>

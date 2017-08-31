@@ -5,11 +5,18 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.apache.wicket.Component;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geotools.gce.gtopo30.GTopo30FormatFactory;
+import org.geotools.geopkg.mosaic.GeoPackageFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.Format;
@@ -99,5 +106,16 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("rasterStoreForm:parametersPanel:url",
                 "file:data/example.extension");
 
+    }
+    
+    @Test
+    public void testGeoPackageRaster() {
+        formatType = new GeoPackageFormat().getName();
+        final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
+        tester.startPage(page);
+        
+        tester.debugComponentTrees();
+        Component urlComponent = tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel:url");
+        assertThat(urlComponent, instanceOf(FileParamPanel.class));
     }
 }

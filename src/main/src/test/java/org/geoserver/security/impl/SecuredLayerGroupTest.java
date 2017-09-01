@@ -53,7 +53,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetLayerGroup() throws Exception {
         //create mocks
-        final LayerGroupInfo lg = createNiceMock(LayerGroupInfo.class);       
+        final LayerGroupInfo lg = createNiceMock(LayerGroupInfo.class);
         expect(lg.getWorkspace()).andReturn(null);
         final ArrayList<PublishedInfo> layers = new ArrayList<PublishedInfo>();
         expect(lg.getLayers()).andReturn(layers);
@@ -78,7 +78,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         
         final LayerGroupInfo lg = createNiceMock(LayerGroupInfo.class);       
         final ArrayList<PublishedInfo> layers = new ArrayList<PublishedInfo>();
-        expect(lg.getLayers()).andReturn(layers).times(3);
+        expect(lg.getLayers()).andReturn(layers).anyTimes();
         lg.setRootLayer(layer1);
         expectLastCall();
         replay(lg);
@@ -87,7 +87,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         //tests
         final ArrayList<PublishedInfo> securedLayers = new ArrayList<PublishedInfo>();
         final SecuredLayerGroupInfo securedLg = new SecuredLayerGroupInfo(
-                lg, null, securedLayers);
+                lg, null, securedLayers, new ArrayList<>());
         
 
         securedLg.getLayers().add(new SecuredLayerInfo(layer1, null));

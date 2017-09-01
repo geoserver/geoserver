@@ -24,6 +24,7 @@ import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.locationtech.geogig.rest.repository.RepositoryRouter;
 import org.locationtech.geogig.rest.repository.UploadCommandResource;
 import org.locationtech.geogig.web.api.CommandSpecException;
+import org.locationtech.geogig.web.api.index.IndexCommandResource;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -59,7 +60,7 @@ public class GeogigDispatcher extends AbstractController {
     private GeoServerRepositoryProvider repositoryProvider;
 
     /**
-     * converter for turning servlet requests into resetlet requests.
+     * converter for turning servlet requests into restlet requests.
      */
     private ServletConverter converter;
 
@@ -119,12 +120,18 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos/{repository}.{extension}", RepositoryResource.class);
         router.attach("/repos/{repository}", RepositoryResource.class);
         router.attach("/repos/{repository}/repo", makeRepoRouter());
+        router.attach("/repos/{repository}/rename.{extension}", UnsupportedCommandResource.class);
+        router.attach("/repos/{repository}/rename", UnsupportedCommandResource.class);
         router.attach("/repos/{repository}/import.{extension}", UploadCommandResource.class);
         router.attach("/repos/{repository}/import", UploadCommandResource.class);
         router.attach("/repos/{repository}/init.{extension}", InitCommandResource.class);
         router.attach("/repos/{repository}/init", InitCommandResource.class);
+        router.attach("/repos/{repository}/importExistingRepo", ImportRepoCommandResource.class);
+        router.attach("/repos/{repository}/importExistingRepo.{extension}", ImportRepoCommandResource.class);
         router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
         router.attach("/repos/{repository}/{command}", CommandResource.class);
+        router.attach("/repos/{repository}/index/{command}.{extension}", IndexCommandResource.class);
+        router.attach("/repos/{repository}/index/{command}", IndexCommandResource.class);
 
         return router;
     }

@@ -143,8 +143,15 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
                 if(o == null) {
                     continue;
                 }
-                Object value = getProperty(o, propName);
-                result.add(value);
+                // if one of the nested properties is not found just ignore and move
+                // to the next one, we can have mixed collections (e.g., layer group layers)
+                try {
+                    Object value = getProperty(o, propName);
+                    Object nested = getProperty(value, propertyNames, offset + 1);
+                    result.add(nested);
+                } catch(Exception e) {
+                    LOGGER.log(Level.FINE, "Skipping nested property not found", e);
+                }
             }
             return result;
         }

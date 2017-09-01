@@ -102,4 +102,11 @@ public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
         return myLimits == null ? (theirLimits == null ? 0 : 1) : (theirLimits == null ? -1
                 : myLimits.compareTo(theirLimits));
     }
+    
+    @Override
+    public String toString() {
+        return "WrapperPolicy [level=" + level + ", response=" + response + ", limits=" + limits
+                + "]";
+    }
+
 }

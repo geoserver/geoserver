@@ -22,6 +22,13 @@ import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
+/**
+ * {@link AbstractCatalogFinder} implementation for Styles.
+ * 
+ * Implements {@link ApplicationListener} in order to register style file extensions as shortcuts for the corresponding media type in the
+ * {@link MediaTypes} registry, but only if the file extension is not already mapped to another media type.
+ *
+ */
 public class StyleFinder extends AbstractCatalogFinder implements ApplicationListener {
 
     public StyleFinder(Catalog catalog) {
@@ -99,8 +106,12 @@ public class StyleFinder extends AbstractCatalogFinder implements ApplicationLis
         if (event instanceof ContextLoadedEvent) {
             // register style format mime types
             for (StyleHandler sh : Styles.handlers()) {
-                Version ver = sh.getVersions().iterator().next();
-                MediaTypes.registerExtension(sh.getFileExtension(), new MediaType(sh.mimeType(ver)));
+                // Only map the StyleHandler's extension to its mime type 
+                // if the extension does not conflict with existing mappings.
+                if (MediaTypes.getMediaTypeForExtension(sh.getFileExtension()) == null) {
+                    Version ver = sh.getVersions().iterator().next();
+                    MediaTypes.registerExtension(sh.getFileExtension(), new MediaType(sh.mimeType(ver)));
+                }
             }
         }
     }

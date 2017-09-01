@@ -134,7 +134,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         Update update = (Update) element;
         final QName elementName = update.getTypeName();
         String handle = update.getHandle();
-        
+
         long updated = response.getTotalUpdated().longValue();
 
         SimpleFeatureStore store = DataUtilities.simple((FeatureStore) featureStores.get(elementName));
@@ -162,6 +162,11 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             AttributeDescriptor[] types = new AttributeDescriptor[properties.size()];
             String[] names = new String[properties.size()];
             Object[] values = new Object[properties.size()];
+
+            //If no properties are defined for an update, there's nothing to do
+            if (properties.isEmpty()) {
+                return;
+            }
 
             for (int j = 0; j < properties.size(); j++) {
                 Property property = properties.get(j);

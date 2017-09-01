@@ -9,12 +9,15 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -79,6 +82,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
     Label progress;
 
     AjaxButton startLink;
+
+    private CheckBox recursive;
 
     /**
      * DropDown choice model object becuase dbconfig freaks out if using the CatalogInfo objects
@@ -249,6 +254,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
         resourceAndLayer.setOutputMarkupId(true);
         form.add(resourceAndLayer);
+        
+        recursive = new CheckBox("recursive", new Model<Boolean>(Boolean.FALSE));
+        form.add(recursive);
 
         duplicateCount = new TextField<Integer>("duplicateCount", new Model<Integer>(100),
                 Integer.class);
@@ -256,7 +264,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         duplicateCount.add(new RangeValidator<Integer>(1, 100000));
         form.add(duplicateCount);
 
-        sufix = new TextField<String>("sufix", new Model<String>("copy-"));
+        sufix = new TextField<String>("sufix", new Model<String>("-copy-"));
         sufix.setRequired(true);
         form.add(sufix);
 
@@ -302,6 +310,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         Session.get().getFeedbackMessages().clear();
         target.add(getFeedbackPanel());
 
+        final boolean recursive = this.recursive.getModelObject();
         final int numCopies = duplicateCount.getModelObject();
         final String s = sufix.getModelObject();
 
@@ -345,7 +354,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         for (int curr = 0; curr < numCopies; curr++) {
             String paddedIndex = Strings.padStart(String.valueOf(curr), padLength, '0');
             String nameSuffix = s + paddedIndex;
-            copyOne(catalog, original, (Class<CatalogInfo>) clazz, layer, nameSuffix, globalTime);
+            copyOne(catalog, original, (Class<CatalogInfo>) clazz, layer, nameSuffix, globalTime, recursive, null);
             if ((curr + 1) % 100 == 0) {
                 sw.stop();
                 System.out.printf("inserted %s so far in %s (last 100 in %s)\n", (curr + 1),
@@ -379,7 +388,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     private void copyOne(Catalog catalog, final CatalogInfo original,
             final Class<CatalogInfo> clazz, final LayerInfo layer, final String nameSuffix,
-            final Stopwatch sw) {
+            final Stopwatch sw, boolean recursive, CatalogInfo parent) {
 
         CatalogInfo prototype = prototype(original, catalog);
 
@@ -402,22 +411,44 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 sw.start();
                 catalog.add(ns2);
                 sw.stop();
-
+                
+                if(recursive) {
+                    for (StoreInfo store : catalog.getStoresByWorkspace((WorkspaceInfo) original, StoreInfo.class)) {
+                        copyOne(catalog, store, (Class<CatalogInfo>) interfaceOf(store), (LayerInfo) null, nameSuffix, sw, true, prototype);
+                    }
+                }
             } else if (prototype instanceof StoreInfo) {
 
                 sw.start();
-                catalog.add((StoreInfo) prototype);
+                final StoreInfo ps = (StoreInfo) prototype;
+                if(parent != null) {
+                    ps.setWorkspace((WorkspaceInfo) parent);
+                }
+                // reset the cache, or we might stumble into a error about too many connections
+                // while cloning many jdbc stores
+                catalog.getResourcePool().dispose();
+                catalog.add(ps);
                 sw.stop();
+                
+                if(recursive) {
+                    for (ResourceInfo resource : catalog.getResourcesByStore((StoreInfo) original, ResourceInfo.class)) {
+                        LayerInfo resourceLayer = catalog.getLayerByName(resource.prefixedName()); 
+                        copyOne(catalog, resource, (Class<CatalogInfo>) interfaceOf(resource), resourceLayer, nameSuffix, sw, true, prototype);
+                    }
+                }
 
             } else if (prototype instanceof ResourceInfo) {
                 ((ResourceInfo) prototype).setNativeName(((ResourceInfo) original).getNativeName());
                 ((ResourceInfo) prototype).setName(newName);
+                if(parent != null) {
+                    ((ResourceInfo) prototype).setStore((StoreInfo) parent);
+                }
                 sw.start();
                 catalog.add((ResourceInfo) prototype);
                 sw.stop();
 
                 String id = prototype.getId();
-                // prototype = catalog.getResource(id, ResourceInfo.class);
+                prototype = catalog.getResource(id, ResourceInfo.class);
 
                 if (layer == null) {
                     return;
@@ -425,7 +456,6 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 LayerInfoImpl layerCopy;
                 {
                     layerCopy = new LayerInfoImpl();
-                    layerCopy.setResource((ResourceInfo) original);
                     OwsUtils.copy(LayerInfo.class.cast(layer), layerCopy, LayerInfo.class);
                     layerCopy.setResource((ResourceInfo) prototype);
                     layerCopy.setId(null);

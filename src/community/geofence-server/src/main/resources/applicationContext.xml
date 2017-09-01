@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2015 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2015 - 2017 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -127,6 +127,10 @@
 
     <bean id="rulesRestController" class="org.geoserver.geofence.rest.RulesRestController">
         <constructor-arg index="0" ref="ruleAdminService"/>
+    </bean>
+
+    <bean id="adminRulesRestController" class="org.geoserver.geofence.rest.AdminRulesRestController">
+        <constructor-arg index="0" ref="adminRuleAdminService"/>
     </bean>
 
     <bean id="usersRestController" class="org.geoserver.geofence.rest.UsersRestController">

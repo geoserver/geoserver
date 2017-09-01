@@ -1,0 +1,11 @@
+title: 'YSLD Cook Book: Simple Point'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 6
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: '#FF0000'

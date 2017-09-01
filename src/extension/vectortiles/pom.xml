@@ -6,21 +6,13 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.11.2</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-vectortiles</artifactId>
   <packaging>jar</packaging>
   <name>Vector Tiles</name>
-  
-  <repositories>
-    <repository>
-        <id>ECC</id>
-        <url>https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>com.google.code.gson</groupId>

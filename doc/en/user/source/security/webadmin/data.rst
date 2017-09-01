@@ -21,6 +21,12 @@ Clicking an existing rule will open it for editing, while clicking the :guilabel
    :align: center
 
    *Creating a new rule*
+   
+.. figure:: images/data_lgrule.png
+   :align: center
+
+   *Editing a layer group rule*
+   
 
 .. list-table:: 
    :widths: 40 60 
@@ -28,10 +34,12 @@ Clicking an existing rule will open it for editing, while clicking the :guilabel
 
    * - Option
      - Description
+   * - Global layer group rule
+     - If checked, switches the editor to create/edit a rule about a global layer group (and will remove the layer configuration as a result)
    * - Workspace
      - Sets the allowed workspace for this rule. Options are ``*`` (all workspaces), or the name of each workspace.
-   * - Layer
-     - Sets the allowed layer for this rule. Options are ``*`` (all layers), or the name of each layer in the above workspace. Will be disabled until the workspace is set.
+   * - Layer and groups
+     - Sets the allowed layer/groups for this rule. Options are ``*`` (all layers/groups in the chosen workspace), or the name of each layer in the above workspace. Will be disabled until the workspace is set.
    * - Access mode
      - Specifies whether the rule refers to either ``Read`` or ``Write`` mode
    * - Grant access to any role

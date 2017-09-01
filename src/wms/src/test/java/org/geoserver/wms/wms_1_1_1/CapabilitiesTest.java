@@ -10,11 +10,13 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 import static org.junit.Assert.*;
-
 import java.util.ArrayList;
+import static org.hamcrest.CoreMatchers.is;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
-import java.util.ListIterator;
 
+import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
@@ -23,10 +25,11 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -37,16 +40,17 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
+import org.geotools.data.Base64;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class CapabilitiesTest extends WMSTestSupport {
     
-    static final String CONTAINER_GROUP = "containerGroup";
-
     public CapabilitiesTest() {
         super();
     }
@@ -81,23 +85,63 @@ public class CapabilitiesTest extends WMSTestSupport {
         lakesLayer.getStyles().add(tigerRoadsStyle);
         catalog.save(lakesLayer);
         
-        // create a group containing the other group
-        LayerGroupInfo containerGroup = catalog.getFactory().createLayerGroup();
-        LayerGroupInfo nature = catalog.getLayerGroupByName(NATURE_GROUP);
-        containerGroup.setName(CONTAINER_GROUP);
-        containerGroup.setMode(Mode.CONTAINER);
-        containerGroup.getLayers().add(nature);
-        CatalogBuilder cb = new CatalogBuilder(catalog);
-        cb.calculateLayerGroupBounds(containerGroup);
-        catalog.add(containerGroup);
+        setupOpaqueGroup(catalog);
     }
-
 
     @Test
     public void testCapabilities() throws Exception {
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
+    }
+    
+    @org.junit.Test 
+    public void testCapabilitiesNoWGS84DD() throws Exception {
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+        // print(dom);
+        XMLAssert.assertXpathNotExists("//SRS[text() = 'EPSG:WGS84(DD)']", dom);
+    }
+
+    @Test
+    /**
+     * Tests the behavior of the format vendor parameter.
+     */
+    public void testCapabilitiesFormat() throws Exception {
+        // the default and only wms standard conform mime type is application/vnd.ogc.wms_xml
+        MockHttpServletResponse response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.wms_xml"));
+        // request with the supported ime type text/xml
+        response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=text/xml");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("text/xml"));
+        // using an invalid mime type should throw an exception
+        response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=invalid");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.se_xml"));
+        // using an empty mime type should fall back to the default mime type
+        response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.wms_xml"));
+    }
+
+    @Test
+    /**
+     * Test that all the supported mime types for the get capabilities
+     * operation are listed.
+     */
+    public void testGetCapabilities() throws Exception {
+        // request a wms 1.1.1 capabilities document
+        MockHttpServletResponse response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.wms_xml"));
+        // parse the result as a xml document
+        InputStream content = new ByteArrayInputStream(response.getContentAsByteArray());
+        Document document = dom(content, true);
+        // check that all the available mime types are present
+        for(String mimeType : GetCapabilitiesTransformer.WMS_CAPS_AVAIL_MIME) {
+            assertXpathExists(String.format("//GetCapabilities[Format='%s']", mimeType), document);
+        }
     }
 
     @Test
@@ -125,24 +169,15 @@ public class CapabilitiesTest extends WMSTestSupport {
 
     @Test
     public void testLayerCount() throws Exception {
-        List<LayerInfo> layers = new ArrayList<LayerInfo>(getCatalog().getLayers());
-        for (ListIterator<LayerInfo> it = layers.listIterator(); it.hasNext();) {
-            LayerInfo next = it.next();
-            if (!next.enabled() || next.getName().equals(MockData.GEOMETRYLESS.getLocalPart())) {
-                it.remove();
-            }
-        }
-        List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
-
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), true);
 
         XpathEngine xpath = XMLUnit.newXpathEngine();
         NodeList nodeLayers = xpath.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/Layer",
                 dom);
 
-        assertEquals(layers.size() + groups.size() - 1 /* nested group */, nodeLayers.getLength());
+        assertEquals(getRawTopLayerCount(), nodeLayers.getLength());
     }
-
+    
     @Test
     public void testNonAdvertisedLayer() throws Exception {
         String layerId = getLayerId(MockData.BUILDINGS);
@@ -296,6 +331,8 @@ public class CapabilitiesTest extends WMSTestSupport {
         info.setContent("http://my/metadata/link");
         lg.getMetadataLinks().add(info);
         getCatalog().add(lg);
+        // add keywords to layer group
+        addKeywordsToLayerGroup("MyLayerGroup");
         
         try {
             Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
@@ -304,6 +341,10 @@ public class CapabilitiesTest extends WMSTestSupport {
             assertXpathEvaluatesTo("My Attribution", "//Layer[Name='MyLayerGroup']/Attribution/Title", doc);
             assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/MetadataURL)", doc);
             assertXpathEvaluatesTo("http://my/metadata/link", "//Layer[Name='MyLayerGroup']/MetadataURL/OnlineResource/@xlink:href", doc);
+            // check keywords are present
+            assertXpathEvaluatesTo("2", "count(//Layer[Name='MyLayerGroup']/KeywordList/Keyword)", doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/KeywordList[Keyword='keyword1'])", doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/KeywordList[Keyword='keyword2'])", doc);
         } finally {
             //clean up
             getCatalog().remove(lg);
@@ -566,6 +607,60 @@ public class CapabilitiesTest extends WMSTestSupport {
         } finally {
             lakes.setAdvertised(true);
             catalog.save(lakes);
+        }
+    }
+    
+    @Test
+    public void testOpaqueGroup() throws Exception {
+        Document dom = dom(get("wms?request=GetCapabilities&version=1.1.0"), true);
+
+        // the layer group is there, but not the contained layers
+        assertXpathEvaluatesTo("1", "count(//Layer[Name='opaqueGroup'])", dom);
+        for (LayerInfo l : getCatalog().getLayerGroupByName(OPAQUE_GROUP).layers()) {
+            assertXpathNotExists("//Layer[Name='" + l.prefixedName() + "']", dom);
+        }
+    }
+
+    @Test
+    public void testNestedGroupInOpaqueGroup() throws Exception {
+        Catalog catalog = getCatalog();
+        
+        // nest container inside opaque, this should make it disappear from the caps
+        LayerGroupInfo container = catalog.getLayerGroupByName(CONTAINER_GROUP);
+        LayerGroupInfo opaque = catalog.getLayerGroupByName(OPAQUE_GROUP);
+        opaque.getLayers().add(container);
+        opaque.getStyles().add(null);
+        catalog.save(opaque);
+
+        try {
+            Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.0");
+            // print(dom);
+
+            // the layer group is there, but not the contained layers, which are not visible anymore
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='opaqueGroup'])", dom);
+            for (PublishedInfo p : getCatalog().getLayerGroupByName(OPAQUE_GROUP).getLayers()) {
+                assertXpathNotExists("//Layer[Name='" + p.prefixedName() + "']", dom);
+            }
+
+            // now check the layer count too, we just hide everything in the container layer
+            List<LayerInfo> nestedLayers = new LayerGroupHelper(container).allLayers();
+
+            int expectedLayerCount = getRawTopLayerCount()
+                    // layers gone due to the nesting
+                    - nestedLayers.size()
+                    /* container has been nested and disappeared */
+                    - 1;
+            XpathEngine xpath = XMLUnit.newXpathEngine();
+            NodeList nodeLayers = xpath
+                    .getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/Layer", dom);
+
+            assertEquals(expectedLayerCount /* the layers under the opaque group */,
+                    nodeLayers.getLength());
+        } finally {
+            // restore the configuration
+            opaque.getLayers().remove(container);
+            opaque.getStyles().remove(opaque.getStyles().size() - 1);
+            catalog.save(opaque);
         }
     }
 }

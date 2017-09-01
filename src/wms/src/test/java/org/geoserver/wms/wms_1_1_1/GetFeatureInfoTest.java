@@ -1,14 +1,16 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -40,6 +43,7 @@ import org.geoserver.wms.featureinfo.*;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -64,10 +68,14 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     public static QName POINT_TEST_2D = new QName(MockData.CITE_URI, "point_test_2d", MockData.CITE_PREFIX);
     public static QName POINT_TEST_3D = new QName(MockData.CITE_URI, "point_test_3d", MockData.CITE_PREFIX);
 
+    public static QName STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
+        
+        setupOpaqueGroup(getCatalog());
         
         // setup buffer
         WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
@@ -133,6 +141,13 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         properties.put(LayerProperty.SRS, 4939);
         testData.addVectorLayer(POINT_TEST_3D, properties, "point_test_3d.properties",
                 GetFeatureInfoTest.class, catalog);
+
+        // set up a non-querable layer.
+        testData.addStyle("Population", "Population.sld", GetFeatureInfoTest.class, catalog);
+        testData.addVectorLayer(STATES, Collections.emptyMap(), "states.properties", GetFeatureInfoTest.class, catalog);
+        LayerInfo layer = catalog.getLayerByName(getLayerId(STATES));
+        layer.setQueryable(false);
+        catalog.save(layer);
     }
     
     
@@ -959,5 +974,76 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        assertTrue(result.indexOf("no layer was queryable") > 0);
        
        catalog.remove(layerGroup);
+   }
+   
+   @Test
+   public void testGetFeatureInfoOpaqueGroup() throws Exception {
+       String url = "wms?LAYERS=" + OPAQUE_GROUP + "&STYLES=&FORMAT=image%2Fpng"
+               + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.0043,-0.0025,0.0043,0.0025" +
+               "&info_format=text/plain&request=GetFeatureInfo&&query_layers=" + OPAQUE_GROUP + "&x=105&y=107";
+       String response = getAsString(url);
+       assertThat(response, containsString("FID = 102"));
+   }
+
+   @Test
+   public void testFeatureInfoLayersInOpaqueGroup() throws Exception {
+       LayerGroupInfo group = getCatalog().getLayerGroupByName(OPAQUE_GROUP);
+       for (PublishedInfo pi : group.layers()) {
+           final String layerName = pi.prefixedName();
+        String url = "wms?LAYERS=" + layerName + "&STYLES=&FORMAT=image%2Fpng"
+                   + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.0043,-0.0025,0.0043,0.0025" +
+                   "&info_format=text/plain&request=GetFeatureInfo&&query_layers=" + layerName + "&x=105&y=107";
+           Document dom = getAsDOM(url);
+           //print(dom);
+           
+           // should not be found
+           XMLAssert.assertXpathEvaluatesTo("1", "count(/ServiceExceptionReport)", dom);
+           XMLAssert.assertXpathEvaluatesTo("layers", "//ServiceException/@locator", dom);
+           XMLAssert.assertXpathEvaluatesTo("LayerNotDefined", "//ServiceException/@code", dom);
+       }
+   }
+
+   @Test
+   public void testQueryableAndNonQueryableLayersWithStyles() throws Exception {
+       String states = getLayerId(STATES);
+       String forests = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg" +
+           "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&x=10&y=10" +
+           "&layers=" + states + "," + forests + "&query_layers=" + states + "," + forests +
+           "&styles=Population,Forests";
+       String result = getAsString(request);
+       // System.out.println(result);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
+   }
+
+   @Test
+   public void testQueryableAndNonQueryableLayersWithCqlFilter() throws Exception {
+       String states = getLayerId(STATES);
+       String forests = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg" +
+           "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&x=10&y=10" +
+           "&layers=" + states + "," + forests + "&query_layers=" + states + "," + forests +
+           "&styles=&cql_filter=PERSONS>25000000;NAME='Green Forest'";
+       String result = getAsString(request);
+       // System.out.println(result);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
+   }
+
+   @Test
+   public void testQueryableAndNonQueryableLayersWithFilter() throws Exception {
+       String states = getLayerId(STATES);
+       String forests = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg" +
+           "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&x=10&y=10" +
+           "&layers=" + states + "," + forests + "&query_layers=" + states + "," + forests +
+           "&styles=&filter=" +
+           "(%3CFilter%3E%3CPropertyIsGreaterThan%3E%3CPropertyName%3EPERSONS%3C/PropertyName%3E%3CLiteral%3E25000000%3C/Literal%3E%3C/PropertyIsGreaterThan%3E%3C/Filter%3E)" +
+           "(%3CFilter%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3ENAME%3C/PropertyName%3E%3CLiteral%3EGreen%20Forest%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Filter%3E)";
+       String result = getAsString(request);
+       // System.out.println(result);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
    }
 }

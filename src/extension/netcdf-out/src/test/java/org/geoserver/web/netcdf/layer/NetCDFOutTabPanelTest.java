@@ -94,6 +94,12 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
                 .getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:shuffle");
         assertEquals(shuffle.getModelObject(), container.isShuffle());
 
+        // Ensure the Copy Attributes component value is correct
+        tester.assertComponent("form:panel:netcdfeditor:container:copyAttributes", CheckBox.class);
+        CheckBox copyAttributes = (CheckBox) tester.getComponentFromLastRenderedPage(
+                "form:panel:netcdfeditor:container:copyAttributes");
+        assertEquals(copyAttributes.getModelObject(), container.isCopyAttributes());
+
         // Ensure the Compression Component value is correct
         tester.assertComponent("form:panel:netcdfeditor:container:compressionLevel",
                 TextField.class);
@@ -108,18 +114,64 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
                 .getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:dataPacking");
         assertEquals(dataPacking.getModelObject(), container.getDataPacking());
 
-        // Ensure the form is updated correctly
-        FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("panel:netcdfeditor:container:standardName", "test");
-        formTester.setValue("panel:netcdfeditor:container:uom", "test");
+        FormTester formTester;
+
+        formTester = tester.newFormTester("form");
+        formTester.setValue("panel:netcdfeditor:container:standardName", "test-name");
+        formTester.setValue("panel:netcdfeditor:container:uom", "test-uom");
         formTester.submit();
-
-        // Ensure no error
         tester.assertNoErrorMessage();
+        assertEquals("test-name", actualContainer.getLayerName());
+        assertEquals("test-uom", actualContainer.getLayerUOM());
 
-        // Check the container
-        assertEquals(actualContainer.getLayerName(), "test");
-        assertEquals(actualContainer.getLayerUOM(), "test");
+        // add a global attribute
+        formTester = tester.newFormTester("form");
+        formTester.setValue("panel:netcdfeditor:container:newGlobalAttributeKey",
+                "test-global-attribute");
+        formTester.setValue("panel:netcdfeditor:container:newGlobalAttributeValue",
+                "Test Global Attribute");
+        tester.executeAjaxEvent("form:panel:netcdfeditor:container:addGlobalAttribute", "click");
+        formTester.setValue("panel:netcdfeditor:container:compressionLevel", "0");
+        formTester.submit();
+        tester.assertNoErrorMessage();
+        assertEquals(1, actualContainer.getGlobalAttributes().size());
+        assertEquals("test-global-attribute",
+                actualContainer.getGlobalAttributes().get(0).getKey());
+        assertEquals("Test Global Attribute",
+                actualContainer.getGlobalAttributes().get(0).getValue());
+
+        // add a variable attribute
+        formTester = tester.newFormTester("form");
+        formTester.setValue("panel:netcdfeditor:container:newVariableAttributeKey",
+                "test-variable-attribute");
+        formTester.setValue("panel:netcdfeditor:container:newVariableAttributeValue",
+                "Test Variable Attribute");
+        tester.executeAjaxEvent("form:panel:netcdfeditor:container:addVariableAttribute", "click");
+        formTester.setValue("panel:netcdfeditor:container:compressionLevel", "0");
+        formTester.submit();
+        tester.assertNoErrorMessage();
+        assertEquals(1, actualContainer.getVariableAttributes().size());
+        assertEquals("test-variable-attribute",
+                actualContainer.getVariableAttributes().get(0).getKey());
+        assertEquals("Test Variable Attribute",
+                actualContainer.getVariableAttributes().get(0).getValue());
+
+        // add an extra variable
+        formTester = tester.newFormTester("form");
+        formTester.setValue("panel:netcdfeditor:container:newExtraVariableSource", "reftime");
+        formTester.setValue("panel:netcdfeditor:container:newExtraVariableOutput",
+                "forecast_reference_time");
+        formTester.setValue("panel:netcdfeditor:container:newExtraVariableDimensions", "time");
+        tester.executeAjaxEvent("form:panel:netcdfeditor:container:addExtraVariable", "click");
+        formTester.setValue("panel:netcdfeditor:container:compressionLevel", "0");
+        formTester.submit();
+        tester.assertNoErrorMessage();
+        assertEquals(1, actualContainer.getExtraVariables().size());
+        assertEquals("reftime", actualContainer.getExtraVariables().get(0).getSource());
+        assertEquals("forecast_reference_time",
+                actualContainer.getExtraVariables().get(0).getOutput());
+        assertEquals("time", actualContainer.getExtraVariables().get(0).getDimensions());
+
     }
 
 }

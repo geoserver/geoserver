@@ -7,6 +7,7 @@ package org.geoserver.backuprestore.tasklet;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.backuprestore.Backup;
@@ -52,6 +53,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.UnexpectedJobExecutionException;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.BiMap;
@@ -205,8 +207,12 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             backupRestoreAdditionalResources(resourceStore, targetBackupFolder);
 
             // Backup GWC Configuration bits
-            if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-                backupGWCSettings(targetBackupFolder);
+            try {
+                if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                    backupGWCSettings(targetBackupFolder);
+                }
+            } catch (NoSuchBeanDefinitionException e) {
+                LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
             }
         } catch (Exception e) {
             logValidationExceptions((ValidationResult) null,
@@ -412,14 +418,18 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         backupRestoreAdditionalResources(sourceGeoServerResourceLoader, dd.get(Paths.BASE));
 
         // Restore GWC Configuration bits
-        if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-            restoreGWCSettings(sourceRestoreFolder, dd.get(Paths.BASE));
+        try {
+            if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                restoreGWCSettings(sourceRestoreFolder, dd.get(Paths.BASE));
 
-            // Initialize GWC with the new settings
-            GWCInitializer gwcInitializer = GeoServerExtensions.bean(GWCInitializer.class);
-            if (gwcInitializer != null) {
-                gwcInitializer.initialize(geoserver);
+                // Initialize GWC with the new settings
+                GWCInitializer gwcInitializer = GeoServerExtensions.bean(GWCInitializer.class);
+                if (gwcInitializer != null) {
+                    gwcInitializer.initialize(geoserver);
+                }
             }
+        } catch (NoSuchBeanDefinitionException e) {
+            LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
         }
     }
 
@@ -478,8 +488,12 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         backupRestoreAdditionalResources(sourceGeoServerResourceLoader, td.get(Paths.BASE));
 
         // Restore GWC Configuration bits
-        if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-            restoreGWCSettings(sourceRestoreFolder, td.get(Paths.BASE));
+        try {
+            if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                restoreGWCSettings(sourceRestoreFolder, td.get(Paths.BASE));
+            }
+        } catch (NoSuchBeanDefinitionException e) {
+            LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
         }
 
         // Cleanup Temp Folder
@@ -821,19 +835,17 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             throws Exception {
         // Restore configuration files form source and Test that everything went well
         try {
+
             // - Prepare folder
-            Files.delete(
-                    baseDir.get(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME).dir());
+            GeoserverXMLResourceProvider gwcConfigProvider = (GeoserverXMLResourceProvider) GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
+            Resource targetGWCProviderRestoreDir = gwcConfigProvider.getConfigDirectory();
+            Files.delete(targetGWCProviderRestoreDir.dir());
 
             // Restore GWC Providers Configurations
-            Resource targetGWCProviderRestoreDir = BackupUtils.dir(baseDir,
-                    GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
-
             for (GeoserverXMLResourceProvider gwcProvider : GeoServerExtensions
                     .extensions(GeoserverXMLResourceProvider.class)) {
-                final File gwcProviderConfigFile = new File(gwcProvider.getLocation());
                 Resource providerConfigFile = sourceRestoreFolder.get(Paths
-                        .path(gwcProviderConfigFile.getParent(), gwcProviderConfigFile.getName()));
+                        .path(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME, gwcProvider.getConfigFileName()));
                 if (Resources.exists(providerConfigFile)
                         && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
                     Resources.copy(providerConfigFile.in(), targetGWCProviderRestoreDir,

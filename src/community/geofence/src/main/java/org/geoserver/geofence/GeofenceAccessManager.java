@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2016 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2017 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -248,14 +248,19 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             }
             return sourceAddress;
         }
-        
+
         // try Spring
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-        String sourceAddress = getSourceAddress(request);
-        if(sourceAddress == null) {
-            LOGGER.log(Level.WARNING, "Could not retrieve source address from Spring Request");
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            String sourceAddress = getSourceAddress(request);
+            if(sourceAddress == null) {
+                LOGGER.log(Level.WARNING, "Could not retrieve source address with Spring Request");
+            }
+            return sourceAddress;
+        } catch (IllegalStateException ex) {
+            LOGGER.log(Level.WARNING, "Error retrieving source address with Spring Request: " + ex.getMessage());
+            return null;
         }
-        return sourceAddress;
     }
 
 
@@ -731,12 +736,6 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             throw new ServiceException("GetMap POST requests are forbidden");
         }
 		
-        // check for dynamic style
-        if ((getMap.getSld() != null) || (getMap.getSldBody() != null)) {
-            if( !configurationManager.getConfiguration().isAllowDynamicStyles() ) {
-                throw new ServiceException("Dynamic style usage is forbidden");
-            }
-        }
 
         // parse the styles param like the kvp parser would (since we have no way,
         // to know if a certain style was requested explicitly or defaulted, and
@@ -799,38 +798,6 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                     throw new ServiceException("Unable to load the style suggested by Geofence: " +
                         rule.getDefaultStyle(), e);
                 }
-            }
-        }
-    }
-
-    /**
-     *
-     * Allow dynamic styling only when there's no style restriction.
-     *
-     * We may update the model by adding a "allow dyn style" permission,
-     * but it would break current installations.
-     * We can infer this authorization by verifying if any style constraint is in place:
-     * It means that both of these conditions should be verified:
-     * 1) rule.getAllowedStyles() != null
-     *    - -> no style restriction has been defined in the rule details
-     * 2) the number of allowed styles should be less than than the number of total styles
-     *    --> generally, you can't delete the restricted style list once it has been defined.
-     *      > We assume that if all the available styles have been allowed, then there should be no
-     *      > style restrictions. We're only comparing the number of the available styles, but a
-     *      > better approach would be to make sure all of the available styles (maybe identified by name)
-     *      > are currently allowed.
-     *
-     * @param getMap
-     * @param rule
-     * @param layer
-     * @throws ServiceException if dyn style usage is forbidden
-     */
-    protected void checkDynStyles(GetMapRequest getMap, AccessInfo rule, MapLayerInfo layer) throws ServiceException {
-        if ((getMap.getSld() != null) || (getMap.getSldBody() != null))
-        {
-            if( !configurationManager.getConfiguration().isAllowDynamicStyles() ) {
-                LOGGER.info("Denying dynamic style; allowed#"+rule.getAllowedStyles().size() + " avail#"+layer.getLayerInfo().getStyles().size());
-                throw new ServiceException("Dynamic style usage is forbidden");
             }
         }
     }

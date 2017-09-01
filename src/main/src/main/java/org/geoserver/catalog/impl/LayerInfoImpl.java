@@ -88,6 +88,8 @@ public class LayerInfoImpl implements LayerInfo {
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
 
+    protected WMSInterpolation defaultWMSInterpolationMethod;
+    
     @Override
     public String getId() {
         return id;
@@ -417,5 +419,15 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public String getPrefixedName() {
         return prefixedName();
+    }
+    
+    @Override
+    public WMSInterpolation getDefaultWMSInterpolationMethod() {
+        return defaultWMSInterpolationMethod;
+    }
+    
+    @Override
+    public void setDefaultWMSInterpolationMethod(WMSInterpolation interpolationMethod) {
+        this.defaultWMSInterpolationMethod = interpolationMethod;
     }
 }

@@ -5,17 +5,18 @@
  */
 package org.geoserver.catalog.impl;
 
-
-import static org.easymock.EasyMock.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-
-import static org.geoserver.data.test.CiteTestData.*;
-import static org.junit.Assert.*;
+import static org.geoserver.data.test.CiteTestData.BRIDGES;
+import static org.geoserver.data.test.CiteTestData.BUILDINGS;
+import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
+import static org.geoserver.data.test.CiteTestData.FORESTS;
+import static org.geoserver.data.test.CiteTestData.LAKES;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-
+import java.util.List;
 
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
@@ -27,6 +28,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
@@ -120,6 +122,7 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         assertEquals(0, catalog.count(LayerInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(ResourceInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(StoreInfo.class, Filter.INCLUDE));
+        List<LayerGroupInfo> groups = catalog.getLayerGroups();
         assertEquals(0, catalog.count(LayerGroupInfo.class, Filter.INCLUDE));
     }
 

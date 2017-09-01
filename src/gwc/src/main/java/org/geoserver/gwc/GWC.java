@@ -82,6 +82,7 @@ import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -131,6 +132,8 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.Or;
 import org.opengis.metadata.extent.GeographicBoundingBox;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.beans.BeansException;
@@ -178,7 +181,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * @see #getResponseEncoder(MimeType, RenderedImageMap)
      */
-    private static Map<String, Response> cachedTileEncoders = new HashMap<String, Response>();
+    private Map<String, Response> cachedTileEncoders = new HashMap<String, Response>();
 
     private final TileLayerDispatcher tld;
 
@@ -2186,6 +2189,48 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 }
             }
         }
+    }
+    
+    /**
+     * Verify that a layer is accessible within a certain bounding box (calculated from tile) using the (secured) catalog
+     * 
+     * @param layerName name of the layer
+     * @param gridSetId name of the gridset
+     * @param level zoom level
+     * @param tileColumn column of tile in tile grid
+     * @param tileRow row  of tile in tile grid
+     * @throws ServiceException
+     */
+    public void verifyAccessTiledLayer(String layerName, String gridSetId, int level, long tileColumn,
+            long tileRow) throws ServiceException {
+        // get bounding box of requested tile
+        GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(layerName);
+        GridSubset gridSubset = layer.getGridSubset(gridSetId);
+        if (gridSubset == null) {
+            throw new ServiceException(
+                    "The specified grid set " + gridSetId + " is not defined on layer " + layerName,
+                    "InternalServerError");
+        }
+        long[] tileIndex = { tileColumn, tileRow, level };
+        BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
+        double[] coords = bounds.getCoords();
+        CoordinateReferenceSystem crs;
+        try {
+            crs = getCRSForGridset(gridSubset);
+        } catch (FactoryException e) {
+            throw new ServiceException(
+                    "Could not decode SRS " + gridSubset.getSRS().toString() + " for gridset "+gridSubset.getGridSet().getName(),
+                    "InternalServerError");
+        }
+        
+        ReferencedEnvelope envelope = new ReferencedEnvelope(coords[0], coords[2], coords[1],
+                coords[3], crs);
+        this.verifyAccessLayer(layerName, envelope);
+    }
+
+    CoordinateReferenceSystem getCRSForGridset(GridSubset gridSubset)
+            throws NoSuchAuthorityCodeException, FactoryException {
+        return CRS.decode(gridSubset.getSRS().toString());
     }
 
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {

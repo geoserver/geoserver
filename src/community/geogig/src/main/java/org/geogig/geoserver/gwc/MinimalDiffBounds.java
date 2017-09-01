@@ -10,17 +10,20 @@ import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.model.RevTree;
 import org.locationtech.geogig.plumbing.ResolveTreeish;
+import org.locationtech.geogig.plumbing.diff.PathFilteringDiffConsumer;
 import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk;
+import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk.Consumer;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.storage.ObjectDatabase;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * An operation that computes the "approximate minimal bounds" difference between two
- * {@link RevTree trees}.
+ * An operation that computes the "approximate minimal bounds" difference between two {@link RevTree
+ * trees}.
  * <p>
  * The "approximate minimal bounds" is defined as the geometry union of the bounds of each
  * individual difference, with the exception that when a tree node or bucket tree does not exist at
@@ -72,12 +75,13 @@ public class MinimalDiffBounds extends AbstractGeoGigOp<Geometry> {
         ObjectDatabase rightSource = objectDatabase();
 
         PreOrderDiffWalk visitor = new PreOrderDiffWalk(left, right, leftSource, rightSource);
-        MinimalDiffBoundsConsumer consumer = new MinimalDiffBoundsConsumer();
+        MinimalDiffBoundsConsumer boundsBuilder = new MinimalDiffBoundsConsumer();
+        Consumer consumer = boundsBuilder;
         if (treeName != null) {
-            consumer.setTreeNameFilter(treeName);
+            consumer = new PathFilteringDiffConsumer(ImmutableList.of(treeName), boundsBuilder);
         }
         visitor.walk(consumer);
-        Geometry minimalBounds = consumer.buildGeometry();
+        Geometry minimalBounds = boundsBuilder.buildGeometry();
         return minimalBounds;
     }
 

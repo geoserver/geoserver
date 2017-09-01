@@ -86,10 +86,7 @@ public class StyleResource extends AbstractCatalogResource {
         String style = getAttribute("style");
         
         LOGGER.fine( "GET style " + style );
-        StyleInfo sinfo = workspace == null ? catalog.getStyleByName( style ) : 
-            catalog.getStyleByName(workspace,style);
-
-        return sinfo;
+        return catalog.getStyleByName(workspace,style);
     }
 
     @Override

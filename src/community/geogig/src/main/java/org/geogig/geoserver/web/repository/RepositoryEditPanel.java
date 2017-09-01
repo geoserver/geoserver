@@ -17,7 +17,6 @@ import org.apache.wicket.validation.ValidationError;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geogig.geoserver.util.PostgresConnectionErrorHandler;
-import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,9 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
                 final URI location = repo.getLocation();
                 final RepositoryResolver resolver = RepositoryResolver.lookup(location);
                 final String scheme = location.getScheme();
-                if (isNew && repoNameExists(repo.getRepoName())) {
+                final boolean nameExists = RepositoryManager.get()
+                        .repoExistsByName(repo.getRepoName());
+                if (isNew && nameExists) {
                     error.addKey("errRepositoryNameExists");
                 } else if ("file".equals(scheme)) {
                     File repoDir = new File(location);
@@ -98,14 +99,5 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
     public void convertInput() {
         RepositoryInfo modelObject = getModelObject();
         setConvertedInput(modelObject);
-    }
-
-    private boolean repoNameExists(String repoName) {
-        for (RepositoryInfo repo : RepositoryManager.get().getAll()) {
-            if (repo.getRepoName().equals(repoName)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

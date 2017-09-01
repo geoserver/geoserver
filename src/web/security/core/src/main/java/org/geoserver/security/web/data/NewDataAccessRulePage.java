@@ -52,7 +52,7 @@ public class NewDataAccessRulePage extends AbstractDataAccessRulePage {
     class DuplicateRuleValidator extends AbstractFormValidator {
         public FormComponent<?>[] getDependentFormComponents() {
             return new FormComponent[] { 
-                workspaceChoice, layerChoice, accessModeChoice, rolesFormComponent };
+                rootChoice, layerChoice, accessModeChoice, rolesFormComponent };
         }
 
         public void validate(Form<?> form) {

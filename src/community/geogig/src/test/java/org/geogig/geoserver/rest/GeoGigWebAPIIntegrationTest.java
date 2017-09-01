@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.locationtech.geogig.model.RevObjectTestSupport.hashString;
+import static org.locationtech.geogig.model.impl.RevObjectTestSupport.hashString;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -45,10 +45,10 @@ import org.locationtech.geogig.model.RevObject;
 import org.locationtech.geogig.plumbing.RefParse;
 import org.locationtech.geogig.plumbing.ResolveTreeish;
 import org.locationtech.geogig.plumbing.RevObjectParse;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.RepositoryResolver;
-import org.locationtech.geogig.storage.ObjectSerializingFactory;
+import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.storage.datastream.DataStreamSerializationFactoryV1;
+import org.locationtech.geogig.storage.impl.ObjectSerializingFactory;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.restlet.data.MediaType;
@@ -145,6 +145,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
     @After
     public void after() {
         RepositoryManager.close();
+        getCatalog().dispose();
     }
 
     /**

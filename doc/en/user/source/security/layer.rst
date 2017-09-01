@@ -14,16 +14,19 @@ Providing access to layers is linked to :ref:`roles <security_rolesystem_roles>`
 Rules
 -----
 
-The syntax for a layer security rule is as follows (``[]`` denotes optional
-parameters)::
+The syntax for a layer security rule can follow three different patterns (``[]`` denotes optional parameters)::
 
+  globalLayerGroup.permission=role[,role2,...]
   workspace.layer.permission=role[,role2,...]
+  workspace.workspaceLayerGroup.permission=role[,role2,...]
 
-The parameters include::
+The parameters include:
 
-* ``workspace``—Name of the workspace. The wildcard ``*`` is used to indicate all workspaces.
-* ``layer``—Name of a resource (featuretype/coverage/etc...). The wildcard ``*`` is used to indicate all layers.
-* ``permission``—Type of access permission/mode. 
+* ``globalLayerGroup``— Name of a global layer group (one without workspace associated to it).
+* ``workspace``— Name of the workspace. The wildcard ``*`` is used to indicate all workspaces.
+* ``layer``— Name of a resource (featuretype/coverage/etc...). The wildcard ``*`` is used to indicate all layers.
+* ``workspaceLayerGroup``— Name of a workspace specific layer group.
+* ``permission``— Type of access permission/mode. 
    
    * ``r``—Read access
    * ``w``—Write access
@@ -39,7 +42,36 @@ The parameters include::
 
      topp.layer\\.with\\.dots.r=role[,role2,...]
 
-Each entry must have a unique combination of workspace, layer, and permission values. If a permission at the global level is not specified, global permissions are assumed to allow read/write access. If a permission for a workspace is not specified, it inherits permissions from the global specification. If a permission for a layer is not specified, it inherits permissions from its workspace specification. If a user belongs to multiple roles, the **least restrictive** permission they inherit will apply.
+General rules for layer security:
+
+* Each entry must have a unique combination of workspace, layer, and permission values. 
+* If a permission at the global level is not specified, global permissions are assumed to allow read/write access. 
+* If a permission for a workspace is not specified, it inherits permissions from the global specification. 
+* If a permission for a layer is not specified, it inherits permissions from its workspace specification in all protocols except WMS (where layer groups rules play a role, see below).
+* If a user belongs to multiple roles, the **least restrictive** permission they inherit will apply.
+
+For WMS, layers will be also secured by considering their containing layer groups. In particular:
+
+* Rules with *Single* layer groups only affect the group itself, but not its contents. *Single* mode is considered just an alias for a list of layers, with no containment.
+* Rules with other types of groups (*Named tree*, *Container tree*, *Earth Observation tree*) also affect contained layers and nested layer groups. 
+  If the group is not accessible, the layers and groups contained in that group will not be accessible either..
+  The only exception is when another layer group which is accessible contains the same layer or nested group, in that case the layers they will show up under the allowed groups.
+* Workspace rules gets precedence over global layer group ones when it comes to allow access to layers.
+* Layer rules get precedence over all layer group rules when it comes to allow access to layers.
+  
+The following tables summarizes the layer group behavior depending on whether they are used in a public or secured environment:
+
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| **Mode**             | **Public behavior**                                                                                                                                | **Restricted behavior**                                                                                                          |
++======================+====================================================================================================================================================+==================================================================================================================================+
+| **Single**           | Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers are also visible at root level             | Does not control layer access at all                                                                                             |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| **Opaque container** | Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers in it are not available for WMS requests   | Same as public behavior                                                                                                          |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| **Named tree**       | Contained layers are visible as children in the capabilities document, the name can be used as a shortcut to request all layers.                   | Restricting access to the group restricts also the contained layers, unless another "tree" group allows access to the same layer |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| **Container tree**   | Same as "named tree", but does not have a name published in the capabilities document and thus cannot be requested directly                        | Same as "named tree"                                                                                                             |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
 
 Catalog Mode
 ------------
@@ -239,7 +271,6 @@ The mapping of roles to permissions is as follows:
 
 .. note:: The entry ``topp.states.w=NO_ONE`` is not required because this permission would be inherited from the global level (the entry ``*.*.w=NO_ONE``).
 
-
 Invalid configuration
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -248,3 +279,101 @@ The following examples are invalid because the workspace, layer, and permission 
    topp.state.rw=ROLE1
    topp.state.rw=ROLE2,ROLE3
 
+Security by layer group in WMS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To clarify, lets assume the following starting situation, in which all layers and groups are visible::
+
+    root
+    +- namedTreeGroupA
+    |   |   ws1:layerA
+    |   └   ws2:layerB
+    +- namedTreeGroupB
+    |   |   ws2:layerB
+    |   └   ws1:layerC
+    +- layerD
+    +- singleGroupC (contains ws1:layerA and layerD when requested)
+
+
+Here are a few examples of how the structure changes based on different security rules.
+
+* Denying access to ``namedTreeGroupA`` by::
+
+    namedTreeGroupA.r=ROLE_PRIVATE 
+
+  Will give the following capabilities tree to anonymous users::
+
+    root
+    +- namedTreeGroupB
+    |   |   ws2:layerB
+    |   └   ws1:layerC
+    +- layerD
+    +- singleGroupC (contains only layerD when requested)
+
+
+* Denying access to ``namedTreeGroupB``by ::
+
+    namedTreeGroupB.r=ROLE_PRIVATE 
+
+  Will give the following capabilities tree to anonymous users::
+
+    root
+    +- namedTreeGroupA
+    |   |   ws1:layerA
+    |   └   ws2:layerB
+    +- layerD
+    +- singleGroupC (contains ws1:layerA and layerD when requested)
+
+* Denying access to ``singleGroupC`` by::
+
+    singleGroupC.r=ROLE_PRIVATE 
+
+  Will give the following capabilities tree to anonymous users::
+
+    root
+    +- namedTreeGroupA
+    |   |   ws1:layerA
+    |   └   ws2:layerB
+    +- namedTreeGroupB
+    |   |   ws2:layerB
+    |   └   ws1:layerC
+    +- layerD
+    
+* Denying access to everything, but allowing explicit access to namedTreeGroupA by::
+
+    nameTreeGroupA.r=*
+    *.*.r=PRIVATE
+    *.*.w=PRIVATE 
+
+  Will give the following capabilities tree to anonymous users::
+
+    root
+    +- namedTreeGroupA
+        |   ws1:layerA
+        └   ws2:layerB
+
+* Denying access to ``nameTreeA`` and ``namedTreeGroupB`` but explicitly allowing access to ``ws1:layerA``::
+
+    namedTreeGroupA.r=ROLE_PRIVATE
+    namedTreeGroupB.r=ROLE_PRIVATE
+    ws1.layerA.r=* 
+
+  Will give the following capabilities tree to anonymous users (notice how ws1:layerA popped up to the root)::
+
+    root
+    +- ws1:layerA
+    +- layerD
+
+* Denying access to ``nameTreeA`` and ``namedTreeGroupB`` but explicitly allowing all layers in ws2
+  (a workspace rules overrides global groups ones)::
+
+    namedTreeGroupA.r=ROLE_PRIVATE
+    namedTreeGroupB.r=ROLE_PRIVATE
+    ws2.*.r=* 
+
+  Will give the following capabilities tree to anonymous users (notice how ws1:layerB popped up to the root)::
+
+    root
+    +- ws2:layerB
+    +- layerD
+    +- singleGroupC

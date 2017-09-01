@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,6 +28,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -41,6 +42,7 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -207,11 +209,13 @@ public class ExternalGraphicPanel extends Panel {
 
         width = new TextField<Integer>("width", styleModel.bind("legend.width"), Integer.class);
         width.add(RangeValidator.minimum(0));
+        width.setRequired(true);
         width.setOutputMarkupId(true);
         table.add(width);
 
         height = new TextField<Integer>("height", styleModel.bind("legend.height"), Integer.class);
         height.add(RangeValidator.minimum(0));
+        height.setRequired(true);        
         height.setOutputMarkupId(true);
         table.add(height);
         
@@ -248,9 +252,13 @@ public class ExternalGraphicPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 onlineResource.setModelObject("");
+                onlineResource.clearInput();
                 format.setModelObject("");
+                format.clearInput();
                 width.setModelObject(0);
+                width.clearInput();
                 height.setModelObject(0);
+                height.clearInput();
                 
                 updateVisibility(false);
                 target.add(ExternalGraphicPanel.this);
@@ -310,9 +318,9 @@ public class ExternalGraphicPanel extends Panel {
                 else {
                     WorkspaceInfo wsInfo = ((StyleInfo)getDefaultModelObject()).getWorkspace();
                     if (wsInfo != null) {
-                        url = new URL( baseUrl + "styles/"+wsInfo.getName()+"/"+external );
+                        url = new URL(ResponseUtils.appendPath(baseUrl, "styles", wsInfo.getName(), external));
                     } else {
-                        url = new URL( baseUrl + "styles/"+external );
+                        url = new URL(ResponseUtils.appendPath(baseUrl, "styles", external));
                     }
                 }
                 

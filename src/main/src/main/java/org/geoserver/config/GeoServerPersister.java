@@ -7,6 +7,7 @@ package org.geoserver.config;
 
 import static org.geoserver.config.util.XStreamUtils.xStreamPersist;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +50,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Style;
@@ -648,6 +650,17 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         LOGGER.fine( "Removing style " + s.getName() );
         Resource xml = dd.config(s);
         rmRes(xml);
+        
+        Resource sld = dd.style(s);
+        if (Resources.exists(sld)) {
+            Resource sldBackup = dd.get(sld.path() + ".bak");
+            int i = 1;
+            while (Resources.exists(sldBackup)) {
+                sldBackup = dd.get(sld.path() + ".bak." + i++);
+            }
+            LOGGER.fine( "Removing the SLD as well but making backup " + sldBackup.name());
+            sld.renameTo(sldBackup);
+        }
     }
 
     /*
@@ -723,7 +736,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void persist( Object o, Resource r ) throws IOException {
         try {
             synchronized ( xp ) {
-                xStreamPersist(r, o, xp);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                xp.save(o, bos);
+                r.setContents(bos.toByteArray());
             }
             LOGGER.fine("Persisted " + o.getClass().getName() + " to " + r.path() );
         }

@@ -13,7 +13,7 @@
 	</bean>
 
 	<bean id="wmsGetFeatureInfoXML" class="org.geoserver.wms.eo.XMLFeatureInfoOutputFormat">
-		<constructor-arg ref="wms" />
+		<constructor-arg ref="gml3OutputFormat" />
 	</bean>
  
   	<bean id="wmsEoLayerGroupMenuPage" class="org.geoserver.web.MenuPageInfo">

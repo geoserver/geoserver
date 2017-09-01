@@ -214,6 +214,11 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         return delegate.getAccessLimits(user, layer);
     }
 
+    
+    public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+        return delegate.getAccessLimits(user, layer, containers);
+    }
+
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         return delegate.getAccessLimits(user, workspace);
     }
@@ -221,8 +226,12 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
     public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style) {
         return delegate.getAccessLimits(user, style);
     }
-
+    
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
         return delegate.getAccessLimits(user, layerGroup);
+    }
+
+    public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
+        return delegate.getAccessLimits(user, layerGroup, containers);
     }
 }

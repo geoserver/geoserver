@@ -67,12 +67,14 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
         }
                 
         assertTrue(store instanceof WFSDataStore);
-                
-        FeatureType type = ftInfo.getFeatureType();
         
-        assertEquals("sf_archsites", type.getName().getLocalPart());        
-        
-        assertEquals("sf_archsites", ftInfo.getFeatureSource(null, null).getName().getLocalPart());
-
+        try {
+            FeatureType type = ftInfo.getFeatureType();
+            assertEquals("sf_archsites", type.getName().getLocalPart());
+            assertEquals("sf_archsites", ftInfo.getFeatureSource(null, null).getName().getLocalPart());
+        } catch(IOException e) {
+            String expectedMessage = "Schema 'sf_archsites' does not exist.";
+            assertEquals("Exception message must be correct", expectedMessage, e.getMessage());
+        }
     }
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+   <body>
+      <wicket:extend>
+        <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="metadataSource">metadataSource</wicket:message>
+               </span>
+            </legend>
+            <ul>
+               <li>
+                  <label>
+                     <wicket:message key="openSearchAccessId">openSearchAccessId</wicket:message>
+                  </label>
+                  <select wicket:id="openSearchAccessId"/>
+               </li>
+            </ul>
+         </fieldset>
+         <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="paging">paging</wicket:message>
+               </span>
+            </legend>
+            <ul>
+               <li>
+                  <label><wicket:message key="recordsPerPage">recordsPerPage</wicket:message></label>
+                  <input type="text" wicket:id="recordsPerPage" class="field text"/>
+               </li>
+               <li>
+                  <label><wicket:message key="maximumRecordsPerPage">maxRecordsPerPage</wicket:message></label>
+                  <input type="text" wicket:id="maximumRecordsPerPage" class="field text"/>
+               </li>
+            </ul>
+         </fieldset>
+         
+      </wicket:extend>
+   </body>
+</html>
+

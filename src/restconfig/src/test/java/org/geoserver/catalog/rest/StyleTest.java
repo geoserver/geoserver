@@ -27,10 +27,12 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.format.MediaTypes;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
 import org.junit.Before;
 import org.junit.Test;
+import org.restlet.data.MediaType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -55,6 +57,28 @@ public class StyleTest extends CatalogRESTTestSupport {
         revertLayer(SystemTestData.BASIC_POLYGONS);
     }
 
+    /**
+     * Register a {@link StyleHandler} whose format and extension collide with the extension-based content negotiation, in order to verify that the
+     * conflicting StyleHandler does *not* take precedence for requests with that extension. In particular, this will register a
+     * {@link TestStyleHandlerExtensionConflict} handler with a file extension of ".xml", which is specifically created to conflict with the ".xml"
+     * extension in the REST API.
+     */
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        springContextLocations.add("testStyleHandlerExtensionConflict.xml");
+        super.setUpSpring(springContextLocations);        
+    }
+    
+    /**
+     * Verify that the {@link MediaTypes} registry correctly maps the "xml" extension to the "application/xml" mime type, even though there is a
+     * {@link StyleHandler} with the same file extension (but a different mime type).
+     */
+    @Test
+    public void styleFinderConflictingExtensionTest() {
+        MediaType mt = MediaTypes.getMediaTypeForExtension("xml");
+        assertEquals("application/xml", mt.getName());
+    }
+    
     @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/styles.xml" );
@@ -75,15 +99,18 @@ public class StyleTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/styles.html");
+        print(dom);
         
-        List<StyleInfo> styles = catalog.getStyles();
+        List<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE);
         NodeList links = xp.getMatchingNodes("//html:a", dom);
 
         for ( int i = 0; i < styles.size(); i++ ) {
             StyleInfo s = (StyleInfo) styles.get( i );
             Element link = (Element) links.item( i );
             
-            assertTrue( link.getAttribute("href").endsWith( s.getName()+ ".html"));
+            final String href = link.getAttribute("href");
+            assertTrue("Expected href to bed with " + s.getName() + ".html but was " + href,
+                    href.endsWith(s.getName() + ".html"));
         }
     }
 
@@ -195,6 +222,33 @@ public class StyleTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM("/rest/workspaces/gs/styles/foo.xml");
         assertXpathEvaluatesTo("foo", "/style/name", dom);
         assertXpathEvaluatesTo("gs", "/style/workspace/name", dom);
+    }
+
+    //GEOS-8080
+    @Test
+    public void testGetGlobalWithDuplicateInDefaultWorkspace() throws Exception {
+        Catalog cat = getCatalog();
+        String styleName = "foo";
+        String wsName = cat.getDefaultWorkspace().getName();
+
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName(styleName);
+        s.setFilename(styleName + ".sld");
+        cat.add(s);
+
+        s = cat.getFactory().createStyle();
+        s.setName(styleName);
+        s.setFilename(styleName + ".sld");
+        s.setWorkspace(cat.getDefaultWorkspace());
+        cat.add(s);
+
+        Document dom = getAsDOM("/rest/styles/foo.xml");
+        assertXpathEvaluatesTo(styleName, "/style/name", dom);
+        assertXpathEvaluatesTo("", "/style/workspace/name", dom);
+
+        dom = getAsDOM("/rest/workspaces/" + wsName + "/styles/foo.xml");
+        assertXpathEvaluatesTo(styleName, "/style/name", dom);
+        assertXpathEvaluatesTo(wsName, "/style/workspace/name", dom);
     }
 
     String newSLDXML() {
@@ -422,8 +476,9 @@ public class StyleTest extends CatalogRESTTestSupport {
         response = deleteAsServletResponse("/rest/styles/foo");
         assertEquals( 200, response.getStatus() );
         
-        //ensure the style not deleted on disk
-        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        //ensure the style deleted on disk but backed up
+        assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld.bak").exists());
     }
     
     @Test

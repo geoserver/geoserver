@@ -8,12 +8,9 @@ package org.geoserver.wfs;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.Filter;
 import javax.xml.namespace.QName;
@@ -27,11 +24,10 @@ import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class SecuredGetFeatureTest extends WFSTestSupport {
 	

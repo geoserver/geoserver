@@ -1,0 +1,33 @@
+<notificationConfiguration>
+	<queueSize>1000</queueSize>
+	<notificator>
+		<queueSize>1000</queueSize>
+		<processorThreads>1</processorThreads>
+		<messageFilter>type='Catalog'</messageFilter>
+		<genericProcessor>
+			<geonodeEncoder />
+			<fanoutSender>
+				<host>localhost</host>
+				<port>4432</port>
+				<virtualHost></virtualHost>
+				<exchangeName>testExchange</exchangeName>
+				<routingKey>testRouting</routingKey>
+			</fanoutSender>
+		</genericProcessor>
+	</notificator>
+	<notificator>
+		<queueSize>1000</queueSize>
+		<processorThreads>10</processorThreads>
+		<messageFilter>type='Data'</messageFilter>
+		<genericProcessor>
+			<geonodeEncoder />
+			<fanoutSender>
+				<host>localhost</host>
+				<port>4432</port>
+				<virtualHost></virtualHost>
+				<exchangeName>testExchange</exchangeName>
+				<routingKey>testRouting</routingKey>
+			</fanoutSender>
+		</genericProcessor>
+	</notificator>
+</notificationConfiguration>

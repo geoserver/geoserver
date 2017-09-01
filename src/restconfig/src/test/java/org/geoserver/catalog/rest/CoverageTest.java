@@ -22,21 +22,29 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.xml.namespace.QName;
 
 public class CoverageTest extends CatalogRESTTestSupport {
 
@@ -72,8 +80,16 @@ public class CoverageTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByCoverageStore() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:usa" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
         addCoverageStore(true);
-        Document dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 1, dom.getElementsByTagName( "coverage").getLength() );
         assertXpathEvaluatesTo( "1", "count(//coverage/name[text()='usa'])", dom );
     }
@@ -114,6 +130,44 @@ public class CoverageTest extends CatalogRESTTestSupport {
       Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html" );
       assertEquals( "html", dom.getDocumentElement().getNodeName() );
   }
+
+    @Test
+    public void testGetInWorkspace() throws Exception {
+        Catalog catalog = getCatalog();
+
+        List<WorkspaceInfo> workspaces = catalog.getWorkspaces();
+
+        //The default workspace
+        WorkspaceInfo ws1 = catalog.getDefaultWorkspace();
+        //Some other workspace, not the default
+        WorkspaceInfo ws2 = workspaces.get(0);
+        if (ws1.equals(ws2)) {
+            ws2 = workspaces.get(1);
+        }
+        NamespaceInfo ns1 = catalog.getNamespaceByPrefix(ws1.getName());
+        NamespaceInfo ns2 = catalog.getNamespaceByPrefix(ws2.getName());
+
+        //Add an identically named store to each workspace.
+        getTestData().addRasterLayer(new QName(ns1.getURI(), "world", ns1.getPrefix()), "world.tiff", null, catalog);
+        getTestData().addRasterLayer(new QName(ns2.getURI(), "world", ns2.getPrefix()), "world.tiff", null, catalog);
+
+        //rename the layers so they are different
+        CoverageInfo cov1 = catalog.getCoverageByName(ns1, "world");
+        cov1.setName("foo");
+        catalog.save(cov1);
+
+        CoverageInfo cov2 = catalog.getCoverageByName(ns2, "world");
+        cov2.setName("bar");
+        catalog.save(cov2);
+
+        //Try to get the one in ws2 (the non-default workspace)
+        Document dom = getAsDOM( "/rest/workspaces/" + ws2.getName() + "/coveragestores/world/coverages.xml");
+
+        //make sure we've got the one in the right workspace (not the default)
+        assertXpathEvaluatesTo( "1", "count(//coverage/name[text()='bar'])", dom );
+        assertXpathEvaluatesTo( "0", "count(//coverage/atom:link[contains(@href,'"+ws1.getName()+"')])", dom );
+        assertXpathEvaluatesTo( "1", "count(//coverage/atom:link[contains(@href,'"+ws2.getName()+"')])", dom );
+    }
   
   @Test
   public void testGetWrongCoverage() throws Exception {
@@ -287,6 +341,76 @@ public class CoverageTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
 
+    }
+
+    @Test
+    public void testPostNewAsXMLWithNativeCoverageName() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:differentName" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
+        addCoverageStore(false);
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
+
+        String xml =
+            "<coverage>" +
+                "<name>differentName</name>"+
+                "<nativeCoverageName>usa</nativeCoverageName>"+
+              "</coverage>";
+        MockHttpServletResponse response =
+            postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName" ) );
+
+        dom = getAsDOM( req );
+        assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
+
+        dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        assertXpathEvaluatesTo("differentName", "/coverage/name", dom);
+        assertXpathEvaluatesTo("differentName", "/coverage/title", dom);
+        assertXpathEvaluatesTo("usa", "/coverage/nativeCoverageName", dom);
+    }
+
+    @Test
+    public void testPostNewAsXMLWithNativeNameFallback() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:differentName" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
+        addCoverageStore(false);
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
+
+        String xml =
+            "<coverage>" +
+                "<name>differentName</name>"+
+                "<nativeName>usa</nativeName>"+
+              "</coverage>";
+        MockHttpServletResponse response =
+            postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName" ) );
+
+        dom = getAsDOM( req );
+        assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
+
+        dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        assertXpathEvaluatesTo("differentName", "/coverage/name", dom);
+        assertXpathEvaluatesTo("differentName", "/coverage/title", dom);
+        assertXpathEvaluatesTo("usa", "/coverage/nativeCoverageName", dom);
     }
 
     @Test
@@ -474,9 +598,9 @@ public class CoverageTest extends CatalogRESTTestSupport {
         CoverageDimensionInfo dimension = dimensions.get(0);
         assertEquals( "GRAY_INDEX", dimension.getName());
         NumberRange range = dimension.getRange();
-        assertEquals( -9999.0, range.getMinimum(), DELTA);
-        assertEquals( -9999.0, range.getMaximum(), DELTA);
-        assertEquals("GridSampleDimension[-9999.0,-9999.0]", dimension.getDescription());
+        assertEquals( Double.NEGATIVE_INFINITY, range.getMinimum(), DELTA);
+        assertEquals( Double.POSITIVE_INFINITY, range.getMaximum(), DELTA);
+        assertEquals("GridSampleDimension[-Infinity,Infinity]", dimension.getDescription());
         List<Double> nullValues = dimension.getNullValues();
         assertEquals( -9999.0, nullValues.get(0), DELTA);
         

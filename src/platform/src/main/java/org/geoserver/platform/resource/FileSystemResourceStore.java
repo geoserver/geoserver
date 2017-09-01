@@ -14,6 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -133,7 +136,10 @@ public class FileSystemResourceStore implements ResourceStore {
 
         try {
             dest.getParentFile().mkdirs(); // Make sure there's somewhere to move to.
-            return Files.move(file, dest);
+            java.nio.file.Files.move(java.nio.file.Paths.get(file.getAbsolutePath()),
+                    java.nio.file.Paths.get(dest.getAbsolutePath()),
+                    StandardCopyOption.ATOMIC_MOVE);
+            return true;
         } catch (IOException e) {
             throw new IllegalStateException("Unable to move " + path + " to " + target, e);
         }
@@ -424,15 +430,20 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public Type getType() {
-            if (!file.exists()) {
+            try {
+                BasicFileAttributes attributes = java.nio.file.Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                if(attributes.isDirectory()) {
+                    return Type.DIRECTORY;
+                } else if(attributes.isRegularFile()) {
+                    return Type.RESOURCE;
+                } else {
+                    throw new IllegalStateException(
+                          "Path does not represent a configuration resource: " + path);
+                }
+            } catch(NoSuchFileException e) {
                 return Type.UNDEFINED;
-            } else if (file.isDirectory()) {
-                return Type.DIRECTORY;
-            } else if (file.isFile()) {
-                return Type.RESOURCE;
-            } else {
-                throw new IllegalStateException(
-                        "Path does not represent a configuration resource: " + path);
+            } catch(IOException e) {
+                throw new IllegalStateException(e);
             }
         }
 
@@ -495,6 +506,44 @@ public class FileSystemResourceStore implements ResourceStore {
                 return false;
             }
             return true;
+        }
+        
+      
+        @Override
+        public byte[] getContents() throws IOException {
+            return java.nio.file.Files.readAllBytes(file.toPath());
+        }
+        
+        @Override
+        public void setContents(byte[] byteArray) throws IOException {
+            final File actualFile = file();
+            if (!actualFile.exists()) {
+                throw new IllegalStateException("Cannot access " + actualFile);
+            }
+            try {
+                // first save to a temp file
+                final File temp;
+                synchronized(this) {
+                    File tryTemp;
+                    do {
+                        UUID uuid = UUID.randomUUID();
+                        tryTemp = new File(actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                    } while(tryTemp.exists());
+                    
+                    temp = tryTemp;
+                }
+                
+                java.nio.file.Files.write(temp.toPath(), byteArray);
+                Lock lock = lock();
+                try {
+                    // no errors, overwrite the original file
+                    Files.move(temp, actualFile);
+                } finally {
+                    lock.release();
+                }
+            } catch (FileNotFoundException e) {
+                throw new IllegalStateException("Cannot access " + actualFile, e);
+            }
         }
     }
 

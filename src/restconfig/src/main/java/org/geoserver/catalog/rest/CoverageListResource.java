@@ -28,7 +28,7 @@ public class CoverageListResource extends AbstractCatalogListResource {
         String cs = getAttribute("coveragestore");
         
         if ( cs != null ) {
-            CoverageStoreInfo coverageStore = catalog.getCoverageStoreByName( cs );
+            CoverageStoreInfo coverageStore = catalog.getCoverageStoreByName(ws, cs);
             return catalog.getCoveragesByCoverageStore(coverageStore);    
         }
         

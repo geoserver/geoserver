@@ -4,22 +4,19 @@
  */
 package org.geogig.geoserver.gwc;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.geotools.geometry.jts.JTS;
 import org.locationtech.geogig.model.Bounded;
 import org.locationtech.geogig.model.Bucket;
+import org.locationtech.geogig.model.NodeRef;
 import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk;
 import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk.BucketIndex;
-import org.locationtech.geogig.repository.NodeRef;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -38,25 +35,7 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
      */
     private List<Geometry> nonPoints = new LinkedList<>();
 
-    private Predicate<NodeRef> treeNodeFilter = Predicates.alwaysTrue();
-
-    private final Envelope envBuff = new Envelope();
-
-    public void setTreeNameFilter(final String treeName) {
-        checkArgument(!isNullOrEmpty(treeName), "treeName can't be null or empty");
-        this.treeNodeFilter = new Predicate<NodeRef>() {
-            private final String name = treeName;
-
-            /**
-             * @return true if node name is null, empty, or equal to {@code treeName}
-             */
-            @Override
-            public boolean apply(NodeRef nodeRef) {
-                return nodeRef == null || NodeRef.ROOT.equals(nodeRef.getNode().getName())
-                        || name.equals(nodeRef.getNode().getName());
-            }
-        };
-    }
+    private final Lock lock = new ReentrantLock();
 
     /**
      * @return a single geometry product of unioning all the bounding boxes acquired while
@@ -85,9 +64,6 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
 
     @Override
     public boolean tree(@Nullable final NodeRef left, @Nullable final NodeRef right) {
-        if (!treeNodeFilter.apply(left) || !treeNodeFilter.apply(right)) {
-            return false;
-        }
         if (left == null) {
             addEnv(right);
             return false;
@@ -100,7 +76,8 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
 
     @Override
     public boolean bucket(final NodeRef leftParent, final NodeRef rightParent,
-            final BucketIndex bucketIndex, @Nullable final Bucket left, @Nullable final Bucket right) {
+            final BucketIndex bucketIndex, @Nullable final Bucket left,
+            @Nullable final Bucket right) {
         if (left == null) {
             addEnv(right);
             return false;
@@ -115,15 +92,21 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
         if (node == null) {
             return;
         }
-        Envelope env = envBuff;
-        env.setToNull();
-        node.expand(env);
-        if (env.isNull()) {
+        final Envelope env = node.bounds().orNull();
+        if (env == null || env.isNull()) {
             return;
         }
         if (isPoint(env)) {
-            points.add(env.getMinX(), env.getMinY());
-        } else if (isOrthoLine(env)) {
+            lock.lock();
+            try {
+                points.add(env.getMinX(), env.getMinY());
+            } finally {
+                lock.unlock();
+            }
+            return;
+        }
+        Geometry geom;
+        if (isOrthoLine(env)) {
             // handle the case where the envelope is given by an orthogonal line so we don't add a
             // zero area polygon
             double width = env.getWidth();
@@ -135,9 +118,15 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
                 cs.add(env.getMinX(), env.getMinY());
                 cs.add(env.getMaxX(), env.getMinY());
             }
-            nonPoints.add(GEOM_FACTORY.createLineString(cs));
+            geom = GEOM_FACTORY.createLineString(cs);
         } else {
-            nonPoints.add(JTS.toGeometry(env, GEOM_FACTORY));
+            geom = JTS.toGeometry(env, GEOM_FACTORY);
+        }
+        lock.lock();
+        try {
+            nonPoints.add(geom);
+        } finally {
+            lock.unlock();
         }
     }
 

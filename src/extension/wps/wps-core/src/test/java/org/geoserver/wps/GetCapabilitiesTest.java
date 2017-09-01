@@ -8,7 +8,6 @@ package org.geoserver.wps;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServer;
@@ -38,6 +37,21 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         } finally {
             info.setEnabled(true);
             gs.save(info);
+        }
+    }
+    
+    @Test
+    public void testInvalidWPSConfig() throws Exception {
+        GeoServer gs = getGeoServer();
+        WPSInfo wpsInfo = gs.getService(WPSInfo.class);
+        
+        // Simulates the config failing to load due to xstream error GEOS-7903
+        gs.getFacade().remove(wpsInfo);
+        try {
+            Document dom = getAsDOM("wps?service=wps&request=getcapabilities");
+            checkOws11Exception(dom);
+        } finally {
+            gs.getFacade().add(wpsInfo);
         }
     }
 

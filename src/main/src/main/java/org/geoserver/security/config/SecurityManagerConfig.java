@@ -35,6 +35,7 @@ public class SecurityManagerConfig implements SecurityConfig {
 
     private GeoServerSecurityFilterChain filterChain = new GeoServerSecurityFilterChain();
     private RememberMeServicesConfig rememberMeService = new RememberMeServicesConfig();
+    private BruteForcePreventionConfig bruteForcePrevention = new BruteForcePreventionConfig();
 
     public SecurityManagerConfig() {
     }
@@ -46,6 +47,7 @@ public class SecurityManagerConfig implements SecurityConfig {
         this.filterChain = config.getFilterChain() != null ? 
             new GeoServerSecurityFilterChain(config.getFilterChain()) : null;
         this.rememberMeService = new RememberMeServicesConfig(config.getRememberMeService());
+        this.bruteForcePrevention = new BruteForcePreventionConfig(config.getBruteForcePrevention());
         this.encryptingUrlParams = config.isEncryptingUrlParams();
         this.configPasswordEncrypterName = config.getConfigPasswordEncrypterName();
         //this.masterPasswordURL=config.getMasterPasswordURL();
@@ -56,6 +58,7 @@ public class SecurityManagerConfig implements SecurityConfig {
         authProviderNames = authProviderNames != null ? authProviderNames : new ArrayList<String>();
         filterChain = filterChain != null ? filterChain : new GeoServerSecurityFilterChain();
         rememberMeService = rememberMeService != null ? rememberMeService : new RememberMeServicesConfig();
+        bruteForcePrevention = bruteForcePrevention != null ? bruteForcePrevention : new BruteForcePreventionConfig();
         return this;
     }
 
@@ -98,12 +101,24 @@ public class SecurityManagerConfig implements SecurityConfig {
         this.rememberMeService = rememberMeService;
     }
 
+    public BruteForcePreventionConfig getBruteForcePrevention() {
+        return bruteForcePrevention;
+    }
+
+    /**
+     * The brute force attack prevention
+     */
+    public void setBruteForcePrevention(BruteForcePreventionConfig bruteForcePrevention) {
+        this.bruteForcePrevention = bruteForcePrevention;
+    }
+
     /**
      * Flag controlling if web admin should encrypt url parameters.
      */
     public boolean isEncryptingUrlParams() {
         return encryptingUrlParams;
     }
+    
     public void setEncryptingUrlParams(boolean encryptingUrlParams) {
         this.encryptingUrlParams = encryptingUrlParams;
     }

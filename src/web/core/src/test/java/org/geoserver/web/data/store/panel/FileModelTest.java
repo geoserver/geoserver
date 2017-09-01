@@ -9,9 +9,13 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.wicket.model.Model;
 import org.geoserver.data.test.MockData;
+import org.geoserver.web.util.MapModel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,6 +64,16 @@ public class FileModelTest {
     public void testRelativeUnmodified() throws IOException {
         FileModel model = new FileModel(new Model<String>(), root);
         model.setObject("file:data/cite/Buildings.properties");
+        String path = (String) model.getObject();
+        assertEquals("file:data/cite/Buildings.properties", path);
+    }
+
+    @Test
+    public void testURL() throws IOException {
+        Map map = new HashMap();
+        map.put("url", new URL("file:data/cite/Buildings.properties"));
+        MapModel mapModel = new MapModel(map, "url");
+        FileModel model = new FileModel(mapModel, root);
         String path = (String) model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }

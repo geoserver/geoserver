@@ -860,25 +860,53 @@ public class CatalogBuilder {
     }
 
     /**
+     * Builds the default coverage contained in the current store
+     *
+     * @param nativeCoverageName the native name for the coverage
+     * @param specifiedName the published name for the coverage. If null, the name will be determined from the coverage store.
+     * @return coverage for the specified name
+     * @throws Exception if the coverage store was not found or could not be read, or if the coverage could not be created.
+     */
+    public CoverageInfo buildCoverageByName(String nativeCoverageName, String specifiedName) throws Exception {
+        if (store == null || !(store instanceof CoverageStoreInfo)) {
+            throw new IllegalStateException("Coverage store not set.");
+        }
+
+        CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
+        GridCoverage2DReader reader = (GridCoverage2DReader) catalog
+                .getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
+
+        if (reader == null)
+            throw new Exception("Unable to acquire a reader for this coverage with format: "
+                    + csinfo.getFormat().getName());
+
+        return buildCoverageInternal(reader, nativeCoverageName, null, specifiedName);
+    }
+
+    /**
      * Builds a coverage from a geotools grid coverage reader.
      * @param customParameters 
      */
     public CoverageInfo buildCoverage(GridCoverage2DReader reader, Map customParameters) throws Exception {
         return buildCoverage(reader, null, customParameters);
     }
-    
+
     /**
      * Builds a coverage from a geotools grid coverage reader.
      * @param customParameters 
      */
     public CoverageInfo buildCoverage(GridCoverage2DReader reader, String coverageName, Map customParameters) throws Exception {
+        return buildCoverageInternal(reader, coverageName, customParameters, null);
+    }
+
+    private CoverageInfo buildCoverageInternal(GridCoverage2DReader reader, String nativeCoverageName, Map customParameters, String specifiedName) throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
             throw new IllegalStateException("Coverage store not set.");
         }
         
         // if we are dealing with a multicoverage reader, wrap to simplify code
-        if (coverageName != null) {
-            reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
+        if (nativeCoverageName != null) {
+            reader = SingleGridCoverage2DReader.wrap(reader, nativeCoverageName);
         }
 
         CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
@@ -887,8 +915,8 @@ public class CatalogBuilder {
         cinfo.setStore(csinfo);
         cinfo.setEnabled(true);
 
-        WorkspaceInfo workspace = store.getWorkspace();
-        NamespaceInfo namespace = catalog.getNamespaceByPrefix(workspace.getName());
+        WorkspaceInfo wspace = store.getWorkspace();
+        NamespaceInfo namespace = catalog.getNamespaceByPrefix(wspace.getName());
         if (namespace == null) {
             namespace = catalog.getDefaultNamespace();
         }
@@ -984,20 +1012,27 @@ public class CatalogBuilder {
         parameters.remove(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
 
         cinfo.getDimensions().addAll(getCoverageDimensions(gc.getSampleDimensions()));
-        String name = gc.getName().toString();
-        cinfo.setName(name);
-        cinfo.setNativeCoverageName(coverageName);
-        cinfo.setTitle(name);
+        if (specifiedName != null) {
+            cinfo.setName(specifiedName);
+            cinfo.setTitle(specifiedName);
+            cinfo.getKeywords().add(new Keyword(specifiedName));
+        } else {
+            String name = gc.getName().toString();
+            cinfo.setName(name);
+            cinfo.setTitle(name);
+            cinfo.getKeywords().add(new Keyword(name));
+        }
+        cinfo.setNativeCoverageName(nativeCoverageName);
+
         cinfo.setDescription(new StringBuilder("Generated from ").append(format.getName()).toString());
 
         // keywords
         cinfo.getKeywords().add(new Keyword("WCS"));
         cinfo.getKeywords().add(new Keyword(format.getName()));
-        cinfo.getKeywords().add(new Keyword(name));
 
         // native format name
         cinfo.setNativeFormat(format.getName());
-        cinfo.getMetadata().put("dirName", new StringBuilder(store.getName()).append("_").append(name).toString());
+        cinfo.getMetadata().put("dirName", new StringBuilder(store.getName()).append("_").append(nativeCoverageName).toString());
 
         // request SRS's
         if ((gc.getCoordinateReferenceSystem2D().getIdentifiers() != null)
@@ -1078,21 +1113,22 @@ public class CatalogBuilder {
             
             dim.setDimensionType(sd.getSampleDimensionType());
 
+            double sdMin = sd.getMinimumValue();
+            double sdMax = sd.getMaximumValue();
             label.append("[".intern());
-            label.append(sd.getMinimumValue());
+            label.append(sdMin);
             label.append(",".intern());
-            label.append(sd.getMaximumValue());
+            label.append(sdMax);
             label.append("]".intern());
 
             dim.setDescription(label.toString());
+            // Since the nullValues element of the CoverageDimensionInfo reports
+            // the nodata (if available), let's switch to use the 
+            // sampleDimension's min and max as Dimension's Range
+            // instead of the whole SampleDimension Range 
+            // (the latter may include nodata categories).
+            dim.setRange(NumberRange.create(sdMin, sdMax));
 
-            if (sd.getRange() != null) {
-                dim.setRange(sd.getRange());    
-            }
-            else {
-                dim.setRange(NumberRange.create(sd.getMinimumValue(), sd.getMaximumValue()));
-            }
-            
             final List<Category> categories = sd.getCategories();
             if (categories != null) {
                 for (Category cat : categories) {

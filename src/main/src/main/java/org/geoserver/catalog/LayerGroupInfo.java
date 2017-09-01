@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -24,7 +25,7 @@ public interface LayerGroupInfo extends PublishedInfo {
      */
     public enum Mode {
         /**
-         * The layer group is seen as a single exposed layer with a name.
+         * The layer group is seen as a single exposed layer with a name, does not actually contain the layers it's referencing
          */
         SINGLE {
             public String getName() {
@@ -33,6 +34,21 @@ public interface LayerGroupInfo extends PublishedInfo {
             
             public Integer getCode() {
                 return 0;
+            }
+        },
+        /**
+         * The layer group is seen as a single exposed layer with a name, but contains the layers it's referencing, 
+         * thus hiding them from the caps document unless also shown in other tree mode layers 
+         */
+        OPAQUE_CONTAINER {
+            public String getName() {
+                return "Opaque Container";
+            }
+            
+            public Integer getCode() {
+            	// added last, but a cross in between SINGLE and NAMED semantically,
+            	// so added in this position
+                return 4;
             }
         },
         /**
@@ -72,6 +88,7 @@ public interface LayerGroupInfo extends PublishedInfo {
                 return 3;
             }
         };
+        
 
         public abstract String getName();
         public abstract Integer getCode();
@@ -181,6 +198,16 @@ public interface LayerGroupInfo extends PublishedInfo {
     List<MetadataLinkInfo> getMetadataLinks();
 
     /**
+     * Return the keywords associated with this layer group. If no keywords are available
+     * an empty list should be returned.
+     *
+     * @return a non NULL list containing the keywords associated with this layer group
+     */
+    default List<KeywordInfo> getKeywords() {
+        return new ArrayList<>();
+    }
+
+    /**
      * A way to compare two LayerGroupInfo instances that works around all the wrappers we have
      * around (secured, decorating ecc) all changing some aspects of the bean and breaking
      * usage of "common" equality). This method only uses getters to fetch the fields.
@@ -246,10 +273,13 @@ public interface LayerGroupInfo extends PublishedInfo {
                 return false;
         } else if (!lg.getWorkspace().equals(other.getWorkspace()))
             return false;
-        if (lg.getStyles() == null) {
-            if (other.getStyles() != null)
+        
+        List<StyleInfo> styles = canonicalStyles(lg.getStyles(), lg.getLayers());
+        List<StyleInfo> otherStyles = canonicalStyles(other.getStyles(), other.getLayers());
+        if (styles == null) {
+            if (otherStyles != null)
                 return false;
-        } else if (!lg.getStyles().equals(other.getStyles()))
+        } else if (!styles.equals(otherStyles))
             return false;
         if(lg.getAuthorityURLs() == null){
             if (other.getAuthorityURLs() != null)
@@ -291,6 +321,44 @@ public interface LayerGroupInfo extends PublishedInfo {
             return false;
         
         return true;
+    }
+
+    /**
+     * Styles, especially when using defaults, can be represented in too many ways (null, list
+     * of nulls, and so on). This returns a single canonical representation for those cases,
+     * trying not to allocate new objects.
+     * 
+     * @param styles
+     * @param layers
+     * @return
+     */
+    static List<StyleInfo> canonicalStyles(List<StyleInfo> styles, List<PublishedInfo> layers) {
+        if(styles == null || styles.isEmpty()) {
+            return null;
+        }
+        boolean allNull = true;
+        for (StyleInfo s : styles) {
+            if(s != null) {
+                allNull = false;
+                break;
+            }
+        }
+        if (allNull) {
+            return null;
+        }
+        
+        // at least one non null element, are they at least aligned with layers?
+        if(styles.size() == layers.size()) {
+            return styles;
+        }
+        
+        // not aligned, build a new representation
+        List<StyleInfo> canonical = new ArrayList<>(layers.size());
+        for (int i = 0; i < layers.size(); i++) {
+            StyleInfo s = styles.size() > i ? styles.get(i) : null;
+            canonical.add(s);
+        }
+        return canonical;
     }
 
     /**

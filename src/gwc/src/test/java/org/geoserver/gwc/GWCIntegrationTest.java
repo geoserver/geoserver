@@ -7,13 +7,7 @@ package org.geoserver.gwc;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,10 +21,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -66,6 +62,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.feature.NameImpl;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -90,7 +87,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 @TestSetup(run=TestSetupFrequency.REPEAT)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
-    
+
+    static final String SIMPLE_LAYER_GROUP = "SIMPLE_LAYER_GROUP";
+
     static final String FLAT_LAYER_GROUP = "flatLayerGroup";
     static final String NESTED_LAYER_GROUP = "nestedLayerGroup";
     static final String CONTAINER_LAYER_GROUP = "containerLayerGroup";
@@ -126,6 +125,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         LayerInfo li = catalog.getLayerByName(getLayerId(WORKSPACED_LAYER_QNAME));
         li.setDefaultStyle(catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME));
         catalog.save(li);
+
+        // add a simple layer group with two layers
+        createLayerGroup(SIMPLE_LAYER_GROUP, MockData.BUILDINGS, MockData.BRIDGES);
         
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
     }
@@ -979,6 +981,43 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
                 MockData.BUILDINGS.getLocalPart() + "'])", document), is("1"));
     }
+    
+    @Test
+    public void testGetCapabilitiesWithLocalLayer() throws Exception {
+        // initiating the xpath engine
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        // getting capabilities document for CITE workspace
+        Document document = getAsDOM(MockData.CITE_PREFIX + "/" + MockData.BUILDINGS.getLocalPart() + "/gwc/service/wmts?request=GetCapabilities");
+        // checking get capabilities result for CITE workspace
+        List<LayerInfo> citeLayers = getWorkspaceLayers(MockData.CITE_PREFIX);
+        assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), equalTo(1));
+        assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
+                MockData.BUILDINGS.getLocalPart() + "'])", document), is("1"));
+    }
+    
+    @Test
+    public void testGetCapabilitiesWithLocalGroup() throws Exception {
+        // initiating the xpath engine
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        // getting capabilities document for CITE workspace
+        Document document = getAsDOM(SIMPLE_LAYER_GROUP + "/gwc/service/wmts?request=GetCapabilities");
+        // checking get capabilities result for CITE workspace
+        assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), equalTo(1));
+        assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
+                SIMPLE_LAYER_GROUP + "'])", document), is("1"));
+    }
 
     @Test
     public void testGetTileWithLocalWorkspace() throws Exception {
@@ -1034,5 +1073,34 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             getGeoServer().getService(WMTSInfo.class).setEnabled(initialValue);
             LocalWorkspace.set(null);
         }
+    }
+
+    @Test
+    public void testGetCapabilitiesRequest() throws Exception {
+        // getting the capabilities document
+        MockHttpServletResponse response = getAsServletResponse("/gwc/service/wmts?request=GetCapabilities");
+        // check that the request was successful
+        assertThat(response.getStatus(), is(200));
+    }
+
+    /**
+     * Helper method that creates a layer group using the provided name and layers names.
+     */
+    private void createLayerGroup(String layerGroupName, QName... layersNames) throws Exception {
+        // get layers that match the layers names
+        List<LayerInfo> layers = Arrays.stream(layersNames)
+                .map(layerName -> getCatalog().getLayerByName(new NameImpl(layerName)))
+                .collect(Collectors.toList());
+        // create a new layer group using the provided name
+        LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
+        layerGroup.setName(layerGroupName);
+        // add the provided layers
+        for (LayerInfo layerInfo : layers) {
+            layerGroup.getLayers().add(layerInfo);
+        }
+        // set the layer group bounds by merging all layers bounds
+        CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());
+        catalogBuilder.calculateLayerGroupBounds(layerGroup);
+        getCatalog().add(layerGroup);
     }
 }

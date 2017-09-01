@@ -23,6 +23,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
@@ -131,5 +132,39 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=cite:Ponds"));
 
+    }
+
+    @Test
+    public void testInterpolationDropDown() {
+        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
+        final Model<LayerInfo> layerModel = new Model<LayerInfo>(layer);
+
+        FormTestPage page = new FormTestPage(new ComponentBuilder() {
+
+                public Component buildComponent(String id) {
+                    return new WMSLayerConfig(id, layerModel);
+                }
+            }
+        );
+
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        tester.assertComponent("form", Form.class);
+        tester.assertComponent("form:panel:defaultInterpolationMethod", DropDownChoice.class);
+
+        // By default, no interpolation method is specified
+        FormTester ft = tester.newFormTester("form");
+        ft.submit();
+
+        tester.assertModelValue("form:panel:defaultInterpolationMethod",
+                null);
+
+        // Select Bicubic interpolation method
+        ft = tester.newFormTester("form");
+        ft.select("panel:defaultInterpolationMethod", 2);
+        ft.submit();
+
+        tester.assertModelValue("form:panel:defaultInterpolationMethod",
+                WMSInterpolation.Bicubic);
     }
 }

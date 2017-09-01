@@ -278,7 +278,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                         pImage.copyData(wTile);
                         if (wTile.getMinX() != 0 || wTile.getMinY() != 0) {
                             tile = new BufferedImage(pImage.getColorModel(),
-                                    (WritableRaster) wTile.createTranslatedChild(0, 0),
+                                    (WritableRaster) wTile.createWritableTranslatedChild(0, 0),
                                     pImage.getColorModel().isAlphaPremultiplied(), null);
                         } else {
                             tile = new BufferedImage(pImage.getColorModel(), wTile,

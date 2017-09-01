@@ -8,18 +8,19 @@
   
   <bean id="geogigRepoManager" class="org.geogig.geoserver.config.RepositoryManager">
     <constructor-arg ref="geogigConfigStore"/>
+    <constructor-arg ref="resourceLoader"/>
   </bean>
 
   <bean id="geoGigGeoServerLifeCycleListener" class="org.geogig.geoserver.config.GeoGigGeoServerLifeCycleListener">
   </bean>
 
-  <bean id="geogigSecurityLogStore" class="org.geogig.geoserver.config.LogStore">
+  <!-- <bean id="geogigSecurityLogStore" class="org.geogig.geoserver.config.LogStore">
     <constructor-arg ref="resourceLoader"/>
   </bean>
 
   <bean id="geogigSecurityLogger" class="org.geogig.geoserver.security.SecurityLogger">
     <constructor-arg ref="geogigSecurityLogStore"/>
-  </bean>
+  </bean> -->
 
   <!--  REST  -->
 
@@ -66,7 +67,17 @@
     <property name="order" value="10"/>
   </bean>
 
-  <bean id="geogigRemotesPage" class="org.geoserver.web.MenuPageInfo">
+  <bean id="geogigSettingsPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="geogigSettings"/>
+    <property name="titleKey" value="GeoGigSettingsPage.title"/>
+    <property name="descriptionKey" value="GeoGigSettingsPage.description"/>
+    <property name="componentClass" value="org.geogig.geoserver.web.GeoGigSettingsPage"/>
+    <property name="category" ref="geogigCategory"/>
+    <property name="icon" value="geogig_16x16_darkblue.png"/>
+    <property name="order" value="9"/>
+  </bean>
+
+  <!-- bean id="geogigRemotesPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="geogigRemotesSecurityConfig"/>
     <property name="titleKey" value="RemotesPage.title"/>
     <property name="descriptionKey" value="RemotesPage.description"/>
@@ -74,5 +85,5 @@
     <property name="category" ref="geogigCategory"/>
     <property name="icon" value="geogig_16x16_darkblue.png"/>
     <property name="order" value="11"/>
-  </bean>
+  </bean-->
 </beans>

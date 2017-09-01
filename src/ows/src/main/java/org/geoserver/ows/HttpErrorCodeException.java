@@ -20,6 +20,11 @@ public class HttpErrorCodeException extends RuntimeException {
      * the error code
      */
     final int errorCode;
+
+    /**
+     * optional value for Content-Type header 
+     */
+    String contentType;
     
     public HttpErrorCodeException(int errorCode) {
         super();
@@ -43,5 +48,14 @@ public class HttpErrorCodeException extends RuntimeException {
 
     public int getErrorCode() {
         return errorCode;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public HttpErrorCodeException setContentType(String contentType) {
+        this.contentType = contentType;
+        return this;
     }
 }

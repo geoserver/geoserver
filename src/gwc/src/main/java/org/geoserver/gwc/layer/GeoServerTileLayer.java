@@ -1274,7 +1274,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public Map<String, LegendInfo> getLegendsInfo() {
         LayerInfo layerInfo = getLayerInfo();
         if (layerInfo == null) {
-            return null;
+            return Collections.emptyMap();
         }
         Map<String, LegendInfo> legends = new HashMap<>();
         Set<StyleInfo> styles = new HashSet<>(layerInfo.getStyles());

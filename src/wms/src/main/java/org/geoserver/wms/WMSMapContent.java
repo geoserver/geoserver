@@ -418,4 +418,12 @@ public class WMSMapContent extends MapContent {
         return metadata;
     }
     
+    @Override
+    public void dispose() {
+        this.request = null;
+        this.callbacks = null;
+        this.metadata = null;
+        super.dispose();
+    }
+    
 }

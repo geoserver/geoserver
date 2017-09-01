@@ -49,12 +49,13 @@ import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.data.FeatureBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.model.NodeRef;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.RevFeature;
-import org.locationtech.geogig.model.RevFeatureBuilder;
 import org.locationtech.geogig.model.RevFeatureType;
-import org.locationtech.geogig.model.RevFeatureTypeBuilder;
 import org.locationtech.geogig.model.RevTree;
+import org.locationtech.geogig.model.impl.RevFeatureBuilder;
+import org.locationtech.geogig.model.impl.RevFeatureTypeBuilder;
 import org.locationtech.geogig.plumbing.FindTreeChild;
 import org.locationtech.geogig.plumbing.ResolveGeogigDir;
 import org.locationtech.geogig.plumbing.RevObjectParse;
@@ -68,10 +69,9 @@ import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.FeatureInfo;
-import org.locationtech.geogig.repository.GeoGIG;
-import org.locationtech.geogig.repository.GlobalContextBuilder;
-import org.locationtech.geogig.repository.NodeRef;
 import org.locationtech.geogig.repository.WorkingTree;
+import org.locationtech.geogig.repository.impl.GeoGIG;
+import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
 import org.locationtech.geogig.test.TestPlatform;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -92,16 +92,23 @@ public class GeoGigTestData extends ExternalResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeoGigTestData.class);
 
-    private TemporaryFolder tmpFolder;
+    private final TemporaryFolder tmpFolder;
 
     private GeoGIG geogig;
 
     private File repoDir;
 
-    private final File tempRoot;
-
-    public GeoGigTestData(File tempRoot) {
-        this.tempRoot = tempRoot;
+    public GeoGigTestData(TemporaryFolder tmpFolder) {
+        if (tmpFolder == null) {
+            this.tmpFolder = new TemporaryFolder();
+            try {
+                this.tmpFolder.create();
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        } else {
+            this.tmpFolder = tmpFolder;
+        }
     }
 
     public GeoGigTestData() {
@@ -114,9 +121,11 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     public void setUp(String repoName) throws Exception {
-        tmpFolder = new TemporaryFolder(tempRoot);
-        tmpFolder.create();
         this.geogig = createRepository(repoName);
+    }
+
+    public void setUp(String repoName, File root) throws Exception {
+        this.geogig = createRepository(repoName, root);
     }
 
     @Override
@@ -132,7 +141,9 @@ public class GeoGigTestData extends ExternalResource {
             }
         } finally {
             RepositoryManager.close();
-            tmpFolder.delete();
+            if (tmpFolder != null) {
+                tmpFolder.delete();
+            }
         }
     }
 
@@ -147,6 +158,19 @@ public class GeoGigTestData extends ExternalResource {
 
         TestPlatform testPlatform = new TestPlatform(repoDir);
         testPlatform.setUserHome(dataDirectory);
+        GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
+        Context context = GlobalContextBuilder.builder().build();
+        GeoGIG Geogig = new GeoGIG(context);
+
+        return Geogig;
+    }
+
+    public GeoGIG createRepository(String name, File root) {
+        repoDir = new File(root, name);
+        Assert.assertTrue(repoDir.mkdir());
+
+        TestPlatform testPlatform = new TestPlatform(repoDir);
+        testPlatform.setUserHome(root);
         GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
         Context context = GlobalContextBuilder.builder().build();
         GeoGIG Geogig = new GeoGIG(context);
@@ -384,7 +408,7 @@ public class GeoGigTestData extends ExternalResource {
                 context.command(RevObjectParse.class).setObjectId(featureRef.getObjectId()));
 
         String id = featureRef.name();
-        Feature feature = new FeatureBuilder(type).build(id, revFeature.get());
+        Feature feature = new FeatureBuilder(RevFeatureTypeBuilder.build(type)).build(id, revFeature.get());
         return (SimpleFeature) feature;
     }
 

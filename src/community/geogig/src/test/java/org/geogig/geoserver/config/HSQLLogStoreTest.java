@@ -16,13 +16,17 @@ import static org.geogig.geoserver.config.LogStore.PROP_USER;
 import java.io.File;
 import java.util.Properties;
 
-public class HSQLLogStoreTest extends AbstractLogStoreTest {
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
 
+public class HSQLLogStoreTest extends AbstractLogStoreTest {
+	
     @Override
-    protected void populateConfigProperties(Properties props, File configDirectory) {
+    protected void populateConfigProperties(Properties props) {
 
         final String driverClassName = "org.hsqldb.jdbcDriver";
-        final File dbFile = new File(configDirectory, "logstore.hsql");
+        final File dbFile = new File(tmpDir.getRoot(), "logstore.hsql");
         final String jdbcUrl = "jdbc:hsqldb:file:" + dbFile.getAbsolutePath();
 
         props.setProperty(PROP_ENABLED, "true");

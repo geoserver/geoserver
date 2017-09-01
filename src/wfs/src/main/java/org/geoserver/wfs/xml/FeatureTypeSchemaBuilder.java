@@ -44,7 +44,9 @@ import org.eclipse.xsd.util.XSDSchemaLocator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -209,12 +211,23 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             if (!simple) {
-                // add secondary namespaces from catalog
-                for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
-                    if (!schema.getQNamePrefixToNamespaceMap().containsKey(nameSpaceinfo.getPrefix())) {
-                        schema.getQNamePrefixToNamespaceMap().put(nameSpaceinfo.getPrefix(),
-                                nameSpaceinfo.getURI());
+                // complex features may belong to different workspaces
+                WorkspaceInfo localWorkspace = LocalWorkspace.get();
+                if (localWorkspace != null) {
+                    // deactivate workspace filtering
+                    LocalWorkspace.remove();
+                }
+                // add secondary namespaces from the full catalog
+                try {
+                    for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
+                        if (!schema.getQNamePrefixToNamespaceMap().containsKey(nameSpaceinfo.getPrefix())) {
+                            schema.getQNamePrefixToNamespaceMap().put(nameSpaceinfo.getPrefix(),
+                                    nameSpaceinfo.getURI());
+                        }
                     }
+                } finally {
+                    // make sure local workspace filtering is repositioned
+                    LocalWorkspace.set(localWorkspace);
                 }
             }
 

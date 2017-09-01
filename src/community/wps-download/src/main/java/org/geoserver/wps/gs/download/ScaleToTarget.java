@@ -32,7 +32,7 @@ import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.image.ImageUtilities;
-import org.jaitools.imageutils.ImageLayout2;
+import it.geosolutions.jaiext.utilities.ImageLayout2;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -256,7 +256,7 @@ class ScaleToTarget {
 
         // scale
         final Hints hints = GeoTools.getDefaultHints();
-        final GridEnvelope2D sourceGE = getGridGeometry().getGridRange2D();
+        final GridEnvelope2D sourceGE = sourceGC.getGridGeometry().getGridRange2D();
         if ((isTargetSizeSet() && this.adjustedTargetSizeX.equals(sourceGE.width) && this.adjustedTargetSizeY == sourceGE.height)
                 || (!isTargetSizeSet())) {
             // NO NEED TO SCALE, do we need interpolation?

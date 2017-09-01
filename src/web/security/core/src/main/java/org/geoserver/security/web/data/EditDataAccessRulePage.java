@@ -31,13 +31,18 @@ public class EditDataAccessRulePage extends AbstractDataAccessRulePage {
         try {
             DataAccessRuleDAO dao = DataAccessRuleDAO.get();
 
-            //update original
-            orig.setWorkspace(rule.getWorkspace());
-            orig.setLayer(rule.getLayer());
-            orig.setAccessMode(rule.getAccessMode());
-            orig.getRoles().clear();
-            orig.getRoles().addAll(rule.getRoles());
-
+            // we cannot update the original because it might have been serialized
+            // and thus detached, we'll update the rule that is the same as the original one instead
+            dao.getRules().forEach(r -> {
+                if(r.equals(orig)) {
+                    r.setRoot(rule.getRoot());
+                    r.setGlobalGroupRule(rule.isGlobalGroupRule());
+                    r.setLayer(rule.getLayer());
+                    r.setAccessMode(rule.getAccessMode());
+                    r.getRoles().clear();
+                    r.getRoles().addAll(rule.getRoles());
+                }
+            });
             dao.storeRules();
             doReturn(DataSecurityPage.class);
         } catch (Exception e) {

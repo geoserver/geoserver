@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,6 +37,7 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
+import org.geoserver.ows.LocalHttpServletRequest;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -75,7 +76,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
@@ -83,11 +83,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
-
-    /**
-     * current request
-     */
-    private HttpServletRequest httpRequest;
 
     private static Map<String, Integer> interpolationMethods;
     
@@ -145,7 +140,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * @see org.geoserver.ows.HttpServletRequestAware#setHttpRequest(javax.servlet.http.HttpServletRequest)
      */
     public void setHttpRequest(HttpServletRequest httpRequest) {
-        this.httpRequest = httpRequest;
+        LocalHttpServletRequest.set(httpRequest);
     }
 
     public void setStyleFactory(StyleFactory styleFactory) {
@@ -168,6 +163,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     @Override
     public GetMapRequest createRequest() throws Exception {
         GetMapRequest request = new GetMapRequest();
+        HttpServletRequest httpRequest = LocalHttpServletRequest.get();
         if (httpRequest != null) {
             request.setRequestCharset(httpRequest.getCharacterEncoding());
             request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
@@ -236,31 +232,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         String layerParam = (String) rawKvp.get("LAYERS");
         if (layerParam != null) {
             List<String> layerNames = KvpUtils.readFlat(layerParam);
-            
-            for (Object o : parseLayers(layerNames, remoteOwsUrl, remoteOwsType)) {
-                if (!skipResource(o)) {
-                    requestedLayerInfos.add(o);
-                }
-            }
-
-            List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
-            for (Object o : requestedLayerInfos) {
-                
-                if (skipResource(o))
-                    continue;
-                
-                if (o instanceof LayerInfo) {
-                    layers.add(new MapLayerInfo((LayerInfo) o));
-                } else if (o instanceof LayerGroupInfo) {
-                    for (LayerInfo l : ((LayerGroupInfo) o).layers()) {
-                        layers.add(new MapLayerInfo(l));
-                    }
-                } else if (o instanceof MapLayerInfo) {
-                    // it was a remote OWS layer, add it directly
-                    layers.add((MapLayerInfo) o);
-                }
-            }
-            getMap.setLayers(layers);
+            requestedLayerInfos.addAll(parseLayers(layerNames, remoteOwsUrl, remoteOwsType));
         }
 
         // raw styles parameter
@@ -276,13 +248,58 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         if (interpolationParam != null) {
             interpolationList.addAll(KvpUtils.readFlat(interpolationParam));
         }
+
+        // raw filter and cql_filter parameters
+        List<Filter> rawFilters = ((getMap.getFilter() != null) ?
+            new ArrayList<Filter>(getMap.getFilter()) : Collections.emptyList());
+        List<Filter> cqlFilters = ((getMap.getCQLFilter() != null) ?
+            new ArrayList<Filter>(getMap.getCQLFilter()) : Collections.emptyList());
+
+        // remove skipped resources along with their corresponding parameters
+        List<MapLayerInfo> newLayers = new ArrayList<>();
+        for (int i = 0; i < requestedLayerInfos.size(); ) {
+            Object o = requestedLayerInfos.get(i);
+            if (skipResource(o)) {
+                // remove the layer, style, interpolation, filter and cql_filter
+                requestedLayerInfos.remove(i);
+                if (i < styleNameList.size()) {
+                    styleNameList.remove(i);
+                }
+                if (i < interpolationList.size()) {
+                    interpolationList.remove(i);
+                }
+                if (i < rawFilters.size()) {
+                    rawFilters.remove(i);
+                }
+                if (i < cqlFilters.size()) {
+                    cqlFilters.remove(i);
+                }
+            } else {
+                if (o instanceof LayerInfo) {
+                    newLayers.add(new MapLayerInfo((LayerInfo) o));
+                } else if (o instanceof LayerGroupInfo) {
+                    for (LayerInfo l : ((LayerGroupInfo) o).layers()) {
+                        newLayers.add(new MapLayerInfo(l));
+                    }
+                } else if (o instanceof MapLayerInfo) {
+                    // it was a remote OWS layer, add it directly
+                    newLayers.add((MapLayerInfo) o);
+                }
+                i++;
+            }
+        }
+        getMap.setLayers(newLayers);
         
         if(interpolationList.size() > 0) {
             getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
         }
         
         // pre parse filters
-        List<Filter> filters = parseFilters(getMap);
+        List<Filter> filters = parseFilters(getMap, rawFilters, cqlFilters);
+
+        if ((getMap.getSldBody() != null || getMap.getSld() != null) && wms.isDynamicStylingDisabled()) {
+            throw new ServiceException("Dynamic style usage is forbidden");
+        }
 
         // styles
         // process SLD_BODY, SLD, then STYLES parameter
@@ -604,20 +621,19 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * filters
      * 
      * @param getMap
+     * @param rawFilters
+     * @param cqlFilters
      * @return the list of parsed filters, or null if none was found
      */
-    private List<Filter> parseFilters(GetMapRequest getMap) {
-        List<Filter> filters = (getMap.getFilter() != null) ? getMap.getFilter() : Collections
-                .emptyList();
-        List cqlFilters = (getMap.getCQLFilter() != null) ? getMap.getCQLFilter()
-                : Collections.EMPTY_LIST;
+    private List<Filter> parseFilters(GetMapRequest getMap, List<Filter> rawFilters, List<Filter> cqlFilters) {
+        List<Filter> filters = rawFilters;
         List featureId = (getMap.getFeatureId() != null) ? getMap.getFeatureId()
                 : Collections.EMPTY_LIST;
 
         if (!featureId.isEmpty()) {
             if (!filters.isEmpty()) {
                 throw new ServiceException("GetMap KVP request contained "
-                        + "conflicting filters.  Filter: " + filters + ", fid: " + featureId);
+                        + "conflicting filters.  Filter: " + rawFilters + ", fid: " + featureId);
             }
 
             Set ids = new HashSet();
@@ -630,7 +646,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         if (!cqlFilters.isEmpty()) {
             if (!filters.isEmpty()) {
                 throw new ServiceException("GetMap KVP request contained "
-                        + "conflicting filters.  Filter: " + filters + ", fid: " + featureId
+                        + "conflicting filters.  Filter: " + rawFilters + ", fid: " + featureId
                         + ", cql: " + cqlFilters);
             }
 

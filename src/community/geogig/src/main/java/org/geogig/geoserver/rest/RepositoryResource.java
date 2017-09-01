@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,8 +14,8 @@ import java.util.Map;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
-import org.locationtech.geogig.rest.StreamingWriterRepresentation;
 import org.locationtech.geogig.rest.RestletException;
+import org.locationtech.geogig.rest.StreamingWriterRepresentation;
 import org.locationtech.geogig.rest.Variants;
 import org.locationtech.geogig.rest.repository.DeleteRepository;
 import org.locationtech.geogig.web.api.StreamWriterException;
@@ -130,7 +130,7 @@ public class RepositoryResource extends DeleteRepository {
             w.writeStartElement("repository");
             w.writeElement("id", repo.getId());
             w.writeElement("name", repo.getRepoName());
-            w.writeElement("location", repo.getLocation());
+            w.writeElement("location", repo.getMaskedLocation());
             w.writeEndElement();
         }
     }

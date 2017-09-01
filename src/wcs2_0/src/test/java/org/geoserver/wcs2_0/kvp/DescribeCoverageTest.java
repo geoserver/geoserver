@@ -67,6 +67,18 @@ public class DescribeCoverageTest extends WCSTestSupport {
     }
     
     @Test
+    public void testProjectectedKVP() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__utm11");
+        assertNotNull(dom);
+        // print(dom, System.out);
+        
+        checkValidationErrors(dom, WCS20_SCHEMA);
+        assertXpathEvaluatesTo("E N", "//gml:boundedBy/gml:Envelope/@axisLabels", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+    }
+    
+    @Test
     public void testCustomUnit() throws Exception {
         CoverageInfo ciRain = getCatalog().getCoverageByName(getLayerId(RAIN));
         ciRain.getDimensions().get(0).setUnit("mm");

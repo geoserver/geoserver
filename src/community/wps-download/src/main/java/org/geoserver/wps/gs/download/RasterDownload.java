@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.Interpolation;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.resource.Resource;
@@ -35,7 +34,6 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.raster.BandSelectProcess;
 import org.geotools.process.raster.CropCoverage;
 import org.geotools.referencing.CRS;
-import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -236,7 +234,7 @@ class RasterDownload {
 
             // --> READ
             originalGridCoverage = reader.read(readParameters);
-            
+
             // check, the reader might have returned a null coverage
             if(originalGridCoverage == null) {
                 throw new WPSException("The reader did not return any data for current input "
@@ -294,18 +292,13 @@ class RasterDownload {
                 }
                 // Crop or Clip
                 final CropCoverage cropCoverage = new CropCoverage(); // TODO avoid creation
-                if (clip) {
-                    // clipping means carefully following the ROI shape
-                    clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage,
-                            roiManager.getSafeRoiInTargetCRS(), progressListener);
-                } else {
-                    // use envelope of the ROI to simply crop and not clip the raster. This is important since when
-                    // reprojecting we might read a bit more than needed!
-                    clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage,
-                            roiManager.getSafeRoiInTargetCRS(), progressListener);
-                }
-                
-                if(clippedGridCoverage == null) {
+
+
+                // Get the proper ROI (depending on clip parameter and CRS)
+                Geometry croppingRoi = roiManager.getTargetRoi(clip);
+                clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage, croppingRoi, progressListener);
+
+                if (clippedGridCoverage == null) {
                     throw new WPSException("No data left after applying the ROI. This means there "
                             + "is source data, but none matching the requested ROI");
                 }

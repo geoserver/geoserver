@@ -26,15 +26,18 @@ public class Filter_2_0_0_KvpParserTest {
      * 
      * @param expectedLiteral expected decoded filter literal
      * @param encodedLiteral percent-encoded filter literal
+     * @param matchCase value of {@code matchCase} filter attribute or {@code null} if none
      */
-    private static void parsePropertyIsLike(String expectedLiteral, String encodedLiteral)
-            throws Exception {
+    private static void parsePropertyIsLike(String expectedLiteral, String encodedLiteral,
+            Boolean matchCase) throws Exception {
         String encodedXml = "%3Cfes:Filter" //
                 + "%20xmlns:fes=%22http://www.opengis.net/fes/2.0%22%3E" //
                 + "%3Cfes:PropertyIsLike" //
                 + "%20wildCard=%22*%22" //
                 + "%20singleChar=%22%25%22" //
-                + "%20escapeChar=%22!%22%3E" //
+                + "%20escapeChar=%22!%22" //
+                + (matchCase == null ? "" : "%20matchCase=%22" + matchCase + "%22") //
+                + "%3E" //
                 + "%3Cfes:ValueReference%3E" //
                 + "topp:STATE_NAME" //
                 + "%3C/fes:ValueReference%3E" //
@@ -51,7 +54,7 @@ public class Filter_2_0_0_KvpParserTest {
         Assert.assertEquals("*", propertyIsLike.getWildCard());
         Assert.assertEquals("%", propertyIsLike.getSingleChar());
         Assert.assertEquals("!", propertyIsLike.getEscape());
-        Assert.assertEquals(true, propertyIsLike.isMatchingCase());
+        Assert.assertEquals(matchCase == null ? true : matchCase, propertyIsLike.isMatchingCase());
         Assert.assertEquals("topp:STATE_NAME",
                 ((PropertyName) propertyIsLike.getExpression()).getPropertyName());
         Assert.assertEquals(expectedLiteral, propertyIsLike.getLiteral());
@@ -63,7 +66,7 @@ public class Filter_2_0_0_KvpParserTest {
      */
     @Test
     public void testPropertyIsLikeAsciiLiteral() throws Exception {
-        parsePropertyIsLike("Illino*", "Illino*");
+        parsePropertyIsLike("Illino*", "Illino*", null);
     }
 
     /**
@@ -72,7 +75,25 @@ public class Filter_2_0_0_KvpParserTest {
      */
     @Test
     public void testPropertyIsLikeNonAsciiLiteral() throws Exception {
-        parsePropertyIsLike("ü*", "%C3%BC*");
+        parsePropertyIsLike("ü*", "%C3%BC*", null);
+    }
+
+    /**
+     * Test that Filter 2.0 {@code fes:PropertyIsLike} with {@code matchCase="true"} can be parsed from percent-encoded form into a
+     * {@link PropertyIsLike} object.
+     */
+    @Test
+    public void testPropertyIsLikeMatchCaseTrue() throws Exception {
+        parsePropertyIsLike("Illino*", "Illino*", true);
+    }
+
+    /**
+     * Test that Filter 2.0 {@code fes:PropertyIsLike} with {@code matchCase="false"} can be parsed from percent-encoded form into a
+     * {@link PropertyIsLike} object.
+     */
+    @Test
+    public void testPropertyIsLikeMatchCaseFalse() throws Exception {
+        parsePropertyIsLike("Illino*", "Illino*", false);
     }
 
 }

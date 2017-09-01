@@ -78,7 +78,10 @@ public class CoverageResource extends AbstractCatalogResource {
             coverage.setStore( ds );
         }
         final boolean isNew = isNewCoverage(coverage);
-        String name = coverage.getNativeCoverageName();
+        String nativeCoverageName = coverage.getNativeCoverageName();
+        if (nativeCoverageName == null) {
+            nativeCoverageName = coverage.getNativeName();
+        }
         CatalogBuilder builder = new CatalogBuilder(catalog);
         CoverageStoreInfo store = coverage.getStore();
         builder.setStore(store);
@@ -86,10 +89,11 @@ public class CoverageResource extends AbstractCatalogResource {
         // We handle 2 different cases here
         if (!isNew) {
             // Configuring a partially defined coverage
-            builder.initCoverage(coverage, name);
+            builder.initCoverage(coverage, nativeCoverageName);
         } else {
             // Configuring a brand new coverage (only name has been specified)
-            coverage = builder.buildCoverage(name);
+            String specifiedName = coverage.getName();
+            coverage = builder.buildCoverageByName(nativeCoverageName, specifiedName);
         }
 
         NamespaceInfo ns = coverage.getNamespace();

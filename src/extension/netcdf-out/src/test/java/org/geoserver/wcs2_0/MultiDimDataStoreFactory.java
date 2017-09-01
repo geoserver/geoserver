@@ -5,15 +5,18 @@
  */
 package org.geoserver.wcs2_0;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import org.geotools.data.AbstractDataStoreFactory;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
 
-public class MultiDimDataStoreFactory extends AbstractDataStoreFactory {
+public class MultiDimDataStoreFactory implements DataStoreFactorySpi {
 
     @Override
     public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
@@ -21,8 +24,19 @@ public class MultiDimDataStoreFactory extends AbstractDataStoreFactory {
     }
 
     @Override
+    public String getDisplayName() {
+        return "MultiDim";
+    }
+
+    @Override
     public DataStore createNewDataStore(Map<String, Serializable> params) throws IOException {
-        throw new UnsupportedOperationException("Can not create a new dummy data store");
+        File dir = new File((String) params.get("ParentLocation"));
+
+        if (dir.exists()) {
+            throw new IOException(dir + " already exists");
+        }
+
+        return new MultiDimDataStore((String) params.get("ParentLocation"));
     }
 
     @Override
@@ -35,4 +49,19 @@ public class MultiDimDataStoreFactory extends AbstractDataStoreFactory {
         return new DataStoreFactorySpi.Param[] { new Param("ParentLocation") };
     }
 
+    @Override
+    public boolean canProcess(Map<String, Serializable> map) {
+        File dir = new File((String) map.get("ParentLocation"));
+        return dir.exists();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
+    public Map<RenderingHints.Key, ?> getImplementationHints() {
+        return Collections.emptyMap();
+    }
 }

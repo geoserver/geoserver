@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.11.2</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
@@ -233,7 +233,11 @@
     <version>${gt.version}</version>
     <scope>test</scope>
   </dependency>
-</dependencies> 
+     <dependency>
+         <groupId>org.codehaus.jettison</groupId>
+         <artifactId>jettison</artifactId>
+     </dependency>
+ </dependencies>
 
  <build>
   <plugins>

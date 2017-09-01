@@ -15,9 +15,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.client.JMSContainer;
 import org.geoserver.cluster.configuration.BrokerConfiguration;
@@ -86,8 +83,7 @@ public class ClusterPage extends GeoServerSecuredPage {
         connectionInfo.setEnabled(false);
         form.add(connectionInfo);
 
-        final AjaxButton connection = new AjaxButton("connectionB", new StringResourceModel(
-                ConnectionConfiguration.CONNECTION_KEY, this, null)) {
+        final AjaxButton connection = new AjaxButton("connectionB") {
             /** serialVersionUID */
             private static final long serialVersionUID = 1L;
 
@@ -150,8 +146,7 @@ public class ClusterPage extends GeoServerSecuredPage {
         readOnlyInfo.setEnabled(false);
         form.add(readOnlyInfo);
 
-        final AjaxButton readOnly = new AjaxButton("readOnlyB", new StringResourceModel(
-                ReadOnlyConfiguration.READ_ONLY_KEY, this, null)) {
+        final AjaxButton readOnly = new AjaxButton("readOnlyB") {
             /** serialVersionUID */
             private static final long serialVersionUID = 1L;
 
@@ -171,7 +166,9 @@ public class ClusterPage extends GeoServerSecuredPage {
         };
         form.add(readOnly);
 
-        final Button save = new Button("saveB", new StringResourceModel("save", this, null)) {
+        final Button save = new Button("saveB"
+
+        ) {
             /** serialVersionUID */
             private static final long serialVersionUID = 1L;
 
@@ -201,9 +198,7 @@ public class ClusterPage extends GeoServerSecuredPage {
         embeddedBrokerInfo.setEnabled(false);
         form.add(embeddedBrokerInfo);
 
-        final AjaxButton embeddedBroker = new AjaxButton(
-                "embeddedBrokerB",
-                new StringResourceModel(EmbeddedBrokerConfiguration.EMBEDDED_BROKER_KEY, this, null)) {
+        final AjaxButton embeddedBroker = new AjaxButton("embeddedBrokerB") {
             /** serialVersionUID */
             private static final long serialVersionUID = 1L;
 

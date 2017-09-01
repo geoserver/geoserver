@@ -12,11 +12,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -24,6 +25,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -35,6 +37,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.LegacyCatalogImporter;
 import org.geoserver.catalog.util.LegacyCatalogReader;
 import org.geoserver.catalog.util.LegacyFeatureTypeInfoReader;
+import org.geoserver.config.AsynchResourceIterator.ResourceMapper;
 import org.geoserver.config.util.LegacyConfigurationImporter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -45,6 +48,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resources.ExtensionFilter;
+import org.geoserver.util.Filter;
 import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -62,6 +67,150 @@ import org.springframework.context.ApplicationContext;
 public abstract class GeoServerLoader {
 
     static Logger LOGGER = Logging.getLogger( "org.geoserver" );
+    
+    /**
+     * Workspace IO resources
+     */
+    static final class WorkspaceContents {
+        Resource resource;
+        byte[] contents;
+        byte[] nsContents;
+        
+        public WorkspaceContents(Resource resource, byte[] contents, byte[] nsContents) {
+            this.resource = resource;
+            this.contents = contents;
+            this.nsContents = nsContents;
+        }
+    }
+    
+    /**
+     * {@link ResourceMapper} for workspaces
+     */
+    static final class WorkspaceMapper implements ResourceMapper<WorkspaceContents> {
+
+        @Override
+        public WorkspaceContents apply(Resource rd) throws IOException {
+            Resource wr = rd.get("workspace.xml");
+            Resource nr = rd.get("namespace.xml");
+            if (Resources.exists(wr) && Resources.exists(nr)) {
+                byte[] contents = wr.getContents();
+                byte[] nrContents = nr.getContents();
+                return new WorkspaceContents(rd, contents, nrContents);
+            } else {
+                LOGGER.warning("Ignoring workspace directory " + rd.path());
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Data store IO resources
+     */
+    static final class StoreContents {
+        Resource resource;
+        byte[] contents;
+        public StoreContents(Resource resource, byte[] contents) {
+            super();
+            this.resource = resource;
+            this.contents = contents;
+        }
+    }
+    
+    /**
+     * Layer IO resources
+     */
+    static final class LayerContents {
+        Resource resource;
+        byte[] contents;
+        byte[] layerContents;
+        
+        public LayerContents(Resource resource, byte[] contents, byte[] layerContents) {
+            this.resource = resource;
+            this.contents = contents;
+            this.layerContents = layerContents;
+        }
+    }
+    
+    /**
+     * Resource/Layer mapper to IO resources (generic)
+     */
+    static final class ResourceLayerMapper implements ResourceMapper<LayerContents> {
+
+        private String resourceFileName;
+        private String resourceType;
+
+        public ResourceLayerMapper(String resourceFileName, String resourceType) {
+            this.resourceFileName = resourceFileName;
+            this.resourceType = resourceType;
+        }
+
+        @Override
+        public LayerContents apply(Resource rd) throws IOException {
+            Resource r = rd.get(resourceFileName);
+            Resource lr = rd.get("layer.xml");
+            if (Resources.exists(r) && Resources.exists(lr)) {
+                byte[] contents = r.getContents();
+                byte[] lrContents = lr.getContents();
+                return new LayerContents(rd, contents, lrContents);
+            } else {
+                LOGGER.warning("Ignoring " + resourceType + " directory " + rd.path());
+                return null;
+            }
+        }
+    }
+    
+    /** Feature Type IO resource mapper */
+    static final ResourceLayerMapper FEATURE_LAYER_MAPPER = new ResourceLayerMapper("featuretype.xml", "feature type");
+    /** Coverage IO resource mapper */
+    static final ResourceLayerMapper COVERAGE_LAYER_MAPPER = new ResourceLayerMapper("coverage.xml", "coverage");
+    /** WMS Layer IO resource mapper */
+    static final ResourceLayerMapper WMS_LAYER_MAPPER = new ResourceLayerMapper("wmslayer.xml", "wms layer");
+    
+    /**
+     * Generic layer catalog loader for all types of IO resources
+     *
+     * @author Andrea Aime - GeoSolutions
+     */
+    static final class LayerLoader<T extends ResourceInfo> implements Consumer<LayerContents> {
+
+        Class<T> clazz;
+        XStreamPersister xp;
+        Catalog catalog;
+        
+        public LayerLoader(Class<T> clazz, XStreamPersister xp, Catalog catalog) {
+            this.clazz = clazz;
+            this.xp = xp;
+            this.catalog = catalog;
+        }
+
+        @Override
+        public void accept(LayerContents lc) {
+            T ft = null;
+            try {
+                ft = depersist(xp, lc.contents,clazz);
+                catalog.add(ft);
+            } catch( Exception e ) {
+                LOGGER.log( Level.WARNING, "Failed to load feature type", e);
+                return;
+            }
+            
+            if(LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.info( "Loaded feature type '" + lc.resource.name() +"'");
+            }
+            
+            try {
+                LayerInfo l = depersist(xp, lc.layerContents, LayerInfo.class );
+                catalog.add( l );
+                
+                LOGGER.info( "Loaded layer '" + l.getName() + "'" );
+            } catch( Exception e ) {
+                LOGGER.log( Level.WARNING, "Failed to load layer " + lc.resource.name(), e);
+            }
+            
+        }
+    }
+    
+    static final ExtensionFilter XML_FILTER = new Resources.ExtensionFilter("XML");
     
     protected GeoServerResourceLoader resourceLoader;
     GeoServer geoserver;
@@ -251,6 +400,21 @@ public abstract class GeoServerLoader {
         }
     }
     
+    boolean checkStoresOnStartup(XStreamPersister xp) {
+        Resource f = resourceLoader.get( "global.xml");
+        if ( Resources.exists(f) ) {
+            try {
+                GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
+                final ResourceErrorHandling resourceErrorHandling = global.getResourceErrorHandling();
+                return resourceErrorHandling != null && !ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    resourceErrorHandling);
+            } catch (IOException e) {
+                LOGGER.log(Level.INFO, "Failed to determine the capabilities resource error handling", e);
+            }
+        }
+        return true;
+    }
+    
     /**
      * Reads the catalog from disk.
      */
@@ -260,7 +424,11 @@ public abstract class GeoServerLoader {
         xp.setCatalog( catalog );
         xp.setUnwrapNulls(false);
         
-        CatalogFactory factory = catalog.getFactory();
+        // see if we really need to verify stores on startup 
+        boolean checkStores = checkStoresOnStartup(xp);
+        if(!checkStores) {
+            catalog.setExtendedValidation(false);
+        }
        
         //global styles
         loadStyles(resourceLoader.get( "styles" ), catalog, xp);
@@ -275,249 +443,120 @@ public abstract class GeoServerLoader {
                 try {
                     defaultWorkspace = depersist(xp, dws, WorkspaceInfo.class);
                     LOGGER.info("Loaded default workspace " + defaultWorkspace.getName());
-                }
-                catch( Exception e ) {
+                } catch( Exception e ) {
                     LOGGER.log(Level.WARNING, "Failed to load default workspace", e);
                 }
-            }
-            else {
+            } else {
                 LOGGER.warning("No default workspace was found.");
             }
             
-            for ( Resource wsd : Resources.list(workspaces, Resources.DirectoryFilter.INSTANCE) ) {
-                Resource f = wsd.get("workspace.xml");
-                if ( !Resources.exists(f) ) {
-                    continue;
-                }
-                
-                WorkspaceInfo ws = null;
-                try {
-                    ws = depersist( xp, f, WorkspaceInfo.class );
-                    catalog.add( ws );    
-                }
-                catch( Exception e ) {
-                    LOGGER.log( Level.WARNING, "Failed to load workspace '" + wsd.name() + "'" , e );
-                    continue;
-                }
-                
-                LOGGER.info( "Loaded workspace '" + ws.getName() +"'");
-                
-                //load the namespace
-                Resource nsf = wsd.get("namespace.xml" );
-                NamespaceInfo ns = null; 
-                if ( Resources.exists(nsf) ) {
+            List<Resource> workspaceList = workspaces.list().parallelStream()
+                    .filter(r -> Resources.DirectoryFilter.INSTANCE.accept(r))
+                    .collect(Collectors.toList());
+            
+            try (AsynchResourceIterator<WorkspaceContents> it = new AsynchResourceIterator<>(
+                    workspaces, Resources.DirectoryFilter.INSTANCE, new WorkspaceMapper())) {
+                while (it.hasNext()) {
+                    WorkspaceContents wc = it.next();
+                    WorkspaceInfo ws;
+                    final Resource workspaceResource = wc.resource;
                     try {
-                        ns = depersist( xp, nsf, NamespaceInfo.class );
-                        catalog.add( ns );
-                    }
-                    catch( Exception e ) {
-                        LOGGER.log( Level.WARNING, "Failed to load namespace for '" + wsd.name() + "'" , e );
-                    }
-                }
-                
-                //set the default workspace, this value might be null in the case of coming from a 
-                // 2.0.0 data directory. See https://osgeo-org.atlassian.net/browse/GEOS-3440
-                if (defaultWorkspace != null ) {
-                    if (ws.getName().equals(defaultWorkspace.getName())) {
-                        catalog.setDefaultWorkspace(ws);
-                        if (ns != null) {
-                            catalog.setDefaultNamespace(ns);
+                        ws = depersist(xp, wc.contents, WorkspaceInfo.class);
+                        catalog.add(ws);
+                        if (LOGGER.isLoggable(Level.INFO)) {
+                            LOGGER.info("Loaded workspace '" + ws.getName() + "'");
                         }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING,
+                                "Failed to load workspace '" + workspaceResource.name() + "'", e);
+                        continue;
                     }
-                }
-                else {
-                    //create the default.xml file
-                    defaultWorkspace = catalog.getDefaultWorkspace();
-                    if (defaultWorkspace != null) {
-                        try {
-                            persist(xp, defaultWorkspace, dws);    
-                        }
-                        catch( Exception e ) {
-                            LOGGER.log( Level.WARNING, "Failed to persist default workspace '" + 
-                                wsd.name() + "'" , e );
-                        }
-                        
-                    }
-                }
 
-                //load the styles for the workspace
-                Resource styles = wsd.get("styles");
-                if (styles != null) {
-                    loadStyles(styles, catalog, xp);
-                }
-            }
-            
-            for ( Resource wsd : Resources.list(workspaces, Resources.DirectoryFilter.INSTANCE )) {
-            
-                //load the stores for this workspace
-                for ( Resource sd : Resources.list(wsd, Resources.DirectoryFilter.INSTANCE) ) {
-                    Resource f = sd.get("datastore.xml");
-                    if ( Resources.exists(f)) {
-                        //load as a datastore
-                        DataStoreInfo ds = null;
-                        try {    
-                            ds = depersist( xp, f, DataStoreInfo.class );
-                            catalog.add( ds );
-                            
-                            LOGGER.info( "Loaded data store '" + ds.getName() +"'");
-                            
-                            if (ds.isEnabled()) {
-                                //connect to the datastore to determine if we should disable it
-                                try {
-                                    ds.getDataStore(null);
-                                }
-                                catch( Throwable t ) {
-                                    LOGGER.warning( "Error connecting to '" + ds.getName() + "'. Disabling." );
-                                    LOGGER.log( Level.INFO, "", t );
-                                    
-                                    ds.setError(t);
-                                    ds.setEnabled(false);
-                                }
-                            }
-                        }
-                        catch( Exception e ) {
-                            LOGGER.log( Level.WARNING, "Failed to load data store '" + sd.name() + "'", e);
-                            continue;
-                        }
-                        
-                        //load feature types
-                        for ( Resource ftd : Resources.list(sd, Resources.DirectoryFilter.INSTANCE) ) {
-                            f =  ftd.get("featuretype.xml" );
-                            if( Resources.exists(f) ) {
-                                FeatureTypeInfo ft = null;
-                                try {
-                                    ft = depersist(xp,f,FeatureTypeInfo.class);
-                                    catalog.add(ft);
-                                }
-                                catch( Exception e ) {
-                                    LOGGER.log( Level.WARNING, "Failed to load feature type '" + ftd.name() +"'", e);
-                                    continue;
-                                }
-                                
-                                LOGGER.info( "Loaded feature type '" + ds.getName() +"'");
-                                
-                                f = ftd.get("layer.xml" );
-                                if ( Resources.exists(f) ) {
-                                    try {
-                                        LayerInfo l = depersist(xp, f, LayerInfo.class );
-                                        catalog.add( l );
-                                        
-                                        LOGGER.info( "Loaded layer '" + l.getName() + "'" );
-                                    }
-                                    catch( Exception e ) {
-                                        LOGGER.log( Level.WARNING, "Failed to load layer for feature type '" + ft.getName() +"'", e);
-                                    }
-                                }
-                            }
-                            else {
-                                LOGGER.warning( "Ignoring feature type directory " + ftd.path() );
+                    // load the namespace
+                    NamespaceInfo ns = null;
+                    try {
+                        ns = depersist(xp, wc.nsContents, NamespaceInfo.class);
+                        catalog.add(ns);
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING,
+                                "Failed to load namespace for '" + workspaceResource.name() + "'", e);
+                    }
+                    
+                    // set the default workspace, this value might be null in the case of coming from a
+                    // 2.0.0 data directory. See https://osgeo-org.atlassian.net/browse/GEOS-3440
+                    if (defaultWorkspace != null) {
+                        if (ws.getName().equals(defaultWorkspace.getName())) {
+                            catalog.setDefaultWorkspace(ws);
+                            if (ns != null) {
+                                catalog.setDefaultNamespace(ns);
                             }
                         }
                     } else {
-                        //look for a coverage store
-                        f = sd.get("coveragestore.xml" );
-                        if ( Resources.exists(f) ) {
-                            CoverageStoreInfo cs = null;
+                        // create the default.xml file
+                        defaultWorkspace = catalog.getDefaultWorkspace();
+                        if (defaultWorkspace != null) {
                             try {
-                                cs = depersist( xp, f, CoverageStoreInfo.class );
-                                catalog.add( cs );
-                            
-                                LOGGER.info( "Loaded coverage store '" + cs.getName() +"'");
+                                persist(xp, defaultWorkspace, dws);
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING, "Failed to persist default workspace '"
+                                        + workspaceResource.name() + "'", e);
                             }
-                            catch( Exception e ) {
-                                LOGGER.log( Level.WARNING, "Failed to load coverage store '" + sd.name() +"'", e);
-                                continue;
-                            }
-                            
-                            //load coverages
-                            for ( Resource cd : Resources.list(sd, Resources.DirectoryFilter.INSTANCE) ) {
-                                f = cd.get("coverage.xml" );
-                                if( Resources.exists(f) ) {
-                                    CoverageInfo c = null;
-                                    try {
-                                        c = depersist(xp,f,CoverageInfo.class);
-                                        catalog.add( c );
-                                        
-                                        LOGGER.info( "Loaded coverage '" + cs.getName() +"'");
-                                    }
-                                    catch( Exception e ) {
-                                        LOGGER.log( Level.WARNING, "Failed to load coverage '" + cd.name() +"'", e);
-                                        continue;
-                                    }
-                                    
-                                    f = cd.get("layer.xml" );
-                                    if ( Resources.exists(f) ) {
-                                        try {
-                                            LayerInfo l = depersist(xp, f, LayerInfo.class );
-                                            catalog.add( l );
-                                            
-                                            LOGGER.info( "Loaded layer '" + l.getName() + "'" );
-                                        }
-                                        catch( Exception e ) {
-                                            LOGGER.log( Level.WARNING, "Failed to load layer coverage '" + c.getName() +"'", e);
-                                        }
-                                    }
-                                }
-                                else {
-                                    LOGGER.warning( "Ignoring coverage directory " + cd.path() );
-                                }
-                            }
-                        } else {
-                            f = sd.get("wmsstore.xml");
-                            if(Resources.exists(f)) {
-                                WMSStoreInfo wms = null;
-                                try {
-                                    wms = depersist( xp, f, WMSStoreInfo.class );
-                                    catalog.add( wms );
-                                
-                                    LOGGER.info( "Loaded wmsstore '" + wms.getName() +"'");
-                                } catch( Exception e ) {
-                                    LOGGER.log( Level.WARNING, "Failed to load wms store '" + sd.name() +"'", e);
-                                    continue;
-                                }
-                                
-                                //load wms layers
-                                for ( Resource cd : Resources.list(sd,Resources.DirectoryFilter.INSTANCE) ) {
-                                    f =  cd.get("wmslayer.xml" );
-                                    if( Resources.exists(f) ) {
-                                        WMSLayerInfo wl = null;
-                                        try {
-                                            wl = depersist(xp,f,WMSLayerInfo.class);
-                                            catalog.add( wl );
-                                            
-                                            LOGGER.info( "Loaded wms layer'" + wl.getName() +"'");
-                                        }
-                                        catch( Exception e ) {
-                                            LOGGER.log( Level.WARNING, "Failed to load wms layer '" + cd.name() +"'", e);
-                                            continue;
-                                        }
-                                        
-                                        f =  cd.get("layer.xml" );
-                                        if ( Resources.exists(f) ) {
-                                            try {
-                                                LayerInfo l = depersist(xp, f, LayerInfo.class );
-                                                catalog.add( l );
-                                                
-                                                LOGGER.info( "Loaded layer '" + l.getName() + "'" );
-                                            }
-                                            catch( Exception e ) {
-                                                LOGGER.log( Level.WARNING, "Failed to load cascaded wms layer '" + wl.getName() +"'", e);
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        LOGGER.warning( "Ignoring coverage directory " + cd.path() );
-                                    }
-                                }
-                            } else if(!isConfigDirectory(sd)) {
-                                LOGGER.warning( "Ignoring store directory '" + sd.name() +  "'");
-                                continue;
-                            }
+
+                        }
+                    }
+
+                    //load the styles for the workspace
+                    Resource styles = workspaceResource.get("styles");
+                    if (styles != null) {
+                        loadStyles(styles, catalog, xp);
+                    }
+                }
+            }
+
+            // maps each store into a StoreContents
+            ResourceMapper<StoreContents> storeMapper = sd -> {
+                Resource f = sd.get("datastore.xml");
+                if(Resources.exists(f)) {
+                    return new StoreContents(f, f.getContents());
+                }
+                f = sd.get("coveragestore.xml");
+                if(Resources.exists(f)) {
+                    return new StoreContents(f, f.getContents());
+                }
+                f = sd.get("wmsstore.xml");
+                if(Resources.exists(f)) {
+                    return new StoreContents(f, f.getContents());
+                }
+                if(!isConfigDirectory(sd)) {
+                    LOGGER.warning( "Ignoring store directory '" + sd.name() +  "'");
+                }
+                // nothing found
+                return null;
+                
+            };
+            
+            for (Resource wsd : workspaceList) {
+                // load the stores for this workspace
+                try (AsynchResourceIterator<StoreContents> it = new AsynchResourceIterator<>(wsd,
+                        Resources.DirectoryFilter.INSTANCE, storeMapper)) {
+                    while (it.hasNext()) {
+                        StoreContents storeContents = it.next();
+                        final String resourceName = storeContents.resource.name();
+                        if ("datastore.xml".equals(resourceName)) {
+                            loadDataStore(storeContents, catalog, xp, checkStores);
+                        } else if ("coveragestore.xml".equals(resourceName)) {
+                            loadCoverageStore(storeContents, catalog, xp);
+                        } else if ("wmsstore.xml".equals(resourceName)) {
+                            loadWmsStore(storeContents, catalog, xp);
+                        } else if (!isConfigDirectory(storeContents.resource)) {
+                            LOGGER.warning("Ignoring store directory '"
+                                    + storeContents.resource.name() + "'");
+                            continue;
                         }
                     }
                 }
 
-                //load hte layer groups for this workspace
+                // load the layer groups for this workspace
                 Resource layergroups = wsd.get("layergroups");
                 if (layergroups != null) {
                     loadLayerGroups(layergroups, catalog, xp);
@@ -528,18 +567,112 @@ public abstract class GeoServerLoader {
             LOGGER.warning( "No 'workspaces' directory found, unable to load any stores." );
         }
 
-        //namespaces
-        
         //layergroups
         Resource layergroups = resourceLoader.get( "layergroups" );
-        if ( layergroups != null ) {
+        if (layergroups != null) {
            loadLayerGroups(layergroups, catalog, xp);
         }
         xp.setUnwrapNulls(true);
         catalog.resolve();
+        // re-enable extended validation
+        if(!checkStores) {
+            catalog.setExtendedValidation(true);
+        }
         return catalog;
     }
     
+    private void loadWmsStore(StoreContents storeContents, CatalogImpl catalog,
+            XStreamPersister xp) {
+        final Resource storeResource = storeContents.resource;
+        WMSStoreInfo wms = null;
+        try {
+            wms = depersist( xp, storeContents.contents, WMSStoreInfo.class );
+            catalog.add( wms );
+        
+            LOGGER.info( "Loaded wmsstore '" + wms.getName() +"'");
+        } catch( Exception e ) {
+            LOGGER.log( Level.WARNING, "Failed to load wms store '" + storeResource.name() +"'", e);
+            return;
+        }
+        
+        // load wms layers
+        LayerLoader<WMSLayerInfo> coverageLoader = new LayerLoader<>(WMSLayerInfo.class, xp, catalog);
+        try(AsynchResourceIterator<LayerContents> it = new AsynchResourceIterator<>(storeResource.parent(), Resources.DirectoryFilter.INSTANCE, WMS_LAYER_MAPPER)) {
+            while(it.hasNext()) {
+                LayerContents lc = it.next();
+                coverageLoader.accept(lc);
+            }
+        }
+    }
+
+    private void loadCoverageStore(StoreContents storeContents, CatalogImpl catalog,
+            XStreamPersister xp) {
+        CoverageStoreInfo cs = null;
+        final Resource storeResource = storeContents.resource;
+        try {
+            cs = depersist( xp, storeContents.contents, CoverageStoreInfo.class );
+            catalog.add( cs );
+
+            if(LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.info( "Loaded coverage store '" + cs.getName() +"'");
+            }
+        } catch( Exception e ) {
+            LOGGER.log( Level.WARNING, "Failed to load coverage store '" + storeResource.name() +"'", e);
+            return;
+        }
+        
+        // load coverages
+        LayerLoader<CoverageInfo> coverageLoader = new LayerLoader<>(CoverageInfo.class, xp,
+                catalog);
+        try (AsynchResourceIterator<LayerContents> it = new AsynchResourceIterator<>(
+                storeResource.parent(), Resources.DirectoryFilter.INSTANCE,
+                COVERAGE_LAYER_MAPPER)) {
+            while (it.hasNext()) {
+                LayerContents lc = it.next();
+                coverageLoader.accept(lc);
+            }
+        }
+    }
+
+    private void loadDataStore(StoreContents storeContents, CatalogImpl catalog, XStreamPersister xp, boolean checkStores) {
+        final Resource storeResource = storeContents.resource;
+        DataStoreInfo ds;
+        try {    
+            ds = depersist( xp, storeContents.contents, DataStoreInfo.class );
+            catalog.add( ds );
+            
+            if(LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.info( "Loaded data store '" + ds.getName() +"'");
+            }
+            
+            if (checkStores && ds.isEnabled()) {
+                //connect to the datastore to determine if we should disable it
+                try {
+                    ds.getDataStore(null);
+                } catch( Throwable t ) {
+                    LOGGER.warning( "Error connecting to '" + ds.getName() + "'. Disabling." );
+                    LOGGER.log( Level.INFO, "", t );
+                    
+                    ds.setError(t);
+                    ds.setEnabled(false);
+                }
+            }
+        } catch( Exception e ) {
+            LOGGER.log( Level.WARNING, "Failed to load data store '" + storeResource.parent().name() + "'", e);
+            return;
+        }
+        
+        // load feature types
+        LayerLoader<FeatureTypeInfo> featureLoader = new LayerLoader<>(FeatureTypeInfo.class, xp, catalog);
+        try(AsynchResourceIterator<LayerContents> it = new AsynchResourceIterator<>(storeResource.parent(), Resources.DirectoryFilter.INSTANCE, FEATURE_LAYER_MAPPER)) {
+            while(it.hasNext()) {
+                LayerContents lc = it.next();
+                featureLoader.accept(lc);
+            }
+        }
+        
+    }
+
     /**
      * Some config directories in GeoServer are used to store workspace specific configurations, 
      * identify them so that we don't log complaints about their existence
@@ -697,39 +830,42 @@ public abstract class GeoServerLoader {
         }
     }
 
-    void loadStyles(Resource styles, Catalog catalog, XStreamPersister xp) {
-        for ( Resource sf : Resources.list(styles, new Resources.ExtensionFilter("XML") ) ) {
-            try {
-                //handle the .xml.xml case
-                if (Resources.exists(styles.get(sf.name() + ".xml"))) {
-                    continue;
+    void loadStyles(Resource styles, Catalog catalog, XStreamPersister xp) throws IOException {
+        Filter<Resource> styleFilter = r -> XML_FILTER.accept(r) && !Resources.exists(styles.get(r.name() + ".xml"));
+        try (AsynchResourceIterator<byte[]> it = new AsynchResourceIterator<>(styles, styleFilter, r -> r.getContents())) {
+            while (it.hasNext()) {
+                try {
+                    StyleInfo s = depersist(xp, it.next(), StyleInfo.class);
+                    catalog.add(s);
+
+                    if(LOGGER.isLoggable(Level.INFO)) {
+                        LOGGER.info("Loaded style '" + s.getName() + "'");
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed to load style", e);
                 }
-                
-                StyleInfo s = depersist( xp, sf, StyleInfo.class );
-                catalog.add( s );
-                
-                LOGGER.info( "Loaded style '" + s.getName() + "'" );
-            }
-            catch( Exception e ) {
-                LOGGER.log( Level.WARNING, "Failed to load style from file '" + sf.name() + "'" , e );
             }
         }
     }
+    
+   
+    void loadLayerGroups(Resource layerGroups, Catalog catalog, XStreamPersister xp) {
+        try (AsynchResourceIterator<byte[]> it = new AsynchResourceIterator<>(layerGroups,
+                XML_FILTER, r -> r.getContents())) {
+            while (it.hasNext()) {
+                try {
+                    LayerGroupInfo lg = depersist(xp, it.next(), LayerGroupInfo.class);
+                    if (lg.getLayers() == null || lg.getLayers().size() == 0) {
+                        LOGGER.warning(
+                                "Skipping empty layer group '" + lg.getName() + "', it is invalid");
+                        continue;
+                    }
+                    catalog.add(lg);
 
-    void loadLayerGroups(Resource layergroups, Catalog catalog, XStreamPersister xp) {
-        for ( Resource lgf : Resources.list( layergroups, new Resources.ExtensionFilter( "XML" ) ) ) {
-            try {
-                LayerGroupInfo lg = depersist( xp, lgf, LayerGroupInfo.class );
-                if(lg.getLayers() == null || lg.getLayers().size() == 0) {
-                    LOGGER.warning("Skipping empty layer group '" + lg.getName() + "', it is invalid");
-                    continue;
+                    LOGGER.info("Loaded layer group '" + lg.getName() + "'");
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed to load layer group", e);
                 }
-                catalog.add( lg );
-                
-                LOGGER.info( "Loaded layer group '" + lg.getName() + "'" );    
-            }
-            catch( Exception e ) {
-                LOGGER.log( Level.WARNING, "Failed to load layer group '" + lgf.name() + "'", e );
             }
         }
     }
@@ -774,7 +910,16 @@ public abstract class GeoServerLoader {
      * Helper method which uses xstream to depersist an object as xml from disk.
      */
     <T> T depersist( XStreamPersister xp, Resource f , Class<T> clazz ) throws IOException {
-        try(InputStream in = f.in()) {
+        try(InputStream in = new ByteArrayInputStream(f.getContents())) {
+            return xp.load( in, clazz );
+        }
+    }
+    
+    /**
+     * Helper method which uses xstream to depersist an object as xml from disk.
+     */
+    static <T> T depersist( XStreamPersister xp, byte[] contents , Class<T> clazz ) throws IOException {
+        try(InputStream in = new ByteArrayInputStream(contents)) {
             return xp.load( in, clazz );
         }
     }

@@ -13,7 +13,6 @@ import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.ReadOnlyConfiguration;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.cluster.impl.handlers.DocumentFileHandler;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -30,11 +29,13 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
 	private final Catalog catalog;
 
 	private JMSConfiguration config;
+	private final GeoServerResourceLoader loader;
 
 	public JMSCatalogStylesFileHandler(Catalog catalog, XStream xstream,
-			Class clazz) {
+			Class clazz, GeoServerResourceLoader loader) {
 		super(xstream, clazz);
 		this.catalog = catalog;
+		this.loader = loader;
 	}
 
 	public void setConfig(JMSConfiguration config) {
@@ -50,7 +51,6 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
 			throw new IllegalStateException("Unable to load configuration");
 		} else if (!ReadOnlyConfiguration.isReadOnly(config)) {
 			try {
-				GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 				Resource file = loader.get("styles").get(event.getResourceName());
 				
 				if ( !Resources.exists(file) ) {

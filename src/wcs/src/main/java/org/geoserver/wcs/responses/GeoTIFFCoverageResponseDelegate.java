@@ -5,8 +5,6 @@
  */
 package org.geoserver.wcs.responses;
 
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
-
 import java.awt.Dimension;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
@@ -21,20 +19,19 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
-import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
 import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
+
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
 
 /**
  * Coverage writer for the geotiff format.
@@ -89,38 +86,24 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         Utilities.ensureNonNull("econdingParameters", econdingParameters);
 
         
-        // imposing encoding parameters
-        final GeoTiffWriteParams wp = new GeoTiffWriteParams();
-        
+        GeoTiffWriterHelper writerHelper = new GeoTiffWriterHelper(sourceCoverage);
         // compression
-        handleCompression(econdingParameters, wp);
+        handleCompression(econdingParameters, writerHelper);
         
         // tiling
-        handleTiling(econdingParameters, wp, sourceCoverage);
+        handleTiling(econdingParameters, sourceCoverage, writerHelper);
         
         // interleaving
-        handleInterleaving(econdingParameters, wp, sourceCoverage);
+        handleInterleaving(econdingParameters, sourceCoverage, writerHelper);
 
-        final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
-        writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
-        
         if(geoserver.getService(WCSInfo.class).isLatLon()){
-            writerParams.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
+            final ParameterValueGroup gp = writerHelper.getGeotoolsWriteParams();
+            gp.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
         }
 
-        // write down
-        GeoTiffWriter writer = (GeoTiffWriter) GEOTIF_FORMAT.getWriter(output);
         try {
-            if (writer != null)
-                writer.write(sourceCoverage, (GeneralParameterValue[]) writerParams.values()
-                        .toArray(new GeneralParameterValue[1]));
+            writerHelper.write(output);
         } finally {
-            try {
-                if (writer != null)
-                    writer.dispose();
-            } catch (Throwable e) {
-                // eating exception
-            }
             sourceCoverage.dispose(false);
         }
     }
@@ -132,15 +115,13 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      * Notice that the Tiff ImageWriter supports only pixel interleaving.
      * 
      * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to hold the encoding parameters.
-     * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided encoding parameters.
+     * @param sourceCoverage an instance of {@link GeoTiffWriteParams} to be massaged as per the provided encoding parameters.
      * 
      * @throws WcsException in case there are invalid or unsupported options.
      */
-    private void handleInterleaving(Map<String, String> encondingParameters, GeoTiffWriteParams wp, GridCoverage2D sourceCoverage) throws WcsException{
-
+    private void handleInterleaving(Map<String, String> encondingParameters, GridCoverage2D sourceCoverage, GeoTiffWriterHelper writerHelper) throws WcsException{
         // interleaving is optional
         if(encondingParameters.containsKey("interleave")){
-            
             // ok, the interleaving has been specified, let's see what we got
             final String interleavingS= encondingParameters.get("interleave");
             if(interleavingS.equals("pixel")){
@@ -178,7 +159,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      * 
      * @throws WcsException in case there are invalid or unsupported options.
      */
-    private void handleTiling(Map<String, String> econdingParameters, final GeoTiffWriteParams wp, GridCoverage2D sourceCoverage)
+    private void handleTiling(Map<String, String> econdingParameters, GridCoverage2D sourceCoverage, GeoTiffWriterHelper helper)
             throws WcsException {
 
         // start with default dimension, since tileW and tileH are optional
@@ -258,16 +239,13 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                     }
                 }
             }
-        }
-
-        // set tile dimensions
-        if(tileDimensions.width!=sourceTileW||tileDimensions.height!=sourceTileH){
-            LOGGER.fine("Final tiling:"+tileDimensions.width+"x"+tileDimensions.height);
+           
+            GeoTiffWriteParams wp = helper.getImageIoWriteParams();
+            helper.disableSourceCopyOptimization();
             wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
             wp.setTiling(tileDimensions.width, tileDimensions.height);
-        } else {
-            LOGGER.fine("Mantaining original tiling");
         }
+
     }
 
     /**
@@ -286,9 +264,12 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      * @throws WcsException in case there are invalid or unsupported options.
      */
     private void handleCompression(Map<String, String> econdingParameters,
-            final GeoTiffWriteParams wp) throws WcsException {
+            GeoTiffWriterHelper helper) throws WcsException {
         // compression
         if(econdingParameters.containsKey("compression")){ 
+            GeoTiffWriteParams wp = helper.getImageIoWriteParams();
+            helper.disableSourceCopyOptimization();
+            
             String compressionS= econdingParameters.get("compression");
             if(compressionS!=null&&!compressionS.equalsIgnoreCase("none")){ 
                 if(compressionS.equals("LZW")){

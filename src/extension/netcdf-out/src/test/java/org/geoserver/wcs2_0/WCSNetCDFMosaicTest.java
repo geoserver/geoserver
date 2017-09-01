@@ -5,9 +5,12 @@
  */
 package org.geoserver.wcs2_0;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -41,7 +44,10 @@ import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
+import org.geoserver.web.netcdf.NetCDFSettingsContainer;
+import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
+import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
@@ -50,16 +56,16 @@ import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 @TestSetup(run=TestSetupFrequency.ONCE)
 public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
@@ -77,6 +83,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public static QName VISIBILITYPACKED = new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCOMPRESSED = new QName(CiteTestData.WCS_URI, "visibilityCompressed", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCFPACKED = new QName(CiteTestData.WCS_URI, "visibilityCFPacked", CiteTestData.WCS_PREFIX);
+    public static QName TEMPERATURE_SURFACE = new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
 
     private final static String STANDARD_NAME = "visibility_in_air";
     private final static Section NETCDF_SECTION;
@@ -145,6 +152,12 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
         testData.addRasterLayer(VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCOMPRESSED);
+
+        testData.addRasterLayer(TEMPERATURE_SURFACE, "Temperature_surface.zip", null, null,
+                this.getClass(), getCatalog());
+        setupRasterDimension(getLayerId(TEMPERATURE_SURFACE), ResourceInfo.TIME,
+                DimensionPresentation.LIST, null);
+        configureTemperatureSurface();
     }
 
     private void setupNetCDFoutSettings(QName name) {
@@ -486,4 +499,184 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         coverageBands.add(outputBand2);
         coverageView = new CoverageView("dummyView", coverageBands);
     }
+
+    /**
+     * Configure NetCDF output settings for <code>Temperature_surface</code>.
+     */
+    private void configureTemperatureSurface() {
+        NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
+        container.setCopyAttributes(true);
+        List<VariableAttribute> variableAttributes = new ArrayList<VariableAttribute>();
+        variableAttributes
+                .add(new VariableAttribute("test-variable-attribute", "Test Variable Attribute"));
+        variableAttributes.add(new VariableAttribute("Grib2_Parameter_Category", "Test Category"));
+        container.setVariableAttributes(variableAttributes);
+        List<ExtraVariable> extraVariables = new ArrayList<ExtraVariable>();
+        extraVariables.add(new ExtraVariable("reftime", "forecast_reference_time", "time"));
+        extraVariables.add(new ExtraVariable("reftime", "scalar_forecast_reference_time", ""));
+        container.setExtraVariables(extraVariables);
+        List<GlobalAttribute> globalAttributes = new ArrayList<GlobalAttribute>();
+        globalAttributes.add(new GlobalAttribute("test-global-attribute", "Test Global Attribute"));
+        globalAttributes.add(new GlobalAttribute("test-global-attribute-integer", "42"));
+        globalAttributes.add(new GlobalAttribute("test-global-attribute-double", "1.5"));
+        container.setGlobalAttributes(globalAttributes);
+        CoverageInfo info = getCatalog().getCoverageByName(getLayerId(TEMPERATURE_SURFACE));
+        info.getMetadata().put(NetCDFSettingsContainer.NETCDFOUT_KEY, container);
+        getCatalog().save(info);
+    }
+
+    /**
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different types, for NetCDF-3 output.
+     */
+    @Test
+    public void testExtraVariablesNetcdf3() throws Exception {
+        checkExtraVariables("application/x-netcdf");
+    }
+
+    /**
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different types, for NetCDF-4 output.
+     */
+    @Test
+    public void testExtraVariablesNetcdf4() throws Exception {
+        assumeTrue(NetCDFUtilities.isNC4CAvailable());
+        checkExtraVariables("application/x-netcdf4");
+    }
+
+    /**
+     * Check <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different type.
+     * 
+     * @param format the output format MIME type
+     */
+    private void checkExtraVariables(String format) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?service=WCS&version=2.0.1&request=GetCoverage"
+                        + "&coverageid=wcs__Temperature_surface&format=" + format);
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals(format, response.getContentType());
+        byte[] responseBytes = getBinary(response);
+        File file = File.createTempFile("extra-variable-", "-wcs__Temperature_surface.nc",
+                new File("./target"));
+        FileUtils.writeByteArrayToFile(file, responseBytes);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            assertNotNull(dataset);
+            // check dimensions
+            Dimension timeDim = dataset.findDimension("time");
+            assertNotNull(timeDim);
+            assertEquals(2, timeDim.getLength());
+            Dimension rlonDim = dataset.findDimension("rlon");
+            assertNotNull(rlonDim);
+            assertEquals(7, rlonDim.getLength());
+            Dimension rlatDim = dataset.findDimension("rlat");
+            assertNotNull(rlatDim);
+            assertEquals(5, rlatDim.getLength());
+            // check coordinate variables
+            Variable timeVar = dataset.findVariable("time");
+            assertNotNull(timeVar);
+            assertEquals(1, timeVar.getDimensions().size());
+            assertEquals(timeDim, timeVar.getDimensions().get(0));
+            assertEquals("time", timeVar.findAttribute("long_name").getStringValue());
+            assertEquals("time", timeVar.findAttribute("description").getStringValue());
+            assertEquals("seconds since 1970-01-01 00:00:00 UTC",
+                    timeVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new double[] { 1461664800, 1461708000 },
+                    (double[]) timeVar.read().copyTo1DJavaArray(), (double) DELTA);
+            Variable rlonVar = dataset.findVariable("rlon");
+            assertNotNull(rlonVar);
+            assertEquals(1, rlonVar.getDimensions().size());
+            assertEquals(rlonDim, rlonVar.getDimensions().get(0));
+            assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
+            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new float[] { -30, -20, -10, 0, 10, 20, 30 },
+                    (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
+            Variable rlatVar = dataset.findVariable("rlat");
+            assertNotNull(rlatVar);
+            assertEquals(1, rlatVar.getDimensions().size());
+            assertEquals(rlatDim, rlatVar.getDimensions().get(0));
+            assertEquals("grid_latitude", rlatVar.findAttribute("long_name").getStringValue());
+            assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
+            assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new float[] { -20, -10, 0, 10, 20 },
+                    (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
+            // check projection variable
+            Variable projVar = dataset.findVariable("rotated_latitude_longitude");
+            assertNotNull(projVar);
+            assertEquals("rotated_latitude_longitude",
+                    projVar.findAttribute("grid_mapping_name").getStringValue());
+            assertEquals(74.0, projVar.findAttribute("grid_north_pole_longitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            assertEquals(36.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            // check data variable
+            Variable tempVar = dataset.findVariable("Temperature_surface");
+            assertNotNull(tempVar);
+            assertEquals("rotated_latitude_longitude",
+                    tempVar.findAttribute("grid_mapping").getStringValue());
+            assertEquals("K", tempVar.findAttribute("units").getStringValue());
+            assertEquals(3, tempVar.getDimensions().size());
+            assertEquals(timeDim, tempVar.getDimensions().get(0));
+            assertEquals(rlatDim, tempVar.getDimensions().get(1));
+            assertEquals(rlonDim, tempVar.getDimensions().get(2));
+            assertArrayEquals(new float[] { 300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298,
+                    297, 296, 295, 298, 299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298,
+                    297, 296, 297, 298, 299, 300, 299, 298, 301, 300, 299, 298, 297, 296, 295, 300,
+                    301, 300, 299, 298, 297, 296, 299, 300, 301, 300, 299, 298, 297, 298, 299, 300,
+                    301, 300, 299, 298, 297, 298, 299, 300, 301, 300, 299 },
+                    (float[]) tempVar.read().copyTo1DJavaArray(), (float) DELTA);
+            // some attributes expected to copied from source variable
+            assertEquals("TMP", tempVar.findAttribute("abbreviation").getStringValue());
+            assertEquals("Forecast",
+                    tempVar.findAttribute("Grib2_Generating_Process_Type").getStringValue());
+            // should not be copied from source variable as in the blacklist
+            assertNull(tempVar.findAttribute("coordinates"));
+            // test that copied variable attributes can be overwritten
+            assertEquals("Test Category",
+                    tempVar.findAttribute("Grib2_Parameter_Category").getStringValue());
+            // test that a new variable attribute can be added
+            assertEquals("Test Variable Attribute",
+                    tempVar.findAttribute("test-variable-attribute").getStringValue());
+            // extra variable copied from source with dimensions "time"
+            Variable reftimeVar = dataset.findVariable("forecast_reference_time");
+            assertEquals(1, reftimeVar.getDimensions().size());
+            assertEquals(timeDim, reftimeVar.getDimensions().get(0));
+            assertEquals("Hour since 2016-04-25T22:00:00Z",
+                    reftimeVar.findAttribute("units").getStringValue());
+            assertEquals("forecast_reference_time",
+                    reftimeVar.findAttribute("standard_name").getStringValue());
+            assertEquals("GRIB reference time",
+                    reftimeVar.findAttribute("long_name").getStringValue());
+            assertArrayEquals(new double[] { 6, 3 },
+                    (double[]) reftimeVar.read().copyTo1DJavaArray(), (double) DELTA);
+            // scalar extra variable copied from source with dimensions ""
+            Variable scalarReftimeVar = dataset.findVariable("scalar_forecast_reference_time");
+            assertEquals(0, scalarReftimeVar.getDimensions().size());
+            assertEquals("Hour since 2016-04-25T22:00:00Z",
+                    scalarReftimeVar.findAttribute("units").getStringValue());
+            assertEquals("forecast_reference_time",
+                    scalarReftimeVar.findAttribute("standard_name").getStringValue());
+            assertEquals("GRIB reference time",
+                    scalarReftimeVar.findAttribute("long_name").getStringValue());
+            double t = scalarReftimeVar.read().getDouble(0);
+            // the value is nondeterministic because it depends
+            // on which of two granules is used as the sample
+            assertTrue(t == 6 || t == 3);
+            // string global attribute
+            assertEquals("Test Global Attribute",
+                    dataset.findGlobalAttribute("test-global-attribute").getStringValue());
+            // integer global attribute
+            assertEquals(DataType.INT,
+                    dataset.findGlobalAttribute("test-global-attribute-integer").getDataType());
+            assertEquals(42,
+                    dataset.findGlobalAttribute("test-global-attribute-integer").getNumericValue());
+            // double global attribute
+            assertEquals(DataType.DOUBLE,
+                    dataset.findGlobalAttribute("test-global-attribute-double").getDataType());
+            assertEquals(1.5,
+                    dataset.findGlobalAttribute("test-global-attribute-double").getNumericValue());
+        } finally {
+            FileUtils.deleteQuietly(file);
+        }
+    }
+
 }

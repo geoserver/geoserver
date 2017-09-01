@@ -27,4 +27,13 @@ public class HelloWorld {
         	throw new ServiceException("Wrapping code error", e);
         }
     }
+
+    public void badRequestHttpErrorCodeException() {
+        throw new HttpErrorCodeException( HttpServletResponse.SC_BAD_REQUEST );
+    }
+
+    public void httpErrorCodeExceptionWithContentType() {
+        throw new HttpErrorCodeException( HttpServletResponse.SC_OK, "{\"hello\":\"world\"}")
+            .setContentType("application/json");
+    }
 }

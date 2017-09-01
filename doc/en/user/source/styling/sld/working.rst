@@ -77,7 +77,7 @@ Style lookup in library mode operates as follows:
 
 * For each layer in the ``layers`` list, the applied style is either 
   a named style specified in the ``styles`` list (if present), or the layer default style
-* For a **named** style, if the eternal style document has a ``<NamedLayer>...<UserStyle>``
+* For a **named** style, if the external style document has a ``<NamedLayer>...<UserStyle>``
   with matching layer name and style name, then it is used.
   Otherwise, the style name is searched for in the catalog.
   If it is not found there, an error occurs.

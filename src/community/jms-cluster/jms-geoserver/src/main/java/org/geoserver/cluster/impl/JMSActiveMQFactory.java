@@ -105,10 +105,6 @@ public class JMSActiveMQFactory extends JMSFactory implements
 					configuration
 							.getProperty(TopicConfiguration.TOPIC_NAME_KEY));
 		}
-		if (topic == null) {
-			throw new IllegalStateException(
-					"Unable to load a JMS Topic destination");
-		}
 		return topic;
 	}
 
@@ -333,7 +329,7 @@ public class JMSActiveMQFactory extends JMSFactory implements
 
 					} else {
 						if (LOGGER.isLoggable(Level.SEVERE)) {
-							LOGGER.severe("Started the embedded brokerURI: "
+							LOGGER.info("Started the embedded brokerURI: "
 									+ brokerService.toString());
 						}
 					}

@@ -43,7 +43,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             
             int slash = first.indexOf('/');
             if (slash > -1) {
-                last = first.substring(slash+1);
+                last = first.substring(slash + 1);
                 first = first.substring(0, slash);
             }
             
@@ -58,6 +58,12 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
                     //hack up a qualified name
                     NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
                     if (ns != null) {
+                        // can have extra bits, like ws/layer/gwc/service
+                        int slashInLayer = last.indexOf('/');
+                        if(slashInLayer != -1) {
+                            last = last.substring(0, slashInLayer);
+                        }
+                        
                         LayerInfo l = catalog.getLayerByName(new NameImpl(ns.getURI(), last));
                         if (l != null) {
                             LocalPublished.set(l);
@@ -76,7 +82,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
                 LocalPublished.set(lg);
             }
             else {
-                //if no workspace context specified and server configuration not allowing global
+                // if no workspace context specified and server configuration not allowing global
                 // services throw an error
                 if (!gs.getGlobal().isGlobalServices()) {
                     throw new ServiceException("No such workspace '" + request.context + "'" );  

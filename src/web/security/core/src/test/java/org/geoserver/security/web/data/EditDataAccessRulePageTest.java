@@ -41,8 +41,8 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         tester.startPage(page=new EditDataAccessRulePage(getRule(ruleName)));        
         tester.assertRenderedPage(EditDataAccessRulePage.class);
 
-        tester.assertModelValue("form:workspace", MockData.CITE_PREFIX);
-        tester.assertModelValue("form:layer", MockData.LAKES.getLocalPart());
+        tester.assertModelValue("form:root", MockData.CITE_PREFIX);
+        tester.assertModelValue("form:layerContainer:layerAndLabel:layer", MockData.LAKES.getLocalPart());
         tester.assertModelValue("form:accessMode", AccessMode.WRITE);
         
         // Does not work with Palette

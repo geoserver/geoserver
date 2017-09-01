@@ -5,6 +5,11 @@
  */
 package org.geoserver.ows;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertThat;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -342,14 +347,24 @@ public class DispatcherTest extends TestCase {
     }
     
     public void testHttpErrorCodeException() throws Exception {
-    	assertHttpErrorCode("httpErrorCodeException");
+    	assertHttpErrorCode("httpErrorCodeException", HttpServletResponse.SC_NO_CONTENT);
     }
     
     public void testWrappedHttpErrorCodeException() throws Exception {
-        assertHttpErrorCode("wrappedHttpErrorCodeException");
+        assertHttpErrorCode("wrappedHttpErrorCodeException", HttpServletResponse.SC_NO_CONTENT);
     }
 
-    private void assertHttpErrorCode(String requestType) throws Exception {
+    public void testBadRequestHttpErrorCodeException() throws Exception {
+        assertHttpErrorCode("badRequestHttpErrorCodeException", HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    public void testHttpErrorCodeExceptionWithContentType() throws Exception {
+        CodeExpectingHttpServletResponse rsp = 
+            assertHttpErrorCode("httpErrorCodeExceptionWithContentType", HttpServletResponse.SC_OK);
+        assertEquals("application/json", rsp.getContentType());
+    }
+
+    private CodeExpectingHttpServletResponse assertHttpErrorCode(String requestType, int expectedCode) throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
@@ -389,7 +404,10 @@ public class DispatcherTest extends TestCase {
         request.setQueryString("service=hello&request=hello&message=HelloWorld");
         
         dispatcher.handleRequest(request, response);
-        assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatusCode());
+        assertEquals(expectedCode, response.getStatusCode());
+
+        assertEquals(expectedCode >= 400, response.isError());
+        return response;
 	}
     
     /**
@@ -944,5 +962,21 @@ public class DispatcherTest extends TestCase {
         dispatcher.handleRequestInternal(request, response);
 
         assertEquals("Hello world!", response.getContentAsString());
+    }
+    
+    public void testErrorThrowingResponse() throws Exception {
+        URL url = getClass().getResource("applicationContext-errorResponse.xml");
+
+        try(FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+            MockHttpServletRequest request = setupRequest();
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            dispatcher.handleRequest(request, response);
+            // the output is not there
+            final String outputContent = response.getContentAsString();
+            assertThat(outputContent, not(containsString("Hello world!")));
+            // only the exception
+            assertThat(outputContent, startsWith("<ows:Exception"));
+        }
     }
 }

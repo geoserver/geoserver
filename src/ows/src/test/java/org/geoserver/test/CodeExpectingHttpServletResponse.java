@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
  */
 public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper{
     private int myErrorCode;
+    private boolean error;
 
     public CodeExpectingHttpServletResponse (HttpServletResponse req){
         super(req);
@@ -33,11 +34,13 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
     }
 
     public void sendError(int sc) throws IOException {
+        error = true;
         myErrorCode = sc;
         super.sendError(sc);
     }
 
     public void sendError(int sc, String sm) throws IOException {
+        error = true;
         myErrorCode = sc;
         super.sendError(sc, sm);
     }
@@ -48,6 +51,10 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
 
     public int getStatusCode(){
         return myErrorCode;
+    }
+
+    public boolean isError() {
+        return error;
     }
 }
 

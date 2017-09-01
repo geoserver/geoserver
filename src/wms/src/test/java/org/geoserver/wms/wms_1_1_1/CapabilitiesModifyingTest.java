@@ -29,7 +29,7 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     @Before
     public void resetWmsConfigChanges() {
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setResourceErrorHandling(null);
+        global.setResourceErrorHandling(ResourceErrorHandling.OGC_EXCEPTION_REPORT);
         getGeoServer().save(global);
     }
     

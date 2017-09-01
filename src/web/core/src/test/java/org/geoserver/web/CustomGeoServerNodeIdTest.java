@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.Model;
+import org.geoserver.GeoServerNodeData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,6 +53,11 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
         @Override
         public String getId() {
             return ID;
+        }
+
+        @Override
+        public GeoServerNodeData getData() {
+            return new GeoServerNodeData(ID, STYLE);
         }
 
         @Override

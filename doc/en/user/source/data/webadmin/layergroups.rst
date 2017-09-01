@@ -6,21 +6,37 @@ Layer Groups
 A layer group is a container in which layers and other layer groups can be organized in a hierarchical structure. A layer group can be referred to by a single name in WMS requests.  This allows simpler requests, as one layer can be specified instead of multiple individual layers.
 A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify alternate (non-default) styles for layers.
 
+.. figure:: img/data_layergroups.png
+
+   Layer Groups page
+   
 Layer Group modes
 -----------------
 
-Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 4 available values:
+Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 5 available values:
 
-* **single**: the layer group is exposed as a single layer with a name.
+* **single**: the layer group is exposed as a single layer with a name, acting as an alias for a list of layers. The layers are still showing up as top level entries in the WMS capabilities document (unless explicitly referred by a tree group).
+* **opaque container**: the layer group is exposed as a single layer with a name, acting as an alias for a list of layers. However, the layers and sub-groups contained in it won't show up in the capabilities document (unless explicitly referred by a tree group) and won't be available by themselves in WMS calls and in the WMS capabilities document, but only  as part of the group.
 * **named tree**: the layer group can be referred to by one name, but also exposes its nested layers and groups in the capabilities document.
 * **container tree**: the layer group is exposed in the capabilities document, but does not have a name, making it impossible to render it on its own. This is called "containing category" in the WMS specification.
 * **Earth Observation tree**: a special type of group created to manage the WMS Earth Observation requirements. This group does not render its nested layers and groups, but only a "preview layer" called Root Layer. When this mode is chosen, a new field "Root Layer" will be exposed in the configuration UI.
 
 If a layer is included in any non *single* mode group, it will no longer be listed in the flat layer list.  It will still be possible to include the layer in other layer groups. 
 
-.. figure:: img/data_layergroups.png
++------------------------+-------+-------------------+----------------+------------------+
+| Layer Group Mode       | Named | Contains Children | Lists Children | Details          |
++========================+=======+===================+================+==================+
+| Single                 | named |                   | no             |                  |
++------------------------+-------+-------------------+----------------+------------------+
+| Opaque Container       | named | yes               | no             | hides children   |
++------------------------+-------+-------------------+----------------+------------------+
+| Named Tree             | named | yes               | lists children |                  |
++------------------------+-------+-------------------+----------------+------------------+
+| Contrainer Tree        |       | yes               | lists children |                  |
++------------------------+-------+-------------------+----------------+------------------+
+| Earth Observation Tree | named | yes               | lists children | has root layer   |
++------------------------+-------+-------------------+----------------+------------------+
 
-   Layer Groups page
 
 Edit a Layer Group
 ------------------
@@ -96,3 +112,14 @@ To remove a layer group, select it by clicking the checkbox next to the layer gr
 .. figure:: img/data_layergroups_delete.png
   
    Removing a layer group
+
+Layer Group Keywords
+--------------------
+
+Is possible to associate a layer group with some keywords that will be used to assist catalog searching. 
+ 
+.. figure:: img/data_layergroups_keywords.png
+  
+   Layer groups keywords editor
+
+Layer groups keywords will no be merged with contained layers keywords but keywords of a layer group should be logically inherited by contained layers.

@@ -100,20 +100,18 @@
       </li>
     </ul>
   </fieldset>
-  <fieldset>
-    <legend><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></legend>
-    <ul>
-      <li>
-        <div wicket:id="extensions">
-             <div wicket:id="content"></div>
-        </div>
-      </li>
-      <li class="button-group selfclear">
-        <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
-        <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
-      </li>
-    </ul>
-  </fieldset>
+  <h3><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></h3>
+  <ul>
+    <li wicket:id="extensions">
+      <fieldset wicket:id="content"></fieldset>
+    </li>
+  </ul>
+  <ul>
+    <li class="button-group selfclear">
+      <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+      <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+    </li>
+  </ul>
 </form>
 </wicket:extend>
 </body>

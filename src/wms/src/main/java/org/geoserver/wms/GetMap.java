@@ -826,7 +826,7 @@ public class GetMap {
      *             <code>request</code> or if it can't be instantiated or the format is not
      *             allowed
      */
-    private GetMapOutputFormat getDelegate(final String outputFormat) throws ServiceException {
+    protected GetMapOutputFormat getDelegate(final String outputFormat) throws ServiceException {
 
         final GetMapOutputFormat producer = wms.getMapOutputFormat(outputFormat);
         if (producer == null) {

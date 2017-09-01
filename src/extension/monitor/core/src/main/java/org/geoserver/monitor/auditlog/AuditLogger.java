@@ -28,7 +28,6 @@ import org.geoserver.monitor.MemoryMonitorDAO;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataListener;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -66,8 +65,6 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     String path;
 
-    String defaultPath;
-
     String headerTemplate;
 
     String contentTemplate;
@@ -76,8 +73,6 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     public AuditLogger(MonitorConfig config, GeoServerResourceLoader loader) throws IOException {
         this.config = config;
-        Resource monitoring = loader.get("monitoring");        
-        defaultPath = monitoring.dir().getAbsolutePath();
         templateConfig = new Configuration();
         templateConfig.setTemplateLoader(new AuditTemplateLoader(loader));
     }

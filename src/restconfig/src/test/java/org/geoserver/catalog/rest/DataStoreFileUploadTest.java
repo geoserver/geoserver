@@ -5,7 +5,11 @@
  */
 package org.geoserver.catalog.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -18,7 +22,9 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -45,11 +51,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
@@ -218,6 +223,24 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
             dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
             assertFeatures(dom);
+            
+            // try to download it again after a full reload from disk (GEOS-4616)
+            getGeoServer().reload();
+            
+            resp = getAsServletResponse("/rest/workspaces/gs/datastores/pds/file.shp");
+            assertEquals( 200, resp.getStatus() );
+            assertEquals( "application/zip", resp.getContentType() );
+            
+            Set<String> entryNames = new HashSet<>();
+            try(ByteArrayInputStream bin = getBinaryInputStream(resp); ZipInputStream zin = new ZipInputStream( bin )) {
+                ZipEntry entry;
+                while((entry= zin.getNextEntry()) != null) {
+                    entryNames.add(entry.getName());
+                }
+            }
+            assertTrue(entryNames.contains("pds.shp"));
+            assertTrue(entryNames.contains("pds.shx"));
+            assertTrue(entryNames.contains("pds.dbf"));
         } finally {
             FileUtils.deleteQuietly(f);
         }
@@ -314,7 +337,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testGetProperties() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/datastores/pds/file.properties");
         assertEquals( 404, resp.getStatus() );
         

@@ -578,7 +578,12 @@ public class Dispatcher extends AbstractController {
         return service;
     }
 
-    String normalize(String value) {
+    /**
+     * Normalize a parameter, trimming whitespace
+     * @param value
+     * @return The value with whitespace trimmed, or null if this would result in an empty string.
+     */
+    public static String normalize(String value) {
         if (value == null) {
             return null;
         }
@@ -592,8 +597,10 @@ public class Dispatcher extends AbstractController {
 
     /**
      * Normalize the version, handling cases like forcing "x.y" to "x.y.z".
+     * @param version
+     * @return normalized version
      */
-    String normalizeVersion(String version) {
+    public static String normalizeVersion(String version) {
         if (version == null) {
             return null;
         }
@@ -986,33 +993,40 @@ public class Dispatcher extends AbstractController {
             setHeaders(req,opDescriptor,result,response);
             
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
-
-            if (req.isSOAP()) {
-                //SOAP request, start the SOAP wrapper
-                startSOAPEnvelope(output, response);
-            }
-
-            //special check for transformer
-            if (req.isSOAP() && result instanceof TransformerBase) {
-                ((TransformerBase)result).setOmitXMLDeclaration(true);
-            }
-
-            // actually write out the response
-            response.write(result, output, opDescriptor);
-
-            if (req.isSOAP()) {
-                //SOAP request, start the SOAP wrapper
-                endSOAPEnvelope(output);
-            }
-
-            // flush the output with detection of client shutting the door in our face
+            boolean abortResponse = true;
             try {
-                outputStrategy.flush(req.getHttpResponse());
-            } catch(IOException e) {
-                throw new ClientStreamAbortedException(e);
+                if (req.isSOAP()) {
+                    //SOAP request, start the SOAP wrapper
+                    startSOAPEnvelope(output, response);
+                }
+    
+                //special check for transformer
+                if (req.isSOAP() && result instanceof TransformerBase) {
+                    ((TransformerBase)result).setOmitXMLDeclaration(true);
+                }
+    
+                // actually write out the response
+                response.write(result, output, opDescriptor);
+    
+                if (req.isSOAP()) {
+                    //SOAP request, start the SOAP wrapper
+                    endSOAPEnvelope(output);
+                }
+    
+                // flush the output with detection of client shutting the door in our face
+                try {
+                    outputStrategy.flush(req.getHttpResponse());
+                } catch(IOException e) {
+                    throw new ClientStreamAbortedException(e);
+                }
+                abortResponse = true;
+            } finally {
+                if(abortResponse) {
+                    outputStrategy.abort();
+                }
             }
 
-            //flush the underlying out stream for good meaure
+            // flush the underlying out stream for good measure
             req.getHttpResponse().getOutputStream().flush();
         }
     }
@@ -1249,7 +1263,7 @@ public class Dispatcher extends AbstractController {
         return (KvpRequestReader) matches.get(0);
     }
 
-    Collection loadXmlReaders() {
+    static Collection loadXmlReaders() {
         List<XmlRequestReader> xmlReaders = GeoServerExtensions.extensions(XmlRequestReader.class);
 
         if (!(new HashSet<XmlRequestReader>(xmlReaders).size() == xmlReaders.size())) {
@@ -1273,7 +1287,16 @@ public class Dispatcher extends AbstractController {
         return xmlReaders;
     }
 
-    XmlRequestReader findXmlReader(String namespace, String element, String serviceId, String ver) {
+    /**
+     * Finds a registered {@link XmlRequestReader} bean able to read a request, given the request details
+     *
+     * @param namespace The XML namespace of the request body
+     * @param element The OWS request, e.g. "GetMap"
+     * @param serviceId The OWS service, e.g. "WMS"
+     * @param ver The OWS service version, e.g "1.1.1"
+     * @return An {@link XmlRequestReader} capable of reading the request body
+     */
+    public static XmlRequestReader findXmlReader(String namespace, String element, String serviceId, String ver) {
         Collection xmlReaders = loadXmlReaders();
 
         //first just match on namespace, element
@@ -1558,7 +1581,14 @@ public class Dispatcher extends AbstractController {
         return xmlReader.read( requestBean, input, request.getKvp() );
     }
 
-    Map readOpContext(Request request) {
+    /**
+     * Reads the following parameters from an OWS XML request body:
+     * * service
+     *
+     * @param request {@link Request} object
+     * @return a {@link Map} containing the parsed parameters.
+     */
+    public static Map readOpContext(Request request) {
         
         Map map = new HashMap();
         if (request.getPath() != null) {
@@ -1568,7 +1598,20 @@ public class Dispatcher extends AbstractController {
         return map;
     }
 
-    Map readOpPost(BufferedReader input) throws Exception {
+    /**
+     * Reads the following parameters from an OWS XML request body:
+     * * request
+     * * namespace
+     * * service
+     * * version
+     * * outputFormat
+     * Resets the input reader after reading
+     *
+     * @param input {@link BufferedReader} containing a valid OWS XML request body
+     * @return a {@link Map} containing the parsed parameters.
+     * @throws Exception if there was an error reading the input.
+     */
+    public static Map readOpPost(BufferedReader input) throws Exception {
         //create stream parser
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -1634,14 +1677,29 @@ public class Dispatcher extends AbstractController {
             } else {
                 logger.log(Level.FINER, "", t);
             }
-            
+
+            boolean isError = ece.getErrorCode() >= 400;
+            HttpServletResponse rsp = request.getHttpResponse();
+
+            if (ece.getContentType() != null) {
+                rsp.setContentType(ece.getContentType());
+            }
             try {
-                if(ece.getMessage() != null) {
-                    request.getHttpResponse().sendError(ece.getErrorCode(),ece.getMessage());
-                } else {
-                    request.getHttpResponse().sendError(ece.getErrorCode());
+                if (isError) {
+                    if (ece.getMessage() != null) {
+                        rsp.sendError(ece.getErrorCode(), ece.getMessage());
+                    }
+                    else {
+                        rsp.sendError(ece.getErrorCode());
+                    }
                 }
-                if (ece.getErrorCode() < 400) {
+                else {
+                    rsp.setStatus(ece.getErrorCode());
+                    if (ece.getMessage() != null) {
+                        rsp.getOutputStream().print(ece.getMessage());
+                    }
+                }
+                if (!isError) {
                     // gwc returns an HttpErrorCodeException for 304s
                     // we don't want to flag these as errors for upstream filters, ie the monitoring extension
                     t = null;
@@ -1716,7 +1774,12 @@ public class Dispatcher extends AbstractController {
         handler.handleServiceException(se, request);
     }
 
-    protected boolean  isSecurityException(Throwable t) {
+    /**
+     * Examines a {@link Throwable} object and returns true if it represents a security exception.
+     * @param t Throwable
+     * @return true if t is a security exception
+     */
+    protected static boolean isSecurityException(Throwable t) {
         return t != null && 
             t.getClass().getPackage().getName().startsWith("org.springframework.security");
     }

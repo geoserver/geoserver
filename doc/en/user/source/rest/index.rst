@@ -9,11 +9,62 @@ REST is an acronym for "`REpresentational State Transfer <http://en.wikipedia.or
 
 Operations on resources are implemented with the standard primitives of HTTP:  GET to read; and PUT, POST, and DELETE to write changes. Each resource is represented as a URL, such as ``http://GEOSERVER_HOME/rest/workspaces/topp``.
 
-For further information about the REST API, refer to the :ref:`rest_api` section. For practical examples, refer to the :ref:`rest_examples` section.
- 
-.. toctree::
-   :maxdepth: 2
 
+API
+---
+
+The following links provide direct access to the GeoServer REST API documentation, including definitions and examples of each endpoint:
+
+* :api:`/about/manifests <manifests.yaml>`
+* :api:`/coverages <coverages.yaml>`
+* :api:`/coveragestores <coveragestores.yaml>`
+* :api:`/featuretypes <featuretypes.yaml>`
+* :api:`/fonts <fonts.yaml>`
+* :api:`/layergroups <layergroups.yaml>`
+* :api:`/layers <layers.yaml>`
+* :api:`/monitoring <monitoring.yaml>`
+* :api:`/namespaces <namespaces.yaml>`
+* :api:`/owsservices <owsservices.yaml>`
+* :api:`/reload <reload.yaml>`
+* :api:`/security <security.yaml>`
+* :api:`/settings <settings.yaml>`
+* :api:`/structuredcoverages <structuredcoverages.yaml>`
+* :api:`/styles <styles.yaml>`
+* :api:`/templates <templates.yaml>`
+* :api:`/transforms <transforms.yaml>`
+* :api:`/wmslayers <wmslayers.yaml>`
+* :api:`/wmsstores <wmsstores.yaml>`
+* :api:`/workspaces <workspaces.yaml>`
+* Importer extension:
+
+  * :api:`/imports <importer.yaml>`
+  * :api:`/imports (tasks) <importerTasks.yaml>`
+  * :api:`/imports (transforms) <importerTransforms.yaml>`
+  * :api:`/imports (data) <importerData.yaml>`
+
+.. note:: You can also view the original :ref:`rest_api` section.
+
+Examples
+--------
+
+This section contains a number of examples which illustrate some of the most common uses of the REST API. They are grouped by endpoint.
+
+
+.. toctree::
+   :maxdepth: 1
+   
+   about
+   fonts
+   layergroups
+   layers
+   security
+   styles
+   workspaces
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   
    api/index
-   examples/index
+
 

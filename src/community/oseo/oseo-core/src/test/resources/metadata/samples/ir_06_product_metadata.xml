@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opt:EarthObservation xmlns:opt="http://www.opengis.net/opt/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:atm="http://www.opengis.net/atm/2.0" xmlns:eop="http://www.opengis.net/eop/2.1" xmlns:gmlov="http://www.opengis.net/gml"
+  xmlns:om="http://www.opengis.net/om/2.0" xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:sar="http://www.opengis.net/sar/2.0"
+  xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:wrs="http://www.opengis.net/cat/wrs/1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  gml:id="IDN10020"
+  xsi:schemaLocation="http://www.opengis.net/opt/2.0 https://svn.opengeospatial.org/ogc-projects/cite/scripts/wcseo/1.0/tags/r1/resources/omeo/opt.xsd"
+>
+  <om:phenomenonTime>
+    <gml:TimePeriod gml:id="TPN10020">
+      <gml:beginPosition>2004-10-28T11:07:57.000Z</gml:beginPosition>
+      <gml:endPosition>2004-10-28T11:08:08.529Z</gml:endPosition>
+    </gml:TimePeriod>
+  </om:phenomenonTime>
+  <om:resultTime />
+  <om:procedure>
+    <eop:EarthObservationEquipment gml:id="EOEN10020">
+      <eop:platform>
+        <eop:Platform>
+          <eop:shortName>IR06</eop:shortName>
+          <eop:serialIdentifier>IR06</eop:serialIdentifier>
+          <eop:orbitType>LEO</eop:orbitType>
+        </eop:Platform>
+      </eop:platform>
+      <eop:instrument>
+        <eop:Instrument>
+          <eop:shortName>LI4</eop:shortName>
+        </eop:Instrument>
+      </eop:instrument>
+      <eop:sensor>
+        <eop:Sensor>
+          <eop:sensorType>OPTICAL</eop:sensorType>
+          <eop:operationalMode codeSpace="urn:eop:PHR:sensorMode">M__</eop:operationalMode>
+        </eop:Sensor>
+      </eop:sensor>
+      <eop:acquisitionParameters>
+        <eop:Acquisition>
+          <eop:orbitNumber>5361</eop:orbitNumber>
+          <eop:orbitDirection>DESCENDING</eop:orbitDirection>
+          <eop:illuminationAzimuthAngle uom="deg">190.218</eop:illuminationAzimuthAngle>
+          <eop:illuminationElevationAngle uom="deg">4.287</eop:illuminationElevationAngle>
+          <eop:acrossTrackIncidenceAngle uom="deg">-2.102</eop:acrossTrackIncidenceAngle>
+          <eop:alongTrackIncidenceAngle uom="deg">0</eop:alongTrackIncidenceAngle>
+        </eop:Acquisition>
+      </eop:acquisitionParameters>
+    </eop:EarthObservationEquipment>
+  </om:procedure>
+  <om:observedProperty xlink:href="#phenom1" />
+  <om:featureOfInterest>
+    <eop:Footprint gml:id="FPN10020">
+      <eop:multiExtentOf>
+        <gml:MultiSurface gml:id="MULSFN10021" srsName="EPSG:4326">
+          <gml:surfaceMembers>
+            <Polygon xmlns="http://www.opengis.net/gml/3.2" gml:id="PON10074"
+              srsName="urn:ogc:def:crs:EPSG:6.15:4326"
+            >
+              <exterior>
+                <LinearRing>
+                  <pos>72.663 18.116</pos>
+                  <pos>72.112 17.123</pos>
+                  <pos>71.801 18.922</pos>
+                  <pos>72.343 19.953</pos>
+                  <pos>72.663 18.116</pos>
+                </LinearRing>
+              </exterior>
+            </Polygon>
+          </gml:surfaceMembers>
+        </gml:MultiSurface>
+      </eop:multiExtentOf>
+    </eop:Footprint>
+  </om:featureOfInterest>
+  <om:result>
+    <opt:EarthObservationResult gml:id="EORN10020">
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>QUICKLOOK</eop:type>
+          <eop:subType>LISS-IV.P-QL</eop:subType>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326</eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <ows:ServiceReference
+              xlink:href="https://geoservice.dlr.de/hma/browse/?dims_op_pl_eoweb1_XXXXB00000000225476449394/1/anonymous/2017-02-14-11-26-46"
+            >
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>THUMBNAIL</eop:type>
+          <eop:subType>LISS-IV.P-QL</eop:subType>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326</eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <ows:ServiceReference
+              xlink:href="https://geoservice.dlr.de/hma/browse/?dims_op_pl_eoweb1_XXXXB00000000225476449394/2/anonymous/2017-02-14-11-26-46"
+            >
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:parameter>
+        <eop:ParameterInformation>
+          <eop:unitOfMeasure uom="c" />
+          <eop:phenomenon>
+            <swe:Phenomenon xmlns:ns1="http://www.opengis.net/gml" ns1:id="phenom1">
+              <name xmlns="http://www.opengis.net/gml">xyzdef</name>
+            </swe:Phenomenon>
+          </eop:phenomenon>
+        </eop:ParameterInformation>
+      </eop:parameter>
+      <opt:cloudCoverPercentage uom="%">90</opt:cloudCoverPercentage>
+    </opt:EarthObservationResult>
+  </om:result>
+  <eop:metaDataProperty>
+    <eop:EarthObservationMetaData>
+      <eop:identifier>${eo:productIdentifier></eop:identifier>
+      <eop:creationDate>${eo:creationDate}</eop:creationDate>
+      <eop:doi>IRS-P6.LISS-IV.P-MONO:/dims_nz_pl_dfd_XXXXB00000001110264115372/dims_op_pl_dfd_//IRS-P6.LISS-IV.P</eop:doi>
+      <eop:parentIdentifier>urn:eop:DLR:EOWEB:IRS-P6.LISS-IV.P-MONO</eop:parentIdentifier>
+      <eop:acquisitionType>NOMINAL</eop:acquisitionType>
+      <eop:productType>IRS-P6.LISS-IV.P-MONO</eop:productType>
+      <eop:status>ACQUIRED</eop:status>
+      <eop:downlinkedTo>
+        <eop:DownlinkInformation>
+          <eop:acquisitionStation codeSpace="urn:eop:PHR:stationCode">NSG</eop:acquisitionStation>
+          <eop:acquisitionDate>2004-10-28T11:08:03.260Z</eop:acquisitionDate>
+        </eop:DownlinkInformation>
+      </eop:downlinkedTo>
+      <eop:productQualityDegradation>${eo:productQualityStatus}</eop:productQualityDegradation>
+      <eop:archivedIn>
+        <eop:ArchivingInformation>
+          <eop:archivingCenter codeSpace="urn:eop:PHR:stationCode">Euromap</eop:archivingCenter>
+          <eop:archivingDate>2010-02-23T15:39:17.919Z</eop:archivingDate>
+          <eop:archivingIdentifier codeSpace="urn:eop:PHR:stationCode">041028P600160013MC_00_4</eop:archivingIdentifier>
+        </eop:ArchivingInformation>
+      </eop:archivedIn>
+      <eop:processing>
+        <eop:ProcessingInformation />
+      </eop:processing>
+    </eop:EarthObservationMetaData>
+  </eop:metaDataProperty>
+</opt:EarthObservation>

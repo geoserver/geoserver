@@ -65,6 +65,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -275,7 +277,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         if (applicationContext == null) {
             return;
         }
-
+        getGeoServer().dispose();
         try {
             //dispose WFS XSD schema's - they will otherwise keep geoserver instance alive forever!!
             disposeIfExists(getXSD11());
@@ -826,7 +828,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void addLayerAccessRule(String workspace, String layer, AccessMode mode, String... roles) throws IOException {
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();
         DataAccessRule rule = new DataAccessRule();
-        rule.setWorkspace(workspace);
+        rule.setRoot(workspace);
         rule.setLayer(layer);
         rule.setAccessMode(mode);
         rule.getRoles().addAll(Arrays.asList(roles));
@@ -1900,7 +1902,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return caseInsensitiveKvp(input);
     }
 
-    protected Map caseInsensitiveKvp(HashMap input) {
+    protected Map caseInsensitiveKvp(Map input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map result = new HashMap();
         for (Iterator it = input.keySet().iterator(); it.hasNext();) {
@@ -2019,5 +2021,32 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             return i;
         }
+    }
+
+    /**
+     * Helper method that adds some tests keywords to a layer group.
+     * The provided layer group name should not be NULL, if the layer
+     * group cannot be found an exception will be throw.
+     */
+    protected void addKeywordsToLayerGroup(String layerGroupName) {
+        // create a list of keywords
+        List<KeywordInfo> keywords = new ArrayList<>();
+        Keyword keyword1 = new Keyword("keyword1");
+        keyword1.setLanguage("en");
+        keyword1.setVocabulary("vocabulary1");
+        keywords.add(keyword1);
+        Keyword keyword2 = new Keyword("keyword2");
+        keyword2.setLanguage("pt");
+        keyword2.setVocabulary("vocabulary2");
+        keywords.add(keyword2);
+        // add keywords to a layer group
+        LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(layerGroupName);
+        if (layerGroup == null) {
+            // targeted layer group doesn't exists
+            throw new RuntimeException(String.format(
+                    "Layer group '%s' doesn't exists.", layerGroupName));
+        }
+        layerGroup.getKeywords().addAll(keywords);
+        getCatalog().save(layerGroup);
     }
 }

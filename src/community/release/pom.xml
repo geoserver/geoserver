@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.11.2</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -182,12 +182,7 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-jdbc</artifactId>
      <version>${project.version}</version>
-   </dependency>  
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-ysld</artifactId>
-     <version>${project.version}</version>
-   </dependency>   
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcstore</artifactId>
@@ -246,6 +241,41 @@
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-onelogin</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-notification</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-notification-common</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-notification-geonode</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-ows-simulate</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-jdbc-metrics</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-oseo-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-web-oseo</artifactId>
      <version>${project.version}</version>
    </dependency>
  </dependencies>

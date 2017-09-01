@@ -20,6 +20,8 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -932,7 +934,7 @@ public class ResourcePool {
     }
     
     FeatureType tryGetFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
-        boolean cacheable = isCacheable(info) && handleProjectionPolicy;
+        boolean cacheable = isCacheable(info);
         return cacheable ? getCacheableFeatureType(info, handleProjectionPolicy): 
                            getNonCacheableFeatureType(info, handleProjectionPolicy);
     }
@@ -971,25 +973,7 @@ public class ResourcePool {
         FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
         Name temporaryName = null;
         if (initializer != null) {
-            // use a highly random name, we don't want to actually add the
-            // virtual table to the store as this feature type is not cacheable,
-            // it is "dirty" or un-saved. The renaming below will take care
-            // of making the user see the actual name
-            // NT 14/8/2012: Removed synchronization on jstore as it blocked query
-            // execution and risk of UUID clash is considered acceptable.
-
-            List<Name> typeNames = dataAccess.getNames();
-            String nsURI = null;
-            if (typeNames.size() > 0) {
-                nsURI = typeNames.get(0).getNamespaceURI();
-            }
-            do {
-                String name = UUID.randomUUID().toString();
-                temporaryName = new NameImpl(nsURI, name);
-            } while (Arrays.asList(typeNames).contains(temporaryName));
-            if (!initializer.initialize(info, dataAccess, temporaryName)) {
-                temporaryName = null;
-            }
+            temporaryName = getTemporaryName(info, dataAccess, initializer);
         }
         ft = dataAccess.getSchema(temporaryName != null ? temporaryName : info
                 .getQualifiedNativeName());
@@ -1001,6 +985,42 @@ public class ResourcePool {
         }
 
         return ft;
+    }
+
+    /**
+     * Builds a temporary name for a feature type making sure there is no conflict with other
+     * existing type names in the store
+     * 
+     * @param info
+     * @param dataAccess
+     * @param initializer
+     * @return
+     * @throws IOException
+     */
+    protected Name getTemporaryName(FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            FeatureTypeCallback initializer) throws IOException {
+        Name temporaryName;
+        // use a highly random name, we don't want to actually add the
+        // virtual table to the store as this feature type is not cacheable,
+        // it is "dirty" or un-saved. The renaming below will take care
+        // of making the user see the actual name
+        // NT 14/8/2012: Removed synchronization on jstore as it blocked query
+        // execution and risk of UUID clash is considered acceptable.
+
+        List<Name> typeNames = dataAccess.getNames();
+        String nsURI = null;
+        if (typeNames.size() > 0) {
+            nsURI = typeNames.get(0).getNamespaceURI();
+        }
+        do {
+            String name = UUID.randomUUID().toString();
+            temporaryName = new NameImpl(nsURI, name);
+        } while (Arrays.asList(typeNames).contains(temporaryName));
+        if (!initializer.initialize(info, dataAccess, temporaryName)) {
+            temporaryName = null;
+        }
+        return temporaryName;
     }
 
     /**
@@ -1484,17 +1504,13 @@ public class ResourcePool {
                     // Getting coverage reader using the format and the real path.
                     //
                     // /////////////////////////////////////////////////////////
-                    final String url = expandedStore.getURL();
-                    GeoServerResourceLoader loader = catalog.getResourceLoader();
-                    final File obj = loader.url(url);
-
-                    // In case no File is returned, provide the original String url
-                    final Object input = obj != null ? obj : url;  
+                    final String urlString = expandedStore.getURL();
+                    Object readObject = getObjectToRead(urlString);
 
                     // readers might change the provided hints, pass down a defensive copy
-                    reader = gridFormat.getReader(input, new Hints(hints));
+                    reader = gridFormat.getReader(readObject, new Hints(hints));
                     if(reader == null) {
-                        throw new IOException("Failed to create reader from " + url + " and hints " + hints);
+                        throw new IOException("Failed to create reader from " + urlString + " and hints " + hints);
                     }
                     if(key != null) {
                         if(hints != null) {
@@ -1543,7 +1559,42 @@ public class ResourcePool {
 
         }
     }
-    
+
+    /**
+     * Attempted to convert the URL-ish string to a file object, otherwise just returns the string
+     * itself
+     *
+     * @param urlString the url string to parse, which may actually be a path
+     * @return an object appropriate for passing to a grid coverage reader
+     */
+    private Object getObjectToRead(String urlString) {
+        //Check to see if our "url" points to a file or not, otherwise we use the string
+        //itself for reading
+        Object readObject = urlString;
+        boolean isFile = false;
+        URI uri;
+        try {
+            uri = new URI(urlString);
+            if (uri.getScheme() == null || "file".equalsIgnoreCase(uri.getScheme())) {
+                isFile = true;
+            }
+        } catch (URISyntaxException e) {
+            LOGGER.warning("Unable to convert coverage URL to a URI, attempting to use "
+                + "it as a path");
+            LOGGER.log(Level.FINEST, "Can't convert URL string to URI, this may be "
+                + "fine if the URL is actually a path", e);
+        }
+
+        if (isFile) {
+            GeoServerResourceLoader loader = catalog.getResourceLoader();
+            final File readerFile = loader.url(urlString);
+            if (readerFile != null) {
+                readObject = readerFile;
+            }
+        }
+        return readObject;
+    }
+
     /**
      * Clears any cached readers for the coverage.
      */

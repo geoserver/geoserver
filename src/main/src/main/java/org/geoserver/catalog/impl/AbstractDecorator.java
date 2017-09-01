@@ -5,6 +5,8 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serializable;
+
 import org.geoserver.catalog.Wrapper;
 
 /**
@@ -16,7 +18,7 @@ import org.geoserver.catalog.Wrapper;
  * <li>implements the Wrapper interface for programmatic extraction</li>
  * </ul>
  */
-public abstract class AbstractDecorator<D> implements Wrapper {
+public abstract class AbstractDecorator<D> implements Wrapper, Serializable {
     protected D delegate;
 
     public AbstractDecorator(D delegate) {

@@ -18,15 +18,18 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.data.layer.LayerProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.Lists;
@@ -57,7 +60,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     static Property<LayerInfo> WORKSPACE = 
         new BeanProperty<LayerInfo>("workspace", "resource.store.workspace.name");
     
-    public LayerListPanel( String id ) {
+    public LayerListPanel( String id, final WorkspaceInfo workspace ) {
         this( id, new LayerListProvider(){
 
             private static final long serialVersionUID = 426375054014475107L;
@@ -76,6 +79,18 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
                 } else {
                     return iterator;
                 }
+            }
+            
+            @Override
+            protected Filter getFilter() {
+                FilterFactory ff = CommonFactoryFinder.getFilterFactory2();
+                final Filter filter;
+                if (workspace == null) {
+                    filter = super.getFilter();
+                } else {
+                    filter = ff.and(super.getFilter(), ff.equal(ff.property("resource.store.workspace.id"), ff.literal(workspace.getId()),true));
+                }
+                return filter;
             }
 
             /**

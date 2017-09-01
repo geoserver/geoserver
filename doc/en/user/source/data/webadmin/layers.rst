@@ -214,6 +214,7 @@ Sets the WMS specific publishing parameters.
 * **Additional styles**—Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.
 * **Default rendering buffer**—Default value of the ``buffer`` GetMap/GetFeatureInfo vendor parameter. See the :ref:`wms_vendor_parameters` for more details.
 * **Default WMS path**—Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
+* **Default Interpolation Method**—Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see :ref:`Raster Rendering Options <services_webadmin_wms_raster_options>` for details). Can be overridden by the :ref:`interpolations vendor parameter <wms_vendor_parameter_interpolations>`.
 
 WMS Attribution
 ^^^^^^^^^^^^^^^

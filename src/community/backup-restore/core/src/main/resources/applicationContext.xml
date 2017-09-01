@@ -7,16 +7,12 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:batch="http://www.springframework.org/schema/batch"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
         http://www.springframework.org/schema/batch
-        http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
-        http://www.springframework.org/schema/util
-        http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+        http://www.springframework.org/schema/batch/spring-batch-3.0.xsd">
 
 	<!-- core backup/restore setup -->
 
@@ -50,7 +46,14 @@
 		<!-- milliseconds: 10 minutes timeout for each step -->
 		<constructor-arg value="600000"/>
 	</bean>
-	
+
+  <!-- extension point for generic backup / restore tasklets -->
+  <bean id="genericTasklet" class="org.geoserver.backuprestore.tasklet.GenericTasklet">
+    <constructor-arg ref="backupFacade" />
+    <constructor-arg ref="xstreamPersisterFactory" />
+    <property name="timeout" value="600000"/>
+  </bean>
+
 	<!-- ********************** -->
 	<!-- Main Backup BATCH Flow -->
 	<!-- ********************** -->
@@ -59,6 +62,11 @@
 		<bean id="backupJobExecutionListener" class="org.geoserver.backuprestore.listener.BackupJobExecutionListener">
 			<constructor-arg ref="backupFacade"/>
 		</bean>
+
+	<!-- Extension point for backup jobs listeners -->
+	<bean id="genericBackupJobExecutionListener" class="org.geoserver.backuprestore.listener.GenericListenersExecutor">
+		<constructor-arg value="true"/>
+	</bean>
 
 	<!-- CatalogAdditionalResourcesWriter extensions: those can be triggered by the CatalogWriter -->
 		<bean id="styleInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.StyleInfoAdditionalResourceWriter" />
@@ -72,6 +80,7 @@
 	        <!-- Any job specific listeners here -->
 	        <batch:listener ref="backupFacade" />
 	        <batch:listener ref="backupJobExecutionListener" />
+					<batch:listener ref="genericBackupJobExecutionListener" />
 	    </batch:listeners>
     	
     	<!-- Backup GeoServer Globals/Logging/Services -->
@@ -89,6 +98,13 @@
 		    		<batch:tasklet ref="catalogSecurityManagerTasklet"/>
 		    	</batch:step>
 		    </batch:flow>
+
+        <!-- extension point for generic backup tasklets -->
+        <batch:flow>
+          <batch:step id="genericTaskletsBackup">
+            <batch:tasklet ref="genericTasklet"/>
+          </batch:step>
+        </batch:flow>
 
     		<batch:fail on="FAILED"/>
     		<batch:stop on="STOPPED" restart="backupWorkspaceInfos"/>
@@ -128,7 +144,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/workspace.dat" />
 						</bean>
 					</batch:writer>
@@ -173,7 +189,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/namespace.dat" />
 						</bean>
 					</batch:writer>
@@ -218,7 +234,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/store.dat" />
 						</bean>
 					</batch:writer>
@@ -263,7 +279,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/resource.dat" />
 						</bean>
 					</batch:writer>
@@ -308,7 +324,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/layer.dat" />
 						</bean>
 					</batch:writer>
@@ -353,7 +369,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/layerGroup.dat" />
 						</bean>
 					</batch:writer>
@@ -398,7 +414,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/style.dat" />
 						</bean>
 					</batch:writer>
@@ -408,7 +424,7 @@
 
 	</batch:job>
 	<!-- The BACKUP Job definition ENDS here -->
-	
+
 
 	<!-- *********************** -->
 	<!-- Main Restore BATCH Flow -->
@@ -418,6 +434,11 @@
 		<bean id="restoreJobExecutionListener" class="org.geoserver.backuprestore.listener.RestoreJobExecutionListener">
 			<constructor-arg ref="backupFacade"/>
 		</bean>
+
+	<!-- Extensions point for restore jobs listeners -->
+	<bean id="genericRestoreJobExecutionListener" class="org.geoserver.backuprestore.listener.GenericListenersExecutor">
+		<constructor-arg value="false"/>
+	</bean>
 
 		<!-- This specific Listener allows to promote properties setted on Steps to Job Context Scope -->
 		<bean id="restoreExecutionPromotionListener" 
@@ -434,6 +455,7 @@
 	        <!-- Any job specific listeners here -->
 	        <batch:listener ref="backupFacade" />
 	        <batch:listener ref="restoreJobExecutionListener" />
+				  <batch:listener ref="genericRestoreJobExecutionListener" />
 	    </batch:listeners>
 
 		<!-- Restore NamespaceInfos -->
@@ -809,10 +831,22 @@
 
     	</batch:step>
 
-    	<batch:step id="restoreGeoServerSecurityManager">
-    		<batch:tasklet allow-start-if-complete="true" ref="catalogSecurityManagerTasklet"/>
-    	</batch:step>
-		
+    <batch:step id="restoreGeoServerSecurityManager">
+      <batch:tasklet allow-start-if-complete="true" ref="catalogSecurityManagerTasklet"/>
+      <batch:fail on="FAILED"/>
+      <batch:stop on="STOPPED" restart="genericTaskletsRestore"/>
+      <batch:next on="*" to="genericTaskletsRestore"/>
+
+      <batch:listeners>
+        <batch:listener ref="restoreExecutionPromotionListener"/>
+      </batch:listeners>
+    </batch:step>
+
+    <!-- extension point for generic restore tasklets -->
+    <batch:step id="genericTaskletsRestore">
+      <batch:tasklet allow-start-if-complete="true" ref="genericTasklet"/>
+    </batch:step>
+
 	</batch:job>
 	<!-- The RESTORE Job definition ENDS here -->
 	

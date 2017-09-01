@@ -42,8 +42,10 @@
           <key><value>/security/acl/catalog.{type}</value></key>
           <value>catalogModeResource</value>
         </entry>                
-                        
-                        
+        <entry>
+          <key><value>/security/self/password</value></key>
+          <value>userPasswordResource</value>
+        </entry>
   </map>
 </property>
 </bean>
@@ -55,6 +57,7 @@
   <bean id="restAccessControlResource" class="org.geoserver.security.rest.RESTAccessControlResource" scope="prototype"/>
   <bean id="serviceAccessControlResource" class="org.geoserver.security.rest.ServiceAccessControlResource" scope="prototype"/>
   <bean id="catalogModeResource" class="org.geoserver.security.rest.CatalogModeResource" scope="prototype"/>
+  <bean id="userPasswordResource" class="org.geoserver.security.rest.UserPasswordResource" scope="prototype"/>
   
   
 </beans>

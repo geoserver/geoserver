@@ -25,13 +25,17 @@
     <bean id="netcdfOutXStreamInitializer" class="org.geoserver.web.netcdf.NetCDFContainerXStreamInitializer" />
 
     <bean id="globalAttributeXStreamInitializer" class="org.geoserver.web.netcdf.GlobalAttributeXStreamInitializer" />
-    
+
+    <bean id="variableAttributeXStreamInitializer" class="org.geoserver.web.netcdf.VariableAttributeXStreamInitializer" />
+
+    <bean id="extraVariableXStreamInitializer" class="org.geoserver.web.netcdf.ExtraVariableXStreamInitializer" />
+
     <bean id="netcdfParser" class="org.geoserver.web.netcdf.layer.NetCDFParserBean" />
     
     <bean id="netcdfOutEditTabPanelInfo" class="org.geoserver.web.netcdf.layer.NetCDFOutEditTabPanelInfo">
         <property name="id" value="netcdfOutEditTabPanelInfo"/>
-        <property name="titleKey" value="NetCDFOutTabPanel.title"/>
-        <property name="descriptionKey" value="NetCDFOutTabPanel.shortDescription"/>
+        <property name="titleKey" value="NetCDFOut.title"/>
+        <property name="descriptionKey" value="NetCDFOut.shortDescription"/>
         <property name="componentClass" value="org.geoserver.web.netcdf.layer.NetCDFOutTabPanel"/>
         <property name="order" value="400"/>
     </bean>

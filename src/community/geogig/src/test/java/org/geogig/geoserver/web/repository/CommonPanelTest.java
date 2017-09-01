@@ -4,20 +4,29 @@
  */
 package org.geogig.geoserver.web.repository;
 
+import static org.geoserver.web.GeoServerWicketTestSupport.tester;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
+import org.geogig.geoserver.model.DropDownModel;
+import org.geogig.geoserver.model.DropDownTestUtil;
 import org.geogig.geoserver.web.RepositoriesPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
-import org.junit.Before;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -29,11 +38,22 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
 
     protected RepositoriesPage repoPage;
 
+    @Rule
+    public TemporaryFolder temp;
+
+    @After
+    public void after() {
+        if (temp != null) {
+            temp.delete();
+            temp = null;
+        }
+    }
+
     /**
      * Before method that navigates all subclass tests to their respective starting pages.
+     * @throws java.io.IOException
      */
-    @Before
-    public void navigateToStartPage() {
+    protected void navigateToStartPage() throws IOException {
         // login
         login();
         // create RepositoriesPage
@@ -44,6 +64,14 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
         tester.clickLink(getStartPage());
         // verify the page is the correct type
         tester.assertRenderedPage(getStartPageClass());
+        temp = new TemporaryFolder();
+        temp.create();
+    }
+
+    @After
+    public void resetDropDownChoices() {
+        // restor default backend choices
+        DropDownTestUtil.resetAvailableBackends();
     }
 
     /**
@@ -80,6 +108,9 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
         DropDownChoice<Serializable> choice = panel.getFormComponent();
         // get the form
         FormTester formTester = tester.newFormTester(getFrom());
+        // ensure choice is available
+        assertTrue("Choice is not available from DropDown: " + type,
+                choice.getChoices().contains(type));
         // make the selection
         formTester.select(getFormChoiceComponent(), choice.getChoices().indexOf(type));
         // fire the ajax event to simulate the selection
@@ -121,4 +152,77 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
      * @return Page subclass Class type of the start page for this test. Used for asserting the correct start page.
      */
     protected abstract Class<? extends Page> getStartPageClass();
+
+    protected abstract void verifyPostgreSQLBackendComponents();
+
+    protected abstract void verifyDirectoryBackendComponents();
+
+    protected abstract void verifyNoBackendComponents();
+
+    @Test
+    public void testNoRocksDBBackend() throws IOException {
+        // override the available backends
+        ArrayList<String> configs = new ArrayList<>(1);
+        configs.add(DropDownModel.PG_CONFIG);
+        DropDownTestUtil.setAvailableBackends(configs, configs.get(0));
+
+        navigateToStartPage();
+        // try to select Directory from the dropdown
+        try {
+            select(DropDownModel.DIRECTORY_CONFIG);
+            fail("DropDown config option should not be available: "
+                    + DropDownModel.DIRECTORY_CONFIG);
+        } catch (AssertionError ae) {
+            // AssertionException expected here from the call to select()
+        }
+        // verify PostgreSQL config components are visible
+        verifyPostgreSQLBackendComponents();
+    }
+
+    @Test
+    public void testNoPostgreSQLBackend() throws IOException {
+        // override the available backends
+        ArrayList<String> configs = new ArrayList<>(1);
+        configs.add(DropDownModel.DIRECTORY_CONFIG);
+        DropDownTestUtil.setAvailableBackends(configs, configs.get(0));
+
+        navigateToStartPage();
+        // try to select PostgreSQL from the dropdown
+        try {
+            select(DropDownModel.PG_CONFIG);
+            fail("DropDown config option should not be available: "
+                    + DropDownModel.PG_CONFIG);
+        } catch (AssertionError ae) {
+            // AssertionException expected here from the call to select()
+        }
+        // verify Directory config components are visible
+        verifyDirectoryBackendComponents();
+    }
+
+    @Test
+    public void testNoAvailableBackends() throws IOException {
+        // override the available backends
+        DropDownTestUtil.setAvailableBackends(new ArrayList<>(0), null);
+
+        navigateToStartPage();
+        // try to select Directory from the dropdown
+        try {
+            select(DropDownModel.DIRECTORY_CONFIG);
+            fail("DropDown config option should not be available: "
+                    + DropDownModel.DIRECTORY_CONFIG);
+        } catch (AssertionError ae) {
+            // AssertionException expected here from the call to select()
+        }
+        // try to select PostgreSQL from the dropdown
+        try {
+            select(DropDownModel.PG_CONFIG);
+            fail("DropDown config option should not be available: "
+                    + DropDownModel.PG_CONFIG);
+        } catch (AssertionError ae) {
+            // AssertionException expected here from the call to select()
+        }
+
+        // verify Directory and PostgreSQL config components are invisible
+        verifyNoBackendComponents();
+    }
 }

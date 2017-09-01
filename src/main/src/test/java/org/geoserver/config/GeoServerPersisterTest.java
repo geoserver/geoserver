@@ -637,6 +637,28 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testModifyStyleChangeWorkspaceToGlobal() throws Exception {
+        testAddStyleWithWorkspace();
+
+        //copy an sld into place
+        FileUtils.copyURLToFile(getClass().getResource("default_line.sld"),
+                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"));
+
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
+
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        s.setWorkspace(null);
+        catalog.save( s );
+
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
+
+        assertFalse(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertFalse(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
+    }
+
+    @Test
     public void testModifyStyleWithResourceChangeWorkspace() throws Exception {
         testAddStyle();
 
@@ -794,12 +816,40 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         
         File f = new File( testData.getDataDirectoryRoot(), 
             "styles/foostyle.xml");
-        assertTrue( f.exists() );
+        assertTrue(f.exists());
         
-        StyleInfo s = catalog.getStyleByName( "foostyle" );
-        catalog.remove( s );
+        File sf = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld");
+        sf.createNewFile();
+        assertTrue(sf.exists());
         
-        assertThat( f, not(fileExists()) );
+        StyleInfo s = catalog.getStyleByName( "foostyle" );        
+        catalog.remove(s);
+        
+        assertThat(f, not(fileExists()));
+        assertThat(sf, not(fileExists()));
+        
+        File sfb = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld.bak");
+        assertThat(sfb, fileExists() );
+        
+        //do it a second time
+        
+        testAddStyle();               
+        sf = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld");
+        sf.createNewFile();
+        assertTrue(sf.exists());
+        
+        s = catalog.getStyleByName("foostyle");        
+        catalog.remove(s);
+        
+        assertThat(f, not(fileExists()));
+        assertThat(sf, not(fileExists()));
+        
+        sfb = new File( testData.getDataDirectoryRoot(), 
+                "styles/foostyle.sld.bak.1");
+        assertThat(sfb, fileExists());
     }
 
     @Test

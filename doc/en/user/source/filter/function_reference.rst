@@ -5,7 +5,7 @@ Filter Function Reference
 
 This reference describes all filter functions that can be used in WFS/WMS filtering or in SLD expressions.
 
-The list of functions available on a Geoserver instance can be determined by 
+The list of functions available on a GeoServer instance can be determined by 
 browsing to http://localhost:8080/geoserver/wfs?request=GetCapabilities 
 and searching for ``ogc:FunctionNames`` in the returned XML.  
 If a function is described in the Capabilities document but is not in this reference, 
@@ -420,9 +420,12 @@ Math functions
    * - roundDouble
      - ``x``:Double
      - Returns the closest Long to ``x``
+   * - sin
+     - ``angle``: Double
+     - Returns the sine of an ``angle`` expressed in radians
    * - tan
      - ``angle``:Double
-     - Returns the trigonometric tangent of ``angle``
+     - Returns the trigonometric tangent of ``angle`` expressed in radians
    * - toDegrees
      - ``angle``:Double
      - Converts an angle expressed in radians into degrees
@@ -505,13 +508,13 @@ Parsing and formatting functions
      - **Arguments**
      - **Description**
    * - dateFormat
-     - ``format``:String, date``:Timestamp
+     - ``format``:String, ``date``:Timestamp
      - Formats the specified date according to the provided format. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - dateParse
-     - ``format``:String, dateString``:String
+     - ``format``:String, ``dateString``:String
      - Parses a date from a ``dateString`` formatted according to the ``format`` specification. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - numberFormat
-     - ``format``:String, number``:Double
+     - ``format``:String, ``number``:Double
      - Formats the number according to the specified ``format``. The format syntax can be found in the `Java DecimalFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html>`_
    * - parseBoolean
      - ``boolean``:String

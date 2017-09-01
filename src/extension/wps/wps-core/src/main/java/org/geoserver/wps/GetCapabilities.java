@@ -34,6 +34,7 @@ import org.eclipse.emf.common.util.ECollections;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
@@ -85,7 +86,12 @@ public class GetCapabilities {
         // ServiceIdentification
         ServiceIdentificationType si = owsf.createServiceIdentificationType();
         caps.setServiceIdentification(si);
-
+        
+        // Check if WPS config is loaded
+        if (wps==null){
+            throw new ServiceException("WPS config not loaded. Check logs for details.");
+        }
+        
         si.getTitle().add(Ows11Util.languageString(wps.getTitle()));
         si.getAbstract().add(Ows11Util.languageString(wps.getAbstract()));
 

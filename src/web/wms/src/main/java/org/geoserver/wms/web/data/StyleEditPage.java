@@ -37,7 +37,7 @@ public class StyleEditPage extends AbstractStylePage {
         String name = parameters.get(NAME).toString();
         String workspace = parameters.get(WORKSPACE).toOptionalString();
 
-        StyleInfo si = workspace != null ? getCatalog().getStyleByName(workspace, name) : 
+        StyleInfo si = workspace != null ? getCatalog().getStyleByName(workspace, name) :
             getCatalog().getStyleByName(name);
 
         if(si == null) {
@@ -45,6 +45,8 @@ public class StyleEditPage extends AbstractStylePage {
             doReturn(StylePage.class);
             return;
         }
+        
+        recoverCssStyle(si);
         initPreviewLayer(si);
         initUI(si);
 
@@ -98,22 +100,27 @@ public class StyleEditPage extends AbstractStylePage {
             style.setFormat(format);
             Version version = Styles.handler(format).version(rawStyle);
             style.setFormatVersion(version);
-
             // make sure the legend is null if there is no URL
             if (null == style.getLegend()
                     || null == style.getLegend().getOnlineResource()
                     || style.getLegend().getOnlineResource().isEmpty()) {
                 style.setLegend(null);
             }
-
-            // write out the SLD
+            // write out the SLD, we try to use the old style so the same path is used
+            StyleInfo stylePath = getCatalog().getStyle(style.getId());
+            if (stylePath == null) {
+                // the old style is no available anymore, so use the new path
+                stylePath = style;
+            }
+            // ask the catalog to write the style
             try {
-                getCatalog().getResourcePool().writeStyle(style, 
-                        new ByteArrayInputStream(rawStyle.getBytes()));
+                getCatalog().getResourcePool().writeStyle(stylePath, new ByteArrayInputStream(rawStyle.getBytes()));
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
+            // update the catalog
             getCatalog().save(style);
+            // provide feedback to the user
             styleForm.info("Style saved");
         } catch( Exception e ) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);

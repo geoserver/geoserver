@@ -52,15 +52,15 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
     protected boolean checkEditForm(String objectString) {
         String[] array=objectString.split("\\.");
         return  array[0].equals(
-                    tester.getComponentFromLastRenderedPage("form:workspace").getDefaultModelObject()) &&
+                    tester.getComponentFromLastRenderedPage("form:root").getDefaultModelObject()) &&
                 array[1].equals(
-                        tester.getComponentFromLastRenderedPage("form:layer").getDefaultModelObject());
+                        tester.getComponentFromLastRenderedPage("form:layerContainer:layerAndLabel:layer").getDefaultModelObject());
     }
 
     @Override
     protected String getSearchString() throws Exception{
         for (DataAccessRule rule : DataAccessRuleDAO.get().getRules()) {
-            if (MockData.CITE_PREFIX.equals(rule.getWorkspace()) &&
+            if (MockData.CITE_PREFIX.equals(rule.getRoot()) &&
                     MockData.BRIDGES.getLocalPart().equals(rule.getLayer()))
                 return rule.getKey();
         }

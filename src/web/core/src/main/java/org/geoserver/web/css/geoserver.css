@@ -299,6 +299,9 @@ th.selection {
 	width: 1%; /* use as few space as possible */
 }
 
+.alternating-rows tr:nth-child(even) {
+	background: #e2efcd;
+}
 /*-----------------------
 Forms
 -----------------------*/

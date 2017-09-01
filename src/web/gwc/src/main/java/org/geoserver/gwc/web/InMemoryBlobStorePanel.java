@@ -199,7 +199,6 @@ public class InMemoryBlobStorePanel extends Panel {
                 KEY_CURRENT_MEM));
         final Label cacheSizeLabel = new Label("cacheSize", new MapModel(values, KEY_SIZE));
 
-        statsContainer.add(new Label("title"));
         statsContainer.add(totalCountLabel);
         statsContainer.add(hitCountLabel);
         statsContainer.add(missCountLabel);

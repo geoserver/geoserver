@@ -232,8 +232,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                                
         form.add(getFeatureInfoMimeTypesComponent =new MimeTypesFormComponent("getFeatureInfoMimeTypes",
                 new ListModel<String>(getFeatureInfoSelected),new CollectionModel<String>(getFeatureInfoChoices),
-                new PropertyModel<Boolean>(info, "getFeatureInfoMimeTypeCheckingEnabled").getObject()));                                                           
-        
+                new PropertyModel<Boolean>(info, "getFeatureInfoMimeTypeCheckingEnabled").getObject()));
+
+        //dynamicStylingDisabled
+        form.add(new CheckBox("dynamicStyling.disabled",new PropertyModel<Boolean>(info, WMS.DYNAMIC_STYLING_DISABLED)));
+
+        // disable the reprojection of GetFeatureInfo results
+        form.add(new CheckBox("disableFeaturesReproject", new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
     }
     
     @Override

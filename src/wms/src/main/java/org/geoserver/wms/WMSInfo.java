@@ -146,4 +146,36 @@ public interface WMSInfo extends ServiceInfo {
      * @return the list of identifiers for the WMS root layer
      */
     List<LayerIdentifierInfo> getIdentifiers();
+
+    /**
+     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
+     *
+     * @param dynamicStylesEnabled
+     */
+    void setDynamicStylingDisabled(Boolean dynamicStylesDisabled);
+
+    /**
+     * @return the status of dynamic styling (SLD and SLD_BODY params) allowance
+     */
+    Boolean isDynamicStylingDisabled();
+
+    /**
+     * If set to TRUE GetFeatureInfo results will NOT be reprojected.
+     *
+     * @param featuresReprojectionDisabled features reprojection allowance
+     */
+    default void setFeaturesReprojectionDisabled(boolean featuresReprojectionDisabled) {
+        // if not implemented nothing is done
+    }
+
+    /**
+     * Flag that controls if GetFeatureInfo results should NOT be reprojected to the map
+     * coordinate reference system.
+     *
+     * @return GetFeatureInfo features reprojection allowance
+     */
+    default boolean isFeaturesReprojectionDisabled() {
+        // deactivate features reprojection by default
+        return true;
+    }
 }

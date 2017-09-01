@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -32,6 +33,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -89,6 +91,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * A facade providing access to the WMS configuration details
@@ -131,6 +134,10 @@ public class WMS implements ApplicationContextAware {
     
     public static final Boolean SCALEHINT_MAPUNITS_PIXEL_DEFAULT = Boolean.FALSE;
     
+    public static final String DYNAMIC_STYLING_DISABLED = "dynamicStylingDisabled";
+
+    public static final String FEATURES_REPROJECTION_DISABLED = "featuresReprojectionDisabled";
+
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -351,6 +358,20 @@ public class WMS implements ApplicationContextAware {
 
     public WMSInterpolation getInterpolation() {
         return getServiceInfo().getInterpolation();
+    }
+
+    public boolean isDynamicStylingDisabled() {
+        return getServiceInfo().isDynamicStylingDisabled();
+    }
+
+    /**
+     * If TRUE is returned GetFeatureInfo results should NOT be reproject
+     * to the map coordinate reference system.
+     *
+     * @return GetFeatureInfo results reprojection allowance
+     */
+    public boolean isFeaturesReprojectionDisabled() {
+        return getServiceInfo().isFeaturesReprojectionDisabled();
     }
 
     public JAIInfo.PngEncoderType getPNGEncoderType() {
@@ -943,7 +964,7 @@ public class WMS implements ApplicationContextAware {
     public static String toInternalSRS(String srs, Version version) {
         if (VERSION_1_3_0.equals(version)) {
             if (srs != null && srs.toUpperCase().startsWith("EPSG:")) {
-                srs = srs.toUpperCase().replace("EPSG:", "urn:x-ogc:def:crs:EPSG:");
+                srs = srs.toUpperCase().replace("EPSG:", "urn:ogc:def:crs:EPSG:");
             }
         }
 
@@ -1629,4 +1650,32 @@ public class WMS implements ApplicationContextAware {
         return GeoServerExtensions.bean(WMS.class);
     }
 
+    /**
+     * Checks if the layer can be drawn, that is, if it's raster, or vector with a geometry attribute
+     * @param lyr
+     * @return
+     */
+    public static boolean isWmsExposable(LayerInfo lyr) {
+        if (lyr.getType() == PublishedType.RASTER || lyr.getType() == PublishedType.WMS) {
+            return true;
+        }
+
+        if (lyr.getType() == PublishedType.VECTOR) {
+            final ResourceInfo resource = lyr.getResource();
+            try {
+                for (AttributeTypeInfo att : ((FeatureTypeInfo) resource).attributes()) {
+                    if (att.getBinding() != null
+                            && Geometry.class.isAssignableFrom(att.getBinding())) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE,
+                        "An error occurred trying to determine if" + " the layer is geometryless",
+                        e);
+            }
+        }
+
+        return false;
+    }
 }

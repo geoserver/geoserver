@@ -70,7 +70,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         try {
             tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
             fail("Shouldn't have found section for INSPIRE extension configuration");
-        } catch (AssertionFailedError e) {
+        } catch (AssertionError e) {
         }
     }
     
@@ -176,7 +176,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
             // the spatial identifiers editor
             tester.assertComponent("form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers", UniqueResourceIdentifiersEditor.class);
             fail("Shouldn't have found a Spatial Dataset Identifers section");
-        } catch (AssertionFailedError e) {
+        } catch (AssertionError e) {
         }
     }
     

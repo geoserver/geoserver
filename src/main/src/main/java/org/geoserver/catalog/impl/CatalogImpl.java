@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -91,7 +92,7 @@ public class CatalogImpl implements Catalog {
     /**
      * listeners
      */
-    protected List listeners = new ArrayList();
+    protected List listeners = new CopyOnWriteArrayList<>();
 
     /** 
      * resources
@@ -1069,9 +1070,10 @@ public class CatalogImpl implements Catalog {
         
         NamespaceInfo added;
         synchronized (facade) {
-            added = facade.add(resolve(namespace));
+            final NamespaceInfo resolved = resolve(namespace);
+            added = facade.add(resolved);
             if ( getDefaultNamespace() == null ) {
-                setDefaultNamespace(namespace);
+                setDefaultNamespace(resolved);
             }
         }
         
@@ -1386,10 +1388,8 @@ public class CatalogImpl implements Catalog {
     
     public void remove(StyleInfo style) {
         //ensure no references to the style
-        for ( LayerInfo l : facade.getLayers() ) {
-            if ( style.equals( l.getDefaultStyle() ) || l.getStyles().contains( style )) {
-                throw new IllegalArgumentException( "Unable to delete style referenced by '"+ l.getName()+"'");
-            }
+        for ( LayerInfo l : facade.getLayers(style) ) {
+            throw new IllegalArgumentException( "Unable to delete style referenced by '"+ l.getName()+"'");
         }
 
         for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
@@ -1428,12 +1428,7 @@ public class CatalogImpl implements Catalog {
     
     @Override
     public void removeListeners(Class listenerClass) {
-        for (Iterator it = listeners.iterator(); it.hasNext();) {
-            CatalogListener listener = (CatalogListener) it.next();
-            if(listenerClass.isInstance(listener)) {
-                it.remove();
-            }
-        }
+        new ArrayList<>(listeners).stream().filter(l -> listenerClass.isInstance(l)).forEach(l -> listeners.remove(l));
     }
 
     public Iterator search(String cql) {
@@ -1519,8 +1514,7 @@ public class CatalogImpl implements Catalog {
             } catch(Throwable t) {
                 if ( t instanceof CatalogException && toThrow == null) {
                     toThrow = (CatalogException) t;
-                }
-                else {
+                } else if(LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(Level.WARNING, "Catalog listener threw exception handling event.", t);
                 }
             }

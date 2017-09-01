@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.11.2</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -69,7 +69,6 @@
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
-          <descriptor>release/ext-ysld.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
@@ -80,6 +79,10 @@
           <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
           <descriptor>release/ext-onelogin.xml</descriptor> 
+          <descriptor>release/ext-notification.xml</descriptor> 
+          <descriptor>release/ext-ows-simulate.xml</descriptor> 
+          <descriptor>release/ext-jdbc-metrics.xml</descriptor>
+          <descriptor>release/ext-opensearch-eo.xml</descriptor>  
         </descriptors>
       </configuration>
      </plugin>
@@ -175,6 +178,19 @@
         <module>onelogin</module>
       </modules>
     </profile>
+	<profile>
+      <id>notification</id>
+      <modules>
+		<module>notification-common</module>
+        <module>notification</module>
+      </modules>
+    </profile>
+	<profile>
+      <id>notification-geonode</id>
+      <modules>
+		<module>notification-geonode</module>
+      </modules>
+    </profile>
     <profile>
       <id>communityRelease</id>
       <modules>
@@ -210,7 +226,6 @@
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-s3</module>
-        <module>ysld</module>
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>web-resource</module>
@@ -221,6 +236,12 @@
         <module>security/oauth2-geonode</module>
         <module>wmts-multi-dimensional</module>
         <module>onelogin</module>
+        <module>notification</module>
+        <module>notification-common</module>
+        <module>notification-geonode</module>
+        <module>ows-simulate</module>
+        <module>jdbc-metrics</module>
+        <module>oseo</module>
       </modules>
     </profile>
     <profile>
@@ -292,6 +313,12 @@
       <id>mbtiles</id>
       <modules>
         <module>mbtiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>mbstyle</id>
+      <modules>
+        <module>mbstyle</module>
       </modules>
     </profile>
     <profile>
@@ -435,12 +462,6 @@
       </modules>
     </profile>
     <profile>
-      <id>ysld</id>
-      <modules>
-        <module>ysld</module>
-      </modules>
-    </profile>
-    <profile>
       <id>backup-restore</id>
       <modules>
         <module>backup-restore</module>
@@ -474,18 +495,21 @@
     <profile>
       <id>oauth2-google</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-google</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-github</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-github</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-geonode</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-geonode</module>
       </modules>
     </profile>
@@ -493,6 +517,24 @@
       <id>wmts-multi-dimensional</id>
       <modules>
         <module>wmts-multi-dimensional</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ows-simulate</id>
+      <modules>
+        <module>ows-simulate</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oseo</id>
+      <modules>
+        <module>oseo</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jdbc-metrics</id>
+      <modules>
+        <module>jdbc-metrics</module>
       </modules>
     </profile>
   </profiles>

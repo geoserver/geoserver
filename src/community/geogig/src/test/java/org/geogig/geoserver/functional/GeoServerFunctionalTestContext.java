@@ -33,11 +33,13 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
+import org.geotools.factory.Hints;
+import org.geotools.referencing.CRS;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
+import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.web.api.TestData;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -61,6 +63,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     private GeoServerRepositoryProvider repoProvider = null;
 
+    private GeoGigTestData testData;
     /**
      * Helper class for running mock http requests.
      */
@@ -110,6 +113,28 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
             req.addHeader("Content-Type", multipart.getContentType());
             req.setMethod("POST");
             req.setContent(bout.toByteArray());
+
+            return dispatch(req);
+        }
+        
+        /**
+         * Issue a POST request to the provided URL with the given content.
+         *
+         * @param contentType the content type of the data
+         * @param resourceUri   the url to issue the request to
+         * @param postContent     the content to be posted
+         *
+         * @return the response to the request
+         */
+        public MockHttpServletResponse postContent(String contentType, String resourceUri, String postContent)
+                throws Exception {
+
+            MockHttpServletRequest req = createRequest(resourceUri);
+
+            req.setContentType(contentType);
+            req.addHeader("Content-Type", contentType);
+            req.setMethod("POST");
+            req.setContent(postContent == null ? null : postContent.getBytes());
 
             return dispatch(req);
         }
@@ -163,6 +188,23 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void setUp() throws Exception {
+        // use the OGC standard for axis order
+        //
+        // must be done *before* super.oneTimeSetUp() to ensure CRS factories
+        // configured before data is loaded
+        //
+        // if this property is null, GeoServerAbstractTestSupport.oneTimeSetUp()
+        // will blow away our changes
+        System.setProperty("org.geotools.referencing.forceXY", "false");
+        // yes, we need this too
+        Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, false);
+        // if this is set to anything but "http", GeoServerAbstractTestSupport.oneTimeSetUp()
+        // will blow away our changes
+        Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
+        // apply changes
+        CRS.reset("all");
+        
+        testData = new GeoGigTestData(this.tempFolder);
         if (helper == null) {
             helper = new TestHelper();
             helper.doSetup();
@@ -171,6 +213,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
             RepositoryManager.get().setCatalog(helper.getCatalog());
         }
+        setVariable("@systemTempPath", tempFolder.getRoot().getCanonicalPath().replace("\\", "/"));
 
     }
 
@@ -184,9 +227,20 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
                 RepositoryManager.close();
                 helper.doTearDown();
             }
+            if (testData != null) {
+                testData.tearDown();
+            }
         } finally {
             helper = null;
         }
+        
+        // undo the changes made for this suite and reset
+        System.clearProperty("org.geotools.referencing.forceXY");
+        Hints.removeSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER);
+        Hints.removeSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING);
+        CRS.reset("all");
+        
+        System.runFinalization();
     }
 
     /**
@@ -202,6 +256,31 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
     }
 
     /**
+     * Initialize a repository with the given name. Does not register it with the Catalog or
+     * associate it to a DataStore.
+     *
+     * @param name the repository name
+     *
+     * @throws Exception
+     */
+    void initRepo(String name) throws Exception {
+        testData.setUp(name);
+        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
+    }
+
+    @Override
+    protected TestData createUnmanagedRepo(String name) throws Exception {
+        initRepo(name);
+        return new TestData(testData.getGeogig());
+    }
+
+    protected TestData createUnManagedRepoWithAltRoot(String name) throws Exception {
+        File unmanagedRoot = testData.tmpFolder().newFolder("unmanagedRoot");
+        testData.setUp(name, unmanagedRoot);
+        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
+        return new TestData(testData.getGeogig());
+    }
+    /**
      * Create a repository with the given name for testing.
      *
      * @param name the repository name
@@ -212,9 +291,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
-        GeoGigTestData testData = new GeoGigTestData(RunWebAPIFunctionalTest.TEMP_ROOT.getRoot());
-        testData.setUp(name);
-        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
+        initRepo(name);
         GeoGIG geogig = testData.getGeogig();
 
         Catalog catalog = helper.getCatalog();
@@ -241,6 +318,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         String repoName = resolver.getName(repoURI);
         RepositoryInfo repositoryInfo = RepositoryManager.get().getByRepoName(repoName);
         assertNotNull(repositoryInfo);
+        catalog.dispose();
         return new TestData(geogig);
     }
 
@@ -381,5 +459,26 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
             Throwables.propagate(e);
         }
     }
+
+	@Override
+	public String getHttpLocation(String repoName) {
+		return String.format("http://localhost:%d/geoserver/geogig/repos/%s", 8080, repoName);
+	}
+
+	@Override
+	protected void postContentInternal(String contentType, String resourceUri, String postContent) {
+        resourceUri = replaceVariables(resourceUri);
+        postContent = replaceVariables(postContent);
+        try {
+            lastResponse = helper.postContent(contentType, "/geogig" + resourceUri, postContent);
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
+	}
+
+	@Override
+	protected void serveHttpRepos() throws Exception {
+		// Do Nothing
+	}
 
 }

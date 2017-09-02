@@ -2,10 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.status.monitoring;
+package org.geoserver.status.monitoring.collector;
+
+import org.geoserver.status.monitoring.rest.Infos;
 
 public interface SystemInfoCollector {
 
-    String retriveSystemInfo(SystemInfoProperty systemInfo);
+    Infos retriveAllSystemInfo();
 
 }

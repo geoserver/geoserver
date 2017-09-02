@@ -5,7 +5,6 @@
 package org.geoserver.status.monitoring.web;
 
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,11 +15,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SystemStatusMonitor extends Panel {
-    
+
     private static final long serialVersionUID = -5616622546856772557L;
 
     public SystemStatusMonitor(String id) {
         super(id);
     }
-    
+
 }

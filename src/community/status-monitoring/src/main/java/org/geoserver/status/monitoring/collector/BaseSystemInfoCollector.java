@@ -4,22 +4,40 @@
  */
 package org.geoserver.status.monitoring.collector;
 
-import org.geoserver.status.monitoring.rest.Infos;
+import java.util.Collections;
+import java.util.List;
 
+/**
+ * 
+ * Create an empty system information metrics for all element defined in {@link MetricInfo} 
+ * <p>
+ * As default all elements are initialized as not available
+ * 
+ * @author sandr
+ *
+ */
 public class BaseSystemInfoCollector implements SystemInfoCollector {
 
-    public final Infos retriveAllSystemInfo() {
-        Infos infos = new Infos();
-        for (SystemInfoProperty sip : SystemInfoProperty.values()) {
-            infos.addData(retriveSystemInfo(sip));
+    String DEFAULT_VALUE = "NOT AVAILABLE";
+
+    public final Metrics retriveAllSystemInfo() {
+        Metrics metrics = new Metrics();
+        for (MetricInfo sip : MetricInfo.values()) {
+            metrics.getMetrics().addAll(retriveSystemInfo(sip));
         }
-        return infos;
+        return metrics;
     }
 
-    SystemInfoProperty retriveSystemInfo(SystemInfoProperty systemInfo) {
-        systemInfo.getValues().clear();
-        systemInfo.setAvailable(false);
-        return systemInfo;
+    /**
+     * Retrieve one or more metric for each element defined in {@link MetricInfo} 
+     * @param info the element to retrieve
+     * @return a list of {@link MetricValue} for each {@link MetricInfo}
+     */
+    List<MetricValue> retriveSystemInfo(MetricInfo info) {
+        MetricValue mv = new MetricValue(info);
+        mv.setAvailable(false);
+        mv.setValue(DEFAULT_VALUE);
+        return Collections.singletonList(mv);
     }
 
 }

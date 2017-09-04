@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 
+ * Panel to visualize system informations
  * @author sandr
  *
  */

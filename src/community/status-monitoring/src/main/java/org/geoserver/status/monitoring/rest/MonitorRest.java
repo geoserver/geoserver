@@ -1,4 +1,10 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.status.monitoring.rest;
+
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -6,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.status.monitoring.collector.MetricValue;
+import org.geoserver.status.monitoring.collector.Metrics;
 import org.geoserver.status.monitoring.collector.SystemInfoCollector;
-import org.geoserver.status.monitoring.collector.SystemInfoProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +29,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thoughtworks.xstream.XStream;
 
+import freemarker.template.ObjectWrapper;
+
+/**
+ * 
+ * REST endpoint that return the available system information.
+ * <p>
+ * Every time this endpoint is hitted the informations are retrieved from the system, no cached information is used.
+ * <p>
+ * HTML, XML and JSON are supported.
+ * 
+ * @author sandr
+ *
+ */
+
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/about/monitoring")
 public class MonitorRest extends RestBaseController {
@@ -30,24 +52,25 @@ public class MonitorRest extends RestBaseController {
     @Autowired
     SystemInfoCollector systemInfoCollector;
 
-    // RESTful method
     @GetMapping(value = "", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     @ResponseStatus(HttpStatus.OK)
-    public RestWrapper<Infos> getData(HttpServletRequest request, HttpServletResponse response) {
-        log.debug("CALLED");
-        Infos si = systemInfoCollector.retriveAllSystemInfo();
-        return wrapObject(si, Infos.class);
+    public RestWrapper<Metrics> getData(HttpServletRequest request, HttpServletResponse response) {
+        Metrics si = systemInfoCollector.retriveAllSystemInfo();
+        return wrapObject(si, Metrics.class);
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xs = persister.getXStream();
-        xs.alias("monitoring", Infos.class);
-        xs.alias("infos", SystemInfoProperty.class);
-        xs.addImplicitArray(Infos.class, "data");
-        xs.registerConverter(new InfoListConverter());
-        xs.registerConverter(new SystemInfoConverter());
+        xs.alias("metric", MetricValue.class);
+        xs.alias("metrics", Metrics.class);
+        xs.addImplicitCollection(Metrics.class, "metrics");
+    }
+
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<>(clazz, Arrays.asList(MetricValue.class));
     }
 
 }

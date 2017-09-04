@@ -7,8 +7,12 @@ package org.geoserver.config;
 
 import org.geoserver.catalog.Info;
 
+/**
+ * System info object.
+ * 
+ * @author sandr
+ *
+ */
 public interface SystemInfo extends Info {
-    
-   
-    
+
 }

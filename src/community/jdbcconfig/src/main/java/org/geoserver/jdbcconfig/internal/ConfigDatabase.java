@@ -8,6 +8,9 @@ package org.geoserver.jdbcconfig.internal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static org.geoserver.catalog.Predicates.and;
+import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.isNull;
 import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
 import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
@@ -30,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
@@ -139,6 +143,8 @@ public class ConfigDatabase {
 
     private Cache<String, Info> cache;
 
+    private Cache<InfoIdentity, String> identityCache;
+
     private InfoRowMapper<CatalogInfo> catalogRowMapper;
 
     private InfoRowMapper<Info> configRowMapper;
@@ -174,6 +180,7 @@ public class ConfigDatabase {
             cacheProvider = DefaultCacheProvider.findProvider();
         }
         cache = cacheProvider.getCache("catalog");
+        identityCache = cacheProvider.getCache("catalogNames");
     }
 
     private Dialect dialect() {
@@ -336,6 +343,56 @@ public class ConfigDatabase {
 
         return result;
     }
+    
+    public <T extends Info> CloseableIterator<String> queryIds(final Class<T> of, final Filter filter) {
+
+        checkNotNull(of);
+        checkNotNull(filter);
+
+        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter);
+
+        final StringBuilder sql = sqlBuilder.build();
+        final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
+        final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
+        final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
+
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.finer("Original filter: " + filter);
+            LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
+            LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
+        }
+        logStatement(sql, namedParameters);
+
+        Stopwatch sw = Stopwatch.createStarted();
+        // the oracle offset/limit implementation returns a two column result set
+        // with rownum in the 2nd - queryForList will throw an exception
+        List<String> ids = template.query(sql.toString(), namedParameters, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1);
+            }
+        });
+        sw.stop();
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ",
+                    sw.toString()));
+        }
+
+        CloseableIterator<String> result;
+        Iterator<String> iterator = Iterators.filter(ids.iterator(),
+                com.google.common.base.Predicates.notNull());
+
+        if (fullySupported) {
+            result = new CloseableIteratorAdapter<String>(iterator);
+        } else {
+            // Apply the filter
+            result = CloseableIteratorAdapter.filter(iterator, filter);
+            // The offset and limit should not have been applied as part of the query
+            assert(!sqlBuilder.isOffsetLimitApplied());
+        }
+
+        return result;
+    }
 
     private <T extends Info> CloseableIterator<T> applyOffsetLimit(CloseableIterator<T> iterator, Integer offset, Integer limit){
         if (offset != null) {
@@ -403,7 +460,21 @@ public class ConfigDatabase {
         addAttributes(info, key);
 
         cache.put(id, info);
+        
+        for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
+            if (identityCache.getIfPresent(identity) == null) {
+                identityCache.put(identity, id);
+            } else { 
+                //not a unique identity
+                identityCache.invalidate(identity);
+            }
+        }
+        
         return getById(id, interf);
+    }
+    
+    public <T extends Info> void addNames(String id, String...names) {
+            
     }
 
     private void addAttributes(final Info info, final Number infoPk) {
@@ -596,6 +667,8 @@ public class ConfigDatabase {
         } catch (EmptyResultDataAccessException notFound) {
             return;
         }
+        
+        identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
 
         String deleteObject = "delete from object where id = :id";
@@ -609,7 +682,6 @@ public class ConfigDatabase {
         final int relatedPropCount = template.update(deleteRelatedProperties, params("oid", oid));
         LOGGER.fine("Removed " + relatedPropCount + " related properties of " + info.getId());
 
-        cache.invalidate(info.getId());
     }
 
     /**
@@ -623,12 +695,13 @@ public class ConfigDatabase {
         final String id = info.getId();
 
         checkNotNull(id, "Can't modify an object with no id");
-
+        
         final ModificationProxy modificationProxy = ModificationProxy.handler(info);
         Preconditions.checkNotNull(modificationProxy, "Not a modification proxy: ", info);
 
         final Info oldObject = (Info) modificationProxy.getProxyObject();
 
+        identityCache.invalidateAll(InfoIdentities.get().getIdentities(oldObject));
         cache.invalidate(id);
 
         // get changed properties before h.commit()s
@@ -682,6 +755,17 @@ public class ConfigDatabase {
             }
         }
         // / </HACK>
+        
+        
+        for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
+            if (identityCache.getIfPresent(identity) == null) {
+                identityCache.put(identity, id);
+            } else {
+                //not a unique identity
+                identityCache.invalidate(identity);
+            }
+        }
+        
         return getById(id, clazz);
     }
 
@@ -843,6 +927,42 @@ public class ConfigDatabase {
 
         return null;
     }
+    
+    @Nullable
+    public <T extends Info> String getIdByIdentity(final Class<T> type, final String... identityMappings) {
+        Assert.notNull(identityMappings, "id");
+        int length = identityMappings.length / 2;
+        String[] descriptor = new String[length];
+        String[] values = new String[length];
+        for (int i = 0; i < length; i++) {
+           descriptor[i] = identityMappings[i * 2];
+           values[i] = identityMappings[i * 2 + 1];
+        }
+        InfoIdentity infoIdentity = new InfoIdentity(InfoIdentities.root(type), descriptor, values);
+
+        String id = null;
+        try {
+            id = identityCache.get(infoIdentity, new IdentityLoader(infoIdentity));
+
+        } catch (CacheLoader.InvalidCacheLoadException notFound) {
+            return null;
+        } catch (ExecutionException e) {
+            Throwables.propagate(e.getCause());
+        }
+        
+        return id;
+    }
+    
+    @Nullable
+    public <T extends Info> T getByIdentity(final Class<T> type, final String... identityMappings) {
+        String id = getIdByIdentity(type, identityMappings);
+
+        if (id == null) {
+            return null;
+        } else {
+            return getById(id, type);
+        }
+    }
 
     private <T extends CatalogInfo> T resolveCatalog(final T real) {
         if (real == null) {
@@ -945,6 +1065,8 @@ public class ConfigDatabase {
     public void dispose() {
         cache.invalidateAll();
         cache.cleanUp();
+        identityCache.invalidateAll();
+        identityCache.cleanUp();
     }
 
     private final class CatalogLoader implements Callable<CatalogInfo> {
@@ -967,6 +1089,30 @@ public class ConfigDatabase {
                 return null;
             }
             return info;
+        }
+    }
+    
+    private final class IdentityLoader implements Callable<String> {
+
+        private final InfoIdentity identity;
+
+        public IdentityLoader(final InfoIdentity identity) {
+            this.identity = identity;
+        }
+
+        @Override
+        public String call() throws Exception {
+            Filter filter = Filter.INCLUDE;
+            for (int i = 0; i < identity.getDescriptor().length; i++) {
+                filter = and(filter,  identity.getValues()[i] == null ? isNull(identity.getDescriptor()[i]) :
+                    equal(identity.getDescriptor()[i], identity.getValues()[i]));
+            }
+            
+            try {
+                return getId(identity.getClazz(), filter);
+            } catch (IllegalArgumentException multipleResults) {
+                return null;
+            }
         }
     }
 
@@ -1011,7 +1157,7 @@ public class ConfigDatabase {
             return info;
         }
     }
-
+    
     /**
      * @return whether there exists a property named {@code propertyName} for the given type of
      *         object, and hence native sorting can be done over it.
@@ -1022,9 +1168,46 @@ public class ConfigDatabase {
     }
 
     void clear(Info info) {
+        identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
     }
     
+    public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
+    
+        CloseableIterator<T> it = query(type, filter, null, 2, (org.opengis.filter.sort.SortBy)null);
+        T result = null;
+        try {
+            if (it.hasNext()) {
+                result = it.next();
+                if (it.hasNext()) {
+                    throw new IllegalArgumentException(
+                            "Specified query predicate resulted in more than one object");
+                }
+            }
+        } finally {
+            it.close();
+        }
+        return result;
+    }
+    
+    public <T extends Info> String getId(Class<T> type, Filter filter) throws IllegalArgumentException {
+        
+        CloseableIterator<String> it = queryIds(type, filter);
+        String result = null;
+        try {
+            if (it.hasNext()) {
+                result = it.next();
+                if (it.hasNext()) {
+                    throw new IllegalArgumentException(
+                            "Specified query predicate resulted in more than one object");
+                }
+            }
+        } finally {
+            it.close();
+        }
+        return result;
+    }
+
     /**
      * Listens to catalog events clearing cache entires when resources are modified.
      */

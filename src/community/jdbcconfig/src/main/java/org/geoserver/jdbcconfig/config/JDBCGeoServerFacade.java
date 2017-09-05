@@ -59,7 +59,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     private GeoServer geoServer;
 
-    private final ConfigDatabase db;
+    public final ConfigDatabase db;
     
     private ResourceStore ddResourceStore;
     
@@ -243,7 +243,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     public SettingsInfo getSettings(WorkspaceInfo workspace) {
         Filter filter = equal("workspace.id", workspace.getId());
 
-        return get(SettingsInfo.class, filter);
+        return db.get(SettingsInfo.class, filter);
 
     }
 
@@ -372,28 +372,10 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             filter = and(filter, wsFilter);
         }
         try {
-            return get(clazz, filter);
+            return db.get(clazz, filter);
         } catch (IllegalArgumentException multipleResults) {
             return null;
         }
-    }
-
-    public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
-
-        CloseableIterator<T> it = db.query(type, filter, null, 2, (org.opengis.filter.sort.SortBy)null);
-        T result = null;
-        try {
-            if (it.hasNext()) {
-                result = it.next();
-                if (it.hasNext()) {
-                    throw new IllegalArgumentException(
-                            "Specified query predicate resulted in more than one object");
-                }
-            }
-        } finally {
-            it.close();
-        }
-        return result;
     }
 
     @Override

@@ -134,20 +134,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     @Override
     public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name,
             Class<T> clazz) {
-
-        Filter filter = equal("name", name);
-        if (null != workspace && ANY_WORKSPACE != workspace) {
-            Filter wsFilter = equal("workspace.id", workspace.getId());
-            filter = and(filter, wsFilter);
+        if (workspace == null || workspace == ANY_WORKSPACE) {
+            return db.getByIdentity(clazz, "name", name);
+        } else {        
+            return db.getByIdentity(clazz, "workspace.id", workspace.getId(), "name", name);
         }
-
-        T store;
-        try {
-            store = findUnique(clazz, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-        return store;
     }
 
     /**
@@ -252,20 +243,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     @Override
     public <T extends ResourceInfo> T getResourceByName(NamespaceInfo namespace, String name,
             Class<T> clazz) {
-
-        Filter filter = equal("name", name);
-        if (null != namespace && ANY_NAMESPACE != namespace) {
-            Filter wsFilter = equal("namespace.id", namespace.getId());
-            filter = and(filter, wsFilter);
+        if (namespace == null || namespace == ANY_NAMESPACE) {
+            return db.getByIdentity(clazz, "name", name);
+        } else {        
+            return db.getByIdentity(clazz, "namespace.id", namespace.getId(), "name", name);
         }
-
-        T resource;
-        try {
-            resource = findUnique(clazz, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-        return resource;
     }
 
     /**
@@ -373,7 +355,12 @@ public class JDBCCatalogFacade implements CatalogFacade {
      */
     @Override
     public LayerInfo getLayerByName(String name) {
-        return getByName(name, LayerInfo.class);
+        String resourceId = db.getIdByIdentity(ResourceInfo.class, "name", name);
+        if (resourceId == null) {
+            return null;
+        } else {
+            return db.getByIdentity(LayerInfo.class, "resource.id", resourceId);
+        }
     }
 
     /**
@@ -603,12 +590,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
      */
     @Override
     public NamespaceInfo getNamespaceByPrefix(String prefix) {
-        Filter filter = equal("prefix", prefix);
-        try {
-            return findUnique(NamespaceInfo.class, filter);
-        } catch (IllegalArgumentException multipleResults) {
-            return null;
-        }
+        return db.getByIdentity(NamespaceInfo.class, "prefix", prefix);
     }
 
     /**
@@ -616,13 +598,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
      */
     @Override
     public NamespaceInfo getNamespaceByURI(String uri) {
-
-        Filter filter = equal("URI", uri);
-        try {
-            return findUnique(NamespaceInfo.class, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return db.getByIdentity(NamespaceInfo.class, "URI", uri);
     }
 
     /**
@@ -712,8 +688,6 @@ public class JDBCCatalogFacade implements CatalogFacade {
      */
     @Override
     public WorkspaceInfo getWorkspaceByName(String name) {
-        // if ("web".equals(name))
-        // return null;
         return getByName(name, WorkspaceInfo.class);
     }
 
@@ -840,20 +814,12 @@ public class JDBCCatalogFacade implements CatalogFacade {
         checkNotNull(workspace,
                 "workspace is null. Did you mean CatalogFacade.ANY_WORKSPACE or CatalogFacade.NO_WORKSPACE?");
         checkNotNull(name, "name");
-
-        Filter nameFilter = equal("name", name);
-        Filter wsFilter;
-        if (workspace == NO_WORKSPACE) {
-            wsFilter = isNull("workspace.id");
-        } else if (workspace == ANY_WORKSPACE) {
-            wsFilter = acceptAll();
+        
+        if (workspace == ANY_WORKSPACE) {
+            return db.getByIdentity(StyleInfo.class, "name", name);
         } else {
-            wsFilter = equal("workspace.id", workspace.getId());
+            return db.getByIdentity(StyleInfo.class, "workspace.id", workspace.getId(), "name", name);
         }
-
-        Filter filter = and(nameFilter, wsFilter);
-        StyleInfo info = findUnique(StyleInfo.class, filter);
-        return info;
     }
 
     @Override
@@ -1026,14 +992,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     private <T extends CatalogInfo> T getByName(final String name, final Class<T> clazz) {
-
-        Filter filter = equal("name", name);
-
-        try {
-            return findUnique(clazz, filter);
-        } catch (IllegalArgumentException multipleResults) {
-            return null;
-        }
+        return db.getByIdentity(clazz, "name", name);
     }
 
     private <T extends CatalogInfo> T addInternal(T info) {

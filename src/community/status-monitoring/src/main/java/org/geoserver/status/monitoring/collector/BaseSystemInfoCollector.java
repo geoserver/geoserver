@@ -4,19 +4,22 @@
  */
 package org.geoserver.status.monitoring.collector;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * 
- * Create an empty system information metrics for all element defined in {@link MetricInfo} 
+ * Create an empty system information metrics for all element defined in {@link MetricInfo}
  * <p>
  * As default all elements are initialized as not available
  * 
  * @author sandr
  *
  */
-public class BaseSystemInfoCollector implements SystemInfoCollector {
+public class BaseSystemInfoCollector implements SystemInfoCollector, Serializable {
+
+    private static final long serialVersionUID = 5031022719592227250L;
 
     public static String DEFAULT_VALUE = "NOT AVAILABLE";
 
@@ -29,8 +32,10 @@ public class BaseSystemInfoCollector implements SystemInfoCollector {
     }
 
     /**
-     * Retrieve one or more metric for each element defined in {@link MetricInfo} 
-     * @param info the element to retrieve
+     * Retrieve one or more metric for each element defined in {@link MetricInfo}
+     * 
+     * @param info
+     *            the element to retrieve
      * @return a list of {@link MetricValue} for each {@link MetricInfo}
      */
     List<MetricValue> retriveSystemInfo(MetricInfo info) {

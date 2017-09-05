@@ -25,10 +25,10 @@ import oshi.software.os.OperatingSystem;
 
 /**
  * 
- * Retrieve real system information metrics defined in {@link MetricInfo} using OSHI library 
+ * Retrieve real system information metrics defined in {@link MetricInfo} using OSHI library
  * <p>
- * Is possible to extends this class to change or add others low level APIs and use this new class as main collector 
- * after register using autowiring.
+ * Is possible to extends this class to change or add others low level APIs and use this new class
+ * as main collector after register using autowiring.
  * 
  * @see <a href="https://github.com/oshi/oshi">OSHI library </a>
  * @author sandr
@@ -36,6 +36,8 @@ import oshi.software.os.OperatingSystem;
  */
 @Component
 public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
+
+    private static final long serialVersionUID = 502867203324474735L;
 
     private static Log log = LogFactory.getLog(OSHISystemInfoCollector.class);
 
@@ -92,16 +94,16 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
             case SYSTEM_MEMORY_USAGE_P: {
                 MetricValue mv = new MetricValue(info);
                 mv.setAvailable(true);
-                mv.setValue(String.format("%.2f", mm.getAvailable() / (double)(1L << 20)) + "/"
-                        + String.format("%.2f", mm.getTotal() / (double)(1L << 20)));
+                mv.setValue(String.format("%.2f", mm.getAvailable() / (double) (1L << 20)) + "/"
+                        + String.format("%.2f", mm.getTotal() / (double) (1L << 20)));
                 si = Collections.singletonList(mv);
                 break;
             }
             case SYSTEM_MEMORY_USAGE_S: {
                 MetricValue mv = new MetricValue(info);
                 mv.setAvailable(true);
-                mv.setValue(String.format("%.2f", mm.getSwapUsed() / (double)(1L << 20)) + "/"
-                        + String.format("%.2f", mm.getSwapUsed() / (double)(1L << 20)));
+                mv.setValue(String.format("%.2f", mm.getSwapUsed() / (double) (1L << 20)) + "/"
+                        + String.format("%.2f", mm.getSwapUsed() / (double) (1L << 20)));
                 si = Collections.singletonList(mv);
                 break;
             }
@@ -157,8 +159,9 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                         OSFileStore fs = fss[i];
                         MetricValue mv = new MetricValue(info);
                         mv.setName(info.name() + "_" + (i + 1));
-                        mv.setValue(String.format("%.2f", fs.getUsableSpace() / (double)(1L << 20)) + "/"
-                                + String.format("%.2f", fs.getTotalSpace() / (double)(1L << 20)));
+                        mv.setValue(String.format("%.2f", fs.getUsableSpace() / (double) (1L << 20))
+                                + "/"
+                                + String.format("%.2f", fs.getTotalSpace() / (double) (1L << 20)));
                         mv.setAvailable(true);
                         mv.setDescription(fs.getName());
                         si.add(mv);
@@ -174,8 +177,9 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                         NetworkIF ni = nis[i];
                         MetricValue mv = new MetricValue(info);
                         mv.setName(info.name() + "_" + (i + 1));
-                        mv.setValue(String.format("%.2f", ni.getBytesSent() / (double)(1L << 20)) + "/"
-                                + String.format("%.2f", ni.getBytesRecv() / (double)(1L << 20)));
+                        mv.setValue(String.format("%.2f", ni.getBytesSent() / (double) (1L << 20))
+                                + "/"
+                                + String.format("%.2f", ni.getBytesRecv() / (double) (1L << 20)));
                         mv.setAvailable(true);
                         mv.setDescription(ni.getName());
                         si.add(mv);

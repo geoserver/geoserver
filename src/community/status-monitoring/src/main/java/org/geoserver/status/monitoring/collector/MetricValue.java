@@ -4,6 +4,8 @@
  */
 package org.geoserver.status.monitoring.collector;
 
+import java.io.Serializable;
+
 /**
  * 
  * Stores values and configuration of system information metrics This object is serialized by
@@ -12,7 +14,9 @@ package org.geoserver.status.monitoring.collector;
  * @author sandr
  *
  */
-public class MetricValue {
+public class MetricValue implements Serializable {
+
+    private static final long serialVersionUID = 344784541680947799L;
 
     String value;
 
@@ -26,7 +30,9 @@ public class MetricValue {
 
     /**
      * Initialize the metric value coping the definition from infomration obejct {@link MetricInfo}
-     * @param info the data associated with information to retrieve
+     * 
+     * @param info
+     *            the data associated with information to retrieve
      */
     public MetricValue(MetricInfo info) {
         this.name = info.name();

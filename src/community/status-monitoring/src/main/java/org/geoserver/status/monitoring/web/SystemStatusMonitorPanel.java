@@ -37,6 +37,8 @@ import org.geoserver.status.monitoring.collector.SystemInfoCollector;
 public class SystemStatusMonitorPanel extends Panel {
 
     private static final long serialVersionUID = -5616622546856772557L;
+    
+    public static final String datePattern = "yyyy-MM-dd HH:mm:ss.SSS";
 
     public SystemStatusMonitorPanel(String id) {
         super(id);
@@ -50,7 +52,7 @@ public class SystemStatusMonitorPanel extends Panel {
         final IModel<Date> timeMdl = Model.of(new Date());
         final IModel<List<MetricValue>> metricMdl = Model.ofList(Collections.emptyList());
 
-        Label time = DateLabel.forDatePattern("time", timeMdl, "yyyy-MM-dd HH:mm:ss.SSS");
+        Label time = DateLabel.forDatePattern("time", timeMdl, datePattern);
         time.setOutputMarkupId(true);
         add(time);
 
@@ -95,6 +97,7 @@ public class SystemStatusMonitorPanel extends Panel {
                 metricMdl.setObject(metrics.getMetrics());
                 timeMdl.setObject(new Date());
             }
+            
         });
     }
 

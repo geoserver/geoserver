@@ -21,7 +21,7 @@
 		<property name="titleKey" value="MonitoringPanel.title" />
 		<property name="order" value="1" />
 		<property name="componentClass"
-			value="org.geoserver.status.monitoring.web.SystemStatusMonitor" />
+			value="org.geoserver.status.monitoring.web.SystemStatusMonitorPanel" />
 	</bean>
 
 	<bean class="org.geoserver.platform.ModuleStatusImpl">

@@ -34,11 +34,11 @@ import org.geoserver.status.monitoring.collector.SystemInfoCollector;
  *
  */
 
-public class SystemStatusMonitor extends Panel {
+public class SystemStatusMonitorPanel extends Panel {
 
     private static final long serialVersionUID = -5616622546856772557L;
 
-    public SystemStatusMonitor(String id) {
+    public SystemStatusMonitorPanel(String id) {
         super(id);
 
         /*
@@ -71,7 +71,7 @@ public class SystemStatusMonitor extends Panel {
                         new Label("info",
                                 new PropertyModel<MetricValue>(item.getModel(), "description")),
                         new Label("value",
-                                new PropertyModel<MetricValue>(item.getModel(), "value")));
+                                new PropertyModel<MetricValue>(item.getModel(), "valueUnit")));
                 if (counter % 2 == 0) {
                     item.add(new AttributeModifier("class", "odd"));
                 } else {

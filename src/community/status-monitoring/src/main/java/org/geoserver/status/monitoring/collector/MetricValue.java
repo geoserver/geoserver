@@ -28,6 +28,8 @@ public class MetricValue implements Serializable {
 
     String unit;
 
+    String valueUnit;
+
     /**
      * Initialize the metric value coping the definition from infomration obejct {@link MetricInfo}
      * 
@@ -78,6 +80,17 @@ public class MetricValue implements Serializable {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    /**
+     * @return value with unit of measurement
+     */
+    public String getValueUnit() {
+        if (available) {
+            return this.value + " " + this.unit;
+        } else {
+            return this.value;
+        }
     }
 
 }

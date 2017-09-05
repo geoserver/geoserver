@@ -13,6 +13,7 @@ package org.geoserver.status.monitoring.collector;
  * @author sandr
  *
  */
+
 public interface SystemInfoCollector {
 
     /**

@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class BaseSystemInfoCollector implements SystemInfoCollector {
 
-    String DEFAULT_VALUE = "NOT AVAILABLE";
+    public static String DEFAULT_VALUE = "NOT AVAILABLE";
 
     public final Metrics retriveAllSystemInfo() {
         Metrics metrics = new Metrics();

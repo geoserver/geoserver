@@ -133,18 +133,22 @@ public abstract class ProcessParameterIO {
         if (all.isEmpty()) {
             return null;
         }
-
+        List<ProcessParameterIO> matches = new ArrayList<>();
         if (mime != null) {
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
-                    return ppio;
+                if (ppio instanceof ComplexPPIO) {
+                    if (((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                        return ppio;
+                    } else if (((ComplexPPIO) ppio).getMimeType().startsWith(mime)) {
+                        matches.add(ppio);
+                    }
                 }
             }
         }
 
         // if more than one sort by class hierarchy, pushing the most specific classes to the
         // beginning
-        if (all.size() > 0) {
+        if (matches.size() > 0) {
             Collections.sort(all, new Comparator<ProcessParameterIO>() {
                 public int compare(ProcessParameterIO o1, ProcessParameterIO o2) {
                     Class c1 = o1.getType();
@@ -161,10 +165,12 @@ public abstract class ProcessParameterIO {
                     return -1;
                 }
             });
-        }
 
-        // fall back on the first found
+            return matches.get(0);
+        }
+        // fall back on the first found  
         return all.get(0);
+        
     }
 
     public static List<ProcessParameterIO> findAll(Parameter<?> p, ApplicationContext context) {

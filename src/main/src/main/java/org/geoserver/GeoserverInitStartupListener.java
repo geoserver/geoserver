@@ -9,6 +9,7 @@ import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.IIOServiceProvider;
 import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
@@ -57,7 +59,8 @@ import org.geotools.util.logging.Logging;
 import org.opengis.referencing.AuthorityFactory;
 import org.opengis.referencing.FactoryException;
 
-import it.geosolutions.concurrent.ConcurrentTileCache;
+import com.google.common.collect.Lists;
+
 import it.geosolutions.concurrent.ConcurrentTileCacheMultiMap;
 
 /**
@@ -66,6 +69,8 @@ import it.geosolutions.concurrent.ConcurrentTileCacheMultiMap;
  * anything else starts up
  */
 public class GeoserverInitStartupListener implements ServletContextListener {
+    static final String COM_SUN_JPEG2000_PACKAGE = "com.sun.media.imageioimpl.plugins.jpeg2000";
+
     private static final Logger LOGGER = Logging
             .getLogger("org.geoserver.logging");
     
@@ -183,12 +188,18 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // Fix issue with tomcat and JreMemoryLeakPreventionListener causing issues with 
         // IIORegistry leading to imageio plugins not being properly initialized
         ImageIO.scanForPlugins();
-
         
         // in any case, the native png reader is worse than the pure java ones, so
         // let's disable it (the native png writer is on the other side faster)...
         ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
         ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
+        
+        // remove the ImageIO JPEG200 readers/writes, they are outdated and not quite working
+        // GeoTools has the GDAL and Kakadu ones which do work, removing these avoids the
+        // registry russian roulette (one never knows which one comes first, and 
+        // to re-order/unregister correctly the registry scan has to be completed
+        unregisterImageIOJpeg2000Support(ImageReaderSpi.class);
+        unregisterImageIOJpeg2000Support(ImageWriterSpi.class);
         
         // initialize GeoTools factories so that we don't make a SPI lookup every time a factory is needed
         Hints.putSystemDefault(Hints.FILTER_FACTORY, CommonFactoryFinder.getFilterFactory2(null));
@@ -200,6 +211,24 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 CoverageAccessInfoImpl.DEFAULT_MaxPoolSize, CoverageAccessInfoImpl.DEFAULT_KeepAliveTime, 
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         Hints.putSystemDefault(Hints.EXECUTOR_SERVICE, executor);
+    }
+    
+    /**
+     * Unregisters providers in the "https://github.com/geosolutions-it/evo-odas/issues/102" for a given
+     * category (reader, writer). ImageIO contains a pure java reader and a writer, but also a couple based
+     * on native libs (if present).
+     * 
+     * @param category
+     */
+    private <T extends ImageReaderWriterSpi> void unregisterImageIOJpeg2000Support(Class<T> category) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        Iterator<T> it = registry.getServiceProviders(category, false);
+        ArrayList<T> providers = Lists.newArrayList(it);
+        for (T spi : providers) {
+            if (COM_SUN_JPEG2000_PACKAGE.equals(spi.getClass().getPackage().getName())) {
+                registry.deregisterServiceProvider(spi);
+            }
+        }
     }
     
     /**

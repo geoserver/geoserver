@@ -38,6 +38,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.WMSLayer;
+import org.geotools.map.WMTSMapLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.crs.ProjectionHandler;
@@ -287,7 +288,8 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             FeatureType schema = layer.getFeatureSource().getSchema();
             boolean grid = schema.getName().getLocalPart().equals("GridCoverage")
                     && schema.getDescriptor("geom") != null && schema.getDescriptor("grid") != null
-                    && !(layer instanceof WMSLayer);
+                    && !(layer instanceof WMSLayer)
+                    && !(layer instanceof WMTSMapLayer);
             if (!grid)
                 return false;
         }
@@ -311,10 +313,12 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
                 return false;
             }
             GeneralParameterValue[] readParams = ((GridReaderLayer) layer).getParams();
-            for (GeneralParameterValue readParam : readParams) {
-                if (readParam.getDescriptor().getName().getCode().equalsIgnoreCase("FILTER")) {
-                    // the reader of this layer supports filtering
-                    return true;
+            if (readParams != null) {
+                for (GeneralParameterValue readParam : readParams) {
+                    if (readParam.getDescriptor().getName().getCode().equalsIgnoreCase("FILTER")) {
+                        // the reader of this layer supports filtering
+                        return true;
+                    }
                 }
             }
             // no coverage reader supports filtering, so filtering shoudl not be activated

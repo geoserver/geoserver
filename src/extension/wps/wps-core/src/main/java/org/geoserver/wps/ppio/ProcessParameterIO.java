@@ -35,6 +35,27 @@ import com.vividsolutions.jts.geom.Envelope;
 public abstract class ProcessParameterIO {
 
     /**
+     * @author ian
+     *
+     */
+    private static final class ClassComparator implements Comparator<ProcessParameterIO> {
+        public int compare(ProcessParameterIO o1, ProcessParameterIO o2) {
+            Class c1 = o1.getType();
+            Class c2 = o2.getType();
+
+            if (c1.equals(c2)) {
+                return 0;
+            }
+
+            if (c1.isAssignableFrom(c2)) {
+                return 1;
+            }
+
+            return -1;
+        }
+    }
+
+    /**
      * PPIO possible direction:
      * <ul>
      * <li>encoding : PPIO suitable only for outputs</li>
@@ -149,27 +170,15 @@ public abstract class ProcessParameterIO {
         // if more than one sort by class hierarchy, pushing the most specific classes to the
         // beginning
         if (matches.size() > 0) {
-            Collections.sort(all, new Comparator<ProcessParameterIO>() {
-                public int compare(ProcessParameterIO o1, ProcessParameterIO o2) {
-                    Class c1 = o1.getType();
-                    Class c2 = o2.getType();
-
-                    if (c1.equals(c2)) {
-                        return 0;
-                    }
-
-                    if (c1.isAssignableFrom(c2)) {
-                        return 1;
-                    }
-
-                    return -1;
-                }
-            });
-
+            Collections.sort(matches, new ClassComparator());
             return matches.get(0);
         }
         // fall back on the first found  
-        return all.get(0);
+        if (all.size() > 0) {
+            Collections.sort(all, new ClassComparator());
+            return all.get(0);
+        }
+        return null;
         
     }
 

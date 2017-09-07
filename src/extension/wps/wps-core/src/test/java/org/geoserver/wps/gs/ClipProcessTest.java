@@ -7,12 +7,14 @@ package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.wps.WPSTestSupport;
+
 import org.geotools.feature.FeatureCollection;
 import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Parser;
@@ -34,7 +36,7 @@ public class ClipProcessTest extends WPSTestSupport {
                 + "<wps:Input>"
                 + "<ows:Identifier>features</ows:Identifier>"
                 + "<wps:Data>"
-                + "<wps:ComplexData>"
+                + "<wps:ComplexData mimeType='text/xml'>"
                 + readFileIntoString("illinois.xml")
                 + "</wps:ComplexData>"
                 + "</wps:Data>"
@@ -50,13 +52,13 @@ public class ClipProcessTest extends WPSTestSupport {
                 + "</wps:Input>"
                 + "</wps:DataInputs>"
                 + "<wps:ResponseForm>"
-                + "<wps:RawDataOutput>"
+                + "<wps:RawDataOutput mimeType='text/xml'>"
                 + "<ows:Identifier>result</ows:Identifier>"
                 + "</wps:RawDataOutput>" + "</wps:ResponseForm>" + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         // System.out.println(response.getOutputStreamContent());
-        
+        assertFalse("WPS Process failed",response.getContentAsString().contains("wps:ProcessFailed"));
         Parser p = new Parser(new WFSConfiguration());
         FeatureCollectionType fct = (FeatureCollectionType) p.parse(new ByteArrayInputStream(
                 response.getContentAsString().getBytes()));

@@ -61,7 +61,9 @@ import org.geoserver.rest.RestException;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
+import org.geotools.coverage.grid.io.ReadResolutionCalculator;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
@@ -75,8 +77,11 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.Utils;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeocentricCRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.builder.ChannelSelectionBuilder;
 import org.geotools.styling.builder.RasterSymbolizerBuilder;
@@ -93,6 +98,9 @@ import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -621,7 +629,8 @@ public class CollectionsController extends AbstractOpenSearchController {
                             + file.getAbsolutePath(), HttpStatus.PRECONDITION_FAILED);
                 }
                 imageLayout = reader.getImageLayout();
-                nativeResolution = reader.getResolutionLevels()[0];
+                double[][] resolutionLevels = getResolutionLevelsInCRS(reader, DefaultGeographicCRS.WGS84);
+                nativeResolution = resolutionLevels[0];
             } finally {
                 if (reader != null) {
                     reader.dispose();
@@ -696,6 +705,51 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // configure the style if needed
         createStyle(layerConfiguration, layerInfo);
+    }
+    
+    private double[][] getResolutionLevelsInCRS(GridCoverage2DReader reader,
+            CoordinateReferenceSystem targetCRS) throws FactoryException, TransformException, IOException {
+        
+        double[][] resolutionLevels = reader.getResolutionLevels();
+        CoordinateReferenceSystem readerCRS = reader.getCoordinateReferenceSystem();
+        GeneralEnvelope sourceEnvelope = reader.getOriginalEnvelope();
+        
+        // prepare a set of points at middle of the envelope and their 
+        // corresponding offsets based on resolutions
+        final int numLevels = resolutionLevels.length;
+        double[] points = new double[numLevels * 8];
+        double baseX = sourceEnvelope.getMedian(0);
+        double baseY = sourceEnvelope.getMedian(1);
+        for (int i = 0, j = 0; i < numLevels; i++) {
+            // delta x point
+            points[j++] = baseX;
+            points[j++] = baseY;
+            points[j++] = baseX + resolutionLevels[i][0];
+            points[j++] = baseY;
+            // delta y point
+            points[j++] = baseX;
+            points[j++] = baseY;
+            points[j++] = baseX;
+            points[j++] = baseY + resolutionLevels[i][1];
+        }
+        
+        // transform to get offsets in the target CRS
+        MathTransform mt = CRS.findMathTransform(readerCRS, targetCRS);
+        mt.transform(points, 0, points, 0, numLevels * 4);
+        
+        // compute back the offsets
+        double[][] result = new double[numLevels][2];
+        for (int i = 0; i < numLevels; i++) {
+            result[i][0] = distance(points, i * 8);
+            result[i][1] = distance(points, i * 8 + 4);
+        }
+        return result;
+    }
+    
+    private double distance(double[] points, int base) {
+        double dx = points[base + 2] - points[base];
+        double dy = points[base + 3] - points[base + 1];
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     private List<CoverageBand> buildCoverageBands(CollectionLayer collectionLayer) {
@@ -864,7 +918,7 @@ public class CollectionsController extends AbstractOpenSearchController {
     private CoverageStoreInfo createMosaicStore(CatalogBuilder cb, String collection,
             CollectionLayer layer, final String relativePath) {
         // good to go, create the store
-        cb.setWorkspace(catalog.getWorkspace(layer.getWorkspace()));
+        cb.setWorkspace(catalog.getWorkspaceByName(layer.getWorkspace()));
         CoverageStoreInfo mosaicStore = cb.buildCoverageStore(layer.getLayer());
         mosaicStore.setType(new ImageMosaicFormat().getName());
         mosaicStore.setDescription("Image mosaic wrapping OpenSearch collection: " + collection);

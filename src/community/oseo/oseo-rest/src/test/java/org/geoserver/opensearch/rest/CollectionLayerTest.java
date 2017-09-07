@@ -17,18 +17,21 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
-import org.geoserver.config.SettingsInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.styling.ChannelSelection;
@@ -37,6 +40,7 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -64,6 +68,31 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         GeoServerInfo gsInfo = gs.getGlobal();
         gsInfo.getJAI().setPngEncoderType(PngEncoderType.JDK);
         gs.save(gsInfo);
+    }
+    
+    @Before
+    public void setupTestWorkspace() throws Exception {
+        Catalog catalog = getCatalog();
+        WorkspaceInfo ws = catalog.getWorkspaceByName("test");
+        if(ws == null) {
+            ws = catalog.getFactory().createWorkspace();
+            ws.setName("test");
+            catalog.add(ws);
+            NamespaceInfo ns = catalog.getFactory().createNamespace();
+            ns.setPrefix("test");
+            ns.setURI("http://geoserver.org/test");
+            catalog.add(ns);
+        }
+    }
+    
+    @After
+    public void cleanupTestWorkspace() throws Exception {
+        Catalog catalog = getCatalog();
+        CascadeDeleteVisitor remover = new CascadeDeleteVisitor(catalog);
+        WorkspaceInfo ws = catalog.getWorkspaceByName("test");
+        if(ws != null) {
+            remover.visit(ws);
+        }
     }
 
     @Before
@@ -132,6 +161,53 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
         
         BufferedImage image = getAsImage("wms/reflect?layers=gs:test123&format=image/png&width=200", "image/png");
+        File expected = new File("src/test/resources/test123-simple-rgb.png");
+        ImageAssert.assertEquals(expected, image, 1000);
+    }
+    
+    @Test
+    public void testCreateCollectionSimpleLayerTestWorkspace() throws Exception {
+        // setup the granules
+        String granulesTemplate = getTestStringData("/test123-product-granules-rgb.json");
+        String granules = granulesTemplate.replace("$resources", resourceBase);
+        MockHttpServletResponse response = putAsServletResponse(
+                "/rest/oseo/collections/TEST123/products/TEST123_P1/granules",
+                granules, MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(200, response.getStatus());
+
+        // create the layer
+        boolean previousConfiguration = getAsServletResponse("rest/oseo/collections/TEST123/layer")
+                .getStatus() == HttpStatus.OK.value();
+        response = putAsServletResponse("rest/oseo/collections/TEST123/layer",
+                getTestData("/test123-layer-simple-testws.json"), MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(previousConfiguration ? 200 : 201, response.getStatus());
+
+        // check it has been created from REST
+        DocumentContext json = getAsJSONPath("rest/oseo/collections/TEST123/layer", 200);
+        assertEquals("test", json.read("$.workspace"));
+        assertEquals("test123", json.read("$.layer"));
+        assertEquals(Boolean.FALSE, json.read("$.separateBands"));
+        assertEquals(Boolean.FALSE, json.read("$.heterogeneousCRS"));
+        
+        // check the configuration elements are there too
+        Catalog catalog = getCatalog();
+        // ... the store
+        CoverageStoreInfo store = catalog.getCoverageStoreByName("test", "test123");
+        assertNotNull(store);
+        assertThat(store.getFormat(), instanceOf(ImageMosaicFormat.class));
+        // ... the layer
+        LayerInfo layer = catalog.getLayerByName("test:test123");
+        assertNotNull(layer);
+        final CoverageInfo coverageInfo = (CoverageInfo) layer.getResource();
+        assertThat(coverageInfo.getStore(), equalTo(store));
+        // ... the resource is time enabled
+        DimensionInfo dimension = coverageInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        assertThat(dimension.getAttribute(), equalTo("timeStart"));
+        assertThat(dimension.getDefaultValue().getStrategyType(), equalTo(Strategy.MAXIMUM));
+        // ... its style is the default one
+        assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
+        
+        BufferedImage image = getAsImage("wms/reflect?layers=test:test123&format=image/png&width=200", "image/png");
         File expected = new File("src/test/resources/test123-simple-rgb.png");
         ImageAssert.assertEquals(expected, image, 1000);
     }

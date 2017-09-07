@@ -50,6 +50,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.junit.Ignore;
 
 public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
@@ -170,6 +171,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
+    @Ignore
     public void testWMTSFilteringCapabilities() throws Exception {
 
         // Create a cascading layer

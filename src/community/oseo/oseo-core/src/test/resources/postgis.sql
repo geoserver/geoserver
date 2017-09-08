@@ -39,7 +39,7 @@ create table collection (
 -- index all (really, this is a search engine)
 -- manually generated indexes
 create index "idx_collection_footprint" on collection using GIST("footprint");
--- the following indexes have been generated adding
+-- the following indexes have been generated calling
 -- SELECT 'CREATE INDEX "idx_' || table_name || '_' || column_name || '" ON ' || table_name || ' ("' || column_name || '");'   FROM information_schema.columns WHERE table_schema = current_schema() and table_name = 'collection' and (column_name like 'eo%' or column_name like 'opt%' or column_name like 'sar%' or column_name like 'time%');
 CREATE INDEX "idx_collection_timeStart" ON collection ("timeStart");
 CREATE INDEX "idx_collection_timeEnd" ON collection ("timeEnd");
@@ -57,6 +57,7 @@ CREATE INDEX "idx_collection_eoWavelength" ON collection ("eoWavelength");
 CREATE INDEX "idx_collection_eoSecurityConstraints" ON collection ("eoSecurityConstraints");
 CREATE INDEX "idx_collection_eoDissemination" ON collection ("eoDissemination");
 CREATE INDEX "idx_collection_eoAcquisitionStation" ON collection ("eoAcquisitionStation");
+
 -- the layer publishing information, if any
 create table collection_layer (
   "cid" int primary key references collection("id") on delete cascade,
@@ -68,7 +69,8 @@ create table collection_layer (
   "heterogeneousCRS" boolean,
   "mosaicCRS" varchar
 );
--- the iso metadata storage (large files, not used for search, thus separate table)
+
+-- the iso metadata storage (large text, not used for search, thus separate table)
 create table collection_metadata (
   "mid" int primary key references collection("id"),
   "metadata" text
@@ -124,6 +126,7 @@ create table product (
   "sarIncidenceAngleVariation" float,
   "eoResolution" float
 );
+
 -- index all (really, this is a search engine)
 -- manually generated indexes
 create index "idx_product_footprint" on product using GIST("footprint");

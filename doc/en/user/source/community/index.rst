@@ -45,3 +45,4 @@ officially part of the GeoServer releases. They are however built along with the
    onelogin/index
    wmts-multidimensional/index
    notification/index
+   opensearch-eo/index

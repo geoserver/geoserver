@@ -505,9 +505,8 @@ paths:
           in: query
           description: Recursively deletes all layers referenced by the specified featuretype. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layers reference the featuretype.
           required: false
-          type: string
+          type: boolean
           default: false
-          enum: [true, false]
       responses:
         405:
           description: Method not allowed.

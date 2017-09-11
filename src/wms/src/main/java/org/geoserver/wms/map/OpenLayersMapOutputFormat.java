@@ -35,9 +35,11 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.WMSLayer;
+import org.geotools.map.WMTSMapLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.crs.ProjectionHandler;
@@ -167,7 +169,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             map.put("context", mapContent);
             boolean hasOnlyCoverages = hasOnlyCoverages(mapContent);
             map.put("pureCoverage", hasOnlyCoverages);
-            map.put("supportsFiltering", supportsFiltering(mapContent, hasOnlyCoverages));
+            map.put("supportsFiltering", supportsFiltering(mapContent));
             map.put("styles", styleNames(mapContent));
             GetMapRequest request = mapContent.getRequest();
             map.put("request", request);
@@ -287,7 +289,8 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             FeatureType schema = layer.getFeatureSource().getSchema();
             boolean grid = schema.getName().getLocalPart().equals("GridCoverage")
                     && schema.getDescriptor("geom") != null && schema.getDescriptor("grid") != null
-                    && !(layer instanceof WMSLayer);
+                    && !(layer instanceof WMSLayer)
+                    && !(layer instanceof WMTSMapLayer);
             if (!grid)
                 return false;
         }
@@ -295,29 +298,34 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * Helper method that checks if filtering support should be activated. If the map
-     * is not composed only by coverages then filtering should be activated. If the
-     * map is composed only of coverages but at least one of the coverages supports
-     * filtering, then filtering should be activated. Otherwise filtering capabilities
-     * will be deactivated.
+     * Helper method that checks if filtering support should be activated.
+     *
+     * If the map contains at least one layer that is queryable, filtering should be activated.
      */
-    private boolean supportsFiltering(WMSMapContent mapContent, boolean hasOnlyCoverages) {
-        // if we non coverages layers exist filtering will be activated
-        // if only coverages layers are present filtering will eb activated
-        // if at least one coverage reader supports filtering
-        return !hasOnlyCoverages || mapContent.layers().stream().anyMatch(layer -> {
+    private boolean supportsFiltering(WMSMapContent mapContent) {
+        // returns TRUE if at least one layer supports filtering
+        return mapContent.layers().stream().anyMatch(layer -> {
+            if (layer instanceof FeatureLayer) {
+                // vector layers support filtering
+                return true;
+            }
             if (!(layer instanceof GridReaderLayer)) {
-                // unlikely situation, we cannot know if filtering is supported
+                // filtering is not support for the remaining types
                 return false;
             }
+            // let's see if this coverage type supports filtering
             GeneralParameterValue[] readParams = ((GridReaderLayer) layer).getParams();
+            if (readParams == null || readParams.length == 0) {
+                // filtering is not supported
+                return false;
+            }
             for (GeneralParameterValue readParam : readParams) {
                 if (readParam.getDescriptor().getName().getCode().equalsIgnoreCase("FILTER")) {
                     // the reader of this layer supports filtering
                     return true;
                 }
             }
-            // no coverage reader supports filtering, so filtering shoudl not be activated
+            // filtering is not supported
             return false;
         });
     }

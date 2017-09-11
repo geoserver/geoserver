@@ -6,6 +6,7 @@ package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
 
+import org.geoserver.opensearch.eo.store.CollectionLayer;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.HttpInputMessage;

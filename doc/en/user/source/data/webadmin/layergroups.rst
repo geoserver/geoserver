@@ -32,7 +32,7 @@ If a layer is included in any non *single* mode group, it will no longer be list
 +------------------------+-------+-------------------+----------------+------------------+
 | Named Tree             | named | yes               | lists children |                  |
 +------------------------+-------+-------------------+----------------+------------------+
-| Contrainer Tree        |       | yes               | lists children |                  |
+| Container Tree         |       | yes               | lists children |                  |
 +------------------------+-------+-------------------+----------------+------------------+
 | Earth Observation Tree | named | yes               | lists children | has root layer   |
 +------------------------+-------+-------------------+----------------+------------------+

@@ -99,7 +99,7 @@ Note on running GeoServer as a Service on Windows
 
 Note that if you downloaded an installed GeoServer as a Windows service you installed the 32 bit version.
 
-Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) doesn't allow GeoServer to leverage on GDAL, when run as a service. As a result, during the service startup, GeoServer log reports this worrysome message:
+Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) doesn't allow GeoServer to leverage on GDAL, when run as a service. As a result, during the service startup, GeoServer log reports this worrisome message:
 
 *it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
 WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*

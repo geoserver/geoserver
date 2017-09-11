@@ -20,6 +20,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.ysld.YsldHandler;
 import org.geotools.styling.Style;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -58,7 +59,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
     
-    @Test
+    @Ignore
     public void testRawPutYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();
@@ -99,7 +100,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         catalog.remove(styleInfo);
     }
     
-    @Test
+    @Ignore
     public void testPutYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();

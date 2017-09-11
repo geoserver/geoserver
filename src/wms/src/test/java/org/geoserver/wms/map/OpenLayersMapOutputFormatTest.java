@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -23,6 +25,11 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.TestHttpClientRule;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetMapRequest;
@@ -37,11 +44,13 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.junit.Ignore;
 
 public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
@@ -50,6 +59,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     Pattern lookForEscapedParam = Pattern
             .compile(Pattern
                     .quote("\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
+
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
     
     @Before
     public void setMapProducer() throws Exception {
@@ -147,6 +159,40 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                         "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = false;"), is(true));
+
+        // if at least one layer supports filtering, overall filtering should be supported
+        response = getAsServletResponse(
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World,gs:staticRaster" +
+                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
+                        "14.592757149389236,44.55808294568743&width=768&height=330" +
+                        "&srs=EPSG:4326&format=application/openlayers");
+        content = response.getContentAsString();
+        assertThat(content.contains("var supportsFiltering = true;"), is(true));
+    }
+
+    @Test
+    public void testWMTSFilteringCapabilities() throws Exception {
+
+        // Create a cascading layer
+        createWMTSCatalogStuff();
+
+        // wmts by itself should not support filtering
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername" +
+                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
+                        "14.592757149389236,44.55808294568743&width=768&height=330" +
+                        "&srs=EPSG:4326&format=application/openlayers");
+        String content = response.getContentAsString();        
+        assertThat(content.contains("var supportsFiltering = false;"), is(true));
+
+        // wmts along with filterable layer should support filtering
+        response = getAsServletResponse(
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername,gs:staticRaster" +
+                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
+                        "14.592757149389236,44.55808294568743&width=768&height=330" +
+                        "&srs=EPSG:4326&format=application/openlayers");
+        content = response.getContentAsString();       
+        assertThat(content.contains("var supportsFiltering = true;"), is(true));
     }
 
     /**
@@ -163,6 +209,52 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         store.setURL("http://127.0.0.1:geoserver");
         // add the store to the catalog
         catalog.add(store);
+        return store;
+    }
+
+    /**
+     * Helper method that creates a static WMTS store and related layer
+     * and adds it to the catalog.
+     */
+    private StoreInfo createWMTSCatalogStuff() throws MalformedURLException, IOException {
+        // use a local mock capabilities
+        String capabilities = clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+        MockHttpClient client = new MockHttpClient();
+        client.expectGet(
+                new URL(capabilities),
+                new MockHttpResponse(getClass().getResource("/nasa.getcapa.xml"), "text/xml"));
+        clientMocker.bind(client, capabilities);
+
+        Catalog catalog = getCatalog();
+
+        WorkspaceInfo workspace = getCatalog().getWorkspaceByName(MockData.DEFAULT_PREFIX);
+        NamespaceInfo nameSpace = getCatalog().getNamespaceByPrefix(MockData.DEFAULT_PREFIX);
+
+        // Store
+        WMTSStoreInfo store = catalog.getFactory().createWebMapTileServer();
+        store.setWorkspace(workspace);
+        store.setType("WMTS");
+        store.setEnabled(true);
+        store.setName("wmts");
+        store.setCapabilitiesURL(capabilities);
+        catalog.add(store);
+
+        // Resource
+        WMTSLayerInfo resource = catalog.getFactory().createWMTSLayer();
+        resource.setNamespace(nameSpace);
+        resource.setName("wmtslayername");
+        resource.setNativeName("AMSR2_Snow_Water_Equivalent");
+        resource.setEnabled(true);
+        resource.setStore(store);
+        catalog.add(resource);
+
+        // Layer
+        LayerInfoImpl layer = new LayerInfoImpl();
+        layer.setResource(resource);
+        layer.setEnabled(true);
+        layer.setName("wmtslayername");
+        catalog.add(layer);
+
         return store;
     }
 

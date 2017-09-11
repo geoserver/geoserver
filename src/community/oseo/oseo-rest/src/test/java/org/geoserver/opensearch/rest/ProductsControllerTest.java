@@ -537,7 +537,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPM_N02.01/granules",
                 200);
         assertEquals("FeatureCollection", json.read("$.type"));
-        assertEquals(new Integer(1), json.read("$.features.length()"));
+        assertEquals(new Integer(4), json.read("$.features.length()"));
         assertEquals("Feature", json.read("$.features[0].type"));
         assertEquals("Polygon", json.read("$.features[0].geometry.type"));
         assertEquals(

@@ -4,7 +4,7 @@ Custom SQL session start/stop scripts
 =====================================
 
 Starting with version 2.1.4 GeoServer support custom SQL scripts that can be run every time GeoServer
-grabs a connection from the connection pool, and every time the sesion is returned to the pool.
+grabs a connection from the connection pool, and every time the session is returned to the pool.
 
 These scripts can be parametrized with the expansion of environment variables, which can be in turn
 set into the OGC request parameters with the same mechanism as :ref:`sld_variable_substitution`.

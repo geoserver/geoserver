@@ -362,6 +362,64 @@ paths:
           description: OK
         404:
           description: The specified collection cannot be found
+  /collections/{collection}/layer:
+    parameters:
+      - name: collection
+        in: path
+        description: Identifier of the collection
+        required: true
+        type: string
+    get:
+      description: Returns the current publishing configuration for the layer (or 404 if no configuration is currently in use)
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "workspace": "gs",
+                "layer": "test123",
+                "separateBands": true,
+                "bands": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "browseBands": [
+                  4,
+                  3,
+                  2
+                ],
+                "heterogeneousCRS": true,
+                "mosaicCRS": "EPSG:4326"
+              }        
+        404:
+          description: The specified collection or publishing configuration cannot be found
+    put:
+      description: Removes the previous publshing configuration and replaces with a new one, creating along the mosaic configuration, store, layer and style as described
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload does not match the expected structure
+        404:
+          description: The specified collection cannot be found
+    delete:
+      description: Removes the mosaic configuration, store, layer and style associated to this collection
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection or publishing configuration cannot be found
   /collections/{collection}/products:
     parameters:
       - name: collection

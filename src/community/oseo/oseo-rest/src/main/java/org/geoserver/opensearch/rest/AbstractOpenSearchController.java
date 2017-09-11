@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -27,12 +26,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.response.LinkFeatureComparator;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
-import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.opensearch.rest.CollectionsController.IOConsumer;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -111,6 +110,10 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
     protected OpenSearchAccess getOpenSearchAccess() throws IOException {
         return accessProvider.getOpenSearchAccess();
+    }
+    
+    protected DataStoreInfo getOpenSearchStoreInfo() throws IOException {
+        return accessProvider.getDataStoreInfo();
     }
 
     protected void validateMin(Integer value, int min, String name) {

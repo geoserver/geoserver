@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -339,23 +340,34 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         // add the well known ones
         names.add(collectionFeatureType.getName());
         names.add(productFeatureType.getName());
-        // get all collection names
-        getCollectionNames().forEach(name -> {
-            names.add(new NameImpl(namespaceURI, name));
+        // get all collections and their publishing setups
+        
+        getCollectionPublishingConfigurations().forEach((name, layer) -> {
+            if(layer != null && layer.isSeparateBands() && layer.getBands() != null && layer.getBands().length > 0) {
+                // one feature type per band needed to setup a coverage view
+                for (int band : layer.getBands()) {
+                    names.add(new NameImpl(namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
+                }
+            } else {
+                // a single feature type per 
+                names.add(new NameImpl(namespaceURI, name));
+            }
         });
         return new ArrayList<>(names);
     }
 
-    private List<String> getCollectionNames() throws IOException {
+    private Map<String, CollectionLayer> getCollectionPublishingConfigurations() throws IOException {
         FeatureSource<FeatureType, Feature> collectionSource = getCollectionSource();
         Query query = new Query(collectionSource.getName().getLocalPart());
-        query.setPropertyNames(new String[] { COLLECTION_NAME });
+        query.setPropertyNames(new String[] { COLLECTION_NAME, LAYER });
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
-        List<String> result = new ArrayList<>();
+        Map<String, CollectionLayer> result = new LinkedHashMap<>();
         features.accepts(f -> {
             Property p = f.getProperty(COLLECTION_NAME);
             String name = (String) p.getValue();
-            result.add(name);
+            CollectionLayer config = CollectionLayer.buildCollectionLayerFromFeature(f);
+            result.put(name, config);
+            
         }, null);
         return result;
     }
@@ -383,7 +395,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         } else if (productFeatureType.getName().equals(typeName)) {
             return getProductSource();
         }
-        if (Objects.equal(namespaceURI, typeName.getNamespaceURI())) {
+        if (Objects.equal(namespaceURI, typeName.getNamespaceURI()) && getNames().contains(typeName)) {
             // silly generics...
             return (FeatureSource) getCollectionGranulesSource(typeName.getLocalPart());
         }
@@ -392,12 +404,22 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     }
 
-    public SimpleFeatureSource getCollectionGranulesSource(String collectionName)
+    public SimpleFeatureSource getCollectionGranulesSource(String typeName)
             throws IOException {
+        int idx = typeName.lastIndexOf(OpenSearchAccess.BAND_LAYER_SEPARATOR);
+        String collection, band;
+        // the two parts must be non empty in order to have a valid combination
+        if(idx > 1 && idx < (typeName.length() - 3)) { 
+            collection = typeName.substring(0, idx);
+            band = typeName.substring(idx + OpenSearchAccess.BAND_LAYER_SEPARATOR.length());
+        } else {
+            collection = typeName;
+            band = null;
+        }
+        
         // using joining for this one is hard because we need a flat representation
         // and be able to run filters on all attributes in whatever combination, the JOIN
         // support from GeoTools is too weak to do that. We'll setup a reusable virtual table instead
-
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
 
@@ -419,7 +441,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         checkName(granuleTableName, JDBCOpenSearchAccess.GRANULE);
 
         // get the product type, if any (might be a virtual collection)
-        SimpleFeature collectionFeature = getCollectionFeature(collectionName, delegate,
+        SimpleFeature collectionFeature = getCollectionFeature(collection, delegate,
                 collectionTableName);
         String sensorType = (String) collectionFeature.getAttribute("eoSensorType");
         ProductClass productClass = null;
@@ -463,7 +485,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         String gidName = null;
         for (AttributeDescriptor ad : granuleSchema.getAttributeDescriptors()) {
             String localName = ad.getLocalName();
-            if ("id".equalsIgnoreCase(localName)) {
+            if ("id".equalsIgnoreCase(localName) || "band".equalsIgnoreCase(localName)) {
+                // these two should not appear in the feature type
                 continue;
             } else if ("product_id".equalsIgnoreCase(localName)) {
                 productIdColumn = localName;
@@ -493,17 +516,26 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         sb.append(" as collection ON product.\"eoParentIdentifier\" = collection.\"eoIdentifier\"");
         // comparing with false on purpose, allows to defaul to true if primary is null or empty
         boolean primaryTable = !Boolean.FALSE.equals(collectionFeature.getAttribute("primary"));
+        if(primaryTable || band != null) {
+            sb.append(" WHERE ");
+        }
         if (primaryTable) {
-            sb.append(" WHERE collection.\"id\" = " + collectionFeature.getAttribute("id"));
+            sb.append(" collection.\"id\" = " + collectionFeature.getAttribute("id"));
+        } 
+        if (band != null) {
+            if(primaryTable) {
+                sb.append("\n AND");
+            }
+            sb.append( " granule.\"band\" = '" + band + "'");
         }
 
-        VirtualTable vt = new VirtualTable(collectionName, sb.toString());
+        VirtualTable vt = new VirtualTable(typeName, sb.toString());
         vt.addGeometryMetadatata(theGeomName, Polygon.class, 4326);
         vt.setPrimaryKeyColumns(Arrays.asList(gidName));
 
         // now check if the virtual collection is already there
         Map<String, VirtualTable> existingVirtualTables = delegate.getVirtualTables();
-        VirtualTable existing = existingVirtualTables.get(collectionName);
+        VirtualTable existing = existingVirtualTables.get(typeName);
         if (existing != null) {
             // was it updated in the meantime?
             if (!existing.equals(vt)) {
@@ -515,7 +547,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             delegate.createVirtualTable(vt);
         }
 
-        SimpleFeatureSource fs = delegate.getFeatureSource(collectionName);
+        SimpleFeatureSource fs = delegate.getFeatureSource(typeName);
 
         // is it a virtual collection?
         if (!primaryTable) {

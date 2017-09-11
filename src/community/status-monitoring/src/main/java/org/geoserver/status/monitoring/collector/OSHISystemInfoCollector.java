@@ -94,7 +94,8 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
             case SYSTEM_MEMORY_USAGE_P: {
                 MetricValue mv = new MetricValue(info);
                 mv.setAvailable(true);
-                mv.setValue(String.format("%.2f", mm.getAvailable() / (double) (1L << 20)) + "/"
+                mv.setValue(String.format("%.2f",
+                        (mm.getTotal() - mm.getAvailable()) / (double) (1L << 20)) + "/"
                         + String.format("%.2f", mm.getTotal() / (double) (1L << 20)));
                 si = Collections.singletonList(mv);
                 break;

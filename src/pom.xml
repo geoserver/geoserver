@@ -899,6 +899,11 @@
      <artifactId>wicket-extensions</artifactId>
      <version>${wicket.version}</version>
    </dependency>
+  <dependency>
+     <groupId>org.apache.wicket</groupId>
+     <artifactId>wicket-datetime</artifactId>
+     <version>${wicket.version}</version>
+   </dependency>
    <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-api</artifactId>
@@ -1244,6 +1249,11 @@
       <groupId>org.marlin</groupId>
       <artifactId>marlin</artifactId>
       <version>${marlin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.oshi</groupId>
+      <artifactId>oshi-core</artifactId>
+      <version>${oshi.version}</version>
     </dependency>
   </dependencies>
  </dependencyManagement>
@@ -1872,6 +1882,7 @@
   <jackson2.version>2.5.0</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
+  <oshi.version>3.4.3</oshi.version>
  </properties>
 
  <profiles>

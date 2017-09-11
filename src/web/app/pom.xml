@@ -1522,7 +1522,6 @@
         </dependency>
       </dependencies>
     </profile>
-   
     <profile>
       <id>status-monitoring</id>
       <dependencies>
@@ -1533,6 +1532,5 @@
         </dependency>
       </dependencies>
     </profile>
-
  </profiles>
 </project>

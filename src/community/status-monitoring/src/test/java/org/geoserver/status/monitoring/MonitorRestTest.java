@@ -44,6 +44,30 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testDefaultCallback() throws Exception {
+        callback.init(anyObject(), anyObject());
+        expectLastCall();
+        callback.dispatched(anyObject(), anyObject(), anyObject());
+        expectLastCall();
+        callback.finished(anyObject(), anyObject());
+        expectLastCall();
+        replay(callback);
+
+        MockHttpServletResponse response = getAsServletResponse(
+                RestBaseController.ROOT_PATH + "/about/monitoring");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/json", response.getContentType());
+        XStream xs = new XStream(new JettisonMappedXmlDriver());
+        xs.setMode(XStream.NO_REFERENCES);
+        xs.alias("metric", MetricValue.class);
+        xs.alias("metrics", Metrics.class);
+        xs.addImplicitCollection(Metrics.class, "metrics");
+        Metrics metrics = (Metrics) xs.fromXML(response.getContentAsString());
+        assertTrue(metrics.getMetrics().size() >= MetricInfo.values().length);
+        verify(callback);
+    }
+    
+    @Test
     public void testXmlCallback() throws Exception {
         callback.init(anyObject(), anyObject());
         expectLastCall();

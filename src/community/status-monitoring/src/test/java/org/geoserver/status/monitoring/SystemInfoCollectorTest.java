@@ -6,9 +6,12 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.geoserver.status.monitoring.collector.BaseSystemInfoCollector;
 import org.geoserver.status.monitoring.collector.MetricValue;
 import org.geoserver.status.monitoring.collector.Metrics;
+import org.geoserver.status.monitoring.collector.OSHISystemInfoCollector;
 import org.geoserver.status.monitoring.collector.SystemInfoCollector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,6 +21,8 @@ import org.junit.rules.ErrorCollector;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SystemInfoCollectorTest {
+
+    private static Log log = LogFactory.getLog(SystemInfoCollectorTest.class);
 
     @Rule
     public ErrorCollector collector = new ErrorCollector();
@@ -40,15 +45,13 @@ public class SystemInfoCollectorTest {
                 .getBeansOfType(SystemInfoCollector.class);
         assertEquals(1, collectors.size());
         SystemInfoCollector systemInfoCollector = collectors.values().iterator().next();
-        // SystemInfoCollector systemInfoCollector = context.getBean(SystemInfoCollector.class);
         Metrics collected = systemInfoCollector.retriveAllSystemInfo();
         List<MetricValue> metrics = collected.getMetrics();
         for (MetricValue m : metrics) {
             if (m.getAvailable()) {
-                System.out.println(
-                        m.getName() + " IS available -> " + m.getValue() + " " + m.getUnit());
+                log.debug(m.getName() + " IS available -> " + m.getValue() + " " + m.getUnit());
             } else {
-                System.err.println(m.getName() + " IS NOT available");
+                log.debug(m.getName() + " IS NOT available");
             }
             collector.checkThat(
                     "Metric for " + m.getName() + " available but value is not retrived",

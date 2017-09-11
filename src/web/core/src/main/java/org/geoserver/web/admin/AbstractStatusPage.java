@@ -1,12 +1,9 @@
 package org.geoserver.web.admin;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
@@ -14,14 +11,11 @@ import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.SystemInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.SystemPanelInfo;
-
 
 public abstract class AbstractStatusPage extends ServerAdminPage {
 
@@ -41,51 +35,38 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
 
         List<ITab> tabs = new ArrayList<ITab>();
 
-        PanelCachingTab statusTab = new PanelCachingTab(
-                new AbstractTab(new Model<String>("Status")) {
-                    private static final long serialVersionUID = 9062803783143908814L;
+        PanelCachingTab statusTab = new PanelCachingTab(new AbstractTab(new Model<String>("Status")) {
+            private static final long serialVersionUID = 9062803783143908814L;
 
-                    public Panel getPanel(String id) {
-                        return new StatusPanel(id, AbstractStatusPage.this);
-                    }
-                });
+            public Panel getPanel(String id) {
+                return new StatusPanel(id, AbstractStatusPage.this);
+            }
+        });
+        PanelCachingTab moduleStatusTab = new PanelCachingTab(new AbstractTab(new Model<String>("Modules")) {
+            private static final long serialVersionUID = -5301288750339244612L;
+
+            public Panel getPanel(String id) {
+                return new ModuleStatusPanel(id, AbstractStatusPage.this);
+            }
+        });
         tabs.add(statusTab);
-
-        PanelCachingTab moduleStatusTab = new PanelCachingTab(
-                new AbstractTab(new Model<String>("Modules")) {
-                    private static final long serialVersionUID = -5301288750339244612L;
-                    public Panel getPanel(String id) {
-                        return new ModuleStatusPanel(id, AbstractStatusPage.this);
-                    }
-                });
         tabs.add(moduleStatusTab);
 
-        // get the list of SystemStatus extensions
-        List<SystemPanelInfo<SystemInfo>> systemStatuss = GeoServerExtensions
-                .extensions(SystemPanelInfo.class).stream().collect(Collectors.toList());
-        Collections.sort(systemStatuss, (p1, p2) -> p1.getOrder().compareTo(p2.getOrder()));
-        systemStatuss.forEach(item -> {
-            PanelCachingTab systemStatusTab = new PanelCachingTab(
-                    new AbstractTab(new StringResourceModel(item.getTitleKey(), (Component) null, null)) {
-                        private static final long serialVersionUID = 8062803711143338819L;
-
-                        public Panel getPanel(String id) {
-                            Panel panel;
-                            try {
-                                panel = item.getComponentClass().getConstructor(String.class)
-                                        .newInstance(id);
-                            } catch (Exception e) {
-                                throw new WicketRuntimeException(
-                                        "Failed to add pluggable system info configuration panels",
-                                        e);
-                            }
-                            return panel;
-                        }
-                    });
-            tabs.add(systemStatusTab);
+        // extension point for adding extra tabs that will be ordered using the extension priority
+        GeoServerExtensions.extensions(StatusPage.TabDefinition.class).forEach(tabDefinition -> {
+            // create the new extra panel using the tab definition title
+            String title = new ResourceModel(tabDefinition.getTitleKey()).getObject();
+            PanelCachingTab tab = new PanelCachingTab(new AbstractTab(new Model<>(title)) {
+                private static final long serialVersionUID = -5301288750339244612L;
+                // create the extra tab panel passing down the container id
+                public Panel getPanel(String panelId) {
+                    return tabDefinition.createPanel(panelId, AbstractStatusPage.this);
+                }
+            });
+            tabs.add(tab);
         });
-
-        add(new AjaxTabbedPanel<ITab>("tabs", tabs));
+        
+        add(new AjaxTabbedPanel("tabs", tabs));
     }
     //Make sure child tabs can see this
     @Override
@@ -106,4 +87,17 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
         return super.getGeoServerApplication().getGeoServer();
     }
 
+    /**
+     * Extensions that implement this interface will be able to contribute a new tabs to GeoServer
+     * status page, interface {@link org.geoserver.platform.ExtensionPriority} should be used to
+     * define the tab priority.
+     */
+    public interface TabDefinition{
+
+        // title of the tab
+        String getTitleKey();
+
+        // content of the tab, the created panel should use the provided id
+        Panel createPanel(String panelId, Page containerPage);
+    }
 }

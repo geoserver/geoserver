@@ -171,7 +171,6 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
-    @Ignore
     public void testWMTSFilteringCapabilities() throws Exception {
 
         // Create a cascading layer

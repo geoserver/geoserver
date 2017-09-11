@@ -11,6 +11,8 @@ import org.apache.wicket.markup.html.panel.Panel;
  */
 final class ExtraTabPanel extends Panel {
 
+    private static final long serialVersionUID = 3074511900717737417L;
+
     ExtraTabPanel(String panelId) {
         super(panelId);
     }

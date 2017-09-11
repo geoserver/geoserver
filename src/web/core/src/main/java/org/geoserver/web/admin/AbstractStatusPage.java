@@ -66,7 +66,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
             tabs.add(tab);
         });
         
-        add(new AjaxTabbedPanel("tabs", tabs));
+        add(new AjaxTabbedPanel<ITab>("tabs", tabs));
     }
     //Make sure child tabs can see this
     @Override

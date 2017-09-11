@@ -7,6 +7,12 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringWriter;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -66,7 +72,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         assertTrue(metrics.getMetrics().size() >= MetricInfo.values().length);
         verify(callback);
     }
-    
+
     @Test
     public void testXmlCallback() throws Exception {
         callback.init(anyObject(), anyObject());
@@ -123,15 +129,9 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         callback.finished(anyObject(), anyObject());
         expectLastCall();
         replay(callback);
-
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/about/monitoring.html");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/html", response.getContentType());
+        Document doc = getAsDOM(RestBaseController.ROOT_PATH + "/about/monitoring.html");
         XPath xpath = XPathFactory.newInstance().newXPath();
-        TagNode tagNode = new HtmlCleaner().clean(response.getContentAsString());
-        Document doc = new DomSerializer(new CleanerProperties()).createDOM(tagNode);
-        NodeList nodes = (NodeList) xpath.evaluate("/html/body/table/tbody/tr", doc,
+        NodeList nodes = (NodeList) xpath.evaluate("/html/body/table/tr", doc,
                 XPathConstants.NODESET);
         assertTrue(nodes.getLength() >= MetricInfo.values().length);
         verify(callback);

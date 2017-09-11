@@ -59,7 +59,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
     
-    @Ignore
+    @Test
     public void testRawPutYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();
@@ -100,7 +100,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         catalog.remove(styleInfo);
     }
     
-    @Ignore
+    @Test
     public void testPutYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();

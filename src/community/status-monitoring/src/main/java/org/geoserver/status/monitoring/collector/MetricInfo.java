@@ -17,22 +17,23 @@ package org.geoserver.status.monitoring.collector;
  *
  */
 public enum MetricInfo {
-    OS_TYPE("OS type"),
-    PHYSICAL_CPU_N( "Number of physical CPU"),
+    OS_TYPE("OS type"), 
+    PHYSICAL_CPU_N("Number of physical CPU"),
     LOGICAL_CPU_N("Number of logical CPU"),
-    CPU_LOAD("CPU load", "%"), UPTIME("Uptime","h"),
-    SYSTEM_AVERAGE_LOAD("System average load","%"),
+    CPU_LOAD("CPU load", "%"),
+    UPTIME("Uptime","h"),
+    SYSTEM_AVERAGE_LOAD("System average load", "%"),
     RUNNING_PROCESS_N("Number of running process"),
     RUNNING_THREADS_N("Number of running threads"),
     GEOSERVER_CPU_USAGE("Geoserver CPU usage", "%"),
-    SYSTEM_MEMORY_USAGE_P("Memory physical","MiB"),
+    SYSTEM_MEMORY_USAGE_P("Memory physical", "MiB"),
     SYSTEM_MEMORY_USAGE_S("Memory swap", "MiB"),
     GEOSERVER_JVM_MEMORY_USAGE("Geoserver JVM memory usage", "%"),
-    MOUNTED_FS_USAGE("Mounted file system usage","MiB"),
-    NETWORK_INTERFACES("Network interfaces","MiB"),
-    TEMPERATURE("Temperature","°C"),
-    FAN_SPEED("Fan speed","rpm"),
-    VOLTAGE("Voltage","V");
+    MOUNTED_FS_USAGE("Mounted file system usage", "MiB"),
+    NETWORK_INTERFACES("Network interfaces", "MiB"),
+    TEMPERATURE("Temperature", "°C"),
+    FAN_SPEED("Fan speed", "rpm"),
+    VOLTAGE("Voltage", "V");
 
     String description;
 

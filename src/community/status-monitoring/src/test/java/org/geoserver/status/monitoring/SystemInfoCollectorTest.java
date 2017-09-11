@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import org.geoserver.status.monitoring.collector.BaseSystemInfoCollector;
 import org.geoserver.status.monitoring.collector.MetricValue;
 import org.geoserver.status.monitoring.collector.Metrics;
-import org.geoserver.status.monitoring.collector.OSHISystemInfoCollector;
 import org.geoserver.status.monitoring.collector.SystemInfoCollector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

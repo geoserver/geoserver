@@ -7,7 +7,9 @@ language: java
 before_install:
   - rm ~/.m2/settings.xml
 env:
-  - MAVEN_OPTS=-Xmx512m
+  global:
+    - MAVEN_OPTS=-Xmx512m
+    - _JAVA_OPTIONS=
 script:
   - mvn -f src/pom.xml -B -U -T4 -fae -Prelease clean install && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install
 notifications:

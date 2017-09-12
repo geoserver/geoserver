@@ -33,11 +33,6 @@
     </property>
   </bean>
 
-  <mvc:annotation-driven />
-  <!--<context:component-scan base-package="org.geowebcache.controller">-->
-    <!--&lt;!&ndash; So we can use org.geoserver.gwc.controller.DispatcherController instead &ndash;&gt;-->
-    <!--<context:exclude-filter type="regex" expression="org\.geowebcache\.controller\.GeoWebCacheDispatcherController"/>-->
-  <!--</context:component-scan>-->
-  <!--<context:component-scan base-package="org.geoserver.gwc.controller"/>-->
+  <context:component-scan base-package="org.geoserver.gwc.dispatch"/>
   
 </beans>

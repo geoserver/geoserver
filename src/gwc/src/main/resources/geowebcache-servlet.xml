@@ -33,6 +33,6 @@
     </property>
   </bean>
 
-  <context:component-scan base-package="org.geowebcache.controller"/>
+  <context:component-scan base-package="org.geoserver.gwc.dispatch"/>
   
 </beans>

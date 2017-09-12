@@ -6,12 +6,14 @@ package org.geoserver.geofence.rest;
 
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
+import org.geoserver.geofence.core.model.LayerAttribute;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -120,6 +122,136 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         	conflict = true;
         }
         assertTrue(conflict);
+    }
+    
+    @Test
+    public void testLimits() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setUserName("pipo");
+        rule.setRoleName("clown");
+        rule.setAddressRange("127.0.0.1/32");
+        rule.setService("wfs");
+        rule.setRequest("getFeature");
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("LIMIT");
+        rule.setLimits(new JaxbRule.Limits());
+        rule.getLimits().setAllowedArea(GML3MockData.multiPolygon());
+        rule.getLimits().setCatalogMode("MIXED");
+        
+        Long id = controller.insert(rule).getBody();
+        
+        Rule realRule = adminService.get(id);
+
+        assertEquals(rule.getLimits().getCatalogMode(), realRule.getRuleLimits().getCatalogMode().toString());
+        assertEquals(rule.getLimits().getAllowedArea(), realRule.getRuleLimits().getAllowedArea());
+        
+        rule.getLimits().setCatalogMode("HIDE");
+        
+        controller.update(id, rule);
+        
+        realRule = adminService.get(id);
+        
+        assertEquals(rule.getLimits().getCatalogMode(), realRule.getRuleLimits().getCatalogMode().toString());
+        
+        rule.setLimits(null);
+                
+        controller.clearAndUpdate(id, rule);
+        
+        realRule = adminService.get(id);
+        
+        assertNull(realRule.getRuleLimits());
+    }
+    
+    @Test
+    public void testLayerDetails() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setUserName("pipo");
+        rule.setRoleName("clown");
+        rule.setAddressRange("127.0.0.1/32");
+        rule.setService("wfs");
+        rule.setRequest("getFeature");
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+        rule.setLayerDetails(new JaxbRule.LayerDetails());
+        rule.getLayerDetails().setAllowedArea(GML3MockData.multiPolygon());
+        rule.getLayerDetails().getAllowedStyles().add("style1");
+        rule.getLayerDetails().getAllowedStyles().add("style2");
+        JaxbRule.LayerAttribute att = new JaxbRule.LayerAttribute();
+        att.setName("layerAttribute1");
+        att.setAccessType("READONLY");
+        att.setDataType("dataType");
+        rule.getLayerDetails().getAttributes().add(att);
+        att = new JaxbRule.LayerAttribute();
+        att.setName("layerAttribute2");
+        att.setAccessType("READONLY");
+        att.setDataType("dataType2");
+        rule.getLayerDetails().getAttributes().add(att);
+        rule.getLayerDetails().setCatalogMode("MIXED");
+        rule.getLayerDetails().setCqlFilterRead("myFilterRead");
+        rule.getLayerDetails().setCqlFilterWrite("myFilterWrite");
+        rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
+        rule.getLayerDetails().setLayerType("VECTOR");
+        
+        Long id = controller.insert(rule).getBody();
+        
+        Rule realRule = adminService.get(id);
+
+        assertEquals(rule.getLayerDetails().getAllowedArea(), realRule.getLayerDetails().getArea());
+        assertEquals(rule.getLayerDetails().getCatalogMode(), realRule.getLayerDetails().getCatalogMode().toString());
+        assertEquals(rule.getLayerDetails().getAllowedStyles(), realRule.getLayerDetails().getAllowedStyles());
+        assertEquals(2, realRule.getLayerDetails().getAttributes().size());
+        for (LayerAttribute la : realRule.getLayerDetails().getAttributes()) {
+            if (la.getName().equals("layerAttribute2")) {
+                assertEquals("READONLY", la.getAccess().toString());
+            }
+        }
+        assertEquals(rule.getLayerDetails().getCqlFilterRead(), realRule.getLayerDetails().getCqlFilterRead());
+        assertEquals(rule.getLayerDetails().getCqlFilterWrite(), realRule.getLayerDetails().getCqlFilterWrite());
+        assertEquals(rule.getLayerDetails().getDefaultStyle(), realRule.getLayerDetails().getDefaultStyle());
+        assertEquals(rule.getLayerDetails().getLayerType(), realRule.getLayerDetails().getType().toString());
+        
+        rule.getLayerDetails().setDefaultStyle("myDefaultStyle2");
+        
+        rule.getLayerDetails().getAttributes().clear();
+        att = new JaxbRule.LayerAttribute();
+        att.setName("layerAttribute2");
+        att.setAccessType("READWRITE");
+        att.setDataType("dataType");
+        rule.getLayerDetails().getAttributes().add(att);
+        att = new JaxbRule.LayerAttribute();
+        att.setName("layerAttribute3");
+        att.setAccessType("READWRITE");
+        att.setDataType("dataType");
+        rule.getLayerDetails().getAttributes().add(att);
+        
+        rule.getLayerDetails().getAllowedStyles().clear();
+        rule.getLayerDetails().getAllowedStyles().add("style3");
+        
+        controller.update(id, rule);
+        
+        realRule = adminService.get(id);
+        
+        assertEquals(rule.getLayerDetails().getDefaultStyle(), realRule.getLayerDetails().getDefaultStyle());
+
+        assertEquals(3, realRule.getLayerDetails().getAllowedStyles().size());
+        assertEquals(3, realRule.getLayerDetails().getAttributes().size());
+        
+        for (LayerAttribute la : realRule.getLayerDetails().getAttributes()) {
+            if (la.getName().equals("layerAttribute2")) {
+                assertEquals("READWRITE", la.getAccess().toString());
+            }
+        }
+                       
+        controller.clearAndUpdate(id, rule);
+                
+        realRule = adminService.get(id);
+        
+        assertEquals(rule.getLayerDetails().getAllowedStyles(), realRule.getLayerDetails().getAllowedStyles());
+        assertEquals(2, realRule.getLayerDetails().getAttributes().size());
     }
 
     @Test

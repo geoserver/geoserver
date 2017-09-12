@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.web.data.layergroup.LayerGroupEntry;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -47,19 +48,30 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
         private List<T> items;
 
-        private List<org.geoserver.web.wicket.GeoServerDataProvider.Property<T>> properties;
+        private IModel<List<org.geoserver.web.wicket.GeoServerDataProvider.Property<T>>> properties;
 
         @SuppressWarnings("unchecked")
-        public ReorderableDataProvider(List<T> items, List<Property<T>> properties) {
+        public ReorderableDataProvider(List<T> items, IModel<List<Property<T>>> properties) {
             this.items = items;
-            this.properties = new ArrayList<Property<T>>(properties);
-            this.properties.add(0, (Property<T>) POSITION);
-            this.properties.add(0, (Property<T>) RENDERING_ORDER);
+            // make sure we don't serialize the list, but get it fresh from the dataProvider, 
+            // to avoid serialization issues seen in GEOS-8273
+            this.properties = new LoadableDetachableModel<List<Property<T>>>() {
+
+                @Override
+                protected List<Property<T>> load() {
+                    List result = new ArrayList<Property<T>>(properties.getObject());
+                    result.add(0, (Property<T>) POSITION);
+                    result.add(0, (Property<T>) RENDERING_ORDER);
+                    return result;
+                }
+                
+            };
+            
         }
 
         @Override
         protected List<Property<T>> getProperties() {
-            return properties;
+            return properties.getObject();
         }
 
         @Override
@@ -76,9 +88,19 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     static Property<?> POSITION = new PropertyPlaceholder<Object>("position");
 
     static Property<?> RENDERING_ORDER = new PropertyPlaceholder<Object>("order");
+    
+    /**
+     * Deprecated, provide a loadable model for properties instead which ensures always the 
+     * same exact property objects are returned (or use equality by name in the getComponentForProperty method)
+     */
+    @SuppressWarnings("serial")
+    @Deprecated
+    public ReorderableTablePanel(String id, List<T> items, List<Property<T>> properties) {
+        this(id, items, Model.ofList(properties));
+    }
 
     @SuppressWarnings("serial")
-    public ReorderableTablePanel(String id, List<T> items, List<Property<T>> properties) {
+    public ReorderableTablePanel(String id, List<T> items, IModel<List<Property<T>>> properties) {
         super(id, new ReorderableDataProvider<T>(items, properties));
         this.setOutputMarkupId(true);
         this.add(new WebTheme());
@@ -110,7 +132,14 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     @Override
     protected void buildRowListView(GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
         // create one component per viewable property
-        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", dataProvider.getVisibleProperties()) {
+        IModel propertyList = new LoadableDetachableModel() {
+
+            @Override
+            protected Object load() {
+                return dataProvider.getVisibleProperties();
+            }
+        };
+        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", propertyList) {
 
             private static final long serialVersionUID = -7089826211241039856L;
 

@@ -37,6 +37,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.AbstractDecorator;
@@ -52,9 +54,9 @@ import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
+import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.DefaultResourceAccessManager;
-import org.hsqldb.lib.ArrayListIdentity;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -536,6 +538,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return (T) new SecuredCoverageInfo((CoverageInfo) info, policy);
         } else if(info instanceof WMSLayerInfo) {
             return (T) new SecuredWMSLayerInfo((WMSLayerInfo) info, policy);
+        } else if(info instanceof WMTSLayerInfo) {
+            return (T) new SecuredWMTSLayerInfo((WMTSLayerInfo) info, policy);
         } else {
             throw new RuntimeException("Unknown resource type " + info.getClass());
         }
@@ -588,6 +592,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return (T) new SecuredCoverageStoreInfo((CoverageStoreInfo) store, policy);
         } else if (store instanceof WMSStoreInfo) {
             // TODO: implement WMSStoreInfo wrappring if necessary
+            return store;
+        } else if (store instanceof WMTSStoreInfo) {
+            // TODO: implement WMTSStoreInfo wrappring if necessary
             return store;
         } else {
             throw new RuntimeException("Unknown store type " + store.getClass());
@@ -656,6 +663,12 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             if (checked != null) {
                 wrapped.add(checked);
                 selectedStyles.add(style);
+            } else if (layer == null) {
+                StyleInfo styleGroup = checkAccess(user, style, MixedModeBehavior.HIDE);
+                if (styleGroup != null) {
+                    wrapped.add(null);
+                    selectedStyles.add(styleGroup);
+                }
             }
         }
         
@@ -1101,6 +1114,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return ((SecuredCoverageInfo) info).unwrap(ResourceInfo.class);
         if (info instanceof SecuredWMSLayerInfo)
             return ((SecuredWMSLayerInfo) info).unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo)
+            return ((SecuredWMTSLayerInfo) info).unwrap(ResourceInfo.class);
         return info;
     }
     

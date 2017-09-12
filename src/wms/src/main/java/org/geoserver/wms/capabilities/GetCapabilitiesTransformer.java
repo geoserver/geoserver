@@ -51,6 +51,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -692,9 +693,16 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
 
             //WMSInfo serviceInfo = wmsConfig.getServiceInfo();
-            element("Title", serviceInfo.getTitle());
-            element("Abstract", serviceInfo.getAbstract());
-
+            if(StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
+            	element("Title", serviceInfo.getTitle());
+            } else {
+            	element("Title", serviceInfo.getRootLayerTitle());
+            }
+            if(StringUtils.isBlank(serviceInfo.getRootLayerAbstract())) {
+            	element("Abstract", serviceInfo.getAbstract());
+            } else {
+            	element("Abstract", serviceInfo.getRootLayerAbstract());
+            }
             List<String> srsList = serviceInfo.getSRS();
             Set<String> srs = new LinkedHashSet<String>();
             if (srsList != null) {
@@ -918,6 +926,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 dimensionHelper.handleVectorLayerDimensions(layer);
             } else if (layer.getType() == PublishedType.RASTER) {
                 dimensionHelper.handleRasterLayerDimensions(layer);
+            } else if (layer.getType() == PublishedType.WMTS) {
+                dimensionHelper.handleWMTSLayerDimensions(layer);
             }
 
             // handle data attribution
@@ -935,7 +945,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle DataURLs
             handleDataList(layer.getResource().getDataLinks());
 
-            if (layer.getResource() instanceof WMSLayerInfo) {
+            if (layer.getResource() instanceof WMSLayerInfo || layer.getResource() instanceof WMTSLayerInfo) {
                 // do nothing for the moment, we may want to list the set of cascaded named styles
                 // in the future (when we add support for that)
             } else {

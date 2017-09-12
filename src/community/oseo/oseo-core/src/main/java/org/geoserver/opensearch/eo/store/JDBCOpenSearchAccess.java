@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -36,6 +38,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
@@ -116,6 +119,10 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         productFeatureType = buildProductFeatureType(delegate);
     }
 
+    String getNamespaceURI() {
+        return namespaceURI;
+    }
+
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
@@ -159,6 +166,11 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME,
                 String.class);
         typeBuilder.add(metadataDescriptor);
+        
+        // adding the layer publishing property
+        Name layerPropertyName = new NameImpl(this.namespaceURI, OpenSearchAccess.LAYER);
+        AttributeDescriptor layerDescriptor = buildFeatureDescriptor(layerPropertyName, buildCollectionLayerFeatureType(layerPropertyName), 0, 1);
+        typeBuilder.add(layerDescriptor);
 
         // map OGC links
         AttributeDescriptor linksDescriptor = buildFeatureListDescriptor(OGC_LINKS_PROPERTY_NAME,
@@ -170,19 +182,42 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         return typeBuilder.feature();
     }
 
+    protected SimpleFeatureType buildCollectionLayerFeatureType(Name name) throws IOException {
+        SimpleFeatureType source = getDelegateStore().getSchema("collection_layer");
+        try {
+            SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
+            for (AttributeDescriptor ad : source.getAttributeDescriptors()) {
+                if("bands".equals(ad.getLocalName()) || "browseBands".equals(ad.getLocalName())) {
+                    b.add(ad.getLocalName(), String[].class);
+                } else {
+                    b.add(ad);
+                }
+            }
+            
+            b.setName(name);
+            return b.buildFeatureType();
+        } catch (Exception e) {
+            throw new DataSourceException("Could not build the renamed feature type.", e);
+        }
+    }
+
     private AttributeDescriptor buildSimpleDescriptor(Name name, Class binding) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
-        ab.setBinding(String.class);
+        ab.setBinding(binding);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, ab.buildType());
         return descriptor;
     }
 
     private AttributeDescriptor buildFeatureListDescriptor(Name name, SimpleFeatureType schema) {
+        return buildFeatureDescriptor(name, schema, 0, Integer.MAX_VALUE);
+    }
+    
+    private AttributeDescriptor buildFeatureDescriptor(Name name, SimpleFeatureType schema, int minOccurs, int maxOccurs) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
-        ab.setMinOccurs(0);
-        ab.setMaxOccurs(Integer.MAX_VALUE);
+        ab.setMinOccurs(minOccurs);
+        ab.setMaxOccurs(maxOccurs);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, schema);
         return descriptor;
     }
@@ -305,23 +340,34 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         // add the well known ones
         names.add(collectionFeatureType.getName());
         names.add(productFeatureType.getName());
-        // get all collection names
-        getCollectionNames().forEach(name -> {
-            names.add(new NameImpl(namespaceURI, name));
+        // get all collections and their publishing setups
+        
+        getCollectionPublishingConfigurations().forEach((name, layer) -> {
+            if(layer != null && layer.isSeparateBands() && layer.getBands() != null && layer.getBands().length > 0) {
+                // one feature type per band needed to setup a coverage view
+                for (int band : layer.getBands()) {
+                    names.add(new NameImpl(namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
+                }
+            } else {
+                // a single feature type per 
+                names.add(new NameImpl(namespaceURI, name));
+            }
         });
         return new ArrayList<>(names);
     }
 
-    private List<String> getCollectionNames() throws IOException {
+    private Map<String, CollectionLayer> getCollectionPublishingConfigurations() throws IOException {
         FeatureSource<FeatureType, Feature> collectionSource = getCollectionSource();
         Query query = new Query(collectionSource.getName().getLocalPart());
-        query.setPropertyNames(new String[] { COLLECTION_NAME });
+        query.setPropertyNames(new String[] { COLLECTION_NAME, LAYER });
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
-        List<String> result = new ArrayList<>();
+        Map<String, CollectionLayer> result = new LinkedHashMap<>();
         features.accepts(f -> {
             Property p = f.getProperty(COLLECTION_NAME);
             String name = (String) p.getValue();
-            result.add(name);
+            CollectionLayer config = CollectionLayer.buildCollectionLayerFromFeature(f);
+            result.put(name, config);
+            
         }, null);
         return result;
     }
@@ -349,7 +395,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         } else if (productFeatureType.getName().equals(typeName)) {
             return getProductSource();
         }
-        if (Objects.equal(namespaceURI, typeName.getNamespaceURI())) {
+        if (Objects.equal(namespaceURI, typeName.getNamespaceURI()) && getNames().contains(typeName)) {
             // silly generics...
             return (FeatureSource) getCollectionGranulesSource(typeName.getLocalPart());
         }
@@ -358,12 +404,22 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     }
 
-    public SimpleFeatureSource getCollectionGranulesSource(String collectionName)
+    public SimpleFeatureSource getCollectionGranulesSource(String typeName)
             throws IOException {
+        int idx = typeName.lastIndexOf(OpenSearchAccess.BAND_LAYER_SEPARATOR);
+        String collection, band;
+        // the two parts must be non empty in order to have a valid combination
+        if(idx > 1 && idx < (typeName.length() - 3)) { 
+            collection = typeName.substring(0, idx);
+            band = typeName.substring(idx + OpenSearchAccess.BAND_LAYER_SEPARATOR.length());
+        } else {
+            collection = typeName;
+            band = null;
+        }
+        
         // using joining for this one is hard because we need a flat representation
         // and be able to run filters on all attributes in whatever combination, the JOIN
         // support from GeoTools is too weak to do that. We'll setup a reusable virtual table instead
-
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
 
@@ -385,7 +441,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         checkName(granuleTableName, JDBCOpenSearchAccess.GRANULE);
 
         // get the product type, if any (might be a virtual collection)
-        SimpleFeature collectionFeature = getCollectionFeature(collectionName, delegate,
+        SimpleFeature collectionFeature = getCollectionFeature(collection, delegate,
                 collectionTableName);
         String sensorType = (String) collectionFeature.getAttribute("eoSensorType");
         ProductClass productClass = null;
@@ -415,6 +471,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             final String localName = ad.getLocalName();
             if (localName.startsWith(JDBCOpenSearchAccess.EO_PREFIX)
                     || "timeStart".equals(localName) || "timeEnd".equals(localName)
+                    || "crs".equals(localName)
                     || (productClass != null && localName.startsWith(productClass.getPrefix()))
                     || (productClass == null && matchesAnyProductClass(localName))) {
                 String column = encodeColumn(dialect, "product", localName);
@@ -428,7 +485,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         String gidName = null;
         for (AttributeDescriptor ad : granuleSchema.getAttributeDescriptors()) {
             String localName = ad.getLocalName();
-            if ("id".equalsIgnoreCase(localName)) {
+            if ("id".equalsIgnoreCase(localName) || "band".equalsIgnoreCase(localName)) {
+                // these two should not appear in the feature type
                 continue;
             } else if ("product_id".equalsIgnoreCase(localName)) {
                 productIdColumn = localName;
@@ -458,17 +516,26 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         sb.append(" as collection ON product.\"eoParentIdentifier\" = collection.\"eoIdentifier\"");
         // comparing with false on purpose, allows to defaul to true if primary is null or empty
         boolean primaryTable = !Boolean.FALSE.equals(collectionFeature.getAttribute("primary"));
+        if(primaryTable || band != null) {
+            sb.append(" WHERE ");
+        }
         if (primaryTable) {
-            sb.append(" WHERE collection.\"id\" = " + collectionFeature.getAttribute("id"));
+            sb.append(" collection.\"id\" = " + collectionFeature.getAttribute("id"));
+        } 
+        if (band != null) {
+            if(primaryTable) {
+                sb.append("\n AND");
+            }
+            sb.append( " granule.\"band\" = '" + band + "'");
         }
 
-        VirtualTable vt = new VirtualTable(collectionName, sb.toString());
+        VirtualTable vt = new VirtualTable(typeName, sb.toString());
         vt.addGeometryMetadatata(theGeomName, Polygon.class, 4326);
         vt.setPrimaryKeyColumns(Arrays.asList(gidName));
 
         // now check if the virtual collection is already there
         Map<String, VirtualTable> existingVirtualTables = delegate.getVirtualTables();
-        VirtualTable existing = existingVirtualTables.get(collectionName);
+        VirtualTable existing = existingVirtualTables.get(typeName);
         if (existing != null) {
             // was it updated in the meantime?
             if (!existing.equals(vt)) {
@@ -480,7 +547,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             delegate.createVirtualTable(vt);
         }
 
-        SimpleFeatureSource fs = delegate.getFeatureSource(collectionName);
+        SimpleFeatureSource fs = delegate.getFeatureSource(typeName);
 
         // is it a virtual collection?
         if (!primaryTable) {
@@ -545,7 +612,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     public FeatureStore<FeatureType, Feature> getProductSource() throws IOException {
-        return new JDBCProductFeatureSource(this, productFeatureType);
+        return new JDBCProductFeatureStore(this, productFeatureType);
     }
 
     public FeatureStore<FeatureType, Feature> getCollectionSource() throws IOException {
@@ -616,6 +683,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                             fb.set("product_id", dbProductId);
                             fb.set("location", sf.getAttribute("location"));
                             fb.set("the_geom", sf.getDefaultGeometry());
+                            fb.set("band", sf.getAttribute("band"));
                             SimpleFeature mapped = fb.buildFeature(null);
                             fc.add(mapped);
                         }

@@ -22,6 +22,7 @@
 		<value>DEFAULT</value>
 	</property>
 	<property name="utility" ref="wmsUtilities"/>
+    <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
   </bean>
   
   <bean id="wmsUtilities" class="org.geowebcache.service.wms.WMSUtilities"/>

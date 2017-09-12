@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    
   <description>
    Bean configuration file for the gwc-web module
   </description>
@@ -21,16 +27,12 @@
     This mappings are different from the standalone gwc ones in that they prepend the /gwc prefix to the context so it
     ends up being, for example, /geoserver/gwc/*
   -->
-  <bean id="gwcUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="alwaysUseFullPath" value="true"/>
-    <property name="mappings">
-      <props> 
-        <!-- prop key="/gwc/service/**">geowebcacheDispatcher</prop-->
-        <prop key="/gwc/demo/**">geowebcacheDispatcher</prop>
-	    <prop key="/gwc/proxy/**">gwcProxyDispatcher</prop>
-	    <prop key="/gwc/**">geowebcacheDispatcher</prop>
-      </props>
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location">
+      <value>classpath:application.properties</value>
     </property>
   </bean>
+
+  <context:component-scan base-package="org.geoserver.gwc.dispatch"/>
   
 </beans>

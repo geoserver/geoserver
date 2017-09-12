@@ -60,12 +60,54 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(255, 187, 187));
     }
     
+    /**
+     * Same as above, but obtained via sorting on one attribute instead of using both dimensions
+     */
+    @Test
+    public void testSortTimeDescending() throws Exception {
+        // setting up only elevation, the time will be picked by sorting
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&sortBy=ingestion D", "image/png");
+
+        // should be light red pixel and the first pixel is there only at the default elevation
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 187, 187));
+    }
+
+    /**
+     * Same as above, but obtained via sorting on two attributes instead of using dimensions
+     */
+    @Test
+    public void testSortTwoAttributes() throws Exception {
+        // setting up no dimension, will also sort on elevation
+        
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&sortBy=ingestion D,elevation", "image/png");
+
+        // should be light red pixel and the first pixel is there only at the default elevation
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 187, 187));
+    }
+    
     @Test
     public void testElevation() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_PNG_URL + "&elevation=100", "image/png");
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0,0,0));
+        // and this one a light blue
+        assertPixel(image, 68, 72, new Color(246, 246, 255));
+    }
+    
+    /**
+     * Same as above, but obtained via sorting instead of using dimensions
+     */
+    @Test
+    public void testSortElevationDescending() throws Exception {
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&sortBy=elevation D,ingestion D", "image/png");
 
         // at this elevation the pixel is black
         assertPixel(image, 36, 31, new Color(0,0,0));

@@ -34,10 +34,10 @@ when a suitable zoom level is reached::
       font-weight: bold;
       halo-color: white;
       halo-radius: 2;
-      -gt-label-follow-line: true;
-      -gt-label-repeat: 200;
-      -gt-label-max-angle-delta: 45;
-      -gt-label-priority: 2000;
+      label-follow-line: true;
+      label-repeat: 200;
+      label-max-angle-delta: 45;
+      label-priority: 2000;
     }
     
     /* @title Values */
@@ -49,7 +49,7 @@ when a suitable zoom level is reached::
       font-family: Arial;
       font-fill: black;
       font-size: 6;
-      -gt-label-priority: 1000;
+      label-priority: 1000;
     }
 
 .. figure:: images/transformation.png

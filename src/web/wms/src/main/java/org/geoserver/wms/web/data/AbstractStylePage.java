@@ -35,16 +35,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.StyleHandler;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.ComponentAuthorizer;
@@ -53,6 +46,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -411,9 +405,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     
     List<Exception> validateSLD() {
         try {
-            final String sld = editor.getInput();
-            ByteArrayInputStream input = new ByteArrayInputStream(sld.getBytes());
+            final String style = editor.getInput();
+            ByteArrayInputStream input = new ByteArrayInputStream(style.getBytes());
             List<Exception> validationErrors = styleHandler().validate(input, null, getCatalog().getResourcePool().getEntityResolver());
+            input = new ByteArrayInputStream(style.getBytes());
+            StyledLayerDescriptor sld = styleHandler().parse(input, null, null, getCatalog().getResourcePool().getEntityResolver());
+            //If there are more than one layers, assume this is a style group and validate accordingly.
+            if (sld.getStyledLayers().length > 1) {
+                validationErrors.addAll(SLDNamedLayerValidator.validate(getCatalog(), sld));
+            }
             return validationErrors;
         } catch( Exception e ) {
             return Arrays.asList( e );
@@ -544,6 +544,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     @Override
     protected Catalog getCatalog() {
         return super.getCatalog();
+    }
+    @Override
+    protected GeoServer getGeoServer() {
+        return super.getGeoServer();
     }
     
     @Override

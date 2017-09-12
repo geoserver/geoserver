@@ -11,6 +11,7 @@
     "originalPackageLocation" : "/var/data/sentinel2/2017/04/23/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04.zip",
     "thumbnailURL" : null,
     "quicklookURL" : null,
+    "crs" : "EPSG:32632",
     "eop:parentIdentifier" : "SENTINEL2",
     "eop:productionStatus" : null,
     "eop:acquisitionType" : "NOMINAL",

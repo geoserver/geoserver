@@ -90,6 +90,10 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         // popups support
         form.add(modal = new ModalWindow("modal"));
         
+        // new text field for the title of the root node
+        form.add(new TextField<String>("rootLayerTitle"));
+        form.add(new TextArea<String>("rootLayerAbstract"));
+        
         // authority URLs and Identifiers for the root layer
         LayerAuthoritiesAndIdentifiersPanel authAndIds;
         authAndIds = new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);

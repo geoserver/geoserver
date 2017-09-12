@@ -100,7 +100,7 @@ goto checkDataDir
 :checkDataDir
   rem GEOSERVER_DATA_DIR not defined
   if "%GEOSERVER_DATA_DIR%" == "" goto noDataDir
-  goto run
+  goto setMarlinRenderer
 
 :noDataDir
   rem if GEOSERVER_DATA_DIR is not defined then use GEOSERVER_HOME/data_dir/
@@ -122,8 +122,18 @@ goto end
   echo Temporarily setting GEOSERVER_DATA_DIR to the following directory:
   echo %GEOSERVER_DATA_DIR%
   echo.
-goto run
+goto setMarlinRenderer
 
+:setMarlinRenderer
+  cd %GEOSERVER_HOME%
+  for /f "delims=" %%i in ('dir /b/s "%GEOSERVER_HOME%\webapps\geoserver\WEB-INF\lib\marlin*.jar"') do set MARLIN_JAR=%%i
+  if "%MARLIN_JAR%" == "" (
+    echo Marlin renderer jar not found
+    goto run
+  )
+  set MARLIN_ENABLER=-Xbootclasspath/a:"%MARLIN_JAR%" -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
+  set JAVA_OPTS=%JAVA_OPTS% %MARLIN_ENABLER%
+goto run
 
 :run
   cd %GEOSERVER_HOME%

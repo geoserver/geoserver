@@ -5,45 +5,13 @@
  */
 package org.geoserver.gwc;
 
-import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
-import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.namespace.QName;
-
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -53,15 +21,12 @@ import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.wmts.WMTSInfo;
-import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
-import org.geoserver.wms.WMSInfo;
 import org.geotools.feature.NameImpl;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
@@ -78,12 +43,25 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
+import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 @TestSetup(run=TestSetupFrequency.REPEAT)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
@@ -101,6 +79,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static final String WORKSPACED_STYLE_FILE = "workspacedStyle.sld";
     static final String WORKSPACED_LAYER = "workspacedLayer";
     static final QName WORKSPACED_LAYER_QNAME = new QName(TEST_WORKSPACE_URI, WORKSPACED_LAYER, TEST_WORKSPACE_NAME);
+
+    @Value("${gwc.context.suffix}")
+    private String suffix;
     
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
@@ -210,6 +191,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         lg.setName(FLAT_LAYER_GROUP);
         lg.getLayers().add(getCatalog().getLayerByName(bpLayerId));
         lg.getLayers().add(getCatalog().getLayerByName(mpLayerId));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
         new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
         getCatalog().add(lg);        
         
@@ -235,6 +218,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo nested = getCatalog().getFactory().createLayerGroup();
         nested.setName(NESTED_LAYER_GROUP);
         nested.getLayers().add(getCatalog().getLayerByName(bpLayerId));
+        nested.getStyles().add(null);
         builder.calculateLayerGroupBounds(nested);
         getCatalog().add(nested);
         
@@ -243,6 +227,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         container.setName(CONTAINER_LAYER_GROUP);
         container.getLayers().add(getCatalog().getLayerByName(mpLayerId));
         container.getLayers().add(getCatalog().getLayerGroupByName(NESTED_LAYER_GROUP));
+        container.getStyles().add(null);
+        container.getStyles().add(null);
         builder.calculateLayerGroupBounds(container);
         getCatalog().add(container);
         
@@ -508,6 +494,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String mpLayerId = getLayerId(MockData.LAKES);
         lg.getLayers().add(getCatalog().getLayerByName(bpLayerId));
         lg.getLayers().add(getCatalog().getLayerByName(mpLayerId));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
 
         lg.setWorkspace(getCatalog().getWorkspaceByName(workspaceName));
         new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
@@ -619,7 +607,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         .contains("Could not find layer cdf:BasicPolygons"));
     }
 
-    @Test public void testReloadConfiguration() throws Exception {
+    @Test
+    public void testReloadConfiguration() throws Exception {
         String path = "/gwc/rest/reload";
         String content = "reload_configuration=1";
         String contentType = "application/x-www-form-urlencoded";
@@ -1097,6 +1086,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // add the provided layers
         for (LayerInfo layerInfo : layers) {
             layerGroup.getLayers().add(layerInfo);
+            layerGroup.getStyles().add(null);
         }
         // set the layer group bounds by merging all layers bounds
         CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());

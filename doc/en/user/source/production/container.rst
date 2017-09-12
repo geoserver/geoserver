@@ -19,8 +19,6 @@ Set the following performance settings in the Java virtual machine (JVM) for you
      - By starting with a larger heap GeoServer will not need to pause and ask the operating system for more memory during heavy load. The setting ``-Xms128m`` will tell the virtual machine to acquire grab a 128m heap memory on initial startup.
    * - ``-Xmx756M``
      - Defines an upper limit on how much heap memory Java will request from the operating system  (use more if you have excess memory). By default, the JVM will use 1/4 of available system memory. The setting ``-Xms756m`` allocates 756MB of memory to GeoServer.
-   * - ``-XX:MaxPermSize=512m``
-     - This setting is **no longer needed for Java 8** to to a change in how applications are loaded. Previously we asked administrators to rase this value as GeoServer is a relatively large application.
    * - ``-XX:SoftRefLRUPolicyMSPerMB=36000``
      - Increases the lifetime of "soft references" in GeoServer.  GeoServer uses soft references to cache datastore, spatial reference systems, and other data structures. By increasing this value to ``36000`` (which is 36 seconds) these values will stay in memory longer increasing the effectiveness of the cache.
    * - ``-XX:+UseParallelGC``
@@ -54,8 +52,18 @@ For more information about JVM configuration, see the article `Performance tunin
     
    The above results (from a 16 GB laptop) amount to initial heap size of 256m, and a max heap size of around 4 GB (or around 1/4 of system memory).
    
-.. _production_container.enable_cors:
+Enable the Marlin rasterizer
+----------------------------
 
+The Marlin rasterizer in Java 8 and getting better performance and scalability while rendering vector data in Java 8. 
+In order to enable it add the following among the JVM startup options::
+
+     -Xbootclasspath/a:$MARLIN_JAR 
+     -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine 
+
+where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory.
+
+.. _production_container.enable_cors:
 Enable CORS
 -----------
 

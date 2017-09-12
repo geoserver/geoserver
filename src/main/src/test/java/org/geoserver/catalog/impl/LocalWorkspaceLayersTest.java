@@ -75,12 +75,14 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         globalGroup.setName("globalGroup");
         globalGroup.setWorkspace(workspace2);
         globalGroup.getLayers().add(catalog.getLayerByName("Lakes"));
+        globalGroup.getStyles().add(null);
         catalog.add(globalGroup);
 
         LayerGroupInfo localGroup = factory.createLayerGroup();
         localGroup.setName("localGroup");
         localGroup.setWorkspace(workspace);
         localGroup.getLayers().add(catalog.getLayerByName("GenericEntity"));
+        localGroup.getStyles().add(null);
         catalog.add(localGroup);
         String localName = localGroup.prefixedName();
         assertEquals("sf:localGroup", localName);
@@ -179,11 +181,14 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         globalGroup.setName(GLOBAL_GROUP);
         globalGroup.getLayers().add(getBuildingsLayer());
         globalGroup.getLayers().add(getAggregateGeoFeatureLayer());
+        globalGroup.getStyles().add(null);
+        globalGroup.getStyles().add(null);
         catalog.add(globalGroup);
         
         LayerGroupInfo globalGroup2 = factory.createLayerGroup();
         globalGroup2.setName(GLOBAL_GROUP2);
         globalGroup2.getLayers().add(getBridgesLayer());
+        globalGroup2.getStyles().add(null);
         catalog.add(globalGroup2);
 
         LocalPublished.set(catalog.getLayerGroupByName(GLOBAL_GROUP));
@@ -222,6 +227,7 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         LayerGroupInfo nestedGroup = factory.createLayerGroup();
         nestedGroup.setName(NESTED_GROUP);
         nestedGroup.getLayers().add(getBridgesLayer());
+        nestedGroup.getStyles().add(null);
         catalog.add(nestedGroup);
         
         LayerGroupInfo globalGroup = factory.createLayerGroup();
@@ -229,6 +235,9 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         globalGroup.getLayers().add(getBuildingsLayer());
         globalGroup.getLayers().add(getAggregateGeoFeatureLayer());
         globalGroup.getLayers().add(nestedGroup);
+        globalGroup.getStyles().add(null);
+        globalGroup.getStyles().add(null);
+        globalGroup.getStyles().add(null);
         catalog.add(globalGroup);
 
         LocalPublished.set(catalog.getLayerGroupByName(GLOBAL_GROUP));
@@ -281,6 +290,7 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         LayerGroupInfo globalGroup = factory.createLayerGroup();
         globalGroup.setName(GLOBAL_GROUP);
         globalGroup.getLayers().add(getAggregateGeoFeatureLayer());
+        globalGroup.getStyles().add(null);
         catalog.add(globalGroup);
 
         LocalWorkspace.set(citeWs);
@@ -350,6 +360,8 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         localGroup.setWorkspace(citeWs);
         localGroup.getLayers().add(getBuildingsLayer());
         localGroup.getLayers().add(getBridgesLayer());
+        localGroup.getStyles().add(null);
+        localGroup.getStyles().add(null);
         catalog.add(localGroup);
     }
     

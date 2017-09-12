@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.kvp;
+package org.geoserver.ows.kvp;
 
 import org.geoserver.ows.NestedKvpParser;
 import org.opengis.filter.FilterFactory;
@@ -13,7 +13,8 @@ import org.opengis.filter.sort.SortOrder;
 
 /**
  * Parses kvp of the form 'sortBy=Field1 {A|D},Field2 {A|D}...' into a
- * list of {@link org.opengis.filter.sort.SortBy}.
+ * list of {@link org.opengis.filter.sort.SortBy} (WFS style syntax, as opposed
+ * to the CSW one, which is slightly different)
  *
  * @author Justin Deoliveira, The Open Planning Project
  *
@@ -31,7 +32,7 @@ public class SortByKvpParser extends NestedKvpParser {
      * {@link SortBy}.
      */
     protected Object parseToken(String token) throws Exception {
-        String[] nameOrder = token.split(" ");
+        String[] nameOrder = token.trim().split(" ");
         String propertyName = nameOrder[0];
 
         SortOrder order = SortOrder.ASCENDING;

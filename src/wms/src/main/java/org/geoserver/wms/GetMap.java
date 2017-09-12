@@ -28,6 +28,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.MetatileMapOutputFormat;
@@ -40,6 +41,8 @@ import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wms.WebMapServer;
+
+import org.geotools.data.wmts.WebMapTileServer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
@@ -48,6 +51,7 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.WMSLayer;
+import org.geotools.map.WMTSMapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.styling.FeatureTypeConstraint;
@@ -61,10 +65,12 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.ows.Dispatcher;
 
 /**
  * WMS GetMap operation default implementation.
@@ -387,6 +393,8 @@ public class GetMap {
         
         final Style[] styles = request.getStyles().toArray(new Style[] {});
         final Filter[] filters = buildLayersFilters(request.getFilter(), layers);
+        final List<SortBy[]> sorts = request.getSortByArrays();
+        
 
         // if there's a crs in the request, use that. If not, assume its 4326
         final CoordinateReferenceSystem mapcrs = request.getCrs();
@@ -444,6 +452,7 @@ public class GetMap {
 
             final Style layerStyle = styles[i];
             final Filter layerFilter = SimplifyingFilterVisitor.simplify(filters[i]);
+            final SortBy[] layerSort = sorts != null ? sorts.get(i) : null;
 
             final org.geotools.map.Layer layer;
 
@@ -457,6 +466,7 @@ public class GetMap {
                 final Query definitionQuery = new Query(source.getSchema().getTypeName());
                 definitionQuery.setFilter(layerFilter);
                 definitionQuery.setVersion(featureVersion);
+                definitionQuery.setSortBy(layerSort);
                 int maxFeatures = request.getMaxFeatures() != null ? request.getMaxFeatures()
                         : Integer.MAX_VALUE;
                 definitionQuery.setMaxFeatures(maxFeatures);
@@ -474,6 +484,12 @@ public class GetMap {
                 // /////////////////////////////////////////////////////////
                 try {
                     source = mapLayerInfo.getFeatureSource(true);
+                    
+                    if (layerSort != null) {
+                        // filter gets validated down in the renderer, but
+                        // sorting is done without the renderer knowing, perform validation here
+                        validateSort(source, layerSort, mapLayerInfo);
+                    }
 
                     // NOTE for the feature. Here there was some code that
                     // sounded like:
@@ -508,6 +524,7 @@ public class GetMap {
                 final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
                 definitionQuery.setVersion(featureVersion);
                 definitionQuery.setFilter(filter);
+                definitionQuery.setSortBy(layerSort);
             	if (viewParams != null) {
                     definitionQuery.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams.get(i)));
             	}
@@ -549,7 +566,7 @@ public class GetMap {
 
                     // get the group of parameters tha this reader supports
                     GeneralParameterValue[] readParameters = wms.getWMSReadParameters(request,
-                            mapLayerInfo, layerFilter, times, elevations, reader, false);
+                            mapLayerInfo, layerFilter, layerSort, times, elevations, reader, false);
                     try {
 
                         try {
@@ -601,8 +618,21 @@ public class GetMap {
                     Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }
+            } else if (layerType == MapLayerInfo.TYPE_WMTS) {
+                WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
+                WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
+                Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
+
+
+                WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer);
+                mapLayer.setTitle(wmtsLayer.prefixedName());
+
+                mapLayer.setRawTime((String)Dispatcher.REQUEST.get().getRawKvp().get("time"));
+
+                mapContent.addLayer(mapLayer);
+                
             } else {
-                throw new IllegalArgumentException("Unkown layer type " + layerType);
+                throw new IllegalArgumentException("Unknown layer type " + layerType);
             }
         }
 
@@ -633,6 +663,19 @@ public class GetMap {
         }
 
         return map;
+    }
+
+    private void validateSort(FeatureSource<? extends FeatureType, ? extends Feature> source,
+            SortBy[] sort, MapLayerInfo mapLayerInfo) {
+        FeatureType ft = source.getSchema();
+        for (SortBy sortBy : sort) {
+            if (sortBy.getPropertyName().evaluate(ft) == null) {
+                throw new ServiceException(
+                        "Sort property '" + sortBy.getPropertyName().getPropertyName()
+                                + "' not available in " + mapLayerInfo.getName(),
+                        ServiceException.INVALID_PARAMETER_VALUE, "sortBy");
+            }
+        }
     }
 
     /**
@@ -750,7 +793,7 @@ public class GetMap {
     }
 
     /**
-     * Returns the list of filters resulting of comining the layers definition filters with the per
+     * Returns the list of filters resulting of combining the layers definition filters with the per
      * layer filters made by the user.
      * <p>
      * If <code>requestFilters != null</code>, it shall contain the same number of elements than

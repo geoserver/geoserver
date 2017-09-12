@@ -94,6 +94,7 @@ extlinks = {
     'website': ('http://geoserver.org/%s',''),
     'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
     'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
+    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
     'api': ('http://docs.geoserver.org/api/#/1.0.0/%s','')

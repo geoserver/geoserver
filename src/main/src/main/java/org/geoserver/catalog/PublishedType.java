@@ -34,6 +34,10 @@ public enum PublishedType {
         public Integer getCode() {
             return 4;
         }
+    },WMTS {
+        public Integer getCode() {
+            return 5;
+        }
     };
     
     

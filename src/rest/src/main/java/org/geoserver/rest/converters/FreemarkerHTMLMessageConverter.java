@@ -95,10 +95,6 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
             templateWriter.flush();
         } catch (TemplateException te) {
             throw new IOException("Template processing error " + te.getMessage());
-        } finally {
-            if (templateWriter != null) {
-                templateWriter.close();
-            }
         }
     }
 

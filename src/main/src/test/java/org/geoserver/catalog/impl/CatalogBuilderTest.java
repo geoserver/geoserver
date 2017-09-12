@@ -37,6 +37,8 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
@@ -52,7 +54,6 @@ import org.geotools.data.Query;
 import org.geotools.data.ResourceInfo;
 import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
-import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
@@ -343,6 +344,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName("group");
         group.getLayers().add(layer);
+        group.getStyles().add(null);
         
         assertNull(group.getBounds());
 
@@ -425,7 +427,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertNotNull(wmsLayer.getLatLonBoundingBox());
         assertFalse(wmsLayer.getKeywords().isEmpty());
     }
-
+    
     @Test
     public void testLookupSRSDetached() throws Exception {
         Catalog cat = getCatalog();
@@ -611,7 +613,38 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             TestHttpClientProvider.endTest();
         }
     }
-    
+
+    @Test
+    public void testWMTSLayer100() throws Exception {
+        TestHttpClientProvider.startTest();
+        try {
+            String baseURL = TestHttpClientProvider.MOCKSERVER + "/wmts100";
+            MockHttpClient client = new MockHttpClient();
+            URL capsURL = new URL(baseURL + "?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
+            client.expectGet(capsURL,
+                    new MockHttpResponse(getClass().getResource("nasa.getcapa.xml"), "text/xml"));
+            TestHttpClientProvider.bind(client, capsURL);
+
+            CatalogBuilder cb = new CatalogBuilder(getCatalog());
+            WMTSStoreInfo store = cb.buildWMTSStore("test-wmts-store");
+            store.setCapabilitiesURL(capsURL.toExternalForm());
+            cb.setStore(store);
+            WMTSLayerInfo layer = cb.buildWMTSLayer("AMSR2_Wind_Speed_Night");
+
+            // check the bbox has the proper axis order
+            assertEquals("Wind Speed (Night, AMSR2, GCOM-W1)", layer.getTitle());
+            assertEquals("EPSG:4326", layer.getSRS());
+
+            ReferencedEnvelope bbox = layer.getLatLonBoundingBox();
+            assertEquals(-180, bbox.getMinX(), 0d);
+            assertEquals(-90, bbox.getMinY(), 0d);
+            assertEquals(180, bbox.getMaxX(), 0d);
+            assertEquals(90, bbox.getMaxY(), 0d);
+        } finally {
+            TestHttpClientProvider.endTest();
+        }
+    }
+
     @Test
     public void testWgs84BoundsFromCompoundCRS() throws Exception {
         try {

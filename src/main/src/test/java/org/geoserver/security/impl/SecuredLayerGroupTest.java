@@ -13,11 +13,7 @@ import static org.easymock.EasyMock.replay;
 
 import java.util.ArrayList;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFactory;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
@@ -105,6 +101,37 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
         securedLg.setRootLayer(new SecuredLayerInfo(layer2, null));
         //expect is test enough
         
+    }
+
+    @Test
+    public void testStyleGroup() throws Exception {
+        final LayerGroupInfo lg = createNiceMock(LayerGroupInfo.class);
+        expect(lg.getWorkspace()).andReturn(null);
+        //Setup null layer with not-null style
+        final ArrayList<PublishedInfo> layers = new ArrayList<>();
+        layers.add(null);
+        final ArrayList<StyleInfo> styles = new ArrayList<>();
+
+        final StyleInfo s = createNiceMock(StyleInfo.class);
+        expect(s.getName()).andReturn("styleGroup");
+        styles.add(s);
+        replay(s);
+
+        expect(lg.getLayers()).andReturn(layers);
+        expect(lg.getStyles()).andReturn(styles);
+        replay(lg);
+        final Catalog catalog = createNiceMock(Catalog.class);
+        expect(catalog.getLayerGroup("lg")).andReturn(lg);
+        replay(catalog);
+
+        //tests
+        final Catalog secureCatalog = new SecureCatalogImpl(catalog);
+        final LayerGroupInfo layerGroup = secureCatalog.getLayerGroup("lg");
+
+        assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
+        assertTrue(((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class) == lg);
+        assertEquals(1, layerGroup.getLayers().size());
+        assertEquals(1, layerGroup.getStyles().size());
     }
 
 }

@@ -435,10 +435,12 @@ public class BufferedImageLegendGraphicBuilder {
                     labelMargin = Integer.parseInt(request.getLegendOptions().get("labelMargin").toString());
                 }
                 LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, labelMargin, request, forceLabelsOn, forceLabelsOff);
-                BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
-                        
-                if(image != null) {
-                    layersImages.add(image);
+                if(ruleCount > 0) {
+                    BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
+                            
+                    if(image != null) {
+                        layersImages.add(image);
+                    }
                 }
             }
             

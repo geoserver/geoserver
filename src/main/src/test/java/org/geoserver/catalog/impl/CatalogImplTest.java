@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -33,7 +32,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,6 +57,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
@@ -98,9 +98,11 @@ public class CatalogImplTest {
 
     protected CoverageStoreInfo cs;
     protected WMSStoreInfo wms;
+    protected WMTSStoreInfo wmtss;
     protected FeatureTypeInfo ft;
     protected CoverageInfo cv;
     protected WMSLayerInfo wl;
+    protected WMTSLayerInfo wmtsl;
     protected LayerInfo l;
     protected StyleInfo s;
     protected StyleInfo defaultLineStyle;
@@ -185,6 +187,18 @@ public class CatalogImplTest {
         wl.setName("wmsLayer");
         wl.setStore(wms);
         wl.setNamespace(ns);
+
+        wmtss = factory.createWebMapTileServer();
+        wmtss.setName("wmtsName");
+        wmtss.setType("WMTS");
+        wmtss.setCapabilitiesURL("http://fake.wmts.url");
+        wmtss.setWorkspace(ws);
+
+        wmtsl = factory.createWMTSLayer();
+        wmtsl.setEnabled(true);
+        wmtsl.setName("wmtsLayer");
+        wmtsl.setStore(wmtss);
+        wmtsl.setNamespace(ns);
         
         s = factory.createStyle();
         s.setName( "styleName" );
@@ -231,6 +245,11 @@ public class CatalogImplTest {
         addWorkspace();
         catalog.add(wms);
     }
+
+    protected void addWMTSStore() {
+        addWorkspace();
+        catalog.add(wmtss);
+    }
     
     protected void addFeatureType() {
         addDataStore();
@@ -248,6 +267,12 @@ public class CatalogImplTest {
         addWMSStore();
         addNamespace();
         catalog.add(wl);
+    }
+
+    protected void addWMTSLayer() {
+        addWMTSStore();
+        addNamespace();
+        catalog.add(wmtsl);
     }
     
     protected void addStyle() {
@@ -989,6 +1014,13 @@ public class CatalogImplTest {
     }
 
     @Test
+    public void testAddWMTSLayer() {
+        assertTrue( catalog.getResources(WMTSLayerInfo.class).isEmpty() );
+        addWMTSLayer();
+        assertEquals( 1, catalog.getResources(WMTSLayerInfo.class).size() );
+    }
+
+    @Test
     public void testRemoveFeatureType() {
         addFeatureType();
         assertFalse( catalog.getFeatureTypes().isEmpty() );
@@ -1010,7 +1042,16 @@ public class CatalogImplTest {
         catalog.remove( wl );
         assertTrue( catalog.getResources(WMSLayerInfo.class).isEmpty() );
     }
-    
+
+    @Test
+    public void testRemoveWMTSLayer() {
+        addWMTSLayer();
+        assertFalse( catalog.getResources(WMTSLayerInfo.class).isEmpty() );
+
+        catalog.remove( wmtsl );
+        assertTrue( catalog.getResources(WMTSLayerInfo.class).isEmpty() );
+    }
+
     @Test
     public void testGetFeatureTypeById() {
         addFeatureType();
@@ -1929,6 +1970,23 @@ public class CatalogImplTest {
         assertEquals( 2, catalog.getStores(WMSStoreInfo.class).size() );
     }
     
+    @Test
+    public void testAddWMTSStore() {
+        assertTrue( catalog.getStores(WMTSStoreInfo.class).isEmpty() );
+        addWMTSStore();
+        assertEquals( 1, catalog.getStores(WMTSStoreInfo.class).size() );
+
+        WMTSStoreInfo retrieved = catalog.getStore(wmtss.getId(), WMTSStoreInfo.class);
+        assertNotNull(retrieved);
+
+        WMTSStoreInfo wmts2 = catalog.getFactory().createWebMapTileServer();
+        wmts2.setName( "wmts2Name" );
+        wmts2.setWorkspace( ws );
+
+        catalog.add( wmts2 );
+        assertEquals( 2, catalog.getStores(WMTSStoreInfo.class).size() );
+    }
+
     protected int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 500;
     private static final int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT = 10;
 

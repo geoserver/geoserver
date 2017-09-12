@@ -134,6 +134,12 @@
   <dependency>
     <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
     <artifactId>jt-concurrent-tile-cache</artifactId>
+    <exclusions>
+       <exclusion>
+          <groupId>com.vividsolutions</groupId>
+          <artifactId>jts</artifactId>
+       </exclusion>
+    </exclusions>
   </dependency>
   
   <dependency>
@@ -236,6 +242,11 @@
      <dependency>
          <groupId>org.codehaus.jettison</groupId>
          <artifactId>jettison</artifactId>
+     </dependency>
+     <dependency>
+     	<groupId>org.geotools</groupId>
+     	<artifactId>gt-wmts</artifactId>
+     	<version>${gt.version}</version>
      </dependency>
  </dependencies>
 

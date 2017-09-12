@@ -244,6 +244,30 @@
             </configuration>
           </execution>
           <execution>
+            <id>wmtslayers</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/wmtslayers.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/wmtslayers</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>wmtsstores</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/wmtsstores.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/wmtsstores</output>
+            </configuration>
+          </execution>
+          <execution>
             <id>workspaces</id>
             <phase>process-resources</phase>
             <goals>

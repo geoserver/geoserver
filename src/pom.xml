@@ -468,6 +468,12 @@
     <artifactId>gt-process-feature</artifactId>
     <version>${gt.version}</version>
    </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-geopkg</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+
 
    <dependency>
      <groupId>com.google.code.gson</groupId>
@@ -1005,16 +1011,28 @@
     <artifactId>jt-concurrent-tile-cache</artifactId>
     <version>${jaiext.version}</version>
    </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>common</artifactId>
-    <version>2.6.0</version>
-   </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>ecore</artifactId>
-    <version>2.6.1</version>
-   </dependency>
+         <!-- EMF -->
+
+      <dependency>
+	    <groupId>org.eclipse.emf</groupId>
+	    <artifactId>org.eclipse.emf.common</artifactId>
+	    <version>2.12.0</version>
+    </dependency>
+	<dependency>
+		<groupId>org.eclipse.emf</groupId>
+		<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+		<version>2.12.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.emf</groupId>
+		<artifactId>org.eclipse.emf.ecore</artifactId>
+		<version>2.12.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.xsd</groupId>
+		<artifactId>org.eclipse.xsd</artifactId>
+		<version>2.12.0</version>
+	</dependency>
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>
@@ -1227,6 +1245,11 @@
            <artifactId>wicket-core</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.marlin</groupId>
+      <artifactId>marlin</artifactId>
+      <version>${marlin.version}</version>
     </dependency>
   </dependencies>
  </dependencyManagement>
@@ -1822,7 +1845,7 @@
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
   <imageio-ext.version>1.1.17</imageio-ext.version>
-  <jaiext.version>1.0.14</jaiext.version>
+  <jaiext.version>1.0.15</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
@@ -1854,6 +1877,7 @@
   <jackson1.version>1.9.13</jackson1.version>
   <jackson2.version>2.5.0</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
+  <marlin.version>0.7.5-Unsafe</marlin.version>
  </properties>
 
  <profiles>

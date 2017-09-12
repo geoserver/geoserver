@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
@@ -158,8 +159,13 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
         public Editor(String id, final Collection<String> enabledDimensionNames,
                 IModel<DefaultValueConfigurations> model) {
             super(id, model);
-            List<Property<DefaultValueConfiguration>> properties = Arrays.asList(DIMENSION, POLICY,
-                    DEFAULT_VALUE_EXPRESSION);
+            IModel<List<Property<DefaultValueConfiguration>>> properties = new LoadableDetachableModel<List<Property<DefaultValueConfiguration>>>() {
+
+                @Override
+                protected List<Property<DefaultValueConfiguration>> load() {
+                    return Arrays.asList(DIMENSION, POLICY, DEFAULT_VALUE_EXPRESSION);
+                }
+            };
 
             table = new ReorderableTablePanel<DefaultValueConfiguration>("defaultConfigs",
                     configurations, properties) {

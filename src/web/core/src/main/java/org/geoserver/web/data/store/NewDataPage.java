@@ -202,6 +202,7 @@ public class NewDataPage extends GeoServerSecuredPage {
         List<OtherStoreDescription> stores = new ArrayList<OtherStoreDescription>();
         PackageResourceReference wmsIcon = new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
         stores.add(new OtherStoreDescription("wms", wmsIcon, WMSStoreNewPage.class));
+        stores.add(new OtherStoreDescription("wmts", wmsIcon, WMTSStoreNewPage.class));
         
         return stores;
     }

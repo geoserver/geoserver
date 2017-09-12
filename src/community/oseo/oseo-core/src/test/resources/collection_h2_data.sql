@@ -3332,3 +3332,7 @@ VALUES(2, 31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCap
 INSERT INTO public.collection_ogclink
 ("lid", "collection_id", "offering", "method", "code", "type", "href")
 VALUES(3, 32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities');
+-- collection publishing metadata
+INSERT into public.collection_layer
+("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS")
+VALUES(17, 'gs', 'sentinel2', true, '1,2,3,4,5,6,7,8,9,10,11,12', '4,3,2', true, 'EPSG:4326');

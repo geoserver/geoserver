@@ -30,6 +30,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -453,6 +454,12 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         // check there is no extra filtering applied to the layer
         List<Filter> filters = request.getFilter();
         if (filters != null && filters.size() > 0 && filters.get(layerIndex) != Filter.INCLUDE) {
+            return false;
+        }
+        
+        // no extra sorts
+        List<List<SortBy>> sortBy = request.getSortBy();
+        if (sortBy != null && sortBy.size() > 0) {
             return false;
         }
 

@@ -46,6 +46,11 @@ public interface CatalogVisitor {
     void visit( WMSStoreInfo wmsStore ); 
 
     /**
+     * Visits a WMTS data store.
+     */
+    default void visit( WMTSStoreInfo store ) {}
+
+    /**
      * Visits a feature type.
      */
     void visit( FeatureTypeInfo featureType );
@@ -75,4 +80,9 @@ public interface CatalogVisitor {
      * @param wmsLayerInfoImpl
      */
     void visit(WMSLayerInfo wmsLayer);
+
+    /**
+     * Visits a WMTS layer resource
+     */
+    default void visit(WMTSLayerInfo layer) {}
 }

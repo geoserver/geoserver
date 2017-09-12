@@ -253,6 +253,20 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         assertOriginPixelColor(response, new int[] {0, 255, 0});
     }
     
+    @Test
+    public void testSortByLocationAscending() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__mosaic&sortBy=location");
+        // green is the lowest, lexicographically
+        assertOriginPixelColor(response, new int[] {0, 255, 0});
+    }
+    
+    @Test
+    public void testSortByLocationDescending() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__mosaic&sortBy=location D");
+        // yellow is the highest, lexicographically
+        assertOriginPixelColor(response, new int[] {255, 255, 0});
+    }
+    
     private void assertOriginPixelColor(MockHttpServletResponse response, int[] expected)
             throws DataSourceException, IOException {
         assertEquals("image/tiff", response.getContentType());

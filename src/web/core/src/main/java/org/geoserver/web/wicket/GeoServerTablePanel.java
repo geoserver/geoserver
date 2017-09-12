@@ -35,6 +35,7 @@ import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -208,8 +209,18 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     protected void buildRowListView(final GeoServerDataProvider<T> dataProvider, Item<T> item,
             final IModel<T> itemModel) {
+        // make sure we don't serialize the list, but get it fresh from the dataProvider, 
+        // to avoid serialization issues seen in GEOS-8273
+        IModel propertyList = new LoadableDetachableModel() {
+
+            @Override
+            protected Object load() {
+                return dataProvider.getVisibleProperties();
+            }
+            
+        };
         // create one component per viewable property
-        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", dataProvider.getVisibleProperties()) {
+        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", propertyList) {
 
             private static final long serialVersionUID = -4552413955986008990L;
 

@@ -125,6 +125,14 @@
         </dependency>
 
         <!-- test dependencies -->
+         <dependency>
+            <groupId>org.geotools.xsd</groupId>
+            <artifactId>gt-xsd-gml3</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+            <version>${gt.version}</version>
+        </dependency>        
+        
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>

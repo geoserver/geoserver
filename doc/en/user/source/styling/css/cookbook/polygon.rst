@@ -302,8 +302,8 @@ Code
       font-weight: bold;
       font-fill: black;
       label-anchor: 0.5 0.5;
-      -gt-label-auto-wrap: 60;
-      -gt-label-max-displacement: 150;
+      label-auto-wrap: 60;
+      label-max-displacement: 150;
     }
 
 Details
@@ -315,7 +315,7 @@ The font is setup to be Arial, 11 pixels, "normal" (as opposed to "italic") and 
 
 The "label-anchor" affects where the label is placed relative to the centroid of the polygon, centering the label by positioning it 50% (or 0.5) of the way horizontally along the centroid of the polygon, as well as vertically in exactly the same way.
 
-Finally, there are two added touches for label placement optimization: The "gt-label-auto-wrap" attribute ensures that long labels are split across multiple lines by setting line wrapping on the labels to 60 pixels, whilst the "-gt-label-max-displacement" allows the label to be displaced by up to 150 pixels. This ensures that labels are compacted and less likely to spill over polygon boundaries. Notice little Massive County in the corner, whose label is now displayed.
+Finally, there are two added touches for label placement optimization: The "label-auto-wrap" attribute ensures that long labels are split across multiple lines by setting line wrapping on the labels to 60 pixels, whilst the "label-max-displacement" allows the label to be displaced by up to 150 pixels. This ensures that labels are compacted and less likely to spill over polygon boundaries. Notice little Massive County in the corner, whose label is now displayed.
 
 
 Attribute-based polygon

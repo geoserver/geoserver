@@ -104,6 +104,11 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
     }
 
 
+    @Override
+    public void visit(WMTSStoreInfo store) {
+        visitStore(store);
+    }
+
     public void visit(FeatureTypeInfo featureType) {
         // when the resource/layer split is done, delete all layers linked to the resource
         catalog.remove(featureType);
@@ -310,6 +315,12 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
 
     public void visit(WMSLayerInfo wmsLayer) {
         catalog.remove(wmsLayer);
+        
+    }
+
+    @Override
+    public void visit(WMTSLayerInfo wmtsLayer) {
+        catalog.remove(wmtsLayer);
         
     }
 

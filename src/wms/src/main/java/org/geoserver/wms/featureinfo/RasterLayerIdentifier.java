@@ -51,6 +51,7 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -87,7 +88,8 @@ public class RasterLayerIdentifier implements LayerIdentifier {
 
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures) throws Exception {
         final MapLayerInfo layer = params.getLayer();
-        final Filter filter = params.getFilter(); 
+        final Filter filter = params.getFilter();
+        final SortBy[] sort = params.getSort();
         final CoverageInfo cinfo = layer.getCoverage();
         final GridCoverage2DReader reader = (GridCoverage2DReader) cinfo
                 .getGridCoverageReader(new NullProgressListener(),
@@ -173,7 +175,7 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         // read from the request
         GetMapRequest getMap = params.getGetMapRequest();
         GeneralParameterValue[] parameters = wms.getWMSReadParameters(getMap, 
-                layer, filter, params.getTimes(), params.getElevations(), reader, true);
+                layer, filter, sort, params.getTimes(), params.getElevations(), reader, true);
         
         
         // now get the position in raster space using the world to grid related to

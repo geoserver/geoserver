@@ -130,10 +130,16 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         
         loop1 = buildGroup("loop1", forestLayer);
         loop1.getLayers().add(loop1);
+        loop1.getStyles().add(null);
+        loop1.getStyles().add(null);
         
         loop2 = buildGroup("loop2", forestLayer);
         loop2Child = buildGroup("ponds", pondsLayer, loop2);
+        loop2Child.getStyles().add(null);
+        loop2Child.getStyles().add(null);
         loop2.getLayers().add(loop2Child);
+        loop2.getStyles().add(null);
+        loop2.getStyles().add(null);
         
         container = buildGroup("container", forestLayer);
         container.getStyles().add(polygonStyle);
@@ -160,22 +166,25 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     @Test
     public void testSimpleLoopWithNotEqualGroups() {
         LayerGroupInfo myLoop = buildGroup("myLoop", forestLayer);
-         LayerGroupInfo loopClone = buildGroup("myLoop", forestLayer);
-         assertTrue(myLoop.equals(loopClone));
-            
-         // change the LayerGroup
-         myLoop.setTitle("new title");
-         // now the two groups aren't equal anymore
-         assertFalse(myLoop.equals(loopClone));
-            
-         // create loop
-         myLoop.getLayers().add(loopClone);
+        myLoop.getStyles().add(null);
+        LayerGroupInfo loopClone = buildGroup("myLoop", forestLayer);
+        loopClone.getStyles().add(null);
+        assertTrue(myLoop.equals(loopClone));
 
-         // validate
-         LayerGroupHelper helper = new LayerGroupHelper(myLoop);
-         Stack<LayerGroupInfo> path = helper.checkLoops();
-         Assert.assertNotNull(path);
-         Assert.assertEquals("/myLoop/myLoop", helper.getLoopAsString(path));
+        // change the LayerGroup
+        myLoop.setTitle("new title");
+        // now the two groups aren't equal anymore
+        assertFalse(myLoop.equals(loopClone));
+
+        // create loop
+        myLoop.getLayers().add(loopClone);
+        myLoop.getStyles().add(null);
+
+        // validate
+        LayerGroupHelper helper = new LayerGroupHelper(myLoop);
+        Stack<LayerGroupInfo> path = helper.checkLoops();
+        Assert.assertNotNull(path);
+        Assert.assertEquals("/myLoop/myLoop", helper.getLoopAsString(path));
     }
     
     @Test

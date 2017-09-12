@@ -6,8 +6,7 @@ Natural Earth
 
 The Natural Earth dataset is a free collection of vector and raster data published by the North American Cartographic Information Society to encourage mapping.
 
-For this course we will be using the `Natural Earth <http://www.naturalearthdata.com/>`_ cultural and physical vector layers backed by a raster shaded relief dataset ( `vector <http://kelso.it/x/nequickstart>`_
-| `raster <http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/raster/NE1_HR_LC_SR_W_DR.zip>`_).
+For this course we will be using the `Natural Earth <http://www.naturalearthdata.com/>`_ cultural and physical vector layers backed by a raster shaded relief dataset.
   
 .. figure:: img/natural_earth.png
    
@@ -35,6 +34,17 @@ Configuration
 
 To set up GeoServer yourself:
 
+#. Download and unzip the following into your data directory:
+   
+   * `styling-workshop-vector.zip <http://echobase.boundlessgeo.com/~jgarnett/GeoServerStyling/styling-workshop-vector.zip>`__
+   * `styling-workshop-raster.zip <styling-workshop-raster.zip>`_
+   
+   This will produce a :file:`raster` and :file:`vector` folder referenced in the following steps.
+   
+   Optional default SLD styles:
+   
+   * `styling-workshop-sld.zip <http://echobase.boundlessgeo.com/~jgarnett/GeoServerStyling/styling-workshop-sld.zip>`__
+   
 #. Use the **Importer** to add and publish - 
    
    the following TIF Coverage Stores:
@@ -53,7 +63,7 @@ To set up GeoServer yourself:
    
    * Layer names have been shortened for publication - the :file:`ne_10m_admin_1_states_provinces_lines_ship.shp` is published  named ``states_provinces_shp``
    * Use ``EPSG:4326`` as the spatial reference system
-   * Appropriate SLD styles have been provided (from the uDig project)
+   * Optional: Appropriate SLD styles have been provided (from the uDig project)
 
    .. image:: img/cultural.png
 
@@ -63,7 +73,6 @@ To set up GeoServer yourself:
    * The usgs:dem GeoTiff is styled with the default ``DEM`` style
    
    .. image:: img/raster.png
-
    
 #. Optional: create a ``basemap`` group layer consisting of:
    

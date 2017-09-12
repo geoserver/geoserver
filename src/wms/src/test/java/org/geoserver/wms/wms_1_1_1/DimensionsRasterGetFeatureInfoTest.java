@@ -9,29 +9,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport {
     
-    static final String BASE_URL = "wms?service=WMS&version=1.1.0&request=GetFeatureInfo" +
-        "&layers=watertemp&styles=&bbox=0.237,40.562,14.593,44.558&width=200&height=80" +
-        "&srs=EPSG:4326&format=image/png" +
-        "&query_layers=watertemp&feature_count=50";
+    static final String BASE_URL_NO_COUNT = "wms?service=WMS&version=1.1.0&request=GetFeatureInfo" +
+            "&layers=watertemp&styles=&bbox=0.237,40.562,14.593,44.558&width=200&height=80" +
+            "&srs=EPSG:4326&format=image/png" +
+            "&query_layers=watertemp";
+    
+    static final String BASE_URL = BASE_URL_NO_COUNT + "&feature_count=50";
+    static final String BASE_URL_ONE = BASE_URL_NO_COUNT + "&feature_count=1";
     
     static final double EPS = 1e-03;
     
@@ -78,6 +78,27 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(14.51, getFeatureAt(BASE_URL, 36, 31, "sf:watertemp"), EPS);
         // this one hot
         assertEquals(19.15, getFeatureAt(BASE_URL, 68, 72, "sf:watertemp"), EPS);
+    }
+    
+    @Test 
+    public void testSortTime() throws Exception {
+        // do not setup time, only elevation, and sort by time
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        
+        // this one should be medium
+        assertEquals(14.51, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D", 36, 31, "sf:watertemp"), EPS);
+        // this one hot
+        assertEquals(19.15, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D", 68, 72, "sf:watertemp"), EPS);
+    }
+    
+    @Test 
+    public void testSortTimeElevation() throws Exception {
+        // do not setup anything, only sort
+        
+        // this one should be medium
+        assertEquals(14.51, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D,elevation", 36, 31, "sf:watertemp"), EPS);
+        // this one hot
+        assertEquals(19.15, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D,elevation", 68, 72, "sf:watertemp"), EPS);
     }
     
     @Test 

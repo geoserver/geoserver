@@ -5,14 +5,12 @@
  */
 package org.geoserver.web.data.layer;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -23,10 +21,12 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.platform.GeoServerEnvironment;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.data.ows.Layer;
+import org.geotools.data.wmts.model.WMTSCapabilities;
+import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.feature.NameImpl;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
@@ -112,6 +112,22 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                     resources.put(name.getLocalPart(), new Resource(name));
                 }
                     
+            } else if(store instanceof WMTSStoreInfo) {
+                WMTSStoreInfo wmsInfo = (WMTSStoreInfo) store;
+                WMTSStoreInfo expandedStore = (WMTSStoreInfo) getCatalog().getResourcePool().clone(wmsInfo, true);
+                
+                CatalogBuilder builder = new CatalogBuilder(getCatalog());
+                builder.setStore(store);
+                WebMapTileServer webMapTileServer = expandedStore.getWebMapTileServer(null);
+                WMTSCapabilities capabilities = webMapTileServer.getCapabilities();
+                List<WMTSLayer> layers = capabilities.getLayerList();
+                for(Layer l : layers) {
+                    if(l.getName() == null) {
+                        continue;
+                    }
+                    
+                    resources.put(l.getName(), new Resource(new NameImpl(l.getName())));
+                }
             } else if(store instanceof WMSStoreInfo) {
                 WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
                 WMSStoreInfo expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);

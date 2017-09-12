@@ -1,0 +1,76 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              11.4772,
+              40.5362
+            ],
+            [
+              11.5145,
+              41.5243
+            ],
+            [
+              10.199,
+              41.5456
+            ],
+            [
+              10.1811,
+              40.5567
+            ],
+            [
+              11.4772,
+              40.5362
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "/efs/geoserver_data/coverages/sentinel/california/R1C1.tif",
+        "band": "B1"
+      },
+      "id": "GRANULE.1"
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              11.4772,
+              40.5362
+            ],
+            [
+              11.5145,
+              41.5243
+            ],
+            [
+              10.199,
+              41.5456
+            ],
+            [
+              10.1811,
+              40.5567
+            ],
+            [
+              11.4772,
+              40.5362
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "/efs/geoserver_data/coverages/sentinel/california/R1C2.tif"
+        "band": "B2"
+      },
+      "id": "GRANULE.2"
+    },
+    
+  ]
+}

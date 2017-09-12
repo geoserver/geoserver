@@ -83,7 +83,11 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         group.setName(name);
         group.setTitle("title for layer group " + title);
         group.setAbstract("abstract for layer group " + title);
-        group.getLayers().addAll(Arrays.asList(layers));
+        for (PublishedInfo layer : layers) {
+            group.getLayers().add(layer);
+            group.getStyles().add(null);
+        }
+
         new CatalogBuilder(cat).calculateLayerGroupBounds(group);
         return group;
     }

@@ -1,0 +1,7 @@
+{
+	"workspace": "gs",
+	"layer": "test123",
+	"separateBands": false,
+	"browseBands": [1],
+	"heterogeneousCRS": false
+}

@@ -62,7 +62,7 @@
           <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
           <descriptor>release/ext-geofence-server.xml</descriptor>
-          <descriptor>release/ext-gwc-s3.xml</descriptor>	
+          <!-- <descriptor>release/ext-gwc-s3.xml</descriptor> -->
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
@@ -225,7 +225,7 @@
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
-        <module>gwc-s3</module>
+        <!-- <module>gwc-s3</module> -->
         <!-- <module>backup-restore</module> -->
         <module>ncwms</module>
         <module>web-resource</module>
@@ -242,6 +242,7 @@
         <module>ows-simulate</module>
         <module>jdbc-metrics</module>
         <module>oseo</module>
+        <module>s3-geotiff</module>
       </modules>
     </profile>
     <profile>
@@ -529,6 +530,12 @@
       <id>jdbc-metrics</id>
       <modules>
         <module>jdbc-metrics</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>s3-geotiff</id>
+      <modules>
+        <module>s3-geotiff</module>
       </modules>
     </profile>
   </profiles>

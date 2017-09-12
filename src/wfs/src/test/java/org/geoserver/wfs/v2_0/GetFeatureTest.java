@@ -5,9 +5,11 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
@@ -33,9 +35,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class GetFeatureTest extends WFS20TestSupport {
 
@@ -1081,4 +1080,59 @@ public class GetFeatureTest extends WFS20TestSupport {
         response =  postAsServletResponse("wfs", xml);
         assertThat(response.getContentType(), is("text/xml"));
     }
+
+    /**
+     * Check that a Filter 2.0 {@code fes:PropertyIsLike} returns the expected number of Buildings for a given {@code matchCase}.
+     * 
+     * @param matchCase value of {@code matchCase} filter attribute or {@code null} if none
+     * @param expectedBuildings
+     */
+    private void checkPropertyIsLikeMatchCase(Boolean matchCase, int expectedBuildings)
+            throws Exception {
+        // @formatter:off
+        String xml 
+            = "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" "
+            + "        xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" "
+            + "        xmlns:fes=\"http://www.opengis.net/fes/2.0\" "
+            + "        xmlns:cite=\"http://www.opengis.net/cite\">"
+            + "    <wfs:Query typeNames=\"cite:Buildings\">"
+            + "        <fes:Filter>"
+            + "            <fes:PropertyIsLike wildCard=\"*\" singleChar=\"%\" escapeChar=\"!\""
+            + (matchCase == null ? "" : " matchCase=\"" + matchCase + "\"") + ">"
+            + "                <fes:ValueReference>cite:ADDRESS</fes:ValueReference>"
+            + "                <fes:Literal>* MAIN STREET</fes:Literal>"
+            + "            </fes:PropertyIsLike>"
+            + "        </fes:Filter>"
+            + "    </wfs:Query>"
+            + "</wfs:GetFeature>";
+        // @formatter:on
+        Document doc = postAsDOM("wfs", xml);
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+        assertEquals(expectedBuildings, doc.getElementsByTagName("cite:Buildings").getLength());
+    }
+
+    /**
+     * Test that a Filter 2.0 {@code fes:PropertyIsLike} without {@code matchCase} matches zero Buildings.
+     */
+    @Test
+    public void testPropertyIsLikeWithoutMatchCase() throws Exception {
+        checkPropertyIsLikeMatchCase(null, 0);
+    }
+
+    /**
+     * Test that a Filter 2.0 {@code fes:PropertyIsLike} with {@code matchCase="true"} matches zero Buildings.
+     */
+    @Test
+    public void testPropertyIsLikeMatchCaseTrue() throws Exception {
+        checkPropertyIsLikeMatchCase(true, 0);
+    }
+
+    /**
+     * Test that a Filter 2.0 {@code fes:PropertyIsLike} with {@code matchCase="false"} matches two Buildings.
+     */
+    @Test
+    public void testPropertyIsLikeMatchCaseFalse() throws Exception {
+        checkPropertyIsLikeMatchCase(false, 2);
+    }
+
 }

@@ -19,6 +19,10 @@
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
+        <groupId>org.marlin</groupId>
+        <artifactId>marlin</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
@@ -136,6 +140,10 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -1514,6 +1522,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-oseo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>s3-geotiff</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-s3-geotiff</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

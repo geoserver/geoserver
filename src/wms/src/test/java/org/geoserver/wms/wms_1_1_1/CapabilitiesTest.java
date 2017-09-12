@@ -11,10 +11,18 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import static org.hamcrest.CoreMatchers.is;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -29,6 +37,7 @@ import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -38,8 +47,12 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
+import org.geoserver.wms.ExtendedCapabilitiesProvider;
+import org.geoserver.wms.GetCapabilitiesRequest;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
 import org.geotools.data.Base64;
 import org.geotools.referencing.CRS;
@@ -50,6 +63,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class CapabilitiesTest extends WMSTestSupport {
+  
+    private static final String BASE_URL = "http://localhost/geoserver";
     
     public CapabilitiesTest() {
         super();
@@ -322,6 +337,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         //attribution
         lg.setName("MyLayerGroup");
         lg.getLayers().add(points);
+        lg.getStyles().add(null);
         builder.calculateLayerGroupBounds(lg, CRS.decode("EPSG:4326"));
         lg.setAttribution(getCatalog().getFactory().createAttribution());
         lg.getAttribution().setTitle("My Attribution");
@@ -662,5 +678,53 @@ public class CapabilitiesTest extends WMSTestSupport {
             opaque.getStyles().remove(opaque.getStyles().size() - 1);
             catalog.save(opaque);
         }
+    }
+    
+    @Test
+    public void testRootLayer()throws Exception{
+
+        Document dom = findCapabilities(false);
+
+        WMS wms = getWMS();
+        WMSInfo info=wms.getServiceInfo();
+        
+        DOMSource domSource = new DOMSource(dom);
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.transform(domSource, result);
+        
+        assertEquals(writer.toString().contains(info.getRootLayerTitle()) , true);
+    }
+    
+    /**
+     * Retrieves the WMS's capabilities document.
+     * 
+     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a pixel
+     * @return Capabilities as {@link Document}
+     * 
+     */
+    private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception{
+        //set the Scalehint units per diagonal pixel setting.
+        WMS wms = getWMS();
+        WMSInfo info=wms.getServiceInfo();
+        info.setRootLayerTitle("test the title");  
+        MetadataMap mm= info.getMetadata();
+        mm.put(WMS.SCALEHINT_MAPUNITS_PIXEL, scaleHintUnitsPerDiaPixel);
+        info.getGeoServer().save(info);
+        
+        Capabilities_1_3_0_Transformer tr = new Capabilities_1_3_0_Transformer(wms, BASE_URL, 
+                wms.getAllowedMapFormats(), new HashSet<ExtendedCapabilitiesProvider>());
+        GetCapabilitiesRequest req = new GetCapabilitiesRequest();
+        req.setBaseUrl(BASE_URL);
+        req.setVersion(WMS.VERSION_1_3_0.toString());
+
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        Element root = dom.getDocumentElement();
+        assertEquals(WMS.VERSION_1_3_0.toString(), root.getAttribute("version"));
+
+        return dom;
     }
 }

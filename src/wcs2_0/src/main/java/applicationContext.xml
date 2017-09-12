@@ -113,6 +113,12 @@
     <property name="service" value="WCS" />
     <property name="version" value="2.0.1" />
   </bean>
+  <bean id="wcs201SortByKvpParser" class="org.geoserver.ows.kvp.SortByKvpParser">
+    <constructor-arg ref="filterFactory"/>
+    <property name="service" value="WCS"/>
+    <property name="version" value="2.0.1" />
+  </bean>
+  
 
 
   <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader" />

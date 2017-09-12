@@ -76,6 +76,15 @@ public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
     public boolean isReadWrite() {
         return level == AccessLevel.READ_ONLY && response == Response.CHALLENGE;
     }
+    
+    /**
+     * Builds a new WrapperPolicy copying this one, but with a different access limits object
+     * @param limits
+     * @return
+     */
+    public WrapperPolicy derive(AccessLimits limits) {
+        return new WrapperPolicy(this.level, this.response, limits);
+    }
 
     /**
      * Sorts wrapper policies from more to less restrictive limits.

@@ -757,9 +757,11 @@ public class GeoServerDataDirectory {
     static final String DATASTORE_XML = "datastore.xml";
     static final String COVERAGESTORE_XML = "coveragestore.xml";
     static final String WMSSTORE_XML = "wmsstore.xml";
+    static final String WMTSSTORE_XML = "wmtsstore.xml";
     static final String FEATURETYPE_XML = "featuretype.xml";
     static final String COVERAGE_XML = "coverage.xml";
     static final String WMSLAYER_XML = "wmslayer.xml";
+    static final String WMTSLAYER_XML = "wmtslayer.xml";
     static final String LAYER_XML = "layer.xml";
     static final String WORKSPACE_DIR = "workspaces";
     static final String LAYERGROUP_DIR = "layergroups";
@@ -914,6 +916,17 @@ public class GeoServerDataDirectory {
     }
     
     /**
+     * Retrieve the WMTS store configuration XML as a Resource
+     * @param wmss The coverage store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WMTSStoreInfo wmss) {
+        Resource r = get(wmss, WMTSSTORE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
      * Retrieve the WMS store configuration XML as a Resource
      * @param wmss The coverage store
      * @return A {@link Resource}
@@ -924,12 +937,14 @@ public class GeoServerDataDirectory {
             r=config((DataStoreInfo) si);
         } else if(si instanceof CoverageStoreInfo) {
             r=config((CoverageStoreInfo) si);
+        } else if(si instanceof WMTSStoreInfo) {
+            r=config((WMTSStoreInfo) si);
         } else if(si instanceof WMSStoreInfo) {
             r=config((WMSStoreInfo) si);
         } else {
             // It'd be nice if we could be generic and cover potential future StoreInfo types.
             throw new IllegalArgumentException(
-                    "Only DataStoreInfo, CoverageStoreInfo, and WMSStoreInfo are supported.");
+                    "Only DataStoreInfo, CoverageStoreInfo, and WMS/WMTSStoreInfo are supported.");
         }
         assert r!=null;
         return r;
@@ -946,12 +961,14 @@ public class GeoServerDataDirectory {
             r=config((FeatureTypeInfo) si);
         } else if(si instanceof CoverageInfo) {
             r=config((CoverageInfo) si);
+        } else if(si instanceof WMTSLayerInfo) {
+            r=config((WMTSLayerInfo) si);
         } else if(si instanceof WMSLayerInfo) {
             r=config((WMSLayerInfo) si);
         } else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
-                    "Only FeatureTypeInfo, CoverageInfo, and WMSLayerInfo are supported.");
+                    "Only FeatureTypeInfo, CoverageInfo, and WMS/WMTSLayerInfo are supported.");
         }
         assert r!=null;
         return r;
@@ -1003,6 +1020,17 @@ public class GeoServerDataDirectory {
     }
     
     /**
+     * Retrieve the WMS layer configuration XML as a Resource
+     * @param wmsl The feature type
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WMTSLayerInfo wmsl) {
+        Resource r = get(wmsl, WMTSLAYER_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
      * Retrieve a resource in the the configuration directory of a Layer.  An empty path will 
      * retrieve the directory itself.
      * @param li The store
@@ -1015,14 +1043,15 @@ public class GeoServerDataDirectory {
         }
         else if ( l.getResource() instanceof CoverageInfo ) {
             r = get( l.getResource(), path );
-        }
-        else if ( l.getResource() instanceof WMSLayerInfo ) {
+        } else if ( l.getResource() instanceof WMTSLayerInfo ) {
+            r = get( l.getResource(), path );
+        } else if ( l.getResource() instanceof WMSLayerInfo ) {
             r = get( l.getResource(), path );
         }
         else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
-                    "Only FeatureTypeInfo, CoverageInfo, and WMSLayerInfo are supported.");
+                    "Only FeatureTypeInfo, CoverageInfo, and WMS/WMTSLayerInfo are supported.");
         }
         assert r!=null;
         return r;
@@ -1180,15 +1209,15 @@ public class GeoServerDataDirectory {
         assert style!=null;
         return style;
     }
-    
+
     /**
-     * Retrieve the style prepared for direct GeoTools use. All file references
+     * Retrieve the styled layer descriptor prepared for direct GeoTools use. All file references
      * have been made absolute.
-     * 
+     *
      * @param s The style
-     * @return A {@link Resource}
+     * @return A {@link StyledLayerDescriptor}
      */
-    public @Nonnull Style parsedStyle(final StyleInfo s) throws IOException {
+    public @Nonnull StyledLayerDescriptor parsedSld(final StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
             throw new IOException( "No such resource: " + s.getFilename());
@@ -1196,7 +1225,7 @@ public class GeoServerDataDirectory {
         File input = styleResource.file();
 
         DefaultResourceLocator locator = new DefaultResourceLocator() {
-            
+
             @Override
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
@@ -1210,9 +1239,9 @@ public class GeoServerDataDirectory {
                         //GEOS-7025: Just get the path; don't try to create the file
                         file = Paths.toFile(root(), resource.path());
                     }
-                    
+
                     URL u = fileToUrlPreservingCqlTemplates(file);
-                    
+
                     if (url.getQuery() != null) {
                         try {
                             u = new URL(u.toString() + "?" + url.getQuery());
@@ -1221,7 +1250,7 @@ public class GeoServerDataDirectory {
                             return null;
                         }
                     }
-                    
+
                     if (url.getRef() != null) {
                         try {
                             u = new URL(u.toString() + "#" + url.getRef());
@@ -1230,13 +1259,13 @@ public class GeoServerDataDirectory {
                             return null;
                         }
                     }
-                    
+
                     return u;
                 } else {
                     return url;
                 }
             }
-            
+
             @Override
             protected URL validateRelativeURL(URL relativeUrl) {
                 // the resource:/ thing does not make for a valid url, so don't validate it
@@ -1251,9 +1280,21 @@ public class GeoServerDataDirectory {
         locator.setSourceUrl(Resources.toURL(styleResource));
         EntityResolver entityResolver = getEntityResolver();
         final StyledLayerDescriptor sld =
-            Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, getEntityResolver());
+                Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, getEntityResolver());
+
+        return sld;
+    }
+
+    /**
+     * Retrieve the style prepared for direct GeoTools use. All file references
+     * have been made absolute.
+     * 
+     * @param s The style
+     * @return A {@link Style}
+     */
+    public @Nonnull Style parsedStyle(final StyleInfo s) throws IOException {
+        final StyledLayerDescriptor sld = parsedSld(s);
         final Style style = Styles.style(sld);
-        
         assert style!=null;
         return style;
     }

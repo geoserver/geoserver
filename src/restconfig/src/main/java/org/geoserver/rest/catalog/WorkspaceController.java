@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import freemarker.template.ObjectWrapper;
 import org.geoserver.catalog.CascadeDeleteVisitor;
@@ -23,6 +24,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
@@ -86,7 +88,7 @@ public class WorkspaceController extends AbstractCatalogController {
     }
 
     @GetMapping(value = "/{workspaceName}")
-    public RestWrapper<WorkspaceInfo> getWorkspace(@PathVariable String workspaceName) {
+    public RestWrapper<WorkspaceInfo> workspaceGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo wkspace = catalog.getWorkspaceByName(workspaceName);
         if (wkspace == null) {
@@ -220,49 +222,37 @@ public class WorkspaceController extends AbstractCatalogController {
                     try {
                         properties = model.toMap();
                     } catch (TemplateModelException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
-                List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
 
-                List<DataStoreInfo> datasources = catalog.getDataStoresByWorkspace(wkspace);
-                for (DataStoreInfo ds : datasources) {
-                    Map<String, String> names = new HashMap<>();
-                    names.put("name", ds.getName());
-                    dsProps.add(Collections.singletonMap("properties", names));
-                }
-                if (!dsProps.isEmpty())
-                    properties.putIfAbsent("dataStores", dsProps);
+                collectSources(DataStoreInfo.class, "dataStores", properties, wkspace);
+                collectSources(CoverageStoreInfo.class, "coverageStores", properties, wkspace);
+                collectSources(WMSStoreInfo.class, "wmsStores", properties, wkspace);
+                collectSources(WMTSStoreInfo.class, "wmtsStores", properties, wkspace);
 
-                dsProps = new ArrayList<>();
-
-                List<CoverageStoreInfo> coverages = catalog.getCoverageStoresByWorkspace(wkspace);
-                for (CoverageStoreInfo ds : coverages) {
-                    Map<String, String> names = new HashMap<>();
-                    names.put("name", ds.getName());
-                    dsProps.add(Collections.singletonMap("properties", names));
-                }
-                if (!dsProps.isEmpty())
-                    properties.putIfAbsent("coverageStores", dsProps);
-
-                dsProps = new ArrayList<>();
-
-                List<WMSStoreInfo> wmssources = catalog.getStoresByWorkspace(wkspace,
-                        WMSStoreInfo.class);
-                for (WMSStoreInfo ds : wmssources) {
-                    Map<String, String> names = new HashMap<>();
-                    names.put("name", ds.getName());
-                    dsProps.add(Collections.singletonMap("properties", names));
-                }
-                if (!dsProps.isEmpty())
-                    properties.putIfAbsent("wmsStores", dsProps);
                 WorkspaceInfo def = catalog.getDefaultWorkspace();
                 if (def.equals(wkspace)) {
                     properties.put("isDefault", Boolean.TRUE);
                 } else {
                     properties.put("isDefault", Boolean.FALSE);
                 }
+            }
+
+            protected <T extends StoreInfo> void collectSources(
+                    Class<T> clazz, String propsName,
+                    Map<String, Object> properties, WorkspaceInfo wkspace) {
+                
+                List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
+
+                List<T> wmssources = catalog.getStoresByWorkspace(wkspace, clazz);
+                for (StoreInfo ds : wmssources) {
+                    Map<String, String> names = new HashMap<>();
+                    names.put("name", ds.getName());
+                    dsProps.add(Collections.singletonMap("properties", names));
+                }
+                if (!dsProps.isEmpty())
+                    properties.putIfAbsent(propsName, dsProps);
             }
 
             @Override
@@ -319,6 +309,10 @@ public class WorkspaceController extends AbstractCatalogController {
 
                 writer.startNode("wmsStores");
                 converter.encodeCollectionLink("wmsstores", writer);
+                writer.endNode();
+
+                writer.startNode("wmtsStores");
+                converter.encodeCollectionLink("wmtsstores", writer);
                 writer.endNode();
             }
 

@@ -34,13 +34,13 @@ import org.opengis.filter.Filter;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class JDBCProductFeatureSource extends AbstractMappingStore {
+public class JDBCProductFeatureStore extends AbstractMappingStore {
 
-    static final Logger LOGGER = Logging.getLogger(JDBCProductFeatureSource.class);
+    static final Logger LOGGER = Logging.getLogger(JDBCProductFeatureStore.class);
     
     String granuleForeignKey; 
 
-    public JDBCProductFeatureSource(JDBCOpenSearchAccess openSearchAccess,
+    public JDBCProductFeatureStore(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         super(openSearchAccess, collectionFeatureType);
         
@@ -147,6 +147,7 @@ public class JDBCProductFeatureSource extends AbstractMappingStore {
                                     .getAttributeDescriptors()) {
                                 fb.set(ad.getLocalName(), sf.getAttribute(ad.getLocalName()));
                             }
+                            fb.set("the_geom", sf.getDefaultGeometry());
                             fb.set("product_id", id);
                             SimpleFeature mappedGranule = fb.buildFeature(null);
                             mappedGranules.add(mappedGranule);

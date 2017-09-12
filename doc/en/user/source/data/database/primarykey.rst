@@ -79,6 +79,6 @@ Using the metadata table with views
 GeoServer can publish spatial views without issues, but normally results in two side effects:
 
   * the view is treated as read only
-  * the feauture IDs are randomly generated
+  * the feature IDs are randomly generated
 
 The metadata table can also refer to views, just use the view name in the ``table_name`` column: this will result in stable ids, and in databases supporting updatable views, it will also make the code treat the view as writable (thus, enabling usage of WFS-T on it).

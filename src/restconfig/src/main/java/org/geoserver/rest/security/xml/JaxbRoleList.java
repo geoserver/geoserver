@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence.rest.xml;
+package org.geoserver.rest.security.xml;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,16 +22,25 @@ public class JaxbRoleList {
 		
 	}
 
-	public JaxbRoleList( Collection<GeoServerRole> roles ) {
-		roleNames = new ArrayList<String>();
+	public static JaxbRoleList fromGS(Collection<GeoServerRole> roles) {
+		List<String> roleNames = new ArrayList<String>();
 		for (GeoServerRole role: roles) {
 			roleNames.add(role.getAuthority());
 		}
+		return new JaxbRoleList(roleNames);
+	}
+	
+	public JaxbRoleList(Collection<String> roleNames) {
+		this.roleNames = new ArrayList<String>(roleNames);
 	}
 
 	@XmlElement(name="role")
 	public List<String> getRoles() {
 		return roleNames;
+	}
+	
+	public void setRoles(List<String> roleNames) {
+		this.roleNames = roleNames;
 	}
 
 }

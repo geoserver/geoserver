@@ -133,21 +133,11 @@
         <constructor-arg index="0" ref="adminRuleAdminService"/>
     </bean>
 
-    <bean id="usersRestController" class="org.geoserver.geofence.rest.UsersRestController">
-        <constructor-arg index="0" ref="geoServerSecurityManager"/>
-    </bean>
-
-    <bean id="rolesRestController" class="org.geoserver.geofence.rest.RolesRestController">
-        <constructor-arg index="0" ref="geoServerSecurityManager"/>
-    </bean>
-
     <bean id="geofenceRestURLMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="alwaysUseFullPath" value="true"/>
         <property name="mappings">
             <props>
                 <prop key="/geofence/rest/rules**">rulesRestController</prop>
-                <prop key="/geofence/rest/usergroup**">usersRestController</prop>
-                <prop key="/geofence/rest/roles**">rolesRestController</prop>
             </props>
         </property>
     </bean>
@@ -155,6 +145,28 @@
     <mvc:interceptors>
        <bean class="org.geoserver.geofence.rest.GeofenceSecurityInterceptor"/>
     </mvc:interceptors>
+  
+    <bean id="geofenceViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1" />
+        <property name="defaultViews">
+            <list>
+                <!-- XML view using a JAXB marshaller -->
+                <bean id="jaxbView" class="org.springframework.web.servlet.view.xml.MarshallingView">
+                    <constructor-arg>
+                        <bean id="jaxb2Marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                            <property name="classesToBeBound">
+                                <list>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbRule</value>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbRuleList</value>
+                                </list>
+                            </property>
+                        </bean>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+            </list>
+        </property>
+    </bean>
 
     <!-- Resolve views based on string names -->
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>

@@ -289,6 +289,8 @@ if [ -z $SKIP_BUILD ]; then
   # Build the docs
   ##################
 
+
+
   pushd ../doc/en > /dev/null
 
   # 2.11 and older uses make
@@ -360,8 +362,17 @@ if [ -e developer ]; then
   unlink developer
 fi
 
-ln -sf ../../../doc/en/user/build/html user
-ln -sf ../../../doc/en/developer/build/html developer
+# paths for 2.12 and newer docbuild
+usertarget=target/user
+devtarget=target/developer
+# paths for 2.11 and older docbuild
+if [ -e ../../../doc/en/user/Makefile ]; then
+  usertarget=user/build
+  devtarget=developer/build
+fi
+
+ln -sf ../../../doc/en/$usertarget/html user
+ln -sf ../../../doc/en/$devtarget/html developer
 ln -sf ../../../doc/en/release/README.txt readme
 
 htmldoc=geoserver-$tag-htmldoc.zip
@@ -380,7 +391,8 @@ cp $artifacts/*-plugin.zip $dist/plugins
 for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
-cp $artifacts/../../../doc/en/user/build/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
+
+cp $artifacts/../../../doc/en/$usertarget/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
 
 # git commit changes on the release branch
 pushd .. > /dev/null

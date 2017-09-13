@@ -117,7 +117,9 @@ public class HzCacheProvider implements CacheProvider {
             if (value == null) {
                 try {
                     value = valueLoader.call();
-                    put(key, value);
+                    if (value != null) {
+                        put(key, value);
+                    }
                 } catch (Exception e) {
                     throw new ExecutionException(e);
                 }

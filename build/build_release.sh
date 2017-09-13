@@ -285,27 +285,48 @@ if [ -z $SKIP_BUILD ]; then
   # build the javadocs
   mvn javadoc:aggregate
 
-  # build the user docs
-  pushd ../doc/en/user > /dev/null
-  make clean html
-  make latex
-  cd build/latex
-  sed  "s/includegraphics/includegraphics[scale=0.5]/g" GeoServerUserManual.tex > manual.tex
-  # run pdflatex twice in a row to get the TOC, and ignore errors 
-  set +e
-  pdflatex -interaction batchmode manual.tex
-  pdflatex -interaction batchmode manual.tex
-  set -e
+  ##################
+  # Build the docs
+  ##################
 
-  if [ ! -f manual.pdf ]; then
-    echo "Failed to build pdf manual. Printing latex log:"
-    cat manual.log
+  pushd ../doc/en > /dev/null
+  
+  # build the user docs
+
+  # 2.11 and older uses make
+  if [ -e ../doc/en/user/Makefile ]
+  then
+    cd user
+    make clean html
+    make latex
+    cd build/latex
+
+    sed  "s/includegraphics/includegraphics[scale=0.5]/g" GeoServerUserManual.tex > manual.tex
+    # run pdflatex twice in a row to get the TOC, and ignore errors 
+    set +e
+    pdflatex -interaction batchmode manual.tex
+    pdflatex -interaction batchmode manual.tex
+    set -e
+
+    if [ ! -f manual.pdf ]; then
+      echo "Failed to build pdf manual. Printing latex log:"
+      cat manual.log
+    fi
+
+    # build the developer docs
+    cd ../../../developer
+    make clean html
+
+  # 2.12 and newer uses ant to do everything
+  else
+    ant clean user
+    ant user-pdf
+    ant developer
   fi
 
-  cd ../../../developer
-  make clean html
-
   popd > /dev/null
+
+
 fi
 
 mvn $MAVEN_FLAGS assembly:attached

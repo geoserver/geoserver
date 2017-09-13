@@ -41,14 +41,14 @@ public class CoverageView implements Serializable {
      * Type of Envelope Composition, used to expose the bounding box of the CoverageView
      */
     public static enum EnvelopeCompositionType {
-        UNION, INTERSECTION, IMPOSED;
+        UNION, INTERSECTION;
     }
 
     /**
      * Which Resolution to be used in composition
      */
     public static enum SelectedResolution {
-        BEST, WORST, IMPOSED, INDEX;
+        BEST, WORST, INDEX;
     }
 
     /**
@@ -335,9 +335,6 @@ public class CoverageView implements Serializable {
     /** This will be != -1 when {@link SelectedResolution} is INDEX */
     private int selectedResolutionIndex = -1;
 
-    /** This will be != null when {@link EnvelopeCompositionType} is IMPOSED */
-    private ReferencedEnvelope imposedEnvelope;
-
     public String getName() {
         return name;
     }
@@ -368,14 +365,6 @@ public class CoverageView implements Serializable {
 
     public void setSelectedResolutionIndex(int selectedResolutionIndex) {
         this.selectedResolutionIndex = selectedResolutionIndex;
-    }
-
-    public ReferencedEnvelope getImposedEnvelope() {
-        return imposedEnvelope;
-    }
-
-    public void setImposedEnvelope(ReferencedEnvelope imposedEnvelope) {
-        this.imposedEnvelope = imposedEnvelope;
     }
 
     public List<CoverageBand> getCoverageBands() {
@@ -489,7 +478,6 @@ public class CoverageView implements Serializable {
         result = prime * result + ((coverageBands == null) ? 0 : coverageBands.hashCode());
         result = prime * result
                 + ((envelopeCompositionType == null) ? 0 : envelopeCompositionType.hashCode());
-        result = prime * result + ((imposedEnvelope == null) ? 0 : imposedEnvelope.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result
                 + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
@@ -512,11 +500,6 @@ public class CoverageView implements Serializable {
         } else if (!coverageBands.equals(other.coverageBands))
             return false;
         if (envelopeCompositionType != other.envelopeCompositionType)
-            return false;
-        if (imposedEnvelope == null) {
-            if (other.imposedEnvelope != null)
-                return false;
-        } else if (!imposedEnvelope.equals(other.imposedEnvelope))
             return false;
         if (name == null) {
             if (other.name != null)

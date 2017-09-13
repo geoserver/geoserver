@@ -179,22 +179,6 @@ class CoverageViewHandler {
     }
 
     /**
-     * Implementation returning the imposed envelope
-     */
-    class ImposedEnvelopeComposer extends AbstractEnvelopeComposer {
-
-        public ImposedEnvelopeComposer(ReferencedEnvelope imposedEnvelope) {
-            env = new GeneralEnvelope(imposedEnvelope);
-        }
-
-        @Override
-        public void visit(GridCoverage2DReader reader) {
-            // Does nothing
-            // The imposed envelope composer will not do any check on the reader's envelope
-        }
-    }
-
-    /**
      * A CoveragesConsistencyChecker checks if the composing coverages respect the constraints which currently are:
      * <UL>
      * <LI>same CRS</LI>
@@ -453,7 +437,6 @@ class CoverageViewHandler {
             return new IndexedResolutionComposer(coverageView.getSelectedResolutionIndex());
         default:
             return new BestResolutionComposer();
-        // TODO: Add imposedResolution support
         }
     }
 
@@ -464,8 +447,6 @@ class CoverageViewHandler {
             return new IntersectionEnvelopeComposer();
         case UNION:
             return new UnionEnvelopeComposer();
-        case IMPOSED:
-            return new ImposedEnvelopeComposer(coverageView.getImposedEnvelope());
         default:
             return new UnionEnvelopeComposer();
         }
@@ -478,5 +459,9 @@ class CoverageViewHandler {
             return delegate.getReadingResolutions(referenceName, policy, requestedResolution);
         }
         return delegate.getReadingResolutions(referenceName, policy, requestedResolution);
+    }
+    
+    EnvelopeCompositionType getEnvelopeCompositionType() {
+        return coverageView.getEnvelopeCompositionType();
     }
 }

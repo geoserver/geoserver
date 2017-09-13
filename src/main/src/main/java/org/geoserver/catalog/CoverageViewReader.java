@@ -5,30 +5,39 @@
  */
 package org.geoserver.catalog;
 
+import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
+import javax.media.jai.operator.ConstantDescriptor;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageViewHandler.CoveragesConsistencyChecker;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
@@ -39,20 +48,27 @@ import org.geotools.data.ServiceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
@@ -70,6 +86,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
     public final static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
+    
+    private static final Logger LOGGER = Logging.getLogger(CoverageViewReader.class);
 
     /** The CoverageView containing definition */
     CoverageView coverageView;
@@ -98,7 +116,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         this.coverageView = coverageView;
         this.hints = hints;
         referenceName = coverageView.getBand(0).getInputCoverageBands().get(0).getCoverageName();
-        canSupportHeterogeneousCoverages = ImageWorker.isJaiExtEnabled() && JAIExt.isJAIExtOperation("BandMerge");
+        canSupportHeterogeneousCoverages = JAIExt.isJAIExtOperation("BandMerge");
 
         this.handler = new CoverageViewHandler(canSupportHeterogeneousCoverages, delegate, referenceName, coverageView);
 
@@ -131,6 +149,38 @@ public class CoverageViewReader implements GridCoverage2DReader {
     @Override
     public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
             IOException {
+        
+        // did we get a request within the bounds of the coverage?
+        Optional<GeneralParameterValue> ggParameter = Optional.empty();
+        if(parameters != null) {
+            ggParameter = Arrays.stream(parameters).filter(
+                parameter -> parameter.getDescriptor().getName().equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())).findFirst();
+        }
+        GridGeometry2D requestedGridGeometry = null;
+        if(ggParameter.isPresent()) {
+            ParameterValue value = (ParameterValue) ggParameter.get();
+            requestedGridGeometry = (GridGeometry2D) value.getValue();
+            ReferencedEnvelope requestedEnvelope = ReferencedEnvelope.reference(requestedGridGeometry.getEnvelope());
+            ReferencedEnvelope dataEnvelope = ReferencedEnvelope.reference(handler.getOriginalEnvelope());
+            if(CRS.equalsIgnoreMetadata(requestedEnvelope, dataEnvelope)) {
+                if(!requestedEnvelope.intersects((BoundingBox) dataEnvelope)) {
+                    return null;
+                }
+            } else {
+                ReferencedEnvelope re84;
+                try {
+                    re84 = requestedEnvelope.transform(DefaultGeographicCRS.WGS84, true);
+                    ReferencedEnvelope de84 = dataEnvelope.transform(DefaultGeographicCRS.WGS84, true);
+                    if(!re84.intersects((BoundingBox) de84)) {
+                        return null;
+                    }
+                } catch (TransformException | FactoryException e) {
+                    LOGGER.log(Level.FINE, "Cannot determine if the requested BBOX intersects the "
+                            + "data one, continuing", e);
+                    
+                }
+            }
+        }
 
         List<CoverageBand> bands = coverageView.getCoverageBands();
         List<GridCoverage2D> coverages = new ArrayList<GridCoverage2D>();
@@ -169,6 +219,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         // cached to be used for its other bands that possibly take part in the CoverageView definition
         HashMap<String, GridCoverage2D> inputCoverages = new HashMap<String, GridCoverage2D>();
         GridCoverage2D dynamicAlphaSource = null;
+        int nonNullCoverages = 0;
         for (int bIdx : selectedBandIndices) {
             CoverageBand band = bands.get(bIdx);
             List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
@@ -193,12 +244,12 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 }
                 GridCoverage2D coverage = reader.read(filteredParameters);
                 if (coverage == null) {
-                    if (handler.isHomogeneousCoverages()) {
-                        continue;
-
+                    if (handler.isHomogeneousCoverages() || 
+                            handler.getEnvelopeCompositionType() == EnvelopeCompositionType.INTERSECTION) {
+                        return null;
                     }
-                    // TODO Create a constant coverage.
-                    coverage = inputCoverages.get(inputCoverages.keySet().iterator().next());
+                } else {
+                    nonNullCoverages++;
                 }
                 if(dynamicAlphaSource == null && hasDynamicAlpha(coverage, reader)) {
                     dynamicAlphaSource = coverage;
@@ -208,8 +259,33 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
         
         // all readers returned null?
-        if (inputCoverages.isEmpty()) {
+        if (nonNullCoverages == 0 || inputCoverages.isEmpty()) {
             return null;
+        }
+        
+        // some returned null?
+        if(nonNullCoverages < inputCoverages.size()) {
+            float width, height;
+            if(requestedGridGeometry != null) {
+                GridEnvelope2D range = requestedGridGeometry.getGridRange2D();
+                width = (float) range.getWidth();
+                height = (float) range.getHeight();
+            } else {
+                GridCoverage2D reference = inputCoverages.values().stream().filter(c -> c != null).findFirst().get();
+                RenderedImage ri = reference.getRenderedImage();
+                width = ri.getWidth();
+                height = ri.getHeight();
+            }
+            
+            // build empty coverages for the missing bits
+            for (String name : inputCoverages.keySet()) {
+                GridCoverage2DReader reader = SingleGridCoverage2DReader.wrap(delegate, name);
+                ImageLayout layout = reader.getImageLayout();
+                int numBands = layout.getSampleModel(null).getNumBands();
+                Number[] bandValues = new Number[numBands]; // all zeroes
+                Arrays.fill(bandValues, Double.valueOf(0));
+                ConstantDescriptor.create(width, height, bandValues, new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout));
+            }
         }
         
         // Group together bands that come from the same coverage

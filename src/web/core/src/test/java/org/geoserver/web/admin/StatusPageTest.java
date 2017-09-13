@@ -5,10 +5,21 @@
  */
 package org.geoserver.web.admin;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class StatusPageTest extends GeoServerWicketTestSupport {
     @Override
@@ -97,5 +108,40 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertContains("GeoServer Main");
         tester.assertContains("gs-main");
         tester.assertContains("Message:");
+    }
+
+    @Test
+    public void testExtraTabExists() {
+        // render the page, GeoServer status tab is show
+        tester.assertRenderedPage(StatusPage.class);
+        // click on the extra tab link
+        tester.clickLink("tabs:tabs-container:tabs:2:link", true);
+        // render extra tab content
+        tester.assertRenderedPage(StatusPage.class);
+        // check that extra tab content was rendered
+        tester.assertContains("extra tab content");
+        // check that the tab has the correct title
+        Component component = tester.getComponentFromLastRenderedPage(
+                "tabs:tabs-container:tabs:2:link:title");
+        assertThat(component, instanceOf(Label.class));
+        Label label = (Label) component;
+        assertThat(label.getDefaultModel(), notNullValue());
+        assertThat(label.getDefaultModel().getObject(), is("extra"));
+    }
+
+    /**
+     * Extra tab definition that will be added to GeoServer status page.
+     */
+    public static final class ExtraTabDefinition implements StatusPage.TabDefinition  {
+
+        @Override
+        public String getTitleKey() {
+            return "StatusPageTest.extra";
+        }
+
+        @Override
+        public Panel createPanel(String panelId, Page containerPage) {
+            return new ExtraTabPanel(panelId);
+        }
     }
 }

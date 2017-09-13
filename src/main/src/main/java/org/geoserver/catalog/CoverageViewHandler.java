@@ -77,7 +77,7 @@ class CoverageViewHandler {
                 referenceName = reader.getGridCoverageNames()[0];
             } else {
                 double[][] tempRes = reader.getResolutionLevels();
-                if (tempRes[0][0] <= resolution[0][0] && tempRes[0][1] <= resolution[0][1]) {
+                if (tempRes[0][0] < resolution[0][0] && tempRes[0][1] < resolution[0][1]) {
                     resolution = tempRes;
                     referenceName = reader.getGridCoverageNames()[0];
                 }
@@ -97,7 +97,7 @@ class CoverageViewHandler {
                 referenceName = reader.getGridCoverageNames()[0];
             } else {
                 double[][] tempRes = reader.getResolutionLevels();
-                if (tempRes[0][0] >= resolution[0][0] && tempRes[0][1] >= resolution[0][1]) {
+                if (tempRes[0][0] > resolution[0][0] && tempRes[0][1] > resolution[0][1]) {
                     resolution = tempRes;
                     referenceName = reader.getGridCoverageNames()[0];
                 }
@@ -356,11 +356,11 @@ class CoverageViewHandler {
                 }
                 envelopeComposer.visit(reader);
                 resolutionComposer.visit(reader);
-                this.referenceName = resolutionComposer.getReferenceName(); 
             } catch (IOException ioe) {
                 // the next read operation will report the issue
             }
         }
+        this.referenceName = resolutionComposer.getReferenceName();
     }
 
     public boolean isHomogeneousCoverages() {

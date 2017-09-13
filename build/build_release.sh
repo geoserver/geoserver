@@ -290,12 +290,11 @@ if [ -z $SKIP_BUILD ]; then
   ##################
 
   pushd ../doc/en > /dev/null
-  
-  # build the user docs
 
   # 2.11 and older uses make
-  if [ -e ../doc/en/user/Makefile ]
+  if [ -e user/Makefile ]
   then
+    # build the user docs
     cd user
     make clean html
     make latex

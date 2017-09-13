@@ -1,4 +1,4 @@
-.. _opensearch_eo:
+.. _opensearch_eo_install:
 
 Installing the OpenSearch for EO module
 =======================================
@@ -32,7 +32,8 @@ desired series (the module works for 2.12.x onwards):
   .. figure:: images/admin.png
      :align: center
 
-  * The GeoServer home page after the OpenSearch for EO module installation
+     The GeoServer home page after the OpenSearch for EO module installation.
+
 
 Configuring the OpenSearch module
 ---------------------------------

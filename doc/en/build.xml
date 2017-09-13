@@ -68,8 +68,13 @@
     <exec executable="pdflatex" failonerror="false" dir="${build.directory}/user/latex/">
       <arg line="-interaction batchmode GeoServerUserManual.tex"/>
     </exec>
+    
+    <move
+      file="${build.directory}/user/latex/GeoServerUserManual.pdf"
+      tofile="${build.directory}/user/latex/manual.pdf"
+    />
   </target>
-
+  
   <target name="docguide" depends="init"
     description="Generate instructions for editing GeoServer documentation">
     <mkdir dir="${build.directory}"/>
@@ -101,19 +106,6 @@
                 <echo message="Running sphinx-build -D release=${project.version} -W -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/> 
     <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
       <arg line="-D release=${project.version} -q -W -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
-    </exec>
-  </target>
-
-  <!--target name="latex">
-    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}">
-      <arg line="-D release=${project.version} -b latex -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
-    </exec>
-  </target-->
-
-  <!-- this is not recommended use latextpdf -->
-  <target name="pdf" if="rst2pdf.available">
-    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}">
-      <arg line="-D release=${project.version} -c ${basedir}/${id}/pdf -b pdf -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
     </exec>
   </target>
 

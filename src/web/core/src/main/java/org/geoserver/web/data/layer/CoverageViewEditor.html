@@ -3,6 +3,8 @@
   <wicket:panel>
       <ul>
         <li>
+          <fieldset style="margin-top: 3em">
+          <legend ><span><wicket:message key="bandSelection">definition</wicket:message></span></legend>
           <table cellspacing="0" cellpadding="2">
             <tr>
               <td style="vertical-align:top">
@@ -78,6 +80,26 @@
              </tr>
             -->
           </table>
+          </fieldset>
+        </li>
+        <li wicket:id="heterogeneousControlsContainer" style="margin-top: 3em">
+          <fieldset wicket:id="heterogeneousControls">
+          <legend><span><wicket:message key="heterogeneousControls">Heterogeneous bands settings</wicket:message></span></legend>
+          <ul>
+            <li>
+              <label for="envelopeCompositionType"><wicket:message key="envelopeCompositionType">envelopePolicy</wicket:message></label>
+              <select id="envelopeCompositionType" wicket:id="envelopeCompositionType"></select>
+            </li>
+            <li>
+              <label for="resolutionPolicy"><wicket:message key="selectedResolution">selectedResolution</wicket:message></label>
+              <select id="selectedResolution" wicket:id="selectedResolution"></select>
+              <div wicket:id="resolutionReferenceCoverageContainer">
+                <label for="resolutionReferenceCoverage"><wicket:message key="resolutionReferenceCoverage">resolutionReferenceCoverage</wicket:message></label>
+                <select id="resolutionReferenceCoverage" wicket:id="resolutionReferenceCoverage"></select>
+              </div>
+            </li>
+          </ul>
+        </fieldset>
         </li>
       </ul>
    </wicket:panel>

@@ -74,12 +74,6 @@
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-data</artifactId>
 		</dependency>
-      <dependency>
-            <groupId>org.geoserver.extension</groupId>
-            <artifactId>gs-css</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-      </dependency>
  </dependencies>
 
 </project>

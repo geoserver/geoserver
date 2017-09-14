@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.web.data;
+package org.geoserver.community.css.web;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,6 +17,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.wms.web.data.StyleEditPage;
 import org.junit.Before;
 import org.junit.Test;
 

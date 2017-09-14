@@ -83,7 +83,8 @@
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
           <descriptor>release/ext-jdbc-metrics.xml</descriptor>
           <descriptor>release/ext-opensearch-eo.xml</descriptor>
-          <descriptor>release/ext-mbstyle.xml</descriptor>
+          <descriptor>release/ext-mbstyle.xml</descriptor> 
+          <descriptor>release/ext-status-monitoring.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -245,6 +246,7 @@
         <module>oseo</module>
         <module>mbstyle</module>
         <module>s3-geotiff</module>
+        <module>status-monitoring</module>
       </modules>
     </profile>
     <profile>
@@ -540,5 +542,11 @@
         <module>s3-geotiff</module>
       </modules>
     </profile>
-  </profiles>
+    <profile>
+      <id>status-monitoring</id>
+      <modules>
+        <module>status-monitoring</module>
+      </modules>
+    </profile>
+  </profiles>  
 </project>

@@ -1,0 +1,24 @@
+<assembly>
+  <id>status-monitoring-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>*oshi*.jar</include>
+        <include>*jna*.jar</include>
+        <include>*threetenbp*.jar</include>
+        <include>*slf4j-api*.jar</include>
+        <include>*jackson-databind*.jar</include>
+        <include>*jackson-annotations*.jar</include>
+        <include>*wicket-datetime*.jar</include>
+        <include>*joda-time*.jar</include>
+        <include>*status-monitoring*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

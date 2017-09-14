@@ -1251,6 +1251,11 @@
       <artifactId>marlin</artifactId>
       <version>${marlin.version}</version>
     </dependency>
+    <dependency>
+     <groupId>com.github.oshi</groupId>
+     <artifactId>oshi-core</artifactId>
+     <version>3.4.3</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 

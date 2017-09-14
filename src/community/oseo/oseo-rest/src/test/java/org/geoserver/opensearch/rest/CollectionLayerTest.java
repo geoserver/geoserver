@@ -325,8 +325,8 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         RasterSymbolizer rs = (RasterSymbolizer) symbolizers.get(0);
         ChannelSelection cs = rs.getChannelSelection();
         assertEquals("4", cs.getRGBChannels()[0].getChannelName());
-        assertEquals("3", cs.getRGBChannels()[1].getChannelName());
-        assertEquals("2", cs.getRGBChannels()[2].getChannelName());
+        assertEquals("2", cs.getRGBChannels()[1].getChannelName());
+        assertEquals("1", cs.getRGBChannels()[2].getChannelName());
         assertNull(cs.getGrayChannel());
         
         BufferedImage image = getAsImage("wms/reflect?layers=gs:test123&format=image/png&width=200", "image/png");

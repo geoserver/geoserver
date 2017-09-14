@@ -438,6 +438,7 @@ class CollectionLayerManager {
     private void createStyle(CollectionLayer layerConfiguration, LayerInfo layerInfo)
             throws IOException {
         CoverageInfo ci = (CoverageInfo) layerInfo.getResource();
+        int[] bands = layerConfiguration.getBands();
         int[] defaultBands = IntStream.rangeClosed(1, ci.getDimensions().size()).toArray();
         final int[] browseBands = layerConfiguration.getBrowseBands();
         if (browseBands != null && browseBands.length > 0
@@ -445,12 +446,12 @@ class CollectionLayerManager {
             RasterSymbolizerBuilder rsb = new RasterSymbolizerBuilder();
             if (browseBands.length == 1) {
                 ChannelSelectionBuilder cs = rsb.channelSelection();
-                cs.gray().channelName("" + browseBands[0]);
+                cs.gray().channelName("" + getBandIndex(browseBands[0], bands));
             } else if (browseBands.length == 3) {
                 ChannelSelectionBuilder cs = rsb.channelSelection();
-                cs.red().channelName("" + browseBands[0]);
-                cs.green().channelName("" + browseBands[1]);
-                cs.blue().channelName("" + browseBands[2]);
+                cs.red().channelName("" + getBandIndex(browseBands[0], bands));
+                cs.green().channelName("" + getBandIndex(browseBands[1], bands));
+                cs.blue().channelName("" + getBandIndex(browseBands[2], bands));
             }
             Style style = rsb.buildStyle();
             StyleInfo si = catalog.getFactory().createStyle();
@@ -467,7 +468,20 @@ class CollectionLayerManager {
             savedLayer.setDefaultStyle(si);
             catalog.save(savedLayer);
         }
+    }
 
+    private int getBandIndex(int band, int[] bands) {
+        // using all native bands in a non split-multiband case
+        if(bands == null || bands.length == 0) {
+            return band;
+        }
+        // lookup the band order in the split multiband case
+        for (int i = 0; i < bands.length; i++) {
+            if(band == bands[i]) {
+                return i + 1;
+            }
+        }
+        throw new IllegalArgumentException("Could not find browse band " + band + " among the layer bands " + Arrays.toString(bands));
     }
 
     private void createDataStoreProperties(String collection, Resource mosaic) throws IOException {

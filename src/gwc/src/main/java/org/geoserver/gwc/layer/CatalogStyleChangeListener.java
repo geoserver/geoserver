@@ -93,8 +93,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 return;
             }
             final int nameIdx = propertyNames.indexOf("name");
-            final String oldName = (String) event.getOldValues().get(nameIdx);
-            final String newName = (String) event.getNewValues().get(nameIdx);
+            final String oldName = nameIdx != -1 ? (String) event.getOldValues().get(nameIdx) : null;
+            final String newName = nameIdx != -1 ? (String) event.getNewValues().get(nameIdx) : null;
             final int workspaceIdx = propertyNames.indexOf("wokspace");
             final String oldWorkspaceName = workspaceIdx != -1 ? (String) event.getOldValues().get(
                     workspaceIdx) : null;
@@ -103,7 +103,11 @@ public class CatalogStyleChangeListener implements CatalogListener {
             final String oldStyleName = getPrefixedName(oldWorkspaceName, oldName);
             final String newStyleName = getPrefixedName(newWorkspaceName, newName);
 
-            handleStyleRenamed(oldStyleName, newStyleName);
+            if (nameIdx != -1) {
+                //for now, only handle the even if the name changes. most likely we should also do the truncate if
+                //the workspace changes too, but that needs a more thorough investigation
+                handleStyleRenamed(oldStyleName, newStyleName);
+            }
         } else if (source instanceof WorkspaceInfo) {
             PRE_MODIFY_EVENT.set(event);
         }

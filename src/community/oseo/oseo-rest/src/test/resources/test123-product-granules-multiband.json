@@ -32,7 +32,7 @@
       },
       "properties": {
         "location": "$resources/multiband/B02.tif",
-        "band" : "2"
+        "band" : "B02"
       },
       "id": "GRANULE.1"
     },
@@ -67,7 +67,7 @@
       },
       "properties": {
         "location": "$resources/multiband/B03.tif",
-        "band" : "3"
+        "band" : "B03"
       },
       "id": "GRANULE.2"
     },
@@ -102,7 +102,7 @@
       },
       "properties": {
         "location": "$resources/multiband/B04.tif",
-        "band" : "4"
+        "band" : "B04"
       },
       "id": "GRANULE.3"
     },
@@ -137,7 +137,7 @@
       },
       "properties": {
         "location": "$resources/multiband/B08.tif",
-        "band" : "8"
+        "band" : "B08"
       },
       "id": "GRANULE.4"
     }

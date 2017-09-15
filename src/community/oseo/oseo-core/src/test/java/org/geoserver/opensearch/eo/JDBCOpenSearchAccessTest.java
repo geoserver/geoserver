@@ -106,7 +106,7 @@ public class JDBCOpenSearchAccessTest {
         String s1 = "DELETE public.collection_layer";
         String s2 = "INSERT into public.collection_layer\n"
                 + "(\"cid\", \"workspace\", \"layer\", \"separateBands\", \"bands\", \"browseBands\", \"heterogeneousCRS\", \"mosaicCRS\")\n"
-                + "VALUES(17, 'gs', 'sentinel2', true, '1,2,3,4,5,6,7,8,9,10,11,12', '4,3,2', true, 'EPSG:4326')";
+                + "VALUES(17, 'gs', 'sentinel2', true, 'B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12', 'B04,B03,B02', true, 'EPSG:4326')";
         try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = conn.createStatement()) {
             st.execute(s1);
@@ -268,9 +268,9 @@ public class JDBCOpenSearchAccessTest {
         }
         assertThat(localNames,
                 containsInAnyOrder("collection", "product", "SENTINEL1", "LANDSAT8",
-                        "SENTINEL2__B1", "SENTINEL2__B2", "SENTINEL2__B3", "SENTINEL2__B4",
-                        "SENTINEL2__B5", "SENTINEL2__B6", "SENTINEL2__B7", "SENTINEL2__B8",
-                        "SENTINEL2__B9", "SENTINEL2__B10", "SENTINEL2__B11", "SENTINEL2__B12"));
+                        "SENTINEL2__B01", "SENTINEL2__B02", "SENTINEL2__B03", "SENTINEL2__B04",
+                        "SENTINEL2__B05", "SENTINEL2__B06", "SENTINEL2__B07", "SENTINEL2__B08",
+                        "SENTINEL2__B09", "SENTINEL2__B10", "SENTINEL2__B11", "SENTINEL2__B12"));
     }
 
     @Test
@@ -282,7 +282,7 @@ public class JDBCOpenSearchAccessTest {
 
     @Test
     public void testSentinel2Schema() throws Exception {
-        FeatureType schema = osAccess.getSchema(new NameImpl(TEST_NAMESPACE, "SENTINEL2__B1"));
+        FeatureType schema = osAccess.getSchema(new NameImpl(TEST_NAMESPACE, "SENTINEL2__B01"));
         assertGranulesViewSchema(schema, OPTICAL);
     }
 
@@ -306,7 +306,7 @@ public class JDBCOpenSearchAccessTest {
     @Test
     public void testSentinel2Granules() throws Exception {
         FeatureSource<FeatureType, Feature> featureSource = osAccess
-                .getFeatureSource(new NameImpl(TEST_NAMESPACE, "SENTINEL2__B1"));
+                .getFeatureSource(new NameImpl(TEST_NAMESPACE, "SENTINEL2__B01"));
         FeatureCollection<FeatureType, Feature> fc = featureSource.getFeatures();
         assertGranulesViewSchema(fc.getSchema(), OPTICAL);
         assertThat(fc.size(), greaterThan(1));
@@ -387,8 +387,8 @@ public class JDBCOpenSearchAccessTest {
         assertEquals("sentinel2", getAttribute(layerValue, "layer"));
         assertEquals(Boolean.TRUE, getAttribute(layerValue, "separateBands"));
         assertThat(getAttribute(layerValue, "bands"),
-                equalTo(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }));
-        assertThat(getAttribute(layerValue, "browseBands"), equalTo(new int[] { 4, 3, 2 }));
+                equalTo(new String[] { "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12" }));
+        assertThat(getAttribute(layerValue, "browseBands"), equalTo(new String[] { "B04", "B03", "B02" }));
         assertEquals(Boolean.TRUE, getAttribute(layerValue, "heterogeneousCRS"));
         assertEquals("EPSG:4326", getAttribute(layerValue, "mosaicCRS"));
     }
@@ -412,7 +412,7 @@ public class JDBCOpenSearchAccessTest {
         setAttribute(layerValue, "workspace", "gs2");
         setAttribute(layerValue, "layer", "sentinel12345");
         setAttribute(layerValue, "separateBands", false);
-        setAttribute(layerValue, "bands", new int[] { 1, 4, 6 });
+        setAttribute(layerValue, "bands", new String[] { "B01", "B04", "B06" });
         setAttribute(layerValue, "browseBands", null);
         setAttribute(layerValue, "heterogeneousCRS", false);
         setAttribute(layerValue, "mosaicCRS", "EPSG:3857");
@@ -425,7 +425,7 @@ public class JDBCOpenSearchAccessTest {
         assertEquals("gs2", getAttribute(layerValue2, "workspace"));
         assertEquals("sentinel12345", getAttribute(layerValue2, "layer"));
         assertEquals(Boolean.FALSE, getAttribute(layerValue2, "separateBands"));
-        assertThat(getAttribute(layerValue2, "bands"), equalTo(new int[] { 1, 4, 6 }));
+        assertArrayEquals(new String[] { "B01", "B04", "B06" }, (String[]) getAttribute(layerValue2, "bands"));
         assertThat(getAttribute(layerValue2, "browseBands"), nullValue());
         assertEquals(Boolean.FALSE, getAttribute(layerValue2, "heterogeneousCRS"));
         assertEquals("EPSG:3857", getAttribute(layerValue2, "mosaicCRS"));

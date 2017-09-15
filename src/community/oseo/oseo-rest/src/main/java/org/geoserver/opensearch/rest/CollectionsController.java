@@ -460,12 +460,12 @@ public class CollectionsController extends AbstractOpenSearchController {
 
     }
 
-    private boolean containedFully(int[] browseBands, int[] bands) {
+    private boolean containedFully(String[] browseBands, String[] bands) {
         for (int i = 0; i < browseBands.length; i++) {
-            int bb = browseBands[i];
+            String bb = browseBands[i];
             boolean found = false;
             for (int j = 0; j < bands.length; j++) {
-                if(bands[j] == bb) {
+                if(bands[j].equals(bb)) {
                     found = true;
                     break;
                 }

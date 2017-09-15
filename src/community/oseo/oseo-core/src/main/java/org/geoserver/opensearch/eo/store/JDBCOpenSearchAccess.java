@@ -345,7 +345,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         getCollectionPublishingConfigurations().forEach((name, layer) -> {
             if(layer != null && layer.isSeparateBands() && layer.getBands() != null && layer.getBands().length > 0) {
                 // one feature type per band needed to setup a coverage view
-                for (int band : layer.getBands()) {
+                for (String band : layer.getBands()) {
                     names.add(new NameImpl(namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
                 }
             } else {
@@ -399,9 +399,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             // silly generics...
             return (FeatureSource) getCollectionGranulesSource(typeName.getLocalPart());
         }
-
-        return null;
-
+        
+        throw new IOException("Schema '" + typeName + "' does not exist.");
     }
 
     public SimpleFeatureSource getCollectionGranulesSource(String typeName)

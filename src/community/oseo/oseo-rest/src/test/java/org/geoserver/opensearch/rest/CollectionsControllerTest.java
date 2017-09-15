@@ -381,9 +381,9 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("sentinel2", json.read("$.layer"));
         assertEquals(Integer.valueOf(12), json.read("$.bands.length()"));
         assertEquals(Boolean.TRUE, json.read("$.separateBands"));
-        assertEquals(Integer.valueOf(1), json.read("$.bands[0]"));
+        assertEquals("B01", json.read("$.bands[0]"));
         assertEquals(Integer.valueOf(3), json.read("$.browseBands.length()"));
-        assertEquals(Integer.valueOf(4), json.read("$.browseBands[0]"));
+        assertEquals("B04", json.read("$.browseBands[0]"));
         assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
         assertEquals("EPSG:4326", json.read("$.mosaicCRS"));
     }

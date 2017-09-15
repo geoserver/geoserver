@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.eo.store;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -17,9 +16,9 @@ public class CollectionLayer {
 
     boolean separateBands;
 
-    int[] bands;
+    String[] bands;
     
-    int[] browseBands;
+    String[] browseBands;
 
     boolean heterogeneousCRS;
 
@@ -30,8 +29,8 @@ public class CollectionLayer {
         // TODO Auto-generated constructor stub
     }
 
-    public CollectionLayer(String workspace, String layer, boolean separateBands, int[] bands,
-            int[] browseBands, boolean heterogeneousCRS, String targetCRS) {
+    public CollectionLayer(String workspace, String layer, boolean separateBands, String[] bands,
+            String[] browseBands, boolean heterogeneousCRS, String targetCRS) {
         super();
         this.workspace = workspace;
         this.layer = layer;
@@ -66,19 +65,19 @@ public class CollectionLayer {
         this.separateBands = separateBands;
     }
 
-    public int[] getBands() {
+    public String[] getBands() {
         return bands;
     }
 
-    public void setBands(int[] bands) {
+    public void setBands(String[] bands) {
         this.bands = bands;
     }
 
-    public int[] getBrowseBands() {
+    public String[] getBrowseBands() {
         return browseBands;
     }
 
-    public void setBrowseBands(int[] browseBands) {
+    public void setBrowseBands(String[] browseBands) {
         this.browseBands = browseBands;
     }
 
@@ -119,8 +118,8 @@ public class CollectionLayer {
             layer.setWorkspace((String) getAttribute(lf, "workspace"));
             layer.setLayer((String) getAttribute(lf, "layer"));
             layer.setSeparateBands(Boolean.TRUE.equals(getAttribute(lf, "separateBands")));
-            layer.setBands((int[]) getAttribute(lf, "bands"));
-            layer.setBrowseBands((int[]) getAttribute(lf, "browseBands"));
+            layer.setBands((String[]) getAttribute(lf, "bands"));
+            layer.setBrowseBands((String[]) getAttribute(lf, "browseBands"));
             layer.setHeterogeneousCRS(Boolean.TRUE.equals(getAttribute(lf, "heterogeneousCRS")));
             layer.setMosaicCRS((String) getAttribute(lf, "mosaicCRS"));
         }

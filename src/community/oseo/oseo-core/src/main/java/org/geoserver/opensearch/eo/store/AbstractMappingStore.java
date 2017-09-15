@@ -534,8 +534,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             final String localName = att.getLocalName();
             if(value != null && ("bands".equals(localName) || "browseBands".equals(localName))) {
                 String[] split = ((String) value).split("\\s*,\\s*");
-                int[] values = Arrays.stream(split).mapToInt(s -> Integer.valueOf(s)).toArray();
-                retypeBuilder.set(attName, values);
+                retypeBuilder.set(attName, split);
             } else {
                 retypeBuilder.set(attName, value);
             }
@@ -726,9 +725,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                             for (Property p : f.getProperties()) {
                                 String attributeName = p.getName().getLocalPart();
                                 Object attributeValue = p.getValue();
-                                if(("bands".equals(attributeName) || "browseBands".equals(attributeName)) && attributeValue instanceof int[]) {
-                                    final int[] intArray = (int[]) attributeValue;
-                                    attributeValue = Arrays.stream(intArray).mapToObj(n -> String.valueOf(n)).collect(Collectors.joining(","));
+                                if (("bands".equals(attributeName)
+                                        || "browseBands".equals(attributeName))
+                                        && attributeValue instanceof String[]) {
+                                    final String[] array = (String[]) attributeValue;
+                                    attributeValue = Arrays.stream(array)
+                                            .collect(Collectors.joining(","));
                                 }
                                 fb.set(attributeName, attributeValue);
                             }

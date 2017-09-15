@@ -102,7 +102,7 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * Just like in WCS 2.0, setting up a separator that's unlikely to be found 
      * in the wild, since there is no option that's absolutely unique
      */
-    String BAND_LAYER_SEPARATOR = "__B";
+    String BAND_LAYER_SEPARATOR = "__";
 
     /**
      * Returns the feature source backing collections (dynamic, as the store has to respect the namespace URI given by GeoServer)

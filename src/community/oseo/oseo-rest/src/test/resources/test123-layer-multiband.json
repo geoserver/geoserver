@@ -3,15 +3,15 @@
 	"layer": "test123",
 	"separateBands": true,
 	"bands": [
-		2,
-		3,
-		4,
-		8
+		"B02",
+		"B03",
+		"B04",
+		"B08"
 	],
 	"browseBands": [
-		8,
-		3,
-		2
+		"B08",
+		"B03",
+		"B02"
 	],
 	"heterogeneousCRS": true,
 	"mosaicCRS": "EPSG:4326"

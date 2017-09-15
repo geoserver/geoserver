@@ -174,7 +174,7 @@ class CollectionLayerManager {
 
         // image mosaic won't automatically create the mosaic config for us in this case,
         // we have to setup both the mosaic property file and sample image for all bands
-        for (int band : layerConfiguration.getBands()) {
+        for (String band : layerConfiguration.getBands()) {
             final String mosaicName = collection + OpenSearchAccess.BAND_LAYER_SEPARATOR + band;
 
             // get the sample granule
@@ -322,18 +322,18 @@ class CollectionLayerManager {
 
     private List<CoverageBand> buildCoverageBands(CollectionLayer collectionLayer) {
         List<CoverageBand> result = new ArrayList<>();
-        int[] bands = collectionLayer.getBands();
+        String[] bands = collectionLayer.getBands();
         for (int i = 0; i < bands.length; i++) {
-            int band = bands[i];
+            String band = bands[i];
             CoverageBand cb = new CoverageBand(
-                    Collections.singletonList(new InputCoverageBand("" + band, "0")), "B" + i, i,
+                    Collections.singletonList(new InputCoverageBand(band, "0")), band, i,
                     CompositionType.BAND_SELECT);
             result.add(cb);
         }
         return result;
     }
 
-    private File getSampleGranule(String collection, final String nsURI, int band,
+    private File getSampleGranule(String collection, final String nsURI, String band,
             final String mosaicName) throws IOException {
         // make sure there is at least one granule to grab resolution, sample/color model,
         // and preferred SPI
@@ -438,20 +438,20 @@ class CollectionLayerManager {
     private void createStyle(CollectionLayer layerConfiguration, LayerInfo layerInfo)
             throws IOException {
         CoverageInfo ci = (CoverageInfo) layerInfo.getResource();
-        int[] bands = layerConfiguration.getBands();
-        int[] defaultBands = IntStream.rangeClosed(1, ci.getDimensions().size()).toArray();
-        final int[] browseBands = layerConfiguration.getBrowseBands();
+        String[] bands = layerConfiguration.getBands();
+        String[] defaultBands = ci.getDimensions().stream().map(d -> d.getName()).toArray(i -> new String[i]);
+        final String[] browseBands = layerConfiguration.getBrowseBands();
         if (browseBands != null && browseBands.length > 0
                 && !Arrays.equals(defaultBands, browseBands)) {
             RasterSymbolizerBuilder rsb = new RasterSymbolizerBuilder();
             if (browseBands.length == 1) {
                 ChannelSelectionBuilder cs = rsb.channelSelection();
-                cs.gray().channelName("" + getBandIndex(browseBands[0], bands));
+                cs.gray().channelName("" + getBandIndex(browseBands[0], bands, defaultBands));
             } else if (browseBands.length == 3) {
                 ChannelSelectionBuilder cs = rsb.channelSelection();
-                cs.red().channelName("" + getBandIndex(browseBands[0], bands));
-                cs.green().channelName("" + getBandIndex(browseBands[1], bands));
-                cs.blue().channelName("" + getBandIndex(browseBands[2], bands));
+                cs.red().channelName("" + getBandIndex(browseBands[0], bands, defaultBands));
+                cs.green().channelName("" + getBandIndex(browseBands[1], bands, defaultBands));
+                cs.blue().channelName("" + getBandIndex(browseBands[2], bands, defaultBands));
             }
             Style style = rsb.buildStyle();
             StyleInfo si = catalog.getFactory().createStyle();
@@ -470,18 +470,19 @@ class CollectionLayerManager {
         }
     }
 
-    private int getBandIndex(int band, int[] bands) {
+    private int getBandIndex(String band, String[] bands, String[] defaultBands) {
         // using all native bands in a non split-multiband case
+        String[] lookup = bands;
         if(bands == null || bands.length == 0) {
-            return band;
+            lookup = defaultBands;
         }
         // lookup the band order in the split multiband case
-        for (int i = 0; i < bands.length; i++) {
-            if(band == bands[i]) {
+        for (int i = 0; i < lookup.length; i++) {
+            if(band.equals(lookup[i])) {
                 return i + 1;
             }
         }
-        throw new IllegalArgumentException("Could not find browse band " + band + " among the layer bands " + Arrays.toString(bands));
+        throw new IllegalArgumentException("Could not find browse band " + band + " among the layer bands " + Arrays.toString(lookup));
     }
 
     private void createDataStoreProperties(String collection, Resource mosaic) throws IOException {

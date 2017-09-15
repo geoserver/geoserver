@@ -285,27 +285,49 @@ if [ -z $SKIP_BUILD ]; then
   # build the javadocs
   mvn javadoc:aggregate
 
-  # build the user docs
-  pushd ../doc/en/user > /dev/null
-  make clean html
-  make latex
-  cd build/latex
-  sed  "s/includegraphics/includegraphics[scale=0.5]/g" GeoServerUserManual.tex > manual.tex
-  # run pdflatex twice in a row to get the TOC, and ignore errors 
-  set +e
-  pdflatex -interaction batchmode manual.tex
-  pdflatex -interaction batchmode manual.tex
-  set -e
+  ##################
+  # Build the docs
+  ##################
 
-  if [ ! -f manual.pdf ]; then
-    echo "Failed to build pdf manual. Printing latex log:"
-    cat manual.log
+
+
+  pushd ../doc/en > /dev/null
+
+  # 2.11 and older uses make
+  if [ -e user/Makefile ]
+  then
+    # build the user docs
+    cd user
+    make clean html
+    make latex
+    cd build/latex
+
+    sed  "s/includegraphics/includegraphics[scale=0.5]/g" GeoServerUserManual.tex > manual.tex
+    # run pdflatex twice in a row to get the TOC, and ignore errors 
+    set +e
+    pdflatex -interaction batchmode manual.tex
+    pdflatex -interaction batchmode manual.tex
+    set -e
+
+    if [ ! -f manual.pdf ]; then
+      echo "Failed to build pdf manual. Printing latex log:"
+      cat manual.log
+    fi
+
+    # build the developer docs
+    cd ../../../developer
+    make clean html
+
+  # 2.12 and newer uses ant to do everything
+  else
+    ant clean user
+    ant user-pdf
+    ant developer
   fi
 
-  cd ../../../developer
-  make clean html
-
   popd > /dev/null
+
+
 fi
 
 mvn $MAVEN_FLAGS assembly:attached
@@ -340,8 +362,17 @@ if [ -e developer ]; then
   unlink developer
 fi
 
-ln -sf ../../../doc/en/user/build/html user
-ln -sf ../../../doc/en/developer/build/html developer
+# paths for 2.12 and newer docbuild
+usertarget=target/user
+devtarget=target/developer
+# paths for 2.11 and older docbuild
+if [ -e ../../../doc/en/user/Makefile ]; then
+  usertarget=user/build
+  devtarget=developer/build
+fi
+
+ln -sf ../../../doc/en/$usertarget/html user
+ln -sf ../../../doc/en/$devtarget/html developer
 ln -sf ../../../doc/en/release/README.txt readme
 
 htmldoc=geoserver-$tag-htmldoc.zip
@@ -360,7 +391,8 @@ cp $artifacts/*-plugin.zip $dist/plugins
 for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
-cp $artifacts/../../../doc/en/user/build/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
+
+cp $artifacts/../../../doc/en/$usertarget/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
 
 # git commit changes on the release branch
 pushd .. > /dev/null

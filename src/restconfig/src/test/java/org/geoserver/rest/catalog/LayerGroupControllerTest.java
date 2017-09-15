@@ -21,11 +21,8 @@ import static org.junit.Assert.assertTrue;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.Keyword;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.*;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -34,10 +31,18 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LayerGroupControllerTest extends CatalogRESTTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addStyle("singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
+    }
+
     @Before
     public void revertChanges() throws Exception {
         removeLayerGroup(null, "nestedLayerGroupTest");
@@ -47,6 +52,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
         removeLayerGroup(null, "newLayerGroupWithTypeEO");
+        removeLayerGroup(null, "newLayerGroupWithStyleGroup");
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName("sfLayerGroup");
@@ -373,6 +379,55 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertEquals( 2, lg.getStyles().size() );
         assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
         assertEquals( "point", lg.getStyles().get( 1 ).getName() );
+
+        assertNotNull( lg.getBounds() );
+
+        // expected keywords
+        Keyword keyword1 = new Keyword("keyword1");
+        keyword1.setLanguage("en");
+        keyword1.setVocabulary("vocabulary1");
+        Keyword keyword2 = new Keyword("keyword2");
+        keyword2.setLanguage("pt");
+        keyword2.setVocabulary("vocabulary2");
+        // check that the keywords were correctly added
+        assertThat(lg.getKeywords().size(), is(2));
+        assertThat(lg.getKeywords(), containsInAnyOrder(keyword1, keyword2));
+    }
+
+    @Test
+    public void testPostWithStyleGroups() throws Exception{
+        // right now styleGroups need declared bounds to work
+        String xml = "<layerGroup>" +
+                "    <name>newLayerGroupWithStyleGroup</name>" +
+                "    <layers>" +
+                "        <layer>Ponds</layer>" +
+                "        <layer></layer>" +
+                "    </layers>" +
+                "    <styles>" +
+                "        <style>polygon</style>" +
+                "        <style>singleStyleGroup</style>" +
+                "    </styles>" +
+                "    <keywords>" +
+                "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>" +
+                "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>" +
+                "    </keywords>" +
+                "</layerGroup>";
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml );
+        assertEquals( 201, response.getStatus() );
+
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/layergroups/newLayerGroupWithStyleGroup" ) );
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName( "newLayerGroupWithStyleGroup");
+        assertNotNull( lg );
+
+        assertEquals( 2, lg.getLayers().size() );
+        assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
+        assertNull( lg.getLayers().get( 1 ) );
+
+        assertEquals( 2, lg.getStyles().size() );
+        assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
+        assertEquals( "singleStyleGroup", lg.getStyles().get( 1 ).getName() );
 
         assertNotNull( lg.getBounds() );
 

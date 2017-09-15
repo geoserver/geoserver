@@ -31,7 +31,7 @@ Benefits of simple features
 
 * Easy to implement
 * Fast
-* Support queries on properies, including spatial queries on geometries
+* Support queries on properties, including spatial queries on geometries
 
 Drawbacks of simple features
 ````````````````````````````
@@ -86,7 +86,7 @@ XML view of a single table                                      Collection of re
 Schema automatically generated based on database                Schema agreed by community
 One large type                                                  Multiple different types
 Straightforward                                                 Richly featured data standards
-Interoperability relies on simplicity and customisation         Interoperability through standardisation
+Interoperability relies on simplicity and customisation         Interoperability through standardization
 ============================================================    =====================================================
 
 Benefits of complex features
@@ -101,7 +101,7 @@ Drawbacks of complex features
 
 * More complex to implement
 * Complex responses might slower if more database queries are required for each feature.
-* Information modelling is required to standardise an application schema. While this is beneficial, it requires effort from the user community.
+* Information modelling is required to standardize an application schema. While this is beneficial, it requires effort from the user community.
 
 
 Complex feature example
@@ -170,7 +170,7 @@ The complex feature WFS response fragment could then be encoded as::
 
 Portrayal complex features (SF0)
 ````````````````````````````````
-Portrayal schemas are standardised schemas with flat attributes, also known as simple feature level 0 (SF0). Because a community schema is still required (e.g. GeoSciML-Portrayal), app-schema plugin is still used to map the database columns to the attributes.
+Portrayal schemas are standardized schemas with flat attributes, also known as simple feature level 0 (SF0). Because a community schema is still required (e.g. GeoSciML-Portrayal), app-schema plugin is still used to map the database columns to the attributes.
 
 * :doc:`WFS CSV output format <../../services/wfs/outputformats>` is supported for complex features with portrayal schemas. At the moment, propertyName selection is not yet supported with csv outputFormat, so it always returns the full set of attributes. 
 * Complex features with nesting and multi-valued properties are not supported with :doc:`WFS CSV output format <../../services/wfs/outputformats>`.

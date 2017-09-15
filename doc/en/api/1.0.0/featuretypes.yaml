@@ -477,18 +477,36 @@ paths:
           description: The name of the feature type
           required: true
           type: string
+        - name: recalculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          required: false
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
         - name: featureType
           in: body
           description: The body of the feature type to POST
           required: true
           schema:
-            $ref: "#/definitions/FeatureTypeInfo"          
+            $ref: "#/definitions/FeatureTypeInfo"
       responses:
         200:
           description: The feature type was successfully updated.
     delete:
       operationId: deleteFeatureType
       description: Delete a feature type (optionally recursively deleting layers).
+      parameters:
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified featuretype. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layers reference the featuretype.
+          required: false
+          type: boolean
+          default: false
       responses:
         405:
           description: Method not allowed.
@@ -505,7 +523,7 @@ definitions:
         description: The native name of the resource. This name corresponds to the physical resource that feature type is derived from -- a shapefile name, a database table, etc...
       namespace:
         type: object
-        description: The namespace uri of the resource. Example would be an application schema namespace uri.
+        description: The namespace URI of the resource. Example would be an application schema namespace URI.
         properties:
           name:
             type: string
@@ -592,7 +610,7 @@ definitions:
             description: The coordinate reference system object of the bounding box.
       latLonBoundingBox:
         type: object
-        description: The bounds of the resource in lat / lon. This value represents a "fixed value" and is not calulated on the underlying dataset.
+        description: The bounds of the resource in lat / lon. This value represents a "fixed value" and is not calculated on the underlying dataset.
         properties:
           minx:
             type: number

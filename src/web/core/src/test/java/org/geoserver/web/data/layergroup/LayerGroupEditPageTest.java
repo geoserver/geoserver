@@ -21,10 +21,7 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.KeywordInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.wicket.DecimalTextField;
@@ -189,6 +186,29 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         
         assertEquals(layerCount, rowCount);
     }
+
+    @Test
+    public void testStyleGroupLink() {
+
+        LayerGroupEditPage page = new LayerGroupEditPage();
+        // Create the new page
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // Click on the link
+        tester.clickLink("publishedinfo:tabs:panel:layers:addStyleGroup");
+        tester.assertNoErrorMessage();
+        // Ensure that the Style Group List page is rendered correctly
+        tester.assertComponent("publishedinfo:tabs:panel:layers:popup:content:listContainer:items", DataView.class);
+        // Get the DataView containing the Style Group List
+        DataView<?> dataView = (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+        // Ensure that the Row count is equal to the style in the Catalog
+        Catalog catalog = getGeoServerApplication().getCatalog();
+
+        int styleCount = catalog.count(StyleInfo.class, Filter.INCLUDE);
+        int rowCount = (int) dataView.getRowCount();
+
+        assertEquals(styleCount, rowCount);
+    }
     
     @Test
     public void testLayerLinkWithWorkspace() {
@@ -325,6 +345,19 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                     && Objects.equals(keyword.getVocabulary(), "vocab2");
         });
 
+    }
+
+    @Test
+    public void testStyleGroup() {
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "styleGroup"));
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+
+        // save the layer group
+        FormTester form = tester.newFormTester("publishedinfo");
+        form.submit("save");
+        //We should be back to the list page
+        tester.assertRenderedPage(LayerGroupPage.class);
     }
 
     /**

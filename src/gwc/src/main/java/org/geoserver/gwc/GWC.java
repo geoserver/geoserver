@@ -708,7 +708,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
             try {
                 verifyAccessLayer(layerName, bbox);
-            } catch (ServiceException e) {
+            } catch (ServiceException|SecurityException e) {
                 return null;
             }
         }
@@ -2106,7 +2106,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param boundingBox bounding box
      * @throws ServiceException 
      */
-    public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException {
+    public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException, SecurityException {
         // get the list of internal layers corresponding to the advertised layer
         List<LayerInfo> layerInfos = null;
         LayerInfo li = getCatalog().getLayerByName(layerName);
@@ -2190,9 +2190,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     
                         if (!limitBox.covers(ReferencedEnvelope.EVERYTHING)
                                 && (boundingBox == null || !limitBox.contains(boundingBox))) {
-                            throw new ServiceException(
-                                    "Access denied to bounding box on layer " + layerName,
-                                    "AccessDenied");
+                            throw new SecurityException(
+                                    "Access denied to bounding box on layer " + layerName);
                         }
                     }
                 }
@@ -2200,42 +2199,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
     }
     
-    /**
-     * Verify that a layer is accessible within a certain bounding box (calculated from tile) using the (secured) catalog
-     * 
-     * @param layerName name of the layer
-     * @param gridSetId name of the gridset
-     * @param level zoom level
-     * @param tileColumn column of tile in tile grid
-     * @param tileRow row  of tile in tile grid
-     * @throws ServiceException
-     */
-    public void verifyAccessTiledLayer(String layerName, String gridSetId, int level, long tileColumn,
-            long tileRow) throws ServiceException {
-        // get bounding box of requested tile
-        GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(layerName);
-        GridSubset gridSubset = layer.getGridSubset(gridSetId);
-        if (gridSubset == null) {
-            throw new ServiceException(
-                    "The specified grid set " + gridSetId + " is not defined on layer " + layerName,
-                    "InternalServerError");
-        }
-        long[] tileIndex = { tileColumn, tileRow, level };
-        BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
-        double[] coords = bounds.getCoords();
-        CoordinateReferenceSystem crs;
-        try {
-            crs = getCRSForGridset(gridSubset);
-        } catch (FactoryException e) {
-            throw new ServiceException(
-                    "Could not decode SRS " + gridSubset.getSRS().toString() + " for gridset "+gridSubset.getGridSet().getName(),
-                    "InternalServerError");
-        }
-        
-        ReferencedEnvelope envelope = new ReferencedEnvelope(coords[0], coords[2], coords[1],
-                coords[3], crs);
-        this.verifyAccessLayer(layerName, envelope);
-    }
 
     CoordinateReferenceSystem getCRSForGridset(GridSubset gridSubset)
             throws NoSuchAuthorityCodeException, FactoryException {

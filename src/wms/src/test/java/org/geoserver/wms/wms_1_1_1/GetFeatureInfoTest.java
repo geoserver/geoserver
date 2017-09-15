@@ -919,6 +919,9 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        layerGroup.getLayers().add(buildingsLayer);
        layerGroup.getLayers().add(bridgesLayer);
        layerGroup.getLayers().add(forestLayer);
+       layerGroup.getStyles().add(null);
+       layerGroup.getStyles().add(null);
+       layerGroup.getStyles().add(null);
        new CatalogBuilder(catalog).calculateLayerGroupBounds(layerGroup);
        catalog.add(layerGroup);
        
@@ -954,6 +957,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        layerGroup.setName(groupLayer);
        layerGroup.setWorkspace(workspace);
        layerGroup.getLayers().add( catalog.getLayerByName(getLayerId(MockData.FORESTS)) );
+       layerGroup.getStyles().add(null);
        new CatalogBuilder(catalog).calculateLayerGroupBounds(layerGroup);
        catalog.add(layerGroup);
        

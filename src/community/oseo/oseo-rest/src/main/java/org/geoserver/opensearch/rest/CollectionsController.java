@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -13,20 +12,17 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.store.CollectionLayer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -41,19 +37,21 @@ import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.geotools.geojson.feature.FeatureJSON;
-import org.geotools.util.logging.Logging;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +77,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections")
 public class CollectionsController extends AbstractOpenSearchController {
-    
+
     /**
      * List of parts making up a zipfile for a collection
      */
@@ -109,10 +107,13 @@ public class CollectionsController extends AbstractOpenSearchController {
 
     static final Name COLLECTION_ID = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
 
-    public CollectionsController(OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
-        super(accessProvider, jsonConverter);
-    }
+    Catalog catalog;
 
+    public CollectionsController(OpenSearchAccessProvider accessProvider,
+            OseoJSONConverter jsonConverter, Catalog catalog) {
+        super(accessProvider, jsonConverter);
+        this.catalog = catalog;
+    }
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
@@ -159,7 +160,6 @@ public class CollectionsController extends AbstractOpenSearchController {
         return returnCreatedCollectionReference(request, eoId);
     }
 
-
     private ResponseEntity<String> returnCreatedCollectionReference(HttpServletRequest request,
             String eoId) throws URISyntaxException {
         String baseURL = ResponseUtils.baseURL(request);
@@ -192,7 +192,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         byte[] metadata = parts.get(CollectionPart.Metadata);
         byte[] rawLinks = parts.get(CollectionPart.OwsLinks);
         SimpleFeatureCollection linksCollection;
-        if(rawLinks != null) {
+        if (rawLinks != null) {
             OgcLinks links = parseJSON(OgcLinks.class, rawLinks);
             linksCollection = beansToLinksCollection(links);
         } else {
@@ -202,24 +202,25 @@ public class CollectionsController extends AbstractOpenSearchController {
         // insert the new feature and accessory bits
         runTransactionOnCollectionStore(fs -> {
             fs.addFeatures(singleton(collectionFeature));
-            
+
             final String nsURI = fs.getSchema().getName().getNamespaceURI();
             Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(eoId), true);
-            
+
             if (description != null) {
                 String descriptionString = new String(description);
                 fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
                         descriptionString, filter);
             }
-            
+
             if (metadata != null) {
                 String descriptionString = new String(metadata);
-                fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME,
-                        descriptionString, filter);
+                fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, descriptionString,
+                        filter);
             }
-            
-            if(linksCollection != null) {
-                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
+
+            if (linksCollection != null) {
+                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection,
+                        filter);
             }
 
         });
@@ -270,7 +271,7 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // check the id, mind, could be different from the collection one if the client
         // is trying to change
-        String eoId = checkCollectionIdentifier(feature);
+        checkCollectionIdentifier(feature);
 
         // prepare the update, need to convert each field into a Name/Value couple
         Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(),
@@ -306,6 +307,218 @@ public class CollectionsController extends AbstractOpenSearchController {
         // TODO: handle cascading on products, and removing the publishing side without removing the metadata
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(fs -> fs.removeFeatures(filter));
+    }
+
+    @GetMapping(path = "{collection}/layer", produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    public CollectionLayer getCollectionLayer(HttpServletRequest request,
+            @PathVariable(name = "collection", required = true) String collection)
+            throws IOException {
+        // query one collection and grab its OGC links
+        final Name layerPropertyName = getCollectionLayerPropertyName();
+        final PropertyName layerProperty = FF.property(layerPropertyName);
+        Feature feature = queryCollection(collection, q -> {
+            q.setProperties(Collections.singletonList(layerProperty));
+        });
+
+        CollectionLayer layer = buildCollectionLayerFromFeature(feature, true);
+        return layer;
+    }
+
+    private Name getCollectionLayerPropertyName() throws IOException {
+        String namespaceURI = getOpenSearchAccess().getCollectionSource().getSchema().getName()
+                .getNamespaceURI();
+        final Name layerPropertyName = new NameImpl(namespaceURI, OpenSearchAccess.LAYER);
+        return layerPropertyName;
+    }
+
+    @PutMapping(path = "{collection}/layer", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> putCollectionLayer(
+            @PathVariable(name = "collection", required = true) String collection,
+            @RequestBody CollectionLayer layer) throws IOException {
+        // check the collection is there
+        queryCollection(collection, q -> {
+        });
+
+        // validate the layer
+        validateLayer(layer);
+
+        // check if the layer was there
+        CollectionLayer previousLayer = getCollectionLayer(collection);
+
+        // prepare the update
+        SimpleFeature layerCollectionFeature = beanToLayerCollectionFeature(layer);
+        Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
+        final Name layerPropertyName = getCollectionLayerPropertyName();
+        runTransactionOnCollectionStore(fs -> {
+            fs.modifyFeatures(layerPropertyName, layerCollectionFeature, filter);
+        });
+
+        // this is done after the changes in the DB to make sure it's reading the same data
+        // we are inserting (feature sources do not accept a transaction...)
+        CollectionLayerManager layerManager = new CollectionLayerManager(catalog, accessProvider);
+        if (previousLayer != null) {
+             layerManager.removeMosaicAndLayer(previousLayer);
+        }
+        try {
+            layerManager.createMosaicAndLayer(collection, layer);
+        } catch (Exception e) {
+            // rethrow to make the transaction fail
+            throw new RuntimeException(e);
+        }
+
+        // see if we have to return a creation or not
+        if (previousLayer != null) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+    }
+
+    private CollectionLayer getCollectionLayer(String collection) throws IOException {
+        final Name layerPropertyName = getCollectionLayerPropertyName();
+        final PropertyName layerProperty = FF.property(layerPropertyName);
+        Feature feature = queryCollection(collection, q -> {
+            q.setProperties(Collections.singletonList(layerProperty));
+        });
+        CollectionLayer layer = buildCollectionLayerFromFeature(feature, false);
+        return layer;
+    }
+
+    private CollectionLayer buildCollectionLayerFromFeature(Feature feature,
+            boolean notFoundOnEmpty) {
+        CollectionLayer layer = CollectionLayer.buildCollectionLayerFromFeature(feature);
+        if (layer == null && notFoundOnEmpty) {
+            throw new ResourceNotFoundException();
+        }
+
+        return layer;
+    }
+
+   
+
+    /**
+     * Validates the layer and throws appropriate exceptions in case mandatory bits are missing
+     * 
+     * @param layer
+     * @param catalog2
+     */
+    private void validateLayer(CollectionLayer layer) {
+        if (layer.getWorkspace() == null) {
+            throw new RestException(
+                    "Invalid layer configuration, workspace name is missing or null",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (catalog.getWorkspaceByName(layer.getWorkspace()) == null) {
+            throw new RestException("Invalid layer configuration, workspace '"
+                    + layer.getWorkspace() + "' does not exist", HttpStatus.BAD_REQUEST);
+        }
+        if (layer.getLayer() == null) {
+            throw new RestException("Invalid layer configuration, layer name is missing or null",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (layer.isSeparateBands()) {
+            if (layer.getBands() == null || layer.getBands().length == 0) {
+                throw new RestException(
+                        "Invalid layer configuration, claims to have separate bands but does "
+                                + "not list the band names",
+                        HttpStatus.BAD_REQUEST);
+            }
+            if (layer.getBrowseBands() == null || layer.getBrowseBands().length == 0) {
+                throw new RestException(
+                        "Invalid layer configuration, claims to have separate bands but does not "
+                                + "list the browse band names (hence cannot setup a style for it)",
+                        HttpStatus.BAD_REQUEST);
+            } else if ((layer.getBrowseBands().length != 3 && layer.getBrowseBands().length != 1)) {
+                throw new RestException("Invalid layer configuration, browse bands must be either "
+                        + "one (gray) or three (RGB)", HttpStatus.BAD_REQUEST);
+            } else if (layer.getBands().length > 0 && layer.getBrowseBands().length > 0
+                    && !containedFully(layer.getBrowseBands(), layer.getBands())) {
+                throw new RestException(
+                        "Invalid layer configuration, browse bands contains entries "
+                                + "that are not part of the bands declaration",
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+        if (layer.isHeterogeneousCRS()) {
+            if (layer.getMosaicCRS() == null) {
+                throw new RestException(
+                        "Invalid layer configuration, mosaic is heterogeneous but the mosaic CRS is missing",
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+        if (layer.getMosaicCRS() != null) {
+            try {
+                CRS.decode(layer.getMosaicCRS());
+            } catch (FactoryException e) {
+                throw new RestException(
+                        "Invalid mosaicCRS value, cannot be decoded: " + e.getMessage(),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+    }
+
+    private boolean containedFully(String[] browseBands, String[] bands) {
+        for (int i = 0; i < browseBands.length; i++) {
+            String bb = browseBands[i];
+            boolean found = false;
+            for (int j = 0; j < bands.length; j++) {
+                if(bands[j].equals(bb)) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if(!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+    @DeleteMapping(path = "{collection}/layer")
+    public void deleteCollectionLayer(
+            @PathVariable(name = "collection", required = true) String collection)
+            throws IOException {
+        // check the collection is there
+        queryCollection(collection, q -> {
+        });
+
+        // prepare the update
+        Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
+        final Name layerPropertyName = getCollectionLayerPropertyName();
+        runTransactionOnCollectionStore(fs -> {
+            CollectionLayer previousLayer = getCollectionLayer(collection);
+
+            // remove from DB
+            fs.modifyFeatures(layerPropertyName, null, filter);
+
+            // remove from configuration if needed
+            if (previousLayer != null) {
+                new CollectionLayerManager(catalog, accessProvider).removeMosaicAndLayer(previousLayer);
+            }
+        });
+    }
+
+    private SimpleFeature beanToLayerCollectionFeature(CollectionLayer layer) throws IOException {
+        Name collectionLayerPropertyName = getCollectionLayerPropertyName();
+        PropertyDescriptor pd = getOpenSearchAccess().getCollectionSource().getSchema()
+                .getDescriptor(collectionLayerPropertyName);
+        SimpleFeatureType schema = (SimpleFeatureType) pd.getType();
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
+        fb.set("workspace", layer.getWorkspace());
+        fb.set("layer", layer.getLayer());
+        fb.set("separateBands", layer.isSeparateBands());
+        fb.set("bands", layer.getBands());
+        fb.set("browseBands", layer.getBrowseBands());
+        fb.set("heterogeneousCRS", layer.isHeterogeneousCRS());
+        fb.set("mosaicCRS", layer.getMosaicCRS());
+        SimpleFeature sf = fb.buildFeature(null);
+        return sf;
     }
 
     @GetMapping(path = "{collection}/ogcLinks", produces = { MediaType.APPLICATION_JSON_VALUE })

@@ -12,6 +12,7 @@
 	<constructor-arg ref="gwcRuntimeStats"/>
     <constructor-arg ref="gwcURLMangler"/>
     <constructor-arg ref="geowebcacheDispatcher"/>
+    <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
   </bean>
   <bean id="gwcServiceWMTSProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="targetName">

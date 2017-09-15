@@ -5,12 +5,20 @@
  */
 package org.geoserver;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageReaderWriterSpi;
+import javax.imageio.spi.ImageWriterSpi;
 import javax.servlet.ServletContextEvent;
 
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -22,16 +30,19 @@ import org.junit.Test;
 import org.opengis.feature.FeatureFactory;
 import org.opengis.filter.FilterFactory;
 import org.opengis.style.StyleFactory;
-
 import org.springframework.mock.web.MockServletContext;
 
 public class GeoServerInitStartupListenerTest {
 
     private static final double CUSTOM_TOLERANCE = 1E-7d;
+    private GeoserverInitStartupListener listener;
 
     @Before
     public void init() {
         System.setProperty("COMPARISON_TOLERANCE", Double.toString(CUSTOM_TOLERANCE));
+        listener = new GeoserverInitStartupListener();
+        MockServletContext ctx = new MockServletContext();
+        listener.contextInitialized(new ServletContextEvent(ctx));
     }
 
     @After
@@ -41,9 +52,6 @@ public class GeoServerInitStartupListenerTest {
 
     @Test
     public void testStartupListener() {
-        GeoserverInitStartupListener listener = new GeoserverInitStartupListener();
-        MockServletContext ctx = new MockServletContext();
-        listener.contextInitialized(new ServletContextEvent(ctx));
         Hints hints = GeoTools.getDefaultHints();
 
         final Object factory = hints.get(Hints.GRID_COVERAGE_FACTORY);
@@ -74,5 +82,22 @@ public class GeoServerInitStartupListenerTest {
         assertNotNull(executorService);
         assertTrue(executorService instanceof ExecutorService);
 
+    }
+    
+    @Test
+    public void testJPEG2000Registration() {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        assertNoSunJPEG2000(registry, ImageReaderSpi.class);
+        assertNoSunJPEG2000(registry, ImageWriterSpi.class);
+    }
+
+    private <T extends ImageReaderWriterSpi> void assertNoSunJPEG2000(IIORegistry registry,
+            Class<T> category) {
+        Iterator<T> it = registry.getServiceProviders(category, false);
+        while (it.hasNext()) {
+            T spi = it.next();
+            assertThat(spi.getClass().getPackage().getName(),
+                    not(startsWith(GeoserverInitStartupListener.COM_SUN_JPEG2000_PACKAGE)));
+        }
     }
 }

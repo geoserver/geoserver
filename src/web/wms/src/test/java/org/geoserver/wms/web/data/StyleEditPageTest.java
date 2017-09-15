@@ -36,25 +36,16 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.WicketTester;
 import org.apache.wicket.util.tester.WicketTesterHelper;
-import org.geoserver.catalog.CatalogException;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LegendInfo;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.*;
 
-import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -63,6 +54,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -78,11 +70,6 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     StyleInfo buildingsStyle;
     StyleEditPage edit;
 
-    private static final String STYLE_TO_MOVE_NAME = "testStyle";
-    private static final String STYLE_TO_MOVE_FILENAME = "testMoveStyle.sld";
-    private static final String STYLE_TO_MOVE_FILENAME_UPDATED = "testMoveStyleUpdated.sld";
-    StyleInfo styleInfoToMove;
-    
     @Before
     public void setUp() throws Exception {
         Catalog catalog = getCatalog();
@@ -164,14 +151,6 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         
         edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
-        styleInfoToMove = catalog.getStyleByName("testStyle");
-        
-    }
-    
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        testData.addStyle(STYLE_TO_MOVE_NAME, STYLE_TO_MOVE_FILENAME, this.getClass(), getCatalog());
     }
 
     @Test
@@ -346,53 +325,47 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertThat(message, containsString("Entity resolution disallowed"));
         assertThat(message, containsString("/this/file/does/not/exist"));
     }
-    
+
     @Test
-    public void testGenerateTemplateFrenchLocale() throws Exception {
-        final Session session = tester.getSession();
-        try {
-            session.clear();
-            session.setLocale(Locale.FRENCH);
-            
-            StyleEditPage edit = new StyleEditPage(buildingsStyle);
-            tester.startPage(edit);
-            // print(tester.getLastRenderedPage(), true, true);
-            
-            // test the copy style link
-            tester.newFormTester("styleForm").select("context:panel:templates", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:templates", "onchange");
-            Component generateLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
-            tester.executeAjaxEvent(generateLink, "onClick");
-            // check single quote in the message has been escaped
-            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
-        } finally {
-            session.clear();
-            session.setLocale(Locale.getDefault());
-        }
+    public void testValidateNamedLayers() throws Exception {
+        String xml =
+                "<StyledLayerDescriptor version='1.0.0' " +
+                        " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' " +
+                        " xmlns='http://www.opengis.net/sld' " +
+                        " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>Streams</Name>\n" + //Reference the Streams layer
+                        "  </NamedLayer>\n" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>RoadSegments</Name>\n" + //2nd, valid layer
+                        "  </NamedLayer>\n" +
+                        "</StyledLayerDescriptor>";
+
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+
+        tester.executeAjaxEvent("validate", "click");
+        tester.assertNoErrorMessage();
     }
-    
+
     @Test
-    public void testCopyStyleFrenchLocale() throws Exception {
-        final Session session = tester.getSession();
-        try {
-            session.clear();
-            session.setLocale(Locale.FRENCH);
-            
-            StyleEditPage edit = new StyleEditPage(buildingsStyle);
-            tester.startPage(edit);
-            // print(tester.getLastRenderedPage(), true, true);
-            
-            // test the copy style link
-            tester.newFormTester("styleForm").select("context:panel:existingStyles", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "onchange");
-            Component copyLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
-            tester.executeAjaxEvent(copyLink, "onClick");
-            // check single quote in the message has been escaped
-            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
-        } finally {
-            session.clear();
-            session.setLocale(Locale.getDefault());
-        }
+    public void testValidateNamedLayersInvalid() throws Exception {
+        String xml =
+                "<StyledLayerDescriptor version='1.0.0' " +
+                        " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' " +
+                        " xmlns='http://www.opengis.net/sld' " +
+                        " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>Streams</Name>\n" + //Reference the Streams layer
+                        "  </NamedLayer>\n" +
+                        "  <NamedLayer>\n" +
+                        "    <Name>Stream</Name>\n" + //2nd, invalid layer
+                        "  </NamedLayer>\n" +
+                        "</StyledLayerDescriptor>";
+
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+
+        tester.executeAjaxEvent("validate", "click");
+        tester.assertErrorMessages(new String[] {"No layer or layer group named 'Stream' found in the catalog"});
     }
 
     /**
@@ -549,140 +522,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertNull(style.getLegend());
     }
 
-    /*
-     * Test that a user can update the .sld file contents and move the style into a workspace in a single edit.
-     */
-    @Test
-    public void testMoveWorkspaceAndEdit() throws Exception {
-        // add catalog listener so we can validate the style modified event
-        final boolean[] gotValidEvent = {false};
-        getCatalog().addListener(new CatalogListener() {
 
-            @Override
-            public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
-                // not interest, ignore this events
-            }
-
-            @Override
-            public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
-                // not interest, ignore this events
-            }
-
-            @Override
-            public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
-                // not interest, ignore this events
-            }
-
-            @Override
-            public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
-                assertThat(event, notNullValue());
-                assertThat(event.getSource(), notNullValue());
-                if (!(event.getSource() instanceof StyleInfo)) {
-                    // only interested in style info events
-                    return;
-                }
-                try {
-                    // get the associated style and check that you got the correct content
-                    StyleInfo styleInfo = (StyleInfo) event.getSource();
-                    assertThat(styleInfo, notNullValue());
-                    Style style = getCatalog().getResourcePool().getStyle(styleInfo);
-                    assertThat(style, notNullValue());
-                    assertThat(style.featureTypeStyles().size(), is(2));
-                    // ok everything looks good
-                    gotValidEvent[0] = true;
-                } catch (Exception exception) {
-                    LOGGER.log(Level.SEVERE, "Error handling catalog modified style event.", exception);
-                }
-            }
-
-            @Override
-            public void reloaded() {
-                // not interest, ignore this events
-            }
-        });
-
-        edit = new StyleEditPage(styleInfoToMove);
-        tester.startPage(edit);
-
-        // Before the edit, the style should have one <FeatureTypeStyle>
-        assertEquals(1, styleInfoToMove.getStyle().featureTypeStyles().size());
-
-        FormTester form = tester.newFormTester("styleForm", false);
-
-        // Update the workspace (select "sf" from the dropdown)
-        DropDownChoice<WorkspaceInfo> typeDropDown = (DropDownChoice<WorkspaceInfo>) tester
-                .getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
-
-        for (int wsIdx = 0; wsIdx < typeDropDown.getChoices().size(); wsIdx++) {
-            WorkspaceInfo ws = typeDropDown.getChoices().get(wsIdx);
-            if ("sf".equalsIgnoreCase(ws.getName())) {
-                form.select("context:panel:workspace", wsIdx);
-                break;
-            }
-        }
-
-        // Update the raw style contents (the new style has TWO <FeatureTypeStyle> entries).
-        File styleFile = new File(getClass().getResource(STYLE_TO_MOVE_FILENAME_UPDATED).toURI());
-        String updatedSld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n")
-                .replaceAll("\r", "\n");
-        form.setValue("styleEditor:editorContainer:editorParent:editor", updatedSld);
-
-        // Submit the form and verify that both the new workspace and new rawStyle saved.
-        form.submit();
-
-        StyleInfo si = getCatalog().getStyleByName(getCatalog().getWorkspaceByName("sf"),
-                STYLE_TO_MOVE_NAME);
-        assertNotNull(si);
-        assertNotNull(si.getWorkspace());
-        assertEquals("sf", si.getWorkspace().getName());
-        assertEquals(2, si.getStyle().featureTypeStyles().size());
-
-        // check the correct style modified event was published
-        assertThat(gotValidEvent[0], is(true));
-    }
-
-    //Test that a user can non-destructively move the style out of a workspace.
-    @Test
-    public void testMoveFromWorkspace() throws Exception {
-        //Move into sf
-        Catalog catalog = getCatalog();
-        StyleInfo si = catalog.getStyleByName(STYLE_TO_MOVE_NAME);
-        si.setWorkspace(catalog.getWorkspaceByName("sf"));
-        catalog.save(si);
-
-        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
-        //verify move to workspace was successful
-        assertEquals(Resource.Type.UNDEFINED, dataDir.get("styles/"+STYLE_TO_MOVE_FILENAME).getType());
-        assertEquals(Resource.Type.RESOURCE, dataDir.get("workspaces/sf/styles/"+STYLE_TO_MOVE_FILENAME).getType());
-
-        // test moving back to default workspace using the UI
-        edit = new StyleEditPage(si);
-        tester.startPage(edit);
-
-        // Before the edit, the style should have one <FeatureTypeStyle> and be in the sf workspace
-        assertEquals(1, si.getStyle().featureTypeStyles().size());
-        assertEquals("sf", si.getWorkspace().getName());
-
-        FormTester form = tester.newFormTester("styleForm", false);
-
-        // Update the workspace (select "sf" from the dropdown)
-        DropDownChoice<WorkspaceInfo> typeDropDown = (DropDownChoice<WorkspaceInfo>) tester
-                .getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
-
-        form.setValue("context:panel:workspace", "");
-
-
-        // Submit the form and verify that both the new workspace and new rawStyle saved.
-        form.submit();
-
-        si = getCatalog().getStyleByName(STYLE_TO_MOVE_NAME);
-        assertNotNull(si);
-        assertNull(si.getWorkspace());
-
-        //verify move out of the workspace was successful
-        assertEquals(Resource.Type.RESOURCE, dataDir.get("styles/"+STYLE_TO_MOVE_FILENAME).getType());
-        assertEquals(Resource.Type.UNDEFINED, dataDir.get("workspaces/sf/styles/"+STYLE_TO_MOVE_FILENAME).getType());
-    }
     
     @Test
     public void applyThenSubmit() throws Exception {
@@ -702,5 +542,48 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
     }
 
-    
+    @Test
+    public void testLayerPreviewTabStyleGroup() {
+
+        LayerInfo l = getCatalog().getLayers().get(0);
+        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        // used to fail with an exception here because the template file cannot be found
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
+
+        tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
+        OpenLayersPreviewPanel previewPanel = (OpenLayersPreviewPanel) tester.getComponentFromLastRenderedPage("styleForm:context:panel");
+        assertFalse(previewPanel.isPreviewStyleGroup);
+
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:previewStyleGroup", true);
+        form.submit();
+
+        assertTrue(previewPanel.isPreviewStyleGroup);
+    }
+
+    @Test
+    public void testRenameDefaultStyle() {
+        StyleInfo styleInfo = new StyleInfoImpl(null);
+        styleInfo.setName("point");
+        styleInfo.setFilename("test.sld");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
+        WicketTester styleTest = new WicketTester(app, false);
+
+        StyleEditPage page = new StyleEditPage(styleInfo);
+        styleTest.startPage(page);
+        styleTest.assertDisabled("styleForm:context:panel:name");
+    }
+
+    @Test
+    public void testChangeWsDefaultStyle() {
+        StyleInfo styleInfo = new StyleInfoImpl(null);
+        styleInfo.setName("point");
+        styleInfo.setFilename("test.sld");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
+        WicketTester styleTest = new WicketTester(app, false);
+
+        StyleEditPage page = new StyleEditPage(styleInfo);
+        styleTest.startPage(page);
+        styleTest.assertDisabled("styleForm:context:panel:workspace");
+    }
 }

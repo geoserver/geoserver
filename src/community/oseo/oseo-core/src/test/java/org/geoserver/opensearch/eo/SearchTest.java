@@ -154,7 +154,7 @@ public class SearchTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // print(dom);
+        print(dom);
 
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("2")));

@@ -140,9 +140,14 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(REGIONATED)));
         layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT)));
         layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT2)));
+        layerGroup2.getStyles().add(null);
+        layerGroup2.getStyles().add(null);
+        layerGroup2.getStyles().add(null);
         
         layerGroup3.getLayers().add(layerGroup2);
         layerGroup3.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT3)));
+        layerGroup3.getStyles().add(null);
+        layerGroup3.getStyles().add(null);
                         
         catalog.add(layerGroup1);
         catalog.add(layerGroup2);

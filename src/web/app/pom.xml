@@ -143,6 +143,10 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
       <artifactId>gt-wfs-ng</artifactId>
     </dependency>
     <dependency>
@@ -1518,6 +1522,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-oseo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>s3-geotiff</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-s3-geotiff</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

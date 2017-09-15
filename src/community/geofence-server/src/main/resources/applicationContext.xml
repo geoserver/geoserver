@@ -133,21 +133,11 @@
         <constructor-arg index="0" ref="adminRuleAdminService"/>
     </bean>
 
-    <bean id="usersRestController" class="org.geoserver.geofence.rest.UsersRestController">
-        <constructor-arg index="0" ref="geoServerSecurityManager"/>
-    </bean>
-
-    <bean id="rolesRestController" class="org.geoserver.geofence.rest.RolesRestController">
-        <constructor-arg index="0" ref="geoServerSecurityManager"/>
-    </bean>
-
     <bean id="geofenceRestURLMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="alwaysUseFullPath" value="true"/>
         <property name="mappings">
             <props>
                 <prop key="/geofence/rest/rules**">rulesRestController</prop>
-                <prop key="/geofence/rest/usergroup**">usersRestController</prop>
-                <prop key="/geofence/rest/roles**">rolesRestController</prop>
             </props>
         </property>
     </bean>
@@ -168,9 +158,6 @@
                                 <list>
                                     <value>org.geoserver.geofence.rest.xml.JaxbRule</value>
                                     <value>org.geoserver.geofence.rest.xml.JaxbRuleList</value>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbRoleList</value>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbUser</value>
-                                    <value>org.geoserver.geofence.rest.xml.JaxbUserList</value>
                                 </list>
                             </property>
                         </bean>

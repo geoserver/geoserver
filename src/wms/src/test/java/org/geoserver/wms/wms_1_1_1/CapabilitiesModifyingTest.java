@@ -46,6 +46,7 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
         // create a misconfigured layer group
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.LAKES)));
+        lg.getStyles().add(null);
         lg.setName("test");
         lg.setMode(Mode.NAMED);
         

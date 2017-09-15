@@ -19,16 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.geoserver.catalog.CascadeDeleteVisitor;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CatalogFacade;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.SLDHandler;
-import org.geoserver.catalog.StyleHandler;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
@@ -429,8 +420,16 @@ public class StyleController extends AbstractCatalogController {
                     }
                     try {
                         StyledLayerDescriptor sld = format.parse( content, version, null, entityResolver);
+                        //If there are more than one layers, assume this is a style group and validate accordingly.
+                        if (sld.getStyledLayers().length > 1) {
+                            List<Exception> validationErrors = SLDNamedLayerValidator.validate(catalog, sld);
+                            if (validationErrors.size() > 0) {
+                                throw validationErrors.get(0);
+                            }
+                        }
+
                         Style style = Styles.style(sld);
-                        if( format instanceof SLDHandler){
+                        if( format instanceof SLDHandler && sld.getStyledLayers().length <= 1){
                             s.setFormat(format.getFormat());
                             resourcePool.writeStyle(s, style, true);
                             catalog.save(s);
@@ -446,7 +445,7 @@ public class StyleController extends AbstractCatalogController {
                     }
                 }
             }
-            throw new RestException("Unknown style fomrat '"+contentType+"'", HttpStatus.BAD_REQUEST);
+            throw new RestException("Unknown style format '"+contentType+"'", HttpStatus.BAD_REQUEST);
         }
     }
     

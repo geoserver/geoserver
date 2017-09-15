@@ -81,6 +81,19 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         assertTrue(wms.isBBOXForEachCRS());
     }
 
+    
+    @Test
+    public void testRootLayerTitle() throws Exception {
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("rootLayerTitle", "test");
+        ft.setValue("rootLayerAbstract", "abstract test");
+        ft.submit("submit");
+        tester.assertNoErrorMessage();
+        assertEquals(wms.getRootLayerTitle(), "test");
+        assertEquals(wms.getRootLayerAbstract(), "abstract test");
+    }
+
     @Test
     public void testDynamicStylingDisabled() throws Exception {
         assertFalse(wms.isDynamicStylingDisabled());

@@ -5,8 +5,6 @@
  */
 package org.geoserver.gwc.layer;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -15,7 +13,8 @@ import org.geowebcache.config.ContextualConfigurationProvider;
 import org.geowebcache.config.XMLConfigurationProvider;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.service.HttpErrorCodeException;
+import org.geowebcache.rest.exception.RestException;
+import org.springframework.http.HttpStatus;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
@@ -91,8 +90,9 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
                 name = null;
             }
             if (name == null) {// name is mandatory
-                throw new HttpErrorCodeException(HttpServletResponse.SC_BAD_REQUEST,
-                        "Layer name not provided");
+                throw new RestException(
+                        "Layer name not provided",
+                        HttpStatus.BAD_REQUEST);
             }
             LayerInfo layer = null;
             LayerGroupInfo layerGroup = null;
@@ -101,8 +101,9 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
                 if (layer == null) {
                     layerGroup = catalog.getLayerGroup(id);
                     if (layerGroup == null) {
-                        throw new HttpErrorCodeException(HttpServletResponse.SC_BAD_REQUEST,
-                                "No GeoServer Layer or LayerGroup exists with id '" + id + "'");
+                        throw new RestException(
+                                "No GeoServer Layer or LayerGroup exists with id '" + id + "'",
+                                HttpStatus.BAD_REQUEST);
                     }
                 }
             } else {
@@ -110,8 +111,9 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
                 if (layer == null) {
                     layerGroup = catalog.getLayerGroupByName(name);
                     if (layerGroup == null) {
-                        throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND,
-                                "GeoServer Layer or LayerGroup '" + name + "' not found");
+                        throw new RestException(
+                                "GeoServer Layer or LayerGroup '" + name + "' not found",
+                                HttpStatus.NOT_FOUND);
                     }
                 }
             }
@@ -121,9 +123,10 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
                     .tileLayerName(layerGroup);
 
             if (id != null && !name.equals(actualName)) {
-                throw new HttpErrorCodeException(HttpServletResponse.SC_BAD_REQUEST,
+                throw new RestException(
                         "Layer with id '" + id + "' found but name does not match: '" + name
-                                + "'/'" + actualName + "'");
+                                + "'/'" + actualName + "'",
+                        HttpStatus.BAD_REQUEST);
             }
 
             info.setId(actualId);

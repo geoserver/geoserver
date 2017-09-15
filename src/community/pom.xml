@@ -244,6 +244,7 @@
         <module>jdbc-metrics</module>
         <module>oseo</module>
         <module>mbstyle</module>
+        <module>s3-geotiff</module>
       </modules>
     </profile>
     <profile>
@@ -533,5 +534,11 @@
         <module>jdbc-metrics</module>
       </modules>
     </profile>
-  </profiles>  
+    <profile>
+      <id>s3-geotiff</id>
+      <modules>
+        <module>s3-geotiff</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

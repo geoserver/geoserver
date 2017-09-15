@@ -15,9 +15,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Point;
 import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.impl.CatalogImplTest;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -28,10 +31,17 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PointSymbolizer;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -55,6 +65,13 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         if(defaultWorkspace.exists()) {
             defaultWorkspace.delete();
         }
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws IOException {
+        testData.addStyle("singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
+        testData.addStyle("multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
+        testData.addStyle("recursiveStyleGroup", "recursiveStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
     }
     
     @Test
@@ -182,6 +199,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS)));
         lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.PONDS)));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
         cb.calculateLayerGroupBounds(lg);
         lg.setName("test-lg");
         catalog.add(lg);
@@ -243,6 +262,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS)));
         lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.STREAMS)));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
         cb.calculateLayerGroupBounds(lg);
         lg.setName("test-lg");
         lg.setWorkspace(ws);
@@ -283,6 +304,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         LayerInfo l = catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS));
         lg.getLayers().add(l);
+        lg.getStyles().add(null);
         lg.setName("test-reproject");
         
         // EPSG:4901 "equivalent" but different uom
@@ -299,5 +321,128 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         //Reproject our layer group to EPSG:4901. We expect it to have an EPSG code.
         cb.calculateLayerGroupBounds(lg, lgCrs);
         assertNotNull(CRS.lookupEpsgCode(lg.getBounds().getCoordinateReferenceSystem(), false));
+    }
+
+    @Test
+    public void testLayerGroupNullLayerOrStyleReferences() throws IOException {
+        Catalog catalog = getCatalog();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        LayerInfo l = catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS));
+        StyleInfo s = catalog.getStyleByName("singleStyleGroup");
+
+        lg.setWorkspace(null);
+        lg.setName("threeTypeLayerGroup");
+        //layer with default style
+        lg.getLayers().add(l);
+        lg.getStyles().add(null);
+        //style group
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+        lg.getLayers().add(null);
+        lg.getStyles().add(null);
+
+        catalog.add(lg);
+        LayerGroupInfo resolved = catalog.getLayerGroupByName("threeTypeLayerGroup");
+        assertEquals(2, resolved.layers().size());
+        assertEquals(2, resolved.styles().size());
+        assertEquals(l, resolved.layers().get(0));
+        assertEquals(s.getStyle(), resolved.styles().get(1).getStyle());
+    }
+
+    @Test
+    public void testSingleStyleGroup() throws Exception {
+        Catalog catalog = getCatalog();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        StyleInfo s = catalog.getStyleByName("singleStyleGroup");
+
+        lg.setWorkspace(null);
+        lg.setName("singleStyleLayerGroup");
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+
+        catalog.add(lg);
+        LayerGroupInfo resolved = catalog.getLayerGroupByName("singleStyleLayerGroup");
+        assertEquals(1, resolved.layers().size());
+        assertEquals(1, resolved.styles().size());
+        assertEquals(s.getStyle(), resolved.styles().get(0).getStyle());
+
+        //Test bounds calculation
+        new LayerGroupHelper(lg).calculateBounds();
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.STREAMS))).getResource().getLatLonBoundingBox(), lg.getBounds());
+    }
+
+    @Test
+    public void testMultiStyleGroup() throws Exception {
+        Catalog catalog = getCatalog();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        StyleInfo s = catalog.getStyleByName("multiStyleGroup");
+
+        LayerGroupInfo nestedLg = catalog.getFactory().createLayerGroup();
+        nestedLg.setName("nestedLayerGroup");
+        nestedLg.getLayers().add(catalog.getLayerByName((getLayerId(MockData.PONDS))));
+        nestedLg.getLayers().add(catalog.getLayerByName((getLayerId(MockData.BUILDINGS))));
+        nestedLg.getStyles().add(null);
+        nestedLg.getStyles().add(null);
+
+        catalog.add(nestedLg);
+
+        lg.setWorkspace(null);
+        lg.setName("multiStyleLayerGroup");
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+
+        catalog.add(lg);
+        LayerGroupInfo resolved = catalog.getLayerGroupByName("multiStyleLayerGroup");
+
+        List<LayerInfo> layers = resolved.layers();
+        List<StyleInfo> styles = resolved.styles();
+
+        assertEquals(6, layers.size());
+        assertEquals(6, styles.size());
+        //assertEquals(s.getStyle(), resolved.styles().get(0).getStyle());
+
+        //named layer with user style -> 1 layer
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.STREAMS))), layers.get(0));
+        assertTrue(styles.get(0).getStyle().featureTypeStyles().get(0).rules().get(0).getSymbolizers()[0] instanceof LineSymbolizer);
+        //named layer with user style + named style -> 2 layers
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.ROAD_SEGMENTS))), layers.get(1));
+        assertTrue(styles.get(1).getStyle().featureTypeStyles().get(0).rules().get(0).getSymbolizers()[0] instanceof LineSymbolizer);
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.ROAD_SEGMENTS))), layers.get(2));
+        assertEquals(catalog.getStyleByName("line").getStyle(), styles.get(2).getStyle());
+        //named layer (layer group) with no style -> 2 layers
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.PONDS))), layers.get(3));
+        assertEquals(catalog.getLayerByName((getLayerId(MockData.BUILDINGS))), layers.get(4));
+        //user layer (inline feature) with user style -> 1 layer
+        SimpleFeature inlineFeature = (SimpleFeature) ((FeatureTypeInfo)layers.get(5).getResource()).getFeatureSource(null, null).getFeatures().features().next();
+        assertTrue(inlineFeature.getDefaultGeometry() instanceof Point);
+        assertEquals("POINT (115.741666667 -64.6583333333)", ((Point)inlineFeature.getDefaultGeometry()).toText());
+        assertTrue(styles.get(5).getStyle().featureTypeStyles().get(0).rules().get(0).getSymbolizers()[0] instanceof PointSymbolizer);
+
+        //Test bounds calculation
+        new LayerGroupHelper(lg).calculateBounds();
+        assertEquals(new ReferencedEnvelope(-180,180,-90,90, DefaultGeographicCRS.WGS84), lg.getBounds());
+    }
+
+    @Test
+    public void testRecursiveStyleGroup() throws IOException {
+        Catalog catalog = getCatalog();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        StyleInfo s = catalog.getStyleByName("recursiveStyleGroup");
+
+        lg.setWorkspace(null);
+        lg.setName("recursiveLayerGroup");
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+
+        try {
+            catalog.add(lg);
+            Assert.fail("Should not be able to add invalid layer group to catalog");
+        } catch (IllegalArgumentException e) {
+            //expected
+        }
     }
 }

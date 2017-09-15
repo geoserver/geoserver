@@ -88,7 +88,7 @@ public class WorkspaceController extends AbstractCatalogController {
     }
 
     @GetMapping(value = "/{workspaceName}")
-    public RestWrapper<WorkspaceInfo> getWorkspace(@PathVariable String workspaceName) {
+    public RestWrapper<WorkspaceInfo> workspaceGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo wkspace = catalog.getWorkspaceByName(workspaceName);
         if (wkspace == null) {

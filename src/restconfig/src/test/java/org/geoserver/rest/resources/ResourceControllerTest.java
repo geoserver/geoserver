@@ -243,6 +243,22 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/mydir/myres", 
                 "/x:html/x:body/x:ul/x:li[4]/x:ul/x:li/x:a/@href", doc);
     }
+
+    @Test
+    public void testDirectoryRootXML() throws Exception {
+        XMLUnit.setXpathNamespaceContext(NS_XML);
+        Document doc = getAsDOM(RestBaseController.ROOT_PATH+"/resource?format=xml");
+        XMLAssert.assertXpathEvaluatesTo("", "/ResourceDirectory/name", doc);
+        XMLAssert.assertXpathEvaluatesTo("", "/ResourceDirectory/parent", doc);
+    }
+
+    @Test
+    public void testDirectoryRootHTML() throws Exception {
+        XMLUnit.setXpathNamespaceContext(NS_HTML);
+        Document doc = getAsDOM(RestBaseController.ROOT_PATH+"/resource?format=html");
+        XMLAssert.assertXpathEvaluatesTo("Name: ''", "/x:html/x:body/x:ul/x:li[1]", doc);
+        XMLAssert.assertXpathEvaluatesTo("Parent: ", "/x:html/x:body/x:ul/x:li[2]", doc);
+    }
     
     @Test
     public void testDirectoryHeaders() throws Exception {

@@ -344,6 +344,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName("group");
         group.getLayers().add(layer);
+        group.getStyles().add(null);
         
         assertNull(group.getBounds());
 

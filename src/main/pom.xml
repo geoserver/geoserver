@@ -134,6 +134,12 @@
   <dependency>
     <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
     <artifactId>jt-concurrent-tile-cache</artifactId>
+    <exclusions>
+       <exclusion>
+          <groupId>com.vividsolutions</groupId>
+          <artifactId>jts</artifactId>
+       </exclusion>
+    </exclusions>
   </dependency>
   
   <dependency>

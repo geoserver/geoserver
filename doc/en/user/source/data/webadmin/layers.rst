@@ -169,7 +169,7 @@ Restricting features showing up in the layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default GeoServer will publish all the features available in the layer. It is possible
-to restrict the features to a subset by specyfing a CQL filter in the configuration:
+to restrict the features to a subset by specifying a CQL filter in the configuration:
 
 .. figure:: img/data_layers_cql.png
 

@@ -10,9 +10,9 @@ The tutorial assumes:
 
 * GeoServer is running on http://localhost:8080/geoserver
 
-* You have a user/group service called "default" that allows the creation of new users. If your primary user/group service is not called "default", create a new text file called :file:`/geofence/geofence-server.properties` in the geoserver data directory and add the following line::
+* You have a user/group service called "default" that allows the creation of new users. If your primary user/group service is not called "default", you must start geoserver with the following java system property present::
 
-        defaultUserGroupServiceName=<name_of_usergroupservice>
+        org.geoserver.rest.DefaultUserGroupServiceName=<name_of_usergroupservice>
 
 with <name_of_usergroupservice> a user/group service that allows the creation of new users.
 
@@ -77,7 +77,7 @@ You should get an XML representation of your rules::
   </Rules>
 
 2. Let us first create a new user. 
-Do this by sending a POST request to the following URL http://localhost:8080/geoserver/geofence/rest/usergroup/users with the following content::
+Do this by sending a POST request to the following URL http://localhost:8080/geoserver/rest/security/usergroup/users with the following content::
 
   <user>
         <userName>michaeljfox</userName>

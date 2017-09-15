@@ -1,0 +1,17 @@
+<assembly>
+  <id>mbstyle-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-mbstyle-*.jar</include>
+        <include>gt-mbstyle-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

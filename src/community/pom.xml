@@ -82,7 +82,8 @@
           <descriptor>release/ext-notification.xml</descriptor>
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
           <descriptor>release/ext-jdbc-metrics.xml</descriptor>
-          <descriptor>release/ext-opensearch-eo.xml</descriptor>  
+          <descriptor>release/ext-opensearch-eo.xml</descriptor>
+          <descriptor>release/ext-mbstyle.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -242,6 +243,7 @@
         <module>ows-simulate</module>
         <module>jdbc-metrics</module>
         <module>oseo</module>
+        <module>mbstyle</module>
         <module>s3-geotiff</module>
       </modules>
     </profile>

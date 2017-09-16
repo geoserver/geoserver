@@ -166,6 +166,12 @@ paths:
           description: name of workspace
           required: true
           type: string
+        - name: workspaceBody
+          description: The layer group body information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/Workspace"
     post:
       operationId: postWorkspace
       responses:

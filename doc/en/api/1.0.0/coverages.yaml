@@ -116,7 +116,7 @@ paths:
         405:
           description: Method not allowed.
 
-  /workspaces/{workspace}/coveragestores/coverages:
+  /workspaces/{workspace}/coverages:
       get:
         operationId: getCoverageStore
         description: |
@@ -823,12 +823,37 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/CoverageInfo"
+        - name: calculate
+          in: query
+          description: Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".
+          required: false
+          type: string
       responses:
         200:
           description: The coverage was successfully updated.
     delete:
       operationId: deleteWorkspaceCoverage
       description: Delete a coverage (optionally recursively deleting layers).
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage data store
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+        - name: recurse
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all stores containing the resource are also removed. The default value is "false".
       responses:
         200:
           description: Successfully deleted.

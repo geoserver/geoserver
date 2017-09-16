@@ -215,7 +215,7 @@ paths:
           
     delete:
       operationId: deleteCoverageStore
-      summary: Delete coveraeg store
+      summary: Delete coverage store
       description: Deletes a coverage store
       parameters:
         - name: workspace

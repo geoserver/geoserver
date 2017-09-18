@@ -235,7 +235,7 @@ paths:
             type: string
           - name: quietOnNotFound
             in: query
-            description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway. Defaults to "false".
+            description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
             type: boolean
             required: false
             default: false
@@ -534,7 +534,7 @@ paths:
           type: string    
         - name: quietOnNotFound
           in: query
-          description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway. Defaults to "false".
+          description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
           type: boolean
           required: false
           default: false
@@ -827,7 +827,13 @@ paths:
           in: query
           description: Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".
           required: false
-          type: string
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
       responses:
         200:
           description: The coverage was successfully updated.
@@ -853,7 +859,8 @@ paths:
         - name: recurse
           in: query
           required: false
-          description: The recurse controls recursive deletion. When set to true all stores containing the resource are also removed. The default value is "false".
+          description: The recurse controls recursive deletion. When set to true all stores containing the resource are also removed.
+          default: false
       responses:
         200:
           description: Successfully deleted.

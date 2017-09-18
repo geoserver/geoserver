@@ -177,6 +177,7 @@ paths:
           required: false
           type: integer
           minimum: 0
+          default: 0
         - name: limit
           in: query
           description: Used for paging, the number of items to be returned

@@ -81,6 +81,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @PathVariable String storeName,
             @PathVariable UploadMethod method,
             @PathVariable String format,
+            @RequestParam(required = false) String filename,
             HttpServletRequest request) throws IOException {
 
         // check the coverage store exists
@@ -107,7 +108,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
         // This method returns a List of the harvested files.
         final List<File> uploadedFiles = new ArrayList<>();
-        for (Resource res : doFileUpload(method, workspaceName, storeName, format, request)) {
+        for (Resource res : doFileUpload(method, workspaceName, storeName, filename, format, request)) {
             uploadedFiles.add(Resources.find(res));
         }
         // File Harvesting
@@ -124,12 +125,13 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @RequestParam(name = "configure", required = false) String configure,
             @RequestParam(name = "USE_JAI_IMAGEREAD", required = false) Boolean useJaiImageRead,
             @RequestParam(name = "coverageName", required = false) String coverageName,
+            @RequestParam(required = false) String filename,
             HttpServletRequest request) throws IOException {
 
         Format coverageFormat = getCoverageFormat(format);
 
         // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
-        List<Resource> files = doFileUpload(method, workspaceName, storeName, format, request);
+        List<Resource> files = doFileUpload(method, workspaceName, storeName, filename, format, request);
         final Resource uploadedFile = files.get(0);
 
         // create a builder to help build catalog objects
@@ -401,7 +403,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
      * @throws IOException
      */
     protected List<Resource> doFileUpload(UploadMethod method, String workspaceName,
-            String storeName, String format, HttpServletRequest request) throws IOException {
+            String storeName, String filename, String format, HttpServletRequest request) throws IOException {
         Resource directory = null;
 
         boolean postRequest = request != null
@@ -417,7 +419,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
                 directory = createFinalRoot(workspaceName, storeName, postRequest);
             }
         }
-        return handleFileUpload(storeName, workspaceName, method, format, directory, request);
+        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request);
     }
 
     private Resource createFinalRoot(String workspaceName, String storeName, boolean isPost)

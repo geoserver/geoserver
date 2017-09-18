@@ -63,6 +63,34 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         }
     }
     
+    private static Schema getOsSchema() {
+        if(OS_SCHEMA == null) {
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            try {
+                OS_SCHEMA = factory
+                        .newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
+            } catch (Exception e) {
+                throw new RuntimeException("Could not parse the OpenSearch schemas", e);
+            }
+            
+        }
+        
+        return OS_SCHEMA;
+    }
+
+    private static Schema getAtomSchema() {
+        if(ATOM_SCHEMA == null) {
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            try {
+                ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
+            } catch (Exception e) {
+                throw new RuntimeException("Could not parse the OpenSearch schemas", e);
+            }
+        }
+        return ATOM_SCHEMA;
+    }
+
+    
     protected List<Filter> getFilters() {
         return Collections.singletonList(new OSEOFilter());
     }
@@ -175,12 +203,13 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected void checkValidOSDD(Document d) throws SAXException, IOException {
-        checkValidationErrors(d, OS_SCHEMA);
+        checkValidationErrors(d, getOsSchema());
     }
+
 
     protected void checkValidAtomFeed(Document d) throws SAXException, IOException {
         // TODO: we probably need to enrich this with EO specific elements check
-        checkValidationErrors(d, ATOM_SCHEMA);
+        checkValidationErrors(d, getAtomSchema());
     }
 
     /**

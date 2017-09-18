@@ -98,7 +98,6 @@ public class DescriptionTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // print(dom);
 
         // generic contents check
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
@@ -155,7 +154,7 @@ public class DescriptionTest extends OSEOTestSupport {
     @Test
     public void testOpticalCollectionDescription() throws Exception {
         Document dom = getAsDOM("oseo/description?parentId=SENTINEL2");
-        // print(dom);
+        print(dom);
 
         // we got a opensearch descriptor
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
@@ -183,25 +182,25 @@ public class DescriptionTest extends OSEOTestSupport {
         // ... and has generic EOP parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        allOf(containsString("productQualityStatus={eop:productQualityStatus?}"), //
-                                containsString("processorName={eop:processorName?}"), //
-                                containsString("modificationDate={eop:modificationDate?}"))));
+                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
+                                containsString("processorName={eo:processorName?}"), //
+                                containsString("modificationDate={eo:modificationDate?}"))));
         // ... and has OPT parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        allOf(containsString("cloudCover={opt:cloudCover?}"), //
-                                containsString("snowCover={opt:snowCover?}"))));
+                        allOf(containsString("cloudCover={eo:cloudCover?}"), //
+                                containsString("snowCover={eo:snowCover?}"))));
         // ... but no SAR parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template", not(anyOf(
-                        containsString("polarisationMode={sar:polarisationMode?}"), //
-                        containsString("polarisationChannels={sar:polarisationChannels?}")))));
+                        containsString("polarisationMode={eo:polarisationMode?}"), //
+                        containsString("polarisationChannels={eo:polarisationChannels?}")))));
     }
 
     @Test
     public void testRadarCollectionDescription() throws Exception {
         Document dom = getAsDOM("oseo/description?parentId=SENTINEL1");
-        // print(dom);
+        print(dom);
 
         // we got a opensearch descriptor
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
@@ -231,19 +230,19 @@ public class DescriptionTest extends OSEOTestSupport {
         // ... and has generic EOP parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        allOf(containsString("productQualityStatus={eop:productQualityStatus?}"), //
-                                containsString("processorName={eop:processorName?}"), //
-                                containsString("modificationDate={eop:modificationDate?}"))));
+                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
+                                containsString("processorName={eo:processorName?}"), //
+                                containsString("modificationDate={eo:modificationDate?}"))));
         // ... and SAR parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template", allOf(
-                        containsString("polarisationMode={sar:polarisationMode?}"), //
-                        containsString("polarisationChannels={sar:polarisationChannels?}"))));
+                        containsString("polarisationMode={eo:polarisationMode?}"), //
+                        containsString("polarisationChannels={eo:polarisationChannels?}"))));
         // ... but no OPT parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        not(anyOf(containsString("cloudCover={opt:cloudCover?}"), //
-                                containsString("snowCover={opt:snowCover?}")))));
+                        not(anyOf(containsString("cloudCover={eo:cloudCover?}"), //
+                                containsString("snowCover={eo:snowCover?}")))));
     }
 
 }

@@ -582,7 +582,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@count]"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
-        assertThat(dom, hasXPath("/at:feed/os:Query[@opt:cloudCover='2]']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@eo:cloudCover='2]']"));
     }
 
     @Test

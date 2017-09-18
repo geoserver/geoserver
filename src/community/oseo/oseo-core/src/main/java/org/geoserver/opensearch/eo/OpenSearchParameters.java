@@ -175,11 +175,30 @@ public class OpenSearchParameters {
         String name = getParameterName(p);
         
         String prefix = getParameterPrefix(p);
-        if (prefix != null && (!OS_PREFIX.equals(prefix) || qualifyOpenSearchNative)) {
+        if (prefix != null) {
+            if((OS_PREFIX.equals(prefix))) {
+                if(qualifyOpenSearchNative) {
+                    return prefix + ":" + name;
+                } else {
+                    return name;
+                }
+            } else if(isProductClass(prefix)) {
+                // all the EO parameters should be put in the EO namespace
+                return "eo:" + name;
+            }
             return prefix + ":" + name;
         } else {
             return name;
         }
+    }
+
+    private static boolean isProductClass(String prefix) {
+        for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+            if(pc.getPrefix().equals(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

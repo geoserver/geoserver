@@ -196,15 +196,16 @@ public class StructuredCoverageController extends AbstractCatalogController {
     
     /*
      * Note, the .+ regular expression allows granuleId to contain dots instead of having them
-     * interpreted as format extension
+     * interpreted as format extension.
+     * Note: the optional /{format} suffix is required for compatibility with gsconfig, but does not actually do
+     * anything otherwise.
      */
     @DeleteMapping(path = {"/granules/{granuleId:.+}", "/granules/{granuleId:.+}/{format}"})
     @ResponseBody
     public void granuleDelete(@PathVariable(name = "workspaceName") String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
-            @PathVariable String granuleId,
-            @PathVariable(name = "format", required = false) String gsConfigFormat) throws IOException {
+            @PathVariable String granuleId) throws IOException {
 
         // gsConfigForma allows for weird calls gsconfig does, like granules/granule.id/.json
         GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);

@@ -180,4 +180,16 @@ public class CatalogStyleChangeListenerTest {
 
         verify(mockMediator, times(1)).truncate(eq("mockGroup"));
     }
+
+    @Test
+    public void testChangeWorkspaceWithoutName() {
+        CatalogModifyEventImpl modifyEvent = new CatalogModifyEventImpl();
+        modifyEvent.setSource(mockStyle);
+        modifyEvent.setPropertyNames(Collections.singletonList("workspace"));
+        modifyEvent.setOldValues(Collections.singletonList(""));
+        modifyEvent.setNewValues(Collections.singletonList("test"));
+
+        //should occur without exception
+        listener.handleModifyEvent(modifyEvent);
+    }
 }

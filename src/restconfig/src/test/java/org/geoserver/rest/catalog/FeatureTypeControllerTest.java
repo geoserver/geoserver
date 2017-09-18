@@ -39,7 +39,7 @@ import org.w3c.dom.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
-public class FeatureTypeTest extends CatalogRESTTestSupport {
+public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
 
@@ -246,6 +246,30 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPostAsXMLInlineStore() throws Exception {
+        Document dom = getAsDOM("wfs?request=getfeature&typename=sf:pdsa");
+        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
+        addPropertyDataStore(false);
+        String xml = "<featureType>" + "<name>pdsa</name>" + "<nativeName>pdsa</nativeName>"
+                + "<srs>EPSG:4326</srs>" + "<nativeCRS>EPSG:4326</nativeCRS>"
+                + "<nativeBoundingBox>" + "<minx>0.0</minx>" + "<maxx>1.0</maxx>"
+                + "<miny>0.0</miny>" + "<maxy>1.0</maxy>" + "<crs>EPSG:4326</crs>"
+                + "</nativeBoundingBox>" + "<store>pds</store>" + "</featureType>";
+        MockHttpServletResponse response = postAsServletResponse(
+                BASEPATH + "/workspaces/gs/featuretypes/", xml, "text/xml");
+
+        assertEquals(201, response.getStatus());
+        assertNotNull(response.getHeader("Location"));
+        assertTrue(response.getHeader("Location")
+                .endsWith("/workspaces/gs/featuretypes/pdsa"));
+
+        dom = getAsDOM("wfs?request=getfeature&typename=gs:pdsa");
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
+        assertEquals(2, dom.getElementsByTagName("gs:pdsa").getLength());
+    }
+
+    @Test
     public void testPostAsJSON() throws Exception {
         Document dom = getAsDOM("wfs?request=getfeature&typename=sf:pdsa");
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -385,6 +409,22 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPutWithoutStore() throws Exception {
+        String xml = "<featureType>" + "<title>new title</title>" + "</featureType>";
+        MockHttpServletResponse response = putAsServletResponse(
+                BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature", xml,
+                "text/xml");
+        assertEquals(200, response.getStatus());
+
+        Document dom = getAsDOM(
+                BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
+        assertXpathEvaluatesTo("new title", "/featureType/title", dom);
+
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        assertEquals("new title", ft.getTitle());
+    }
+
+    @Test
     public void testPutNonDestructive() throws Exception {
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         assertTrue(ft.isEnabled());
@@ -487,6 +527,35 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
                 deleteAsServletResponse(
                         BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature")
                                 .getStatus());
+        assertNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
+
+        if (catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey(featureTypeId)) {
+            List<AttributeTypeInfo> attributesList = catalog.getResourcePool()
+                    .getFeatureTypeAttributeCache().get(featureTypeId);
+            assertNull("attributes cleared", attributesList);
+        }
+        if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
+            DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get(dataStoreId);
+            List<Name> names = dataStore.getNames();
+            assertTrue(names.contains(name));
+        }
+    }
+
+    @Test
+    public void testDeleteWithoutStore() throws Exception {
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        String featureTypeId = featureType.getId();
+        String dataStoreId = featureType.getStore().getId();
+        Name name = featureType.getFeatureType().getName();
+
+        assertNotNull("PrmitiveGeoFeature available", featureType);
+        for (LayerInfo l : catalog.getLayers(featureType)) {
+            catalog.remove(l);
+        }
+        assertEquals(200,
+                deleteAsServletResponse(
+                        BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature")
+                        .getStatus());
         assertNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
 
         if (catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey(featureTypeId)) {

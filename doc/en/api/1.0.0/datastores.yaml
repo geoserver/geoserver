@@ -6,7 +6,7 @@ info:
   description: A data store contains vector format spatial data. It can be a file (such as a shapefile), a database (such as PostGIS), or a server (such as a remote Web Feature Service).
 
 paths:
-  /workspaces/<ws>/datastores[.<format>]:
+  /workspaces/{workspaceName}/datastores:
     get:
       operationId: getDatastores
       summary: Get a list of data stores
@@ -15,6 +15,11 @@ paths:
         - application/xml
         - application/json
         - text/html
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data stores.
       responses:
         200:
           description: OK
@@ -36,6 +41,10 @@ paths:
       description: Adds a new data store to the workspace.
 
       parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data stores.
         - name: dataStoreBody
           description: The data store body information to upload.
           in: body
@@ -44,6 +53,7 @@ paths:
             $ref: "#/definitions/datastore"
       consumes:
         - application/xml
+        - application/json
       produces:
         - application/xml
         - application/json
@@ -72,17 +82,21 @@ paths:
         405:
           description: Method Not Allowed
 
-  /workspaces/<ws>/datastores/<ds>[.<format>]:
+  /workspaces/{workspaceName}/datastores/{storeName}:
     get:
       operationId: getDataStore
       summary: Retrieve a particular data store from a workspace
-      description: Controls a particular data store in a given workspace.. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{datastore}.xml" for XML).
+      description: Controls a particular data store in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{datastore}.xml" for XML).
       produces:
         - application/xml
         - application/json
         - text/html
       parameters:
-        - name: dataStoreName
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
           in: path
           required: true
           description: The name of the data store to retrieve.
@@ -131,7 +145,11 @@ paths:
       summary: Modify a data store.
       description: Modify data store ds. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{ds}.xml" for XML).
       parameters:
-        - name: dataStoreName
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
           in: path
           required: true
           description: The name of the data store to modify.
@@ -154,11 +172,29 @@ paths:
       summary: Delete data store
       description: Deletes a data store from the server.
       parameters:
-        - name: dataStoreName
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
           in: path
           required: true
           description: The name of the data store to delete.
           type: string
+        - name: purge
+          in: query
+          required: false
+          description: The purge parameter specifies if and how the underlying vector data source is deleted. 
+                       Allowable values for this parameter are "none", "metadata", "all". 
+                       When set to "none" data and auxiliary files are preserved.
+                       When set to "metadata" delete only auxiliary files and metadata. It’s recommended when data files (such as granules) should not be deleted from disk.
+                       Finally, when set to "all" both data and auxiliary files are removed.
+          type: string
+        - name: recurse
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all resources contained in the store are also removed. The default value is "false".
+          type: boolean
       responses:
         200:
           description: OK
@@ -167,10 +203,18 @@ definitions:
 
   dataStoreResponse:
     title: datastores
-    type: object
-    properties:
+    type: array
+    items:
       datastore:
-        $ref: "#/definitions/datastore"
+        title: datastore
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of data store
+          link:
+            type: string
+            description: URL to data store definition
 
   datastore:
     title: datastore
@@ -179,8 +223,42 @@ definitions:
       name:
         type: string
         description: Name of data store
-      link:
+      description:
         type: string
-        description: URL to data store definition
+        description: Description of data store
+      enabled:
+        type: boolean
+        description: Whether or not the data store is enabled
+      workspace:
+        title: workspace
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of workspace
+          link:
+            type: string
+            description: URL to workspace definition
+      connectionParameters:
+        type: array
+        items:
+          title: entry
+          description: connection parameter key-value pair
+          type: object
+          properties:
+            key:
+              type: string
+              description: Connection parameter key
+            value:
+              type: string
+              description: Connection parameter value
+      __default:
+        type: boolean
+        description: Whether or not the data store is the default data store
+      featureTypes:
+        type: array
+        items:
+          type: string
+          description: URL to featuretype definition
 
   

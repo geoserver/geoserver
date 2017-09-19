@@ -11,21 +11,21 @@ GeoServer is distributed under the GNU General Public License Version 2.0 licens
     
     As an exception to the terms of the GPL, you may copy, modify,
     propagate, and distribute a work formed by combining GeoServer with the
-    Eclipse Libraries, or a work derivative of such a combination, even if
+    EMF, XSD and OSHI Libraries, or a work derivative of such a combination, even if
     such copying, modification, propagation, or distribution would otherwise
     violate the terms of the GPL. Nothing in this exception exempts you from
     complying with the GPL in all respects for all of the code used other
-    than the Eclipse Libraries. You may include this exception and its grant
+    than the EMF, XSD and OSHI Libraries. You may include this exception and its grant
     of permissions when you distribute GeoServer.  Inclusion of this notice
     with such a distribution constitutes a grant of such permissions.  If
     you do not wish to grant these permissions, remove this paragraph from
     your distribution. "GeoServer" means the GeoServer software licensed
     under version 2 or any later version of the GPL, or a work based on such
-    software and licensed under the GPL. "Eclipse Libraries" means Eclipse
-    Modeling Framework Project and XML Schema Definition software
-    distributed by the Eclipse Foundation and licensed under the Eclipse
-    Public License Version 1.0 ("EPL"), or a work based on such software and
-    licensed under the EPL.
+    software and licensed under the GPL. "EMF, XSD and OSHI Libraries" means 
+    Eclipse Modeling Framework Project and XML Schema Definition software
+    distributed by the Eclipse Foundation and the OSHI library, all licensed 
+    under the Eclipse Public License Version 1.0 ("EPL"), or a work based on 
+    such software and licensed under the EPL.
     
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of

@@ -51,7 +51,7 @@ import org.locationtech.geogig.storage.datastream.DataStreamSerializationFactory
 import org.locationtech.geogig.storage.impl.ObjectSerializingFactory;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.restlet.data.MediaType;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -214,7 +214,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         servletResponse = getAsServletResponse(url);
         assertEquals(200, servletResponse.getStatus());
 
-        String contentType = MediaType.APPLICATION_OCTET_STREAM.toString();
+        String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         assertEquals(contentType, servletResponse.getContentType());
 
         responseStream = getBinaryInputStream(servletResponse);

@@ -17,7 +17,6 @@ Feature: Import an Existing GeoGig repository
       """
       {
         "parentDirectory":"{@systemTempPath}",
-        "leafDirectory":"nonExistentRepo",
         "authorName":"GeoGig User",
         "authorEmail":"geogig@geogig.org"
       }
@@ -33,7 +32,6 @@ Feature: Import an Existing GeoGig repository
       """
       {
         "parentDirectory":"{@systemTempPath}",
-        "leafDirectory":"geogigRepo",
         "authorName":"GeoGig User",
         "authorEmail":"geogig@geogig.org"
       }
@@ -49,7 +47,6 @@ Feature: Import an Existing GeoGig repository
       """
       {
         "parentDirectory":"{@systemTempPath}",
-        "leafDirectory":"geogigRepo",
         "authorName":"GeoGig User",
         "authorEmail":"geogig@geogig.org"
       }
@@ -58,14 +55,12 @@ Feature: Import an Existing GeoGig repository
     And the response body should contain "http://localhost:8080/geoserver/geogig/repos/geogigRepo.json"
 
   @ImportExisting @Plugin
-  Scenario: Import of existent repository with a name already in use fails with a 409 Conflict
+  Scenario: Import of a repository that is already managed fails with a 409 Conflict
     Given There is a default multirepo server
-    And I have "repo1" that is not managed by GeoServer
     When I "POST" content-type "application/json" to "/repos/repo1/importExistingRepo.json" with
       """
       {
         "parentDirectory":"{@systemTempPath}",
-        "leafDirectory":"geogigRepo",
         "authorName":"GeoGig User",
         "authorEmail":"geogig@geogig.org"
       }

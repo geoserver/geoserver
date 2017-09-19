@@ -23,7 +23,7 @@ import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
 import org.junit.After;

@@ -13,6 +13,7 @@ The standard GeoServer installation supports the loading and serving of the foll
    shapefile
    directory
    properties
+   geopkg
 
 
 Other data sources are supplied as GeoServer extensions.  

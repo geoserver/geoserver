@@ -36,6 +36,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Facade for the scripting subsystem, providing methods for obtaining script context and managing
@@ -44,6 +46,7 @@ import com.google.common.cache.CacheBuilder;
  * @author Justin Deoliveira, OpenGeo
  *
  */
+@Component
 public class ScriptManager implements InitializingBean {
 
     static Logger LOGGER = Logging.getLogger(ScriptManager.class);

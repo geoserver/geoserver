@@ -1,18 +1,19 @@
 package org.geoserver.script.wps;
 
-import java.io.InputStream;
-import java.util.Map;
+import org.geoserver.wps.ppio.XMLPPIO;
+import org.springframework.stereotype.Component;
+import org.xml.sax.ContentHandler;
 
 import javax.xml.namespace.QName;
-
-import org.geoserver.wps.ppio.XMLPPIO;
-import org.xml.sax.ContentHandler;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * PPIO that allows scripts to return a Map to be encoded as JSON.
  * 
  * @author Justin Deoliveira, OpenGeo
  */
+@Component
 public class MapXMLPPIO extends XMLPPIO {
 
     public MapXMLPPIO() {

@@ -5,15 +5,15 @@
  */
 package org.geoserver.script;
 
-import java.io.Serializable;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-
 import org.geoserver.script.app.AppHook;
 import org.geoserver.script.function.FunctionHook;
 import org.geoserver.script.wfs.WfsTxHook;
 import org.geoserver.script.wps.WpsHook;
+import org.springframework.stereotype.Component;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+import java.io.Serializable;
 
 /**
  * Base class for script plugins.
@@ -23,6 +23,7 @@ import org.geoserver.script.wps.WpsHook;
  * @author Justin Deoliveira, OpenGeo
  *
  */
+@Component
 public abstract class ScriptPlugin implements Serializable {
 
     String extension;

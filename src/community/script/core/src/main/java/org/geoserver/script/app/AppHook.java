@@ -5,16 +5,14 @@
  */
 package org.geoserver.script.app;
 
-import java.io.IOException;
-
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
 import org.geoserver.script.ScriptHook;
 import org.geoserver.script.ScriptPlugin;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Hook for "app" requests.
@@ -42,7 +40,7 @@ public class AppHook extends ScriptHook {
      * @param engine The script engine of the appropriate type.
      * 
      */
-    public void run(Request request, Response response, ScriptEngine engine) 
+    public void run(HttpServletRequest request, HttpServletResponse response, ScriptEngine engine)
         throws ScriptException, IOException {
         invoke(engine, "run", request, response);
     }

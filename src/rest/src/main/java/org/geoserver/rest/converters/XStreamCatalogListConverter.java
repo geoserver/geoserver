@@ -4,9 +4,14 @@
  */
 package org.geoserver.rest.converters;
 
-import java.io.IOException;
-import java.util.Collection;
-
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
@@ -17,14 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Converter to handle the serialization of lists of catalog resources, which need some special handling
@@ -65,7 +64,7 @@ public abstract class XStreamCatalogListConverter
 
         Class<?> targetClass = wrapper.getObjectClass();
         Collection<?> data = wrapper.getCollection();
-        this.aliasCollection(data, xstream, targetClass);
+        this.aliasCollection(data, xstream, targetClass, wrapper);
         this.configureXStream(xstream, targetClass, wrapper);
         xstream.toXML(data, outputMessage.getBody());
     }
@@ -134,8 +133,9 @@ public abstract class XStreamCatalogListConverter
      * The default works with list, subclasses may override for instance to work with a Set.
      * </p>
      */
-    protected void aliasCollection(Object data, XStream xstream, Class<?> clazz) {
+    protected void aliasCollection(Object data, XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
         XStreamPersister xp = xpf.createXMLPersister();
+        wrapper.configurePersister(xp, this);
         final String alias = getItemName(xp, clazz);
         xstream.alias(alias + "s", Collection.class, data.getClass());
     }

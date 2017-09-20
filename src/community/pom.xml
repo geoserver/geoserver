@@ -201,7 +201,7 @@
         <module>spatialite</module>
         <module>jdbcconfig</module>
         <module>feature-aggregate</module>
-        <!-- <module>script</module> -->
+        <module>script</module>
         <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>

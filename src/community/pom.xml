@@ -72,7 +72,7 @@
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
-          <!-- <descriptor>release/ext-geogig.xml</descriptor> -->
+          <descriptor>release/ext-geogig.xml</descriptor>
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
@@ -222,7 +222,7 @@
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
-        <!-- <module>geogig</module> -->
+        <module>geogig</module>
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>

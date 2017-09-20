@@ -4,6 +4,8 @@
  */
 package org.geogig.geoserver.rest;
 
+import static org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver.getURI;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -212,4 +214,12 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
         return false;
     }
+
+    @Override
+    public String getMaskedLocationString(Repository repo, String repoName) {
+        // need to mask the location as "geoserver://<repoName>"
+        return getURI(repoName);
+    }
+
+
 }

@@ -16,7 +16,7 @@ import org.locationtech.geogig.di.PluginsModule;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.impl.ContextBuilder;
-import org.locationtech.geogig.storage.GraphDatabase;
+import org.locationtech.geogig.storage.ConflictsDatabase;
 import org.locationtech.geogig.storage.IndexDatabase;
 import org.locationtech.geogig.storage.ObjectDatabase;
 import org.locationtech.geogig.storage.PluginDefaults;
@@ -87,8 +87,8 @@ public class GeoServerContextBuilder extends ContextBuilder {
                     .newMapBinder(binder(), VersionedFormat.class, IndexDatabase.class)
                     .permitDuplicates();
 
-            MapBinder<VersionedFormat, GraphDatabase> graphPlugins = MapBinder
-                    .newMapBinder(binder(), VersionedFormat.class, GraphDatabase.class)
+            MapBinder<VersionedFormat, ConflictsDatabase> graphPlugins = MapBinder
+                    .newMapBinder(binder(), VersionedFormat.class, ConflictsDatabase.class)
                     .permitDuplicates();
 
             Iterable<StorageProvider> providers = StorageProvider.findProviders();

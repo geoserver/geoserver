@@ -44,7 +44,12 @@ paths:
     post:
       operationId: postStyles
       summary: Add a new style
-      description: Adds a new style entry to the server. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /styles/{style}.
+      description: |
+          Adds a new style entry to the server. 
+          Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/styles/{style}` to upload the style in this case.
+
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
+          You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - name: styleBody
           description: Style body information to upload.
@@ -52,10 +57,22 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/StyleInfoPost"
+        - name: name
+          in: query
+          type: string
+          description: The name of the style. Used only when POSTing a style file or ZIP bundle, to determine the name of the style in the catalog. Generated from the filename if not provided.
+          required: false
+        - name: Content-Type
+          in: header
+          type: string
+          description: Content-Type of the style file. Used to determine style encoding when POSTing a style file (e.g. SLD or SE).
+          required: false
       consumes:
         - application/xml
         - application/json
         - application/zip
+        - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
       responses:
         201:
           description: Created
@@ -85,7 +102,8 @@ paths:
         
         The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
-        - application/vnd.ogc.sld+xml for SLDs
+        - application/vnd.ogc.sld+xml for SLD 1.0.0 SLDs
+        - application/vnd.ogc.se+xml for SLD 1.1.0 SLDs
         - application/vnd.geoserver.geocss+css for css styles
         - application/vnd.geoserver.ysld+yaml for ysld styles
         - application/vnd.geoserver.mbstyle+json for mb styles
@@ -93,6 +111,7 @@ paths:
         - application/xml
         - application/json
         - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
         - text/html
       parameters:
         - name: style
@@ -100,21 +119,6 @@ paths:
           required: true
           description: Name of the style to retrieve.
           type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: quietOnNotFound 
-          in: query
-          required: false
-          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: pretty
-          in: query
-          required: false
-          description: Returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format. The HTML, XML, and JSON formats do not support this parameter.
-          type: boolean
       responses:
         200:
           description: OK
@@ -180,27 +184,37 @@ paths:
     put:
       operationId: putStyle
       summary: Modify a single style
-      description: Modifies a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
+      description: |
+        Modifies a single style. 
+        Use the "Accept:" header to specify format or append an extension to the endpoint (example `/styles/{style}.xml` for XML).
+
+        Using PUT with the `application/xml` or `application/json` content modifies the style info in the catalog and does not alter the style content.
+        Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
+
       parameters:
+        - name: styleBody
+          description: Style body information to modify.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/StyleInfoPost"
         - name: style
           in: path
           required: true
-          description: Name of the style to retrieve.
+          description: Name of the style to edit.
           type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
         - name: raw
           in: query
-          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default).
+          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default). Only used when uploading a style file.
           type: boolean
           required: false
+          default: false
       consumes:
+        - application/xml
+        - application/json
+        - application/zip
         - application/vnd.ogc.sld+xml
         - application/vnd.ogc.se+xml
-        - application/zip
       responses:
         200:
           description: OK
@@ -220,12 +234,14 @@ paths:
         - name: purge
           in: query
           required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          default: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk.
           type: boolean
         - name: recurse
           in: query
           required: false
-          description: Removes references to the specified style in existing layers. Allowed values are "true" or "false" (default).
+          default: false
+          description: Removes references to the specified style in existing layers.
           type: boolean
       responses:
         200:
@@ -234,7 +250,7 @@ paths:
           description: Unauthorized
 
 
-  /rest/workspaces/{workspace}/styles:
+  /workspaces/{workspace}/styles:
 
     get:
       operationId: getWorkspaceStyles
@@ -287,7 +303,12 @@ paths:
     post:
       operationId: postWorkspaceStyles
       summary: Add a new style to a given workspace
-      description: Adds a new style entry to the server in the given workspace. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /workspaces/{workspace}/styles/{style}.
+      description:  |
+          Adds a new style entry to the server. 
+          Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/workspaces/{workspace}/styles/{style}` to upload the style in this case.
+
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/workspaces/{workspace}/styles/{style}` to make any desired changes to the generated catalog entry.
+          You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /workspaces/{workspace}/styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - name: workspace
           in: path
@@ -300,10 +321,22 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/StyleInfoPost"
+        - name: name
+          in: query
+          type: string
+          description: The name of the style. Used only when POSTing a style file or ZIP bundle, to determine the name of the style in the catalog. Generated from the filename if not provided.
+          required: false
+        - name: Content-Type
+          in: header
+          type: string
+          description: Content-Type of the style file. Used to determine style encoding when POSTing a style file (e.g. SLD or SE).
+          required: false
       consumes:
         - application/xml
         - application/json
         - application/zip
+        - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
       responses:
         201:
           description: Created
@@ -345,7 +378,8 @@ paths:
         
         The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
-        - application/vnd.ogc.sld+xml for SLDs
+        - application/vnd.ogc.sld+xml for SLD 1.0.0 SLDs
+        - application/vnd.ogc.se+xml for SLD 1.1.0 SLDs
         - application/vnd.geoserver.geocss+css for css styles
         - application/vnd.geoserver.ysld+yaml for ysld styles
         - application/vnd.geoserver.mbstyle+json for mb styles
@@ -353,6 +387,7 @@ paths:
         - application/xml
         - application/json
         - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
         - text/html
       parameters:
         - name: workspace
@@ -364,22 +399,7 @@ paths:
           in: path
           required: true
           description: Name of the style to retrieve.
-          type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: quietOnNotFound 
-          in: query
-          required: false
-          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: pretty
-          in: query
-          required: false
-          description: Returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format. The HTML, XML, and JSON formats do not support this parameter.
-          type: boolean      
+          type: string     
       responses:
         200:
           description: OK
@@ -457,8 +477,20 @@ paths:
     put:
       operationId: putWorkspaceStyle
       summary: Modify a single style in a given workspace
-      description: Modifies a single style in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
+      description: |
+        Modifies a single style in a given workspace. 
+        Use the "Accept:" header to specify format or append an extension to the endpoint (example `/workspaces/{workspace}/styles/{style}.xml` for XML).
+
+        Using PUT with the `application/xml` or `application/json` content modifies the style info in the catalog and does not alter the style content.
+        Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
+
       parameters:
+        - name: styleBody
+          description: Style body information to modify.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/StyleInfoPost"
         - name: workspace
           in: path
           required: true
@@ -469,20 +501,17 @@ paths:
           required: true
           description: Name of the style to retrieve.
           type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
         - name: raw
           in: query
-          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default).
+          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default). Only used when uploading a style file.
           type: boolean
           required: false
       consumes:
+        - application/xml
+        - application/json
+        - application/zip
         - application/vnd.ogc.sld+xml
         - application/vnd.ogc.se+xml
-        - application/zip
       responses:
         200:
           description: OK
@@ -507,12 +536,14 @@ paths:
         - name: purge
           in: query
           required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          default: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk.
           type: boolean
         - name: recurse
           in: query
           required: false
-          description: Removes references to the specified style in existing layers. Allowed values are "true" or "false" (default).
+          default: false
+          description: Removes references to the specified style in existing layers.
           type: boolean
       responses:
         200:
@@ -574,7 +605,7 @@ paths:
     post:
       operationId: postLayerStyles
       summary: Add a new style
-      description: Adds a new style entry to the layer. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /layers/{layer}/styles/{style}.
+      description: Adds a new style entry to the layer. The style named in styleBody must alread exist, and will not be altered by this request. 
       parameters:
         - name: layer
           in: path
@@ -582,22 +613,27 @@ paths:
           description: Name of the layer to manage styles for
           type: string
         - name: styleBody
-          description: Style body information to upload.
+          description: Style body information naming an existing style to add to the layer
           in: body
           required: true
           schema:
             $ref: "#/definitions/StyleInfoPost"
+        - name: default
+          type: boolean
+          in: query
+          description: Whether to make this the default style for the layer.
+          default: false
+          required: false
       consumes:
         - application/xml
         - application/json
-        - application/zip
       responses:
         201:
           description: Created
 
     put:
       operationId: putLayerStyles
-      description: Invalid. Use POST for adding a new style, or use PUT with /layers/{layer}/styles/{style} to edit/upload an existing style.
+      description: Invalid. Use POST to modify the styles for a layer.
       parameters:
         - name: layer
           in: path
@@ -610,7 +646,7 @@ paths:
 
     delete:
       operationId: deleteLayerStyles
-      description: Invalid. Use /layers/{layer}/styles/{style} instead.
+      description: Invalid.
       parameters:
         - name: layer
           in: path
@@ -620,152 +656,14 @@ paths:
       responses:
         405:
           description: Method Not Allowed
-
-
-  /rest/layers/{layer}/styles/{style}:
-
-    get:
-      operationId: getLayerStyle
-      summary: Retrieve a style from a given workspace
-      description: Retrieves a single style from a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
-      produces:
-        - application/xml
-        - application/json
-        - application/vnd.ogc.sld+xml
-        - text/html
-      parameters:
-        - name: layer
-          in: path
-          required: true
-          description: Name of the layer to manage styles for
-          type: string
-        - name: style
-          in: path
-          required: true
-          description: Name of the style to retrieve.
-          type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: quietOnNotFound 
-          in: query
-          required: false
-          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: pretty
-          in: query
-          required: false
-          description: Returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format. The HTML, XML, and JSON formats do not support this parameter.
-          type: boolean      
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/StyleLayer"
-          examples:
-            application/xml: ''
-            # Stack trace: could not get example
-            application/json: ''
-            # Stack trace: could not get example
-            application/vnd.ogc.sld+xml: ''
-            # Stack trace: could not get example
-
-    post:
-      operationId: postLayerStyle
-      description: Invalid. Use PUT to edit a style, or POST with /layers/{layer}/styles to add a new style.
-      parameters:
-        - name: layer
-          in: path
-          required: true
-          description: Name of the layer to manage styles for
-          type: string
-        - name: style
-          in: path
-          required: true
-          description: Name of the style to retrieve.
-          type: string
-      responses:
-        405:
-          description: Method Not Allowed
-
-    put:
-      operationId: putLayerStyle
-      summary: Modify a single style for a given layer
-      description: Modifies a single style for a given layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}/styles/{style}.xml" for XML).
-      parameters:
-        - name: layer
-          in: path
-          required: true
-          description: Name of the layer to manage styles for.
-          type: string
-        - name: style
-          in: path
-          required: true
-          description: Name of the style to modify.
-          type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: raw
-          in: query
-          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default).
-          type: boolean
-          required: false
-      consumes:
-        - application/vnd.ogc.sld+xml
-        - application/vnd.ogc.se+xml
-        - application/zip
-      responses:
-        200:
-          description: OK
-        401:
-          description: Unauthorized
-
-    delete:
-      operationId: deleteLayerStyle
-      summary: Delete style for a given layer
-      description: Deletes a style for a given layer.
-      parameters:
-        - name: layer
-          in: path
-          required: true
-          description: Name of the layer to manage styles for
-          type: string
-        - name: style
-          in: path
-          required: true
-          description: Name of the style to delete.
-          type: string
-        - name: purge
-          in: query
-          required: false
-          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
-          type: boolean
-        - name: recurse
-          in: query
-          required: false
-          description: Removes references to the specified style in existing layers. Allowed values are "true" or "false" (default).
-          type: boolean
-      responses:
-        200:
-          description: OK
-        401:
-          description: Unauthorized
-
 
 definitions:
 
   StyleInfoPost:
     title: style
-    xml:
-      name: style
     type: object
     example: '
-      {"text/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
+      {"application/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
       {"application/zip": <ZIP file containing SLD>}
       '
     properties:

@@ -80,8 +80,7 @@ public class StyleController extends AbstractCatalogController {
     @GetMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"})
     public RestWrapper<?> stylesGet(
             @PathVariable(required = false) String layerName,
-            @PathVariable(required = false) String workspaceName,
-            @RequestParam(value = "quietOnNotFound", required = false) boolean quietOnNotFound) {
+            @PathVariable(required = false) String workspaceName) {
 
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
@@ -369,10 +368,9 @@ public class StyleController extends AbstractCatalogController {
     public void styleZipPut(
             InputStream is,
             @PathVariable String styleName,
-            @PathVariable(required = false) String workspaceName,
-            @RequestParam(required = false) String name) {
+            @PathVariable(required = false) String workspaceName) {
 
-        putZipInternal(is, workspaceName, name, styleName);
+        putZipInternal(is, workspaceName, styleName);
     }
 
     /**
@@ -604,9 +602,7 @@ public class StyleController extends AbstractCatalogController {
         }
     }
     
-    
-    // TODO: This method is not called from anywhere? can it be removed
-    private void putZipInternal(InputStream is, String workspace, String name, String style) {
+    private void putZipInternal(InputStream is, String workspace, String style) {
         if(workspace != null && catalog.getWorkspaceByName(workspace) == null) {
             throw new ResourceNotFoundException("Workspace " + workspace + " not found");
         }
@@ -620,17 +616,17 @@ public class StyleController extends AbstractCatalogController {
 
             Style styleSld = parseSld(uploadedFile);
 
-            if (name == null) {
-                name = findNameFromObject(styleSld);
+            if (style == null) {
+                style = findNameFromObject(styleSld);
             }
 
-            if (name == null) {
+            if (style == null) {
                 throw new RestException("Style must have a name.", HttpStatus.BAD_REQUEST);
             }
 
-            //ensure that the style does already exist
-            if (!existsStyleInCatalog(workspace, name)) {
-                throw new RestException("Style " + name + " doesn't exists.", HttpStatus.FORBIDDEN);
+            //ensure that the style already exists
+            if (!existsStyleInCatalog(workspace, style)) {
+                throw new RestException("Style " + style + " doesn't exist.", HttpStatus.FORBIDDEN);
             }
 
             // save image resources
@@ -640,7 +636,7 @@ public class StyleController extends AbstractCatalogController {
             StyleInfo styleInfo = catalog.getStyleByName(workspace, style);
             serializeSldFileInCatalog(dataDir.style(styleInfo), uploadedFile);
 
-            LOGGER.info("PUT Style Package: " + name + ", workspace: " + workspace);
+            LOGGER.info("PUT Style Package: " + style + ", workspace: " + workspace);
 
         } catch (Exception e) {
             LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());

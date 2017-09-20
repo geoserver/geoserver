@@ -662,17 +662,31 @@ definitions:
   StyleInfoPost:
     title: style
     type: object
-    example: '
-      {"application/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
-      {"application/zip": <ZIP file containing SLD>}
-      '
+    description: >
+    
+      The style body of a request.
+      JSON or XML style uploads follow the schema below.
+      Otherwise, the style body is an actual style:
+
+        - application/zip: 
+        
+            ```
+            {ZIP file containing SLD and icons}
+            ```
+            
+        - application/vnd.ogc.sld+xml:
+
+          ![](img/sld-post.png)
+
     properties:
       name:
         type: string
         description: Name of style
+        example: roads_style
       filename:
         type: string
         description: Name of filename containing SLD code
+        example: roads.sld
 
   StyleList:
     title: styles

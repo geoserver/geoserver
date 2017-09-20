@@ -7,10 +7,7 @@ package org.geoserver.script.rest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.geoserver.script.ScriptIntTestSupport;
-import org.geoserver.test.GeoServerTestSupport;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class SessionTest extends ScriptIntTestSupport {
@@ -35,6 +32,7 @@ public class SessionTest extends ScriptIntTestSupport {
         assertEquals("Hello World!", response.getContentAsString().trim()); // print is a Rhino-specific function
 
         putAsServletResponse("/script/sessions/js/" + sid, "var x = 3;", "text/plain");
+
         response = 
             putAsServletResponse("/script/sessions/js/" + sid, "print(x);", "text/plain");
         assertEquals("3", response.getContentAsString().trim());

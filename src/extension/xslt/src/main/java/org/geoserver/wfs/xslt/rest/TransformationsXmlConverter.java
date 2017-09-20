@@ -7,6 +7,7 @@ package org.geoserver.wfs.xslt.rest;
 import com.thoughtworks.xstream.XStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.converters.XStreamCatalogListConverter;
+import org.geoserver.rest.wrapper.RestListWrapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.Collection;
 public class TransformationsXmlConverter extends XStreamCatalogListConverter.XMLXStreamListConverter {
 
     @Override
-    protected void aliasCollection(Object data, XStream xstream, Class clazz) {
+    protected void aliasCollection(Object data, XStream xstream, Class clazz, RestListWrapper wrapper) {
         xstream.alias("transforms", Collection.class, data.getClass());
     }
 

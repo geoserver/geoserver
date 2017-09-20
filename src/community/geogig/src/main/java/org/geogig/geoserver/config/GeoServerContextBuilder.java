@@ -96,7 +96,7 @@ public class GeoServerContextBuilder extends ContextBuilder {
             for (StorageProvider sp : providers) {
                 VersionedFormat objectDatabaseFormat = sp.getObjectDatabaseFormat();
                 VersionedFormat indexDatabaseFormat = sp.getIndexDatabaseFormat();
-                VersionedFormat graphDatabaseFormat = sp.getGraphDatabaseFormat();
+                VersionedFormat conflictsDatabaseFormat = sp.getConflictsDatabaseFormat();
                 VersionedFormat refsDatabaseFormat = sp.getRefsDatabaseFormat();
 
                 if (objectDatabaseFormat != null) {
@@ -105,8 +105,8 @@ public class GeoServerContextBuilder extends ContextBuilder {
                 if (indexDatabaseFormat != null) {
                     GeoServerContextBuilder.bind(indexPlugins, indexDatabaseFormat);
                 }
-                if (graphDatabaseFormat != null) {
-                    GeoServerContextBuilder.bind(graphPlugins, graphDatabaseFormat);
+                if (conflictsDatabaseFormat != null) {
+                    GeoServerContextBuilder.bind(graphPlugins, conflictsDatabaseFormat);
                 }
                 if (refsDatabaseFormat != null) {
                     GeoServerContextBuilder.bind(refPlugins, refsDatabaseFormat);

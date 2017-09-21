@@ -222,4 +222,8 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
     }
 
 
+    @Override
+    public String getRepositoryId(String repoName) {
+        return this.getRepoIdForName(repoName);
+    }
 }

@@ -51,12 +51,7 @@ paths:
           Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
-        - name: styleBody
-          description: Style body information to upload.
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/definitions/StyleInfoPost"
         - name: name
           in: query
           type: string
@@ -192,12 +187,7 @@ paths:
         Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
 
       parameters:
-        - name: styleBody
-          description: Style body information to modify.
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/definitions/StyleInfoPost"
         - name: style
           in: path
           required: true
@@ -315,12 +305,7 @@ paths:
           required: true
           description: Name of workspace
           type: string
-        - name: styleBody
-          description: Style body information to upload.
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/definitions/StyleInfoPost"
         - name: name
           in: query
           type: string
@@ -485,12 +470,7 @@ paths:
         Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
 
       parameters:
-        - name: styleBody
-          description: Style body information to modify.
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/definitions/StyleInfoPost"
         - name: workspace
           in: path
           required: true
@@ -617,7 +597,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/StyleInfoPost"
+            $ref: "#/definitions/StyleInfoPost/schema"
         - name: default
           type: boolean
           in: query
@@ -660,33 +640,81 @@ paths:
 definitions:
 
   StyleInfoPost:
-    title: style
-    type: object
+    name: styleBody
     description: >
-    
-      The style body of a request.
-      JSON or XML style uploads follow the schema below.
+
+      The style body of a request
+      JSON or XML style uploads follow this schema. For example:
+
+        - application/xml: 
+          
+          ```
+          <style><name>roads_style</name><filename>roads.sld</filename></style>
+          ```
+
+        - application/json: 
+        
+            ```
+            {"style": { "name": "roads_style", "filename": "roads.sld"}}
+            ```
+
       Otherwise, the style body is an actual style:
 
         - application/zip: 
         
             ```
-            {ZIP file containing SLD and icons}
+            <ZIP file containing SLD and icons>
             ```
             
         - application/vnd.ogc.sld+xml:
 
-          ![](img/sld-post.png)
-
-    properties:
-      name:
-        type: string
-        description: Name of style
-        example: roads_style
-      filename:
-        type: string
-        description: Name of filename containing SLD code
-        example: roads.sld
+          ```
+            <?xml version="1.0" encoding="UTF-8"?>
+            <StyledLayerDescriptor version="1.0.0" 
+             xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
+             xmlns="http://www.opengis.net/sld" 
+             xmlns:ogc="http://www.opengis.net/ogc" 
+             xmlns:xlink="http://www.w3.org/1999/xlink" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+              <!-- a Named Layer is the basic building block of an SLD document -->
+              <NamedLayer>
+                <Name>default_line</Name>
+                <UserStyle>
+                <!-- Styles can have names, titles and abstracts -->
+                  <Title>Default Line</Title>
+                  <Abstract>A sample style that draws a line</Abstract>
+                  <!-- FeatureTypeStyles describe how to render different features -->
+                  <!-- A FeatureTypeStyle for rendering lines -->
+                  <FeatureTypeStyle>
+                    <Rule>
+                      <Name>rule1</Name>
+                      <Title>Blue Line</Title>
+                      <Abstract>A solid blue line with a 1 pixel width</Abstract>
+                      <LineSymbolizer>
+                        <Stroke>
+                          <CssParameter name="stroke">#0000FF</CssParameter>
+                        </Stroke>
+                      </LineSymbolizer>
+                    </Rule>
+                  </FeatureTypeStyle>
+                </UserStyle>
+              </NamedLayer>
+            </StyledLayerDescriptor>
+          ```
+    in: body
+    required: true
+    schema:
+      title: style
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of style
+          example: roads_style
+        filename:
+          type: string
+          description: Name of filename containing SLD code
+          example: roads.sld
 
   StyleList:
     title: styles

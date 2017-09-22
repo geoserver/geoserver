@@ -41,6 +41,19 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/workspaces <workspaces.yaml>`
 * :api:`/usergroup <usergroup.yaml>`
 * :api:`/roles <roles.yaml>`
+
+* GeoWebCache:
+
+  * :api:`/bounds <gwcbounds.yaml>`
+  * :api:`/diskquota <gwcdiskquota.yaml>`
+  * :api:`/filterupdate <gwcfilterupdate.yaml>`
+  * :api:`/index <gwcindex.yaml>`
+  * :api:`/layers <gwclayers.yaml>`
+  * :api:`/masstruncate <gwcmasstruncate.yaml>`
+  * :api:`/statistics <gwcmemorycachestatistics.yaml>`
+  * :api:`/reload <gwcreload.yaml>`
+  * :api:`/seed <gwcseed  .yaml>`
+
 * Importer extension:
 
   * :api:`/imports <importer.yaml>`
@@ -58,7 +71,7 @@ This section contains a number of examples which illustrate some of the most com
 
 .. toctree::
    :maxdepth: 1
-   
+
    about
    fonts
    layergroups
@@ -70,7 +83,5 @@ This section contains a number of examples which illustrate some of the most com
 .. toctree::
    :maxdepth: 1
    :hidden:
-   
+
    api/index
-
-

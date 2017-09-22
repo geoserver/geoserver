@@ -1,0 +1,50 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Memory Cache Statistics
+  description: A response contains memory cache statistics
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /statistics:
+    get:
+      operationId: statisticsGet
+      summary: Returns XML or JSON response with memory cache statistics
+      description: When appended with .json or .xml will respond with memory caches statistics in the requested format if
+                   the blobstore used is an instance of MemoryBlobStore.
+      produces:
+        - application/html
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            application/xml: |
+              <gwcInMemoryCacheStatistics>
+                <hitCount>0</hitCount>
+                <missCount>0</missCount>
+                <evictionCount>0</evictionCount>
+                <totalCount>0</totalCount>
+                <hitRate>100.0</hitRate>
+                <missRate>0.0</missRate>
+                <currentMemoryOccupation>0.0</currentMemoryOccupation>
+                <totalSize>67108864</totalSize>
+                <actualSize>0</actualSize>
+              </gwcInMemoryCacheStatistics>
+            application/json: |
+              {
+                "org.geowebcache.storage.blobstore.memory.CacheStatistics": {
+                  "evictionCount": 0,
+                  "hitCount": 0,
+                  "totalSize": 16777216,
+                  "actualSize": 0,
+                  "missRate": 0,
+                  "totalCount": 0,
+                  "currentMemoryOccupation": 0,
+                  "hitRate": 100,
+                  "missCount": 0
+                }
+              }

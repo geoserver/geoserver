@@ -218,6 +218,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @param quietOnNotFound The value of the quietOnNotFound parameter
      * @return
      */
+    //TODO: Remove this once all references have been removed (should just use ResourceNotFoundExceptions)
     protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz, String errorMessage, Boolean quietOnNotFound) {
         errorMessage = quietOnNotFound != null && quietOnNotFound ? "" : errorMessage;
         if (object == null){

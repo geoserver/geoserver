@@ -651,8 +651,8 @@ paths:
           type: boolean
           default: false
       responses:
-        405:
-          description: Method not allowed.
+        200:
+          description: The feature type was successfully deleted.
 
   /workspaces/{workspaceName}/featuretypes/{featureTypeName}:
     get:    
@@ -1013,8 +1013,8 @@ paths:
           type: boolean
           default: false
       responses:
-        405:
-          description: Method not allowed.
+        200:
+          description: The feature type was successfully deleted.
 
 definitions:
   FeatureTypeInfo:

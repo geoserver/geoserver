@@ -287,7 +287,7 @@ public class FeatureTypeController extends AbstractCatalogController {
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
         checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
 
-        return wrapObject(ftInfo, FeatureTypeInfo.class, "No such feature type: "+featureTypeName, quietOnNotFound);
+        return wrapObject(ftInfo, FeatureTypeInfo.class);
     }
 
     @PutMapping(path = "/{featureTypeName}", produces = {

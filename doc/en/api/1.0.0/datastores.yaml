@@ -181,15 +181,6 @@ paths:
           required: true
           description: The name of the data store to delete.
           type: string
-        - name: purge
-          in: query
-          required: false
-          description: The purge parameter specifies if and how the underlying vector data source is deleted. 
-                       Allowable values for this parameter are "none", "metadata", "all". 
-                       When set to "none" data and auxiliary files are preserved.
-                       When set to "metadata" delete only auxiliary files and metadata. It’s recommended when data files (such as granules) should not be deleted from disk.
-                       Finally, when set to "all" both data and auxiliary files are removed.
-          type: string
         - name: recurse
           in: query
           required: false

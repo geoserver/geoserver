@@ -1,0 +1,41 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Bounds
+  description: A RESTful interface through which get the bounds of a given layer based on srs.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /bounds/{layer}/{srs}/{type}:
+    get:
+      produces:
+        - text/plain
+      operationId: boundsGet
+      summary: Returns the bounds for a layer based on srs.
+      description: Returns the bounds for a layer based on srs.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: The name of the layer to update.
+          type: string
+        - name: srs
+          in: path
+          required: true
+          description: The srs projection used against the layer to find the bounds such as EPSG:4326
+          type: string
+        - name: type
+          in: path
+          description: Accepts java as an extension.
+          required: true
+          type: string
+          enum: [java]
+      responses:
+        200:
+          description: OK
+          examples:
+            text/plain: |
+              {{0, 0, 1, 0, 0}, {0, 0, 3, 1, 1}, {0, 0, 7, 3, 2}, {0, 0, 15, 7, 3}, {0, 0, 31, 15, 4}, {0, 0, 63, 30, 5}, {0, 0, 127, 61, 6}, {0, 0, 255, 123, 7}, {0, 0, 511, 246, 8}, {0, 0, 1023, 493, 9}, {0, 0, 2047, 987, 10}, {0, 0, 4095, 1975, 11}, {0, 0, 8191, 3950, 12}, {0, 0, 16383, 7900, 13}, {0, 0, 32767, 15801, 14}, {0, 0, 65535, 31602, 15}, {0, 0, 131071, 63205, 16}, {0, 0, 262143, 126411, 17}, {0, 1, 524287, 252822, 18}, {0, 3, 1048575, 505645, 19}, {0, 6, 2097151, 1011291, 20}, {0, 12, 4194303, 2022582, 21}}

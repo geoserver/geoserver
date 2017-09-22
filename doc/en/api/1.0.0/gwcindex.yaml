@@ -1,0 +1,38 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Index
+  description: The front facing html ui for GeoWebCache.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc
+paths:
+  /rest:
+    get:
+      operationId: indexGet
+      summary: Returns the HTML user interface
+      description: Returns the HTML for the front facing ui homepage for GeoWebCache.
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK
+          examples:
+            text/html: |
+              <html>
+              <body>
+                <a id="logo" href="/geoserver/gwc/rest"><img src="/geoserver/gwc/rest/web/geowebcache_logo.png" alt="" height="100" width="353" border="0"/></a>
+                <h3>Resources available from here:</h3>
+                <ul>
+                  <li>
+                  <h4><a href="/geoserver/gwc/rest/layers/">layers</a></h4>
+                  Lets you see the configured layers. You can also view a specific layer  by appending the name of the layer to the URL, DELETE an existing layer  or POST a new one. Note that the latter operations only make sense when GeoWebCache has been configured through geowebcache.xml. You can POST either XML or JSON.
+                  </li>
+                  <li>
+                    <h4>seed</h4>
+                  </li>
+                </ul>
+              </body>
+              </html>

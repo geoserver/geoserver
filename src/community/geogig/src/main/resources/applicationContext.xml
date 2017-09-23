@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:web="http://java.sun.com/xml/ns/j2ee"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xsi:schemaLocation="
+            http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/mvc       http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+            http://www.springframework.org/schema/util      http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+               
+        default-autowire="byName">
+  
   <bean class="org.geogig.geoserver.config.GeogigModuleStatus">
   </bean>
 
@@ -26,19 +37,32 @@
   </bean> -->
 
   <!--  REST  -->
+  <mvc:interceptors>
+   <mvc:interceptor>
+     <mvc:mapping path="/geogig/**" />
+     <bean class="org.geogig.geoserver.rest.GeogigRequestInterceptor" />
+   </mvc:interceptor>
+</mvc:interceptors>
 
-  <bean id="geogigDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="alwaysUseFullPath" value="true" />
-    <property name="mappings">
-      <props>
-        <prop key="/geogig">geogigDispatcher</prop>
-        <prop key="/geogig/**">geogigDispatcher</prop>
-      </props>
-    </property>
-  </bean>
-
-  <bean id="geogigDispatcher" class="org.geogig.geoserver.rest.GeogigDispatcher" >
-  </bean>
+  <context:component-scan base-package="org.geogig.geoserver.spring.config"
+                        name-generator="org.geogig.geoserver.rest.GeogigBeanNameGenerator" >
+  </context:component-scan>
+  <context:component-scan base-package="org.geogig.geoserver.spring.controller"
+                        name-generator="org.geogig.geoserver.rest.GeogigBeanNameGenerator" >
+  </context:component-scan>
+  <context:component-scan base-package="org.geogig.geoserver.spring.service"
+                        name-generator="org.geogig.geoserver.rest.GeogigBeanNameGenerator" >
+  </context:component-scan>
+  
+  <context:component-scan base-package="org.locationtech.geogig.spring.controller"
+                        name-generator="org.geogig.geoserver.rest.GeogigBeanNameGenerator" >
+    <context:exclude-filter type="regex" expression="org.locationtech.geogig.spring.controller.ConsoleController" />
+    <context:exclude-filter type="regex" expression="org.locationtech.geogig.spring.controller.RequestExceptionHandler" />
+  </context:component-scan>
+  <context:component-scan base-package="org.locationtech.geogig.spring.service"
+                        name-generator="org.geogig.geoserver.rest.GeogigBeanNameGenerator" >
+    <context:exclude-filter type="regex" expression="org.locationtech.geogig.spring.service.RepositoryInitService" />
+  </context:component-scan>
 
   <bean id="GeogigLayerIntegrationListener" class="org.geogig.geoserver.wms.GeogigLayerIntegrationListener" >
     <constructor-arg ref="geoServer"/>

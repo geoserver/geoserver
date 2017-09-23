@@ -15,12 +15,8 @@
             <include>gs-geogig-*.jar</include>
             <!-- GeoGig jars -->
             <include>geogig-*.jar</include>
-            <!-- GeoGig plugin uses SQLite JDBC driver by default for security logs -->
-            <include>sqlite-jdbc-*.jar</include>
             <!-- Hikari DB connection pool libs -->
             <include>HikariCP-*.jar</include>
-            <!-- GeoGig needs a newer postgresql (42.1.1) driver than the one included in GeoServer up to geoserver 2.11.x -->
-            <include>postgresql-*.jar</include>
             <!-- the plugin uses Logback for LogStore -->
             <include>logback*.jar</include>
             <!-- Guice injection libs -->
@@ -39,8 +35,6 @@
             <include>jcommander-*.jar</include>
             <!-- jansi libs -->
             <include>jansi-*.jar</include>
-            <!-- Restlet fileupload -->
-            <include>org.restlet.ext.fileupload-*.jar</include>
             <!-- GeoTools Geopackage libs -->
             <include>gt-geopkg-*.jar</include>
             <!-- JSONP (JSR-353) libs -->
@@ -49,9 +43,6 @@
         <excludes>
             <exclude>*test*</exclude>
             <exclude>*sources*</exclude>
-            <!-- GeoGig now needs version 42.1.1+, so explicitly exclude older versions -->
-            <exclude>postgresql-8.*</exclude>
-            <exclude>postgresql-9.*</exclude>
         </excludes>
     </fileSet>
   </fileSets>

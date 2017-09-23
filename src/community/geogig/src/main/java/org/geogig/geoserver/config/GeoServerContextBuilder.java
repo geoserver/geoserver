@@ -16,7 +16,7 @@ import org.locationtech.geogig.di.PluginsModule;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.impl.ContextBuilder;
-import org.locationtech.geogig.storage.GraphDatabase;
+import org.locationtech.geogig.storage.ConflictsDatabase;
 import org.locationtech.geogig.storage.IndexDatabase;
 import org.locationtech.geogig.storage.ObjectDatabase;
 import org.locationtech.geogig.storage.PluginDefaults;
@@ -87,8 +87,8 @@ public class GeoServerContextBuilder extends ContextBuilder {
                     .newMapBinder(binder(), VersionedFormat.class, IndexDatabase.class)
                     .permitDuplicates();
 
-            MapBinder<VersionedFormat, GraphDatabase> graphPlugins = MapBinder
-                    .newMapBinder(binder(), VersionedFormat.class, GraphDatabase.class)
+            MapBinder<VersionedFormat, ConflictsDatabase> graphPlugins = MapBinder
+                    .newMapBinder(binder(), VersionedFormat.class, ConflictsDatabase.class)
                     .permitDuplicates();
 
             Iterable<StorageProvider> providers = StorageProvider.findProviders();
@@ -96,7 +96,7 @@ public class GeoServerContextBuilder extends ContextBuilder {
             for (StorageProvider sp : providers) {
                 VersionedFormat objectDatabaseFormat = sp.getObjectDatabaseFormat();
                 VersionedFormat indexDatabaseFormat = sp.getIndexDatabaseFormat();
-                VersionedFormat graphDatabaseFormat = sp.getGraphDatabaseFormat();
+                VersionedFormat conflictsDatabaseFormat = sp.getConflictsDatabaseFormat();
                 VersionedFormat refsDatabaseFormat = sp.getRefsDatabaseFormat();
 
                 if (objectDatabaseFormat != null) {
@@ -105,8 +105,8 @@ public class GeoServerContextBuilder extends ContextBuilder {
                 if (indexDatabaseFormat != null) {
                     GeoServerContextBuilder.bind(indexPlugins, indexDatabaseFormat);
                 }
-                if (graphDatabaseFormat != null) {
-                    GeoServerContextBuilder.bind(graphPlugins, graphDatabaseFormat);
+                if (conflictsDatabaseFormat != null) {
+                    GeoServerContextBuilder.bind(graphPlugins, conflictsDatabaseFormat);
                 }
                 if (refsDatabaseFormat != null) {
                     GeoServerContextBuilder.bind(refPlugins, refsDatabaseFormat);

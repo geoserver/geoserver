@@ -4,7 +4,7 @@
  */
 package org.geogig.geoserver.rest;
 
-import static org.locationtech.geogig.web.api.RESTUtils.getStringAttribute;
+import static org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver.getURI;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,12 +21,10 @@ import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.repository.impl.GeoGIG;
-import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.repository.InitRequestUtil;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
-import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Status;
+import org.locationtech.geogig.web.api.CommandSpecException;
+import org.springframework.http.HttpStatus;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -36,7 +34,7 @@ import com.google.common.collect.Iterators;
 
 /**
  * {@link RepositoryProvider} that looks up the coresponding {@link GeoGIG} instance to a given
- * {@link Request} by asking the geoserver's {@link RepositoryManager}
+ * {@link HttpServletRequest} by asking the geoserver's {@link RepositoryManager}
  */
 public class GeoServerRepositoryProvider implements RepositoryProvider {
 
@@ -49,32 +47,6 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
      * Import Existing Repository command string.
      */
     public static final String IMPORT_CMD = "importExistingRepo";
-
-    private Optional<String> getRepositoryName(Request request) {
-        final String repo = getStringAttribute(request, "repository");
-        return Optional.fromNullable(repo);
-    }
-
-    public Optional<RepositoryInfo> findRepository(Request request) {
-        Optional<String> repositoryName = getRepositoryName(request);
-        if (!repositoryName.isPresent()) {
-            return Optional.absent();
-        }
-        try {
-            String repoName = repositoryName.get();
-            String repoId = getRepoIdForName(repoName);
-            if (repoId != null) {
-                RepositoryManager repositoryManager = RepositoryManager.get();
-                RepositoryInfo repositoryInfo;
-                repositoryInfo = repositoryManager.get(repoId);
-                return Optional.of(repositoryInfo);
-            } else {
-                return Optional.absent();
-            }
-        } catch (RuntimeException e) {
-            return Optional.absent();
-        }
-    }
 
     public List<RepositoryInfo> getRepositoryInfos() {
         return RepositoryManager.get().getAll();
@@ -90,14 +62,13 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
         return null;
     }
-
+    
     @Override
-    public void delete(Request request) {
-        Optional<Repository> geogig = getGeogig(request);
+    public void delete(String repoName) {
+        Optional<Repository> geogig = getGeogig(repoName);
         Preconditions.checkState(geogig.isPresent(), "No repository to delete.");
 
-        final String repositoryName = getStringAttribute(request, "repository");
-        final String repoId = getRepoIdForName(repositoryName);
+        final String repoId = getRepoIdForName(repoName);
         Repository ggig = geogig.get();
         Optional<URI> repoUri = ggig.command(ResolveGeogigURI.class).call();
         Preconditions.checkState(repoUri.isPresent(), "No repository to delete.");
@@ -110,7 +81,6 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         } catch (Exception e) {
             Throwables.propagate(e);
         }
-
     }
 
     @Override
@@ -132,59 +102,32 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
             }
         });
     }
-
-    private boolean isInitRequest(Request request) {
-        // if the request is a PUT, and the request path ends in "init", it's an INIT request.
-        if (Method.PUT.equals(request.getMethod())) {
-            Map<String, Object> attributes = request.getAttributes();
-            if (attributes != null && attributes.containsKey("command")) {
-                return INIT_CMD.equals(attributes.get("command"));
-            } else if (request.getResourceRef() != null) {
-                String path = request.getResourceRef().getPath();
-                return path != null && path.contains(INIT_CMD);
-            }
-        }
-        return false;
-    }
-
-    private boolean isImportRequest(Request request) {
-        // if the request is a POST, and the request path ends in "importExistingRepo"
-        if (Method.POST.equals(request.getMethod())) {
-            Map<String, Object> attributes = request.getAttributes();
-            if (attributes != null && attributes.containsKey("command")) {
-                return IMPORT_CMD.equals(attributes.get("command"));
-            } else if (request.getResourceRef() != null) {
-                String path = request.getResourceRef().getPath();
-                return path != null && path.contains(IMPORT_CMD);
-            }
-        }
-        return false;
-    }
-
+    
     @Override
-    public Optional<Repository> getGeogig(Request request) {
-        Optional<String> repositoryName = getRepositoryName(request);
-        if (!repositoryName.isPresent()) {
-            return Optional.absent();
+    public Repository createGeogig(String repositoryName, Map<String, String> parameters) {
+        if (repositoryName != null && RepositoryManager.get().repoExistsByName(repositoryName)) {
+            // repo already exists
+            throw new CommandSpecException(
+                    "The specified repository name is already in use, please try a different name",
+                    HttpStatus.CONFLICT);
         }
-        // look for one with the provided name first
-        Optional<Repository> geogig = getGeogig(repositoryName.get());
-        if (!geogig.isPresent()) {
-            if (isInitRequest(request)) {
-                // special handling of INIT requests
-                geogig = AddRepoRequestHandler.createGeoGIG(request);
-            } else if (isImportRequest(request)){
-                // handles IMPORT requests
-                geogig = AddRepoRequestHandler.importGeogig(request);
-            }
+
+        Optional<Repository> initRepo = AddRepoRequestHandler.createGeoGIG(repositoryName, parameters);
+        if (initRepo.isPresent()) {
+            // init request was sufficient
+            return initRepo.get();
         }
-        if (!geogig.isPresent()) {
-            // if it's still not present, just generate one.
-            // This is so the CommandResource can get into the runCmd code before failing and
-            // generating the correct responses
-            geogig = Optional.fromNullable(RepositoryManager.get().createRepo(new Hints()));
+        return null;
+
+    }
+    
+    public Repository importExistingGeogig(String repositoryName, Map<String, String> parameters) {
+        Optional<Repository> importRepo = AddRepoRequestHandler.importGeogig(repositoryName, parameters);
+        if (importRepo.isPresent()) {
+            // import request was sufficient
+            return importRepo.get();
         }
-        return geogig;
+        return null;
     }
 
     public Optional<Repository> getGeogig(String repositoryName) {
@@ -202,38 +145,41 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         try {
             return manager.getRepository(repoId);
         } catch (IOException e) {
-            throw new RestletException("Error accessing datastore " + repositoryName,
-                    Status.SERVER_ERROR_INTERNAL, e);
+            throw new CommandSpecException("Error accessing datastore " + repositoryName,
+                    HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
+    
     private static class AddRepoRequestHandler {
 
-        private static Optional<Repository> createGeoGIG(Request request) {
+        private static Optional<Repository> createGeoGIG(String repositoryName, Map<String, String> parameters) {
             try {
-                final Hints hints = InitRequestUtil.createHintsFromRequest(request);
-                // now build the repo with the Hints
-                return Optional.fromNullable(RepositoryManager.get().createRepo(hints));
+                final Hints hints = InitRequestUtil.createHintsFromParameters(repositoryName,
+                        parameters);
+                final Repository repository = RepositoryManager.get().createRepo(hints);
+                return Optional.fromNullable(repository);
             } catch (Exception ex) {
                 Throwables.propagate(ex);
             }
             return Optional.absent();
         }
-
-        private static Optional<Repository> importGeogig(Request request) {
+        
+        private static Optional<Repository> importGeogig(String repositoryName, Map<String, String> parameters) {
+            // if the request is a POST, and the request path ends in "importExistingRepo"
 
             try {
-                // build URI
-                Hints hint = InitRequestUtil.createHintsFromRequest(request);
+                final Hints hints = InitRequestUtil.createHintsFromParameters(repositoryName,
+                        parameters);
 
                 // now build the repo with the Hints
                 RepositoryInfo repoInfo = new RepositoryInfo();
 
                 // set the repo location from the URI
-                if (!hint.get(Hints.REPOSITORY_URL).isPresent()) {
-                	return Optional.absent();
+                if (!hints.get(Hints.REPOSITORY_URL).isPresent()) {
+                        return Optional.absent();
                 }
-                URI uri = new URI(hint.get(Hints.REPOSITORY_URL).get().toString());
+                URI uri = new URI(hints.get(Hints.REPOSITORY_URL).get().toString());
                 repoInfo.setLocation(uri);
 
                 // check to see if repo is initialized
@@ -253,5 +199,31 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
             }
             return Optional.absent();
         }
+    }
+
+    @Override
+    public boolean hasGeoGig(String repositoryName) {
+        if (null != repositoryName) {
+            Iterator<String> findRepositories = findRepositories();
+            while (findRepositories.hasNext()) {
+                String next = findRepositories.next();
+                if (next.equals(repositoryName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String getMaskedLocationString(Repository repo, String repoName) {
+        // need to mask the location as "geoserver://<repoName>"
+        return getURI(repoName);
+    }
+
+
+    @Override
+    public String getRepositoryId(String repoName) {
+        return this.getRepoIdForName(repoName);
     }
 }

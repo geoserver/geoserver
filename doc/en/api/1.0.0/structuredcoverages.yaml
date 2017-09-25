@@ -177,6 +177,7 @@ paths:
           required: false
           type: integer
           minimum: 0
+          default: 0
         - name: limit
           in: query
           description: Used for paging, the number of items to be returned
@@ -384,6 +385,18 @@ paths:
           required: false
           description: A CQL filter to reduce the returned granules
           type: string
+        - name: offset
+          in: query
+          description: Used for paging, the start of the current page
+          required: false
+          type: integer
+          minimum: 0
+        - name: limit
+          in: query
+          description: Used for paging, the number of items to be removed
+          required: false
+          type: integer
+          minimum: 1
       responses:
         200:
           description: OK
@@ -391,12 +404,6 @@ paths:
           description: Method Not Allowed
 
   /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/index/granules/{granuleId}:
-    parameters:
-      - name: granuleId
-        type: string
-        in: path
-        required: true
-        description: The granule ID
     get:
       operationId: getStructuredCoverageGranule
       summary: Get the attributes of a particular granule
@@ -419,7 +426,12 @@ paths:
           in: path
           required: true
           description: The name of the coverage to be retrieved
-          type: string       
+          type: string
+        - name: granuleId
+          type: string
+          in: path
+          required: true
+          description: The granule ID
       responses:
         200:
           description: OK
@@ -557,11 +569,16 @@ paths:
           required: true
           description: The name of the coverage to be retrieved
           type: string
+        - name: granuleId
+          type: string
+          in: path
+          required: true
+          description: The granule ID
       responses:
         200:
           description: OK
-        405:
-          description: Method Not Allowed
+        401:
+          description: Unauthorized
 
 
 definitions:

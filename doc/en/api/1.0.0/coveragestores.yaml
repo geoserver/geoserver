@@ -215,7 +215,7 @@ paths:
           
     delete:
       operationId: deleteCoverageStore
-      summary: Delete coveraeg store
+      summary: Delete coverage store
       description: Deletes a coverage store
       parameters:
         - name: workspace
@@ -288,7 +288,7 @@ paths:
         - name: filename
           in: query
           required: false
-          description: The filename parameter specifies the target file name for a file that needs to harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work.
+          description: The filename parameter specifies the target file name for a file that needs to harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
           type: string
       responses:
         200:
@@ -338,6 +338,11 @@ paths:
           in: query
           required: false
           description: Name of the newly created coverage/layer. 
+          type: string
+        - name: filename
+          in: query
+          required: false
+          description: The filename parameter specifies the target file name for a file that needs to harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
           type: string
       responses:
         200:

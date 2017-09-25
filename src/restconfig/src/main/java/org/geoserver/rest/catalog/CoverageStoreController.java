@@ -124,7 +124,7 @@ public class CoverageStoreController extends AbstractCatalogController {
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void coverageStoreGet(
+    public void coverageStorePut(
             @RequestBody CoverageStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {

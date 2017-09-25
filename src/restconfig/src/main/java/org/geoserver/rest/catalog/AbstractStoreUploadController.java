@@ -53,7 +53,7 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
      * @param directory
      *
      */
-    protected List<Resource> handleFileUpload(String store, String workspace, UploadMethod method,
+    protected List<Resource> handleFileUpload(String store, String workspace, String filename, UploadMethod method,
             String format, Resource directory, HttpServletRequest request) {
 
         List<Resource> files = new ArrayList<>();
@@ -65,7 +65,6 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
                 // we want to delete the previous dir contents only in case of PUT, not
                 // in case of POST (harvest, available only for raster data)
                 boolean cleanPreviousContents = HttpMethod.PUT.name().equals(request.getMethod());
-                String filename = request.getParameter("filename");
                 if (filename == null) {
                     filename = buildUploadedFilename(store, format);
                 }

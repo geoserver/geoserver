@@ -222,12 +222,13 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             @RequestParam(name = "target", required = false) String target,
             @RequestParam(name = "update", required = false) String update,
             @RequestParam(name = "charset", required = false) String characterset,
+            @RequestParam(name = "filename", required = false) String filename,
             HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setStatus(HttpStatus.ACCEPTED.value());
 
         // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
-        List<Resource> files = doFileUpload(method, workspaceName, storeName, format, request);
+        List<Resource> files = doFileUpload(method, workspaceName, storeName, filename, format, request);
         final Resource uploadedFile = files.get(0);
 
         DataAccessFactory factory = lookupDataStoreFactory(format);
@@ -505,8 +506,8 @@ public class DataStoreFileController extends AbstractStoreUploadController {
      * @param format The store format.
      * @throws IOException
      */
-    protected List<Resource> doFileUpload(UploadMethod method, String workspaceName,
-                                          String storeName, String format, HttpServletRequest request) throws IOException {
+    protected List<Resource> doFileUpload(UploadMethod method, String workspaceName, String storeName, String filename,
+                                          String format, HttpServletRequest request) throws IOException {
         Resource directory = null;
 
         boolean postRequest = request != null
@@ -522,7 +523,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 directory = createFinalRoot(workspaceName, storeName, postRequest);
             }
         }
-        return handleFileUpload(storeName, workspaceName, method, format, directory, request);
+        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request);
     }
 
     private Resource createFinalRoot(String workspaceName, String storeName, boolean isPost)

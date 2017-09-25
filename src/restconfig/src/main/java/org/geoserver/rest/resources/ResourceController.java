@@ -152,11 +152,10 @@ public class ResourceController extends RestBaseController {
     
     /**
      * Look up operation query string value, defaults to {@link Operation#DEFAULT} if not provided.
-     * @param request
+     * @param operation
      * @return operation defined by query string, or {@link Operation#DEFAULT} if not provided
      */
-    protected static Operation operation(HttpServletRequest request) {
-        String operation = RESTUtils.getQueryStringValue(request, "operation");
+    protected static Operation operation(String operation) {
         if (operation != null) {
             operation = operation.trim().toUpperCase();
             try {
@@ -171,7 +170,10 @@ public class ResourceController extends RestBaseController {
     }
 
     protected static MediaType getFormat(HttpServletRequest request) {
-        String format = RESTUtils.getQueryStringValue(request, "format");
+        return getFormat(RESTUtils.getQueryStringValue(request, "format"));
+    }
+
+    protected static MediaType getFormat(String format) {
         if ("xml".equals(format)) {
             return MediaType.APPLICATION_XML;
         } else if ("json".equals(format)) {
@@ -208,11 +210,13 @@ public class ResourceController extends RestBaseController {
      * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
      */
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD}, produces = {MediaType.ALL_VALUE})
-    public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
+    public Object resourceGet(HttpServletRequest request, HttpServletResponse response,
+                              @RequestParam(name = "operation", required = false, defaultValue = "default") String operationName,
+                              @RequestParam(required = false, defaultValue = MediaType.TEXT_HTML_VALUE) String format) {
         Resource resource = resource(request);
-        Operation operation = operation(request);
+        Operation operation = operation(operationName);
         Object result;
-        response.setContentType(getFormat(request).toString());
+        response.setContentType(getFormat(format).toString());
 
         if (operation == Operation.METADATA) {
             result =  wrapObject(new ResourceMetadataInfo(resource, request), ResourceMetadataInfo.class);
@@ -254,13 +258,14 @@ public class ResourceController extends RestBaseController {
      */
     @PutMapping(consumes = {MediaType.ALL_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public void resourcePut(HttpServletRequest request,HttpServletResponse response){
+    public void resourcePut(HttpServletRequest request,HttpServletResponse response,
+                            @RequestParam(name = "operation", required = false, defaultValue = "default") String operationName){
         Resource resource = resource(request);
         
         if (resource.getType() == Type.DIRECTORY) {
             throw new RestException("Attempting to write data to a directory.",  HttpStatus.METHOD_NOT_ALLOWED );
         }
-        Operation operation = operation(request);
+        Operation operation = operation(operationName);
         if (operation == Operation.METADATA ){
             throw new RestException("Attempting to write data to metadata.",  HttpStatus.METHOD_NOT_ALLOWED );
         }

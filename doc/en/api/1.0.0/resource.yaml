@@ -1,0 +1,337 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Resources
+  description: A resource is any item in the data directory that does not represent configuration. Typical resources include styles and icons.
+
+paths:
+  /resource/{pathToResource}:
+    parameters:
+      - name: pathToResource
+        in: path
+        type: string
+        required: true
+        description: The full path to the resource. Required, but may be empty; a request to `/resource` references the top level resource directory.
+    get:
+      operationId: resourceGet
+      description: | 
+        Download a resource, list contents of directory, or show formatted resource metadata.
+
+        Response content depends upon parameters.
+
+        With `operation=default`, if the request is made against a non-directory resource, the content of the resource is returned.
+
+        For example, `/resource/styles/default_point.sld?operation=default`
+
+        ```
+        <?xml version="1.0" encoding="UTF-8"?>
+        <StyledLayerDescriptor version="1.0.0" 
+         xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
+         xmlns="http://www.opengis.net/sld" 
+         xmlns:ogc="http://www.opengis.net/ogc" 
+         xmlns:xlink="http://www.w3.org/1999/xlink" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <!-- a Named Layer is the basic building block of an SLD document -->
+          <NamedLayer>
+            <Name>default_point</Name>
+            <UserStyle>
+            <!-- Styles can have names, titles and abstracts -->
+              <Title>Default Point</Title>
+              <Abstract>A sample style that draws a point</Abstract>
+              <!-- FeatureTypeStyles describe how to render different features -->
+              <!-- A FeatureTypeStyle for rendering points -->
+              <FeatureTypeStyle>
+                <Rule>
+                  <Name>rule1</Name>
+                  <Title>Red Square</Title>
+                  <Abstract>A 6 pixel square with a red fill and no stroke</Abstract>
+                    <PointSymbolizer>
+                      <Graphic>
+                        <Mark>
+                          <WellKnownName>square</WellKnownName>
+                          <Fill>
+                            <CssParameter name="fill">#FF0000</CssParameter>
+                          </Fill>
+                        </Mark>
+                      <Size>6</Size>
+                    </Graphic>
+                  </PointSymbolizer>
+                </Rule>
+              </FeatureTypeStyle>
+            </UserStyle>
+          </NamedLayer>
+        </StyledLayerDescriptor>
+        ```
+
+        If the request is made against a directory resource, a "ResourceDirectory" response is returned, containing information about the directory and its children.
+        Examples:
+
+        - `http://localhost:8080/geoserver/rest/resource/logs?operation=default&format=xml`
+          ```
+          <ResourceDirectory>
+            <name>logs</name>
+            <parent>
+              <path>/</path>
+              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/" rel="alternate" type="application/xml"/>
+            </parent>
+            <lastModified>2017-09-15 18:50:54.0 UTC</lastModified>
+            <children>
+              <child>
+                <name>DEFAULT_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/DEFAULT_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>geoserver.log</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/geoserver.log" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>geoserver.log.1</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/geoserver.log.1" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>geoserver.log.2</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/geoserver.log.2" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>GEOSERVER_DEVELOPER_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/GEOSERVER_DEVELOPER_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>GEOTOOLS_DEVELOPER_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/GEOTOOLS_DEVELOPER_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>PRODUCTION_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/PRODUCTION_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>QUIET_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/QUIET_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>TEST_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/TEST_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+              <child>
+                <name>VERBOSE_LOGGING.properties</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/logs/VERBOSE_LOGGING.properties" rel="alternate" type="application/octet-stream"/>
+              </child>
+            </children>
+          </ResourceDirectory>
+          ```
+
+        - `http://localhost:8080/geoserver/rest/resource/logs?operation=default&format=json`
+          ```
+          {"ResourceDirectory":{"name":"logs","parent":{"path":"\/","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/","rel":"alternate","type":"application\/json"}},"lastModified":"2017-09-15 18:50:54.0 UTC","children":{"child":[{"name":"DEFAULT_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/DEFAULT_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log.1","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log.1","rel":"alternate","type":"application\/octet-stream"}},{"name":"geoserver.log.2","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/geoserver.log.2","rel":"alternate","type":"application\/octet-stream"}},{"name":"GEOSERVER_DEVELOPER_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/GEOSERVER_DEVELOPER_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"GEOTOOLS_DEVELOPER_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/GEOTOOLS_DEVELOPER_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"PRODUCTION_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/PRODUCTION_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"QUIET_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/QUIET_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"TEST_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/TEST_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}},{"name":"VERBOSE_LOGGING.properties","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/logs\/VERBOSE_LOGGING.properties","rel":"alternate","type":"application\/octet-stream"}}]}}}
+          ```
+
+        With `operation=metadata`, a "ResourceMetadata" object is returned. If the resource is a directory, this metadata object will not list the children of the directory.
+        Examples:
+
+        - `http://localhost:8080/geoserver/rest/resource/styles/default_point.sld?operation=metadata&format=xml`
+          ```
+          <ResourceMetadata>
+            <name>default_point.sld</name>
+            <parent>
+              <path>/styles</path>
+              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/resource/styles" rel="alternate" type="application/xml"/>
+            </parent>
+            <lastModified>2017-01-18 19:02:38.0 UTC</lastModified>
+            <type>resource</type>
+          </ResourceMetadata>
+          ```
+        - `http://localhost:8080/geoserver/rest/resource/styles/default_point.sld?operation=metadata&format=json`
+          ```
+          {"ResourceMetadata":{"name":"default_point.sld","parent":{"path":"\/styles","link":{"href":"http:\/\/localhost:8080\/geoserver\/rest\/resource\/styles","rel":"alternate","type":"application\/json"}},"lastModified":"2017-01-18 19:02:38.0 UTC","type":"resource"}}
+          ```
+      produces: 
+        - application/xml
+        - application/json
+        - text/plain
+        - "*/*"
+      parameters:
+        - name: operation
+          in: query
+          type: string
+          description: The type of GET operation. `default` returns a list of the contained resources in the case of a directory resource, or the actual resource contents in the case of a resource resource.`metadata` requests a metadata summary of the resource.
+          required: false
+          default: default
+          enum:
+            - default
+            - metadata
+        - name: format
+          in: query
+          type: string
+          description: The format of the response. Only applicable for the `metadata` operation, or for a directory resource.
+          required: false
+          default: html
+          enum:
+            - html
+            - xml
+            - json
+      responses:
+        200:
+          description: OK
+          headers:
+            Last-Modified: 
+              type: string
+              description: When resource was last modified.
+            Content-Type: 
+              type: string
+              description: Will guess mime-type from extension or content.
+            Resource-Type: 
+              type: string
+              description: Resource type (custom)
+              enum:
+                - directory
+                - resource
+            Resource-Parent: 
+              type: string
+              description: Path to parent (custom)
+        404:
+          description: Resource not found.
+    head:
+      operationId: resourceHead
+      description: Show resource metadata in HTTP headers.
+      responses:
+        200:
+          description: OK
+          headers:
+            Last-Modified: 
+              type: string
+              description: When resource was last modified.
+            Content-Type: 
+              type: string
+              description: Will guess mime-type from extension or content.
+            Resource-Type: 
+              type: string
+              description: Resource type (custom)
+              enum:
+                - directory
+                - resource
+            Resource-Parent: 
+              type: string
+              description: Path to parent (custom)
+        404:
+          description: Resource not found.
+    post: 
+      operationId: resourcePost
+      description: Invalid. Use PUT to create a resource.
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: resourcePut
+      description: Upload/move/copy a resource, create directories on the fly (overwrite if exists). For move/copy operations, place source path in body. Copying is not supported for directories.
+      parameters:
+        - name: operation
+          in: query
+          type: string
+          description: The type of PUT operation. `default` creates a new resource or alters an existing resource. `move` moves the resource to a new location. `copy` duplicates the resource to a new location
+          required: false
+          default: default
+          enum:
+            - default
+            - move
+            - copy
+        - name: resourceBody
+          in: body
+          description: The content of the resource to upload. In the case of a `move` or `copy` operation, this is instead the path to the source resource to move/copy from.
+          schema:
+            type: string
+            format: binary
+      consumes: 
+        - "*/*"
+      responses:
+        200:
+          description: OK (existing resource)
+        201:
+          description: Created (new resource)
+        404:
+          description: Source path that doesn't exist
+        405: 
+          description: PUT to directory or copy where source path is directory
+
+    delete:
+      operationId: resourceDelete
+      description: Delete a resource (recursively if directory)
+      responses:
+        200:
+          description: OK
+        404:
+          description: Resource not found.
+
+definitions:
+  ResourceMetadata:
+    type: object
+    description: Metadata about a resource
+    properties:
+      name:
+        type: string
+        description: The name of the resource, including the extension if applicable.
+      parent:
+        type: object
+        description: The parent resource of this one
+        properties:
+          path:
+            type: string
+            description: The full path to the parent resource
+          link:
+            type: object
+            description: A link to the parent resource
+            properties:
+              href:
+                type: string
+                description: The link to the resource
+              rel:
+                type: string
+                description: Relationship between the current resource and the linked resource
+                enum:
+                  - alternate
+              type: 
+                type: string
+                description: The mime type returned by the link
+      lastModified:
+        type: string
+        description: The last modified date of the resource
+      type:
+        type: string
+        description: Type of resource.
+        enum:
+          - resource
+          - directory
+  ResourceDirectory:
+    type: object
+    description: Metadata about a directory of resources
+    allOf:
+      - $ref: "#/definitions/ResourceMetadata"
+      - properties:
+          children:
+            type: object
+            description: List of child resources in the directory
+            properties:
+              child:
+                type: array
+                items:
+                  type: object
+                  description: A child resource
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the resource, including the extension if applicable.
+                    link:
+                      type: object
+                      description: A link to the child resource
+                      properties:
+                        href:
+                          type: string
+                          description: The link to the resource
+                        rel:
+                          type: string
+                          description: Relationship between the current resource and the linked resource
+                          enum:
+                            - alternate
+                        type: 
+                          type: string
+                          description: The mime type returned by the link

@@ -24,7 +24,7 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/layers <layers.yaml>`
 * :api:`/monitoring <monitoring.yaml>`
 * :api:`/namespaces <namespaces.yaml>`
-* :api:`/owsservices <owsservices.yaml>`
+* :api:`/services/wms|wfs|wcs/settings <owsservices.yaml>`
 * :api:`/reload <reload.yaml>`
 * :api:`/security <security.yaml>`
 * :api:`/settings <settings.yaml>`

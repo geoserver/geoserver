@@ -16,11 +16,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.ResourceStoreFactory;
-import org.geoserver.rest.ObjectToMapWrapper;
-import org.geoserver.rest.RequestInfo;
-import org.geoserver.rest.ResourceNotFoundException;
-import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.RestException;
+import org.geoserver.rest.*;
 import org.geoserver.rest.converters.XStreamJSONMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.converters.XStreamXMLMessageConverter;
@@ -29,11 +25,17 @@ import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,6 +76,23 @@ public class ResourceController extends RestBaseController {
     public ResourceController(ResourceStore store) {
         super();
         this.resources = store;
+    }
+
+    /**
+     * Workaround to support format parameter when extension is in path
+     */
+    @Configuration
+    static class ResourceControllerConfiguration {
+        @Bean
+        ContentNegotiationStrategy resourceContentNegotiationStrategy() {
+            return webRequest -> {
+                HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+                if (new PatternsRequestCondition("/resource", "/resource/**").getMatchingCondition(request) != null) {
+                    return Collections.singletonList(ResourceController.getFormat(request));
+                }
+                return new ArrayList<>();
+            };
+        }
     }
     
     @Override

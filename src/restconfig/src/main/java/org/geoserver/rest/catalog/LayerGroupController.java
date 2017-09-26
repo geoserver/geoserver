@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * Coverage store controller
+ * Layer group controller
  */
 @RestController
 @ControllerAdvice
@@ -78,8 +78,7 @@ public class LayerGroupController extends AbstractCatalogController {
     @GetMapping(value = "{layerGroupName}")
     public RestWrapper<?> getLayerGroup(
             @PathVariable String layerGroupName,
-            @PathVariable(required = false) String workspaceName,
-            @RequestParam(name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+            @PathVariable(required = false) String workspaceName) {
 
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
@@ -88,9 +87,11 @@ public class LayerGroupController extends AbstractCatalogController {
         LayerGroupInfo layerGroupInfo = workspaceName != null ?
             catalog.getLayerGroupByName(workspaceName, layerGroupName) : catalog.getLayerGroupByName(layerGroupName);
 
-        String errorMessage = "No such layer group " + layerGroupName +
-                (workspaceName == null ? "" : " in workspace " + workspaceName);
-        return wrapObject(layerGroupInfo, LayerGroupInfo.class, errorMessage, quietOnNotFound);
+        if (layerGroupInfo == null) {
+            throw new ResourceNotFoundException("No such layer group " + layerGroupName +
+                    (workspaceName == null ? "" : " in workspace " + workspaceName));
+        }
+        return wrapObject(layerGroupInfo, LayerGroupInfo.class);
     }
 
     @PostMapping(consumes = {

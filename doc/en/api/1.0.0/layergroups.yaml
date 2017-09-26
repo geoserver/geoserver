@@ -46,10 +46,7 @@ paths:
             $ref: "#/definitions/Layergroup"
       consumes:
         - application/xml
-      produces:
-        - application/xml
         - application/json
-        - text/html
       responses:
         201:
           description: Created
@@ -88,12 +85,7 @@ paths:
           in: path
           required: true
           description: The name of the layer group to retrieve.
-          type: string
-        - name: quietOnNotFound 
-          in: query
-          required: false
-          description: The quietOnNotFound parameter avoids logging an exception when the layer group is not present. Note that 404 status code will still be returned.
-          type: boolean             
+          type: string       
       responses:
         200:
           description: OK
@@ -251,10 +243,7 @@ paths:
             $ref: "#/definitions/Layergroup"
       consumes:
         - application/xml
-      produces:
-        - application/xml
         - application/json
-        - text/html
       responses:
         201:
           description: Created
@@ -295,12 +284,7 @@ paths:
           in: path
           required: true
           description: The name of the layer group to retrieve.
-          type: string
-        - name: quietOnNotFound 
-          in: query
-          required: false
-          description: The quietOnNotFound parameter avoids logging an exception when the layer group is not present. Note that 404 status code will still be returned.
-          type: boolean             
+          type: string           
       responses:
         200:
           description: OK

@@ -101,6 +101,8 @@ paths:
       responses:
         200:
           description: OK
+        422: 
+          description: Bad password
 
     delete:
       operationId: deleteSelfPassword
@@ -114,7 +116,7 @@ paths:
 
     get:
       operationId: getCatalogMode
-      description: Sets the catalog mode, which specifies how GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges.
+      description: Gets the catalog mode, which specifies how GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges.
       produces:
         - application/xml
         - application/json
@@ -234,8 +236,7 @@ paths:
         200:
           description: OK
         409:
-          description: |
-            Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
 
     delete:
       operationId: deleteACLLayers
@@ -245,9 +246,8 @@ paths:
       responses:
         200:
           description: OK
-        409:
-          description: |
-            Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+        404:
+          description: Not found. Attempting to delete a non-existent rule.
 
 
   /rest/security/acl/layers/{rule}:
@@ -357,8 +357,8 @@ paths:
       responses:
         200:
           description: OK
-        409:
-          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+        404:
+          description: Not found. Attempting to delete a non-existent rule.
 
 
   /rest/security/acl/services/{rule}:
@@ -467,8 +467,8 @@ paths:
       responses:
         200:
           description: OK
-        409:
-          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+        404:
+          description: Not found. Attempting to delete a non-existent rule.
 
   /rest/security/acl/rest/{rule}:
     parameters:
@@ -540,13 +540,11 @@ definitions:
       oldMasterPassword:
         type: string
         description: Current master password
+        example: oldPassword
       newMasterPassword:
         type: string
         description: New master password
-    example: |
-      application/xml: <masterPassword><oldMasterPassword>oldPassword</oldMasterPassword><newMasterPassword>newPassword</newMasterPassword></masterPassword>
-      
-      application/json: { "oldMasterPassword":"oldPassword","newMasterPassword":"newPassword" }
+        example: newPassword
 
   CatalogMode:
     title: catalog
@@ -571,9 +569,6 @@ definitions:
         type: string
         description: New password
         example: newPassword
-    example: |
-      application/xml: <userPassword><newPassword>newPassword</newPassword></userPassword>
-      application/json: { "newPassword":"newPassword" }
 
   ACLLayers:
     title: rules

@@ -520,6 +520,39 @@ public class XStreamPersisterTest {
         Document dom = dom( in( out ) );
         assertEquals( "style", dom.getDocumentElement().getNodeName() );
     }
+
+    @Test
+    public void testWorkspaceStyle() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+
+        StyleInfo s1 = cFactory.createStyle();
+        s1.setName( "bar" );
+        s1.setFilename( "bar.sld" );
+        s1.setWorkspace(ws);
+
+        ByteArrayOutputStream out = out();
+        persister.save( s1, out );
+
+        ByteArrayInputStream in = in( out );
+
+        StyleInfo s2 = persister.load(in,StyleInfo.class);
+        assertEquals( "bar", s2.getName() );
+
+        assertNotNull( s2.getWorkspace() );
+        assertEquals( "foo", s2.getWorkspace().getId() );
+
+        Document dom = dom( in( out ) );
+        assertEquals( "style", dom.getDocumentElement().getNodeName() );
+
+        catalog.add(ws);
+        catalog.add(s2);
+        //Make sure the catalog resolves the workspace
+        assertEquals("foo", s2.getWorkspace().getName());
+    }
     
     @Test
     @Ignore // why do we want to xstream persist the catalog again?

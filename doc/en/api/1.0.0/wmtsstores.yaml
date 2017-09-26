@@ -214,7 +214,8 @@ paths:
         - name: recurse
           in: query
           required: false
-          description: When set to true all resources contained in the store are also removed. Default value is "false".
+          description: When set to true all resources contained in the store are also removed.
+          default: false
           type: boolean
       responses:
         200:

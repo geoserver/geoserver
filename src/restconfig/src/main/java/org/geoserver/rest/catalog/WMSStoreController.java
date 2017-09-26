@@ -173,8 +173,7 @@ public class WMSStoreController extends AbstractCatalogController {
     public void wmsStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
-            @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
-            @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+            @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse) throws IOException {
 
         WMSStoreInfo cs = getExistingWMSStore(workspaceName, storeName);
         if (!recurse) {

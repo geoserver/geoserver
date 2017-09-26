@@ -51,7 +51,7 @@ paths:
           Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
-        - $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/parameters/StyleInfoPost"
         - name: name
           in: query
           type: string
@@ -187,7 +187,7 @@ paths:
         Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
 
       parameters:
-        - $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/parameters/StyleInfoPost"
         - name: style
           in: path
           required: true
@@ -305,7 +305,7 @@ paths:
           required: true
           description: Name of workspace
           type: string
-        - $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/parameters/StyleInfoPost"
         - name: name
           in: query
           type: string
@@ -470,7 +470,7 @@ paths:
         Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
 
       parameters:
-        - $ref: "#/definitions/StyleInfoPost"
+        - $ref: "#/parameters/StyleInfoPost"
         - name: workspace
           in: path
           required: true
@@ -597,7 +597,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/StyleInfoPost/schema"
+            $ref: "#/definitions/StyleInfoPost"
         - name: default
           type: boolean
           in: query
@@ -637,8 +637,7 @@ paths:
         405:
           description: Method Not Allowed
 
-definitions:
-
+parameters:
   StyleInfoPost:
     name: styleBody
     description: >
@@ -704,17 +703,21 @@ definitions:
     in: body
     required: true
     schema:
-      title: style
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of style
-          example: roads_style
-        filename:
-          type: string
-          description: Name of filename containing SLD code
-          example: roads.sld
+      $ref: "#/definitions/StyleInfoPost"
+
+definitions:
+  StyleInfoPost:
+    title: style
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of style
+        example: roads_style
+      filename:
+        type: string
+        description: Name of filename containing SLD code
+        example: roads.sld
 
   StyleList:
     title: styles

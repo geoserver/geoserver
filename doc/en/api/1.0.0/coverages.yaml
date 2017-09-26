@@ -825,7 +825,7 @@ paths:
             $ref: "#/definitions/CoverageInfo"
         - name: calculate
           in: query
-          description: Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".
+          description: 'Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".'
           required: false
           type: array
           collectionFormat: csv
@@ -857,6 +857,7 @@ paths:
           required: true
           type: string
         - name: recurse
+          type: boolean
           in: query
           required: false
           description: The recurse controls recursive deletion. When set to true all stores containing the resource are also removed.

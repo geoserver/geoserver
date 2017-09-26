@@ -53,7 +53,7 @@ paths:
           
     post:
       operationId: postNamespaces
-      summary: add a new namespace to GeoServer
+      summary: Add a new namespace to GeoServer
       description: Adds a new namespace to the server
       parameters:
         - name: namespaceBody
@@ -96,7 +96,7 @@ paths:
   /namespaces/{namespaceName}:
     get:
       operationId: getNamespace
-      summary: Retrieve a layer group
+      summary: Retrieve a namespace
       description: Retrieves a single namespace definition. Use the "Accept:" header to specify format or 
         append an extension to the endpoint (example "/namespaces/{namespace}.xml" for XML).
       produces:
@@ -105,7 +105,7 @@ paths:
         - text/html
       parameters:
         - name: namespaceName
-          description: the name of the namespace to fetch
+          description: The name of the namespace to fetch, or "default" to get the default namespace.
           in: path
           required: true
           type: string
@@ -136,7 +136,7 @@ paths:
           description: namespace does not exist
     put:
       summary: Update a namespace
-      description: takes the body of the post and modifies the namespace from it.
+      description: Takes the body of the put and modifies the namespace from it.
       operationId: putNamespace
       consumes:
         - application/json
@@ -151,7 +151,7 @@ paths:
       parameters:
         - name: namespaceName
           in: path
-          description: name of namespace
+          description: Name of namespace, or "default" to set the default namespace using the namespace prefix in the body of the post.
           required: true
           type: string
     post:
@@ -162,28 +162,23 @@ paths:
           
     delete:
       operationId: deleteNamespace
+      summary: Delete a namespace
       parameters:
         - name: namespaceName
           in: path
-          description: name of namespace
+          description: Name of the namespace
           required: true
           type: string
-        - name: recurse
-          in: query
-          description: delete namespace contents (default false)
-          required: false
-          type: boolean
-      
       responses:
         200:
-          description: Success namespace deleted 
+          description: Success. Namespace deleted 
         404:
           description: Namespace doesn't exist
         405:
           description: Can't delete default namespace
         403: 
           description: Namespace or related Workspace is not empty (and recurse not true) 
- 
+
 definitions:
   Namespace:
     title: Namespace
@@ -193,10 +188,10 @@ definitions:
     properties:
       prefix:
         type: string
-        description: name/prefix of the namespace
+        description: Name/prefix of the namespace
       uri:
         type: string
-        description: uri that identifies the namespace
+        description: URI that identifies the namespace
         
   NamespacesResponse:
     title: Namespaces

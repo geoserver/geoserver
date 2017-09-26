@@ -85,12 +85,13 @@ public class LayerController extends AbstractCatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> layerGet(
-            @PathVariable String layerName,
-            @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+    public RestWrapper<LayerInfo> layerGet(@PathVariable String layerName) {
 
         LayerInfo layer = catalog.getLayerByName(layerName);
-        return wrapObject(layer, LayerInfo.class, "No such layer: "+layerName, quietOnNotFound );
+        if (layer == null) {
+            throw new ResourceNotFoundException("No such layer: "+layerName);
+        }
+        return wrapObject(layer, LayerInfo.class);
     }
 
     @DeleteMapping(value = "/{layerName}")

@@ -52,7 +52,24 @@ paths:
                    ]
                  }
                }
-            
+    post:
+      operationId: layersPost
+      description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: layersPut
+      description: Invalid. To edit a layer, use PUT on an individual layer instead.
+      responses:
+        405:
+          description: Method not allowed.
+    delete:
+      operationId: layersDelete
+      description: Invalid.
+      responses:
+        405:
+          description: Method not allowed. 
 
   /layers/{layerName}:
     get:
@@ -69,11 +86,6 @@ paths:
           required: true
           description: The name of the layer to retrieve.
           type: string
-        - name: quietOnNotFound 
-          in: query
-          required: false
-          description: The quietOnNotFound parameter avoids logging an exception when the layer  is not present. Note that 404 status code will still be returned.
-          type: boolean
       responses:
         200:
           description: OK
@@ -145,7 +157,12 @@ paths:
                   }
               
               }
-              
+    post:
+      operationId: layersNamePost
+      description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
+      responses:
+        405:
+          description: Method not allowed.
     put:
       operationId: layersNamePut
       summary: Modify a layer.
@@ -179,6 +196,12 @@ paths:
           required: true
           description: The name of the layer to delete.
           type: string
+        - name: recurse
+          in: query
+          description: Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group, also delete the layer group. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layer groups reference the layer.
+          required: false
+          type: boolean
+          default: false
       responses:
         200:
           description: OK

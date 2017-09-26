@@ -160,7 +160,12 @@ paths:
 
 
   /services/wms/workspaces/{workspace}/settings:
-
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
     get:
       operationId: getWMSWorkspaceSettings
       description: Retrieves Web Map Service settings for a given workspace.
@@ -294,13 +299,8 @@ paths:
 
     put:
       operationId: putWMSWorkspaceSettings
-      description: Edits a global WMS setting.
+      description: Edits a workspace-specific WMS setting.
       parameters:
-        - name: workspace
-          in: path
-          description: Name of workspace
-          required: true
-          type: string
         - name: WMSSettingsBody
           in: body
           description: Body of the WMS settings
@@ -316,10 +316,10 @@ paths:
 
     delete:
       operationId: deleteWMSWorkspaceSettings
-      description: Invalid. Use PUT to edit settings.
+      description: Deletes a workspace-specific WMS setting.
       responses:
-        405:
-          description: Method Not Allowed
+        200:
+          description: OK
 
 
   /services/wfs/settings:
@@ -505,7 +505,12 @@ paths:
 
 
   /services/wfs/workspaces/{workspace}/settings:
-
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
     get:
       operationId: getWFSWorkspaceSettings
       description: Retrieves Web Feature Service settings for a given workspace.
@@ -669,13 +674,8 @@ paths:
 
     put:
       operationId: putWFSWorkspaceSettings
-      description: Edits a global WFS setting.
+      description: Edits a workspace-specific WFS setting.
       parameters:
-        - name: workspace
-          in: path
-          description: Name of workspace
-          required: true
-          type: string
         - name: WFSSettingsBody
           in: body
           description: Body of the WFS settings layer
@@ -691,10 +691,10 @@ paths:
 
     delete:
       operationId: deleteWFSWorkspaceSettings
-      description: Invalid. Use PUT to edit settings.
+      description: Deletes a workspace-specific WFS setting.
       responses:
-        405:
-          description: Method Not Allowed
+        200:
+          description: OK
 
 
   /services/wcs/settings:
@@ -833,7 +833,12 @@ paths:
 
 
   /services/wcs/workspaces/{workspace}/settings:
-
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
     get:
       operationId: getWCSWorkspaceSettings
       description: Retrieves Web Coverage Service settings for a given workspace.
@@ -953,13 +958,8 @@ paths:
 
     put:
       operationId: putWCSWorkspaceSettings
-      description: Edits a global WCS setting.
+      description: Edits a workspace-specific WCS setting.
       parameters:
-        - name: workspace
-          in: path
-          description: Name of workspace
-          required: true
-          type: string
         - name: WCSSettingsBody
           in: body
           description: Body of the WCS settings
@@ -975,10 +975,10 @@ paths:
 
     delete:
       operationId: deleteWCSWorkspaceSettings
-      description: Invalid. Use PUT to edit settings.
+      description: Deletes a workspace-specific WCS setting.
       responses:
-        405:
-          description: Method Not Allowed
+        200:
+          description: OK
 
 
 

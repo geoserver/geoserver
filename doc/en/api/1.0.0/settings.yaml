@@ -137,10 +137,6 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
-        - text/html
       responses:
         200:
           description: OK
@@ -214,10 +210,6 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
-        - text/html
       responses:
         200:
           description: OK
@@ -281,6 +273,16 @@ paths:
       operationId: postWorkspaceSettings
       summary: Create workspace-specific settings
       description: Create new workspace-specific settings on the server.
+      parameters:
+        - name: settingsBody
+          description: The settings information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/WorkspaceSettings"
+      consumes:
+        - application/xml
+        - application/json
       responses:
         201:
           description: Created
@@ -302,20 +304,16 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
-        - text/html
       responses:
         200:
           description: OK
 
     delete:
       operationId: deleteWorkspaceSettings
-      description: Invalid. Use PUT to update settings.
+      description: Delete the settings for this workspace.
       responses:
-        405:
-          description: Method Not Allowed  
+        200:
+          description: OK 
 
 
 definitions:

@@ -1,13 +1,16 @@
 package org.geoserver.community.mbstyle.web;
 
-import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.*;
 import org.geoserver.community.mbstyle.MBStyleHandler;
+import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.styling.*;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
@@ -26,5 +29,33 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
         LineSymbolizer ls = SLD.lineSymbolizer(Styles.style(sld));
         assertNotNull(ls);
+    }
+
+    @Test
+    public void testRoundTripMBStyleGroup() throws IOException {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName("citeGroup");
+        lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.LAKES)));
+        lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS)));
+        lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES)));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
+
+        catalog.add(lg);
+
+        StyledLayerDescriptor sld = Styles.handler(MBStyleHandler.FORMAT).parse(getClass()
+                .getResourceAsStream("citeGroup.json"), null, null, null);
+
+        assertEquals(4, sld.getStyledLayers().length);
+
+        StyleHandler sldHandler = Styles.handler(SLDHandler.FORMAT);
+        File sldFile = Files.createTempFile("citeGroup", "sld").toFile();
+        OutputStream fout = new FileOutputStream(sldFile);
+        sldHandler.encode(sld, SLDHandler.VERSION_10, true, fout);
+
+        StyledLayerDescriptor sld2 = sldHandler.parse(new FileInputStream(sldFile), SLDHandler.VERSION_10, null, null);
+        assertEquals(4, sld2.getStyledLayers().length);
     }
 }

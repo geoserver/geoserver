@@ -55,6 +55,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -69,7 +70,7 @@ import freemarker.template.SimpleHash;
 @ControllerAdvice
 @RequestMapping(path = {
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{dataStoreName}/featuretypes"})
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes"})
 public class FeatureTypeController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -85,12 +86,12 @@ public class FeatureTypeController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE })
     public Object featureTypesGet(
             @PathVariable String workspaceName,
-            @PathVariable(required = false) String dataStoreName,
+            @PathVariable(required = false) String storeName,
             @RequestParam(defaultValue = "configured") String list) {
 
         if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)
                 || "all".equalsIgnoreCase(list)) {
-            DataStoreInfo info = getExistingDataStore(workspaceName, dataStoreName);
+            DataStoreInfo info = getExistingDataStore(workspaceName, storeName);
 
             // flag to control whether to filter out types without geometry
             boolean skipNoGeom = "available_with_geom".equalsIgnoreCase(list);
@@ -127,15 +128,15 @@ public class FeatureTypeController extends AbstractCatalogController {
                     }
                 }
             } catch (IOException e) {
-                throw new ResourceNotFoundException("Could not load datastore: " + dataStoreName);
+                throw new ResourceNotFoundException("Could not load datastore: " + storeName);
             }
 
             return new StringsList(featureTypes, "featureTypeName");
         } else {
             List<FeatureTypeInfo> fts;
 
-            if (dataStoreName != null) {
-                DataStoreInfo dataStore = catalog.getDataStoreByName(workspaceName, dataStoreName);
+            if (storeName != null) {
+                DataStoreInfo dataStore = catalog.getDataStoreByName(workspaceName, storeName);
                 fts = catalog.getFeatureTypesByDataStore(dataStore);
             } else {
                 NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
@@ -154,16 +155,17 @@ public class FeatureTypeController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity featureTypePost(
             @PathVariable String workspaceName,
-            @PathVariable(required = false) String dataStoreName,
+            @PathVariable(required = false) String storeName,
             @RequestBody FeatureTypeInfo ftInfo, UriComponentsBuilder builder) throws Exception {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
         // ensure the store matches up
-        if (ftInfo.getStore() != null) {
-            if (!dataStoreName.equals(ftInfo.getStore().getName())) {
-                throw new RestException("Expected datastore " + dataStoreName + " but client specified "
+        if (ftInfo.getStore() != null && storeName != null) {
+            if (!storeName.equals(ftInfo.getStore().getName())) {
+                throw new RestException("Expected datastore " + storeName + " but client specified "
                         + ftInfo.getStore().getName(), HttpStatus.FORBIDDEN);
             }
+            dsInfo = ftInfo.getStore();
         } else {
             ftInfo.setStore(dsInfo);
         }
@@ -255,12 +257,19 @@ public class FeatureTypeController extends AbstractCatalogController {
         // create a layer for the feature type
         catalog.add(new CatalogBuilder(catalog).buildLayer(ftInfo));
 
-        LOGGER.info("POST feature type" + dataStoreName + "," + ftInfo.getName());
+        LOGGER.info("POST feature type" + storeName + "," + ftInfo.getName());
+
+        UriComponents uriComponents;
+        if (storeName == null) {
+            uriComponents = builder.path("/workspaces/{workspaceName}/featuretypes/{featureTypeName}")
+                    .buildAndExpand(workspaceName, ftInfo.getName());
+        } else {
+            uriComponents = builder.path("/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}")
+                    .buildAndExpand(workspaceName, storeName, ftInfo.getName());
+        }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(
-                builder.path("/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/"
-                        + ftInfo.getName()).buildAndExpand(workspaceName, dataStoreName).toUri());
+        headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
 
@@ -270,15 +279,15 @@ public class FeatureTypeController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE })
     public RestWrapper featureTypeGet(
             @PathVariable String workspaceName,
-            @PathVariable(required = false) String dataStoreName,
+            @PathVariable(required = false) String storeName,
             @PathVariable String featureTypeName,
             @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") Boolean quietOnNotFound) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        checkFeatureTypeExists(ftInfo, workspaceName, dataStoreName, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
 
-        return wrapObject(ftInfo, FeatureTypeInfo.class, "No such feature type: "+featureTypeName, quietOnNotFound);
+        return wrapObject(ftInfo, FeatureTypeInfo.class);
     }
 
     @PutMapping(path = "/{featureTypeName}", produces = {
@@ -287,14 +296,14 @@ public class FeatureTypeController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE })
     public void featureTypePut(
             @PathVariable String workspaceName,
-            @PathVariable(required = false) String dataStoreName,
+            @PathVariable(required = false) String storeName,
             @PathVariable String featureTypeName,
             @RequestBody FeatureTypeInfo featureTypeUpdate,
             @RequestParam(name = "recalculate", required = false) String recalculate) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        checkFeatureTypeExists(ftInfo, workspaceName, dataStoreName, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
         Map<String, Serializable> parametersCheck = ftInfo.getStore()
                 .getConnectionParameters();
 
@@ -311,10 +320,10 @@ public class FeatureTypeController extends AbstractCatalogController {
         boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
         if (!virtual && parameters.equals(parametersCheck)) {
-            LOGGER.info("PUT FeatureType" + dataStoreName + "," + featureTypeName
+            LOGGER.info("PUT FeatureType" + storeName + "," + featureTypeName
                     + " updated metadata only");
         } else {
-            LOGGER.info("PUT featureType" + dataStoreName + "," + featureTypeName
+            LOGGER.info("PUT featureType" + storeName + "," + featureTypeName
                     + " updated metadata and data access");
             catalog.getResourcePool().clear(ftInfo.getStore());
         }
@@ -327,13 +336,13 @@ public class FeatureTypeController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE })
     public void featureTypeDelete(
             @PathVariable String workspaceName,
-            @PathVariable(required = false) String dataStoreName,
+            @PathVariable(required = false) String storeName,
             @PathVariable String featureTypeName,
             @RequestParam(name = "recurse", defaultValue = "false") Boolean recurse) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        checkFeatureTypeExists(ftInfo, workspaceName, dataStoreName, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
         List<LayerInfo> layers = catalog.getLayers(ftInfo);
 
         if (recurse) {
@@ -350,19 +359,19 @@ public class FeatureTypeController extends AbstractCatalogController {
         }
 
         catalog.remove(ftInfo);
-        LOGGER.info("DELETE feature type" + dataStoreName + "," + featureTypeName);
+        LOGGER.info("DELETE feature type" + storeName + "," + featureTypeName);
     }
 
     /**
      * If the feature type doesn't exists throws a REST exception with HTTP 404 code.
      */
-    private void checkFeatureTypeExists(FeatureTypeInfo featureType, String workspaceName, String dataStoreName, String featureTypeName) {
-        if (featureType == null && dataStoreName == null) {
+    private void checkFeatureTypeExists(FeatureTypeInfo featureType, String workspaceName, String storeName, String featureTypeName) {
+        if (featureType == null && storeName == null) {
             throw new ResourceNotFoundException(String.format(
                     "No such feature type: %s,%s", workspaceName, featureTypeName));
         } else if (featureType == null) {
             throw new ResourceNotFoundException(String.format(
-                    "No such feature type: %s,%s,%s", workspaceName, dataStoreName, featureTypeName));
+                    "No such feature type: %s,%s,%s", workspaceName, storeName, featureTypeName));
         }
     }
 
@@ -442,7 +451,7 @@ public class FeatureTypeController extends AbstractCatalogController {
                                 RequestAttributes.SCOPE_REQUEST);
                 String workspace = uriTemplateVars.get("workspaceName");
                 String featuretype = uriTemplateVars.get("featureTypeName");
-                String datastore = uriTemplateVars.get("dataStoreName");
+                String datastore = uriTemplateVars.get("storeName");
 
                 if (workspace == null || datastore == null || featuretype == null) {
                     return null;

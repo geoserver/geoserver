@@ -6,7 +6,7 @@ info:
   description: A data store contains vector format spatial data. It can be a file (such as a shapefile), a database (such as PostGIS), or a server (such as a remote Web Feature Service).
 
 paths:
-  /workspaces/<ws>/datastores[.<format>]:
+  /workspaces/{workspaceName}/datastores:
     get:
       operationId: getDatastores
       summary: Get a list of data stores
@@ -15,6 +15,11 @@ paths:
         - application/xml
         - application/json
         - text/html
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data stores.
       responses:
         200:
           description: OK
@@ -36,6 +41,10 @@ paths:
       description: Adds a new data store to the workspace.
 
       parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data stores.
         - name: dataStoreBody
           description: The data store body information to upload.
           in: body
@@ -44,6 +53,7 @@ paths:
             $ref: "#/definitions/datastore"
       consumes:
         - application/xml
+        - application/json
       produces:
         - application/xml
         - application/json
@@ -72,17 +82,21 @@ paths:
         405:
           description: Method Not Allowed
 
-  /workspaces/<ws>/datastores/<ds>[.<format>]:
+  /workspaces/{workspaceName}/datastores/{storeName}:
     get:
       operationId: getDataStore
       summary: Retrieve a particular data store from a workspace
-      description: Controls a particular data store in a given workspace.. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{datastore}.xml" for XML).
+      description: Controls a particular data store in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{datastore}.xml" for XML).
       produces:
         - application/xml
         - application/json
         - text/html
       parameters:
-        - name: dataStoreName
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
           in: path
           required: true
           description: The name of the data store to retrieve.
@@ -131,7 +145,11 @@ paths:
       summary: Modify a data store.
       description: Modify data store ds. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{ds}.xml" for XML).
       parameters:
-        - name: dataStoreName
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
           in: path
           required: true
           description: The name of the data store to modify.
@@ -154,23 +172,140 @@ paths:
       summary: Delete data store
       description: Deletes a data store from the server.
       parameters:
-        - name: dataStoreName
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
           in: path
           required: true
           description: The name of the data store to delete.
+          type: string
+        - name: recurse
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all resources contained in the store are also removed. The default value is "false".
+          type: boolean
+      responses:
+        200:
+          description: OK
+
+  /workspaces/{workspaceName}/datastores/{storeName}/{method}.{format}:
+    get:
+      operationId: getDataStoreUpload
+      description:  Deprecated. Retrieve the underlying files for the data store as a zip file with MIME type application/zip
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+          type: string
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: method
+          in: path
+          required: true
+          description: The upload method. Can be "url", "file", "external". Unused for GET
+          type: string
+        - name: format
+          in: path
+          required: true
+          description: The type of source data store (e.g., "shp"). Unused for GET
           type: string
       responses:
         200:
           description: OK
 
+    post:
+      operationId: postDataStoreUpload
+      description: Invalid, use PUT for uploads
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putDataStoreUpload
+      summary:  Uploads files to the data store, creating it if necessary
+      description: Creates or modifies a single data store by uploading spatial data or mapping configuration (in case an app-schema data store is targeted) files.
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: method
+          in: path
+          required: true
+          description: The upload method. Can be "url", "file", "external". 
+                       "file" uploads a file from a local source. The body of the request is the file itself.
+                       "url" uploads a file from an remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
+                       "external" uses an existing file on the server. The body of the request is the absolute path to the existing file.
+          type: string
+        - name: format
+          in: path
+          required: true
+          description: The type of source data store (e.g., "shp").
+          type: string
+        - name: configure
+          in: query
+          required: false
+          description: The configure parameter controls if a coverage/layer are configured upon file upload, in addition to creating the store. It can have a value of "none" to avoid configuring coverages.
+          type: string
+        - name: target
+          in: query
+          required: false
+          description: The type of target data store (e.g., "shp"). Same as format if not provided.
+          type: string
+        - name: update
+          in: query
+          required: false
+          description: The update mode. If "overwrite", will overwrite existing data. Otherwise, will append to existing data.
+          type: string
+        - name: charset
+          in: query
+          required: false
+          description: The character set of the data.
+          type: string
+        - name: filename
+          in: query
+          required: false
+          description: The filename parameter specifies the target file name for the file to be uploaded. This is important to avoid clashes with existing files.
+          type: string
+      responses:
+        200:
+          description: The data store was successfully updated.
+          
+    delete:
+      operationId: deleteDataStoreUpload
+      description: Invalid, only used for uploads
+      responses:
+        405:
+          description: Method Not Allowed
+
 definitions:
 
   dataStoreResponse:
     title: datastores
-    type: object
-    properties:
+    type: array
+    items:
       datastore:
-        $ref: "#/definitions/datastore"
+        title: datastore
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of data store
+          link:
+            type: string
+            description: URL to data store definition
 
   datastore:
     title: datastore
@@ -179,8 +314,42 @@ definitions:
       name:
         type: string
         description: Name of data store
-      link:
+      description:
         type: string
-        description: URL to data store definition
+        description: Description of data store
+      enabled:
+        type: boolean
+        description: Whether or not the data store is enabled
+      workspace:
+        title: workspace
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of workspace
+          link:
+            type: string
+            description: URL to workspace definition
+      connectionParameters:
+        type: array
+        items:
+          title: entry
+          description: connection parameter key-value pair
+          type: object
+          properties:
+            key:
+              type: string
+              description: Connection parameter key
+            value:
+              type: string
+              description: Connection parameter value
+      __default:
+        type: boolean
+        description: Whether or not the data store is the default data store
+      featureTypes:
+        type: array
+        items:
+          type: string
+          description: URL to featuretype definition
 
   

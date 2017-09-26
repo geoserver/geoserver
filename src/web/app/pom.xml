@@ -1536,5 +1536,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>status-monitoring</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-status-monitoring</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 </project>

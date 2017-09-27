@@ -61,6 +61,10 @@ The following links provide direct access to the GeoServer REST API documentatio
   * :api:`/imports (transforms) <importerTransforms.yaml>`
   * :api:`/imports (data) <importerData.yaml>`
 
+* Monitor extension:
+  
+  * :api:`/monitor <monitoring.yaml>`
+
 .. note:: You can also view the original :ref:`rest_api` section.
 
 Examples

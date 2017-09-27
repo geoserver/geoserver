@@ -42,7 +42,6 @@ public class ImportTransformController extends ImportBaseController {
     public ResponseEntity postTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
-            @RequestParam(value = "expand", required = false) String expand,
             @RequestBody ImportTransform importTransform,
             UriComponentsBuilder builder) {
 
@@ -104,8 +103,7 @@ public class ImportTransformController extends ImportBaseController {
     public ResponseEntity deleteTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
-            @PathVariable Integer transformId,
-            @RequestParam(value = "expand", required = false) String expand) {
+            @PathVariable Integer transformId) {
 
         ImportTask task = task(importId, taskId);
         ImportTransform tx = transform(importId, taskId, transformId);

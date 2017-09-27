@@ -73,7 +73,7 @@ paths:
       operationId: deleteImportDataFile
       summary: Remove a specific file with id {filename} from the import with id {importId}. Only applies to file/directory imports.
       responses: 
-        202: 
+        204: 
           description: No Content
   /imports/{importId}/tasks/{taskId}/data/files:
     get:
@@ -112,7 +112,7 @@ paths:
       operationId: deleteTaskDataFile
       summary: Remove a specific file with id {filename} from the task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       responses: 
-        202: 
+        204: 
           description: No Content
 
 parameters:
@@ -120,7 +120,8 @@ parameters:
     name: expand
     type: string
     in: query
-    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: self
     required: false
   ImportId:
     name: importId

@@ -87,6 +87,7 @@ public class ImportController extends ImportBaseController {
             // this means a specific lookup failed
             throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
         } else {
+            //For ImportContext, the expand parameter is handled at the converter level. Here, we are listing contexts, and use a different (more succinct) default
             return (writer, builder, converter) -> converter.contexts(builder,(Iterator<ImportContext>)lookupContext, converter.expand(expand, 0));
         }
     }

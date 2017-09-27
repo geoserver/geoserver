@@ -157,19 +157,23 @@ public class ImportTaskController extends ImportBaseController {
                     Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
         }
     }
+
+    /**
+     * Uploads a file as a new import task.
+     *
+     * @param id The import id
+     * @param filename The destination name of the file
+     */
     @PutMapping(path = "/{taskId:.+}")
     public Object taskPutFile(
             @PathVariable Long id,
-            @PathVariable Object taskId,
+            @PathVariable(name="taskId") Object filename,
             @RequestParam(required=false) String expand,
             HttpServletRequest request, HttpServletResponse response) {
 
         ImportContext context = context(id);
-        //TODO: Task id is the file name here. This functionality is completely undocumented
-        return acceptData(handleFileUpload(context, taskId, request), context, response, expand);
+        return acceptData(handleFileUpload(context, filename, request), context, response, expand);
     }
-
-
 
     @PutMapping(path = "/{taskId}/target")
     @ResponseStatus(HttpStatus.NO_CONTENT)

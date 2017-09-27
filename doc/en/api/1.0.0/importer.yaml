@@ -14,7 +14,7 @@ paths:
         - application/json
         - text/html
       parameters:
-        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ExpandParameterNone"
       responses:
         200:
           description: OK
@@ -149,11 +149,20 @@ parameters:
     in: query
     type: boolean
     required: false
+  #This parameter is handled at the converter level, and applies to all endpoints which return content. Default is 1 (self), unless otherwise specified in the controller method.
   ExpandParameter:
     name: expand
     type: string
     in: query
-    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: self
+    required: false
+  ExpandParameterNone:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: none
     required: false
   ContextParameter:
     name: importBody

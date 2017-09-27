@@ -66,6 +66,13 @@ paths:
           required: false
           description: Specifies how many records should be returned.
           type: integer
+        - name: live
+          in: query
+          required: false
+          description: |
+                       Specifies which requests to return based on status. If true, only returns live (RUNNING, WAITING, CANCELLING) requests.
+                       If false, only returns completed (FINISHED, FAILED) requests. If not specified, all requests are returned regardless of status.
+          type: boolean
         - name: fields
           in: query
           required: false
@@ -154,7 +161,7 @@ paths:
 
     delete:
       operationId: deleteMonitorRequest
-      description: Invalid
+      description: Invalid. Cannot delete a specific request
       responses:
         405:
           description: Method Not Allowed
@@ -265,7 +272,7 @@ definitions:
         description: Request start time
       Status:
         type: string
-        description: Status of the request (WAITING, RUNNING, FINISHED, FAILED, CANCELLED, INTERRUPTED)
+        description: Status of the request (WAITING, RUNNING, CANCELLING, FAILED, FINISHED, CANCELLED, INTERRUPTED)
       SubOperation:
         type: string
         description: The OGC sub operations, for the cases in which it applies (e.g., for WFS-T it can be Insert/Delete/Update)

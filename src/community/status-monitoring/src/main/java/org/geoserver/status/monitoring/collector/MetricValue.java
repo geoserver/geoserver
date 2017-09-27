@@ -154,7 +154,7 @@ public class MetricValue implements Serializable {
     /**
      * Value holder used for XML and JSOn encoding.
      */
-    public static class ValueHolder {
+    public static class ValueHolder implements Serializable {
 
         private final Object valueOlder;
 

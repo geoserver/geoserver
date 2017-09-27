@@ -72,7 +72,12 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     currentTime = process.getKernelTime() + process.getUserTime();
                     if (previousTime != -1) {
                         timeDifference = currentTime - previousTime;
-                        cpuUsage = (100d * (timeDifference / ((double) 1000))) / pr.getLogicalProcessorCount();
+                        int processors = pr.getLogicalProcessorCount();
+                        if (processors > 0) {
+                            cpuUsage = (100d * (timeDifference / ((double) 1000))) / pr.getLogicalProcessorCount();
+                        } else {
+                            cpuUsage = -1;
+                        }
                     }
                     previousTime = currentTime;
                     try {
@@ -201,8 +206,12 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
                     double total = mm.getTotal();
-                    double used = total - mm.getAvailable();
-                    mv.setValue((used / total) * 100);
+                    if (total > 0.0) {
+                        double used = total - mm.getAvailable();
+                        mv.setValue((used / total) * 100);
+                    } else {
+                        mv.setValue(0);
+                    }
                     si = Collections.singletonList(mv);
                     break;
                 }
@@ -225,8 +234,12 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
                     double total = mm.getSwapTotal();
-                    double used = mm.getSwapUsed();
-                    mv.setValue(used / total * 100);
+                    if (total > 0.0) {
+                        double used = mm.getSwapUsed();
+                        mv.setValue(used / total * 100);
+                    } else {
+                        mv.setValue(0);
+                    }
                     si = Collections.singletonList(mv);
                     break;
                 }
@@ -260,7 +273,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                             used += fsTotal - fs.getUsableSpace();
                         }
                         MetricValue mv = new MetricValue(info);
-                        mv.setValue(used / total * 100);
+                        if (total > 0.0) {
+                            mv.setValue(used / total * 100);
+                        } else {
+                            mv.setValue(0);
+                        }
                         mv.setAvailable(true);
                         si = Collections.singletonList(mv);
                     }
@@ -274,8 +291,12 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                             OSFileStore fs = fss[i];
                             MetricValue mv = new MetricValue(info);
                             double total = fs.getTotalSpace();
-                            double used = total - fs.getUsableSpace();
-                            mv.setValue(used / total  * 100);
+                            if (total > 0.0) {
+                                double used = total - fs.getUsableSpace();
+                                mv.setValue(used / total * 100);
+                            } else {
+                                mv.setValue(0);
+                            }
                             mv.setAvailable(true);
                             mv.setDescription("Partition [" + fs.getName() + "] used space");
                             mv.setPriority(info.getPriority() + (i + 1) * 3);
@@ -436,10 +457,12 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 }
                 // geoserver metrics
                 case GEOSERVER_CPU_USAGE: {
-                    MetricValue mv = new MetricValue(info);
-                    mv.setAvailable(true);
-                    mv.setValue(cpuUsage);
-                    si = Collections.singletonList(mv);
+                    if (cpuUsage >= 0.0) {
+                        MetricValue mv = new MetricValue(info);
+                        mv.setAvailable(true);
+                        mv.setValue(cpuUsage);
+                        si = Collections.singletonList(mv);
+                    }
                     break;
                 }
                 case GEOSERVER_THREADS: {
@@ -452,10 +475,15 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 }
                 case GEOSERVER_JVM_MEMORY_USAGE: {
                     OSProcess gsProc = os.getProcess(os.getProcessId());
-                    double value = 100d * gsProc.getResidentSetSize() / mm.getTotal();
                     MetricValue mv = new MetricValue(info);
                     mv.setAvailable(true);
-                    mv.setValue(value);
+                    double total = mm.getTotal();
+                    if (total > 0.0) {
+                        double value = 100d * gsProc.getResidentSetSize() / total;
+                        mv.setValue(value);
+                    } else {
+                        mv.setValue(0);
+                    }
                     si = Collections.singletonList(mv);
                     break;
                 }

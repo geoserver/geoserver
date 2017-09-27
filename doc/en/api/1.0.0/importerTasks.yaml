@@ -15,7 +15,7 @@ paths:
         - text/html
       parameters:
         - $ref: "#/parameters/ImportId"
-        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ExpandParameterNone"
       responses:
         200:
           description: OK
@@ -46,7 +46,8 @@ paths:
         - application/json
         - text/htm
       parameters:
-        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/ExpandParameterNone"
         - $ref: "#/parameters/TaskParameter"
       responses:
         201:
@@ -121,12 +122,18 @@ paths:
         - $ref: "#/parameters/ImportId"      
         - $ref: "#/parameters/TaskId"
         - $ref: "#/parameters/TaskParameter"
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200: 
           description: OK
+          schema:
+            $ref: "#/definitions/Task"
     delete:
       operationId: deleteTask
       summary: Remove task with id {taskId} within import with id {importId}
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
       responses:
         200: 
           description: OK
@@ -141,6 +148,13 @@ paths:
         - $ref: "#/parameters/ImportId"
         - $ref: "#/parameters/Filename"        
         - $ref: "#/parameters/ExpandParameter"
+        - name: fileBody
+          in: body
+          required: true
+          description: The file contents to upload.
+          schema:
+            type: string
+            format: binary
       responses:
         201:
           description: Created
@@ -183,9 +197,6 @@ paths:
       consumes:
         - application/json
         - text/json
-      produces:
-        - application/json
-        - text/html
       parameters:
         - $ref: "#/parameters/ImportId"      
         - $ref: "#/parameters/TaskId"
@@ -234,8 +245,14 @@ parameters:
     name: expand
     type: string
     in: query
-    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
-    required: false
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: self
+  ExpandParameterNone:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: none
   ImportId:
     name: importId
     in: path
@@ -267,14 +284,14 @@ parameters:
     in: body
     required: true          
     schema:
-      $ref: "#/definitions/Task"
+      $ref: "#/definitions/Store"
   LayerParameter:
     name: layerBody
     description: The layer to modify
     in: body
     required: true          
     schema:
-      $ref: "#/definitions/Task"
+      $ref: "#/definitions/Layer"
 
 definitions:
   Progress:

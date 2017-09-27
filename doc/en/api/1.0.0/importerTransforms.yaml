@@ -2,8 +2,8 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: GeoServer Importer Extension - Main
-  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The main endpoint manages individual import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
+  title: GeoServer Importer Extension - Transforms
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The transforms endpoint manages data transforms applied to sindividual import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
 
 paths:
   /imports/{importId}/tasks/{taskId}/transforms:
@@ -16,7 +16,7 @@ paths:
         - text/html
       parameters:
         - $ref: "#/parameters/ImportId"
-        - $ref: "#/parameters/TaskId"      
+        - $ref: "#/parameters/TaskId"
         - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
@@ -48,10 +48,9 @@ paths:
       consumes:
         - application/json
         - text/json
-      produces:
-        - application/json
-        - text/html
       parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/TaskId"
         - $ref: "#/parameters/ExpandParameter"
         - $ref: "#/parameters/TransformParameter"
       responses:
@@ -72,12 +71,8 @@ paths:
       parameters:
         - $ref: "#/parameters/ImportId"
         - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/TransformId"
         - $ref: "#/parameters/ExpandParameter"
-        - name: transformId
-          type: string
-          required: true
-          in: path
-          description: The transform ID
       responses:
         200:
           description: OK
@@ -94,6 +89,9 @@ paths:
         - application/json
         - text/html
       parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/TransformId"
         - $ref: "#/parameters/ExpandParameter"
         - $ref: "#/parameters/TransformParameter"
       responses:
@@ -105,6 +103,10 @@ paths:
       operationId: deleteTransform
       summary: Removes the transformation 
       description: Removes the transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/TransformId"
       responses:
         200:
           description: OK
@@ -120,7 +122,7 @@ parameters:
     name: transformBody
     description: The transform to add.
     in: body
-    required: true          
+    required: true
     schema:
       $ref: "#/definitions/Transform"
   ImportId:
@@ -133,6 +135,12 @@ parameters:
     name: taskId
     in: path
     description: The ID of the task
+    required: true
+    type: string
+  TransformId:
+    name: transformId
+    in: path
+    description: The ID of the transform
     required: true
     type: string 
     

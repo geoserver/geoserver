@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.12-SNAPSHOT</version>
+    <version>2.13-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jms-cluster-container</artifactId>
   <!-- Use the same version as GeoServer here, at least for the moment -->
-  <version>2.12-SNAPSHOT</version>
+  <version>2.13-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>GeoServer JMS based clustering modules</name>

@@ -12,13 +12,13 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.12-SNAPSHOT</version>
+    <version>2.13-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-printing</artifactId>
   <packaging>jar</packaging>
-  <version>2.12-SNAPSHOT</version>
+  <version>2.13-SNAPSHOT</version>
   <name>Printing Module</name>
 
   <dependencies>

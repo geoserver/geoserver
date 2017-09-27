@@ -11,7 +11,7 @@ txsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/m
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>gs-maven</artifactId>
-  <version>2.12-SNAPSHOT</version>
+  <version>2.13-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver.maven</groupId>

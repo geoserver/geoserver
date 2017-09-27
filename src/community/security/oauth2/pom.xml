@@ -10,13 +10,13 @@
 	<parent>
 		<groupId>org.geoserver.community</groupId>
 		<artifactId>gs-security</artifactId>
-		<version>2.12-SNAPSHOT</version>
+		<version>2.13-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-sec-oauth2</artifactId>
 	<packaging>jar</packaging>
-	<version>2.12-SNAPSHOT</version>
+	<version>2.13-SNAPSHOT</version>
 	<name>GeoServer OAuth2 Connect Security Module</name>
 
 	<properties>

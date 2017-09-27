@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>org.geoserver</groupId>
 		<artifactId>community</artifactId>
-		<version>2.12-SNAPSHOT</version>
+		<version>2.13-SNAPSHOT</version>
 	</parent>
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-rest-ext</artifactId>
-	<version>2.12-SNAPSHOT</version>
+	<version>2.13-SNAPSHOT</version>
 	<name>REST plugin community module</name>
 	<url>http://maven.apache.org</url>
 	<properties>

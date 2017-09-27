@@ -12,13 +12,13 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>    
     <artifactId>gs-security</artifactId>
-    <version>2.12-SNAPSHOT</version>
+    <version>2.13-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-web-sec</artifactId>
   <packaging>pom</packaging>
-  <version>2.12-SNAPSHOT</version>
+  <version>2.13-SNAPSHOT</version>
   <name>GeoServer Security Extension Web Modules</name>
 
   <profiles>

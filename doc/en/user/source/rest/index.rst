@@ -65,6 +65,10 @@ The following links provide direct access to the GeoServer REST API documentatio
   
   * :api:`/monitor <monitoring.yaml>`
 
+* XSLT extension:
+
+  * :api:`/services/wfs/transforms <transforms.yaml>`
+
 .. note:: You can also view the original :ref:`rest_api` section.
 
 Examples

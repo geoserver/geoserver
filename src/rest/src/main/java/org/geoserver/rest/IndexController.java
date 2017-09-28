@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.util.*;
 
 /**
- * The IndexController lists the paths available for the Spring MVC ReuestMappingHandler
+ * The IndexController lists the paths available for the Spring MVC RequestMappingHandler
  * Specifically, it auto-generates an index page containing all non-templated paths relative to the router root.
  *
  */
@@ -43,8 +43,8 @@ public class IndexController extends RestBaseController {
         return wrapObject(model, SimpleHash.class);
     }
 
-    private Set<String> getLinks() {
-        final int rootSize = RestBaseController.ROOT_PATH.length()+1;
+    protected Set<String> getLinks() {
+
         //Ensure sorted, unique keys
         Set<String> s = new TreeSet<>();
 
@@ -57,13 +57,23 @@ public class IndexController extends RestBaseController {
             //Only list "get" endpoints
             if (mapping.getMethodsCondition().getMethods().contains(RequestMethod.GET)) {
                 for (String pattern : mapping.getPatternsCondition().getPatterns()) {
-                    if (!pattern.contains("{") && (pattern.length() > rootSize)) {
-                        //trim root path
-                        String path = pattern.substring(rootSize);
-                        if (path.endsWith("/**")) {
-                            path = path.substring(0, path.length()-3);
+
+                    if (!pattern.contains("{")) {
+
+                        String path = pattern;
+                        //exclude other rest apis, like gwc/rest
+                        final int rootSize = RestBaseController.ROOT_PATH.length()+1;
+                        if (path.startsWith(RestBaseController.ROOT_PATH) && path.length() > rootSize) {
+                            //trim root path
+                            path = path.substring(rootSize);
+
+                            if (path.endsWith("/**")) {
+                                path = path.substring(0, path.length()-3);
+                            }
+                            if (path.length() > 0) {
+                                s.add(path);
+                            }
                         }
-                        s.add(path);
                     }
                 }
             }

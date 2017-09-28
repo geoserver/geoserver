@@ -1538,32 +1538,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         final GridCoverage2DReader reader = context.reader;
         final Object params = context.params;
-        ////
-        //
-        // Intersect the present envelope with the request envelope, also in WGS 84 to make sure
-        // there is an actual intersection
-        //
-        ////
-        try {
-            final CoordinateReferenceSystem coverageCRS=reader.getCoordinateReferenceSystem();
-            final CoordinateReferenceSystem requestCRS= envelope.getCoordinateReferenceSystem();
-            final ReferencedEnvelope coverageEnvelope=new ReferencedEnvelope(reader.getOriginalEnvelope());
-            if(CRS.equalsIgnoreMetadata(coverageCRS, requestCRS)){
-                if(!coverageEnvelope.intersects((BoundingBox)envelope))
-                    return null;
-            }else{
-                
-                ReferencedEnvelope dataEnvelopeWGS84 = coverageEnvelope.transform(DefaultGeographicCRS.WGS84, true);
-                ReferencedEnvelope requestEnvelopeWGS84 = envelope.transform(DefaultGeographicCRS.WGS84, true);
-                if (!dataEnvelopeWGS84.intersects((BoundingBox) requestEnvelopeWGS84))
-                    return null;                
-            }
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Failed to compare data and request envelopes, proceeding with rendering anyways",
-                    e);
-        }
 
         GridCoverage2D coverage;
         GeneralParameterValue[] readParams = getReadParameters(params, envelope,

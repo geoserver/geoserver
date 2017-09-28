@@ -110,6 +110,10 @@
       <option value="-Xmx512m"/>
       <option value="-Dapple.laf.useScreenMenuBar=true"/>
 
+      <!-- Work around conflict with local JAI extensions installed in ~/Library/Java/Extensions -->
+      <!-- (system extension  MRJToolkit used by launcher to open the default browser) -->
+      <option value="-Djava.ext.dirs=${env.JAVA_HOME}/jre/lib/ext:/System/Library/Java/Extensions"/>
+      
       <!-- enable marlin renderer -->
       <option value="-Xbootclasspath/a:$APP_ROOT/Contents/Java/webapps/geoserver/WEB-INF/lib/${marlin_jar}"/>
       <option value="-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"/>

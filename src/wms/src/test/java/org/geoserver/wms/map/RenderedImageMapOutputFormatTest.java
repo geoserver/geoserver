@@ -7,6 +7,8 @@ package org.geoserver.wms.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -27,6 +29,7 @@ import org.geotools.factory.FactoryRegistryException;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
 import org.geotools.filter.IllegalFilterException;
+import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.map.FeatureLayer;
@@ -35,13 +38,8 @@ import org.geotools.parameter.Parameter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.resources.coverage.FeatureUtilities;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ChannelSelectionImpl;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.SelectedChannelTypeImpl;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.*;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Assert;
@@ -61,6 +59,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -909,6 +908,79 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
 
         return image;
+    }
+
+    /**
+     * Test to make sure the rendering does not skip on unmatched original envelope and tries anyways to
+     * render an output
+     */
+    @Test
+    public void testMosaicExpansion() throws Exception {
+        File red1 = URLs.urlToFile(this.getClass().getResource("red_footprint_test/red1.tif"));
+        File source = red1.getParentFile();
+        File testDataDir = getResourceLoader().getBaseDirectory();
+        File directory1 = new File(testDataDir, "redHarvest1");
+        File directory2 = new File(testDataDir, "redHarvest2");
+        if (directory1.exists()) {
+            FileUtils.deleteDirectory(directory1);
+        }
+        FileUtils.copyDirectory(source, directory1);
+        // move all files except red3 to the second dir
+        directory2.mkdirs();
+        for (File file : FileUtils.listFiles(directory1,
+                new RegexFileFilter("red[^3].*"), null)) {
+            assertTrue(file.renameTo(new File(directory2, file.getName())));
+        }
+
+        // create the first reader
+        URL harvestSingleURL = URLs.fileToUrl(directory1);
+        ImageMosaicReader reader = new ImageMosaicReader(directory1, null);
+
+        // now create a second reader that won't be informed of the harvesting changes
+        // (simulating changes over a cluster, where the bbox information won't be updated from one node to the other)
+        ImageMosaicReader reader2 = new ImageMosaicReader(directory1, null);
+
+        try {
+            // harvest the other files with the first reader
+            for (File file : directory2.listFiles()) {
+                assertTrue(file.renameTo(new File(directory1, file.getName())));
+            }
+            reader.harvest(null, directory1, null);
+
+            // now use the render to paint a map not hitting the original envelope of reader2
+            ReferencedEnvelope renderEnvelope = new ReferencedEnvelope(991000, 992000, 216000, 217000, reader2.getCoordinateReferenceSystem());
+            Rectangle rasterArea = new Rectangle(0, 0, 10, 10);
+            GetMapRequest request = new GetMapRequest();
+            request.setBbox(renderEnvelope);
+            request.setSRS("EPSG:6539");
+            request.setFormat("image/png");
+
+            final WMSMapContent map = new WMSMapContent(request);
+            map.setMapWidth(10);
+            map.setMapHeight(10);
+            map.setBgColor(Color.BLACK);
+            map.setTransparent(false);
+            map.getViewport().setBounds(renderEnvelope);
+
+            StyleBuilder builder = new StyleBuilder();
+            Style style = builder.createStyle(builder.createRasterSymbolizer());
+            Layer l = new CachedGridReaderLayer(reader2, style);
+            map.addLayer(l);
+
+            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            File reference = new File("src/test/resources/org/geoserver/wms/map/red10.png");
+            ImageAssert.assertEquals(reference, imageMap.getImage(), 0);
+
+            // now again, but with a rendering transformation, different code path
+            style.featureTypeStyles().get(0).setTransformation(new IdentityCoverageFunction());
+            RenderedImageMap imageMap2 = this.rasterMapProducer.produceMap(map);
+            ImageAssert.assertEquals(reference, imageMap2.getImage(), 0);
+            imageMap.dispose();
+
+        } finally {
+            reader.dispose();
+            reader2.dispose();
+        }
     }
 
     /**

@@ -138,6 +138,12 @@
     <groupId>org.geotools</groupId>
     <artifactId>gt-geopkg</artifactId>
    </dependency>
+   <dependency>
+    <groupId>org.geotools.jdbc</groupId>
+    <artifactId>gt-jdbc-h2</artifactId>
+    <version>${gt.version}</version>
+    <scope>test</scope>
+  </dependency>
   </dependencies>
 
   <build>

@@ -21,7 +21,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -29,12 +31,12 @@ import org.geoserver.data.test.TestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.Converters;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetLegendGraphicTest extends WMSTestSupport {
-   
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -62,7 +64,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         getResourceLoader().copyFromClassPath( "../legend.png", file,  getClass() );
         testData.addStyle(null, "custom", "point_test.sld", getClass(), catalog, legend);
     }
-    
+
     /**
      * Tests GML output does not break when asking for an area that has no data with
      * GML feature bounding enabled
@@ -140,8 +142,40 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertEquals( "green",expectedColor.getGreen(), actualColor.getGreen() );
         assertEquals( "blue",expectedColor.getBlue(), actualColor.getBlue() );
         assertEquals( "alpha",expectedColor.getAlpha(), actualColor.getAlpha() );
-        
     }
+
+    /**
+     * Tests an custom legend graphic
+     */
+    @Test
+    public void testCustomLegendOnDefaultStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerInfo statesLayer = catalog.getLayerByName("states");
+        StyleInfo statesDefaultStyle = statesLayer.getDefaultStyle();
+        StyleInfo customStyle = catalog.getStyleByName("custom");
+
+        try {
+            // alter the default style
+            statesLayer.setDefaultStyle(customStyle);
+            catalog.save(statesLayer);
+
+            // get the default legend graphic, it should be the custom image
+            String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+                    "&layer=sf:states" +
+                    "&format=image/png&width=22&height=22";
+
+            BufferedImage image = getAsImage(base, "image/png");
+            Resource resource = getResourceLoader().get("styles/legend.png");
+            BufferedImage expected = ImageIO.read( resource.file() );
+
+            assertEquals( getPixelColor(expected,10,2).getRGB(), getPixelColor(image,10,2).getRGB() );
+        } finally {
+            statesLayer.setDefaultStyle(statesDefaultStyle);
+            catalog.save(statesLayer);
+        }
+
+    }
+
     
     /**
      * Tests an unscaled states legend

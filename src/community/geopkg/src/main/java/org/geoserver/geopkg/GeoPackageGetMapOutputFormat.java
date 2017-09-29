@@ -229,9 +229,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         if (minZoom != null || maxZoom != null) {
             matrixSet = matrixSet.subMap(minZoom, maxZoom);
         }
-
-        String imageFormat = formatOpts.containsKey("format") ? parseFormatFromOpts(formatOpts)
-                : findBestFormat(request);
                 
         CoordinateReferenceSystem crs = getCoordinateReferenceSystem(request);
         if (crs==null) {
@@ -248,7 +245,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         double yOffset = crs.getCoordinateSystem().getAxis(1).getMinimumValue();
     
         
-        req.setFormat(imageFormat);
+        req.setFormat(getTileImageFormat(formatOpts, request));
         req.setCrs(crs);
         
         //column and row bounds
@@ -299,6 +296,14 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
                     cleaner.finished(null);
                 }
             }
+        }
+    }
+
+    private String getTileImageFormat(Map formatOpts, GetMapRequest request) {
+        if (formatOpts.containsKey("format") && (formatOpts.get("format") != null)) {
+            return parseFormatFromOpts(formatOpts);
+        } else {
+            return findBestFormat(request);
         }
     }
 

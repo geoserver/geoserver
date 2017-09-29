@@ -482,15 +482,14 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 sldStyles.add(getStyleFromLayer(layerInfo));
                 
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
-                LegendInfo legend = defaultStyle.getLegend();
-                if( legend!=null){
+                LegendInfo legend = resolveLegendInfo(defaultStyle.getLegend(), req);
+                if (legend != null) {
                     Name name = layerInfo.getResource().getQualifiedName();
                     LegendRequest legendRequest = req.getLegend(name);
-                    if( legendRequest != null ){
+                    if (legendRequest != null) {
                         configureLegendInfo(req, legendRequest, legend);
-                    }
-                    else {
-                        LOGGER.log(Level.FINE, "Unable to set LegendInfo for "+name);
+                    } else {
+                        LOGGER.log(Level.FINE, "Unable to set LegendInfo for " + name);
                     }
                 }
             } else if(infoObj instanceof LayerGroupInfo) {

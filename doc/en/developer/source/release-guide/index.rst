@@ -30,7 +30,7 @@ Prerequisites
 The following are necessary to perform a GeoServer release:
 
 #. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
-#. Build access to `Jenkins <http://ares.boundlessgeo.com/jenkins/>`_
+#. Build access to `Jenkins <http://build.geoserver.org/jenkins/>`_
 #. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
 #. Administration rights to GeoServer `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
@@ -121,17 +121,27 @@ When creating the first release candidate of a series, there are some extra step
       
 * Create the new beta version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-beta`` for the first release of the ``2.12.x`` series
 
+* Update the main, nightly and live-docs jobs on build.geoserver.org:
+  
+  * disable the maintenance jobs, and remove them from the geoserver view
+  * create new jobs, copying from the existing master jobs, editing the branch and the ver=master configuration.
+
+* Update the cite tests on build.geoserver.org:
+  * disable the maintenance jobs, and remove them from the geoserver view
+  * create new jobs, copying from the existing master jobs, editing the branch in the build command.
+
 * Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
 
-* Switch to the new branch and update:
+* Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.12.x`` (for example):
    
-  * ``README.md`` documentation links
-  * ``doc/en/user/source/conf.py`` documentation links
+  * ``README.md``
+  * ``doc/en/developer/source/conf.py``
+  * ``doc/en/user/source/conf.py``
 
 Build the Release
 -----------------
 
-Run the `geoserver-release <http://ares.boundlessgeo.com/jenkins/job/geoserver-release/>`_ job in Jenkins. The job takes the following parameters:
+Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geoserver-release/>`_ job in Jenkins. The job takes the following parameters:
 
 **BRANCH**
 
@@ -166,7 +176,7 @@ release artifacts against the GeoTools/GeoWebCache versions specified. When
 successfully complete all release artifacts will be uploaded to the following
 location::
 
-   http://ares.boundlessgeo.com/geoserver/release/<RELEASE>
+   http://build.geoserver.org/geoserver/release/<RELEASE>
 
 Additionally when the job completes it fires off two jobs for building the
 Windows and OSX installers. These jobs run on different hudson instances.
@@ -183,7 +193,7 @@ test on the developer list.
 Publish the Release
 -------------------
 
-Run the `geoserver-release-publish <http://ares.boundlessgeo.com/jenkins/job/geoserver-release-publish/>`_ in Jenkins. The job takes the following parameters:
+Run the `geoserver-release-publish <https://build.geoserver.org/view/geoserver/job/geoserver-release-publish/>`_ in Jenkins. The job takes the following parameters:
 
 **VERSION**
 
@@ -195,7 +205,7 @@ Run the `geoserver-release-publish <http://ares.boundlessgeo.com/jenkins/job/geo
 
 This job will rsync all the artifacts located at::
 
-     http://ares.boundlessgeo.com/geoserver/release/<RELEASE>
+     http://build.geoserver.org/geoserver/release/<RELEASE>
 
 to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
 
@@ -250,19 +260,19 @@ Post the Documentation
 
    #. Add the lines::
 
-        ProxyPass /a.b.x/ http://ares.boundlessgeo.com/geoserver/a.b.x/doc/
-        ProxyPassReverse /a.b.x/ http://ares.boundlessgeo.com/geoserver/a.b.x/doc/
+        ProxyPass /a.b.x/ https://build.geoserver.org/geoserver/a.b.x/doc/
+        ProxyPassReverse /a.b.x/ https://build.geoserver.org/geoserver/a.b.x/doc/
 
       after the last similar entry.
 
    #. Modify the lines::
 
-        ProxyPass /maintain/ http://ares.boundlessgeo.com/geoserver/2.8.x/doc/
-        ProxyPassReverse /maintain/ http://ares.boundlessgeo.com/geoserver/2.8.x/doc/
-        ProxyPass /stable/ http://ares.boundlessgeo.com/geoserver/2.9.x/doc/
-        ProxyPassReverse /stable/ http://ares.boundlessgeo.com/geoserver/2.9.x/doc/
-        ProxyPass /latest/ http://ares.boundlessgeo.com/geoserver/master/doc/
-        ProxyPassReverse /latest/ http://ares.boundessgeo.com/geoserver/master/doc/
+        ProxyPass /maintain/ https://build.geoserver.org/geoserver/2.8.x/doc/
+        ProxyPassReverse /maintain/ https://build.geoserver.org/geoserver/2.8.x/doc/
+        ProxyPass /stable/ https://build.geoserver.org/geoserver/2.9.x/doc/
+        ProxyPassReverse /stable/ https://build.geoserver.org/geoserver/2.9.x/doc/
+        ProxyPass /latest/ https://build.geoserver.org/geoserver/master/doc/
+        ProxyPassReverse /latest/ https://build.geoserver.org/geoserver/master/doc/
 
       replacing ``2.8.x`` with the new maintenance and ``2.9.x`` with the newly created stable branch.
 

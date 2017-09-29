@@ -30,10 +30,12 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -50,6 +52,7 @@ import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.NullProgressListener;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
@@ -243,7 +246,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             if(mli.getLabel() != null) {
                 legend.setTitle( mli.getLabel() );
             }
-            LegendInfo legendInfo = resolveLegendInfo(layerInfo.getLegend(),request);
+            LegendInfo legendInfo = resolveLegendInfo(layerInfo.getLegend(), request, null);
             if(legendInfo != null ){
                 configureLegendInfo(request, legend, legendInfo);
             }
@@ -281,7 +284,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param legendInfo LegendInfo used to document use external graphic
      * @return Copy of provided legend info resolved to local file references.
      */
-    private LegendInfo resolveLegendInfo(LegendInfo legendInfo, GetLegendGraphicRequest request){
+    private LegendInfo resolveLegendInfo(LegendInfo legendInfo, GetLegendGraphicRequest request, StyleInfo context) {
         if( legendInfo == null){
             return null; // not available
         }
@@ -293,19 +296,30 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         URL url = null;
         try {
             URI uri = new URI(onlineResource);
+            GeoServerResourceLoader resources = wms.getCatalog().getResourceLoader();
             if( uri.isAbsolute() ){
                 if( baseUrl != null && onlineResource.startsWith(baseUrl+"styles/")){
                     // convert relative to styles durectory
                     onlineResource = onlineResource.substring(baseUrl.length()+7);
-                }
-                else {
+                } else {
                     return legendInfo; // an actual external graphic reference
                 }
+            } else {
+                // not absolute, try relative to the style if available, otherwise search
+                // in the styles directory
+                if (context != null) {
+                    GeoServerDataDirectory dd = new GeoServerDataDirectory(resources);
+                    Resource styleParentResource = dd.get(context);
+                    if (styleParentResource != null && styleParentResource.getType() == Resource.Type.DIRECTORY) {
+                        url = URLs.fileToUrl(new File(styleParentResource.dir(), onlineResource));
+                    }
+                }
             }
-            GeoServerResourceLoader resources = wms.getCatalog().getResourceLoader();
-            File styles = resources.findOrCreateDirectory("styles");
-            URL base = DataUtilities.fileToURL( styles );
-            url = new URL( base, onlineResource );
+            if(url == null) {
+                File styles = resources.findOrCreateDirectory("styles");
+                URL base = DataUtilities.fileToURL(styles);
+                url = new URL(base, onlineResource);
+            }
         }
         catch(MalformedURLException invalid){
             LOGGER.log(Level.FINER, "Unable to resolve "+onlineResource+" locally", invalid);
@@ -458,7 +472,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     if( infoObj instanceof LayerInfo ){
                         StyleInfo styleInfo = wms.getCatalog().getStyleByName(styleName);
                         if( styleInfo != null ){
-                            LegendInfo legend = resolveLegendInfo( styleInfo.getLegend(), req );
+                            LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
                             if( legend != null ){
                                 LayerInfo layerInfo = (LayerInfo) infoObj;
                                 Name name = layerInfo.getResource().getQualifiedName();
@@ -482,7 +496,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 sldStyles.add(getStyleFromLayer(layerInfo));
                 
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
-                LegendInfo legend = resolveLegendInfo(defaultStyle.getLegend(), req);
+                LegendInfo legend = resolveLegendInfo(defaultStyle.getLegend(), req, defaultStyle);
                 if (legend != null) {
                     Name name = layerInfo.getResource().getQualifiedName();
                     LegendRequest legendRequest = req.getLegend(name);
@@ -506,7 +520,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                         sldStyles.add(getStyleFromLayer(layerInfo));
                         styleInfo = layerInfo.getDefaultStyle();
                     }
-                    LegendInfo legend = resolveLegendInfo( styleInfo.getLegend(),req );
+                    LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
                     if( legend!=null){
                         Name name = layerInfo.getResource().getQualifiedName();
                         LegendRequest legendRequest = req.getLegend(name);

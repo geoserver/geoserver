@@ -223,8 +223,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         };
         parameters.setFilterVisible(false);
         parameters.setSortable(false);
-        parameters.getTopPager().setVisible(false);
-        parameters.getBottomPager().setVisible(false);
+        parameters.setPageable(false);
         parameters.setOutputMarkupId(true);
         form.add(parameters);
         

@@ -88,6 +88,10 @@
       <pathelement path="${gs.dir}/resources"/>
     </path>
 
+    <!-- extract relative jvm path, e.g. jdk1.8.0_73.jdk/Contents/Home -->
+    <propertyregex property="java.local" input="${env.JAVA_HOME}"
+      regexp=".*/([^/]*/[^/]*/[^/]*)" select="\1"/>
+
     <bundleapp 
         classpathref="gs.app.classpath"
         outputdirectory="${app.dir}"
@@ -112,7 +116,7 @@
 
       <!-- Work around conflict with local JAI extensions installed in ~/Library/Java/Extensions -->
       <!-- (system extension  MRJToolkit used by launcher to open the default browser) -->
-      <option value="-Djava.ext.dirs=${env.JAVA_HOME}/jre/lib/ext:/System/Library/Java/Extensions"/>
+      <option value="-Djava.ext.dirs=$APP_ROOT/Contents/PlugIns/${java.local}/jre/lib/ext:/System/Library/Java/Extensions"/>
       
       <!-- enable marlin renderer -->
       <option value="-Xbootclasspath/a:$APP_ROOT/Contents/Java/webapps/geoserver/WEB-INF/lib/${marlin_jar}"/>

@@ -33,6 +33,7 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
+import org.springframework.http.HttpHeaders;
 
 /**
  * Handles an internal reference to a remote location
@@ -81,7 +82,6 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             } else if ("http".equalsIgnoreCase(destination.getProtocol())) {
                 // setup the client
                 HttpClient client = new HttpClient();
-                // setting timeouts (30 seconds, TODO: make this configurable)
                 HttpConnectionManagerParams params = new HttpConnectionManagerParams();
                 params.setSoTimeout(timeout);
                 params.setConnectionTimeout(timeout);
@@ -148,7 +148,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
                 if (code == 200) {
                     try {
-                        Header length = method.getResponseHeader("Content-Lenght");
+                        Header length = method.getResponseHeader(HttpHeaders.CONTENT_LENGTH);
                         if (maxSize > 0 && length != null
                                 && Long.parseLong(length.getValue()) > maxSize) {
                             throw new WPSException(

@@ -182,7 +182,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
             resolved = unwrap(resolved);
             style.setWorkspace(resolved);
         } else {
-            LOGGER.log(Level.INFO, "Failed to resolve woekspace for style \""+style.getName()+
+            LOGGER.log(Level.INFO, "Failed to resolve workspace for style \""+style.getName()+
                     "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
         }
     }
@@ -209,7 +209,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
             resolved = unwrap(resolved);
             s.setWorkspace(resolved);
         } else {
-            LOGGER.log(Level.INFO, "Failed to resolve woekspace for store \""+store.getName()+
+            LOGGER.log(Level.INFO, "Failed to resolve workspace for store \""+store.getName()+
                     "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
         }
     }

@@ -314,6 +314,7 @@ public class GeoPackageProcess implements GSProcess {
                }
                request.setFormat("none");
                Map formatOptions = new HashMap();
+               formatOptions.put("flipy", "true");
                if (tiles.getFormat() != null) {
                     formatOptions.put("format",tiles.getFormat());
                }

@@ -72,7 +72,7 @@ Outline of the features layer::
 
 Each features layer has the following properties: 
   * ``featuretype`` (mandatory): the feature type
-  * ``propertynames`` (optional): list of comma-separated names of properties in feauture type to be included (default is all properties)
+  * ``propertynames`` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
   * ``filter`` (optional): any OGC filter that will be applied on features before output
 
 Outline of the tiles layer::

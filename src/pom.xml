@@ -1256,6 +1256,11 @@
      <artifactId>oshi-core</artifactId>
      <version>3.4.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.jdbc.version}</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1883,6 +1888,7 @@
   <jackson2.version>2.5.0</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
+  <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
  </properties>
 
  <profiles>

@@ -232,7 +232,8 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
 
         String imageFormat = formatOpts.containsKey("format") ? parseFormatFromOpts(formatOpts)
                 : findBestFormat(request);
-                
+        req.setFormat(imageFormat);
+
         CoordinateReferenceSystem crs = getCoordinateReferenceSystem(request);
         if (crs==null) {
             String srs = getSRS(request);
@@ -246,9 +247,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         double ySpan = crs.getCoordinateSystem().getAxis(1).getMaximumValue() - crs.getCoordinateSystem().getAxis(1).getMinimumValue();
         double xOffset = crs.getCoordinateSystem().getAxis(0).getMinimumValue();
         double yOffset = crs.getCoordinateSystem().getAxis(1).getMinimumValue();
-    
-        
-        req.setFormat(imageFormat);
+
         req.setCrs(crs);
         
         //column and row bounds

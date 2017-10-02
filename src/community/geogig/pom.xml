@@ -20,13 +20,6 @@
     <mockito.version>1.8.5</mockito.version>
     <logback.version>1.1.2</logback.version>
     <cucumber-java.version>1.2.4</cucumber-java.version>
-    <!--
-      The PostgreSQL version should match the version as depended upon transitively by
-      geogig-postgresql. It is set here because it is not a managed dependency in the POM
-      hierarchy and we need it to compile and run tests. It is marked as "provided" in
-      the dependency seciton below.
-    -->
-    <postgresql.version>42.1.1</postgresql.version>
     <hikaricp.version>2.4.2</hikaricp.version>
   </properties>
 
@@ -97,16 +90,6 @@
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <!--
-      This is an explicit "provided" dependency as the PostgreSQL library is a transitive dependency provided by
-      the GeoTools version of gt-jdbc-postgis and geogig-postgresql.
-    -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>

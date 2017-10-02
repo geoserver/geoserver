@@ -16,18 +16,18 @@ To generate the REST API documentation:
     mvn process-resources
 
 To build all restructured text documentation:
-    
+
     mvn compile
 
 Profiles are defined to build individual manuals:
-    
+
     mvn compile -Puser
     mvn compile -Pdeveloper
     mvn compile -Pdocguide
 
 To package documentation into zip archives:
-    
-    mvn aseembly:single
+
+    mvn assembly:single
 
 ## Building with ANT
 

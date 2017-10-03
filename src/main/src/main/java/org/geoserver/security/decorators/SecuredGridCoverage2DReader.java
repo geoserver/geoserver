@@ -148,8 +148,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         GridCoverage2D grid = delegate.read(parameters);
 
         // crop if necessary
-        if (rasterFilter != null) {
-            
+        if (rasterFilter != null && grid != null) {
             Geometry coverageBounds = JTS.toGeometry((Envelope) new ReferencedEnvelope(grid.getEnvelope2D()));
             if(coverageBounds.intersects(rasterFilter)) {
                 final ParameterValueGroup param = cropParams.clone();

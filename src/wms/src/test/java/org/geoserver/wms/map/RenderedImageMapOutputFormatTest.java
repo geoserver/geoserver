@@ -21,6 +21,7 @@ import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.*;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -39,7 +40,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.*;
-import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Assert;
@@ -916,7 +916,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
      */
     @Test
     public void testMosaicExpansion() throws Exception {
-        File red1 = URLs.urlToFile(this.getClass().getResource("red_footprint_test/red1.tif"));
+        File red1 = DataUtilities.urlToFile(this.getClass().getResource("red_footprint_test/red1.tif"));
         File source = red1.getParentFile();
         File testDataDir = getResourceLoader().getBaseDirectory();
         File directory1 = new File(testDataDir, "redHarvest1");
@@ -933,7 +933,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         }
 
         // create the first reader
-        URL harvestSingleURL = URLs.fileToUrl(directory1);
+        URL harvestSingleURL = DataUtilities.fileToURL(directory1);
         ImageMosaicReader reader = new ImageMosaicReader(directory1, null);
 
         // now create a second reader that won't be informed of the harvesting changes

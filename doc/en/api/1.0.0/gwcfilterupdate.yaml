@@ -1,0 +1,57 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Filter Update
+  description: The REST API for Updating GWC filter
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /filter/{filterName}/update/{updateType}:
+    post:
+      consumes:
+        - application/xml
+        - application/zip
+      operationId: filterUpdatePost
+      summary: Updates a given layer filter by way of xml or zip file.
+      description: Restfully updates the given filterName with parameters provided in the xml or zip
+      parameters:
+        - name: filterName
+          in: path
+          required: true
+          description: The name of the filter to update.
+          type: string
+        - name: updateType
+          in: path
+          required: true
+          description: One of 'zip' or 'xml'
+          type: string
+          enum: [zip, xml]
+        - name: requestBody
+          in: body
+          required: true
+          description: The parameters that are accepted by a given filter.
+          schema:
+            $ref: "#/definitions/requestFilterUpdate"
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+
+definitions:
+  requestFilterUpdate:
+    title: requestFilterUpdate
+    type: object
+    properties:
+      gridSet:
+        type: string
+        description: The projection used in the request filter.
+      zoomStart:
+        type: integer
+        description: This is the minimum zoom level for which the filter is applied.
+      zoomStop:
+        type: integer
+        description: The maximum zoom level for which the filter is applied.

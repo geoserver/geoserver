@@ -1,0 +1,53 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Mass Truncate
+  description: The REST API for mass truncation provides a mechanism for completely clearing caches more conveniently than with the seeding system
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /masstruncate:
+    get:
+      operationId: masstruncateGet
+      summary: Returns available request types for truncation
+      description: Returns xml containing the request type capabilities for mass truncation
+      produces:
+        - application/xml
+      responses:
+        200:
+          description: OK
+          examples:
+            application/xml: |
+              <massTruncateRequests href="http://localhost:8080/geoserver/gwc/rest/masstruncate.xml">
+                <requestType>truncateLayer</requestType>
+                <requestType>truncateParameters</requestType>
+                <requestType>truncateOrphans</requestType>
+                <requestType>truncateExtent</requestType>
+              </massTruncateRequests>
+    post:
+      operationId: masstruncatePost
+      summary: Issue a mass truncate request
+      description: Issues a mass truncate request based on the request type parameter. truncateLayer, will clear all caches associated with a named layer, including all permutations of gridset, parameter filter values, and image formats.
+      parameters:
+        - name: requestType
+          description: The requestType parameter is used to control which cached tiles to truncate.
+          in: query
+          required: true
+          type: string
+          enum:
+            - truncateLayer
+            - truncateParameters
+            - truncateOrphans
+            - truncateExtent
+
+        - name: layer
+          in: query
+          required: false
+          description: The layername to truncate
+          type: string
+      responses:
+        200:
+          description: OK

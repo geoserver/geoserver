@@ -41,6 +41,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
+import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -170,8 +171,11 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
     private Component actionsLinks(String id, IModel<TileLayer> tileLayerNameModel) {
         final String name = tileLayerNameModel.getObject().getName();
-        final String href = ResponseUtils.baseURL(getGeoServerApplication().servletRequest())
-        		+ "gwc/rest/seed/" + name;
+        final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
+        // Since we're working with an absolute URL, build the URL this way to ensure proxy 
+        // mangling is applied.
+        final String href = ResponseUtils.buildURL(baseURL, "gwc/rest/seed/" + name, null,
+                URLType.EXTERNAL);
 
         // openlayers preview
         Fragment f = new Fragment(id, "actionsFragment", CachedLayersPage.this);

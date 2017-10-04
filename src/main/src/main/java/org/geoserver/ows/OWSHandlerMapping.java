@@ -91,7 +91,7 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                     }
                     
                     h = super.lookupHandler(last, request);
-                } else if(catalog.getLayerGroupByName(first) != null) {
+                } else if(catalog.getLayerGroupByName((WorkspaceInfo) null, first) != null) {
                     h = super.lookupHandler(last, request);
                 } else {
                     LOGGER.fine("Could not a layer group named " + first);

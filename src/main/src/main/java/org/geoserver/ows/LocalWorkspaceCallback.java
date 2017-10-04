@@ -49,7 +49,6 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             
             //check if the context matches a workspace
             ws = catalog.getWorkspaceByName(first);
-            lg = catalog.getLayerGroupByName(first);
             if (ws != null) {
                 LocalWorkspace.set(ws);
                 
@@ -78,10 +77,13 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
                     }
                     
                 }
-            } else if(lg != null && lg.getWorkspace() == null) {
-                LocalPublished.set(lg);
+            } else {
+                lg = catalog.getLayerGroupByName((WorkspaceInfo) null, first);
+                if (lg != null) {
+                    LocalPublished.set(lg);
+                }
             }
-            else {
+            if (ws == null && lg == null) {
                 // if no workspace context specified and server configuration not allowing global
                 // services throw an error
                 if (!gs.getGlobal().isGlobalServices()) {

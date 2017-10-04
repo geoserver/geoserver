@@ -104,4 +104,9 @@ public class OWSHandlerMappingTest extends GeoServerSystemTestSupport {
     public void testLookupHandler_LayerGroupMissing() throws Exception {
         assertNull(this.mapping.lookupHandler("/lg/test", null));
     }
+
+    @Test
+    public void testLookupHandler_NotAGlobalLayerGroup() throws Exception {
+        assertNull(this.mapping.lookupHandler("/cite:LayerGroup2/test", null));
+    }
 }

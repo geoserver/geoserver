@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.ows.util.RequestUtils;
 
 /**
  * Filter to log requests for debugging or statistics-gathering purposes.
@@ -43,7 +44,7 @@ public class LoggingFilter implements Filter {
             if (req instanceof HttpServletRequest){
                 HttpServletRequest hreq = (HttpServletRequest) req;
 
-                path = hreq.getRemoteHost() + " \"" + hreq.getMethod() + " " + hreq.getRequestURI();
+                path = RequestUtils.getRemoteAddr(hreq) + " \"" + hreq.getMethod() + " " + hreq.getRequestURI();
                 if (hreq.getQueryString() != null){
                     path += "?" + hreq.getQueryString();
                 }
@@ -51,7 +52,7 @@ public class LoggingFilter implements Filter {
 
                 message = "" + path;
                 message += " \"" + noNull(hreq.getHeader("User-Agent"));
-                message += "\" \"" + noNull(hreq.getHeader("Referer")) + "\" ";
+                message += "\" \"" + noNull(hreq.getHeader("Referer"));
                 message += "\" \"" + noNull(hreq.getHeader("Content-type")) + "\" ";
 
                 if (logBodies && (hreq.getMethod().equals("PUT") || hreq.getMethod().equals("POST"))){

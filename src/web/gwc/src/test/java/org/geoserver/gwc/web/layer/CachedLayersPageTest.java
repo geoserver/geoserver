@@ -7,7 +7,6 @@ package org.geoserver.gwc.web.layer;
 
 import static org.junit.Assert.*;
 
-import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -15,12 +14,18 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geowebcache.layer.TileLayer;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class CachedLayersPageTest extends GeoServerWicketTestSupport {
+    
+    @Rule
+    public GeoServerExtensionsHelper.ExtensionsHelperRule extensions = new GeoServerExtensionsHelper.ExtensionsHelperRule();
     
     protected static final String NATURE_GROUP = "nature";
     
@@ -65,5 +70,29 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(LayerGroupEditPage.class);
     }
     
+    @Test
+    public void testNoMangleSeedLink() {
+        
+        // Don't add a mangler
+        
+        CachedLayersPage page = new CachedLayersPage();
+        
+        tester.startPage(page);
+        tester.assertModelValue("table:listContainer:items:1:itemProperties:7:component:seedLink", "http://localhost:80/context/gwc/rest/seed/cgf:Polygons");
+    }
     
+    @Test
+    public void testMangleSeedLink() {
+        // Mimic a Proxy URL mangler
+        URLMangler testMangler = (base, path, map, type) ->{
+            base.setLength(0);
+            base.append("http://rewrite/");
+        };
+        extensions.singleton("testMangler", testMangler, URLMangler.class);
+        
+        CachedLayersPage page = new CachedLayersPage();
+        
+        tester.startPage(page);
+        tester.assertModelValue("table:listContainer:items:1:itemProperties:7:component:seedLink", "http://rewrite/gwc/rest/seed/cgf:Polygons");
+    }
 }

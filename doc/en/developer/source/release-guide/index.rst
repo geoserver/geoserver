@@ -212,7 +212,7 @@ to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/
 Create the download page
 ------------------------
 
-The `GeoServer web site <http://geoserver.org/>`_ is now managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
+The `GeoServer web site <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
 
 Post the Documentation
 ----------------------
@@ -404,49 +404,10 @@ The following is an example::
    --
    The GeoServer Team
 
+OSGeo News
+^^^^^^^^^^
 
-SlashGeo
-^^^^^^^^
-
-.. note:: This announcement should be made only for official releases. Not betas and release candidates.
-
-.. note::
-
-   This step requires an account on http://slashgeo.org
-
-#. Go to http://slashgeo.org, and log in, creating an account if necessary.
-
-#. Click the **Submit Story** link on the left hand side of the page.
-   Examples of previous stories:
-
-   * http://technology.slashgeo.org/technology/08/12/09/1745249.shtml
-   * http://industry.slashgeo.org/article.pl?sid=08/10/27/137216
-
-FreeGIS
-^^^^^^^
-
-.. note:: This announcement should be made only for official releases. Not betas and release candidates.
-
-Send an email to ``bjoern dot broscheit at uni-osnabrueck dot de``.
-Example::
-
-  Subject: GeoServer update for freegis
-
-  GeoServer 1.7.1 has been released with some exciting new features. The big
-  push for this release has been improved KML support. The new and noteworthy
-  include:
-
-    * KML Super Overlay and Regionating Support
-    * KML Extrude Support
-    * KML Reflector Improvements
-    * Mac OS X Installer
-    * Dutch Translation
-    * Improved Style for Web Admin Interface
-    * New SQL Server DataStore Extension
-    * Improved Oracle DataStore Extension
-    * Default Templates per Namespace
-
-  Along with many other improvements and bug fixes. The entire change log for
-  the 1.7.1 series is available in the issue tracker:
-  
-  https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=
+For major releases it is worth making a news announcement:
+   
+* Project Steering Comittee members should have website access and can post a news item directly
+* The instructions for `submit news <http://www.osgeo.org/content/news/submit_news.html>`__ ask that email be sent to news_item@osgeo.org 

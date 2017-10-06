@@ -404,10 +404,14 @@ The following is an example::
    --
    The GeoServer Team
 
-OSGeo News
-^^^^^^^^^^
+OSGeo Anouncement
+^^^^^^^^^^^^^^^^^
 
-For major releases it is worth making a news announcement:
-   
-* Project Steering Comittee members should have website access and can post a news item directly
-* The instructions for `submit news <http://www.osgeo.org/content/news/submit_news.html>`__ ask that email be sent to news_item@osgeo.org 
+For major releases OSGeo asks that a news item be submitted:
+
+* Login to the osgeo.org website, create a news item using the release announcement text above.
+
+And that an announcement is sent to discuss:
+
+* Mail major release announcements to discuss@osgeo.org (you will need to `subscribe first <https://lists.osgeo.org/listinfo/discuss>`__ ). 
+

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.media.jai.ImageLayout;
 
@@ -32,9 +33,12 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
+import org.geoserver.catalog.CoverageView.SelectedResolution;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
  * Base page for {@link CoverageView} creation/editing
@@ -67,8 +71,16 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     List<String> selectedCoverages;
 
     List<CoverageBand> outputBands;
+    
+    EnvelopeCompositionType envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
+
+    SelectedResolution selectedResolution = SelectedResolution.BEST;
+    
+    String resolutionReferenceCoverage;
 
     CoverageViewEditor coverageEditor;
+    
+    
 
     public CoverageViewAbstractPage(PageParameters params) throws IOException {
         this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
@@ -120,10 +132,14 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             }
             outputBands = new ArrayList<CoverageBand>(coverageView.getCoverageBands());
             name = coverageView.getName();
+            envelopeCompositionType = Optional.ofNullable(coverageView.getEnvelopeCompositionType()).orElse(EnvelopeCompositionType.INTERSECTION);
+            selectedResolution = Optional.ofNullable(coverageView.getSelectedResolution()).orElse(SelectedResolution.BEST);
         } else {
             outputBands = new ArrayList<CoverageBand>();
             newCoverage = true;
             coverageViewInfo = null;
+            envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
+            selectedResolution = SelectedResolution.BEST;
         }
         selectedCoverages = new ArrayList<String>(availableCoverages);
 
@@ -139,6 +155,9 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         coverageEditor = new CoverageViewEditor("coverages", 
                 new PropertyModel<>(this,"selectedCoverages"), 
                 new PropertyModel<>(this, "outputBands"), 
+                new PropertyModel<>(this,"envelopeCompositionType"), 
+                new PropertyModel<>(this, "selectedResolution"),
+                new PropertyModel<>(this, "resolutionReferenceCoverage"),
                 availableCoverages);
         form.add(coverageEditor);
 
@@ -160,7 +179,25 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
 
     protected CoverageView buildCoverageView() throws IOException {
-        return new CoverageView(name, coverageEditor.currentOutputBands);
+        CoverageView view = new CoverageView(name, coverageEditor.currentOutputBands);
+        view.setEnvelopeCompositionType(envelopeCompositionType);
+        view.setSelectedResolution(selectedResolution);
+        if (resolutionReferenceCoverage != null) {
+            final int referenceCoverageIndex = getReferenceCoverageIndex();
+            view.setSelectedResolutionIndex(referenceCoverageIndex);
+        }
+        
+        return view;
+    }
+
+    private int getReferenceCoverageIndex() {
+        for (int i = 0; i < coverageEditor.currentOutputBands.size(); i++) {
+            CoverageBand band = coverageEditor.currentOutputBands.get(i);
+            if (this.resolutionReferenceCoverage.equals(band.getInputCoverageBands().get(0).getCoverageName())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**

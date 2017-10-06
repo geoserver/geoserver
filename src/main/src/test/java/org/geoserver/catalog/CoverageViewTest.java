@@ -5,47 +5,76 @@
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.CoverageView.SelectedResolution;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.footprint.FootprintBehavior;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import it.geosolutions.jaiext.JAIExt;
+
+import static org.junit.Assert.*;
 
 public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private static final String RGB_IR_VIEW = "RgbIrView";
+    private static final String S2_REDUCED_VIEW = "s2reduced_view";
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static QName S2REDUCED= new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
     protected static QName IR_RGB= new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
 
+    @BeforeClass
+    public static void setupJaiExt() {
+        JAIExt.initJAIEXT(true, true);
+    }
+    
+    @AfterClass
+    public static void tearDownJaiExt() {
+        JAIExt.initJAIEXT(false, false);
+    }
+
+    static CoordinateReferenceSystem UTM32N;
+    
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        super.setUpTestData(testData);
-        testData.setUpDefaultRasterLayers();
         testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
+        testData.setUpRasterLayer(S2REDUCED, "s2reduced.zip", null, null, TestData.class);
         testData.setUpRasterLayer(IR_RGB, "ir-rgb.zip", null, null, TestData.class);
+        
+        UTM32N = CRS.decode("EPSG:32632", true);
     }
     
     @Override
@@ -84,6 +113,10 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                 CompositionType.BAND_SELECT);
         final CoverageView coverageView = new CoverageView(RGB_IR_VIEW,
                 Arrays.asList(rBand, gBand, bBand, irBand));
+        // old coverage views deserialize with null in these fields, force it to test backwards
+        // compatibility
+        coverageView.setEnvelopeCompositionType(null);
+        coverageView.setSelectedResolution(null);
         return coverageView;
     }
     
@@ -321,6 +354,206 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                 AbstractGridFormat.BANDS.getValueClass(), null, bands).createValue());
         return (GeneralParameterValue[]) parameters
                 .toArray(new GeneralParameterValue[parameters.size()]);
+    }
+    
+    /**
+     * Tests a heterogeneous view without setting any extra configuration (falling back on defaults)
+     * @throws Exception
+     */
+    @Test
+    public void testHeterogeneousViewDefaults() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+        GridCoverage2D coverage = null;
+        try {
+            // default resolution policy is "best"
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            assertEquals(1007, reader.getResolutionLevels()[0][0], 1); 
+            assertEquals(1007, reader.getResolutionLevels()[0][1], 1);
+            
+            // default envelope policy is "union"
+            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            assertEquals(399960, envelope.getMinimum(0), 1);
+            assertEquals(5190240, envelope.getMinimum(1), 1);
+            assertEquals(509760, envelope.getMaximum(0), 1);
+            assertEquals(5300040, envelope.getMaximum(1), 1);
+            
+            // read the full coverage to verify it's consistent
+            coverage = reader.read(null);
+            assertCoverageResolution(coverage, 1007, 1007);
+            
+            assertEquals(coverage.getEnvelope(), envelope);
+        } finally {
+            getCatalog().remove(info);
+            if(coverage != null) {
+                coverage.dispose(true);
+            }
+        }
+    }
+    
+    /**
+     * Tests a heterogeneous view without setting any extra configuration (falling back on defaults)
+     * @throws Exception
+     */
+    @Test
+    public void testHeterogeneousViewIntersectionEnvelope() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+            cv.setEnvelopeCompositionType(EnvelopeCompositionType.INTERSECTION);
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+        GridCoverage2D coverage = null;
+        try {
+            // default resolution policy is "best"
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            assertEquals(1007, reader.getResolutionLevels()[0][0], 1); 
+            assertEquals(1007, reader.getResolutionLevels()[0][1], 1);
+            
+            // one of the granules has been cut to get a tigheter envelope
+            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            assertEquals(399960, envelope.getMinimum(0), 1);
+            assertEquals(5192273, envelope.getMinimum(1), 1);
+            assertEquals(507726, envelope.getMaximum(0), 1);
+            assertEquals(5300040, envelope.getMaximum(1), 1);
+            
+            // checking the coverage it's not particularly useful as it does not get cut,
+            // the bounds are just metadata
+            coverage = reader.read(null);
+            assertCoverageResolution(coverage, 1007, 1007);
+            Envelope coverageEnvelope = coverage.getEnvelope();
+            assertEquals(399960, coverageEnvelope.getMinimum(0), 1);
+            assertEquals(5190240, coverageEnvelope.getMinimum(1), 1);
+            assertEquals(509760, coverageEnvelope.getMaximum(0), 1);
+            assertEquals(5300040, coverageEnvelope.getMaximum(1), 1);
+
+        } finally {
+            getCatalog().remove(info);
+            if (coverage != null) {
+                coverage.dispose(true);
+            }
+        }
+    }
+    
+    @Test
+    public void testHeterogeneousViewResolutionLowest() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+            cv.setSelectedResolution(SelectedResolution.WORST);
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+        GridCoverage2D coverage = null;
+        try {
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            assertEquals(6100, reader.getResolutionLevels()[0][0], 1); 
+            assertEquals(6100, reader.getResolutionLevels()[0][1], 1);
+            
+            // no point checking the coverage, this is again just metadata, just smoke testing
+            // the read will work
+            coverage = reader.read(null);
+        } finally {
+            getCatalog().remove(info);
+            if (coverage != null) {
+                coverage.dispose(true);
+            }
+        }
+    }
+    
+    private void assertCoverageResolution(GridCoverage2D coverage, double resX, double resY) {
+        AffineTransform2D mt = (AffineTransform2D) coverage.getGridGeometry().getGridToCRS2D();
+        assertEquals(resX, mt.getScaleX(), 1);
+        assertEquals(resY, Math.abs(mt.getScaleY()), 1);
+    }
+    
+    /**
+     * Hit the view outside its bounds, should return null
+     * @throws Exception
+     */
+    @Test
+    public void testHeterogeneousViewOutsideBounds() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+        GridCoverage2D coverage = null;
+        try {
+            ParameterValue<GridGeometry2D> gg = AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
+            gg.setValue(new GridGeometry2D(new GridEnvelope2D(0, 0, 10, 10), new ReferencedEnvelope(0, 1000, 0, 1000, UTM32N)));
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            coverage = reader.read(new GeneralParameterValue[] {gg});
+            assertNull(coverage);
+        } finally {
+            getCatalog().remove(info);
+            if(coverage != null) {
+                coverage.dispose(true);
+            }
+        }
+    }
+
+    @Test
+    public void testHeterogeneousViewBandSelectionBestResolution() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+            // use the default: BEST
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+
+        // check band resolutions with specific band selections
+        checkBandSelectionResolution(info, new int[] {0}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {0, 1}, 1007, 1007);
+        checkBandSelectionResolution(info, new int[] {0, 5}, 2033, 2033);
+        checkBandSelectionResolution(info, new int[] {5, 8, 1}, 1007, 1007);
+        checkBandSelectionResolution(info, new int[] {1, 8, 5}, 1007, 1007);
+    }
+
+    @Test
+    public void testHeterogeneousViewBandSelectionWorstResolution() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+            cv.setSelectedResolution(SelectedResolution.WORST);
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+
+        // check band resolutions with specific band selections
+        checkBandSelectionResolution(info, new int[] {0}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {0, 1}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {0, 5}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {5, 8, 1}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {5, 8, 1}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {1}, 1007, 1007);
+        checkBandSelectionResolution(info, new int[] {1, 5}, 2033, 2033);
+    }
+
+
+    public void checkBandSelectionResolution(CoverageInfo info, int[] bands, double expectedResolutionX, double expectedResolutionY) throws IOException {
+        GridCoverage2D coverage = null;
+        try {
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+
+            ParameterValue<int[]> bandsValue = AbstractGridFormat.BANDS.createValue();
+            bandsValue.setValue(bands);
+            coverage = reader.read(new GeneralParameterValue[] {bandsValue});
+            assertNotNull(coverage);
+            assertCoverageResolution(coverage, expectedResolutionX, expectedResolutionY);
+        } finally {
+            getCatalog().remove(info);
+            if(coverage != null) {
+                coverage.dispose(true);
+            }
+        }
+    }
+
+
+    private CoverageInfo buildHeterogeneousResolutionView(String name, Consumer<CoverageView> viewCustomizer, String... coverageNames) throws Exception {
+        List<CoverageBand> bands = new ArrayList<>();
+        int bandIdx = 0;
+        for (String coverageName : coverageNames) {
+            CoverageBand band = new CoverageBand(Arrays.asList(new InputCoverageBand(coverageName, "0")), coverageName, bandIdx++,
+                    CompositionType.BAND_SELECT);
+            bands.add(band);
+        }
+        final CoverageView coverageView = new CoverageView(name, bands);
+        viewCustomizer.accept(coverageView);
+        
+        final Catalog cat = getCatalog();
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("s2reduced");
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(name, storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        cat.add(coverageInfo);
+        
+        return cat.getCoverage(coverageInfo.getId());
     }
 
 }

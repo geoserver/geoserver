@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.Utilities;
 
 /**
@@ -35,6 +36,20 @@ public class CoverageView implements Serializable {
     }
 
     public static final String BAND_SEPARATOR = "@";
+
+    /**
+     * Type of Envelope Composition, used to expose the bounding box of the CoverageView
+     */
+    public static enum EnvelopeCompositionType {
+        UNION, INTERSECTION;
+    }
+
+    /**
+     * Which Resolution to be used in composition
+     */
+    public static enum SelectedResolution {
+        BEST, WORST;
+    }
 
     /**
      * Composition Type, used to specify how output bands should be composed.
@@ -286,18 +301,39 @@ public class CoverageView implements Serializable {
     public static String COVERAGE_VIEW = "COVERAGE_VIEW";
 
     public CoverageView() {
+
     }
 
     public CoverageView(String name, List<CoverageBand> coverageBands) {
-        this.name = name;
-        this.coverageBands = coverageBands;
+        this(name, coverageBands, EnvelopeCompositionType.UNION, SelectedResolution.BEST);
     }
 
+    public CoverageView(String name, List<CoverageBand> coverageBands, EnvelopeCompositionType envelopeCompositionType, SelectedResolution selectedResolution) {
+        this.name = name;
+        this.coverageBands = coverageBands;
+        this.envelopeCompositionType = envelopeCompositionType;
+        this.selectedResolution = selectedResolution;
+    }
+
+    
     /** The list of {@link CoverageBand}s composing this {@link CoverageView} */
     private List<CoverageBand> coverageBands;
 
     /** The name assigned to the {@link CoverageView} */
     private String name;
+
+    /**
+     * Type of composition of the envelope. 
+     */
+    private EnvelopeCompositionType envelopeCompositionType;
+
+    /**
+     * Requested resolution type (worst vs best vs imposed vs index) 
+     */
+    private SelectedResolution selectedResolution;
+
+    /** This will be != -1 when {@link SelectedResolution} is INDEX */
+    private int selectedResolutionIndex = -1;
 
     public String getName() {
         return name;
@@ -307,6 +343,32 @@ public class CoverageView implements Serializable {
         this.name = name;
     }
 
+    public EnvelopeCompositionType getEnvelopeCompositionType() {
+        // for backwards compatibility
+        return envelopeCompositionType == null ? EnvelopeCompositionType.INTERSECTION : envelopeCompositionType;
+    }
+
+    public void setEnvelopeCompositionType(EnvelopeCompositionType envelopeCompositionType) {
+        this.envelopeCompositionType = envelopeCompositionType;
+    }
+
+    public SelectedResolution getSelectedResolution() {
+        // for backwards compatibility
+        return selectedResolution == null ? SelectedResolution.BEST : selectedResolution;
+    }
+
+    public void setSelectedResolution(SelectedResolution selectedResolution) {
+        this.selectedResolution = selectedResolution;
+    }
+
+    public int getSelectedResolutionIndex() {
+        return selectedResolutionIndex;
+    }
+
+    public void setSelectedResolutionIndex(int selectedResolutionIndex) {
+        this.selectedResolutionIndex = selectedResolutionIndex;
+    }
+
     public List<CoverageBand> getCoverageBands() {
         return coverageBands;
     }
@@ -314,38 +376,7 @@ public class CoverageView implements Serializable {
     public void setCoverageBands(List<CoverageBand> coverageBands) {
         this.coverageBands = coverageBands;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((coverageBands == null) ? 0 : coverageBands.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CoverageView other = (CoverageView) obj;
-        if (coverageBands == null) {
-            if (other.coverageBands != null)
-                return false;
-        } else if (!coverageBands.equals(other.coverageBands))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
-    }
-
+    
     /**
      * Create a {@link CoverageInfo}
      * 
@@ -440,5 +471,47 @@ public class CoverageView implements Serializable {
      */
     public int getSize() {
         return coverageBands != null ? coverageBands.size() : 0;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((coverageBands == null) ? 0 : coverageBands.hashCode());
+        result = prime * result
+                + ((envelopeCompositionType == null) ? 0 : envelopeCompositionType.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result
+                + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
+        result = prime * result + selectedResolutionIndex;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CoverageView other = (CoverageView) obj;
+        if (coverageBands == null) {
+            if (other.coverageBands != null)
+                return false;
+        } else if (!coverageBands.equals(other.coverageBands))
+            return false;
+        if (envelopeCompositionType != other.envelopeCompositionType)
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (selectedResolution != other.selectedResolution)
+            return false;
+        if (selectedResolutionIndex != other.selectedResolutionIndex)
+            return false;
+        return true;
     }
 }

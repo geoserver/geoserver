@@ -14,8 +14,10 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
@@ -26,7 +28,12 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.CoverageView.SelectedResolution;
+import org.geotools.gce.imagemosaic.properties.ResolutionExtractorSPI;
+
+import it.geosolutions.jaiext.JAIExt;
 
 /**
  *
@@ -40,12 +47,15 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     List<CoverageBand> currentOutputBands;
     ListMultipleChoice<String> coveragesChoice;
     CompositionType compositionType;
+    IModel<EnvelopeCompositionType> envelopeCompositionType;
+    IModel<SelectedResolution> selectedResolution;
+    IModel<String> resolutionReferenceCoverage;
 
     ListMultipleChoice<CoverageBand> outputBandsChoice;
 
     TextField<String> definition;
     DropDownChoice<CompositionType> compositionChoice;
-
+    
     /**
      * Creates a new editor.
      * 
@@ -53,10 +63,15 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
      * @param The module should return a non null collection of strings.
      */
     public CoverageViewEditor(String id, final IModel<List<String>> inputCoverages, final IModel<List<CoverageBand>> bands,
+            IModel<EnvelopeCompositionType> envelopeCompositionType, IModel<SelectedResolution> selectedResolution,
+            IModel<String> resolutionReferenceCoverage,
             List<String> availableCoverages) {
         super(id, inputCoverages);
         this.coverages = inputCoverages;
         this.outputBands = bands;
+        this.envelopeCompositionType = envelopeCompositionType;
+        this.selectedResolution = selectedResolution;
+        this.resolutionReferenceCoverage = resolutionReferenceCoverage;
 
         this.availableCoverages = availableCoverages;
 
@@ -109,9 +124,28 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 //target.add(definition);
             }
         });
+        
+        // heterogeneous coverage controls
+        WebMarkupContainer heterogeneousControlsContainer = new WebMarkupContainer("heterogeneousControlsContainer");
+        heterogeneousControlsContainer.setOutputMarkupId(true);
+        add(heterogeneousControlsContainer);
+        WebMarkupContainer heterogeneousControls = new WebMarkupContainer("heterogeneousControls");
+        heterogeneousControlsContainer.add(heterogeneousControls);
+        // need the band-merge from JAI-EXT to work in heterogeneous mode
+        heterogeneousControls.setVisible(JAIExt.isJAIExtOperation("BandMerge"));
+        
+        DropDownChoice<EnvelopeCompositionType> envelopePolicy = new DropDownChoice<>("envelopeCompositionType",  
+                Arrays.asList(EnvelopeCompositionType.values()));
+        envelopePolicy.setModel(envelopeCompositionType);
+        envelopePolicy.setChoiceRenderer(new EnumChoiceRenderer<>(CoverageViewEditor.this));
+        heterogeneousControls.add(envelopePolicy);
+        
+        DropDownChoice<SelectedResolution> resolutionPolicy = new DropDownChoice<>("selectedResolution",  
+                Arrays.asList(SelectedResolution.values()));
+        resolutionPolicy.setModel(selectedResolution);
+        resolutionPolicy.setChoiceRenderer(new EnumChoiceRenderer<>(CoverageViewEditor.this));
+        heterogeneousControls.add(resolutionPolicy);
 
-        // TODO Uncomment this row when it can be used
-        //add(compositionChoice);
         add(addRemoveAllButton());
         add(addRemoveButton());
     }

@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -185,8 +186,73 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         if (attributes == null) {
             if (other.getAttributes() != null)
                 return false;
-        } else if (!attributes.equals(other.getAttributes()))
-            return false;
+        } else {
+            List<AttributeTypeInfo> otherAttributes = other.getAttributes();
+            if (otherAttributes == attributes)
+                return true;
+
+            ListIterator<AttributeTypeInfo> attributesIterator = attributes.listIterator();
+            ListIterator<AttributeTypeInfo> otherAttributesIterator = otherAttributes.listIterator();
+            while (attributesIterator.hasNext() && otherAttributesIterator.hasNext()) {
+                AttributeTypeInfo attr = attributesIterator.next();
+                AttributeTypeInfo otherAttr = otherAttributesIterator.next();
+
+                if (attr == null) {
+                    if (otherAttr != null)
+                        return false;
+                }
+
+                /*
+                 * Compare attributes, excluding the feature type to avoid recursion.
+                 * This should be updated whenever AttributeTypeInfoImpl.equals() changes.
+                 */
+                if (attr instanceof AttributeTypeInfoImpl && otherAttr instanceof AttributeTypeInfoImpl) {
+                    AttributeTypeInfoImpl attribute = (AttributeTypeInfoImpl) attr;
+                    AttributeTypeInfoImpl otherAttribute = (AttributeTypeInfoImpl) otherAttr;
+
+                    if (attribute.attribute == null) {
+                        if (otherAttribute.attribute != null)
+                            return false;
+                    } else if (!attribute.attribute.equals(otherAttribute.attribute))
+                        return false;
+                    if (attribute.binding == null) {
+                        if (otherAttribute.binding != null)
+                            return false;
+                    } else if (!attribute.binding.equals(otherAttribute.binding))
+                        return false;
+                    if (attribute.id == null) {
+                        if (otherAttribute.id != null)
+                            return false;
+                    } else if (!attribute.id.equals(otherAttribute.id))
+                        return false;
+                    if (attribute.length == null) {
+                        if (otherAttribute.length != null)
+                            return false;
+                    } else if (!attribute.length.equals(otherAttribute.length))
+                        return false;
+                    if (attribute.maxOccurs != otherAttribute.maxOccurs)
+                        return false;
+                    if (attribute.metadata == null) {
+                        if (otherAttribute.metadata != null)
+                            return false;
+                    } else if (!attribute.metadata.equals(otherAttribute.metadata))
+                        return false;
+                    if (attribute.minOccurs != otherAttribute.minOccurs)
+                        return false;
+                    if (attribute.name == null) {
+                        if (otherAttribute.name != null)
+                            return false;
+                    } else if (!attribute.name.equals(otherAttribute.name))
+                        return false;
+                    if (attribute.nillable != otherAttribute.nillable)
+                        return false;
+                } else if (!attr.equals(otherAttr)) {
+                    return false;
+                }
+            }
+            if (attributesIterator.hasNext() || otherAttributesIterator.hasNext())
+              return false;
+        }
         if (responseSRS == null) {
             if (other.getResponseSRS() != null)
                 return false;

@@ -99,7 +99,6 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
             this.sendMessage(payload);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            e.printStackTrace();
         } finally {
             this.close();
         }

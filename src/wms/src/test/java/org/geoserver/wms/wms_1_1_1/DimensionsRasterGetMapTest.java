@@ -96,8 +96,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         
         BufferedImage image = getAsImage(BASE_PNG_URL + "&elevation=100", "image/png");
 
-        // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(0,0,0));
+        // at this elevation the pixel is NODATA -> bgcolor
+        assertPixel(image, 36, 31, new Color(255,255,255));
         // and this one a light blue
         assertPixel(image, 68, 72, new Color(246, 246, 255));
     }
@@ -200,7 +200,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         BufferedImage image100 = images.get(1);
         
         // this should be the same as "testElevatin"
-        assertPixel(image100, 36, 31, new Color(0,0,0));
+        assertPixel(image100, 36, 31, new Color(255,255,255)); // nodata -> bgcolor
         assertPixel(image100, 68, 72, new Color(246, 246, 255));
 
 
@@ -229,8 +229,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         
         BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100", "image/png");
 
-        // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(0,0,0));
+        // at this elevation the pixel is NODATA -> bgcolor
+        assertPixel(image, 36, 31, new Color(255,255,255));
         // and this one a light blue, but slightly darker than before
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
@@ -274,8 +274,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         // BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100", "image/png");
         BufferedImage image = getAsImage(BASE_PNG_URL + "&elevation=100", "image/png");
 
-        // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(0,0,0));
+        // at this elevation the pixel is NODATA, thus becomes white, the bgcolor
+        assertPixel(image, 36, 31, new Color(255,255,255));
         // and this one a light blue, but slightly darker than before
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
@@ -292,8 +292,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         // default elevation, specific time
         BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
-        // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(0,0,0));
+        // at this elevation the pixel is NODATA -> bgcolor
+        assertPixel(image, 36, 31, new Color(255,255,255));
         // and this one a light blue, but slightly darker than before
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
@@ -315,7 +315,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         BufferedImage image = getAsImage(BASE_PNG_URL, "image/png");
 
         // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(0,0,0));
+        assertPixel(image, 36, 31, new Color(255,255,255)); // nodata -> bgcolor
         // and this one a light blue, but slightly darker than before
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }

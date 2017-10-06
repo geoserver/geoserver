@@ -55,6 +55,7 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         facade.setResourceLoader(testSupport.getResourceLoader());
 
         super.setUp();
+        facade.setLogging(geoServer.getFactory().createLogging());
     }
 
     @After

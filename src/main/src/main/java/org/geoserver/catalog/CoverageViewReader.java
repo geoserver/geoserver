@@ -154,18 +154,19 @@ public class CoverageViewReader implements GridCoverage2DReader {
         
         // did we get a request within the bounds of the coverage?
         Optional<GeneralParameterValue> ggParameter = Optional.empty();
-        if(parameters != null) {
+        if (parameters != null) {
             ggParameter = Arrays.stream(parameters).filter(
-                parameter -> parameter.getDescriptor().getName().equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())).findFirst();
+                    parameter -> parameter.getDescriptor().getName().equals(AbstractGridFormat.READ_GRIDGEOMETRY2D
+                            .getName())).findFirst();
         }
         GridGeometry2D requestedGridGeometry = null;
-        if(ggParameter.isPresent()) {
+        if (ggParameter.isPresent()) {
             ParameterValue value = (ParameterValue) ggParameter.get();
             requestedGridGeometry = (GridGeometry2D) value.getValue();
             ReferencedEnvelope requestedEnvelope = ReferencedEnvelope.reference(requestedGridGeometry.getEnvelope());
             ReferencedEnvelope dataEnvelope = ReferencedEnvelope.reference(handler.getOriginalEnvelope());
-            if(CRS.equalsIgnoreMetadata(requestedEnvelope, dataEnvelope)) {
-                if(!requestedEnvelope.intersects((BoundingBox) dataEnvelope)) {
+            if (CRS.equalsIgnoreMetadata(requestedEnvelope, dataEnvelope)) {
+                if (!requestedEnvelope.intersects((BoundingBox) dataEnvelope)) {
                     return null;
                 }
             } else {
@@ -173,7 +174,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 try {
                     re84 = requestedEnvelope.transform(DefaultGeographicCRS.WGS84, true);
                     ReferencedEnvelope de84 = dataEnvelope.transform(DefaultGeographicCRS.WGS84, true);
-                    if(!re84.intersects((BoundingBox) de84)) {
+                    if (!re84.intersects((BoundingBox) de84)) {
                         return null;
                     }
                 } catch (TransformException | FactoryException e) {
@@ -185,7 +186,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             
             // expand the read area if we are in the heterogeneous case... it's a resampling
             // one similar to reprojection, prone to off-by-one issues at the borders
-            if(!handler.isHomogeneousCoverages()) {
+            if (!handler.isHomogeneousCoverages()) {
                 GridEnvelope2D range = requestedGridGeometry.getGridRange2D();
                 GridEnvelope2D expandedRange = new GridEnvelope2D(
                         (int) range.getMinX() - HETEROGENEOUS_RASTER_GUTTER,
@@ -268,7 +269,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 } else {
                     nonNullCoverages++;
                 }
-                if(dynamicAlphaSource == null && hasDynamicAlpha(coverage, reader)) {
+                if (dynamicAlphaSource == null && hasDynamicAlpha(coverage, reader)) {
                     dynamicAlphaSource = coverage;
                 }
                 inputCoverages.put(coverageName, coverage);
@@ -281,9 +282,9 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
         
         // some returned null?
-        if(nonNullCoverages < inputCoverages.size()) {
+        if (nonNullCoverages < inputCoverages.size()) {
             float width, height;
-            if(requestedGridGeometry != null) {
+            if (requestedGridGeometry != null) {
                 GridEnvelope2D range = requestedGridGeometry.getGridRange2D();
                 width = (float) range.getWidth();
                 height = (float) range.getHeight();
@@ -293,7 +294,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 width = ri.getWidth();
                 height = ri.getHeight();
             }
-            
+
             // build empty coverages for the missing bits
             for (String name : inputCoverages.keySet()) {
                 GridCoverage2DReader reader = SingleGridCoverage2DReader.wrap(delegate, name);
@@ -342,6 +343,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         // perform the band selects as needed
         int index = 0;
         int transformationChoice = index;
+        CoverageViewHandler.CoverageResolutionChooser resolutionChooser = handler.getCoverageResolutionChooser();
         for (CoverageBand band : mergedBands) {
             List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
             
@@ -353,17 +355,14 @@ public class CoverageViewReader implements GridCoverage2DReader {
             for (InputCoverageBand icb:selectedBands) {
                 int bandIdx = 0;
                 final String bandString = icb.getBand();
-                if(bandString != null && !bandString.isEmpty()) {
+                if (bandString != null && !bandString.isEmpty()) {
                     bandIdx = Integer.parseInt(bandString);
                 }
                 bandIndices.add(bandIdx);
             }
             
             GridCoverage2D coverage = inputCoverages.get(coverageName);
-            if (coverageName.equalsIgnoreCase(handler.getReferenceName())) {
-                transformationChoice = index;
-            }
-            index++;
+
             // special case for dynamic alpha on single input, no need to actually select away the alpha
             Hints localHints = new Hints(hints);
             if (dynamicAlphaSource != null && mergedBands.size() == 1
@@ -375,6 +374,10 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
             coverage = retainBands(bandIndices, coverage, localHints);
             coverages.add(coverage);
+            if (resolutionChooser.visit(coverage)) {
+                transformationChoice = index;
+            }
+            index++;
 
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Read coverage " + coverageName + ", result has envelope "
@@ -387,14 +390,15 @@ public class CoverageViewReader implements GridCoverage2DReader {
         if (coverages.size() > 1) {
             // dynamic alpha but more than one source
             Hints localHints = new Hints(hints);
-            if(dynamicAlphaSource != null) {
+            if (dynamicAlphaSource != null) {
                 int currentBandCount = countBands(coverages);
                 // and the output is suitable for getting an alpha band
-                if(currentBandCount == 1 || currentBandCount == 3) {
+                if (currentBandCount == 1 || currentBandCount == 3) {
                     final int alphaBandIndex = getAlphaBandIndex(dynamicAlphaSource);
-                    GridCoverage2D alphaBandCoverage = retainBands(Arrays.asList(alphaBandIndex), dynamicAlphaSource, hints);
+                    GridCoverage2D alphaBandCoverage = retainBands(Arrays.asList(alphaBandIndex), dynamicAlphaSource,
+                            hints);
                     coverages.add(alphaBandCoverage);
-                    
+
                     addAlphaColorModelHint(localHints, currentBandCount);
                 }
             }
@@ -424,18 +428,18 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     private ColorModel getColorModelWithAlpha(int currentBandCount) {
-        if(currentBandCount == 3) {
+        if (currentBandCount == 3) {
             ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             int[] nBits = {8, 8, 8, 8};
             return new ComponentColorModel(cs, nBits, true, false,
-                                                 Transparency.TRANSLUCENT,
-                                                 DataBuffer.TYPE_BYTE);
+                    Transparency.TRANSLUCENT,
+                    DataBuffer.TYPE_BYTE);
         } else if (currentBandCount == 1) {
             ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
             int[] nBits = {8, 8};
             return new ComponentColorModel(cs, nBits, true, false,
-                                                 Transparency.TRANSLUCENT,
-                                                 DataBuffer.TYPE_BYTE);
+                    Transparency.TRANSLUCENT,
+                    DataBuffer.TYPE_BYTE);
         } else {
             throw new IllegalArgumentException("Cannot create a color model with alpha"
                     + "support starting with " + currentBandCount + " bands");
@@ -452,11 +456,12 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     private int getAlphaBandIndex(GridCoverage2D coverage) {
         final ColorModel cm = coverage.getRenderedImage().getColorModel();
-        if(!cm.hasAlpha() || cm.getNumComponents() == cm.getNumColorComponents()) {
-            throw new IllegalArgumentException("The source coverage does not have an alpha band, cannot extract an alpha band");
+        if (!cm.hasAlpha() || cm.getNumComponents() == cm.getNumColorComponents()) {
+            throw new IllegalArgumentException("The source coverage does not have an alpha band, cannot extract an " +
+                    "alpha band");
         }
         // the alpha band is always the last (see ComponentColorModel.getAlphaRaster or the getAlpha(object) code
-        if(cm.getNumColorComponents() == 1) {
+        if (cm.getNumColorComponents() == 1) {
             // gray-alpha
             return 1;
         } else {
@@ -485,21 +490,21 @@ public class CoverageViewReader implements GridCoverage2DReader {
      */
     private boolean hasDynamicAlpha(GridCoverage2D coverage, GridCoverage2DReader reader) throws IOException {
         // check if we have an alpha band in the coverage to stat with
-        if(coverage == null) {
+        if (coverage == null) {
             return false;
         }
         ColorModel dynamicCm = coverage.getRenderedImage().getColorModel();
-        if(!dynamicCm.hasAlpha() || !hasAlphaBand(dynamicCm)) {
+        if (!dynamicCm.hasAlpha() || !hasAlphaBand(dynamicCm)) {
             return false;
         }
 
         // check if we did not have one in the original layout
         ImageLayout readerLayout = reader.getImageLayout();
-        if(readerLayout == null) {
+        if (readerLayout == null) {
             return false;
         }
         ColorModel nativeCm = readerLayout.getColorModel(null);
-        if(nativeCm == null || nativeCm.hasAlpha()) {
+        if (nativeCm == null || nativeCm.hasAlpha()) {
             return false;
         }
 

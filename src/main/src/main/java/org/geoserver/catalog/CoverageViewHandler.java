@@ -14,14 +14,15 @@ import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageView.SelectedResolution;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.data.DataSourceException;
 import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.ParameterDescriptor;
@@ -38,18 +39,55 @@ import org.opengis.referencing.operation.MathTransform2D;
 class CoverageViewHandler {
 
     /**
+     * Visit the a coverage and decide if its resolution is better than the ones
+     * previously visited
+     */
+    abstract static class CoverageResolutionChooser {
+
+        double[] resolution;
+
+        boolean visit(GridCoverage2D coverage) throws IOException {
+            MathTransform2D mt = coverage.getGridGeometry().getGridToCRS2D();
+            // cannot do a comparison
+            if (!(mt instanceof AffineTransform2D)) {
+                return false;
+            }
+            AffineTransform2D at = (AffineTransform2D) mt;
+            double scaleX = Math.abs(at.getScaleX());
+            double scaleY = Math.abs(at.getScaleY());
+            if (resolution == null) {
+                this.resolution = new double[2];
+                this.resolution[0] = scaleX;
+                this.resolution[1] = scaleY;
+                return true;
+            }
+            if (compare(scaleX, scaleY, resolution)) {
+                this.resolution[0] = scaleX;
+                this.resolution[1] = scaleY;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        protected abstract boolean compare(double scaleX, double scaleY, double[] resolution);
+    }
+
+        /**
      * Visit the reader for a coverage composing the view 
      * and compute the resolution levels
      */
-    interface ResolutionComposer {
+    interface ReaderResolutionComposer {
         void visit(GridCoverage2DReader reader) throws IOException;
 
         double[][] getResolutionLevels();
 
         String getReferenceName();
+
+        CoverageResolutionChooser getCoverageResolutionChooser();
     }
 
-    abstract class AbstractResolutionComposer implements ResolutionComposer {
+    abstract class AbstractReaderResolutionComposer implements ReaderResolutionComposer {
         double[][] resolution;
 
         String referenceName = null;
@@ -68,7 +106,7 @@ class CoverageViewHandler {
     /**
      * Implementation returning the Best resolution of the visited elements
      */
-    class BestResolutionComposer extends AbstractResolutionComposer {
+    class BestReaderResolutionComposer extends AbstractReaderResolutionComposer {
 
         @Override
         public void visit(GridCoverage2DReader reader) throws IOException {
@@ -83,12 +121,23 @@ class CoverageViewHandler {
                 }
             }
         }
+
+        @Override
+        public CoverageResolutionChooser getCoverageResolutionChooser() {
+            return new CoverageResolutionChooser() {
+                @Override
+                protected boolean compare(double scaleX, double scaleY, double[] resolution) {
+                    return scaleX < resolution[0] && scaleY < resolution[1];
+                }
+            };
+        }
+
     }
 
     /**
      * Implementation returning the Worst resolution of the visited elements
      */
-    class WorstResolutionComposer extends AbstractResolutionComposer {
+    class WorstReaderResolutionComposer extends AbstractReaderResolutionComposer {
 
         @Override
         public void visit(GridCoverage2DReader reader) throws IOException {
@@ -103,33 +152,18 @@ class CoverageViewHandler {
                 }
             }
         }
-    }
-
-    /**
-     * Implementation returning the resolution of the i-tx coverage of the view  
-     */
-    class IndexedResolutionComposer extends AbstractResolutionComposer {
-
-        private int selectedResolutionIndex;
-
-        private int visited = -1;
-
-        public IndexedResolutionComposer(int selectedResolutionIndex) {
-            this.selectedResolutionIndex = selectedResolutionIndex;
-        }
 
         @Override
-        public void visit(GridCoverage2DReader reader) throws IOException {
-            visited++;
-            if (visited == selectedResolutionIndex) {
-                resolution = reader.getResolutionLevels();
-                referenceName = reader.getGridCoverageNames()[0];
-            }
+        public CoverageResolutionChooser getCoverageResolutionChooser() {
+            return new CoverageResolutionChooser() {
+                @Override
+                protected boolean compare(double scaleX, double scaleY, double[] resolution) {
+                    return scaleX > resolution[0] && scaleY > resolution[1];
+                }
+            };
         }
     }
 
-    //TODO: Add support for imposed Resolution
-    
     /**
      * Visit the reader for a coverage composing the view and compute the envelope.
      */
@@ -334,12 +368,12 @@ class CoverageViewHandler {
     /** The coverageView definition */
     private CoverageView coverageView;
 
-    private ResolutionComposer resolutionComposer;
+    private ReaderResolutionComposer resolutionComposer;
 
     private EnvelopeComposer envelopeComposer;
 
     public CoverageViewHandler(boolean supportHeterogeneousCoverages, GridCoverage2DReader delegate,
-            String referenceName, CoverageView coverageView) {
+                                     String referenceName, CoverageView coverageView) {
         this.supportHeterogeneousCoverages = supportHeterogeneousCoverages;
         this.delegate = delegate;
         this.referenceName = referenceName;
@@ -409,10 +443,6 @@ class CoverageViewHandler {
 
     }
 
-    public String getReferenceName() {
-        return referenceName;
-    }
-
     public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
         if (homogeneousCoverages) {
             return delegate.getOriginalGridToWorld(referenceName, pixInCell);
@@ -436,17 +466,15 @@ class CoverageViewHandler {
     }
 
 
-    private ResolutionComposer initResolutionComposer() {
+    private ReaderResolutionComposer initResolutionComposer() {
         SelectedResolution selectedResolution = coverageView.getSelectedResolution();
         switch (selectedResolution) {
         case WORST:
-            return new WorstResolutionComposer();
+            return new WorstReaderResolutionComposer();
         case BEST:
-            return new BestResolutionComposer();
-        case INDEX:
-            return new IndexedResolutionComposer(coverageView.getSelectedResolutionIndex());
+            return new BestReaderResolutionComposer();
         default:
-            return new BestResolutionComposer();
+            return new BestReaderResolutionComposer();
         }
     }
 
@@ -464,14 +492,14 @@ class CoverageViewHandler {
 
     public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
-        // TODO
-        if (homogeneousCoverages) {
-            return delegate.getReadingResolutions(referenceName, policy, requestedResolution);
-        }
         return delegate.getReadingResolutions(referenceName, policy, requestedResolution);
     }
     
     EnvelopeCompositionType getEnvelopeCompositionType() {
         return coverageView.getEnvelopeCompositionType();
+    }
+
+    CoverageResolutionChooser getCoverageResolutionChooser() {
+        return resolutionComposer.getCoverageResolutionChooser();
     }
 }

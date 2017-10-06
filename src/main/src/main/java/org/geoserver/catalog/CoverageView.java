@@ -48,7 +48,7 @@ public class CoverageView implements Serializable {
      * Which Resolution to be used in composition
      */
     public static enum SelectedResolution {
-        BEST, WORST, INDEX;
+        BEST, WORST;
     }
 
     /**

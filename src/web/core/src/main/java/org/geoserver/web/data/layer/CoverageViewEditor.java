@@ -51,9 +51,6 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     IModel<SelectedResolution> selectedResolution;
     IModel<String> resolutionReferenceCoverage;
 
-//    List<EnvelopeCompositionType> envelopeCompositionModes;
-//    private DropDownChoice<EnvelopeCompositionType> envelopeComposition;
-
     ListMultipleChoice<CoverageBand> outputBandsChoice;
 
     TextField<String> definition;
@@ -148,25 +145,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         resolutionPolicy.setModel(selectedResolution);
         resolutionPolicy.setChoiceRenderer(new EnumChoiceRenderer<>(CoverageViewEditor.this));
         heterogeneousControls.add(resolutionPolicy);
-        WebMarkupContainer resolutionReferenceCoverageContainer = new WebMarkupContainer("resolutionReferenceCoverageContainer");
-        resolutionReferenceCoverageContainer.setVisible(selectedResolution.getObject() == SelectedResolution.INDEX);
-        heterogeneousControls.add(resolutionReferenceCoverageContainer);
-        DropDownChoice<String> referenceCoverage = new DropDownChoice<>("resolutionReferenceCoverage",  
-                availableCoverages);
-        referenceCoverage.setModel(resolutionReferenceCoverage);
-        resolutionReferenceCoverageContainer.add(referenceCoverage);
-        resolutionPolicy.add(new AjaxFormComponentUpdatingBehavior( "onchange" ) {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                resolutionReferenceCoverageContainer.setVisible(selectedResolution.getObject() == SelectedResolution.INDEX);
-                target.add(heterogeneousControlsContainer);
-            }
-            
-        });
-
-        // TODO Uncomment this row when it can be used
-        //add(compositionChoice);
         add(addRemoveAllButton());
         add(addRemoveButton());
     }

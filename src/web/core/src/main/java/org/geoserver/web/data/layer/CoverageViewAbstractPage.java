@@ -132,17 +132,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             }
             outputBands = new ArrayList<CoverageBand>(coverageView.getCoverageBands());
             name = coverageView.getName();
-            envelopeCompositionType = Optional.ofNullable(coverageView.getEnvelopeCompositionType()).orElseGet(() -> EnvelopeCompositionType.INTERSECTION);
-            selectedResolution = Optional.ofNullable(coverageView.getSelectedResolution()).orElseGet(() -> SelectedResolution.BEST);
-            if(selectedResolution == SelectedResolution.INDEX) {
-                int idx = coverageView.getSelectedResolutionIndex();
-                if(idx < availableCoverages.size()) {
-                    resolutionReferenceCoverage = availableCoverages.get(idx);
-                } else {
-                    resolutionReferenceCoverage = null;
-                }
-            }
-            
+            envelopeCompositionType = Optional.ofNullable(coverageView.getEnvelopeCompositionType()).orElse(EnvelopeCompositionType.INTERSECTION);
+            selectedResolution = Optional.ofNullable(coverageView.getSelectedResolution()).orElse(SelectedResolution.BEST);
         } else {
             outputBands = new ArrayList<CoverageBand>();
             newCoverage = true;
@@ -191,7 +182,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         CoverageView view = new CoverageView(name, coverageEditor.currentOutputBands);
         view.setEnvelopeCompositionType(envelopeCompositionType);
         view.setSelectedResolution(selectedResolution);
-        if(resolutionReferenceCoverage != null) {
+        if (resolutionReferenceCoverage != null) {
             final int referenceCoverageIndex = getReferenceCoverageIndex();
             view.setSelectedResolutionIndex(referenceCoverageIndex);
         }
@@ -202,7 +193,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     private int getReferenceCoverageIndex() {
         for (int i = 0; i < coverageEditor.currentOutputBands.size(); i++) {
             CoverageBand band = coverageEditor.currentOutputBands.get(i);
-            if(this.resolutionReferenceCoverage.equals(band.getInputCoverageBands().get(0).getCoverageName())) {
+            if (this.resolutionReferenceCoverage.equals(band.getInputCoverageBands().get(0).getCoverageName())) {
                 return i;
             }
         }

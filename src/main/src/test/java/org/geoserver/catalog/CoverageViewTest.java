@@ -5,10 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +45,8 @@ import org.opengis.parameter.ParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import it.geosolutions.jaiext.JAIExt;
+
+import static org.junit.Assert.*;
 
 public class CoverageViewTest extends GeoServerSystemTestSupport {
 
@@ -456,29 +454,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         }
     }
     
-    @Test
-    public void testHeterogeneousViewResolutionIndex() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
-            cv.setSelectedResolution(SelectedResolution.INDEX);
-            cv.setSelectedResolutionIndex(4); // B05
-        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
-        GridCoverage2D coverage = null;
-        try {
-            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
-            assertEquals(2033, reader.getResolutionLevels()[0][0], 1); 
-            assertEquals(2033, reader.getResolutionLevels()[0][1], 1);
-            
-            // no point checking the coverage, this is again just metadata, just smoke testing
-            // the read will work
-            coverage = reader.read(null);
-        } finally {
-            getCatalog().remove(info);
-            if (coverage != null) {
-                coverage.dispose(true);
-            }
-        }
-    }
-
     private void assertCoverageResolution(GridCoverage2D coverage, double resX, double resY) {
         AffineTransform2D mt = (AffineTransform2D) coverage.getGridGeometry().getGridToCRS2D();
         assertEquals(resX, mt.getScaleX(), 1);
@@ -507,8 +482,57 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             }
         }
     }
-    
-    
+
+    @Test
+    public void testHeterogeneousViewBandSelectionBestResolution() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+            // use the default: BEST
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+
+        // check band resolutions with specific band selections
+        checkBandSelectionResolution(info, new int[] {0}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {0, 1}, 1007, 1007);
+        checkBandSelectionResolution(info, new int[] {0, 5}, 2033, 2033);
+        checkBandSelectionResolution(info, new int[] {5, 8, 1}, 1007, 1007);
+        checkBandSelectionResolution(info, new int[] {1, 8, 5}, 1007, 1007);
+    }
+
+    @Test
+    public void testHeterogeneousViewBandSelectionWorstResolution() throws Exception {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+            cv.setSelectedResolution(SelectedResolution.WORST);
+        }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
+
+        // check band resolutions with specific band selections
+        checkBandSelectionResolution(info, new int[] {0}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {0, 1}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {0, 5}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {5, 8, 1}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {5, 8, 1}, 6100, 6100);
+        checkBandSelectionResolution(info, new int[] {1}, 1007, 1007);
+        checkBandSelectionResolution(info, new int[] {1, 5}, 2033, 2033);
+    }
+
+
+    public void checkBandSelectionResolution(CoverageInfo info, int[] bands, double expectedResolutionX, double expectedResolutionY) throws IOException {
+        GridCoverage2D coverage = null;
+        try {
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+
+            ParameterValue<int[]> bandsValue = AbstractGridFormat.BANDS.createValue();
+            bandsValue.setValue(bands);
+            coverage = reader.read(new GeneralParameterValue[] {bandsValue});
+            assertNotNull(coverage);
+            assertCoverageResolution(coverage, expectedResolutionX, expectedResolutionY);
+        } finally {
+            getCatalog().remove(info);
+            if(coverage != null) {
+                coverage.dispose(true);
+            }
+        }
+    }
+
+
     private CoverageInfo buildHeterogeneousResolutionView(String name, Consumer<CoverageView> viewCustomizer, String... coverageNames) throws Exception {
         List<CoverageBand> bands = new ArrayList<>();
         int bandIdx = 0;

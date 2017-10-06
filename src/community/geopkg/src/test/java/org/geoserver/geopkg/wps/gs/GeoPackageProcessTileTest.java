@@ -1,3 +1,7 @@
+/* (c) 2014-2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.geopkg.wps.gs;
 
 import java.awt.image.BufferedImage;
@@ -5,20 +9,13 @@ import java.io.ByteArrayInputStream;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
-import org.geotools.data.DataUtilities;
-import org.geotools.data.simple.SimpleFeatureReader;
-import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
-import org.geotools.geopkg.TileEntry;
-import org.geotools.geopkg.TileMatrix;
-import org.geotools.geopkg.TileReader;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
 import org.junit.Test;

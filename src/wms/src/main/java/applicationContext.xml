@@ -607,14 +607,20 @@
       <constructor-arg ref="wms" />
     </bean>
 
-    <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
+    <bean id="OpenLayers2MapProducer" class="org.geoserver.wms.map.OpenLayers2MapOutputFormat">
+        <constructor-arg index="0" ref="wms" />
+    </bean>
+    <bean id="OpenLayers3MapProducer" class="org.geoserver.wms.map.OpenLayers3MapOutputFormat">
       <constructor-arg index="0" ref="wms" />
+    </bean>
+    <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
+      <constructor-arg index="0" ref="OpenLayers2MapProducer" />
+      <constructor-arg index="1" ref="OpenLayers3MapProducer" />
     </bean>
     <bean id="OpenLayersMapResponse" class="org.geoserver.wms.map.RawMapResponse">
     </bean>
-    
 
-	<bean id="AtomGeoRSSMapProducer"
+  <bean id="AtomGeoRSSMapProducer"
 		scope="prototype"
 		class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>

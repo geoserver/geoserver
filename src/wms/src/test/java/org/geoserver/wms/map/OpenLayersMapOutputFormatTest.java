@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.map;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -28,6 +30,7 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.data.test.MockData;
@@ -46,6 +49,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -54,8 +58,6 @@ import org.junit.Ignore;
 
 public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
-    private OpenLayersMapOutputFormat mapProducer;
-    
     Pattern lookForEscapedParam = Pattern
             .compile(Pattern
                     .quote("\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
@@ -63,21 +65,6 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Rule
     public TestHttpClientRule clientMocker = new TestHttpClientRule();
     
-    @Before
-    public void setMapProducer() throws Exception {
-        Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
-        this.mapProducer = getProducerInstance();
-    }
-    
-    protected OpenLayersMapOutputFormat getProducerInstance() {
-        return new OpenLayersMapOutputFormat(getWMS());
-    }
-    
-    @After
-    public void unsetMapProducer() throws Exception {
-        this.mapProducer = null;
-    }
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // get default workspace info
@@ -128,10 +115,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         layer.setTitle("Title");
         map.addLayer(layer);
         request.setFormat("application/openlayers");
-        RawMap rawMap = this.mapProducer.produceMap(map);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        rawMap.writeTo(bos);
-        String htmlDoc = new String(bos.toByteArray(), "UTF-8");
+        String htmlDoc = getAsHTML(map);
         // check that weird param is correctly encoded to avoid js code execution
         int index = htmlDoc
                 .replace("\\n", "")
@@ -316,12 +300,60 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
         request.setFormat("application/openlayers");
 
-        RawMap rawMap = this.mapProducer.produceMap(map);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        rawMap.writeTo(bos);
-        String htmlDoc = new String(bos.toByteArray(), "UTF-8");
+        String htmlDoc = getAsHTML(map);
         int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}\n");
 
         assertTrue(index > -1);
     }
+
+    @Test
+    public void testOL3vsOL2() throws Exception{
+        // the base request
+        String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers=" + getLayerId(MockData.BASIC_POLYGONS) +
+                "&styles=&bbox=-180,-90,180,90&width=768&height=330" +
+                "&srs=EPSG:4326&format=";
+        final String firefoxAgent = "Firefox 40.1";
+        String ie8Agent = "MSIE 8.";
+
+        // generic request on browser supporting OL3
+        String contentFirefox = getResponseContent(path + "application/openlayers", firefoxAgent, OpenLayers3MapOutputFormat.MIME_TYPE);
+        assertThat(contentFirefox, containsString("openlayers3/ol.js"));
+
+        // generic request on browser not supporting OL3
+        String contentIE8 = getResponseContent(path + "application/openlayers", ie8Agent, OpenLayers2MapOutputFormat.MIME_TYPE);
+        assertThat(contentIE8, containsString("OpenLayers.js"));
+
+        // ask explicitly for OL2
+        String contentOL2 = getResponseContent(path + "application/openlayers2", firefoxAgent, OpenLayers2MapOutputFormat.MIME_TYPE);
+        assertThat(contentOL2, containsString("OpenLayers.js"));
+
+        // ask explicitly for OL3
+        String contentOL3 = getResponseContent(path + "application/openlayers3", firefoxAgent, OpenLayers3MapOutputFormat.MIME_TYPE);
+        assertThat(contentOL3, containsString("openlayers3/ol.js"));
+
+        // ask explicitly for OL3 on a non supporting browser
+        String exception = getResponseContent(path + "application/openlayers3", ie8Agent, "application/vnd.ogc.se_xml");
+        assertThat(exception, containsString("not supported"));
+    }
+
+    public String getResponseContent(String path, String userAgent, String expectedMimeType) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod( "GET" );
+        request.setContent(new byte[]{});
+        if(userAgent != null) {
+            request.addHeader("USER-AGENT", userAgent);
+        }
+        MockHttpServletResponse response = dispatch(request);
+        assertEquals(expectedMimeType, response.getContentType());
+        return response.getContentAsString();
+    }
+
+    String getAsHTML(WMSMapContent map) throws IOException {
+        OpenLayersMapOutputFormat mapProducer = GeoServerExtensions.extensions(OpenLayersMapOutputFormat.class).get(0);
+        RawMap rawMap = mapProducer.produceMap(map);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        rawMap.writeTo(bos);
+        return new String(bos.toByteArray(), "UTF-8");
+    }
+
 }

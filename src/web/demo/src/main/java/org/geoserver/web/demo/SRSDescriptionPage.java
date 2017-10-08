@@ -8,21 +8,31 @@ package org.geoserver.web.demo;
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Version;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
@@ -32,7 +42,9 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -87,13 +99,26 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         }
 
         String wkt = "";
+        String epsgWkt = "";
 
         add(new Label("crsName", name));
         CoordinateReferenceSystem crs = null;
         try {
             crs = CRS.decode(code);
+            wkt = crs.toString();
+            String epsgOrderCode = WMS.toInternalSRS(code, new Version("1.3.0"));
+            CoordinateReferenceSystem epsgCrs = CRS.decode(epsgOrderCode);
+
         } catch (Exception e) {
             wkt = "Error decoding CRS: " + e.getMessage();
+        }
+
+        try {
+            String epsgOrderCode = WMS.toInternalSRS(code, new Version("1.3.0"));
+            CoordinateReferenceSystem epsgCrs = CRS.decode(epsgOrderCode);
+            epsgWkt = epsgCrs.toString();
+        } catch (Exception e) {
+            epsgWkt = "Error decoding CRS: " + e.getMessage();
         }
 
         InternationalString scope = null;
@@ -133,7 +158,6 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
             scope = crs.getScope();
             remarks = crs.getRemarks();
 
-            wkt = crs.toString();
             Extent domainOfValidity = crs.getDomainOfValidity();
             if (domainOfValidity != null) {
                 areaOfValidity = domainOfValidity.getDescription() == null ? "" : domainOfValidity
@@ -200,7 +224,30 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
         add(new Label("crsScope", scope == null ? "-" : scope.toString(locale)));
         add(new Label("crsRemarks", remarks == null ? "-" : remarks.toString(locale)));
-        add(new Label("wkt", wkt));
+        List<ITab> tabs = new ArrayList<>();
+        String finalEpsgWkt = epsgWkt;
+        tabs.add(new AbstractTab(new ParamResourceModel("epsgOrder", this)) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                return new WKTPanel(panelId, new ParamResourceModel("epsgOrderDescription", SRSDescriptionPage.this),
+                        new Model<String>(finalEpsgWkt));
+            }
+        });
+        String finalWkt = wkt;
+        tabs.add(new AbstractTab(new ParamResourceModel("internalOrder", this)) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                return new WKTPanel(panelId, new ParamResourceModel("internalOrderDescription", SRSDescriptionPage.this),
+                        new Model<String>(finalWkt));
+            }
+        });
+        TabbedPanel wktTabs = new TabbedPanel("wktTabs", tabs) {
+            protected String getTabContainerCssClass()
+            {
+                return "tab-row tab-row-compact";
+            }
+        };
+        add(wktTabs);
         add(new Label("aovCoords", aovCoords.toString()));
         add(new Label("aovDescription", areaOfValidity));
 
@@ -215,5 +262,21 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
     private double getMaxResolution(final double w, final double h) {
         return 4 * (((w > h) ? w : h) / 256);
     }
+
+    /*
+     * Panel for displaying the well known text for the CRS
+     */
+    class WKTPanel extends Panel {
+
+        public WKTPanel(String id, IModel<String> wktDescriptionModel, IModel<String> wktModel) {
+            super(id);
+
+            Label wktDescription = new Label("wktDescription", wktDescriptionModel);
+            add(wktDescription);
+            MultiLineLabel wkt = new MultiLineLabel("wkt", wktModel);
+            add(wkt);
+        }
+    }
+
 
 }

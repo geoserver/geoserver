@@ -200,53 +200,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
                 if (attr == null) {
                     if (otherAttr != null)
                         return false;
-                }
-
-                /*
-                 * Compare attributes, excluding the feature type to avoid recursion.
-                 * This should be updated whenever AttributeTypeInfoImpl.equals() changes.
-                 */
-                if (attr instanceof AttributeTypeInfoImpl && otherAttr instanceof AttributeTypeInfoImpl) {
-                    AttributeTypeInfoImpl attribute = (AttributeTypeInfoImpl) attr;
-                    AttributeTypeInfoImpl otherAttribute = (AttributeTypeInfoImpl) otherAttr;
-
-                    if (attribute.attribute == null) {
-                        if (otherAttribute.attribute != null)
-                            return false;
-                    } else if (!attribute.attribute.equals(otherAttribute.attribute))
-                        return false;
-                    if (attribute.binding == null) {
-                        if (otherAttribute.binding != null)
-                            return false;
-                    } else if (!attribute.binding.equals(otherAttribute.binding))
-                        return false;
-                    if (attribute.id == null) {
-                        if (otherAttribute.id != null)
-                            return false;
-                    } else if (!attribute.id.equals(otherAttribute.id))
-                        return false;
-                    if (attribute.length == null) {
-                        if (otherAttribute.length != null)
-                            return false;
-                    } else if (!attribute.length.equals(otherAttribute.length))
-                        return false;
-                    if (attribute.maxOccurs != otherAttribute.maxOccurs)
-                        return false;
-                    if (attribute.metadata == null) {
-                        if (otherAttribute.metadata != null)
-                            return false;
-                    } else if (!attribute.metadata.equals(otherAttribute.metadata))
-                        return false;
-                    if (attribute.minOccurs != otherAttribute.minOccurs)
-                        return false;
-                    if (attribute.name == null) {
-                        if (otherAttribute.name != null)
-                            return false;
-                    } else if (!attribute.name.equals(otherAttribute.name))
-                        return false;
-                    if (attribute.nillable != otherAttribute.nillable)
-                        return false;
-                } else if (!attr.equals(otherAttr)) {
+                } else if (!attr.equalsIngnoreFeatureType(otherAttr)) {
                     return false;
                 }
             }

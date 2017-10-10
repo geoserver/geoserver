@@ -60,10 +60,7 @@ import org.springframework.web.context.ServletContextAware;
  * 
  */
 public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore, ServletContextAware {
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
-    static {
-        LOGGER.setLevel(Level.FINER);
-    }
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.platform");
     
     /**
      * ResourceStore used for configuration resources.

@@ -56,12 +56,7 @@ paths:
       summary: add a new workspace to GeoServer
       description: Adds a new workspace to the server
       parameters:
-        - name: workspaceBody
-          description: The layer group body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/Workspace"
+        - $ref: "#/parameters/WorkspaceBody"
         - name: default
           in: query
           description: New workspace will be the used as the default. Allowed values are true or false,  The default value is false.
@@ -166,12 +161,7 @@ paths:
           description: name of workspace
           required: true
           type: string
-        - name: workspaceBody
-          description: The layer group body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/Workspace"
+        - $ref: "#/parameters/WorkspaceBody"
     post:
       operationId: postWorkspace
       responses:
@@ -201,7 +191,38 @@ paths:
           description: Can't delete default workspace
         403: 
           description: Workspace or related Namespace is not empty (and recurse not true) 
-      
+
+parameters:
+  WorkspaceBody:
+    name: workspaceBody
+    description: |
+      The workspace body information to upload.
+
+      Examples:
+
+      - application/xml:
+
+        ```
+        <workspace>
+          <name>topp</name>
+        </workspace>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "workspace": {
+            "name": "topp"
+          }
+        }
+        ```
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/Workspace"
+
 definitions:
   Workspace:
     title: Workspace

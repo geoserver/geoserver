@@ -48,12 +48,7 @@ paths:
           required: true
           description: Name of the worskpace containing the WMS store.
           type: string
-        - name: WMSStoreBody
-          description: WMS store body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/WMSStoreInfo"
+        - $ref: "#/parameters/WMSStorePost"
       consumes:
         - application/xml
         - application/json
@@ -181,12 +176,7 @@ paths:
           required: true
           description: The name of the store to be retrieved
           type: string
-        - name: WMSStoreBody
-          description: The WMS store body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/WMSStoreInfo"
+        - $ref: "#/parameters/WMSStorePut"
       consumes:
         - application/xml
         - application/json
@@ -223,6 +213,82 @@ paths:
         401:
           description: Unauthorized
 
+parameters:
+  WMSStorePost:
+    name: WMSStoreBody
+    description: |
+      WMS store body information to upload.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmsStore>
+          <name>remote</name>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesUrl>
+        </wmsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmsStore": {
+            "name": "remote",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities"
+          }
+        }
+        ```
+
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMSStoreInfo"
+  WMSStorePut:
+    name: WMSStoreBody
+    description: |
+      WMS store body information to upload.
+      For a PUT, only values which should be changed need to be included.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmsStore>
+          <description>A wms store</description>
+          <enabled>true</enabled>
+          <__default>true</__default>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesUrl>
+          <user>admin</user>
+          <password>geoserver</password>
+          <maxConnections>6</maxConnections>
+          <readTimeout>60</readTimeout>
+          <connectTimeout>30</connectTimeout>
+        </wmsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmsStore": {
+            "description": "A wms store",
+            "enabled": "true",
+            "_default": "true",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
+            "user": "admin",
+            "password": "geoserver",
+            "maxConnections": "6",
+            "readTimeout": "60",
+            "connectTimeout": "30"
+          }
+        }
+        ```
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMSStoreInfo"
 
 definitions:
 

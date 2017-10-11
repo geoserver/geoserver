@@ -48,12 +48,7 @@ paths:
           required: true
           description: Name of the worskpace containing the WMTS store.
           type: string
-        - name: WMTSStoreBody
-          description: WMTS store body information to upload.
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/WMTSStoreInfo"
+        - $ref: "#/parameters/WMTSStorePost"
       consumes:
         - application/xml
         - application/json
@@ -181,12 +176,7 @@ paths:
           required: true
           description: The name of the store to be retrieved
           type: string
-        - name: WMTSStoreBody
-          description: The WMTS store body information to upload.
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/WMTSStoreInfo"
+        - $ref: "#/parameters/WMTSStorePut"
       consumes:
         - application/xml
         - application/json
@@ -223,6 +213,82 @@ paths:
         401:
           description: Unauthorized
 
+parameters:
+  WMTSStorePost:
+    name: WMTSStoreBody
+    description: |
+      WMTS store body information to upload.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmtsStore>
+          <name>remote</name>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities</capabilitiesUrl>
+        </wmtsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmtsStore": {
+            "name": "remote",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities"
+          }
+        }
+        ```
+
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMTSStoreInfo"
+  WMTSStorePut:
+    name: WMTSStoreBody
+    description: |
+      WMTS store body information to upload.
+      For a PUT, only values which should be changed need to be included.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmtsStore>
+          <description>A wmts store</description>
+          <enabled>true</enabled>
+          <__default>true</__default>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities</capabilitiesUrl>
+          <user>admin</user>
+          <password>geoserver</password>
+          <maxConnections>6</maxConnections>
+          <readTimeout>60</readTimeout>
+          <connectTimeout>30</connectTimeout>
+        </wmtsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmtsStore": {
+            "description": "A wmts store",
+            "enabled": "true",
+            "_default": "true",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            "user": "admin",
+            "password": "geoserver",
+            "maxConnections": "6",
+            "readTimeout": "60",
+            "connectTimeout": "30"
+          }
+        }
+        ```
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMTSStoreInfo"
 
 definitions:
 

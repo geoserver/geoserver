@@ -38,12 +38,7 @@ paths:
       description: Adds a new layer group entry to the server.
 
       parameters:
-        - name: layergroupBody
-          description: The layer group body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/Layergroup"
+        - $ref: "#/parameters/LayerGroupPost"
       consumes:
         - application/xml
         - application/json
@@ -173,12 +168,7 @@ paths:
           required: true
           description: The name of the layer group to modify.
           type: string
-        - name: layergroupBody
-          in: body
-          description: The updated layer group definition.
-          required: true
-          schema:
-            $ref: "#/definitions/Layergroup"
+        - $ref: "#/parameters/LayerGroupPut"
       consumes:
         - application/xml
         - application/json
@@ -235,12 +225,7 @@ paths:
       description: Adds a new layer group entry to the server in the specified workspace.
 
       parameters:
-        - name: layergroupBody
-          description: The layer group body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/Layergroup"
+        - $ref: "#/parameters/LayerGroupPost"
       consumes:
         - application/xml
         - application/json
@@ -349,12 +334,7 @@ paths:
           required: true
           description: The name of the layer group to modify.
           type: string
-        - name: layergroupBody
-          in: body
-          description: The updated layer group definition.
-          required: true
-          schema:
-            $ref: "#/definitions/Layergroup"
+        - $ref: "#/parameters/LayerGroupPut"
       consumes:
         - application/xml
         - application/json
@@ -378,6 +358,131 @@ paths:
           description: OK
 
 parameters:
+  LayerGroupPost:
+    name: layerGroupBody
+    description: |
+      The layer group body information to upload.
+
+      Examples:
+
+      - applicaiton/xml:
+
+        ```
+        <layerGroup>
+          <name>nyc</name>
+          <layers>
+            <layer>roads</layer>
+            <layer>parks</layer>
+            <layer>buildings</layer>
+          </layers>
+          <styles>
+            <style>roads_style</style>
+            <style>polygon</style>
+            <style>polygon</style>
+          </styles>
+        </layerGroup>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "layerGroup": {
+            "name": "nyc",
+            "publishables": {
+              "published": [
+                {"name": "roads"},
+                {"name": "parks"},
+                {"name": "buildings"}
+              ]
+            },
+            "styles": {
+              "style": [
+                {"name": "roads_style"},
+                {"name": "polygon"},
+                {"name": "polygon"}
+              ]
+            }
+          }
+        }
+        ```
+
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Layergroup"
+  LayerGroupPut:
+    name: layerGroupBody
+    description: |
+      The updated layer group definition.
+      For a PUT, only values which should be changed need to be included.
+
+      Examples:
+
+      - applicaiton/xml:
+
+        ```
+        <layerGroup>
+          <mode>SINGLE</mode>
+          <title>New York City</title>
+          <abstractTxt>Information about the NYC layer group</abstractTxt>
+          <layers>
+            <layer>roads</layer>
+            <layer>parks</layer>
+            <layer>buildings</layer>
+          </layers>
+          <styles>
+            <style>roads_style</style>
+            <style>polygon</style>
+            <style>polygon</style>
+          </styles>
+          <bounds>
+            <minx>-74.047185</minx>
+            <maxx>-73.907005</maxx>
+            <miny>40.679648</miny>
+            <maxy>40.882078</maxy>
+            <crs>EPSG:4326</crs>
+          </bounds>
+        </layerGroup>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "layerGroup": {
+            "mode": "SINGLE",
+            "title": "New York City",
+            "abstractTxt": "Information about the NYC layer group",
+            "publishables": {
+              "published": [
+                {"name": "roads"},
+                {"name": "parks"},
+                {"name": "buildings"}
+              ]
+            },
+            "styles": {
+              "style": [
+                {"name": "roads_style"},
+                {"name": "polygon"},
+                {"name": "polygon"}
+              ]
+            },
+            "bounds": {
+              "crs": "EPSG:4326",
+              "maxx": -73.907005,
+              "maxy": 40.882078,
+              "minx": -74.047185,
+              "miny": 40.679648
+            }
+          }
+        }
+        ```
+
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Layergroup"
   Workspace:
     name: workspace
     type: string

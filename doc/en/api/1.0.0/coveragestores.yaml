@@ -68,12 +68,7 @@ paths:
           required: true
           description: The name of the worskpace containing the coverage stores.
           type: string
-        - name: coverageStoreBody
-          description: The coverage store body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/CoverageStoreInfo"
+        - $ref: "#/parameters/CoverageStorePost"
       consumes:
         - application/xml
         - application/json
@@ -198,12 +193,7 @@ paths:
           required: true
           description: The name of the store to be retrieved
           type: string
-        - name: coverageStoreBody
-          description: The coverage store body information to upload.
-          in: body
-          required: true          
-          schema:
-            $ref: "#/definitions/CoverageStoreInfo"
+        - $ref: "#/parameters/CoverageStorePut"
       consumes:
         - application/xml
         - application/json
@@ -359,6 +349,72 @@ paths:
         405:
           description: Method Not Allowed
 
+parameters:
+  CoverageStorePost:
+    name: coverageStoreBody
+    description: |
+      The coverage store body information to upload.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <coverageStore>
+          <name>nyc</name>
+          <url>file:/path/to/file.tiff</url>
+        </coverageStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "coverageStore": {
+            "name": "nyc",
+            "url": "file:/path/to/file.tiff"
+          }
+        }
+        ```
+
+
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/CoverageStoreInfo"
+  CoverageStorePut:
+    name: coverageStoreBody
+    description: |
+      The coverage store body information to upload.
+      For a PUT, only values which should be changed need to be included.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <coverageStore>
+          <description>A coverage store</description>
+          <enabled>true</enabled>
+          <__default>true</__default>
+          <url>file:/path/to/file.tiff</url>
+        </coverageStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "coverageStore": {
+            "description": "A coverage store",
+            "enabled": "true",
+            "_default": "true",
+            "url": "file:/path/to/file.tiff"
+          }
+        }
+        ```
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/CoverageStoreInfo"
           
 definitions:
   CoverageStoreInfo:

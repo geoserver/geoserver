@@ -187,7 +187,7 @@ paths:
         Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
 
       parameters:
-        - $ref: "#/parameters/StyleInfoPost"
+        - $ref: "#/parameters/StyleInfoPut"
         - name: style
           in: path
           required: true
@@ -470,7 +470,7 @@ paths:
         Using PUT with any other format will modify the content of the style. You can also use PUT with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files
 
       parameters:
-        - $ref: "#/parameters/StyleInfoPost"
+        - $ref: "#/parameters/StyleInfoPut"
         - name: workspace
           in: path
           required: true
@@ -643,19 +643,121 @@ parameters:
     description: >
 
       The style body of a request
-      JSON or XML style uploads follow this schema. For example:
+      JSON or XML style uploads follow the schema. For example:
 
         - application/xml: 
           
           ```
-          <style><name>roads_style</name><filename>roads.sld</filename></style>
+          <style>
+            <name>roads_style</name>
+            <filename>roads.sld</filename>
+          </style>
           ```
 
         - application/json: 
         
-            ```
-            {"style": { "name": "roads_style", "filename": "roads.sld"}}
-            ```
+          ```
+          {
+            "style": { 
+              "name": "roads_style", 
+              "filename": "roads.sld"
+            }
+          }
+          ```
+
+      Otherwise, the style body is an actual style:
+
+        - application/zip: 
+        
+          ```
+          <ZIP file containing SLD and icons>
+          ```
+            
+        - application/vnd.ogc.sld+xml:
+
+          ```
+          <?xml version="1.0" encoding="UTF-8"?>
+          <StyledLayerDescriptor version="1.0.0" 
+           xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
+           xmlns="http://www.opengis.net/sld" 
+           xmlns:ogc="http://www.opengis.net/ogc" 
+           xmlns:xlink="http://www.w3.org/1999/xlink" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <!-- a Named Layer is the basic building block of an SLD document -->
+            <NamedLayer>
+              <Name>default_line</Name>
+              <UserStyle>
+              <!-- Styles can have names, titles and abstracts -->
+                <Title>Default Line</Title>
+                <Abstract>A sample style that draws a line</Abstract>
+                <!-- FeatureTypeStyles describe how to render different features -->
+                <!-- A FeatureTypeStyle for rendering lines -->
+                <FeatureTypeStyle>
+                  <Rule>
+                    <Name>rule1</Name>
+                    <Title>Blue Line</Title>
+                    <Abstract>A solid blue line with a 1 pixel width</Abstract>
+                    <LineSymbolizer>
+                      <Stroke>
+                        <CssParameter name="stroke">#0000FF</CssParameter>
+                      </Stroke>
+                    </LineSymbolizer>
+                  </Rule>
+                </FeatureTypeStyle>
+              </UserStyle>
+            </NamedLayer>
+          </StyledLayerDescriptor>
+          ```
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/StyleInfoPost"
+  StyleInfoPut:
+    name: styleBody
+    description: >
+
+      The style body of a request.
+      For a PUT, only values which should be changed need to be included.
+
+      JSON or XML style uploads follow the schema, and alter the style configuration. For example:
+
+        - application/xml: 
+          
+          ```
+          <style>
+            <name>roads_style</name>
+            <languageVersion>
+              <version>1.0.0</version>
+            </languageVersion>
+            <filename>roads.sld</filename>
+            <legend>
+              <width>32</width>
+              <height>32</height>
+              <format>image/png; charset=UTF-8</format>
+              <onlineResource>legend.png</onlineResource>
+            </legend>
+          </style>
+          ```
+
+        - application/json: 
+        
+          ```
+          {
+            "style": { 
+              "name": "roads_style", 
+              "languageVersion": {
+                "version": "1.0.0"
+              },
+              "filename": "roads.sld",
+              "legend": {
+                "format": "image/png; charset=UTF-8",
+                "height": 32,
+                "width": 32,
+                "onlineResource": "grass_fill.png"
+              }
+            }
+          }
+          ```
 
       Otherwise, the style body is an actual style:
 
@@ -668,37 +770,37 @@ parameters:
         - application/vnd.ogc.sld+xml:
 
           ```
-            <?xml version="1.0" encoding="UTF-8"?>
-            <StyledLayerDescriptor version="1.0.0" 
-             xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
-             xmlns="http://www.opengis.net/sld" 
-             xmlns:ogc="http://www.opengis.net/ogc" 
-             xmlns:xlink="http://www.w3.org/1999/xlink" 
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-              <!-- a Named Layer is the basic building block of an SLD document -->
-              <NamedLayer>
-                <Name>default_line</Name>
-                <UserStyle>
-                <!-- Styles can have names, titles and abstracts -->
-                  <Title>Default Line</Title>
-                  <Abstract>A sample style that draws a line</Abstract>
-                  <!-- FeatureTypeStyles describe how to render different features -->
-                  <!-- A FeatureTypeStyle for rendering lines -->
-                  <FeatureTypeStyle>
-                    <Rule>
-                      <Name>rule1</Name>
-                      <Title>Blue Line</Title>
-                      <Abstract>A solid blue line with a 1 pixel width</Abstract>
-                      <LineSymbolizer>
-                        <Stroke>
-                          <CssParameter name="stroke">#0000FF</CssParameter>
-                        </Stroke>
-                      </LineSymbolizer>
-                    </Rule>
-                  </FeatureTypeStyle>
-                </UserStyle>
-              </NamedLayer>
-            </StyledLayerDescriptor>
+          <?xml version="1.0" encoding="UTF-8"?>
+          <StyledLayerDescriptor version="1.0.0" 
+           xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
+           xmlns="http://www.opengis.net/sld" 
+           xmlns:ogc="http://www.opengis.net/ogc" 
+           xmlns:xlink="http://www.w3.org/1999/xlink" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <!-- a Named Layer is the basic building block of an SLD document -->
+            <NamedLayer>
+              <Name>default_line</Name>
+              <UserStyle>
+              <!-- Styles can have names, titles and abstracts -->
+                <Title>Default Line</Title>
+                <Abstract>A sample style that draws a line</Abstract>
+                <!-- FeatureTypeStyles describe how to render different features -->
+                <!-- A FeatureTypeStyle for rendering lines -->
+                <FeatureTypeStyle>
+                  <Rule>
+                    <Name>rule1</Name>
+                    <Title>Blue Line</Title>
+                    <Abstract>A solid blue line with a 1 pixel width</Abstract>
+                    <LineSymbolizer>
+                      <Stroke>
+                        <CssParameter name="stroke">#0000FF</CssParameter>
+                      </Stroke>
+                    </LineSymbolizer>
+                  </Rule>
+                </FeatureTypeStyle>
+              </UserStyle>
+            </NamedLayer>
+          </StyledLayerDescriptor>
           ```
     in: body
     required: true

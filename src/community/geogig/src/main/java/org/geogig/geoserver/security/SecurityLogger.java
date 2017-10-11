@@ -5,6 +5,9 @@
 package org.geogig.geoserver.security;
 
 import static java.lang.String.format;
+import static org.locationtech.geogig.remotes.RefDiff.Type.ADDED_REF;
+import static org.locationtech.geogig.remotes.RefDiff.Type.CHANGED_REF;
+import static org.locationtech.geogig.remotes.RefDiff.Type.REMOVED_REF;
 
 import java.io.File;
 import java.net.URI;
@@ -18,16 +21,15 @@ import javax.annotation.Nullable;
 import org.geogig.geoserver.config.LogStore;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
-import org.locationtech.geogig.porcelain.CloneOp;
-import org.locationtech.geogig.porcelain.FetchOp;
-import org.locationtech.geogig.porcelain.PullOp;
-import org.locationtech.geogig.porcelain.PullResult;
-import org.locationtech.geogig.porcelain.PushOp;
-import org.locationtech.geogig.porcelain.RemoteAddOp;
-import org.locationtech.geogig.porcelain.RemoteRemoveOp;
-import org.locationtech.geogig.porcelain.TransferSummary;
-import org.locationtech.geogig.porcelain.TransferSummary.ChangedRef;
-import org.locationtech.geogig.porcelain.TransferSummary.ChangedRef.ChangeTypes;
+import org.locationtech.geogig.remotes.CloneOp;
+import org.locationtech.geogig.remotes.FetchOp;
+import org.locationtech.geogig.remotes.PullOp;
+import org.locationtech.geogig.remotes.PullResult;
+import org.locationtech.geogig.remotes.PushOp;
+import org.locationtech.geogig.remotes.RefDiff;
+import org.locationtech.geogig.remotes.RemoteAddOp;
+import org.locationtech.geogig.remotes.RemoteRemoveOp;
+import org.locationtech.geogig.remotes.TransferSummary;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Repository;
@@ -255,23 +257,23 @@ public class SecurityLogger implements InitializingBean {
 
         @Override
         String params(CloneOp c) {
-            return format("url=%s, branch=%s, depth=%s", c.getRepositoryURL().orNull(),
-                    c.getBranch().orNull(), c.getDepth().orNull());
+            return format("url=%s, branch=%s, depth=%s", c.getRemoteURI(), c.getBranch().orNull(),
+                    c.getDepth().orNull());
         }
     }
 
     private static final StringBuilder formatFetchResult(TransferSummary fr) {
-        Map<String, Collection<ChangedRef>> refs = fr.getChangedRefs();
+        Map<String, Collection<RefDiff>> refs = fr.getRefDiffs();
 
         StringBuilder sb = new StringBuilder();
         if (refs.isEmpty()) {
             sb.append("already up to date");
         } else {
-            for (Iterator<Entry<String, Collection<ChangedRef>>> it = refs.entrySet().iterator(); it
+            for (Iterator<Entry<String, Collection<RefDiff>>> it = refs.entrySet().iterator(); it
                     .hasNext();) {
-                Entry<String, Collection<ChangedRef>> entry = it.next();
+                Entry<String, Collection<RefDiff>> entry = it.next();
                 String remoteUrl = entry.getKey();
-                Collection<ChangedRef> changedRefs = entry.getValue();
+                Collection<RefDiff> changedRefs = entry.getValue();
                 sb.append(" From ").append(remoteUrl).append(": [");
                 print(changedRefs, sb);
                 sb.append("]");
@@ -284,21 +286,21 @@ public class SecurityLogger implements InitializingBean {
         return objectId.toString().substring(0, 8);
     }
 
-    private static void print(Collection<ChangedRef> changedRefs, StringBuilder sb) {
-        for (Iterator<ChangedRef> it = changedRefs.iterator(); it.hasNext();) {
-            ChangedRef ref = it.next();
+    private static void print(Collection<RefDiff> changedRefs, StringBuilder sb) {
+        for (Iterator<RefDiff> it = changedRefs.iterator(); it.hasNext();) {
+            RefDiff ref = it.next();
             Ref oldRef = ref.getOldRef();
             Ref newRef = ref.getNewRef();
-            if (ref.getType() == ChangeTypes.CHANGED_REF) {
+            if (ref.getType() == CHANGED_REF) {
                 sb.append(oldRef.getName()).append(" ");
                 sb.append(toString(oldRef.getObjectId()));
                 sb.append(" -> ");
                 sb.append(toString(newRef.getObjectId()));
-            } else if (ref.getType() == ChangeTypes.ADDED_REF) {
+            } else if (ref.getType() == ADDED_REF) {
                 String reftype = (newRef.getName().startsWith(Ref.TAGS_PREFIX)) ? "tag" : "branch";
                 sb.append("* [new ").append(reftype).append("] ").append(newRef.getName())
                         .append(" -> ").append(toString(newRef.getObjectId()));
-            } else if (ref.getType() == ChangeTypes.REMOVED_REF) {
+            } else if (ref.getType() == REMOVED_REF) {
                 sb.append("x [deleted] ").append(oldRef.getName());
             } else {
                 sb.append("[deepened]" + newRef.getName());

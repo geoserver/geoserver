@@ -40,8 +40,8 @@ import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.porcelain.BranchListOp;
 import org.locationtech.geogig.porcelain.ConfigOp;
 import org.locationtech.geogig.porcelain.InitOp;
-import org.locationtech.geogig.remote.IRemoteRepo;
-import org.locationtech.geogig.remote.RemoteResolver;
+import org.locationtech.geogig.remotes.internal.IRemoteRepo;
+import org.locationtech.geogig.remotes.internal.RemoteResolver;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Remote;
@@ -414,15 +414,15 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
         try {
             Hints hints = Hints.readOnly();
             Repository localRepo = GlobalContextBuilder.builder().build(hints).repository();
-            remoteRepo = RemoteResolver.newRemote(localRepo, remote, null);
+            remoteRepo = RemoteResolver.newRemote(remote, null);
             if (!remoteRepo.isPresent()) {
                 throw new IllegalArgumentException("Repository not found or not reachable");
             } else {
                 IRemoteRepo repo = remoteRepo.get();
                 try {
                     repo.open();
-                    Ref head = repo.headRef();
-                    return head;
+                    Optional<Ref> head = repo.headRef();
+                    return head.orNull();
                 } finally {
                     repo.close();
                 }

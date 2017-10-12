@@ -328,4 +328,5 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
             assertThat(actualIds, hasItem(expectedIds[i]));
         }
     }
+
 }

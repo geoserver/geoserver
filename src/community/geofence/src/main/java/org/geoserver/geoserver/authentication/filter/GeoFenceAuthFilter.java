@@ -55,21 +55,20 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author ETj (etj at geo-solutions.it)
  */
 public class GeoFenceAuthFilter
-//        extends GeoServerSecurityFilter
-        extends GeoServerCompositeFilter
-        implements GeoServerAuthenticationFilter {
+        // extends GeoServerSecurityFilter
+        extends GeoServerCompositeFilter implements GeoServerAuthenticationFilter {
 
     static final Logger LOGGER = Logging.getLogger(GeoFenceAuthFilter.class);
 
     private RuleReaderService ruleReaderService;
+
     private GeoFenceSecurityProvider geofenceAuth;
 
-//    static final String ROOT_ROLE = "ROLE_ADMINISTRATOR";
-//    static final String ANONYMOUS_ROLE = "ROLE_ANONYMOUS";
+    // static final String ROOT_ROLE = "ROLE_ADMINISTRATOR";
+    // static final String ANONYMOUS_ROLE = "ROLE_ANONYMOUS";
     static final String USER_ROLE = "ROLE_USER";
 
     private BasicAuthenticationEntryPoint aep;
-
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
@@ -78,9 +77,8 @@ public class GeoFenceAuthFilter
         GeoFenceAuthFilterConfig cfg = (GeoFenceAuthFilterConfig) config;
         // anything to set here? maybe the cache config
 
-        aep= new BasicAuthenticationEntryPoint();
+        aep = new BasicAuthenticationEntryPoint();
         aep.setRealmName(GeoServerSecurityManager.REALM);
-
 
         try {
             aep.afterPropertiesSet();
@@ -88,16 +86,18 @@ public class GeoFenceAuthFilter
             throw new IOException(e);
         }
 
-//        BasicAuthenticationFilterConfig authConfig = (BasicAuthenticationFilterConfig) config;
-        SecurityNamedServiceConfig authCfg = securityManager.loadAuthenticationProviderConfig("geofence");
-        GeoFenceAuthenticationProvider geofenceAuthProvider = geofenceAuth.createAuthenticationProvider(authCfg);
-        BasicAuthenticationFilter filter = new BasicAuthenticationFilter(geofenceAuthProvider ,aep);
+        // BasicAuthenticationFilterConfig authConfig = (BasicAuthenticationFilterConfig) config;
+        SecurityNamedServiceConfig authCfg = securityManager
+                .loadAuthenticationProviderConfig("geofence");
+        GeoFenceAuthenticationProvider geofenceAuthProvider = geofenceAuth
+                .createAuthenticationProvider(authCfg);
+        BasicAuthenticationFilter filter = new BasicAuthenticationFilter(geofenceAuthProvider, aep);
 
-//        if (authConfig.isUseRememberMe()) {
-//            filter.setRememberMeServices(securityManager.getRememberMeService());
-//            GeoServerWebAuthenticationDetailsSource s = new GeoServerWebAuthenticationDetailsSource();
-//            filter.setAuthenticationDetailsSource(s);
-//        }
+        // if (authConfig.isUseRememberMe()) {
+        // filter.setRememberMeServices(securityManager.getRememberMeService());
+        // GeoServerWebAuthenticationDetailsSource s = new GeoServerWebAuthenticationDetailsSource();
+        // filter.setAuthenticationDetailsSource(s);
+        // }
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);
     }
@@ -114,14 +114,14 @@ public class GeoFenceAuthFilter
         request.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, aep);
         super.doFilter(request, response, chain);
 
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth == null) {
-//            doAuth(request, response);
-//        } else {
-//            LOGGER.fine("Found existing Authentication in context: " + auth);
-//        }
-//
-//        chain.doFilter(request, response);
+        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // if (auth == null) {
+        // doAuth(request, response);
+        // } else {
+        // LOGGER.fine("Found existing Authentication in context: " + auth);
+        // }
+        //
+        // chain.doFilter(request, response);
     }
 
     private void doAuth(ServletRequest request, ServletResponse response) {
@@ -129,40 +129,41 @@ public class GeoFenceAuthFilter
         BasicUser basicUser = getBasicAuth(request);
         AuthUser authUser = null;
 
-        if(basicUser != null) {
+        if (basicUser != null) {
             LOGGER.fine("Checking auth for user " + basicUser.name);
             authUser = ruleReaderService.authorize(basicUser.name, basicUser.pw);
 
-            if(authUser == null) {
+            if (authUser == null) {
                 LOGGER.info("Could not authenticate user " + basicUser.name);
             }
 
         } else {
             LOGGER.fine("No basicauth");
         }
-        
-        if(authUser != null) {
+
+        if (authUser != null) {
             LOGGER.fine("Found user " + authUser);
-            
+
             List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
             authorities.add(GeoServerRole.AUTHENTICATED_ROLE);
 
-            if(authUser.getRole() == AuthUser.Role.ADMIN) {
+            if (authUser.getRole() == AuthUser.Role.ADMIN) {
                 authorities.add(GeoServerRole.ADMIN_ROLE);
                 authorities.add(new SimpleGrantedAuthority("ADMIN")); // needed for REST?!?
             } else {
                 authorities.add(new SimpleGrantedAuthority(USER_ROLE)); // ??
             }
 
-            UsernamePasswordAuthenticationToken upa = new UsernamePasswordAuthenticationToken(basicUser.name, basicUser.pw, authorities);
-            SecurityContextHolder.getContext().setAuthentication(upa); 
-            
+            UsernamePasswordAuthenticationToken upa = new UsernamePasswordAuthenticationToken(
+                    basicUser.name, basicUser.pw, authorities);
+            SecurityContextHolder.getContext().setAuthentication(upa);
+
         } else {
             LOGGER.fine("Anonymous access");
-//
-//            Authentication authentication = new AnonymousAuthenticationToken("geoserver", "null",
-//                    Arrays.asList(new GrantedAuthority[] { new SimpleGrantedAuthority(ANONYMOUS_ROLE) }));
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
+            //
+            // Authentication authentication = new AnonymousAuthenticationToken("geoserver", "null",
+            // Arrays.asList(new GrantedAuthority[] { new SimpleGrantedAuthority(ANONYMOUS_ROLE) }));
+            // SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }
     }
@@ -172,6 +173,7 @@ public class GeoFenceAuthFilter
      */
     class BasicUser {
         String name;
+
         String pw;
 
         public BasicUser(String name, String pw) {
@@ -182,20 +184,19 @@ public class GeoFenceAuthFilter
 
     /**
      * Reads username and password from Basic auth headers.
+     * 
      * @return a BasicUser instance, or null if no basic auth detected.
      */
     private BasicUser getBasicAuth(ServletRequest request) {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        String header = ((httpRequest.getHeader("Authorization") != null) ?
-                httpRequest.getHeader("Authorization") :
-                httpRequest.getHeader("X-CUSTOM-USERID"));
+        String header = ((httpRequest.getHeader("Authorization") != null)
+                ? httpRequest.getHeader("Authorization")
+                : httpRequest.getHeader("X-CUSTOM-USERID"));
 
-        if (header != null)
-        {
-            String base64Token = header.startsWith("Basic ") ?
-                    header.substring(6) : header;
+        if (header != null) {
+            String base64Token = header.startsWith("Basic ") ? header.substring(6) : header;
             String token = new String(Base64.decodeBase64(base64Token.getBytes()));
 
             int delim = token.indexOf(":");
@@ -203,13 +204,10 @@ public class GeoFenceAuthFilter
             String username = null;
             String password = null;
 
-            if (delim != -1)
-            {
+            if (delim != -1) {
                 username = token.substring(0, delim);
                 password = token.substring(delim + 1);
-            }
-            else
-            {
+            } else {
                 username = header;
                 password = null;
             }
@@ -224,16 +222,15 @@ public class GeoFenceAuthFilter
     /**
      * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
      */
-//    @Override
+    // @Override
     public boolean applicableForHtml() {
         return true;
     }
 
-
     /**
      * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
      */
-//    @Override
+    // @Override
     public boolean applicableForServices() {
         return true;
     }

@@ -42,27 +42,25 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * Authentication provider that delegates to GeoFence
+ * 
  * @author ETj (etj at geo-solutions.it)
  */
-public class GeoFenceAuthenticationProvider 
-        extends GeoServerAuthenticationProvider
+public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvider
         implements AuthenticationManager {
 
-    private final static Logger LOGGER = Logging.getLogger(GeoFenceAuthenticationProvider.class.getName());
-//    protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
-
+    private final static Logger LOGGER = Logging
+            .getLogger(GeoFenceAuthenticationProvider.class.getName());
+    // protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     private RuleReaderService ruleReaderService;
 
     @Override
-    public void initializeFromConfig(SecurityNamedServiceConfig config)
-            throws IOException {
+    public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
 
         LOGGER.warning("INIT FROM CONFIG");
 
         super.initializeFromConfig(config);
     }
-
 
     @Override
     public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
@@ -73,39 +71,42 @@ public class GeoFenceAuthenticationProvider
     public Authentication authenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {
 
-        UsernamePasswordAuthenticationToken  outTok = null;
+        UsernamePasswordAuthenticationToken outTok = null;
         LOGGER.log(Level.FINE, "Auth request with {0}", authentication);
 
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken inTok =  (UsernamePasswordAuthenticationToken)authentication;
+            UsernamePasswordAuthenticationToken inTok = (UsernamePasswordAuthenticationToken) authentication;
 
             AuthUser authUser = null;
             try {
-                authUser = ruleReaderService.authorize(
-                        inTok.getPrincipal().toString(),
+                authUser = ruleReaderService.authorize(inTok.getPrincipal().toString(),
                         inTok.getCredentials().toString());
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error in authenticating with GeoFence", e);
-                throw new AuthenticationException("Error in GeoFence communication", e) {};
+                throw new AuthenticationException("Error in GeoFence communication", e) {
+                };
             }
 
-            if(authUser != null) {
-                LOGGER.log(Level.FINE, "User {0} authenticated: {1}", new Object[]{inTok.getPrincipal(), authUser});
+            if (authUser != null) {
+                LOGGER.log(Level.FINE, "User {0} authenticated: {1}",
+                        new Object[] { inTok.getPrincipal(), authUser });
 
                 List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
                 roles.addAll(inTok.getAuthorities());
                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-                if(authUser.getRole() == AuthUser.Role.ADMIN) {
+                if (authUser.getRole() == AuthUser.Role.ADMIN) {
                     roles.add(GeoServerRole.ADMIN_ROLE);
                     roles.add(new SimpleGrantedAuthority("ADMIN")); // needed for REST?!?
                 }
 
-                outTok = new UsernamePasswordAuthenticationToken(
-                    inTok.getPrincipal(), inTok.getCredentials(), roles);
+                outTok = new UsernamePasswordAuthenticationToken(inTok.getPrincipal(),
+                        inTok.getCredentials(), roles);
 
             } else { // authUser == null
-                if("admin".equals(inTok.getPrincipal()) && "geoserver".equals(inTok.getCredentials())) {
-                    LOGGER.log(Level.FINE, "Default admin credentials NOT authenticated -- probably a frontend check");
+                if ("admin".equals(inTok.getPrincipal())
+                        && "geoserver".equals(inTok.getCredentials())) {
+                    LOGGER.log(Level.FINE,
+                            "Default admin credentials NOT authenticated -- probably a frontend check");
                 } else {
                     LOGGER.log(Level.INFO, "User {0} NOT authenticated", inTok.getPrincipal());
                 }

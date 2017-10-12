@@ -5,6 +5,9 @@
  */
 package org.geoserver.monitor.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +46,14 @@ public class RESTMonitorCallback extends DispatcherCallbackAdapter {
         
         data.setCategory(Category.REST);
         if (request.getPathInfo() != null) {
-            String resource = Paths.get(request.getPathInfo()).getFileName().toString();
-            resource = FilenameUtils.getBaseName(resource);
-            data.getResources().add(resource);
+        	try {
+	            String resource = Paths.get(URLEncoder.encode(request.getPathInfo(), 
+	            		Charset.defaultCharset().name())).getFileName().toString();
+	            resource = FilenameUtils.getBaseName(resource);
+	            data.getResources().add(resource);
+        	} catch (UnsupportedEncodingException e) {
+        		LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        	}
         }
         monitor.update();
     }

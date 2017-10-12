@@ -27,9 +27,8 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
  *
  * @author ETj (etj at geo-solutions.it)
  */
-public class GeoFenceAuthenticationProviderConfig
-    extends BaseSecurityNamedServiceConfig
-    implements SecurityAuthProviderConfig {
+public class GeoFenceAuthenticationProviderConfig extends BaseSecurityNamedServiceConfig
+        implements SecurityAuthProviderConfig {
 
     public GeoFenceAuthenticationProviderConfig() {
     }

@@ -19,7 +19,6 @@
  */
 package org.geoserver.geofence;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -51,8 +50,10 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         super.onSetUp(testData);
 
         // get the beans we use for testing
-        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
-        configurer.setLocation(new UrlResource(this.getClass().getResource("/test-config.properties")));
+        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext
+                .getBean("geofence-configurer");
+        configurer.setLocation(
+                new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
 
     @Before
@@ -62,8 +63,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * @FIXME
-     * This test fails in 2.6
+     * @FIXME This test fails in 2.6
      */
     @Ignore
     @Test
@@ -80,23 +80,22 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * @FIXME
-     * This test fails in 2.6
+     * @FIXME This test fails in 2.6
      */
     @Ignore
     @Test
     public void testCancel() throws URISyntaxException, IOException {
         GeofenceTestUtils.emptyFile("test-config.properties");
-//        GeofenceTestUtils.emptyFile("test-cache-config.properties");
+        // GeofenceTestUtils.emptyFile("test-cache-config.properties");
         FormTester ft = tester.newFormTester("form");
         ft.submit("cancel");
         tester.assertRenderedPage(GeoServerHomePage.class);
         assertTrue(GeofenceTestUtils.readConfig("test-config.properties").length() == 0);
-//        assertTrue(GeofenceTestUtils.readConfig("test-cache-config.properties").length() == 0);
+        // assertTrue(GeofenceTestUtils.readConfig("test-cache-config.properties").length() == 0);
     }
 
     @Test
-    public void testErrorEmptyInstance()  {
+    public void testErrorEmptyInstance() {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("instanceName", "");
         ft.submit("submit");
@@ -106,7 +105,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testErrorEmptyURL()  {
+    public void testErrorEmptyURL() {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("servicesUrl", "");
         ft.submit("submit");
@@ -116,9 +115,10 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testErrorWrongURL()  {
+    public void testErrorWrongURL() {
         @SuppressWarnings("unchecked")
-		TextField<String> servicesUrl = ((TextField<String>)tester.getComponentFromLastRenderedPage("form:servicesUrl"));
+        TextField<String> servicesUrl = ((TextField<String>) tester
+                .getComponentFromLastRenderedPage("form:servicesUrl"));
         servicesUrl.setDefaultModel(new Model<String>("fakeurl"));
 
         tester.clickLink("form:test", true);
@@ -127,7 +127,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testErrorEmptyCacheSize()  {
+    public void testErrorEmptyCacheSize() {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("cacheSize", "");
         ft.submit("submit");
@@ -137,7 +137,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testErrorWrongCacheSize()  {
+    public void testErrorWrongCacheSize() {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("cacheSize", "A");
         ft.submit("submit");
@@ -147,10 +147,10 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testInvalidateCache()  {
+    public void testInvalidateCache() {
         tester.clickLink("form:invalidate", true);
-        String success = new StringResourceModel(GeofencePage.class.getSimpleName() +
-                ".cacheInvalidated").getObject();
+        String success = new StringResourceModel(
+                GeofencePage.class.getSimpleName() + ".cacheInvalidated").getObject();
         tester.assertInfoMessages((Serializable[]) new String[] { success });
     }
 

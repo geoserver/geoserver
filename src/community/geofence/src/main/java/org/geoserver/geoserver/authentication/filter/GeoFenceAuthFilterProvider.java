@@ -33,6 +33,7 @@ import org.geoserver.security.filter.GeoServerSecurityFilter;
 public class GeoFenceAuthFilterProvider extends AbstractFilterProvider {
 
     private RuleReaderService ruleReaderService;
+
     private GeoFenceSecurityProvider geofenceAuth;
 
     @Override
@@ -56,7 +57,6 @@ public class GeoFenceAuthFilterProvider extends AbstractFilterProvider {
         return filter;
     }
 
-    
     public void setRuleReaderService(RuleReaderService ruleReaderService) {
         this.ruleReaderService = ruleReaderService;
     }

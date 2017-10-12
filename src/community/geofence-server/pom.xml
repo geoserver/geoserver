@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
     <!-- set parent pom to community pom -->
     <parent>
         <groupId>org.geoserver</groupId>
@@ -21,14 +20,14 @@
     <dependencies>
          <dependency>
             <groupId>com.googlecode.genericdao</groupId>
-                <artifactId>dao</artifactId>
-                <version>1.1.0</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>javax.persistence</groupId>
-                            <artifactId>persistence-api</artifactId>
-                        </exclusion>
-                    </exclusions>
+            <artifactId>dao</artifactId>
+            <version>1.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.persistence</groupId>
+                    <artifactId>persistence-api</artifactId>
+                </exclusion>
+            </exclusions>
          </dependency>
          <dependency>
                 <groupId>com.googlecode.genericdao</groupId>
@@ -51,10 +50,17 @@
                 <version>${hibernate-spatial-version}</version>
         </dependency>
         <dependency>
-                <groupId>org.hibernatespatial</groupId>
-                <artifactId>hibernate-spatial-h2-geodb</artifactId>
-                <version>${hibernate-spatial-h2-version}</version>
+            <groupId>org.hibernatespatial</groupId>
+            <artifactId>hibernate-spatial-h2-geodb</artifactId>
+            <version>${hibernate-spatial-h2-version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.opengeo</groupId>
+            <artifactId>geodb</artifactId>
+            <version>0.8</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
@@ -90,6 +96,20 @@
             <groupId>org.geoserver.geofence</groupId>
             <artifactId>geofence-services-impl</artifactId>
             <version>${gf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.postgis</groupId>
+						<artifactId>postgis-jdbc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.postgis</groupId>
+						<artifactId>postgis-stubs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+					</exclusion>
+				</exclusions>
         </dependency>
 
         <dependency>
@@ -124,14 +144,20 @@
             <artifactId>wicket-dnd</artifactId>
         </dependency>
 
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+		</dependency>
+
         <!-- test dependencies -->
-         <dependency>
+        <dependency>
             <groupId>org.geotools.xsd</groupId>
             <artifactId>gt-xsd-gml3</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
             <version>${gt.version}</version>
-        </dependency>        
+        </dependency>
         
         <dependency>
             <groupId>org.geoserver</groupId>
@@ -155,7 +181,7 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

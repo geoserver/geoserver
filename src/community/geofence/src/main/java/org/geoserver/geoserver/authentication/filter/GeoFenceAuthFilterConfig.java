@@ -26,10 +26,12 @@ import org.geoserver.security.config.SecurityFilterConfig;
  *
  * @author ETj (etj at geo-solutions.it)
  */
-public class GeoFenceAuthFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig{
+public class GeoFenceAuthFilterConfig extends SecurityFilterConfig
+        implements SecurityAuthFilterConfig {
 
     // just testing...
     private String geofenceUrl;
+
     // just testing...
     private String geoserverName;
 

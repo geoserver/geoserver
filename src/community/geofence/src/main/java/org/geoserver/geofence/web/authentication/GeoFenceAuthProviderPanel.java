@@ -24,11 +24,13 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 
-public class GeoFenceAuthProviderPanel extends AuthenticationProviderPanel<GeoFenceAuthenticationProviderConfig> {
-   
+public class GeoFenceAuthProviderPanel
+        extends AuthenticationProviderPanel<GeoFenceAuthenticationProviderConfig> {
+
     private static final long serialVersionUID = 4454241105050831394L;
 
-    public GeoFenceAuthProviderPanel(String id, IModel<GeoFenceAuthenticationProviderConfig> model) {
+    public GeoFenceAuthProviderPanel(String id,
+            IModel<GeoFenceAuthenticationProviderConfig> model) {
         super(id, model);
     }
 }

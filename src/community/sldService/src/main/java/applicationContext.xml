@@ -1,33 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="sldServiceRestConfigMapping" class="org.geoserver.rest.RESTMapping">
-	<property name="routes">
-	  <map>
-	  		<entry>
-	          <key><value>/sldservice/{layer}/attributes</value></key>
-	          <value>layerAttributesFinder</value>
-	        </entry>
-	        <entry>
-	          <key><value>/sldservice/{layer}/classify</value></key>
-	          <value>classifierFinder</value>
-	        </entry>
-	        <entry>
-	          <key><value>/sldservice/{layer}/rasterize</value></key>
-	          <value>rasterizerFinder</value>
-	        </entry>
-	  </map>
-	</property>
-	</bean>
-
-	<bean id="layerAttributesFinder" class="org.geoserver.sldservice.rest.finder.LayerAttributesFinder" parent="abstractCatalogFinder"/>
-	<bean id="classifierFinder" class="org.geoserver.sldservice.rest.finder.ClassifierResourceFinder" parent="abstractCatalogFinder"/>
-	<bean id="rasterizerFinder" class="org.geoserver.sldservice.rest.finder.RasterizerResourceFinder" parent="abstractCatalogFinder"/>
+  <!-- <mvc:annotation-driven/> -->
+  <context:component-scan base-package="org.geoserver.sldservice.rest"/>
 
 </beans>

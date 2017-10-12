@@ -10,8 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.geoserver.geofence.rest.xml.MultiPolygonAdapter;
 import org.geotools.gml3.v3_2.GML;
+import org.geoserver.geofence.rest.xml.MultiPolygonAdapter;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -44,10 +44,13 @@ public class MultiPolygonAdapterTest {
         geometryMember = GML3MockData.element(GML3MockData.qName("geometryMember"), document, multiGeometry);
         GML3MockData.polygon(document, geometryMember);
         
-        
-        MultiPolygon multiPolygon = adapter.unmarshal(allowedArea);
-        assertNotNull(multiPolygon);
-        assertEquals(2, multiPolygon.getNumGeometries());
+        try {
+        	MultiPolygon multiPolygon = adapter.unmarshal(allowedArea);
+        	assertNotNull(multiPolygon);
+        	assertEquals(2, multiPolygon.getNumGeometries());
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
     }
 
 }

@@ -21,6 +21,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 
 /***
@@ -33,7 +34,7 @@ public class InternalUserResolverTest extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         
-        addUser("pipo", "clown", null, Arrays.asList("CIRCUS", "KLINIEK", "ZEVER"));
+        addUser("pippo", "clown", null, Arrays.asList("CIRCUS", "KLINIEK", "ZEVER"));
         addUser("jantje", "jantje", null, Arrays.asList("MOPJES", "ZEVER"));
         
         GeoServerSecurityManager secMgr = getSecurityManager();
@@ -64,11 +65,16 @@ public class InternalUserResolverTest extends GeoServerSystemTestSupport {
         rolesStore.store();
     }
 
+    @Before
+    public void setDefaultUserService() {
+    	System.setProperty(InternalUserResolver.DEFAULT_USER_GROUP_SERVICE_KEY, "default");
+    }
+
     @Test
     public void testInternalUserResolver() {
         InternalUserResolver resolver = new InternalUserResolver(getSecurityManager());
         
-        assertTrue(resolver.existsUser("pipo"));
+        assertTrue(resolver.existsUser("pippo"));
         assertTrue(resolver.existsUser("jantje"));
         
         assertTrue(resolver.existsUser("role_user_test"));
@@ -80,7 +86,7 @@ public class InternalUserResolverTest extends GeoServerSystemTestSupport {
         
         assertTrue(resolver.existsRole("ROLE_TEST"));
         
-        Set<String> roles = resolver.getRoles("pipo");
+        Set<String> roles = resolver.getRoles("pippo");
         assertEquals(3, roles.size());
         assertTrue(roles.contains("CIRCUS"));
         assertTrue(roles.contains("ZEVER"));

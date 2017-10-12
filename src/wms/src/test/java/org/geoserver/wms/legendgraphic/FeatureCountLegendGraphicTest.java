@@ -23,6 +23,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.wms_1_1_1.GetLegendGraphicTest;
 import org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -46,6 +47,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
         testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
+        testData.addStyle("scaleDependent","scaleDependent.sld",  GetLegendGraphicTest.class, catalog);
         testData.addVectorLayer(SF_STATES, Collections.EMPTY_MAP, "states.properties",
                 GetMapIntegrationTest.class, catalog);
 
@@ -366,6 +368,50 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         // boring case, the title is just title
         assertLabel("title (1)", ruleSets.get(0)[0]);
         assertLabel("title (1)", ruleSets.get(1)[0]);
+    }
+
+    @Test
+    public void testScaleDependentHittingScale() throws Exception {
+        // somewhere around 60k
+        testScaleDependent("-109.11157608032227,36.97002410888672,-108.97974014282227,37.02667236328125", "TheRule (4)");
+    }
+
+    @Test
+    public void testScaleDependentBelowMinScale() throws Exception {
+        // around 4k
+        testScaleDependent("-109.05228853225708,36.994850635528564,-109.04404878616333,36.99839115142822", "TheRule (0)");
+    }
+
+    @Test
+    public void testScaleDependentAboveMaxScale() throws Exception {
+        // around 273k
+        testScaleDependent("-109.31121826171875,36.88041687011719,-108.78387451171875,37.10700988769531", "TheRule (0)");
+    }
+
+    public void testScaleDependent(String bboxSpecification, String expectedLabel) throws Exception {
+        // around 4k
+        String requestURL = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer=" + getLayerId(SF_STATES)
+                + "&style=scaleDependent&width=20&height=20&srs=EPSG:4326" //
+                + "&bbox=" + bboxSpecification
+                + "&legend_options=" + GetLegendGraphicRequest.COUNT_MATCHED_KEY + ":true"
+                + "&srcwidht=768&srcheight=300";
+
+
+        Map rawKvp = (Map) caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
+        Map kvp = parseKvp(rawKvp);
+        GetLegendGraphicKvpReader reader = new GetLegendGraphicKvpReader(getWMS());
+        GetLegendGraphicRequest request = reader.read(reader.createRequest(), kvp, rawKvp);
+
+        // run
+        legendProducer.buildLegendGraphic(request);
+        this.lastRequest = request;
+
+        assertEquals(1, ruleSets.size());
+        Rule[] rules = ruleSets.get(0);
+        logLabels(rules);
+        assertEquals(1, rules.length);
+        assertLabel(expectedLabel, rules[0]);
     }
 
     private void logLabels(Rule[] rules) {

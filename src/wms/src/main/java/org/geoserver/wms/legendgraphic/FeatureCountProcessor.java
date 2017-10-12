@@ -40,6 +40,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory2;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
+import org.geotools.util.Converters;
 import org.geotools.util.SimpleInternationalString;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,6 +55,8 @@ import org.opengis.style.Description;
 class FeatureCountProcessor {
 
     static final StyleFactory2 SF = (StyleFactory2) CommonFactoryFinder.getStyleFactory();
+    public static final String WIDTH = "WIDTH";
+    public static final String HEIGHT = "HEIGHT";
 
     /**
      * Updates a rule setting its description's title as the provided targetLabel
@@ -272,6 +275,11 @@ class FeatureCountProcessor {
         // setup the KVP for the internal, fake GetMap
         Map<String, Object> kvp = new CaseInsensitiveMap(request.getKvp());
         Map<String, String> rawKvp = new CaseInsensitiveMap(request.getRawKvp());
+        // remove width/height, they are part of the GetLegendGraphic request, not GetMap
+        kvp.remove("WIDTH");
+        kvp.remove("HEIGHT");
+        rawKvp.remove("WIDTH");
+        rawKvp.remove("HEIGHT");
         // ... the actual layer
         String layerName = getLayerName(legend);
         kvp.put("LAYERS", layerName);
@@ -279,9 +287,17 @@ class FeatureCountProcessor {
         // ... a default style we'll override later
         kvp.put("STYLES", "");
         rawKvp.put("STYLES", "");
-        // ... width and height
-        rawKvp.put("WIDTH", rawKvp.get("SRCWIDTH"));
-        rawKvp.put("HEIGHT", rawKvp.get("SRCHEIGHT"));
+        // ... width and height as part of the count related extension
+        String srcWidth = rawKvp.get("SRCWIDTH");
+        String srcHeight = rawKvp.get("SRCHEIGHT");
+        rawKvp.put(WIDTH, srcWidth);
+        rawKvp.put(HEIGHT, srcHeight);
+        if (srcWidth != null) {
+            kvp.put(WIDTH, Converters.convert(srcWidth, Integer.class));
+        }
+        if (srcHeight != null) {
+            kvp.put(HEIGHT, Converters.convert(srcHeight, Integer.class));
+        }
 
         // remove decoration to avoid infinite recursion
         final Map formatOptions = (Map) kvp.get("FORMAT_OPTIONS");

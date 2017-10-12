@@ -14,6 +14,7 @@
       <Title>A thick blue line</Title>
       <FeatureTypeStyle>
         <Rule>
+          <Name>TheRule</Name>
           <MinScaleDenominator>10000</MinScaleDenominator>
           <MaxScaleDenominator>100000</MaxScaleDenominator>
           <!-- like a linesymbolizer but with a fill too -->

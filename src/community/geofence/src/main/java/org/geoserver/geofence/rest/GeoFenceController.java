@@ -27,7 +27,6 @@ import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geotools.util.logging.Logging;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence.rest;
+package org.geoserver.geofence.server.rest;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.geofence.core.model.AdminRule;
-
 import org.geoserver.geofence.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.rest.xml.JaxbAdminRuleList;
 import org.geoserver.geofence.services.AdminRuleAdminService;
@@ -22,10 +21,11 @@ import org.geoserver.geofence.services.dto.RuleFilter.SpecialFilterType;
 import org.geoserver.geofence.services.dto.RuleFilter.TextFilter;
 import org.geoserver.geofence.services.dto.ShortAdminRule;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.geoserver.rest.RestBaseController;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,9 +34,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-public class AdminRulesRestController {
+@RestController
+@ControllerAdvice
+@RequestMapping(path = "/geofence" + RestBaseController.ROOT_PATH)
+public class AdminRulesRestController extends RestBaseController {
 
     private AdminRuleAdminService adminService;
 
@@ -54,7 +57,9 @@ public class AdminRulesRestController {
     	response.sendError(409, exception.getMessage());
     }
 
-    @RequestMapping(value = "/rest/adminrules", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @RequestMapping(value = "/adminrules",
+    		method = RequestMethod.GET,
+    		produces={"application/xml", "application/json"})
     public @ResponseBody JaxbAdminRuleList get(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "entries", required = false) Integer entries,
@@ -74,12 +79,16 @@ public class AdminRulesRestController {
        return new JaxbAdminRuleList(adminService.getListFull(filter, page, entries));
     }
 
-    @RequestMapping(value = "/rest/adminrules/id/{id}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @RequestMapping(value = "/adminrules/id/{id}",
+    		method = RequestMethod.GET,
+    		produces={"application/xml", "application/json"})
     public @ResponseBody JaxbAdminRule get(@PathVariable ("id") Long id) {
     	return new JaxbAdminRule(adminService.get(id));
     }
 
-    @RequestMapping(value = "/rest/adminrules/count", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @RequestMapping(value = "/adminrules/count",
+    		method = RequestMethod.GET,
+    		produces={"application/xml", "application/json"})
     public @ResponseBody JaxbAdminRuleList count(
         @RequestParam(value = "userName", required = false) String userName,
         @RequestParam(value = "userAny", required = false) Boolean userDefault,
@@ -97,7 +106,8 @@ public class AdminRulesRestController {
     }
 
 
-    @RequestMapping(value = "/rest/adminrules", method = RequestMethod.POST)
+    @RequestMapping(value = "/adminrules",
+    		method = RequestMethod.POST)
     public ResponseEntity<Long> insert(@RequestBody JaxbAdminRule rule) {
 
         long priority = rule.getPriority() == null ? 0 : rule.getPriority();
@@ -109,7 +119,8 @@ public class AdminRulesRestController {
         		HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/rest/adminrules/id/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/adminrules/id/{id}",
+    		method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.OK) void update(@PathVariable ("id") Long id, @RequestBody JaxbAdminRule rule) {
         if (rule.getPriority() != null) {
             ShortAdminRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
@@ -120,7 +131,8 @@ public class AdminRulesRestController {
     	adminService.update(rule.toRule(adminService.get(id)));
     }
 
-    @RequestMapping(value = "/rest/adminrules/id/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/adminrules/id/{id}",
+    		method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("id") Long id) {
         adminService.delete(id);
     }
@@ -159,7 +171,9 @@ public class AdminRulesRestController {
      * first rule will be updated with a priority equal to the target priority and the next ones
      * will get an incremented priority value.
      */
-    @RequestMapping(value = "/rest/adminrules/move", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
+    @RequestMapping(value = "/adminrules/move",
+    		method = RequestMethod.GET,
+    		produces = {"application/xml", "application/json"})
     public
     @ResponseBody
     ResponseEntity<JaxbAdminRuleList> move(

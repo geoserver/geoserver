@@ -15,12 +15,17 @@ import java.util.logging.Logger;
 import org.geoserver.geofence.spi.UserResolver;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerSecurityService;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 /**
  * 
@@ -29,12 +34,54 @@ import org.geotools.util.logging.Logging;
  * @author Niels Charlier
  *
  */
+@PropertySource("classpath*:application.properties")
 public class InternalUserResolver implements UserResolver {
     
-    private Logger logger = Logging.getLogger(InternalUserResolver.class);
+    public static final String DEFAULT_USER_GROUP_SERVICE_KEY = "org.geoserver.rest.DefaultUserGroupServiceName";
+
+	private Logger logger = Logging.getLogger(InternalUserResolver.class);
+    
+    @Autowired
+    private Environment env;
+    
+    @Value("${org.geoserver.rest.DefaultUserGroupServiceName}")
+    private String DEFAULT_ROLE_SERVICE_NAME;
+    
+    private GeoServerSecurityService defaultSecurityService;
     
     protected GeoServerSecurityManager securityManager;
     
+    private String getDefaultServiceName() {
+        String defaultServiceName = System.getProperty(DEFAULT_USER_GROUP_SERVICE_KEY);
+        defaultServiceName = defaultServiceName == null ? env.getProperty(DEFAULT_USER_GROUP_SERVICE_KEY) : DEFAULT_ROLE_SERVICE_NAME;
+        return defaultServiceName == null ? DEFAULT_ROLE_SERVICE_NAME : defaultServiceName;
+    }
+    
+    public GeoServerSecurityService getDefaultSecurityService() throws IOException {
+    	if (defaultSecurityService != null) {
+    		return defaultSecurityService;
+    	}
+
+    	for (String serviceName : securityManager.listUserGroupServices()) {
+    		if(serviceName.equals(getDefaultServiceName())) {
+    			final GeoServerUserGroupService userGroupService = securityManager.loadUserGroupService(serviceName);
+    			defaultSecurityService = userGroupService;
+    			return userGroupService;
+    		}
+    	}
+    	
+    	for (String roleServiceName : securityManager.listRoleServices()) {
+    		if(roleServiceName.equals(getDefaultServiceName())) {
+    			final GeoServerRoleService roleService = securityManager.loadRoleService(roleServiceName);
+    			defaultSecurityService = roleService;
+    			return roleService;
+    		}
+    	}
+    	
+    	defaultSecurityService = securityManager.getActiveRoleService();
+    	return defaultSecurityService;
+    }
+
     public InternalUserResolver(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
     }
@@ -99,28 +146,31 @@ public class InternalUserResolver implements UserResolver {
     @Override
     public boolean existsRole(String rolename) {
         try {
-            
             if(logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Checking Role [" + rolename + "] on ActiveRoleService [" + securityManager.getActiveRoleService() + "]");
+                logger.log(Level.FINE, "Checking Role [" + rolename + "] on ActiveRoleService [" + getDefaultSecurityService() + "]");
             }
-                    
-            return securityManager.getActiveRoleService().getRoleByName(rolename) != null;
+            
+            if (getDefaultSecurityService() instanceof GeoServerRoleService) {
+            	return ((GeoServerRoleService)getDefaultSecurityService()).getRoleByName(rolename) != null;
+            }
         } catch (IOException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
-            return false;
         }
+        return false;
     }
 
     @Override
     public Set<String> getRoles(String username) {
         try {
-            SortedSet<GeoServerRole> roleSet = securityManager.getActiveRoleService().getRolesForUser(username);
-            SortedSet<String> stringSet = new TreeSet<String>();
-            
-            for (GeoServerRole role : roleSet) {
+        	SortedSet<GeoServerRole> roleSet = new TreeSet<GeoServerRole>();
+        	SortedSet<String> stringSet = new TreeSet<String>();
+        	if (getDefaultSecurityService() instanceof GeoServerRoleService) {
+        		roleSet = ((GeoServerRoleService)getDefaultSecurityService()).getRolesForUser(username);
+            }
 
+            for (GeoServerRole role : roleSet) {
                 if(logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Checking Role [" + role + "] on ActiveRoleService [" + securityManager.getActiveRoleService() + "]");
+                    logger.log(Level.FINE, "Checking Role [" + role + "] on ActiveRoleService [" + getDefaultSecurityService() + "]");
                 }
 
                 stringSet.add(role.getAuthority());
@@ -129,7 +179,6 @@ public class InternalUserResolver implements UserResolver {
             try {
                 // Search for derived roles, the ones assigned through groups
                 for (String serviceName : securityManager.listUserGroupServices()) {
-                    
                     if(logger.isLoggable(Level.FINE)) {
                         logger.log(Level.FINE, "Checking UserGroupService [" + serviceName + "]");
                     }
@@ -137,19 +186,24 @@ public class InternalUserResolver implements UserResolver {
                     final GeoServerUserGroupService userGroupService = securityManager.loadUserGroupService(serviceName);
                     if (userGroupService.getUserByUsername(username) != null) {
     
-                        RoleCalculator calc = new RoleCalculator(userGroupService, securityManager.getActiveRoleService());
+                        RoleCalculator calc = null;
+                        if (getDefaultSecurityService() instanceof GeoServerRoleService) {
+                        	calc = new RoleCalculator(userGroupService, (GeoServerRoleService)getDefaultSecurityService());
+                        }
                         
                         if(logger.isLoggable(Level.FINE)) {
                             logger.log(Level.FINE, "UserGroupService [" + serviceName + "] matching for User [" + username + "]");
                         }
                         
                         GeoServerUser user = userGroupService.getUserByUsername(username);
-                        for (GeoServerUserGroup group : userGroupService.getGroupsForUser(user)) {
-                            if (group.isEnabled()) {
-                                for (GeoServerRole role : calc.calculateRoles(group)) {
-                                    stringSet.add(role.getAuthority());
-                                }
-                            }
+                        if (calc != null) {
+	                        for (GeoServerUserGroup group : userGroupService.getGroupsForUser(user)) {
+	                            if (group.isEnabled()) {
+	                                for (GeoServerRole role : calc.calculateRoles(group)) {
+	                                    stringSet.add(role.getAuthority());
+	                                }
+	                            }
+	                        }
                         }
                     }
                 }

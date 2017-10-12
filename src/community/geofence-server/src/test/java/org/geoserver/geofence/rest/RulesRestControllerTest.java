@@ -11,6 +11,7 @@ import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
+import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geotools.gml3.bindings.GML3MockData;
@@ -168,7 +169,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testLayerDetails() {
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
-        rule.setUserName("pipo");
+        rule.setUserName("pippo");
         rule.setRoleName("clown");
         rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");

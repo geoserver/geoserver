@@ -21,34 +21,35 @@ import org.geoserver.sldservice.utils.classifier.ColorRamp;
  */
 public class BlueColorRamp implements ColorRamp {
 
-	private int classNum = 0;
-	private List<Color> colors = new ArrayList<Color>();
+    private int classNum = 0;
 
-	public int getNumClasses() {
-		return classNum;
-	}
+    private List<Color> colors = new ArrayList<Color>();
 
-	public void revert() {
+    public int getNumClasses() {
+        return classNum;
+    }
+
+    public void revert() {
         Collections.reverse(colors);
-	}
+    }
 
-	public void setNumClasses(int numClass) {
-		classNum = numClass+1; //+1 for transparent
-		createRamp();
+    public void setNumClasses(int numClass) {
+        classNum = numClass + 1; // +1 for transparent
+        createRamp();
 
-	}
+    }
 
-	public List<Color> getRamp() throws Exception {
-		if (colors == null)
-			throw new Exception("Class num not setted, color ramp null");
-		return colors;
-	}
+    public List<Color> getRamp() throws Exception {
+        if (colors == null)
+            throw new Exception("Class num not setted, color ramp null");
+        return colors;
+    }
 
-	private void createRamp() {
+    private void createRamp() {
 
-		double step = (225.0 / (double) classNum-1);
-		for (int i = 1; i < classNum; i++)
-			colors.add(new Color(0, 0, (int) (step * i + 30)));
-	}
+        double step = (225.0 / (double) classNum - 1);
+        for (int i = 1; i < classNum; i++)
+            colors.add(new Color(0, 0, (int) (step * i + 30)));
+    }
 
 }

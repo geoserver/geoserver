@@ -26,16 +26,16 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 /**
  * 
- * Functions as between webgui and internal geofence db 
+ * Functions as between webgui and internal geofence db
  * 
  * @author Niels Charlier
  *
  */
 public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
-            
+
     private static final long serialVersionUID = 478867886089304835L;
 
-    /** 
+    /**
      * Makes columns that are unsortable and display "*" instead of empty when null
      * 
      */
@@ -45,14 +45,14 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
         }
-        
+
         @Override
-        public Comparator<T> getComparator() { //unsortable
+        public Comparator<T> getComparator() { // unsortable
             return null;
-        }        
-        
+        }
+
         @SuppressWarnings({ "unchecked", "rawtypes" })
-		public IModel getModel(IModel<T> itemModel) { //replace null by *
+        public IModel getModel(IModel<T> itemModel) { // replace null by *
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
                 private static final long serialVersionUID = 1L;
 
@@ -60,82 +60,99 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
                 public Object getObject() {
                     Object o = super.getObject();
                     return o == null ? "*" : o;
-                }                
+                }
             };
         }
     }
-        
-    public static final Property<ShortRule> PRIORITY = new BeanProperty<ShortRule>("priority", "priority");
-    public static final Property<ShortRule> ROLE = new RuleBeanProperty<ShortRule>("roleName", "roleName");
-    public static final Property<ShortRule> USER = new RuleBeanProperty<ShortRule>("userName", "userName");
-    public static final Property<ShortRule> SERVICE = new RuleBeanProperty<ShortRule>("service", "service");
-    public static final Property<ShortRule> REQUEST = new RuleBeanProperty<ShortRule>("request", "request");
-    public static final Property<ShortRule> WORKSPACE = new RuleBeanProperty<ShortRule>("workspace", "workspace");
-    public static final Property<ShortRule> LAYER = new RuleBeanProperty<ShortRule>("layer", "layer");
-    public static final Property<ShortRule> ACCESS = new RuleBeanProperty<ShortRule>("access", "access");
-    public static final Property<ShortRule> BUTTONS = new PropertyPlaceholder<ShortRule>( "buttons" );
-    
+
+    public static final Property<ShortRule> PRIORITY = new BeanProperty<ShortRule>("priority",
+            "priority");
+
+    public static final Property<ShortRule> ROLE = new RuleBeanProperty<ShortRule>("roleName",
+            "roleName");
+
+    public static final Property<ShortRule> USER = new RuleBeanProperty<ShortRule>("userName",
+            "userName");
+
+    public static final Property<ShortRule> SERVICE = new RuleBeanProperty<ShortRule>("service",
+            "service");
+
+    public static final Property<ShortRule> REQUEST = new RuleBeanProperty<ShortRule>("request",
+            "request");
+
+    public static final Property<ShortRule> WORKSPACE = new RuleBeanProperty<ShortRule>("workspace",
+            "workspace");
+
+    public static final Property<ShortRule> LAYER = new RuleBeanProperty<ShortRule>("layer",
+            "layer");
+
+    public static final Property<ShortRule> ACCESS = new RuleBeanProperty<ShortRule>("access",
+            "access");
+
+    public static final Property<ShortRule> BUTTONS = new PropertyPlaceholder<ShortRule>("buttons");
+
     private static RuleAdminService adminService() {
         return (RuleAdminService) GeoServerApplication.get().getBean("ruleAdminService");
     }
-    
+
     /**
-     * We will keep local copy, always sorted on priority 
-     * to support the up and down arrows easily 
+     * We will keep local copy, always sorted on priority to support the up and down arrows easily
      */
     protected List<ShortRule> rules;
-    
+
     public GeofenceRulesModel() {
-        rules = adminService().getAll();   
+        rules = adminService().getAll();
         setSort("priority", SortOrder.ASCENDING);
     }
-    
+
     @Override
     protected Comparator<ShortRule> getComparator(SortParam<?> sort) {
-        return null; //disable on-the-fly sorting
+        return null; // disable on-the-fly sorting
     }
 
     @Override
     public void setSort(Object property, SortOrder order) {
         super.setSort(property, order);
-        Collections.sort(rules, super.getComparator(new SortParam<>(property, order == SortOrder.ASCENDING)));
+        Collections.sort(rules,
+                super.getComparator(new SortParam<>(property, order == SortOrder.ASCENDING)));
     }
-    
-    @Override 
+
+    @Override
     public void setSort(SortParam<Object> param) {
         super.setSort(param);
-        //enable in-memory sorting
+        // enable in-memory sorting
         Collections.sort(rules, super.getComparator(param));
     }
 
     @Override
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ShortRule>> getProperties() {
-        return Arrays.asList(PRIORITY, ROLE, USER, SERVICE, REQUEST, WORKSPACE, LAYER, ACCESS, BUTTONS);
+        return Arrays.asList(PRIORITY, ROLE, USER, SERVICE, REQUEST, WORKSPACE, LAYER, ACCESS,
+                BUTTONS);
     }
-    
+
     @Override
     protected List<ShortRule> getItems() {
         return rules;
     }
-    
+
     public void save(ShortRule rule) {
         if (rule.getId() == null) {
-            shiftIfNecessary(rule.getPriority(), rule); 
-            
-            //local
+            shiftIfNecessary(rule.getPriority(), rule);
+
+            // local
             int i = 0;
             while (i < rules.size() && rules.get(i).getPriority() < rule.getPriority()) {
                 i++;
             }
             rules.add(i, rule);
-                   
-            //db
+
+            // db
             Rule bigRule = new Rule();
             syncRule(rule, bigRule);
             rule.setId(adminService().insert(bigRule));
         } else {
-            //db
-            Rule bigRule = adminService().get(rule.getId());  
+            // db
+            Rule bigRule = adminService().get(rule.getId());
             if (bigRule.getPriority() != rule.getPriority()) {
                 shiftIfNecessary(rule.getPriority(), rule);
             }
@@ -143,31 +160,31 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             adminService().update(bigRule);
         }
     }
-    
+
     public void remove(Collection<ShortRule> selected) {
-        //local
+        // local
         rules.removeAll(selected);
-        
-        //db
+
+        // db
         for (ShortRule rule : selected) {
-           adminService().delete(rule.getId());
+            adminService().delete(rule.getId());
         }
     }
-    
+
     public boolean canUp(ShortRule rule) {
         return rules.indexOf(rule) > 0;
     }
-    
+
     public void moveUp(ShortRule rule) {
         int index = rules.indexOf(rule);
         if (index > 0) {
             swap(rule, rules.get(index - 1));
-            //local sort
+            // local sort
             rules.remove(index);
             rules.add(index - 1, rule);
         }
     }
-    
+
     public boolean canDown(ShortRule rule) {
         return rules.indexOf(rule) < rules.size() - 1;
     }
@@ -176,24 +193,24 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         int index = rules.indexOf(rule);
         if (index < rules.size() - 1) {
             swap(rule, rules.get(index + 1));
-            //local sort
+            // local sort
             rules.remove(index);
             rules.add(index + 1, rule);
         }
     }
-    
-    protected void swap(ShortRule rule, ShortRule otherRule) {        
-        //local
+
+    protected void swap(ShortRule rule, ShortRule otherRule) {
+        // local
         long p = otherRule.getPriority();
         otherRule.setPriority(rule.getPriority());
         rule.setPriority(p);
-                
-        //db
+
+        // db
         adminService().swap(rule.getId(), otherRule.getId());
     }
-    
-    protected void shiftIfNecessary(long priority, ShortRule keep){        
-        //detect if necessary
+
+    protected void shiftIfNecessary(long priority, ShortRule keep) {
+        // detect if necessary
         boolean necessary = false;
         for (ShortRule rule : rules) {
             if (rule.getPriority() == priority) {
@@ -201,19 +218,19 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
                 continue;
             }
         }
-        if (necessary) {            
-            //local
+        if (necessary) {
+            // local
             for (ShortRule rule : rules) {
                 if (rule.getPriority() >= priority && rule != keep) {
                     rule.setPriority(rule.getPriority() + 1);
                 }
             }
-            
-            //db
+
+            // db
             adminService().shift(priority, 1);
         }
     }
-        
+
     public ShortRule newRule() {
         ShortRule rule = new ShortRule();
         rule.setAccess(GrantType.ALLOW);
@@ -233,9 +250,9 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     }
 
     public RuleLimits getRulesLimits(Long ruleId) {
-        if(ruleId != null) {
+        if (ruleId != null) {
             Rule rule = adminService().get(ruleId);
-            if(rule != null) {
+            if (rule != null) {
                 return rule.getRuleLimits();
             }
         }
@@ -252,5 +269,5 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setLayer(shortRule.getLayer());
         rule.setAccess(shortRule.getAccess());
     }
-    
+
 }

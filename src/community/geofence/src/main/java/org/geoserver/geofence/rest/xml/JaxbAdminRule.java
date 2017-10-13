@@ -38,7 +38,8 @@ public class JaxbAdminRule {
         priority = rule.getPriority();
         userName = rule.getUsername();
         roleName = rule.getRolename();
-        addressRange = rule.getAddressRange() == null? null : rule.getAddressRange().getCidrSignature();
+        addressRange = rule.getAddressRange() == null ? null
+                : rule.getAddressRange().getCidrSignature();
         workspace = rule.getWorkspace();
         access = rule.getAccess().toString();
     }
@@ -109,7 +110,8 @@ public class JaxbAdminRule {
         rule.setAccess(AdminGrantType.valueOf(getAccess()));
         rule.setUsername(getUserName());
         rule.setRolename(getRoleName());
-        rule.setAddressRange(getAddressRange() == null? null: new IPAddressRange(getAddressRange()));
+        rule.setAddressRange(
+                getAddressRange() == null ? null : new IPAddressRange(getAddressRange()));
         rule.setWorkspace(getWorkspace());
         rule.setId(id);
         return rule;
@@ -143,6 +145,7 @@ public class JaxbAdminRule {
     protected static String convertAny(String s) {
         if ("".equals(s) || "*".equals(s))
             return null;
-        else return s;
+        else
+            return s;
     }
 }

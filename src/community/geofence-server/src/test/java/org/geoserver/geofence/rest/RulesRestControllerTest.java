@@ -11,6 +11,7 @@ import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
+import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geotools.gml3.bindings.GML3MockData;
@@ -75,36 +76,36 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
         assertEquals(rule.getUserName(), realRule.getUsername());
         assertEquals(ruleMods.getRoleName(), realRule.getRolename());
-        
+
         JaxbRule rule2 = new JaxbRule();
         rule2.setPriority(5L);
         rule2.setAccess("DENY");
         long id2 = controller.insert(rule2).getBody();
-        
+
         realRule = adminService.get(id);
         assertEquals(6L, realRule.getPriority());
-        
-        //test changing to non-existing priority
-        
+
+        // test changing to non-existing priority
+
         JaxbRule rule2Mods = new JaxbRule();
         rule2Mods.setPriority(3L);
         controller.update(id2, rule2Mods);
-        
+
         realRule = adminService.get(id2);
         assertEquals(3L, realRule.getPriority());
-        
-        //test changing to existing priority
-        
+
+        // test changing to existing priority
+
         rule2Mods = new JaxbRule();
         rule2Mods.setPriority(6L);
         controller.update(id2, rule2Mods);
-        
+
         realRule = adminService.get(id2);
         assertEquals(6L, realRule.getPriority());
         realRule = adminService.get(id);
         assertEquals(7L, realRule.getPriority());
 
-        //not found - will be translated by spring exception handler to code 404
+        // not found - will be translated by spring exception handler to code 404
         controller.delete(id);
         boolean notfound = false;
         try {
@@ -113,17 +114,17 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
             notfound = true;
         }
         assertTrue(notfound);
-        
-        //conflict - will be translated by spring exception handler to code 409
+
+        // conflict - will be translated by spring exception handler to code 409
         boolean conflict = false;
         try {
-        	controller.insert(rule2);
+            controller.insert(rule2);
         } catch (DuplicateKeyException e) {
-        	conflict = true;
+            conflict = true;
         }
         assertTrue(conflict);
     }
-    
+
     @Test
     public void testLimits() {
         JaxbRule rule = new JaxbRule();
@@ -139,36 +140,38 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setLimits(new JaxbRule.Limits());
         rule.getLimits().setAllowedArea(GML3MockData.multiPolygon());
         rule.getLimits().setCatalogMode("MIXED");
-        
+
         Long id = controller.insert(rule).getBody();
-        
+
         Rule realRule = adminService.get(id);
 
-        assertEquals(rule.getLimits().getCatalogMode(), realRule.getRuleLimits().getCatalogMode().toString());
+        assertEquals(rule.getLimits().getCatalogMode(),
+                realRule.getRuleLimits().getCatalogMode().toString());
         assertEquals(rule.getLimits().getAllowedArea(), realRule.getRuleLimits().getAllowedArea());
-        
+
         rule.getLimits().setCatalogMode("HIDE");
-        
+
         controller.update(id, rule);
-        
+
         realRule = adminService.get(id);
-        
-        assertEquals(rule.getLimits().getCatalogMode(), realRule.getRuleLimits().getCatalogMode().toString());
-        
+
+        assertEquals(rule.getLimits().getCatalogMode(),
+                realRule.getRuleLimits().getCatalogMode().toString());
+
         rule.setLimits(null);
-                
+
         controller.clearAndUpdate(id, rule);
-        
+
         realRule = adminService.get(id);
-        
+
         assertNull(realRule.getRuleLimits());
     }
-    
+
     @Test
     public void testLayerDetails() {
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
-        rule.setUserName("pipo");
+        rule.setUserName("pippo");
         rule.setRoleName("clown");
         rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");
@@ -195,27 +198,33 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.getLayerDetails().setCqlFilterWrite("myFilterWrite");
         rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
         rule.getLayerDetails().setLayerType("VECTOR");
-        
+
         Long id = controller.insert(rule).getBody();
-        
+
         Rule realRule = adminService.get(id);
 
         assertEquals(rule.getLayerDetails().getAllowedArea(), realRule.getLayerDetails().getArea());
-        assertEquals(rule.getLayerDetails().getCatalogMode(), realRule.getLayerDetails().getCatalogMode().toString());
-        assertEquals(rule.getLayerDetails().getAllowedStyles(), realRule.getLayerDetails().getAllowedStyles());
+        assertEquals(rule.getLayerDetails().getCatalogMode(),
+                realRule.getLayerDetails().getCatalogMode().toString());
+        assertEquals(rule.getLayerDetails().getAllowedStyles(),
+                realRule.getLayerDetails().getAllowedStyles());
         assertEquals(2, realRule.getLayerDetails().getAttributes().size());
         for (LayerAttribute la : realRule.getLayerDetails().getAttributes()) {
             if (la.getName().equals("layerAttribute2")) {
                 assertEquals("READONLY", la.getAccess().toString());
             }
         }
-        assertEquals(rule.getLayerDetails().getCqlFilterRead(), realRule.getLayerDetails().getCqlFilterRead());
-        assertEquals(rule.getLayerDetails().getCqlFilterWrite(), realRule.getLayerDetails().getCqlFilterWrite());
-        assertEquals(rule.getLayerDetails().getDefaultStyle(), realRule.getLayerDetails().getDefaultStyle());
-        assertEquals(rule.getLayerDetails().getLayerType(), realRule.getLayerDetails().getType().toString());
-        
+        assertEquals(rule.getLayerDetails().getCqlFilterRead(),
+                realRule.getLayerDetails().getCqlFilterRead());
+        assertEquals(rule.getLayerDetails().getCqlFilterWrite(),
+                realRule.getLayerDetails().getCqlFilterWrite());
+        assertEquals(rule.getLayerDetails().getDefaultStyle(),
+                realRule.getLayerDetails().getDefaultStyle());
+        assertEquals(rule.getLayerDetails().getLayerType(),
+                realRule.getLayerDetails().getType().toString());
+
         rule.getLayerDetails().setDefaultStyle("myDefaultStyle2");
-        
+
         rule.getLayerDetails().getAttributes().clear();
         att = new JaxbRule.LayerAttribute();
         att.setName("layerAttribute2");
@@ -227,30 +236,32 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         att.setAccessType("READWRITE");
         att.setDataType("dataType");
         rule.getLayerDetails().getAttributes().add(att);
-        
+
         rule.getLayerDetails().getAllowedStyles().clear();
         rule.getLayerDetails().getAllowedStyles().add("style3");
-        
+
         controller.update(id, rule);
-        
+
         realRule = adminService.get(id);
-        
-        assertEquals(rule.getLayerDetails().getDefaultStyle(), realRule.getLayerDetails().getDefaultStyle());
+
+        assertEquals(rule.getLayerDetails().getDefaultStyle(),
+                realRule.getLayerDetails().getDefaultStyle());
 
         assertEquals(3, realRule.getLayerDetails().getAllowedStyles().size());
         assertEquals(3, realRule.getLayerDetails().getAttributes().size());
-        
+
         for (LayerAttribute la : realRule.getLayerDetails().getAttributes()) {
             if (la.getName().equals("layerAttribute2")) {
                 assertEquals("READWRITE", la.getAccess().toString());
             }
         }
-                       
+
         controller.clearAndUpdate(id, rule);
-                
+
         realRule = adminService.get(id);
-        
-        assertEquals(rule.getLayerDetails().getAllowedStyles(), realRule.getLayerDetails().getAllowedStyles());
+
+        assertEquals(rule.getLayerDetails().getAllowedStyles(),
+                realRule.getLayerDetails().getAllowedStyles());
         assertEquals(2, realRule.getLayerDetails().getAttributes().size());
     }
 
@@ -258,15 +269,21 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testMovingRules() {
         // create some rules for the test
         String prefix = UUID.randomUUID().toString();
-        adminService.insert(new Rule(5, prefix + "-user5", prefix + "-role1", null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(2, prefix + "-user2", prefix + "-role1", null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(1, prefix + "-user1", prefix + "-role1", null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(4, prefix + "-user4", prefix + "-role2", null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(3, prefix + "-user3", prefix + "-role2", null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(6, prefix + "-user6", prefix + "-role6", null, null, null, null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(5, prefix + "-user5", prefix + "-role1", null, null, null,
+                null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(2, prefix + "-user2", prefix + "-role1", null, null, null,
+                null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(1, prefix + "-user1", prefix + "-role1", null, null, null,
+                null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(4, prefix + "-user4", prefix + "-role2", null, null, null,
+                null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(3, prefix + "-user3", prefix + "-role2", null, null, null,
+                null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(6, prefix + "-user6", prefix + "-role6", null, null, null,
+                null, null, null, GrantType.ALLOW));
         // get the rules so we can access their id
-        JaxbRuleList originalRules = controller.get(0, 6, false, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+        JaxbRuleList originalRules = controller.get(0, 6, false, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -277,7 +294,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         validateRules(2, 5, 6);
         // moving rules for user1 and user2 to the last page
         ResponseEntity<JaxbRuleList> result = controller.move(7,
-                originalRules.getRules().get(0).getId() + "," + originalRules.getRules().get(1).getId());
+                originalRules.getRules().get(0).getId() + ","
+                        + originalRules.getRules().get(1).getId());
         validateResult(result, HttpStatus.OK, 2);
         validateRules(result.getBody(), prefix, "user1", "user2");
         validateRules(result.getBody(), 7L, 8L);
@@ -289,8 +307,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         validateRules(2, prefix, "user1", "user2");
         validateRules(2, 7, 8);
         // moving rules for user3 and user4 to the second page
-        result = controller.move(7,
-                originalRules.getRules().get(2).getId() + "," + originalRules.getRules().get(3).getId());
+        result = controller.move(7, originalRules.getRules().get(2).getId() + ","
+                + originalRules.getRules().get(3).getId());
         validateResult(result, HttpStatus.OK, 2);
         validateRules(result.getBody(), prefix, "user3", "user4");
         validateRules(result.getBody(), 7L, 8L);
@@ -314,7 +332,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         validateRules(2, prefix, "user4", "user2");
         validateRules(2, 9, 11);
         // moving rules for user2 and user 3 to first and second page
-        result = controller.move(6, originalRules.getRules().get(1).getId() + "," + originalRules.getRules().get(2).getId());
+        result = controller.move(6, originalRules.getRules().get(1).getId() + ","
+                + originalRules.getRules().get(2).getId());
         validateResult(result, HttpStatus.OK, 2);
         validateRules(result.getBody(), prefix, "user3", "user2");
         validateRules(result.getBody(), 6L, 7L);
@@ -330,7 +349,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     /**
      * Helper method that will validate a move result.
      */
-    private void validateResult(ResponseEntity<JaxbRuleList> result, HttpStatus expectedHttpStatus, int rules) {
+    private void validateResult(ResponseEntity<JaxbRuleList> result, HttpStatus expectedHttpStatus,
+            int rules) {
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(expectedHttpStatus));
         if (rules > 0) {
@@ -345,8 +365,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
      * Helper method that will validate the rules present in a certain page based on the user id.
      */
     private void validateRules(int page, String prefix, String... expectedUsers) {
-        JaxbRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+        JaxbRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -366,8 +386,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
      * Helper method that will validate the rules present in a certain page based on the priority.
      */
     private void validateRules(int page, long... expectedPriorities) {
-        JaxbRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+        JaxbRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

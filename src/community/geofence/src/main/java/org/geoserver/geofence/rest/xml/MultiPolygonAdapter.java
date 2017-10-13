@@ -17,7 +17,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
- 
+
 /**
  * Translates between GML3.2 MultiGeometry and MultiPolygon object for JAXB.
  * 
@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
-       
+
     @Override
     public Element marshal(MultiPolygon geometry) throws Exception {
         if (geometry == null) {
@@ -45,10 +45,10 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
         try {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             doc.appendChild(doc.importNode(((Element) o).getFirstChild(), true));
-            DOMParser parser = new DOMParser(new GMLConfiguration(), doc); 
-            Geometry geom =  (Geometry) parser.parse();
+            DOMParser parser = new DOMParser(new GMLConfiguration(), doc);
+            Geometry geom = (Geometry) parser.parse();
             if (geom instanceof Polygon) {
-                return new MultiPolygon(new Polygon[] {(Polygon) geom}, geom.getFactory());
+                return new MultiPolygon(new Polygon[] { (Polygon) geom }, geom.getFactory());
             } else if (geom instanceof GeometryCollection) {
                 Polygon[] pols = new Polygon[((GeometryCollection) geom).getNumGeometries()];
                 for (int i = 0; i < pols.length; i++) {

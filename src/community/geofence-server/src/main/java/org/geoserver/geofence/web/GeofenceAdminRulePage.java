@@ -29,12 +29,15 @@ import java.util.logging.Level;
 public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -1652083500548496180L;
+
     protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
+
     protected DropDownChoice<AdminGrantType> grantTypeChoice;
 
     public GeofenceAdminRulePage(final ShortAdminRule rule, final GeofenceAdminRulesModel rules) {
 
-        final Form<ShortAdminRule> form = new Form<>("form", new CompoundPropertyModel<ShortAdminRule>(rule));
+        final Form<ShortAdminRule> form = new Form<>("form",
+                new CompoundPropertyModel<ShortAdminRule>(rule));
         add(form);
 
         form.add(new TextField<Integer>("priority").setRequired(true));
@@ -61,7 +64,8 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         form.add(workspaceChoice = new DropDownChoice<>("workspace", getWorkspaceNames()));
         workspaceChoice.setNullValid(true);
 
-        form.add(grantTypeChoice = new DropDownChoice<>("access", Arrays.asList(AdminGrantType.values()), new AdminGrantTypeRenderer()));
+        form.add(grantTypeChoice = new DropDownChoice<>("access",
+                Arrays.asList(AdminGrantType.values()), new AdminGrantTypeRenderer()));
         grantTypeChoice.setRequired(true);
 
         form.add(new SubmitLink("save") {
@@ -83,7 +87,6 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         });
         form.add(new BookmarkablePageLink<ShortAdminRule>("cancel", GeofenceServerPage.class));
     }
-
 
     protected List<String> getWorkspaceNames() {
 
@@ -112,7 +115,8 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         try {
             if (roleName == null) {
                 for (String serviceName : securityManager.listUserGroupServices()) {
-                    for (GeoServerUser user : securityManager.loadUserGroupService(serviceName).getUsers()) {
+                    for (GeoServerUser user : securityManager.loadUserGroupService(serviceName)
+                            .getUsers()) {
                         resultSet.add(user.getUsername());
                     }
                 }

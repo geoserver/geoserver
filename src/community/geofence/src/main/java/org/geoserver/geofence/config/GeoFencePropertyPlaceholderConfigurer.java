@@ -30,7 +30,7 @@ public class GeoFencePropertyPlaceholderConfigurer extends GeoServerPropertyConf
     public GeoFencePropertyPlaceholderConfigurer(GeoServerDataDirectory data) {
         super(data);
     }
-        
+
     public Properties getMergedProperties() throws IOException {
         return mergeProperties();
     }

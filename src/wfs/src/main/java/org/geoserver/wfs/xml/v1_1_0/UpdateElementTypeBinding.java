@@ -13,10 +13,14 @@ import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
 
+import org.geoserver.wfs.WFSException;
+import org.geotools.gml2.bindings.GML2ParsingUtils;
 import org.geotools.xml.AbstractComplexEMFBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.picocontainer.MutablePicoContainer;
 
 
 /**
@@ -133,6 +137,21 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      */
     public Class getType() {
         return null;
+    }
+
+    public void initializeChildContext(ElementInstance childInstance, Node node, MutablePicoContainer context) {
+        // if an srsName is set for this geometry, put it in the context for
+        // children, so they can use it as well
+        if ( node.hasAttribute("srsName") ) {
+            try {
+                CoordinateReferenceSystem crs = GML2ParsingUtils.crs(node);
+                if ( crs != null ) {
+                    context.registerComponentInstance(CoordinateReferenceSystem.class, crs);
+                }
+            } catch(Exception e) {
+                throw new WFSException(e, "InvalidParameterValue");
+            }
+        }
     }
 
     /**

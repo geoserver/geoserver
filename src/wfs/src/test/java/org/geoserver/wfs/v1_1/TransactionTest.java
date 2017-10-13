@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.xml.namespace.QName;
 
@@ -498,55 +499,36 @@ public class TransactionTest extends WFSTestSupport {
     
     @Test
     public void testUpdateForcedSRS() throws Exception {
-        testUpdate("srsName=\"EPSG:4326\"");
+        testUpdate("srsName=\"EPSG:4326\"", this::updateSrsOnGeometry);
+        testUpdate("srsName=\"EPSG:4326\"", this::updateSrsOnRoot);
+    }
+
+    @Test
+    public void testUpdateForcedUrnSRS() throws Exception {
+        testUpdate("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"", this::updateSrsOnGeometry);
+        testUpdate("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"", this::updateSrsOnRoot);
     }
     
     @Test
     public void testUpdateNoSRS() throws Exception {
-        testUpdate("");
+        testUpdate("", this::updateSrsOnGeometry);
     }
     
-    private void testUpdate(String srs) throws Exception {
-        String xml =
-        "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 
-        " xmlns:cite=\"http://www.opengis.net/cite\"" +
-        " xmlns:ogc=\"http://www.opengis.net/ogc\"" +
-        " xmlns:gml=\"http://www.opengis.net/gml\"" +
-        " xmlns:wfs=\"http://www.opengis.net/wfs\">" +
-        " <wfs:Update typeName=\"cite:RoadSegments\">" +
-        "   <wfs:Property>" +
-        "     <wfs:Name>cite:the_geom</wfs:Name>" +
-        "     <wfs:Value>" +
-        "      <gml:MultiLineString xmlns:gml=\"http://www.opengis.net/gml\" " + srs + ">" + 
-        "       <gml:lineStringMember>" + 
-        "         <gml:LineString>" +
-        "            <gml:posList>4.2582 52.0643 4.2584 52.0648</gml:posList>" +
-        "         </gml:LineString>" +
-        "       </gml:lineStringMember>" +
-        "      </gml:MultiLineString>" +
-        "     </wfs:Value>" +
-        "   </wfs:Property>" + 
-        "   <ogc:Filter>" +
-        "     <ogc:PropertyIsEqualTo>" +
-        "       <ogc:PropertyName>FID</ogc:PropertyName>" + 
-        "       <ogc:Literal>102</ogc:Literal>" + 
-        "     </ogc:PropertyIsEqualTo>" + 
-        "   </ogc:Filter>" +
-        " </wfs:Update>" +
-       "</wfs:Transaction>"; 
-        
+    private void testUpdate(String srs, Function<String, String> updateStatementBuilder) throws Exception {
+        String xml = updateStatementBuilder.apply(srs);
+
         Document dom = postAsDOM( "wfs", xml );
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
-        
+
         assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
-        
+
         String srsBlock = "".equals(srs) ? "" : "&" + srs.replaceAll("\"", "");
         dom = getAsDOM( "wfs?version=1.1.0&request=getfeature&typename=cite:RoadSegments" + srsBlock + "&" +
             "cql_filter=FID%3D'102'");
         assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
-        
+
         assertEquals( 1, dom.getElementsByTagName("cite:RoadSegments").getLength() );
-        
+
         Element roadSegment = getFirstElementByTagName(dom, "cite:RoadSegments" );
         Element posList = getFirstElementByTagName( roadSegment, "gml:posList" );
         String[] pos = posList.getFirstChild().getTextContent().split( " " );
@@ -556,7 +538,66 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals( 4.2584, Double.parseDouble( pos[2] ), 1E-4 );
         assertEquals( 52.0648, Double.parseDouble( pos[3] ), 1E-4 );
     }
-    
+
+    private String updateSrsOnGeometry(String srs) {
+        return "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" +
+        " xmlns:cite=\"http://www.opengis.net/cite\"" +
+        " xmlns:ogc=\"http://www.opengis.net/ogc\"" +
+        " xmlns:gml=\"http://www.opengis.net/gml\"" +
+        " xmlns:wfs=\"http://www.opengis.net/wfs\">" +
+        " <wfs:Update typeName=\"cite:RoadSegments\">" +
+        "   <wfs:Property>" +
+        "     <wfs:Name>cite:the_geom</wfs:Name>" +
+        "     <wfs:Value>" +
+        "      <gml:MultiLineString xmlns:gml=\"http://www.opengis.net/gml\" " + srs + ">" +
+        "       <gml:lineStringMember>" +
+        "         <gml:LineString>" +
+        "            <gml:posList>4.2582 52.0643 4.2584 52.0648</gml:posList>" +
+        "         </gml:LineString>" +
+        "       </gml:lineStringMember>" +
+        "      </gml:MultiLineString>" +
+        "     </wfs:Value>" +
+        "   </wfs:Property>" +
+        "   <ogc:Filter>" +
+        "     <ogc:PropertyIsEqualTo>" +
+        "       <ogc:PropertyName>FID</ogc:PropertyName>" +
+        "       <ogc:Literal>102</ogc:Literal>" +
+        "     </ogc:PropertyIsEqualTo>" +
+        "   </ogc:Filter>" +
+        " </wfs:Update>" +
+       "</wfs:Transaction>";
+    }
+
+    private String updateSrsOnRoot(String srs) {
+        return "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" +
+                " xmlns:cite=\"http://www.opengis.net/cite\"" +
+                " xmlns:ogc=\"http://www.opengis.net/ogc\"" +
+                " xmlns:gml=\"http://www.opengis.net/gml\"" +
+                " xmlns:wfs=\"http://www.opengis.net/wfs\">" +
+                " <wfs:Update typeName=\"cite:RoadSegments\" " + srs + ">" +
+                "   <wfs:Property>" +
+                "     <wfs:Name>cite:the_geom</wfs:Name>" +
+                "     <wfs:Value>" +
+                "      <gml:MultiLineString xmlns:gml=\"http://www.opengis.net/gml\">" +
+                "       <gml:lineStringMember>" +
+                "         <gml:LineString>" +
+                "            <gml:posList>4.2582 52.0643 4.2584 52.0648</gml:posList>" +
+                "         </gml:LineString>" +
+                "       </gml:lineStringMember>" +
+                "      </gml:MultiLineString>" +
+                "     </wfs:Value>" +
+                "   </wfs:Property>" +
+                "   <ogc:Filter>" +
+                "     <ogc:PropertyIsEqualTo>" +
+                "       <ogc:PropertyName>FID</ogc:PropertyName>" +
+                "       <ogc:Literal>102</ogc:Literal>" +
+                "     </ogc:PropertyIsEqualTo>" +
+                "   </ogc:Filter>" +
+                " </wfs:Update>" +
+                "</wfs:Transaction>";
+    }
+
+
     @Test
     public void testUpdateWithInvalidProperty() throws Exception {
         String xml =

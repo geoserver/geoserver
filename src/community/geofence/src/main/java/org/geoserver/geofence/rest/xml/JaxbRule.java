@@ -25,15 +25,15 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 
 @XmlRootElement(name = "Rule")
 public class JaxbRule {
-    
+
     /**
      * Specification for "LIMIT" rules.
      *
      */
     public static class Limits {
-        
+
         private MultiPolygon allowedArea;
-        
+
         private String catalogMode;
 
         @XmlElement
@@ -54,7 +54,7 @@ public class JaxbRule {
         public void setCatalogMode(String catalogMode) {
             this.catalogMode = catalogMode;
         }
-        
+
         public RuleLimits toRuleLimits(RuleLimits ruleLimits) {
             if (ruleLimits == null) {
                 ruleLimits = new RuleLimits();
@@ -67,40 +67,44 @@ public class JaxbRule {
             }
             return ruleLimits;
         }
-        
+
     }
-    
+
     /**
      * Access specification for a Layer Attribute
      *
      */
     public static class LayerAttribute {
         private String name;
+
         private String dataType;
+
         private String accessType;
-        
+
         public LayerAttribute() {
-            
+
         }
-        
+
         public LayerAttribute(org.geoserver.geofence.core.model.LayerAttribute att) {
             this.name = att.getName();
             this.dataType = att.getDatatype();
             this.accessType = att.getAccess().toString();
         }
-        
+
         @XmlElement
         public String getName() {
             return name;
         }
+
         public void setName(String name) {
             this.name = name;
         }
-        
+
         @XmlElement
         public String getDataType() {
             return dataType;
         }
+
         public void setDataType(String dataType) {
             this.dataType = dataType;
         }
@@ -109,43 +113,49 @@ public class JaxbRule {
         public String getAccessType() {
             return accessType;
         }
+
         public void setAccessType(String accessType) {
             this.accessType = accessType;
         }
-        
-        public org.geoserver.geofence.core.model.LayerAttribute 
-            toLayerAttribute() {
-            org.geoserver.geofence.core.model.LayerAttribute att = new
-                    org.geoserver.geofence.core.model.LayerAttribute();
+
+        public org.geoserver.geofence.core.model.LayerAttribute toLayerAttribute() {
+            org.geoserver.geofence.core.model.LayerAttribute att = new org.geoserver.geofence.core.model.LayerAttribute();
             if (accessType != null) {
                 att.setAccess(AccessType.valueOf(accessType.toUpperCase()));
-            }            
+            }
             att.setDatatype(dataType);
             att.setName(name);
             return att;
         }
-        
-        
+
     }
-    
+
     /**
      * Details for layer access.
      *
      */
     public static class LayerDetails {
         private String layerType;
+
         private String defaultStyle;
+
         private String cqlFilterRead;
+
         private String cqlFilterWrite;
+
         private MultiPolygon allowedArea;
+
         private String catalogMode;
+
         private Set<String> allowedStyles = new HashSet<String>();
+
         private Set<LayerAttribute> layerAttributes = new HashSet<LayerAttribute>();
-        
+
         @XmlElement
         public String getLayerType() {
             return layerType;
         }
+
         public void setLayerType(String layerType) {
             this.layerType = layerType;
         }
@@ -154,6 +164,7 @@ public class JaxbRule {
         public String getDefaultStyle() {
             return defaultStyle;
         }
+
         public void setDefaultStyle(String defaultStyle) {
             this.defaultStyle = defaultStyle;
         }
@@ -162,6 +173,7 @@ public class JaxbRule {
         public String getCqlFilterRead() {
             return cqlFilterRead;
         }
+
         public void setCqlFilterRead(String cqlFilterRead) {
             this.cqlFilterRead = cqlFilterRead;
         }
@@ -170,6 +182,7 @@ public class JaxbRule {
         public String getCqlFilterWrite() {
             return cqlFilterWrite;
         }
+
         public void setCqlFilterWrite(String cqlFilterWrite) {
             this.cqlFilterWrite = cqlFilterWrite;
         }
@@ -179,6 +192,7 @@ public class JaxbRule {
         public MultiPolygon getAllowedArea() {
             return allowedArea;
         }
+
         public void setAllowedArea(MultiPolygon allowedArea) {
             this.allowedArea = allowedArea;
         }
@@ -187,6 +201,7 @@ public class JaxbRule {
         public String getCatalogMode() {
             return catalogMode;
         }
+
         public void setCatalogMode(String catalogMode) {
             this.catalogMode = catalogMode;
         }
@@ -195,6 +210,7 @@ public class JaxbRule {
         public Set<String> getAllowedStyles() {
             return allowedStyles;
         }
+
         public void setAllowedStyles(Set<String> allowedStyles) {
             this.allowedStyles = allowedStyles;
         }
@@ -203,12 +219,13 @@ public class JaxbRule {
         public Set<LayerAttribute> getAttributes() {
             return layerAttributes;
         }
+
         public void setAttributes(Set<LayerAttribute> layerAttributes) {
             this.layerAttributes = layerAttributes;
         }
-        
-        public org.geoserver.geofence.core.model.LayerDetails 
-            toLayerDetails(org.geoserver.geofence.core.model.LayerDetails details) {
+
+        public org.geoserver.geofence.core.model.LayerDetails toLayerDetails(
+                org.geoserver.geofence.core.model.LayerDetails details) {
             if (details == null) {
                 details = new org.geoserver.geofence.core.model.LayerDetails();
             }
@@ -223,8 +240,8 @@ public class JaxbRule {
             }
             if (layerAttributes != null) {
                 for (LayerAttribute att : layerAttributes) {
-                    Iterator<org.geoserver.geofence.core.model.LayerAttribute> it = 
-                            details.getAttributes().iterator();
+                    Iterator<org.geoserver.geofence.core.model.LayerAttribute> it = details
+                            .getAttributes().iterator();
                     while (it.hasNext()) {
                         if (it.next().getName().equals(att.getName())) {
                             it.remove();
@@ -269,9 +286,9 @@ public class JaxbRule {
     private String request;
 
     private String access;
-    
+
     private Limits limits;
-    
+
     private LayerDetails layerDetails;
 
     public JaxbRule() {
@@ -283,7 +300,8 @@ public class JaxbRule {
         priority = rule.getPriority();
         userName = rule.getUsername();
         roleName = rule.getRolename();
-        addressRange = rule.getAddressRange() == null? null : rule.getAddressRange().getCidrSignature();
+        addressRange = rule.getAddressRange() == null ? null
+                : rule.getAddressRange().getCidrSignature();
         workspace = rule.getWorkspace();
         layer = rule.getLayer();
         service = rule.getService() == null ? null : rule.getService().toUpperCase();
@@ -303,8 +321,8 @@ public class JaxbRule {
             layerDetails.setCqlFilterWrite(rule.getLayerDetails().getCqlFilterWrite());
             layerDetails.setDefaultStyle(rule.getLayerDetails().getDefaultStyle());
             layerDetails.setLayerType(rule.getLayerDetails().getType().toString());
-            for (org.geoserver.geofence.core.model.LayerAttribute att : 
-                rule.getLayerDetails().getAttributes()) {
+            for (org.geoserver.geofence.core.model.LayerAttribute att : rule.getLayerDetails()
+                    .getAttributes()) {
                 layerDetails.getAttributes().add(new LayerAttribute(att));
             }
         }
@@ -394,15 +412,15 @@ public class JaxbRule {
     public void setAccess(String access) {
         this.access = access;
     }
-    
+
     @XmlElement
     public Limits getLimits() {
         return limits;
     }
-    
+
     public void setLimits(Limits limits) {
         this.limits = limits;
-    }      
+    }
 
     public LayerDetails getLayerDetails() {
         return layerDetails;
@@ -420,7 +438,8 @@ public class JaxbRule {
         rule.setAccess(GrantType.valueOf(getAccess()));
         rule.setUsername(getUserName());
         rule.setRolename(getRoleName());
-        rule.setAddressRange(getAddressRange() == null? null: new IPAddressRange(getAddressRange()));
+        rule.setAddressRange(
+                getAddressRange() == null ? null : new IPAddressRange(getAddressRange()));
         rule.setService(getService());
         rule.setRequest(getRequest());
         rule.setWorkspace(getWorkspace());
@@ -462,10 +481,11 @@ public class JaxbRule {
         }
         return rule;
     }
-    
+
     protected static String convertAny(String s) {
         if ("".equals(s) || "*".equals(s))
             return null;
-        else return s;
+        else
+            return s;
     }
 }

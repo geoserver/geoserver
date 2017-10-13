@@ -35,23 +35,27 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author ETj (etj at geo-solutions.it)
  */
-public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implements InitializingBean {
+public class GeoFenceSecurityProvider extends GeoServerSecurityProvider
+        implements InitializingBean {
 
-    private final static Logger LOGGER = Logging.getLogger(GeoFenceSecurityProvider.class.getName());
+    private final static Logger LOGGER = Logging
+            .getLogger(GeoFenceSecurityProvider.class.getName());
 
     private RuleReaderService ruleReaderService;
+
     private GeoServerSecurityManager securityManager;
 
     public GeoFenceSecurityProvider() {
     }
-    
+
     @Override
     public Class<? extends GeoServerAuthenticationProvider> getAuthenticationProviderClass() {
         return GeoFenceAuthenticationProvider.class;
     }
 
     @Override
-    public GeoFenceAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
+    public GeoFenceAuthenticationProvider createAuthenticationProvider(
+            SecurityNamedServiceConfig config) {
         GeoFenceAuthenticationProvider authProv = new GeoFenceAuthenticationProvider();
         authProv.setRuleReaderService(ruleReaderService);
         return authProv;
@@ -65,7 +69,6 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implemen
         this.securityManager = securityManager;
     }
 
-
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
@@ -77,15 +80,16 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implemen
         ensureProviderConfigFile();
     }
 
-    private void ensureProviderConfigFile()  {
-        if(securityManager == null) {
+    private void ensureProviderConfigFile() {
+        if (securityManager == null) {
             LOGGER.severe("securityManager is null!");
             return;
         }
 
         try {
-            SecurityAuthProviderConfig loadedConfig = securityManager.loadAuthenticationProviderConfig("geofence");
-            if(loadedConfig == null) {
+            SecurityAuthProviderConfig loadedConfig = securityManager
+                    .loadAuthenticationProviderConfig("geofence");
+            if (loadedConfig == null) {
                 LOGGER.warning("Configuration file not found, creating default config");
 
                 // config: create a default one
@@ -96,7 +100,7 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implemen
             }
 
         } catch (Exception ex) {
-            LOGGER.severe("Error in configuration: " + ex.getMessage());   
+            LOGGER.severe("Error in configuration: " + ex.getMessage());
         }
 
     }

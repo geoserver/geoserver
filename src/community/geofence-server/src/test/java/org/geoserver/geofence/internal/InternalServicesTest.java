@@ -18,25 +18,27 @@ import org.junit.Test;
  *
  */
 public class InternalServicesTest extends ServicesTest {
-    
+
     @Override
     public void oneTimeSetUp() throws Exception {
         setValidating(true);
         super.oneTimeSetUp();
-        
-        RuleAdminService adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
-        adminService.insert(new Rule(0, "cite", null, null, null, "wms", null, "cite", null, GrantType.ALLOW));
-        adminService.insert(new Rule(1, "cite", null, null, null, "wms", null, "sf", null, GrantType.ALLOW));
+
+        RuleAdminService adminService = (RuleAdminService) applicationContext
+                .getBean("ruleAdminService");
+        adminService.insert(
+                new Rule(0, "cite", null, null, null, "wms", null, "cite", null, GrantType.ALLOW));
+        adminService.insert(
+                new Rule(1, "cite", null, null, null, "wms", null, "sf", null, GrantType.ALLOW));
     }
-    
-    
+
     @Test
     public void testConfigurationInternal() {
-        
+
         assertTrue(configManager.getConfiguration().isInternal());
-        
+
         assertTrue(geofenceService instanceof RuleReaderServiceImpl);
-        
+
     }
 
 }

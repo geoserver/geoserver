@@ -29,11 +29,10 @@ import java.net.URISyntaxException;
 
 public class GeofenceTestUtils {
 
-    public static String readConfig(String fileName) throws URISyntaxException,
-            FileNotFoundException, IOException {
-        File configFile = new File(GeofenceTestUtils.class.getResource("/" + fileName)
-                .toURI());
-        
+    public static String readConfig(String fileName)
+            throws URISyntaxException, FileNotFoundException, IOException {
+        File configFile = new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
+
         BufferedReader reader = null;
         StringBuilder content = new StringBuilder();
         try {
@@ -50,7 +49,7 @@ public class GeofenceTestUtils {
         return content.toString();
     }
 
-    public static String readConfig(File configFile) 
+    public static String readConfig(File configFile)
             throws URISyntaxException, FileNotFoundException, IOException {
 
         BufferedReader reader = null;
@@ -68,11 +67,10 @@ public class GeofenceTestUtils {
         }
         return content.toString();
     }
-    
+
     public static File emptyFile(String fileName) throws URISyntaxException, IOException {
         if (GeofenceTestUtils.class.getResource("/" + fileName) != null) {
-            File file = new File(GeofenceTestUtils.class.getResource("/" + fileName)
-                    .toURI());
+            File file = new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
             FileWriter writer = null;
             try {
                 writer = new FileWriter(file);
@@ -83,7 +81,7 @@ public class GeofenceTestUtils {
                     writer.close();
                 }
             }
-    
+
         }
         return null;
     }

@@ -44,9 +44,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(
-            path = {RestBaseController.ROOT_PATH + "/geofence/ruleCache",
-                    RestBaseController.ROOT_PATH + "/ruleCache"}) // legacy entrypoint
+@RequestMapping(path = { RestBaseController.ROOT_PATH + "/geofence/ruleCache",
+        RestBaseController.ROOT_PATH + "/ruleCache" }) // legacy entrypoint
 public class CacheController extends AbstractCatalogController {
 
     static final Logger LOGGER = Logging.getLogger(CacheController.class);
@@ -54,57 +53,47 @@ public class CacheController extends AbstractCatalogController {
     @Autowired
     private CachedRuleReader cachedRuleReader;
 
-    public CacheController(Catalog catalog)
-    {
+    public CacheController(Catalog catalog) {
         super(catalog);
     }
 
-    @GetMapping(
-            path = "/info",
-            produces = {MediaType.TEXT_PLAIN_VALUE})
+    @GetMapping(path = "/info", produces = { MediaType.TEXT_PLAIN_VALUE })
     public String getCacheInfo() {
-                CacheStats stats = cachedRuleReader.getStats();
+        CacheStats stats = cachedRuleReader.getStats();
 
-        StringBuilder sb = new StringBuilder()
-                .append("RuleStats[")
-                .append(" size:").append(cachedRuleReader.getCacheSize())
-                .append("/").append(cachedRuleReader.getCacheInitParams().getSize())
-                .append(" hitCount:").append(stats.hitCount())
-                .append(" missCount:").append(stats.missCount())
+        StringBuilder sb = new StringBuilder().append("RuleStats[").append(" size:")
+                .append(cachedRuleReader.getCacheSize()).append("/")
+                .append(cachedRuleReader.getCacheInitParams().getSize()).append(" hitCount:")
+                .append(stats.hitCount()).append(" missCount:").append(stats.missCount())
                 .append(" loadSuccessCount:").append(stats.loadSuccessCount())
                 .append(" loadExceptionCount:").append(stats.loadExceptionCount())
-                .append(" totalLoadTime:").append(stats.totalLoadTime())
-                .append(" evictionCount:").append(stats.evictionCount())
-                .append("] \n");
+                .append(" totalLoadTime:").append(stats.totalLoadTime()).append(" evictionCount:")
+                .append(stats.evictionCount()).append("] \n");
 
         stats = cachedRuleReader.getAdminAuthStats();
-        sb.append("AdminAuthStats[")
-                .append(" size:").append(cachedRuleReader.getCacheSize())
+        sb.append("AdminAuthStats[").append(" size:").append(cachedRuleReader.getCacheSize())
                 .append("/").append(cachedRuleReader.getCacheInitParams().getSize())
-                .append(" hitCount:").append(stats.hitCount())
-                .append(" missCount:").append(stats.missCount())
-                .append(" loadSuccessCount:").append(stats.loadSuccessCount())
-                .append(" loadExceptionCount:").append(stats.loadExceptionCount())
-                .append(" totalLoadTime:").append(stats.totalLoadTime())
-                .append(" evictionCount:").append(stats.evictionCount())
-                .append("] \n");
+                .append(" hitCount:").append(stats.hitCount()).append(" missCount:")
+                .append(stats.missCount()).append(" loadSuccessCount:")
+                .append(stats.loadSuccessCount()).append(" loadExceptionCount:")
+                .append(stats.loadExceptionCount()).append(" totalLoadTime:")
+                .append(stats.totalLoadTime()).append(" evictionCount:")
+                .append(stats.evictionCount()).append("] \n");
 
         stats = cachedRuleReader.getUserStats();
-        sb.append("UserStats[")
-                .append(" size:").append(cachedRuleReader.getUserCacheSize())
+        sb.append("UserStats[").append(" size:").append(cachedRuleReader.getUserCacheSize())
                 .append("/").append(cachedRuleReader.getCacheInitParams().getSize())
-                .append(" hitCount:").append(stats.hitCount())
-                .append(" missCount:").append(stats.missCount())
-                .append(" loadSuccessCount:").append(stats.loadSuccessCount())
-                .append(" loadExceptionCount:").append(stats.loadExceptionCount())
-                .append(" totalLoadTime:").append(stats.totalLoadTime())
-                .append(" evictionCount:").append(stats.evictionCount())
-                .append("] \n");
+                .append(" hitCount:").append(stats.hitCount()).append(" missCount:")
+                .append(stats.missCount()).append(" loadSuccessCount:")
+                .append(stats.loadSuccessCount()).append(" loadExceptionCount:")
+                .append(stats.loadExceptionCount()).append(" totalLoadTime:")
+                .append(stats.totalLoadTime()).append(" evictionCount:")
+                .append(stats.evictionCount()).append("] \n");
 
         return sb.toString();
     }
 
-    @PutMapping(produces = {MediaType.TEXT_PLAIN_VALUE})
+    @PutMapping(produces = { MediaType.TEXT_PLAIN_VALUE })
     @RequestMapping(path = "/invalidate")
     public String invalidateCache() {
         LOGGER.log(Level.WARNING, "INVALIDATING CACHE");

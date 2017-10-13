@@ -345,14 +345,20 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <dependencies>
           <dependency>
-            <groupId>ant</groupId>
+            <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.6.5</version>
+            <version>1.8.4</version>
           </dependency>
           <dependency>
             <groupId>ant-contrib</groupId>
             <artifactId>ant-contrib</artifactId>
             <version>1.0b3</version>
+            <exclusions>
+              <exclusion>
+                <groupId>ant</groupId>
+                <artifactId>ant</artifactId>
+              </exclusion>
+            </exclusions>
           </dependency>
         </dependencies>
         <executions>

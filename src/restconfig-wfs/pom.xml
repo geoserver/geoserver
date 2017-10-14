@@ -9,30 +9,28 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>gs-restconfig</artifactId>
+  <artifactId>gs-restconfig-wfs</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-rest</artifactId>
+      <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-geojson</artifactId>
-      <version>${gt.version}</version>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>

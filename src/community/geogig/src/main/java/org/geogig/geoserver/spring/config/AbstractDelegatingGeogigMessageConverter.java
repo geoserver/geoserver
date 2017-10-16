@@ -31,7 +31,7 @@ public abstract class AbstractDelegatingGeogigMessageConverter extends BaseMessa
     
     @SuppressWarnings("rawtypes")
     private boolean isGeogigPackage(Class clazz) {
-        return clazz.getPackage().equals(RepositoryImportRepo.class.getPackage()) || clazz.getPackage().equals(RepositoryInitRepo.class.getPackage());
+        return clazz != null && (clazz.getPackage().equals(RepositoryImportRepo.class.getPackage()) || clazz.getPackage().equals(RepositoryInitRepo.class.getPackage()));
     }
 
     @SuppressWarnings("rawtypes")

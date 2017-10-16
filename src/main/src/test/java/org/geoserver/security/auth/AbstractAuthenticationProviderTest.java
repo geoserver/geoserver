@@ -6,55 +6,31 @@
 
 package org.geoserver.security.auth;
 
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Constructor;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Principal;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.AbstractSecurityServiceTest;
-import org.geoserver.security.GeoServerAuthenticationProvider;
-import org.geoserver.security.GeoServerRoleService;
-import org.geoserver.security.GeoServerRoleStore;
-import org.geoserver.security.GeoServerSecurityFilterChain;
-import org.geoserver.security.GeoServerSecurityFilterChainProxy;
-import org.geoserver.security.GeoServerUserGroupService;
-import org.geoserver.security.GeoServerUserGroupStore;
-import org.geoserver.security.HtmlLoginFilterChain;
-import org.geoserver.security.RequestFilterChain;
-import org.geoserver.security.VariableFilterChain;
+import org.geoserver.security.*;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
-import org.geoserver.security.impl.DigestAuthUtils;
-import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.security.impl.GeoServerUser;
-import org.geoserver.security.impl.MemoryRoleService;
-import org.geoserver.security.impl.MemoryUserGroupService;
+import org.geoserver.security.impl.*;
 import org.geoserver.security.password.PasswordValidator;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 
-import org.springframework.mock.web.MockHttpServletRequest;
+import java.lang.reflect.Constructor;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.cert.*;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractAuthenticationProviderTest extends AbstractSecurityServiceTest {
 

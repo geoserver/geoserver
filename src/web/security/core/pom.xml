@@ -23,14 +23,29 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.geoserver</groupId>
-			<artifactId>gs-wms</artifactId>
+			<groupId>org.geoserver.web</groupId>
+			<artifactId>gs-web-core</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-wfs</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.security</groupId>
+			<artifactId>gs-security-tests</artifactId>
+			<version>${project.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.web</groupId>
 			<artifactId>gs-web-core</artifactId>
 			<version>${project.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.web</groupId>

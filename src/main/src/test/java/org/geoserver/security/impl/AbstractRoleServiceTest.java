@@ -7,18 +7,17 @@
 
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-
-import org.junit.Assert;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractRoleServiceTest extends AbstractSecurityServiceTest {
     

@@ -5,10 +5,13 @@
 package org.geogig.geoserver.spring.config;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geogig.geoserver.spring.dto.RepositoryImportRepo;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.spring.dto.RepositoryInitRepo;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -21,7 +24,10 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
  * Abstract implementation for a delegating http message converter that applies only to classes in geogig DTO packages.
  */
 public abstract class AbstractDelegatingGeogigMessageConverter extends BaseMessageConverter<Object> {
-    
+
+    private static final Logger LOGGER =
+            Logging.getLogger(AbstractDelegatingGeogigMessageConverter.class);
+
     private final HttpMessageConverter<Object> delegate;
     
     public AbstractDelegatingGeogigMessageConverter(HttpMessageConverter<Object> delegate, MediaType... mediaTypes) {
@@ -31,7 +37,21 @@ public abstract class AbstractDelegatingGeogigMessageConverter extends BaseMessa
     
     @SuppressWarnings("rawtypes")
     private boolean isGeogigPackage(Class clazz) {
-        return clazz != null && (clazz.getPackage().equals(RepositoryImportRepo.class.getPackage()) || clazz.getPackage().equals(RepositoryInitRepo.class.getPackage()));
+        // only return true if the provided class package matches the GeoGig DTO packages
+        if (clazz != null) {
+            Package aPackage = clazz.getPackage();
+            if (aPackage == null) {
+                // Class loader of this class can't find the package for the provided class
+                LOGGER.log(Level.FINE, "Class loader cannot obtain package info for class: {0}",
+                        clazz.getName());
+                return false;
+            }
+            return aPackage.equals(RepositoryImportRepo.class.getPackage()) ||
+                    aPackage.equals(RepositoryInitRepo.class.getPackage());
+        }
+        // class is null
+        LOGGER.log(Level.FINE, "Provided class is null");
+        return false;
     }
 
     @SuppressWarnings("rawtypes")
@@ -62,6 +82,7 @@ public abstract class AbstractDelegatingGeogigMessageConverter extends BaseMessa
         delegate.write(object, outputMessage.getHeaders().getContentType(), outputMessage);
     }
     
+    @Override
     public int getPriority() {
         return ExtensionPriority.HIGHEST;
     }

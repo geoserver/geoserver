@@ -72,6 +72,8 @@ import org.xml.sax.InputSource;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * Some functional tests for kml reflector
@@ -892,7 +894,10 @@ public class KMLReflectorTest extends WMSTestSupport {
         // Validate against the KML 2.2 schema.
         Unmarshaller unmarshaller = JAXBContext.newInstance(Kml.class).createUnmarshaller();
         unmarshaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-            .newSchema(getClass().getResource("/schema/ogckml/ogckml22.xsd")));
+            .newSchema(new Source[] {
+                new StreamSource(getClass().getResource("/org/geoserver/kml/xAL.xsd").toExternalForm()),
+                new StreamSource(getClass().getResource("/schema/ogckml/ogckml22.xsd").toExternalForm())
+            }));
         unmarshaller.unmarshal(document);
     }
 

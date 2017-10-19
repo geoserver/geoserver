@@ -5,27 +5,10 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
+import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.geoserver.catalog.CascadeDeleteVisitor;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.StyleHandler;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
@@ -37,14 +20,12 @@ import org.geotools.styling.Style;
 import org.geotools.util.Converters;
 import org.geotools.util.Version;
 import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.xml.sax.EntityResolver;
 
-import com.google.common.io.Files;
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
 
 public class StyleResource extends AbstractCatalogResource {
 
@@ -354,9 +335,25 @@ public class StyleResource extends AbstractCatalogResource {
             ResourcePool resourcePool = catalog.getResourcePool();
             if (object instanceof Style) {
                 resourcePool.writeStyle(s, (Style) object, true);
-            }
-            else {
+            } else {
                 resourcePool.writeStyle(s, (InputStream)object);
+                try (Reader r = resourcePool.readStyle(s)) {
+                    String content = org.apache.commons.io.IOUtils.toString(r);
+
+                    // figure out if we need a version switch
+                    for (StyleHandler format : Styles.handlers()) {
+                        if (Objects.equals(s.getFormat(), format.getFormat())) {
+                            Version version = Styles.handler(s.getFormat()).version(content);
+                            if (version != null) {
+                                s.setFormatVersion(version);
+                                catalog.save(s);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Could not determine the version of the raw style, the previous one was" +
+                            "retained", e);
+                }
             }
 
             /*

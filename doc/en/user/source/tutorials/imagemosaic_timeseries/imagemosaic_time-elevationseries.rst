@@ -52,7 +52,7 @@ an example of filename, that is used in this tutorial is::
 
 		gfs50kmTemperature20130310T180000000Z_0600.000_.tiff
 
-The GeoServer ImageMosaic plugin scans the filename and search for the first occurrence that match with the pattern specified. Here the content of **timeregex.properties**:
+The GeoServer ImageMosaic plugin scans the filename and search for the first occurrence that match with the pattern specified. Here the content of **elevationregex.properties**:
 
 .. include:: src/elevationregex.properties
    :literal:

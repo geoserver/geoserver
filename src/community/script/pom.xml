@@ -22,16 +22,10 @@
    <artifactId>gs-rest</artifactId>
    <version>${project.version}</version>
   </dependency>
-
   <dependency>
-   <groupId>org.restlet</groupId>
-   <artifactId>org.restlet</artifactId>
-   <classifier>noobjrep</classifier> <!-- remove after upgrading Restlet -->
-  </dependency>
-  <dependency>
-    <groupId>org.restlet</groupId>
-    <artifactId>org.restlet</artifactId>
-    <scope>provided</scope>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-restconfig</artifactId>
+   <version>${project.version}</version>
   </dependency>
 
   <dependency>

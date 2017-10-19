@@ -5,15 +5,11 @@
  */
 package org.geoserver.script.py;
 
-import java.io.File;
-
 import org.apache.commons.io.FileUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.script.ScriptIntTestSupport;
-import org.geoserver.script.ScriptManager;
-import org.geoserver.test.GeoServerTestSupport;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.io.File;
 
 public class PyAppTest extends ScriptIntTestSupport {
 
@@ -30,7 +26,7 @@ public class PyAppTest extends ScriptIntTestSupport {
         FileUtils.copyURLToFile(
             getClass().getResource("main-helloWorld.py"), new File(app, "main.py"));
 
-        MockHttpServletResponse resp = getAsServletResponse("/script/apps/foo/main.py");
+        MockHttpServletResponse resp = getAsServletResponse("rest/apps/foo/main.py");
         assertEquals(200, resp.getStatus());
         assertEquals("Hello World!", resp.getContentAsString());
     }
@@ -39,7 +35,7 @@ public class PyAppTest extends ScriptIntTestSupport {
         FileUtils.copyURLToFile(
             getClass().getResource("main-helloWorldJSON.py"), new File(app, "main.py"));
 
-        MockHttpServletResponse resp = getAsServletResponse("/script/apps/foo/main.py");
+        MockHttpServletResponse resp = getAsServletResponse("/rest/apps/foo/main.py");
         assertEquals(200, resp.getStatus());
         assertEquals("application/json", resp.getContentType());
     }

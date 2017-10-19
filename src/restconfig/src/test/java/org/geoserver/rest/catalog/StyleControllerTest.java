@@ -411,24 +411,6 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testPutAsSLD11() throws Exception {
-        String xml = newSLD11XML();
-
-        // check it's version 1.0 before
-        StyleInfo infoBefore = catalog.getStyleByName( "Ponds" );
-        assertThat(infoBefore.getFormatVersion(), equalTo(SLDHandler.VERSION_10));
-
-        // put a SLD 1.1
-        MockHttpServletResponse response =
-                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_11);
-        assertEquals( 200, response.getStatus() );
-
-        // now it should have been "upgraded" to 1.1
-        StyleInfo infoAfter = catalog.getStyleByName( "Ponds" );
-        assertThat(infoAfter.getFormatVersion(), equalTo(SLDHandler.VERSION_11));
-    }
-
-    @Test
     public void testPutAsSLD11Raw() throws Exception {
         String xml = newSLD11XML();
 

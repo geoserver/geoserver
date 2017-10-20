@@ -57,6 +57,7 @@
   </dependencies>
   
   <modules>
+    <module>security-tests</module>
     <module>jdbc</module>
     <module>ldap</module>
   </modules>

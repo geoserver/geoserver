@@ -6,17 +6,16 @@
 
 package org.geoserver.security.impl;
 
+import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
-
-import org.geoserver.security.GeoServerRoleStore;
-import org.geoserver.security.config.SecurityNamedServiceConfig;
-import org.geoserver.security.config.SecurityRoleServiceConfig;
-import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 
 
 /**

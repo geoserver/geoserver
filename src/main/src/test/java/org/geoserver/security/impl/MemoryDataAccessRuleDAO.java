@@ -5,11 +5,10 @@
  */
 package org.geoserver.security.impl;
 
-import java.util.Properties;
-
 import org.geoserver.catalog.Catalog;
-import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.vfny.geoserver.global.ConfigurationException;
+
+import java.util.Properties;
 
 /**
  * A {@link DataAccessRuleDAO} variant that lives in memory

@@ -16,3 +16,4 @@ target
 
 # Cucumber Testing artifacts
 cucumber-report
+.mvn

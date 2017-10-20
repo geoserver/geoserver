@@ -81,50 +81,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         DeleteDbFiles.execute("target", "chinese_poly", true);
     }
 
-    @Test
-    public void testPropertyFileUpload() throws Exception {
-        /*
-        Properties p = new Properties();
-        p.put( "_", "name:String,pointProperty:Point");
-        p.put( "pds.0", "'zero'|POINT(0 0)");
-        p.put( "pds.1", "'one'|POINT(1 1)");
-        */
-        byte[] bytes = propertyFile();
-        //p.store( output, null );
-
-        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures( dom );
-    }
-
-    @Test
-    public void testPropertyFileUploadWithWorkspace() throws Exception {
-        byte[] bytes = propertyFile();
-
-        put( ROOT_PATH+"/workspaces/sf/datastores/pds/file.properties", bytes, "text/plain");
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=sf:pds");
-        assertFeatures( dom, "sf" );
-    }
-
-    @Test
-    public void testPropertyFileUploadZipped() throws Exception {
-        byte[] bytes = propertyFile();
-
-        //compress
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ZipOutputStream zout = new ZipOutputStream( out );
-        zout.putNextEntry( new ZipEntry( "pds.properties" ) );
-        zout.write( bytes );
-        zout.flush();
-        zout.close();
-
-        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties", out.toByteArray(), "application/zip");
-
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures( dom );
-
-    }
-
     byte[] propertyFile() throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( output ) );
@@ -142,27 +98,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     void assertFeatures( Document dom, String ns ) throws Exception {
         assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
         assertEquals( 2, dom.getElementsByTagName( ns + ":pds").getLength() );
-    }
-
-    @Test
-    public void testShapeFileUpload() throws Exception {
-        byte[] bytes = shpZipAsBytes();
-        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.shp", bytes, "application/zip");
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures( dom );
-    }
-
-    @Test
-    public void testShapeFileUploadWithCharset() throws Exception {
-        /* Requires that a zipped shapefile (chinese_poly.zip) be in test-data directory */
-        byte[] bytes = shpChineseZipAsBytes();
-        MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8", bytes, "application/zip");
-        assertEquals( 201, response.getStatus() );
-
-        MockHttpServletResponse response2 =
-                getAsServletResponse("wfs?request=getfeature&typename=gs:chinese_poly", "GB18030");
-        assertTrue(response2.getContentAsString().contains("\u951f\u65a4\u62f7"));
     }
 
     byte[] shpZipAsBytes() throws IOException {
@@ -188,52 +123,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testShapeFileUploadExternal() throws Exception {
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-
-        File target = new File("target");
-        File f = File.createTempFile("rest", "dir", target);
-        try {
-            f.delete();
-            f.mkdir();
-
-            File zip = new File(f, "pds.zip");
-            IOUtils.copy(getClass().getResourceAsStream("test-data/pds.zip"), new FileOutputStream(
-                    zip));
-            org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), Files.asResource(f), null);
-
-            MockHttpServletResponse resp = putAsServletResponse(
-                    ROOT_PATH+"/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")
-                            .toURL().toString(), "text/plain");
-            assertEquals(201, resp.getStatus());
-
-            dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
-            assertFeatures(dom);
-
-            // try to download it again after a full reload from disk (GEOS-4616)
-            getGeoServer().reload();
-
-            resp = getAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/file.shp");
-            assertEquals( 200, resp.getStatus() );
-            assertEquals( "application/zip", resp.getContentType() );
-
-            Set<String> entryNames = new HashSet<>();
-            try(ByteArrayInputStream bin = getBinaryInputStream(resp); ZipInputStream zin = new ZipInputStream( bin )) {
-                ZipEntry entry;
-                while((entry= zin.getNextEntry()) != null) {
-                    entryNames.add(entry.getName());
-                }
-            }
-            assertTrue(entryNames.contains("pds.shp"));
-            assertTrue(entryNames.contains("pds.shx"));
-            assertTrue(entryNames.contains("pds.dbf"));
-        } finally {
-            FileUtils.deleteQuietly(f);
-        }
-    }
-
-    @Test
     public void testShapeFileUploadNotExisting() throws Exception {
         File file = new File("./target/notThere.tiff");
         if(file.exists()) {
@@ -247,54 +136,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals(400, response.getStatus());
     }
 
-    @Test
-    public void testShapeFileUploadIntoExisting() throws Exception {
-        Catalog cat = getCatalog();
-        assertNull(cat.getDataStoreByName("gs", "foo_h2"));
 
-        String xml =
-                "<dataStore>" +
-                        " <name>foo_h2</name>" +
-                        " <type>H2</type>" +
-                        " <connectionParameters>" +
-                        "<namespace>" + MockData.DEFAULT_URI + "</namespace>" +
-                        "<database>target/foo</database>" +
-                        "<dbtype>h2</dbtype>" +
-                        " </connectionParameters>" +
-                        "<workspace>gs</workspace>" +
-                        "</dataStore>";
-
-        post(ROOT_PATH+"/workspaces/gs/datastores", xml);
-
-        DataStoreInfo ds = cat.getDataStoreByName("gs", "foo_h2");
-        assertNotNull(ds);
-
-        assertTrue(cat.getFeatureTypesByDataStore(ds).isEmpty());
-
-        byte[] bytes = shpZipAsBytes();
-        put( ROOT_PATH+"/workspaces/gs/datastores/foo_h2/file.shp", bytes, "application/zip");
-
-        assertFalse(cat.getFeatureTypesByDataStore(ds).isEmpty());
-
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures( dom );
-    }
-
-    @Test
-    public void testShapeFileUploadWithTarget() throws Exception {
-        Catalog cat = getCatalog();
-        assertNull(cat.getDataStoreByName("gs", "pds"));
-
-        byte[] bytes = shpZipAsBytes();
-        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.shp?target=h2", bytes, "application/zip");
-
-        DataStoreInfo ds = cat.getDataStoreByName("gs", "pds");
-        assertNotNull(ds);
-        assertFalse(cat.getFeatureTypesByDataStore(ds).isEmpty());
-
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures( dom );
-    }
 
     @Test
     @Ignore

@@ -46,6 +46,13 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>gs-security-tests</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
     <!--
       bcprov-jdk14 must be before spring-ldap-test because the latter depends
       on apacheds-all, which repackages an unsigned bcprov-jdk5 security

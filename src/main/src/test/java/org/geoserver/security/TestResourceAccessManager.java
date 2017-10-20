@@ -5,16 +5,11 @@
  */
 package org.geoserver.security;
 
+import org.geoserver.catalog.*;
+import org.springframework.security.core.Authentication;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.springframework.security.core.Authentication;
 
 /**
  * A simple {@link ResourceAccessManager} that keeps all the limits in a in memory hash map. 

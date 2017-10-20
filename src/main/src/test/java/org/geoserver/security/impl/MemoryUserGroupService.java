@@ -6,12 +6,6 @@
 
 package org.geoserver.security.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.SortedSet;
-import java.util.TreeMap;
-
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -19,6 +13,12 @@ import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordEncodingType;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.SortedSet;
+import java.util.TreeMap;
 
 
 /**

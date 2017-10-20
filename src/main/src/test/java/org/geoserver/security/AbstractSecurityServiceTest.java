@@ -6,27 +6,20 @@
 
 package org.geoserver.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
-import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
-import org.geoserver.security.password.GeoServerEmptyPasswordEncoder;
-import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
-import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
-import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
+import org.geoserver.security.password.*;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import static org.junit.Assert.*;
 
 
 /**

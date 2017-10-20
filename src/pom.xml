@@ -1837,6 +1837,9 @@
   <module>gwc</module>
   <module>rest</module>
   <module>restconfig</module>
+  <module>restconfig-wcs</module>
+  <module>restconfig-wfs</module>
+  <module>restconfig-wms</module>
   <module>web</module>
   <module>community</module>
   <module>extension</module>

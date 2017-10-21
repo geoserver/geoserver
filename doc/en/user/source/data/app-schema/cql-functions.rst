@@ -9,7 +9,7 @@ CQL functions enable data conversion and conditional behaviour to be specified i
 
 * The uDig manual includes a list of CQL functions:
 
-    * http://udig.refractions.net/confluence/display/EN/Constraint+Query+Language
+    * http://udig.refractions.net/confluence/display/EN/Constraint%20Query%20Language.html
 
 * CQL string literals are enclosed in single quotes, for example ``'urn:ogc:def:nil:OGC:missing'``.
 * Single quotes are represented in CQL string literals as two single quotes, just as in SQL. For example, ``'yyyy-MM-dd''T''HH:mm:ss''Z'''`` for the string ``yyyy-MM-dd'T'HH:mm:ss'Z'``.

@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.XMLGridSubset;
@@ -73,7 +74,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
     
     private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) throws Exception {
 
-        XStream xstream = XMLConfiguration.getConfiguredXStream(new XStream(), (WebApplicationContext) null);
+        XStream xstream = XMLConfiguration.getConfiguredXStream(new SecureXStream(), (WebApplicationContext) null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
         xstream.allowTypes(new Class[] { GeoServerTileLayerInfo.class, SortedSet.class });
 

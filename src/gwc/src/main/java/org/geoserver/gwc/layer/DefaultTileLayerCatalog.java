@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.AsynchResourceIterator;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -64,8 +65,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     public DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader,
             XMLConfiguration xmlPersisterFactory) throws IOException {
         this(resourceLoader,
-                // this configures security back in GWC, no point in using SecureXStream here
-                xmlPersisterFactory.getConfiguredXStreamWithContext(new XStream(),
+                xmlPersisterFactory.getConfiguredXStreamWithContext(new SecureXStream(),
                 Context.PERSIST));
     }
 

@@ -13,6 +13,7 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.geowebcache.config.XMLConfiguration;
@@ -37,7 +38,7 @@ public class DefaultTileLayerCatalogTest {
         baseDirectory.mkdirs();
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(baseDirectory);
 
-        XStream xStream = XMLConfiguration.getConfiguredXStreamWithContext(new XStream(),
+        XStream xStream = XMLConfiguration.getConfiguredXStreamWithContext(new SecureXStream(),
                 (WebApplicationContext) null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);

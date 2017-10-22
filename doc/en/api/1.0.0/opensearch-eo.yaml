@@ -609,7 +609,7 @@ paths:
         required: true
         type: string
     get:
-      description: Returns the O&M metadata of this collection
+      description: Returns the O&M metadata of this product
       produces:
         - application/xml
       responses:
@@ -848,7 +848,7 @@ paths:
         404:
           description: The specified collection or product cannot be found
     put:
-      description: Updates/creates a products granules
+      description: Updates/creates a product granules
       consumes:
         - text/html
       responses:

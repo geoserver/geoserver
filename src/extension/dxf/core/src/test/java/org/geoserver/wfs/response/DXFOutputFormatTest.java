@@ -162,7 +162,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
         // has to insert an attribute
-        checkSequence(sResponse,new String[] {"POLYGONS_attributes", "ATTRIB", "POLYGONS_attributes", "AcDbText", "10", "500250.0", "20", "500050.0", "t0002"},pos);
+        checkSequence(sResponse,new String[] {"POLYGONS_attributes", "POLYGONS_attributes", "POLYGONS_attributes", "ATTRIB", "POLYGONS_attributes", "AcDbText", "10", "500237.5", "20", "500062.5", "t0002"},pos);
     }
 
     /**

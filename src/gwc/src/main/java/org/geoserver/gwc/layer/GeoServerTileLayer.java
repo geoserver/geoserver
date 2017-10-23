@@ -16,9 +16,11 @@ import org.geoserver.gwc.controller.DispatcherController;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.rest.RequestInfo;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -479,7 +481,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             wmsParams.put("FEATURE_COUNT", featureCount);
         }
 
-        Map<String, String> fullParameters = convTile.getFullParameters();
+        Map<String, String> fullParameters = convTile.getFilteringParameters();
         if (fullParameters.isEmpty()) {
             fullParameters = getDefaultParameterFilters();
         }
@@ -689,7 +691,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         params.put("TRANSPARENT", "true");
         params.put(GWC_SEED_INTERCEPT_TOKEN, "true");
 
-        Map<String, String> filteredParams = tile.getFullParameters();
+        Map<String, String> filteredParams = tile.getFilteringParameters();
         if (filteredParams.isEmpty()) {
             filteredParams = getDefaultParameterFilters();
         }
@@ -1185,7 +1187,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             throw new GeoWebCacheException("Failed to cascade request", e);
         }
     }
-
+    
     @Override
     public List<MetadataURL> getMetadataURLs() {
         List<MetadataLinkInfo> gsMetadataLinks;
@@ -1205,7 +1207,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 }
             }
         }
-        String baseUrl = RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+        String baseUrl = baseUrl();
         for(MetadataLinkInfo gsMetadata : gsMetadataLinks) {
             String url = ResponseUtils.proxifyMetadataLink(gsMetadata, baseUrl);
             try {
@@ -1257,11 +1259,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             org.geoserver.catalog.LegendInfo legendInfo = styleInfo.getLegend();
             LegendInfoBuilder gwcLegendInfo = new LegendInfoBuilder();
             if (legendInfo != null) {
+                String baseUrl = baseUrl();
                 gwcLegendInfo.withStyleName(styleInfo.getName())
                         .withWidth(legendInfo.getWidth())
                         .withHeight(legendInfo.getHeight())
                         .withFormat(legendInfo.getFormat())
-                        .withCompleteUrl(buildURL(RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest()),
+                        .withCompleteUrl(buildURL(baseUrl,
                                 legendInfo.getOnlineResource(), null, URLMangler.URLType.RESOURCE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
             } else {
@@ -1292,12 +1295,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 if (!styleInfo.getName().equals(layerInfo.getDefaultStyle().getName())) {
                     params.put("style", styleInfo.getName());
                 }
+                String baseUrl = baseUrl();
                 gwcLegendInfo.withStyleName(styleInfo.getName())
                         .withWidth(finalWidth)
                         .withHeight(finalHeight)
                         .withFormat(finalFormat)
-                        .withCompleteUrl(buildURL(RequestUtils.baseURL(
-                                Dispatcher.REQUEST.get().getHttpRequest()), "ows", params, URLMangler.URLType.SERVICE));
+                        .withCompleteUrl(buildURL(baseUrl, "ows", params, URLMangler.URLType.SERVICE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
             }
         }
@@ -1332,5 +1335,27 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     void setWms(WMS wms) {
         this.wms = wms;
+    }
+
+    /**
+     * Gets the base URL of the server, this value is retrieved from the current HTTP request.
+     * If no HTTP request is in progress NULL is returned. Only the use cases where an OWS
+     * service or a REST end-point was target are handled.
+     */
+    private static String baseUrl() {
+        // let's see if a OWS service was targeted
+        Request owsRequest = Dispatcher.REQUEST.get();
+        if (owsRequest != null) {
+            // retrieve the base URL from the dispatcher request
+            return RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+        }
+        // let's see if a REST end-point was targeted
+        RequestInfo restRequest = RequestInfo.get();
+        if (restRequest != null) {
+            // retrieve the base URL from REST request
+            return restRequest.getBaseURL();
+        }
+        // no HTTP request is in progress
+        return null;
     }
 }

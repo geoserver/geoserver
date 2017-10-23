@@ -1333,7 +1333,7 @@ public class GWCTest {
         ConveyorTile tileRequest = mediator.prepareRequest(tileLayer, request, errors);
         assertTrue(errors.toString(), errors.length() == 0);
 
-        Map<String, String> fullParameters = tileRequest.getFullParameters();
+        Map<String, String> fullParameters = tileRequest.getFilteringParameters();
         assertEquals(fullParameters.toString(), rawKvpParamValue,
                 fullParameters.get(rawKvpParamName.toUpperCase()));
     }

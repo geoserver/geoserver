@@ -58,6 +58,14 @@ Enables the Web Map Tiled Service (WMTS) endpoint in GeoWebCache. When this sett
 
 When the service is disabled, calls to the capabilities document will return a ``Service is disabled`` message.
 
+HTTP RESTful API is available through the existing GWC integration allowing clients to retrieve the following resources:
+
+* capabilities document
+* tile
+* feature info
+
+For more information read `GWC WMTS documentation <http://geowebcache.org/docs/current/services/wmts.html>`_.
+
 Enable Data Security
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -123,15 +131,15 @@ In Memory BlobStore Options
 These options are used for enabling/disabling In Memory Caching for GeoWebCache. This feature can be used for saving GWC tiles directly in memory, for a fast data retrieval.
 
 Enable
-`````````````
+``````
 This parameter allows to enable or disable in memory caching. By default it is disabled.
 
 Avoid Persistence
-```````````````````
+`````````````````
 This parameter can be used in order to avoid to save any file in the file system, keeping all the GWC tiles only in memory. By default it is disabled.
 
 Available Caches
-```````````````````
+````````````````
 This parameter defines which Cache method can be used for In Memory Caching. By default the Guava Caching is used. Note that if a caching method
 requires an immutable configuration at GeoServer startup like HazelCast, the *Hard Memory limit*, *Eviction Policy*, *Eviction Time* and *Concurrency Level*
 parameters are disabled.
@@ -139,11 +147,11 @@ parameters are disabled.
 More informations on how to configure a new Cache object can be found in the GeoWebCache :ref:`gwc_config` page.
 
 Cache Hard Memory limit (Mb)
-```````````````````````````````````````
+````````````````````````````
 Parameter for configuring in memory cache size in MB.
 
 Cache Eviction Policy
-```````````````````````````````````````
+`````````````````````
 Parameter for configuring in memory cache eviction policy, it may be: LRU, LFU, EXPIRE_AFTER_WRITE, EXPIRE_AFTER_ACCESS, NULL
 
 This eviction policies may not be supported by all caches implementations. For example, Guava Caching only supports the eviction policies: EXPIRE_AFTER_WRITE, EXPIRE_AFTER_ACCESS and NULL.
@@ -151,25 +159,25 @@ This eviction policies may not be supported by all caches implementations. For e
 Note, only the eviction policies accepted by the selected cache will be shown on the UI.
 
 Cache Eviction Time (in Seconds)
-```````````````````````````````````````
+````````````````````````````````
 Paramter for configuring in memory cache eviction time. It is in Seconds. 
 
 .. note:: Note that this parameter is also used for configuring an internal thread which performs a periodical cache cleanup.
 
 Cache Concurrency Level
-```````````````````````````````````````
+```````````````````````
 Paramter for configuring in memory cache concurrency.
 
 Clear In Memory Cache
-```````````````````````````````````````
+`````````````````````
 Button for clearing all the tiles in the in-memory cache.
 
 Cache Statistics
-```````````````````````````````````````
+````````````````
 Various statistics parameters associated to the in memory cache.
 
 Update Cache Statistics
-```````````````````````````````````````
+```````````````````````
 Button for updating cache statistics seen above. The statistics are always related to the local cached entries, even in case of distributed in-memory caching
 
 .. note:: Note that some Caches do not provide all the statistics parameters, in that case the user will only see *"Unavailable"* for those parameters.

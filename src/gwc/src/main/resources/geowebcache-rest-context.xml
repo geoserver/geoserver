@@ -7,6 +7,6 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
-  <context:component-scan base-package="org.geowebcache.rest, org.geowebcache.diskquota.rest.controller" />
+  <context:component-scan base-package="org.geowebcache.rest, org.geowebcache.diskquota.rest.controller, org.geowebcache.service.wmts" />
 
 </beans>

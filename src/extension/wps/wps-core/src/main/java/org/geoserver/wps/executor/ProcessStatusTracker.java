@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.executor;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -125,11 +126,12 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     public void cleanExpiredStatuses(long expirationThreshold) {
         Date date = new Date(expirationThreshold);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         Not completionTimenotNull = FF.not(FF.isNull(FF.property("completionTime")));
-        Filter completionTimeExpired = FF.before(FF.property("completionTime"), FF.literal(date));
+        Filter completionTimeExpired = FF.before(FF.property("completionTime"), FF.literal(format.format(date)));
         Filter completionTimeFilter = FF.and(completionTimenotNull, completionTimeExpired);
         Not lastUpdatedNotNull = FF.not(FF.isNull(FF.property("lastUpdated")));
-        Filter lastUpdatedExpired = FF.before(FF.property("lastUpdated"), FF.literal(date));
+        Filter lastUpdatedExpired = FF.before(FF.property("lastUpdated"), FF.literal(format.format(date)));
         Filter lastUpdatedFilter = FF.and(lastUpdatedNotNull, lastUpdatedExpired);
         And filter = FF.and(completionTimeFilter, lastUpdatedFilter);
         store.remove(filter);

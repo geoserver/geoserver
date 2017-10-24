@@ -177,13 +177,16 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         setId(style);
 
         // resolve the workspace
-        WorkspaceInfo resolved = ResolvingProxy.resolve(getCatalog(), style.getWorkspace());
-        if (resolved != null) {
-            resolved = unwrap(resolved);
-            style.setWorkspace(resolved);
-        } else {
-            LOGGER.log(Level.INFO, "Failed to resolve workspace for style \""+style.getName()+
-                    "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
+        WorkspaceInfo ws = style.getWorkspace();
+        if (ws != null) {
+            WorkspaceInfo resolved = ResolvingProxy.resolve(getCatalog(), ws);
+            if (resolved != null) {
+                resolved = unwrap(resolved);
+                style.setWorkspace(resolved);
+            } else {
+                LOGGER.log(Level.INFO, "Failed to resolve workspace for style \""+style.getName()+
+                        "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
+            }
         }
     }
 

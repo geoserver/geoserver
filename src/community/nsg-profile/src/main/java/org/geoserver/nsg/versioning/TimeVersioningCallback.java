@@ -4,32 +4,22 @@
  */
 package org.geoserver.nsg.versioning;
 
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wfs.GetFeatureCallback;
-import org.geoserver.wfs.GetFeatureContext;
-import org.geoserver.wfs.InsertElementHandler;
-import org.geoserver.wfs.TransactionCallback;
-import org.geoserver.wfs.TransactionContext;
-import org.geoserver.wfs.TransactionContextBuilder;
-import org.geoserver.wfs.request.Delete;
-import org.geoserver.wfs.request.Insert;
-import org.geoserver.wfs.request.RequestObject;
-import org.geoserver.wfs.request.Update;
+import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.wfs.*;
+import org.geoserver.wfs.request.*;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.Converters;
-import org.geotools.xml.EMFUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -40,13 +30,8 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
 import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 final class TimeVersioningCallback implements GetFeatureCallback, TransactionCallback {
@@ -61,7 +46,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
 
     @Override
     public GetFeatureContext beforeQuerying(GetFeatureContext context) {
-        if (!isWfs20(context.getRequest())) {
+        String version = context.getRequest().getVersion();
+        if (version == null || !version.startsWith("2.0")) {
             return context;
         }
         FeatureTypeInfo featureTypeInfo = context.getFeatureTypeInfo();
@@ -84,104 +70,41 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
     }
 
     @Override
-    public TransactionContext beforeHandlerExecution(TransactionContext context) {
-        if (!isWfs20(context.getRequest())) {
-            return context;
-        }
-        if (context.getElement() instanceof Update) {
-            Insert insert = buildInsertForUpdate(context);
-            InsertElementHandler handler = GeoServerExtensions.bean(InsertElementHandler.class);
-            return new TransactionContextBuilder()
-                    .withContext(context)
-                    .withElement(insert)
-                    .withHandler(handler).build();
-        }
-        if (context.getElement() instanceof Insert) {
-            Insert insert = (Insert) context.getElement();
-            for (Object element : insert.getFeatures()) {
-                if (element instanceof SimpleFeature) {
-                    setTimeAttribute((SimpleFeature) element);
-                }
-            }
-        }
-        if (context.getElement() instanceof Delete) {
-            Delete delete = (Delete) context.getElement();
-            Filter filter = delete.getFilter();
-            QName typeName = context.getElement().getTypeName();
-            FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(typeName));
-            Filter adaptedFilter = VersioningFilterAdapter.adapt(featureTypeInfo, filter);
-            EMFUtils.set(delete.getAdaptee(), "filter", adaptedFilter);
-        }
-        return context;
+    public int getPriority() {
+        return ExtensionPriority.LOWEST;
     }
 
-    @Override
-    public TransactionContext beforeInsertFeatures(TransactionContext context) {
-        return context;
-    }
-
-    @Override
-    public TransactionContext beforeUpdateFeatures(TransactionContext context) {
-        return context;
-    }
-
-    @Override
-    public TransactionContext beforeDeleteFeatures(TransactionContext context) {
-        return context;
-    }
-
-    @Override
-    public TransactionContext beforeReplaceFeatures(TransactionContext context) {
-        return context;
-    }
-
-    private void setTimeAttribute(SimpleFeature feature) {
+    private void setTimeAttribute(SimpleFeature feature, Date date) {
         FeatureType featureType = feature.getFeatureType();
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(featureType);
         if (TimeVersioning.isEnabled(featureTypeInfo)) {
             String timePropertyName = TimeVersioning.getTimePropertyName(featureTypeInfo);
             AttributeDescriptor attributeDescriptor = feature.getType().getDescriptor(timePropertyName);
-            Object timeValue = Converters.convert(new Date(), attributeDescriptor.getType().getBinding());
+            Object timeValue = Converters.convert(date, attributeDescriptor.getType().getBinding());
             feature.setAttribute(timePropertyName, timeValue);
         }
     }
 
-    private SimpleFeatureCollection getTransactionFeatures(TransactionContext context) {
-        QName typeName = context.getElement().getTypeName();
-        Filter filter = context.getElement().getFilter();
+    private SimpleFeatureCollection getTransactionFeatures(Update update) throws IOException {
+        QName typeName = update.getTypeName();
+        Filter filter = update.getFilter();
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(typeName));
-        SimpleFeatureStore store = getTransactionStore(context);
+        SimpleFeatureSource source = getTransactionSource(update);
         try {
             Query query = new Query();
             query.setFilter(VersioningFilterAdapter.adapt(featureTypeInfo, filter));
             SortBy sort = FILTER_FACTORY.sort(TimeVersioning.getTimePropertyName(featureTypeInfo), SortOrder.DESCENDING);
             query.setSortBy(new SortBy[]{sort});
-            return store.getFeatures(query);
+            return source.getFeatures(query);
         } catch (Exception exception) {
             throw new RuntimeException(String.format(
                     "Error getting features of type '%s'.", typeName), exception);
         }
     }
 
-    private Comparator<SimpleFeature> buildFeatureTimeComparator(FeatureTypeInfo featureTypeInfo) {
-        String timePropertyName = TimeVersioning.getTimePropertyName(featureTypeInfo);
-        return (featureA, featureB) -> {
-            Date timeA = Converters.convert(featureA.getAttribute(timePropertyName), Date.class);
-            Date timeB = Converters.convert(featureB.getAttribute(timePropertyName), Date.class);
-            if (timeA == null) {
-                return -1;
-            }
-            return timeA.compareTo(timeB);
-        };
-    }
-
     /**
      * Returns the most recent version of each feature (note, this is an aggregate operator, a visitor, wondering
      * if it could be optimized in a single db query)
-     *
-     * @param timeSortedFeatures
-     * @param featureTypeInfo
-     * @return
      */
     private List<SimpleFeature> getMostRecentFeatures(SimpleFeatureCollection timeSortedFeatures, FeatureTypeInfo featureTypeInfo) {
         String nameProperty = TimeVersioning.getNamePropertyName(featureTypeInfo);
@@ -190,32 +113,43 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 Object id = feature.getAttribute(nameProperty);
-                if (featuresIndexedById.get(id) == null) {
-                    featuresIndexedById.put(id, feature);
-                }
+                featuresIndexedById.putIfAbsent(id, feature);
             }
         }
         return new ArrayList<>(featuresIndexedById.values());
     }
 
-    private Insert buildInsertForUpdate(TransactionContext context) {
-        Update update = (Update) context.getElement();
+    /**
+     * Takes an update and transforms it in an insert if the feature type is versioned, leave it
+     * as is otherwise
+     */
+    private TransactionElement transformUpdate(TransactionRequest request, Update update, Date referenceTime) throws IOException {
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(update.getTypeName()));
-        SimpleFeatureCollection features = getTransactionFeatures(context);
+        if(!TimeVersioning.isEnabled(featureTypeInfo)) {
+            return update;
+        }
+        SimpleFeatureCollection features = getTransactionFeatures(update);
         List<SimpleFeature> recent = getMostRecentFeatures(features, featureTypeInfo);
         List<SimpleFeature> newFeatures = recent.stream()
-                .map(f -> prepareInsertFeature(f, update)).collect(Collectors.toList());
-        return new UpdateInsert(context.getRequest(), newFeatures);
+                .map(f -> prepareInsertFeature(f, update, referenceTime)).collect(Collectors.toList());
+        Insert insert = request.createInsert();
+        insert.setHandle(update.getHandle());
+        insert.getFeatures().addAll(newFeatures);
+
+        return insert;
     }
 
-    private SimpleFeature prepareInsertFeature(SimpleFeature feature, Update update) {
+    private SimpleFeature prepareInsertFeature(SimpleFeature feature, Update update, Date referenceTime) {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(feature.getFeatureType());
         builder.init(feature);
         SimpleFeature versionedFeature = builder.buildFeature(null);
         // run the update
-        update.getUpdateProperties().forEach(p -> versionedFeature.setAttribute(p.getName().getLocalPart(), p.getValue()));
+        for (Object o : update.getUpdateProperties()) {
+            Property p = (Property) o;
+            versionedFeature.setAttribute(p.getName().getLocalPart(), p.getValue());
+        }
         // set the time
-        setTimeAttribute(versionedFeature);
+        setTimeAttribute(versionedFeature, referenceTime);
         return versionedFeature;
     }
 
@@ -233,29 +167,79 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         return featureTypeInfo;
     }
 
-    private SimpleFeatureStore getTransactionStore(TransactionContext context) {
-        QName typeName = context.getElement().getTypeName();
-        FeatureStore store = (FeatureStore) context.getFeatureStores().get(typeName);
-        return DataUtilities.simple(store);
-    }
+    private SimpleFeatureSource getTransactionSource(Update update) throws IOException {
+        QName typeName = update.getTypeName();
 
-    private boolean isWfs20(RequestObject request) {
-        return true;
-    }
+        final String name = typeName.getLocalPart();
+        final String namespaceURI;
 
-    private static final class UpdateInsert extends Insert {
-
-        private final List<SimpleFeature> features;
-
-        protected UpdateInsert(RequestObject request, List<SimpleFeature> features) {
-            super(request.getAdaptee());
-            this.features = features;
+        if (typeName.getNamespaceURI() != null) {
+            namespaceURI = typeName.getNamespaceURI();
+        } else {
+            namespaceURI = catalog.getDefaultNamespace().getURI();
         }
 
-        @Override
-        public List getFeatures() {
-            return features;
+        final FeatureTypeInfo meta = catalog.getFeatureTypeByName(namespaceURI, name);
+
+        if (meta == null) {
+            String msg = "Feature type '" + name + "' is not available: ";
+            throw new WFSTransactionException(msg, (String) null, update.getHandle());
         }
+
+        FeatureSource source = meta.getFeatureSource(null, null);
+        return DataUtilities.simple(source);
+    }
+
+
+    @Override
+    public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
+        if (request.getVersion() == null || !request.getVersion().startsWith("2.0")) {
+            return request;
+        }
+
+        // all changes in this transaction will carry the same reference time
+        Date referenceTime = new Date();
+        List<TransactionElement> newElements = new ArrayList<>();
+
+        for (TransactionElement element : request.getElements()) {
+            if (element instanceof Insert) {
+                for (Object of : ((Insert) element).getFeatures()) {
+                    if (of instanceof SimpleFeature) {
+                        setTimeAttribute((SimpleFeature) of, referenceTime);
+                    }
+                }
+                newElements.add(element);
+            } else if (element instanceof Update) {
+                try {
+                    TransactionElement transformed = transformUpdate(request, (Update) element, referenceTime);
+                    newElements.add(transformed);
+                } catch (IOException e) {
+                    throw new WFSException(e);
+                }
+            } else if (element instanceof Delete) {
+                Delete delete = (Delete) element;
+                FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(delete.getTypeName()));
+                if(TimeVersioning.isEnabled(featureTypeInfo)) {
+                    Filter filter = delete.getFilter();
+                    Filter adaptedFilter = VersioningFilterAdapter.adapt(featureTypeInfo, filter);
+                    delete.setFilter(adaptedFilter);
+                }
+                newElements.add(delete);
+            }
+        }
+        request.setElements(newElements);
+
+        return request;
+    }
+
+    @Override
+    public void beforeCommit(TransactionRequest request) throws WFSException {
+        // nothing to do
+    }
+
+    @Override
+    public void afterTransaction(TransactionRequest request, TransactionResponse result, boolean committed) {
+        // nothing to do
     }
 
 }

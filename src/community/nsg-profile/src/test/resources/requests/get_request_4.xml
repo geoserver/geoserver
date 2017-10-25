@@ -5,9 +5,5 @@
                 xsi:schemaLocation="
                   http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd
                   http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd">
-  <wfs:Query typeNames="gs:versioned">
-    <fes:Filter>
-      <fes:ResourceId rid="Feature_1"  startDate="${startDate}"/>
-    </fes:Filter>
-  </wfs:Query>
+  <wfs:Query typeNames="gs:versioned"/>
 </wfs:GetFeature>

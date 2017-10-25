@@ -7,65 +7,62 @@ package org.geoserver.nsg.versioning;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.xml.v1_0_0.WFS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
+import org.geotools.util.Converters;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class TimeVersioningTest extends GeoServerSystemTestSupport {
 
     private XpathEngine WFS20_XPATH_ENGINE;
 
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.setUpTestData(testData);
-        // create bounding box definitions
+    @Before
+    public void beforeTest() throws IOException {
+        // instantiate xpath engine
+        WFS20_XPATH_ENGINE = buildXpathEngine(
+                "wfs", "http://www.opengis.net/wfs/2.0",
+                "gml", "http://www.opengis.net/gml/3.2");
+
+        // create versioned layer (each time so that its contents are always clean)
         ReferencedEnvelope envelope = new ReferencedEnvelope(-5, -5, 5, 5, DefaultGeographicCRS.WGS84);
         Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
         properties.put(SystemTestData.LayerProperty.LATLON_ENVELOPE, envelope);
         properties.put(SystemTestData.LayerProperty.ENVELOPE, envelope);
         properties.put(SystemTestData.LayerProperty.SRS, 4326);
-        // create versioned layer
-        QName versionedLayerName = new QName(MockData.DEFAULT_URI, "versioned", MockData.DEFAULT_PREFIX);
-        testData.addVectorLayer(versionedLayerName, properties, "versioned.properties", getClass(), getCatalog());
-        // instantiate xpath engine
-        WFS20_XPATH_ENGINE = buildXpathEngine(
-                "wfs", "http://www.opengis.net/wfs/2.0",
-                "gml", "http://www.opengis.net/gml/3.2");
-    }
 
-    @Before
-    public void beforeTest() {
+        QName versionedLayerName = new QName(MockData.DEFAULT_URI, "versioned", MockData.DEFAULT_PREFIX);
+        getTestData().addVectorLayer(versionedLayerName, properties, "versioned.properties", getClass(), getCatalog());
+
         // activate versioning for versioned layer
         TestsUtils.updateFeatureTypeTimeVersioning(getCatalog(), "gs:versioned", true, "NAME", "TIME");
     }
 
     @Test
     public void testInsertVersionedFeature() throws Exception {
-        MockHttpServletResponse result = postAsServletResponse("wfs", TestsUtils.readResource("/requests/insert_request_1.xml"));
-        assertThat(result.getStatus(), is(200));
+        Document doc = postAsDOM("wfs", TestsUtils.readResource("/requests/insert_request_1.xml"));
+        assertTransactionResponse(doc);
 
-        List<SimpleFeature> features = TestsUtils.searchFeatures(getCatalog(), "gs:versioned");
-        List<SimpleFeature> foundFeatures = TestsUtils.searchFeatures(features, "NAME", "TIME", "Feature_2", new Date(), 300);
+                List<SimpleFeature> features = TestsUtils.searchFeatures(getCatalog(), "gs:versioned");
+        List<SimpleFeature> foundFeatures = TestsUtils.searchFeatures(features, "NAME", "TIME", "Feature_3", new Date(), 300);
         assertThat(foundFeatures.size(), is(1));
         SimpleFeature foundFeature = foundFeatures.get(0);
         String description = (String) foundFeature.getAttribute("DESCRIPTION");
@@ -73,13 +70,119 @@ public final class TimeVersioningTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testGetFeatureVersioned() throws Exception {
-        Document result = postAsDOM("wfs", TestsUtils.readResource("/requests/get_request_1.xml"));
+    public void testGetFeatureVersionedEarlyDate() throws Exception {
+        String earlyDateRequest = TestsUtils.readResource("/requests/get_request_1.xml").replace("${startDate}", "2017-01-01T12:00:00");
+        Document doc = postAsDOM("wfs", earlyDateRequest);
+        // print(doc);
+        // all three states of the feature
+        assertEquals("3", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned)", doc));
+        // sorted by time, descending
+        assertEquals("v.2", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[1]/@gml:id", doc));
+        assertEquals("v.3", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[2]/@gml:id", doc));
+        assertEquals("v.1", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[3]/@gml:id", doc));
     }
 
     @Test
-    public void testUpdateVersionedFeature() throws Exception {
-        Document result = postAsDOM("wfs", TestsUtils.readResource("/requests/update_request_1.xml"));
+    public void testGetFeatureVersionedLateDate() throws Exception {
+        String earlyDateRequest = TestsUtils.readResource("/requests/get_request_1.xml").replace("${startDate}", "2017-07-24T00:00:00Z");
+        Document doc = postAsDOM("wfs", earlyDateRequest);
+        // print(doc);
+        // only the last states of the feature
+        assertEquals("1", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned)", doc));
+        // sorted by time, descending
+        assertEquals("v.2", WFS20_XPATH_ENGINE.evaluate("//gs:versioned/@gml:id", doc));
+    }
+
+    @Test
+    public void testGetFeatureVersionedExtraFilter() throws Exception {
+        String request = TestsUtils.readResource("/requests/get_request_2.xml").replace("${startDate}", "2017-01-01T00:00:00Z");
+        Document doc = postAsDOM("wfs", request);
+        // print(doc);
+        // only one matches
+        assertEquals("1", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned)", doc));
+        assertEquals("v.3", WFS20_XPATH_ENGINE.evaluate("//gs:versioned/@gml:id", doc));
+    }
+
+    @Test
+    public void testUpdateSingleVersionedFeature() throws Exception {
+        Document updateDoc = postAsDOM("wfs", TestsUtils.readResource("/requests/update_request_1.xml"));
+        // print(insertDoc);
+        // TODO: check it returns an update statement, not a insert like it now does
+        assertTransactionResponse(updateDoc);
+        String getRequest = TestsUtils.readResource("/requests/get_request_3.xml").replace("${startDate}", "2017-01-01T00:00:00");
+        Document getDoc = postAsDOM("wfs", getRequest);
+        // print(getDoc);
+        // one more state for the feature, there was only two
+        assertEquals("3", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned)", getDoc));
+        // sorted by time, the update created this new instance and it should have the old value but the new time
+        // and the new
+        assertEquals("Feature_2", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[1]/gs:NAME", getDoc));
+        assertEquals("-2 2", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[1]/gs:GEOMETRY/gml:Point/gml:pos", getDoc));
+        assertEquals("UPDATE_NOW", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[1]/gs:DESCRIPTION", getDoc));
+        String time = WFS20_XPATH_ENGINE.evaluate("(//gs:versioned)[1]/gs:TIME", getDoc);
+        Date updateTime = Converters.convert(time, Date.class);
+        assertThat(System.currentTimeMillis() - updateTime.getTime(), lessThan(300 * 1000l));
+    }
+
+    @Test
+    public void testUpdateMultipleVersionedFeature() throws Exception {
+        Document updateDoc = postAsDOM("wfs", TestsUtils.readResource("/requests/update_request_2.xml"));
+        // print(insertDoc);
+        assertTransactionResponse(updateDoc);
+        // TODO: check it returns an update statement, not a insert like it now does
+        String getRequest = TestsUtils.readResource("/requests/get_request_4.xml");
+        Document getDoc = postAsDOM("wfs", getRequest);
+        // print(getDoc);
+        // one more state for each feature, the property file has 5
+        assertEquals("7", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned)", getDoc));
+        // sorted by time, the update created this new instance and it should have the old value but the new time
+        // and the new
+        assertEquals("UPDATE_NOW", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned[gs:NAME='Feature_1'])[1]/gs:DESCRIPTION", getDoc));
+        assertEquals("-1 -1", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned[gs:NAME='Feature_1'])[1]/gs:GEOMETRY/gml:Point/gml:pos", getDoc));
+        assertEquals("UPDATE_NOW", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned[gs:NAME='Feature_2'])[1]/gs:DESCRIPTION", getDoc));
+        assertEquals("-2 2", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned[gs:NAME='Feature_2'])[1]/gs:GEOMETRY/gml:Point/gml:pos", getDoc));
+        String time = WFS20_XPATH_ENGINE.evaluate("(//gs:versioned[gs:NAME='Feature_1'])[1]/gs:TIME", getDoc);
+        Date updateTime = Converters.convert(time, Date.class);
+        assertThat(System.currentTimeMillis() - updateTime.getTime(), lessThan(300 * 1000l));
+        assertEquals("UPDATE_NOW", WFS20_XPATH_ENGINE.evaluate("(//gs:versioned[gs:NAME='Feature_2'])[1]/gs:DESCRIPTION", getDoc));
+    }
+
+    @Test
+    public void testDeleteFeature2() throws Exception {
+        // wipe out entire feature
+        String deleteRequest = TestsUtils.readResource("/requests/delete_request_1.xml");
+        Document deleteResponse = postAsDOM("wfs", deleteRequest);
+        // print(deleteResponse);
+        assertTransactionResponse(deleteResponse);
+
+        // read back and make sure there is none left
+        String getRequest = TestsUtils.readResource("/requests/get_request_4.xml");
+        Document getDoc = postAsDOM("wfs", getRequest);
+        // only Feature_1 left
+        assertEquals("3", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned)", getDoc));
+        assertEquals("3", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned[gs:NAME='Feature_1'])", getDoc));
+    }
+
+    @Test
+    public void testDeleteBetweenDates() throws Exception {
+        // wipe out entire feature
+        String deleteRequest = TestsUtils.readResource("/requests/delete_request_2.xml");
+        Document deleteResponse = postAsDOM("wfs", deleteRequest);
+        // print(deleteResponse);
+        assertTransactionResponse(deleteResponse);
+
+        // read back and make sure there is none left
+        String getRequest = TestsUtils.readResource("/requests/get_request_4.xml");
+        Document getDoc = postAsDOM("wfs", getRequest);
+        // Feature_1 fully left, Feature_2 only has one
+        assertEquals("3", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned[gs:NAME='Feature_1'])", getDoc));
+        assertEquals("1", WFS20_XPATH_ENGINE.evaluate("count(//gs:versioned[gs:NAME='Feature_2'])", getDoc));
+        assertEquals("UPDATE_2", WFS20_XPATH_ENGINE.evaluate("//gs:versioned[gs:NAME='Feature_2']/gs:DESCRIPTION", getDoc));
+    }
+
+
+    private void assertTransactionResponse(Document doc) throws XpathException {
+        assertEquals("1",  WFS20_XPATH_ENGINE.evaluate("count(/wfs:TransactionResponse)", doc));
     }
 
     /**
@@ -113,28 +216,4 @@ public final class TimeVersioningTest extends GeoServerSystemTestSupport {
         return xpathEngine;
     }
 
-
-
-    /**
-     * Check the result of a WFS 2.0 get feature request targeting stations data set.
-     */
-    private void checkWfs20StationsGetFeatureResult(Document document) {
-        checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
-                "st_gml32:Station_gml32[@gml:id='st.1']/st_gml32:measurements/ms_gml32:Measurement[ms_gml32:name='temperature']");
-        checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
-                "st_gml32:Station_gml32[@gml:id='st.1']/st_gml32:location/gml:Point[gml:pos='1.0 -1.0']");
-    }
-
-    /**
-     * Helper method that evaluates a xpath and checks if the number of nodes found
-     * correspond to the expected number,
-     */
-    private void checkCount(XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
-        try {
-            // evaluate the xpath and compare the number of nodes found
-            MatcherAssert.assertThat(xpathEngine.getMatchingNodes(xpath, document).getLength(), CoreMatchers.is(expectedCount));
-        } catch (Exception exception) {
-            throw new RuntimeException("Error evaluating xpath.", exception);
-        }
-    }
 }

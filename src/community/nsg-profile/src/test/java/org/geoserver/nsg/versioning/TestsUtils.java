@@ -101,7 +101,7 @@ public final class TestsUtils {
         if (time == null || expectedTime == null) {
             return false;
         }
-        return time.getTime() <= expectedTime.getTime() + toleranceInSeconds
-                && time.getTime() >= expectedTime.getTime() - toleranceInSeconds;
+        return time.getTime() <= expectedTime.getTime() + toleranceInSeconds * 1000
+                && time.getTime() >= expectedTime.getTime() - toleranceInSeconds * 1000;
     }
 }

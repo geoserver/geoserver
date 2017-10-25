@@ -11,8 +11,5 @@
       <wfs:ValueReference>DESCRIPTION</wfs:ValueReference>
       <wfs:Value>UPDATE_NOW</wfs:Value>
     </wfs:Property>
-    <fes:Filter>
-      <fes:ResourceId rid="Feature_2"/>
-    </fes:Filter>
   </wfs:Update>
 </wfs:Transaction>

@@ -99,7 +99,9 @@ final class VersioningFilterAdapter extends DuplicatingFilterVisitor {
     }
 
     static Filter adapt(FeatureTypeInfo featureTypeInfo, Filter filter) {
-        String timePropertyName = TimeVersioning.getTimePropertyName(featureTypeInfo);
+        if (filter == null) {
+            return null;
+        }
         VersioningFilterAdapter adapter = new VersioningFilterAdapter(featureTypeInfo);
         return (Filter) filter.accept(adapter, null);
     }

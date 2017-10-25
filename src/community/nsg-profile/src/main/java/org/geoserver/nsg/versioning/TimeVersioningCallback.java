@@ -4,6 +4,7 @@
  */
 package org.geoserver.nsg.versioning;
 
+import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.GeoServerExtensions;
@@ -13,6 +14,7 @@ import org.geoserver.wfs.InsertElementHandler;
 import org.geoserver.wfs.TransactionCallback;
 import org.geoserver.wfs.TransactionContext;
 import org.geoserver.wfs.TransactionContextBuilder;
+import org.geoserver.wfs.request.Delete;
 import org.geoserver.wfs.request.Insert;
 import org.geoserver.wfs.request.RequestObject;
 import org.geoserver.wfs.request.Update;
@@ -27,6 +29,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.Converters;
+import org.geotools.xml.EMFUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -66,7 +69,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
             // time versioning is not enabled for this feature type or is not a WFS 2.0 request
             return context;
         }
-        VersioningFilterAdapter.adapt(featureTypeInfo, context.getQuery().getFilter());
+        Filter adapted = VersioningFilterAdapter.adapt(featureTypeInfo, context.getQuery().getFilter());
+        context.getQuery().setFilter(adapted);
         SortBy sort = FILTER_FACTORY.sort(TimeVersioning.getTimePropertyName(featureTypeInfo), SortOrder.DESCENDING);
         SortBy[] sorts = context.getQuery().getSortBy();
         if (sorts == null) {
@@ -99,6 +103,14 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
                     setTimeAttribute((SimpleFeature) element);
                 }
             }
+        }
+        if (context.getElement() instanceof Delete) {
+            Delete delete = (Delete) context.getElement();
+            Filter filter = delete.getFilter();
+            QName typeName = context.getElement().getTypeName();
+            FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(typeName));
+            Filter adaptedFilter = VersioningFilterAdapter.adapt(featureTypeInfo, filter);
+            EMFUtils.set(delete.getAdaptee(), "filter", adaptedFilter);
         }
         return context;
     }
@@ -163,42 +175,46 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         };
     }
 
-    private List<SimpleFeature> getOnlyRecentFeatures(SimpleFeatureCollection features, FeatureTypeInfo featureTypeInfo) {
+    /**
+     * Returns the most recent version of each feature (note, this is an aggregate operator, a visitor, wondering
+     * if it could be optimized in a single db query)
+     *
+     * @param timeSortedFeatures
+     * @param featureTypeInfo
+     * @return
+     */
+    private List<SimpleFeature> getMostRecentFeatures(SimpleFeatureCollection timeSortedFeatures, FeatureTypeInfo featureTypeInfo) {
         String nameProperty = TimeVersioning.getNamePropertyName(featureTypeInfo);
-        Map<Object, List<SimpleFeature>> featuresIndexedById = new HashMap<>();
-        SimpleFeatureIterator iterator = features.features();
-        while (iterator.hasNext()) {
-            SimpleFeature feature = iterator.next();
-            Object id = feature.getAttribute(nameProperty);
-            List<SimpleFeature> existing = featuresIndexedById.computeIfAbsent(id, key -> new ArrayList<>());
-            existing.add(feature);
+        Map<Object, SimpleFeature> featuresIndexedById = new HashMap<>();
+        try(SimpleFeatureIterator iterator = timeSortedFeatures.features()) {
+            while (iterator.hasNext()) {
+                SimpleFeature feature = iterator.next();
+                Object id = feature.getAttribute(nameProperty);
+                if (featuresIndexedById.get(id) == null) {
+                    featuresIndexedById.put(id, feature);
+                }
+            }
         }
-        Comparator<SimpleFeature> comparator = buildFeatureTimeComparator(featureTypeInfo);
-        List<SimpleFeature> finalFeatures = new ArrayList<>();
-        featuresIndexedById.values().forEach(indexed -> {
-            indexed.sort(comparator);
-            SimpleFeature feature = indexed.get(0);
-            SimpleFeatureBuilder builder = new SimpleFeatureBuilder(feature.getFeatureType());
-            builder.init(feature);
-            finalFeatures.add(builder.buildFeature(null));
-        });
-        return finalFeatures;
+        return new ArrayList<>(featuresIndexedById.values());
     }
 
     private Insert buildInsertForUpdate(TransactionContext context) {
         Update update = (Update) context.getElement();
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(update.getTypeName()));
         SimpleFeatureCollection features = getTransactionFeatures(context);
-        List<SimpleFeature> recent = getOnlyRecentFeatures(features, featureTypeInfo);
+        List<SimpleFeature> recent = getMostRecentFeatures(features, featureTypeInfo);
         List<SimpleFeature> newFeatures = recent.stream()
-                .map(this::prepareInsertFeature).collect(Collectors.toList());
+                .map(f -> prepareInsertFeature(f, update)).collect(Collectors.toList());
         return new UpdateInsert(context.getRequest(), newFeatures);
     }
 
-    private SimpleFeature prepareInsertFeature(SimpleFeature feature) {
+    private SimpleFeature prepareInsertFeature(SimpleFeature feature, Update update) {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(feature.getFeatureType());
         builder.init(feature);
         SimpleFeature versionedFeature = builder.buildFeature(null);
+        // run the update
+        update.getUpdateProperties().forEach(p -> versionedFeature.setAttribute(p.getName().getLocalPart(), p.getValue()));
+        // set the time
         setTimeAttribute(versionedFeature);
         return versionedFeature;
     }
@@ -241,4 +257,5 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
             return features;
         }
     }
+
 }

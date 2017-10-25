@@ -7,7 +7,13 @@
                   http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd">
   <wfs:Query typeNames="gs:versioned">
     <fes:Filter>
-      <fes:ResourceId rid="Feature_1"  startDate="${startDate}"/>
+      <fes:And>
+        <fes:ResourceId rid="Feature_1"  startDate="${startDate}"/>
+        <fes:PropertyIsEqualTo>
+          <fes:ValueReference>DESCRIPTION</fes:ValueReference>
+          <fes:Literal>UPDATE_3</fes:Literal>
+        </fes:PropertyIsEqualTo>
+      </fes:And>
     </fes:Filter>
   </wfs:Query>
 </wfs:GetFeature>

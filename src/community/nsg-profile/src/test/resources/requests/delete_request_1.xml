@@ -6,13 +6,9 @@
                  xsi:schemaLocation="
                   http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd
                   http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd">
-  <wfs:Update typeName="versioned">
-    <wfs:Property>
-      <wfs:ValueReference>DESCRIPTION</wfs:ValueReference>
-      <wfs:Value>UPDATE_NOW</wfs:Value>
-    </wfs:Property>
+  <wfs:Delete typeName="versioned">
     <fes:Filter>
       <fes:ResourceId rid="Feature_2"/>
     </fes:Filter>
-  </wfs:Update>
+  </wfs:Delete>
 </wfs:Transaction>

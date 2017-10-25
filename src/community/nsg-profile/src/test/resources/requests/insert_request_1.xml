@@ -9,7 +9,8 @@
                   http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
   <wfs:Insert>
     <gs:versioned>
-      <gs:NAME>Feature_2</gs:NAME>
+      <gs:NAME>Feature_3</gs:NAME>
+      <gs:TIME>2010-01-01T12:00:00Z</gs:TIME>
       <gs:DESCRIPTION>INSERT_1</gs:DESCRIPTION>
       <gs:GEOMETRY>
         <gml:Point srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">

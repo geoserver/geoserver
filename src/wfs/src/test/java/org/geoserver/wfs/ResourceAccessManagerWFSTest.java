@@ -47,7 +47,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
     static final String INSERT_RESTRICTED_STREET = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\"\n"
             + "  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:cite=\"http://www.opengis.net/cite\"\n"
             + "  xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-            + "  xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads\">\n"
+            + "  xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd \">\n"
             + "  <wfs:Insert>\n"
             + "    <cite:Buildings fid=\"Buildings.123\">\n"
             + "      <cite:the_geom>\n"

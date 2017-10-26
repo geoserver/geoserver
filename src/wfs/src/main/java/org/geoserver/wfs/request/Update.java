@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.opengis.wfs.InsertElementType;
+import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
 
+import net.opengis.wfs20.UpdateType;
+import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.UpdateElementHandler;
 import org.geoserver.wfs.request.Insert.WFS11;
@@ -28,6 +31,10 @@ public abstract class Update extends TransactionElement {
     }
     
     public abstract List<Property> getUpdateProperties();
+
+    public abstract void setUpdateProperties(List<Property> properties);
+
+    public abstract Property createProperty();
     
     public static class WFS11 extends Update {
         public WFS11(EObject adaptee) {
@@ -41,6 +48,19 @@ public abstract class Update extends TransactionElement {
                 list.add(new Property.WFS11((EObject) o));
             }
             return list;
+        }
+
+        @Override
+        public void setUpdateProperties(List<Property> properties) {
+            UpdateElementType update = (UpdateElementType) adaptee;
+            update.getProperty().clear();
+            properties.stream().map(p -> p.getAdaptee()).forEach(p -> update.getProperty().add(p));
+        }
+
+        @Override
+        public Property createProperty() {
+            PropertyType property = WfsFactory.eINSTANCE.createPropertyType();
+            return new Property.WFS11(property);
         }
 
         public static UpdateElementType unadapt(Update update) {
@@ -72,6 +92,19 @@ public abstract class Update extends TransactionElement {
                 list.add(new Property.WFS20((EObject) o));
             }
             return list;
+        }
+
+        @Override
+        public void setUpdateProperties(List<Property> properties) {
+            UpdateType update = (UpdateType) adaptee;
+            update.getProperty().clear();
+            properties.stream().map(p -> (net.opengis.wfs20.PropertyType) p.getAdaptee()).forEach(p -> update.getProperty().add(p));
+        }
+
+        @Override
+        public Property createProperty() {
+            net.opengis.wfs20.PropertyType property = Wfs20Factory.eINSTANCE.createPropertyType();
+            return new Property.WFS20(property);
         }
     }
 

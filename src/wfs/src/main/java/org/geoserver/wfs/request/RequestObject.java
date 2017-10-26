@@ -115,6 +115,10 @@ public abstract class RequestObject {
     public Filter getFilter() {
         return eGet(adaptee, "filter", Filter.class);
     }
+
+    public void setFilter(Filter filter) {
+        eSet(adaptee, "filter", filter);
+    }
     
     public boolean isSetOutputFormat() {
         return eIsSet(adaptee, "outputFormat");

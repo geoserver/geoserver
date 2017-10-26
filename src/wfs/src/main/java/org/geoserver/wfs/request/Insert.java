@@ -10,7 +10,6 @@ import java.util.List;
 import net.opengis.wfs.IdentifierGenerationOptionType;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.WfsFactory;
-import net.opengis.wfs20.InsertType;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -27,6 +26,8 @@ public abstract class Insert extends TransactionElement {
     
     public abstract List getFeatures();
 
+    public abstract void setFeatures(List features);
+
     public boolean isIdGenUseExisting() {
         return false;
     }
@@ -40,6 +41,11 @@ public abstract class Insert extends TransactionElement {
         @Override
         public List getFeatures() {
             return eGet(adaptee, "feature", List.class);
+        }
+
+        @Override
+        public void setFeatures(List features) {
+            eSet(adaptee, "feature", features);
         }
 
         @Override
@@ -70,6 +76,11 @@ public abstract class Insert extends TransactionElement {
         @Override
         public List getFeatures() {
             return eGet(adaptee, "any", List.class);
+        }
+
+        @Override
+        public void setFeatures(List features) {
+            eSet(adaptee, "any", features);
         }
 
     }

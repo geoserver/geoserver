@@ -28,6 +28,7 @@
     ends up being, for example, /geoserver/gwc/*
   -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
     <property name="location">
       <value>classpath:application.properties</value>
     </property>

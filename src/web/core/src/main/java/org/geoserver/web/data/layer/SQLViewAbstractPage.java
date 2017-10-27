@@ -179,6 +179,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                 parameters.processInputs();
                 if (sql != null && !"".equals(sql.trim())) {
                     paramProvider.refreshFromSql(sql);
+                    parameters.setPageable(false);
                     target.add(parameters);
                 }
             }

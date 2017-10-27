@@ -65,6 +65,9 @@ If further changes to the view are required, the page has a link to the SQL View
 Once created, the SQL view layer is used in the same way as a conventional table-backed layer,
 with the one limitation of being read-only.
 
+.. warning:: Saving the SQL view definition here is not sufficient, the layer containing it must be saved as well for the change to have any effect.
+             This is because the SQL view definition is actually just one component of the layer/featuretype/coverage attributes.
+
 Parameterizing SQL Views
 ------------------------
 
@@ -179,4 +182,3 @@ The following are some resources for constructing regular expressions:
   * GeoServer uses the standard Java regular expression engine. The `Pattern class Javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_ contain the full specification of the allowed syntax.
   * `<http://www.regular-expressions.info>`_ has many tutorials and examples of regular expressions.
   * The `myregexp <http://myregexp.com/>`_ applet can be used to test regular expressions online.
-

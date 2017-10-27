@@ -519,6 +519,9 @@ public class XStreamPersisterTest {
         
         Document dom = dom( in( out ) );
         assertEquals( "style", dom.getDocumentElement().getNodeName() );
+
+        catalog.add(s2);
+        assertNull(s2.getWorkspace());
     }
 
     @Test

@@ -5,20 +5,10 @@
  */
 package org.geoserver.script.wfs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.wfs.TransactionEvent;
@@ -27,10 +17,17 @@ import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
+import org.springframework.stereotype.Component;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+@Component
 public class ScriptTransactionPlugin implements TransactionPlugin {
 
     static Logger LOGGER = Logging.getLogger(ScriptTransactionPlugin.class);

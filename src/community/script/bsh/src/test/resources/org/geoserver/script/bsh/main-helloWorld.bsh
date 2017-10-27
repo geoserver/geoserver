@@ -1,4 +1,6 @@
-import org.restlet.data.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 run(request,response) {
-  response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
+  response.setContentType("text/plain");
+  response.getWriter().write("Hello World!");
 }

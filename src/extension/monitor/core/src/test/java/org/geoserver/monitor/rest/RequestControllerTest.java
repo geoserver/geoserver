@@ -1,27 +1,6 @@
 package org.geoserver.monitor.rest;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
+import net.sf.json.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -36,6 +15,18 @@ import org.jsoup.Jsoup;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
+
+import java.io.*;
+import java.text.ParseException;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.*;
 
 public class RequestControllerTest extends GeoServerSystemTestSupport {
 
@@ -80,6 +71,49 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
         // the structure is different, check the title
         assertEquals("Request 5", document.select("#content > h1 > span").text());
     }
+
+    /**
+     * This is undocumented/accidental behavior of 2.10.x (and previous) that actually got
+     * used by other projects, adding it back preserving its original structure (pure XStream
+     * reflection) even if it's really hard on the eyes....
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetXMLById() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                RestBaseController.ROOT_PATH + "/monitor/requests/5.xml");
+        assertEquals(200, response.getStatus());
+
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        // print(dom);
+
+        assertXpathEvaluatesTo("5", "/org.geoserver.monitor.RequestData/id", dom);
+        assertXpathEvaluatesTo("RUNNING", "/org.geoserver.monitor.RequestData/status", dom);
+    }
+    
+    /**
+     * This is undocumented/accidental behavior of 2.10.x (and previous) that actually got
+     * used by other projects, adding it back preserving its original structure (pure XStream
+     * reflection) even if it's really hard on the eyes....
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetJSONById() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                RestBaseController.ROOT_PATH + "/monitor/requests/5.json");
+        assertEquals(200, response.getStatus());
+
+        JSONObject json = (JSONObject) json(response);
+        // print(json);
+
+        JSONObject data = json.getJSONObject("org.geoserver.monitor.RequestData");
+        assertNotNull(data);
+        assertEquals("5", data.getString("id"));
+        assertEquals("RUNNING", data.getString("status"));
+    }
+
 
     @Test
     public void testGetAllCSV() throws Exception {

@@ -89,8 +89,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     boolean[] selection;
     boolean selectAllValue;
-    
-    
+    boolean pageable;
+
+
     /**
      * Builds a non selectable table
      */
@@ -436,7 +437,29 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Selects a single item by index.
      */
     public void selectIndex(int i) {
+        validateSelectionIndex(i);
         selection[i] = true;
+    }
+
+    /**
+     * Un-selects a single item by index.
+     */
+    public void unseelectIndex(int i) {
+        validateSelectionIndex(i);
+        selection[i] = false;
+    }
+
+    public void validateSelectionIndex(int i) {
+        if (selection.length <= i) {
+            if(dataProvider.size() <= i) {
+                throw new ArrayIndexOutOfBoundsException(i);
+            } else {
+                // expand selection array, the data provider likely resized and the two got misaligned
+                boolean[] newSelection = new boolean[(int) dataProvider.size()];
+                System.arraycopy(selection, 0, newSelection, 0, selection.length);
+                this.selection = newSelection;
+            }
+        }
     }
 
     /**
@@ -703,6 +726,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         
         public SelectionModel(int index) {
             this.index = index;
+            validateSelectionIndex(index);
         }
 
         public Boolean getObject() {
@@ -710,7 +734,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         }
 
         public void setObject(Boolean object) {
-            selection[index] = object.booleanValue();            
+            selection[index] = object.booleanValue();
         }
 
         public void detach() {

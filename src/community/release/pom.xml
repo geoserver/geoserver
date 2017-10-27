@@ -113,7 +113,7 @@
      <artifactId>gs-gpxppio</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!-- <dependency>
+   <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-geoserver</artifactId>
      <version>${project.version}</version>
@@ -122,7 +122,7 @@
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-commons</artifactId>
      <version>${project.version}</version>
-   </dependency> -->
+   </dependency>
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-hz-cluster</artifactId>

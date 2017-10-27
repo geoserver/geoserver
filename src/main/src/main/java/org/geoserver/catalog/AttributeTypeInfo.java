@@ -118,4 +118,9 @@ public interface AttributeTypeInfo extends Serializable {
      * @param length
      */
     void setLength(Integer length);
+
+    /**
+     * The same as {@link #equals(Object)}, except doesn't compare {@link FeatureTypeInfo}s, to avoid recursion.
+     */
+    boolean equalsIngnoreFeatureType(Object obj);
 }

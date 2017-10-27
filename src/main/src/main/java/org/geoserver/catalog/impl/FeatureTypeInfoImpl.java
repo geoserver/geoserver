@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -185,8 +186,27 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         if (attributes == null) {
             if (other.getAttributes() != null)
                 return false;
-        } else if (!attributes.equals(other.getAttributes()))
-            return false;
+        } else {
+            List<AttributeTypeInfo> otherAttributes = other.getAttributes();
+            if (otherAttributes == attributes)
+                return true;
+
+            ListIterator<AttributeTypeInfo> attributesIterator = attributes.listIterator();
+            ListIterator<AttributeTypeInfo> otherAttributesIterator = otherAttributes.listIterator();
+            while (attributesIterator.hasNext() && otherAttributesIterator.hasNext()) {
+                AttributeTypeInfo attr = attributesIterator.next();
+                AttributeTypeInfo otherAttr = otherAttributesIterator.next();
+
+                if (attr == null) {
+                    if (otherAttr != null)
+                        return false;
+                } else if (!attr.equalsIngnoreFeatureType(otherAttr)) {
+                    return false;
+                }
+            }
+            if (attributesIterator.hasNext() || otherAttributesIterator.hasNext())
+              return false;
+        }
         if (responseSRS == null) {
             if (other.getResponseSRS() != null)
                 return false;

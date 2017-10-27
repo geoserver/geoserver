@@ -177,6 +177,52 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
             return false;
         return true;
     }
-    
-    
+
+    @Override
+    public boolean equalsIngnoreFeatureType(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AttributeTypeInfoImpl other = (AttributeTypeInfoImpl) obj;
+        if (attribute == null) {
+            if (other.attribute != null)
+                return false;
+        } else if (!attribute.equals(other.attribute))
+            return false;
+        if (binding == null) {
+            if (other.binding != null)
+                return false;
+        } else if (!binding.equals(other.binding))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (length == null) {
+            if (other.length != null)
+                return false;
+        } else if (!length.equals(other.length))
+            return false;
+        if (maxOccurs != other.maxOccurs)
+            return false;
+        if (metadata == null) {
+            if (other.metadata != null)
+                return false;
+        } else if (!metadata.equals(other.metadata))
+            return false;
+        if (minOccurs != other.minOccurs)
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (nillable != other.nillable)
+            return false;
+        return true;
+    }
 }

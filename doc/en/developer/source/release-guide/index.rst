@@ -83,6 +83,8 @@ When creating the first release candidate of a series, there are some extra step
     git checkout -b 2.11.x
     git push geoserver 2.11.x
 
+* Enable `GitHub branch protection <https://github.com/geoserver/geoserver/settings/branches>`_ for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
+
 * Checkout the master branch and update the version in all pom.xml files; for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
 
     git checkout master

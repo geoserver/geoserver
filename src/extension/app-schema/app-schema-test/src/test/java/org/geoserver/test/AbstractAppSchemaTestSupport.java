@@ -588,42 +588,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     }
     
     /**
-     * Checks the pixel i/j has the specified color
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     */
-    protected void assertPixel(BufferedImage image, int i, int j, Color color) {
-        Color actual = getPixelColor(image, i, j);
-        
-
-        assertEquals(color, actual);
-    }
-
-    /**
-     * Gets a specific pixel color from the specified buffered image
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     *
-     */
-    protected Color getPixelColor(BufferedImage image, int i, int j) {
-        ColorModel cm = image.getColorModel();
-        Raster raster = image.getRaster();
-        Object pixel = raster.getDataElements(i, j, null);
-        
-        Color actual;
-        if(cm.hasAlpha()) {
-            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), cm.getAlpha(pixel));
-        } else {
-            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), 255);
-        }
-        return actual;
-    }
-
-    /**
      * Checks that the identifiers of the features in the provided collection match the specified ids.
      * 
      * <p>

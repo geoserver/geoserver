@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 
 import java.io.FileReader;
@@ -26,6 +27,7 @@ import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -585,5 +587,37 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         StyleEditPage page = new StyleEditPage(styleInfo);
         styleTest.startPage(page);
         styleTest.assertDisabled("styleForm:context:panel:workspace");
+    }
+
+    @Test
+    public void testPreviewSLD11Legend() throws Exception {
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" " +
+                        "xmlns:se=\"http://www.opengis.net/se\">\n" +
+                        "  <NamedLayer>\n" +
+                        "    <se:Name>ne_110m_admin_0_countries</se:Name>\n" +
+                        "    <UserStyle>\n" +
+                        "      <se:Name>ne_110m_admin_0_countries</se:Name>\n" +
+                        "      <se:FeatureTypeStyle>\n" +
+                        "        <se:Rule>\n" +
+                        "          <se:Name>Single symbol</se:Name>\n" +
+                        "          <se:PolygonSymbolizer>\n" +
+                        "            <se:Fill>\n" +
+                        "              <se:SvgParameter name=\"fill\">#ff0000</se:SvgParameter>\n" +
+                        "            </se:Fill>\n" +
+                        "          </se:PolygonSymbolizer>\n" +
+                        "        </se:Rule>\n" +
+                        "      </se:FeatureTypeStyle>\n" +
+                        "    </UserStyle>\n" +
+                        "  </NamedLayer>\n" +
+                        "</StyledLayerDescriptor>";
+
+        // tester.debugComponentTrees();
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.clickLink("styleForm:context:panel:preview", true);
+        StyleAdminPanel panel = (StyleAdminPanel) tester.getComponentFromLastRenderedPage("styleForm:context:panel");
+        // check the SvgParameter has been interpreted and we get a red fill, not a gray one
+        assertPixel(panel.legendImage, 10, 10, Color.RED);
     }
 }

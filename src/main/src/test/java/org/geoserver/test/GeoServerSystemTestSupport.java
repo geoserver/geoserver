@@ -12,7 +12,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -1669,6 +1672,53 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
         dispatch(request, response);
         assertEquals(code, response.getErrorCode());
+    }
+
+    /**
+     * Gets a specific pixel color from the specified buffered image
+     * @param image
+     * @param i
+     * @param j
+     * @param color
+     *
+     */
+    protected Color getPixelColor(BufferedImage image, int i, int j) {
+        ColorModel cm = image.getColorModel();
+        Raster raster = image.getRaster();
+        Object pixel = raster.getDataElements(i, j, null);
+
+        Color actual;
+        if(cm.hasAlpha()) {
+            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), cm.getAlpha(pixel));
+        } else {
+            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), 255);
+        }
+        return actual;
+    }
+
+    /**
+     * Checks the pixel i/j has the specified color
+     * @param image
+     * @param i
+     * @param j
+     * @param color
+     */
+    protected void assertPixel(BufferedImage image, int i, int j, Color color) {
+        Color actual = getPixelColor(image, i, j);
+
+
+        assertEquals(color, actual);
+    }
+
+    /**
+     * Checks the pixel i/j is fully transparent
+     * @param image
+     * @param i
+     * @param j
+     */
+    protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
+  	    int pixel = image.getRGB(i,j);
+        assertEquals(true, (pixel>>24) == 0x00);
     }
 
     //

@@ -67,6 +67,7 @@ import org.geoserver.wms.web.publish.StyleTypeChoiceRenderer;
 import org.geoserver.wms.web.publish.StyleTypeModel;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.geotools.styling.Style;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -328,7 +329,8 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     //No external legend, use generated legend
                     GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class, stylePage.getGeoServerApplication().getApplicationContext());
                     StyleInfo si = new StyleInfoImpl(stylePage.getCatalog());
-                    si.setFormat(stylePage.getStyleInfo().getFormat());
+                    String format = stylePage.getStyleInfo().getFormat();
+                    si.setFormat(format);
                     String styleName = "tmp" + UUID.randomUUID().toString();
                     String styleFileName = styleName + '.' + Styles.handler(si.getFormat()).getFileExtension();
                     si.setFilename(styleFileName);
@@ -340,13 +342,17 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         try(OutputStream os = styleResource.out()) {
                             IOUtils.write(stylePage.editor.getInput(), os);
                         }
+                        // guess the version, the style in the editor might be using one that's different from the
+                        // the one in the
+                        Version version = Styles.handler(format).version(stylePage.editor.getInput());
+                        si.setFormatVersion(version);
                         Style style = dd.parsedStyle(si);
                         if (style != null) {
                             GetLegendGraphicRequest request = new GetLegendGraphicRequest();
                             request.setLayer(null);
                             request.setStyle(style);
                             request.setStrict(false);
-                            Map<String, String> legendOptions = new HashMap<String, String>();
+                            Map<String, String> legendOptions = new HashMap<>();
                             legendOptions.put("forceLabels", "on");
                             legendOptions.put("fontAntiAliasing", "true");
                             request.setLegendOptions(legendOptions);

@@ -28,7 +28,7 @@ public class OwsRequestResource extends MonitorRequestController {
 
     @GetMapping(produces = { CSV_MEDIATYPE_VALUE, EXCEL_MEDIATYPE_VALUE, ZIP_MEDIATYPE_VALUE })
     @ResponseBody
-    protected RestWrapper handleObjectGetHtml(
+    protected RestWrapper handleObjectGetRestWrapper(
             @PathVariable(name = "request", required = false) String req,
             @RequestParam(name = "from", required = false) String from,
             @RequestParam(name = "to", required = false) String to,
@@ -38,7 +38,7 @@ public class OwsRequestResource extends MonitorRequestController {
             @RequestParam(name = "count", required = false) Long count,
             @RequestParam(name = "live", required = false) Boolean live,
             @RequestParam(name = "fields", required = false) String fieldsSpec) throws Exception {
-        return super.handleObjectGetHtml(req, from, to, filter, order, offset, count, live,
+        return super.handleObjectGetRestWrapper(req, from, to, filter, order, offset, count, live,
                 fieldsSpec);
     }
 

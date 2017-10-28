@@ -5,20 +5,22 @@
  */
 package org.geoserver.script.wps;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONWriter;
+import org.geoserver.wps.ppio.CDataPPIO;
+import org.springframework.stereotype.Component;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
-
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONWriter;
-import org.geoserver.wps.ppio.CDataPPIO;
 
 /**
  * PPIO that allows scripts to return a Map to be encoded as JSON.
  * 
  * @author Justin Deoliveira, OpenGeo
  */
+@Component
 public class MapJSONPPIO extends CDataPPIO {
 
     protected MapJSONPPIO() {

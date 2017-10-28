@@ -10,14 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFacade;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PropertyStyleHandler;
-import org.geoserver.catalog.SLDHandler;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -34,11 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -46,6 +35,7 @@ import java.util.Properties;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.*;
 
@@ -266,6 +256,35 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 "</sld:StyledLayerDescriptor>";
     }
 
+    String newSLD11XML() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis" +
+                        ".net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1.0\" " +
+                        "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/sld" +
+                        " http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd\" xmlns:se=\"http://www" +
+                        ".opengis.net/se\">\n" +
+                        "  <NamedLayer>\n" +
+                        "    <se:Name>foo</se:Name>\n" +
+                        "    <UserStyle>\n" +
+                        "      <se:Name>foo</se:Name>\n" +
+                        "      <se:FeatureTypeStyle>\n" +
+                        "        <se:Rule>\n" +
+                        "          <se:Name>Single symbol</se:Name>\n" +
+                        "          <se:LineSymbolizer>\n" +
+                        "            <se:Stroke>\n" +
+                        "              <se:SvgParameter name=\"stroke\">#aa6e8e</se:SvgParameter>\n" +
+                        "              <se:SvgParameter name=\"stroke-width\">2</se:SvgParameter>\n" +
+                        "              <se:SvgParameter name=\"stroke-linejoin\">round</se:SvgParameter>\n" +
+                        "              <se:SvgParameter name=\"stroke-linecap\">round</se:SvgParameter>\n" +
+                        "            </se:Stroke>\n" +
+                        "          </se:LineSymbolizer>\n" +
+                        "        </se:Rule>\n" +
+                        "      </se:FeatureTypeStyle>\n" +
+                        "    </UserStyle>\n" +
+                        "  </NamedLayer>\n" +
+                        "</StyledLayerDescriptor>";
+    }
+
     @Test
     public void testPostAsSLD() throws Exception {
         String xml = newSLDXML();
@@ -379,7 +398,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response =
-            putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 200, response.getStatus() );
 
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
@@ -390,6 +409,42 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
     }
+
+    @Test
+    public void testPutAsSLD11Raw() throws Exception {
+        String xml = newSLD11XML();
+
+        // check it's version 1.0 before
+        StyleInfo infoBefore = catalog.getStyleByName( "Ponds" );
+        assertThat(infoBefore.getFormatVersion(), equalTo(SLDHandler.VERSION_10));
+
+        // put a SLD 1.1 in raw mode (the content type is ignored in raw mode, but mimicking was gsconfig does here)
+        MockHttpServletResponse response =
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds?raw=true", xml, "application/vnd.ogc.se+xml");
+        assertEquals( 200, response.getStatus() );
+
+        // now it should have been "upgraded" to 1.1
+        StyleInfo infoAfter = catalog.getStyleByName( "Ponds" );
+        assertThat(infoAfter.getFormatVersion(), equalTo(SLDHandler.VERSION_11));
+    }
+
+    @Test
+    public void testPutVersionBackAndForth() throws Exception {
+        // go from 1.0 to 1.1
+        testPutAsSLD11Raw();
+
+        String xml = newSLDXML();
+
+        // put a SLD 1.0 in raw mode (the content type is ignored in raw mode, but mimicking was gsconfig does here)
+        MockHttpServletResponse response =
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds?raw=true", xml, "application/vnd.ogc.sld+xml");
+        assertEquals( 200, response.getStatus() );
+
+        // now it should have been modified back to 1.0
+        StyleInfo infoAfter = catalog.getStyleByName( "Ponds" );
+        assertThat(infoAfter.getFormatVersion(), equalTo(SLDHandler.VERSION_10));
+    }
+
 
     @Test
     public void testPutAsSLDWithExtension() throws Exception {

@@ -4,29 +4,17 @@
  */
 package org.geoserver.rest.catalog;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
-import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.factory.CommonFactoryFinder;
@@ -43,23 +31,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.xml.sax.EntityResolver;
 
-import com.google.common.io.Files;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Example style resource controller
@@ -404,12 +389,28 @@ public class StyleController extends AbstractCatalogController {
         // String extentsion = "sld"; // TODO: determine this from path
         
         ResourcePool resourcePool = catalog.getResourcePool();
-        if( raw ){
-            writeRaw( s, request.getInputStream() );
-        }
-        else {
-            String content = IOUtils.toString( request.getInputStream());
-            EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+        byte[] rawData = IOUtils.toByteArray(request.getInputStream());
+        String content = new String(rawData);
+        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+        if (raw) {
+            writeRaw(s, new ByteArrayInputStream(rawData));
+
+            try {
+                // figure out if we need a version switch
+                for (StyleHandler format : Styles.handlers()) {
+                    if (Objects.equals(s.getFormat(), format.getFormat())) {
+                        Version version = Styles.handler(s.getFormat()).version(content);
+                        if (version != null) {
+                            s.setFormatVersion(version);
+                            catalog.save(s);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Could not determine the version of the raw style, the previous one was " +
+                        "retained", e);
+            }
+        } else {
             for (StyleHandler format : Styles.handlers()) {
                 for (Version version : format.getVersions()) {
                     String mimeType = format.mimeType(version);
@@ -427,14 +428,14 @@ public class StyleController extends AbstractCatalogController {
                         }
 
                         Style style = Styles.style(sld);
-                        if( format instanceof SLDHandler && sld.getStyledLayers().length <= 1){
+                        if (format instanceof SLDHandler && sld.getStyledLayers().length <= 1) {
                             s.setFormat(format.getFormat());
                             resourcePool.writeStyle(s, style, true);
                             catalog.save(s);
-                        }
-                        else {
+                        } else {
                             s.setFormat(format.getFormat());
-                            writeRaw(s, request.getInputStream());
+                            s.setFormatVersion(version);
+                            writeRaw(s, new ByteArrayInputStream(rawData));
                         }
                         return;
                     }

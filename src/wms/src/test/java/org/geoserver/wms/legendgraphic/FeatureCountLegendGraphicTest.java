@@ -47,6 +47,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
         testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
+        testData.addStyle("PopulationElse", "PopulationElse.sld", FeatureCountLegendGraphicTest.class, catalog);
         testData.addStyle("scaleDependent","scaleDependent.sld",  GetLegendGraphicTest.class, catalog);
         testData.addVectorLayer(SF_STATES, Collections.EMPTY_MAP, "states.properties",
                 GetMapIntegrationTest.class, catalog);
@@ -161,6 +162,23 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         // this is the rule for outline and text symbolizer, Alaska and Hawaii are not in the
         // map but Washington DC is and it's not a state (50 - 2 + 1)
         assertLabel("(49)", rules[3]);
+    }
+
+    @Test
+    public void testStatesElse() throws Exception {
+        runGetLegendGraphics(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                        + "&layer=" + getLayerId(SF_STATES)
+                        + "&style=PopulationElse&width=550&height=250&srs=EPSG:4326" //
+                        + "&bbox=" + "-130,24,-66,50" + "&legend_options="
+                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY + ":true");
+        assertEquals(1, ruleSets.size());
+        Rule[] rules = ruleSets.get(0);
+        logLabels(rules);
+        assertEquals(3, rules.length);
+        assertLabel("2M - 4M (10)", rules[0]);
+        assertLabel("< 2M (16)", rules[1]);
+        assertLabel("Others (23)", rules[2]);
     }
 
     @Test

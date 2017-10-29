@@ -249,6 +249,7 @@ class FeatureCountProcessor {
                         } else if (rule.getFilter() == null || rule.getFilter().evaluate(f)) {
                             AtomicInteger counter = counters.get(rule);
                             counter.incrementAndGet();
+                            matched = true;
                             if(matchFirst) {
                                 break;
                             }

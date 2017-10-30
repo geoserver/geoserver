@@ -4,7 +4,37 @@
  */
 package org.geoserver.rest.catalog;
 
-import org.geoserver.catalog.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FilenameUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -14,7 +44,15 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUploadPathMapper;
-import org.geotools.data.*;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataAccessFactory;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.DefaultTransaction;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
+import org.geotools.data.FileDataStoreFactorySpi;
+import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStoreFactory;
@@ -27,23 +65,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.vfny.geoserver.util.DataStoreUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @RestController
 @ControllerAdvice
@@ -130,6 +159,31 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         }
 
         return null;
+    }
+
+    public static List<String> lookupUploadedFeatureTypeNames(List<Resource> files, String format) {
+        List<String> uploadedFeatureTypeNames = new ArrayList<>();
+        
+        for (Resource file : files) {
+            if(FilenameUtils.getExtension(file.name()).equalsIgnoreCase(format)) {
+                uploadedFeatureTypeNames.add(FilenameUtils.getBaseName(file.path()));
+            }
+        }
+        return uploadedFeatureTypeNames;
+    }
+
+    private static List<Name> lookupUploadedFeatureNames(List<String> uploadedFeatureTypeNames,
+            List<Name> featureTypeNames) {
+        List<Name> uploadedFeatureNames = new ArrayList<>();
+
+        for (String fileName : uploadedFeatureTypeNames) {
+            for (Name name : featureTypeNames) {
+                if (fileName.equals(name.getLocalPart())) {
+                    uploadedFeatureNames.add(name);
+                }
+            }
+        }
+        return uploadedFeatureNames;
     }
 
     @GetMapping
@@ -230,8 +284,11 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
         List<Resource> files = doFileUpload(method, workspaceName, storeName, filename, format, request);
         final Resource uploadedFile = files.get(0);
+        files.remove(0);
 
         DataAccessFactory factory = lookupDataStoreFactory(format);
+
+        List<String> uploadedFeatureTypeNames = lookupUploadedFeatureTypeNames(files, format);
 
         //look up the target datastore type specified by user
         String sourceDataStoreFormat = format;
@@ -345,7 +402,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 // copy over the feature types
                 DataStore sourceDataStore = (DataStore) source;
                 DataStore targetDataStore = (DataStore) ds;
-                for (String featureTypeName : sourceDataStore.getTypeNames()) {
+                String[] typeNames = (uploadedFeatureTypeNames.isEmpty()
+                        ? sourceDataStore.getTypeNames()
+                        : uploadedFeatureTypeNames.toArray(new String[1]));
+                for (String featureTypeName : typeNames) {
 
                     // does the feature type already exist in the target?
                     try {
@@ -411,15 +471,20 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             }
 
             List<Name> featureTypeNames = source.getNames();
-            for ( int i = 0; i < featureTypeNames.size(); i++ ) {
+            List<Name> uploadedFeatureNames = lookupUploadedFeatureNames(uploadedFeatureTypeNames,
+                    featureTypeNames);
+            List<Name> typeNames = (uploadedFeatureNames.isEmpty() ? featureTypeNames
+                    : uploadedFeatureNames);
+            for (int i = 0; i < typeNames.size(); i++) {
 
                 //unless configure specified "all", only configure the first feature type
                 if ( !"all".equalsIgnoreCase( configure ) && i > 0 ) {
                     break;
                 }
 
-                FeatureSource fs = ds.getFeatureSource(featureTypeNames.get(i));
-                FeatureTypeInfo ftinfo = featureTypesByNativeName.get(featureTypeNames.get(i).getLocalPart());
+                FeatureSource fs = ds.getFeatureSource(typeNames.get(i));
+                FeatureTypeInfo ftinfo = featureTypesByNativeName
+                        .get(typeNames.get(i).getLocalPart());
 
                 if ( ftinfo == null) {
                     //auto configure the feature type as well
@@ -496,7 +561,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             }
         }
     }
-
 
     /**
      * Does the file upload based on the specified method.

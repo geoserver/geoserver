@@ -45,28 +45,29 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
     }
 
     @Override
-    public GetFeatureContext beforeQuerying(GetFeatureContext context) {
+    public void beforeQuerying(GetFeatureContext context) {
         String version = context.getRequest().getVersion();
         if (version == null || !version.startsWith("2.0")) {
-            return context;
+            return;
         }
         FeatureTypeInfo featureTypeInfo = context.getFeatureTypeInfo();
         if (!TimeVersioning.isEnabled(featureTypeInfo)) {
             // time versioning is not enabled for this feature type or is not a WFS 2.0 request
-            return context;
+            return;
         }
-        Filter adapted = VersioningFilterAdapter.adapt(featureTypeInfo, context.getQuery().getFilter());
-        context.getQuery().setFilter(adapted);
+        Query query = new Query(context.getQuery());
+        Filter adapted = VersioningFilterAdapter.adapt(featureTypeInfo, query.getFilter());
+        query.setFilter(adapted);
         SortBy sort = FILTER_FACTORY.sort(TimeVersioning.getTimePropertyName(featureTypeInfo), SortOrder.DESCENDING);
-        SortBy[] sorts = context.getQuery().getSortBy();
+        SortBy[] sorts = query.getSortBy();
         if (sorts == null) {
             sorts = new SortBy[]{sort};
         } else {
             sorts = Arrays.copyOf(sorts, sorts.length + 1);
             sorts[sorts.length - 1] = sort;
         }
-        context.getQuery().setSortBy(sorts);
-        return context;
+        query.setSortBy(sorts);
+        context.setQuery(query);
     }
 
     @Override

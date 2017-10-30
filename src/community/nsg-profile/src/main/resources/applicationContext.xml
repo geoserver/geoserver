@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="versioning" class="org.geoserver.nsg.versioning.TimeVersioningCallback">
+    <constructor-arg ref="catalog"/>
+  </bean>
+  <bean id="versioningLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="wfsVersioningConfig"/>
+    <property name="titleKey" value="data.resource.config.wfs"/>
+    <property name="componentClass" value="WfsVersioningConfig"/>
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+</beans>

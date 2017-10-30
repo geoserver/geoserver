@@ -247,6 +247,7 @@
         <module>mbstyle</module>
         <module>s3-geotiff</module>
         <module>status-monitoring</module>
+        <module>nsg-profile</module>
       </modules>
     </profile>
     <profile>
@@ -548,5 +549,11 @@
         <module>status-monitoring</module>
       </modules>
     </profile>
-  </profiles>  
+    <profile>
+      <id>nsg-profile</id>
+      <modules>
+        <module>nsg-profile</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

@@ -1256,6 +1256,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         Set<StyleInfo> styles = new HashSet<>(layerInfo.getStyles());
         styles.add(layerInfo.getDefaultStyle());
         for (StyleInfo styleInfo : styles) {
+            if (styleInfo == null) {
+                continue;
+            }
             org.geoserver.catalog.LegendInfo legendInfo = styleInfo.getLegend();
             LegendInfoBuilder gwcLegendInfo = new LegendInfoBuilder();
             if (legendInfo != null) {

@@ -9,7 +9,7 @@
   <bean id="versioningLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wfsVersioningConfig"/>
     <property name="titleKey" value="data.resource.config.wfs"/>
-    <property name="componentClass" value="WfsVersioningConfig"/>
+    <property name="componentClass" value="org.geoserver.nsg.versioning.web.WfsVersioningConfig"/>
     <property name="supportedTypes">
       <list>
         <value>org.geoserver.catalog.FeatureTypeInfo</value>

@@ -111,7 +111,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
 
     public Object[] toArray(Object[] arg0) {
         List list = new ArrayList();
-        
+
         Iterator it = collections.iterator();
         while(it.hasNext()){
             FeatureCollection col = (FeatureCollection)it.next();
@@ -121,7 +121,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
             }
             it2.close();
         }
-        
+
         return list.toArray(arg0);
     }
 

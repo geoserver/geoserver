@@ -6,12 +6,14 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.feature.CompositeFeatureCollection;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
@@ -57,8 +59,6 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
 
         private boolean readOnly;
 
-        private SimpleFeatureType schema;
-
         public GranuleStoreView(StructuredGridCoverage2DReader structuredDelegate,
                 String referenceName, CoverageView coverageView, boolean readOnly)
                 throws UnsupportedOperationException, IOException {
@@ -66,145 +66,27 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
             this.coverageView = coverageView;
             this.name = referenceName;
             this.readOnly = readOnly;
-            this.schema = buildSchema();
-        }
-
-        private SimpleFeatureType buildSchema() throws IOException {
-            GranuleSource source = reader.getGranules(name, readOnly);
-            SimpleFeatureType inputSchema = source.getSchema();
-            List<AttributeDescriptor> descriptors = inputSchema.getAttributeDescriptors();
-            StringBuilder builder = new StringBuilder();
-            for (AttributeDescriptor descriptor : descriptors) {
-
-                // Avoid exposing ImageIndex
-                if (!descriptor.getLocalName().equalsIgnoreCase("imageIndex")) {
-                    Class<?> binding = descriptor.getType().getBinding();
-                    String bindingClass = binding.toString();
-                    if (bindingClass.startsWith("class ")) {
-                        bindingClass = bindingClass.substring(6, bindingClass.length());
-                    }
-
-                    builder.append(descriptor.getName()).append(":").append(bindingClass)
-                            .append(",");
-                }
-            }
-            String schema = builder.toString();
-            schema = schema.substring(0, schema.length() - 1);
-
-            try {
-                return DataUtilities.createType(coverageView.getName(), schema);
-            } catch (SchemaException e) {
-                throw new IOException("Exception occurred while creating the schemaType", e);
-            }
         }
 
         @Override 
         public SimpleFeatureCollection getGranules(Query q) throws IOException {
             List<CoverageBand> bands = coverageView.getCoverageBands();
-            SimpleFeatureCollection collection = null;
+            Query renamedQuery = q != null ? new Query(q) : new Query();
+            List<SimpleFeatureCollection> collections = new ArrayList<>();
             for (CoverageBand band : bands) {
                 String coverageName = band.getInputCoverageBands().get(0).getCoverageName();
-                if (collection == null) {
-                    collection = reader.getGranules(coverageName, readOnly).getGranules(q);
-                } else {
-                    collection = join(collection, band, coverageName);
-                }
+                renamedQuery.setTypeName(coverageName);
+                SimpleFeatureCollection collection = reader.getGranules(coverageName, readOnly).getGranules(renamedQuery);
+                collections.add(collection);
             }
-            return collection;
-        }
-
-        private SimpleFeatureCollection join(SimpleFeatureCollection inputCollection,
-                CoverageBand band, final String coverageName) throws IOException {
-            // TODO Improve this by doing batch join and storing the result into memory
-
-            final DefaultProgressListener listener = new DefaultProgressListener();
-            final ListFeatureCollection collection = new ListFeatureCollection(schema);
-            // Getting attributes structure to be filled
-
-            inputCollection.accepts(new AbstractFeatureVisitor() {
-                public void visit(Feature feature) {
-                    if (feature instanceof SimpleFeature) {
-                        // get the feature
-                        final SimpleFeature sourceFeature = (SimpleFeature) feature;
-                        Collection<Property> props = sourceFeature.getProperties();
-                        Name propName = null;
-                        Object propValue = null;
-
-                        // Assigning value to dest feature for matching attributes
-                        Filter filter = null;
-                        for (Property prop : props) {
-                            propName = prop.getName();
-                            if (
-                            !propName.getLocalPart().equalsIgnoreCase("imageIndex")
-                                    && !propName.getLocalPart().equalsIgnoreCase("the_geom")
-                                    && !propName.getLocalPart().equalsIgnoreCase("location")) {
-                                propValue = prop.getValue();
-                                Filter updatedFilter = Utils.FF.equal(Utils.FF.property(propName),
-                                        Utils.FF.literal(propValue), true);
-                                if (filter == null) {
-                                    filter = updatedFilter;
-                                } else {
-                                    filter = FF.and(filter, updatedFilter);
-                                }
-                            }
-                        }
-                        Query query = new Query();
-                        query.setFilter(filter);
-                        SimpleFeatureCollection coverageCollection;
-                        try {
-                            coverageCollection = reader.getGranules(coverageName, readOnly)
-                                    .getGranules(query);
-                            coverageCollection.accepts(new AbstractFeatureVisitor() {
-                                public void visit(Feature feature) {
-                                    if (feature instanceof SimpleFeature) {
-                                        // get the feature
-                                        final SimpleFeature destFeature = DataUtilities
-                                                .template(schema);
-                                        Collection<Property> props = destFeature.getProperties();
-                                        Name propName = null;
-                                        Object propValue = null;
-
-                                        // Assigning value to dest feature for matching attributes
-                                        for (Property prop : props) {
-                                            propName = prop.getName();
-                                            propValue = ((SimpleFeature) feature)
-                                                    .getAttribute(propName);
-                                            // Matching attributes are set
-
-                                            destFeature.setAttribute(propName, propValue);
-                                        }
-                                        collection.add(destFeature);
-
-                                        // check if something bad occurred
-                                        if (listener.isCanceled() || listener.hasExceptions()) {
-                                            if (listener.hasExceptions())
-                                                throw new RuntimeException(listener.getExceptions()
-                                                        .peek());
-                                            else
-                                                throw new IllegalStateException(
-                                                        "Feature visitor has been canceled");
-                                        }
-                                    }
-                                }
-                            }, listener);
-                        } catch (IOException e) {
-                            LOGGER.log(Level.FINER, e.getMessage(), e);
-                        } catch (UnsupportedOperationException e) {
-                            LOGGER.log(Level.FINER, e.getMessage(), e);
-                        }
-
-                        // check if something bad occurred
-                        if (listener.isCanceled() || listener.hasExceptions()) {
-                            if (listener.hasExceptions())
-                                throw new RuntimeException(listener.getExceptions().peek());
-                            else
-                                throw new IllegalStateException("Feature visitor has been canceled");
-                        }
-                    }
-                }
-            }, listener);
-
-            return collection;
+            // aggregate and return
+            if (collections.size() == 0) {
+                throw new IllegalStateException("Unexpected, there is not a single band in the definition?");
+            } else if (collections.size() == 1) {
+                return collections.get(0);
+            } else {
+                return new CompositeFeatureCollection(collections);
+            }
         }
 
         @Override
@@ -219,7 +101,9 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
 
         @Override
         public SimpleFeatureType getSchema() throws IOException {
-            return schema;
+            List<CoverageBand> bands = coverageView.getCoverageBands();
+            String coverageName = bands.get(0).getInputCoverageBands().get(0).getCoverageName();
+            return reader.getGranules(coverageName, true).getSchema();
         }
 
         @Override

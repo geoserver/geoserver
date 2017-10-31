@@ -2,7 +2,6 @@ package org.geoserver.wfs;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
-import net.opengis.wfs.*;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.request.*;
@@ -13,14 +12,12 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
-public class TransactionPlugin2Tester extends TransactionListenerTester implements TransactionPlugin2 {
+public class TransactionCallbackTester implements TransactionCallback {
 
     public static final String FOLSOM_STREET = "Folsom Street";
 
@@ -120,10 +117,10 @@ public class TransactionPlugin2Tester extends TransactionListenerTester implemen
     boolean beforeCommitCalled;
     TransactionRequest request;
     BiFunction<Catalog, TransactionRequest, TransactionRequest> beforeTransaction =
-            TransactionPlugin2Tester::defaultTransformation;
+            TransactionCallbackTester::defaultTransformation;
     Catalog catalog;
 
-    public TransactionPlugin2Tester(Catalog catalog) {
+    public TransactionCallbackTester(Catalog catalog) {
         this.catalog = catalog;
     }
 
@@ -148,12 +145,10 @@ public class TransactionPlugin2Tester extends TransactionListenerTester implemen
         this.committed = committed;
     }
 
-    @Override
     public void clear() {
-        super.clear();
         this.result = null;
         this.committed = false;
         this.beforeCommitCalled = false;
-        this.beforeTransaction = TransactionPlugin2Tester::defaultTransformation;
+        this.beforeTransaction = TransactionCallbackTester::defaultTransformation;
     }
 }

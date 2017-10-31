@@ -13,7 +13,7 @@ import org.geoserver.wfs.request.TransactionResponse;
  * A transaction plugin is able to listen to a transaction evolution, perform
  * checks and throw exceptions, alter transaction requests, as well as
  */
-public interface TransactionPlugin2 extends TransactionListener, ExtensionPriority {
+public interface TransactionCallback extends ExtensionPriority {
     /**
      * Check/alter the transaction request elements
      */

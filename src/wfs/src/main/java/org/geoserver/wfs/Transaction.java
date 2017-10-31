@@ -74,7 +74,7 @@ public class Transaction {
     protected List<TransactionElementHandler> transactionElementHandlers = new ArrayList<>();
     protected List<TransactionListener> transactionListeners = new ArrayList<>();
     protected List<TransactionPlugin> transactionPlugins = new ArrayList<>();
-    protected List<TransactionPlugin2> transactionPlugins2 = new ArrayList<>();
+    protected List<TransactionCallback> transactionPlugins2 = new ArrayList<>();
     
     public Transaction(WFSInfo wfs, Catalog catalog, ApplicationContext context) {
         this.wfs = wfs;
@@ -84,7 +84,7 @@ public class Transaction {
         transactionElementHandlers.addAll(GeoServerExtensions.extensions(TransactionElementHandler.class));
         transactionListeners.addAll(GeoServerExtensions.extensions(TransactionListener.class));
         transactionPlugins.addAll(GeoServerExtensions.extensions(TransactionPlugin.class));
-        transactionPlugins2.addAll(GeoServerExtensions.extensions(TransactionPlugin2.class));
+        transactionPlugins2.addAll(GeoServerExtensions.extensions(TransactionCallback.class));
         // plugins are listeners too, but I want to make sure they are notified
         // of
         // changes in the same order as the other plugin callbacks
@@ -447,7 +447,7 @@ public class Transaction {
                 tp.beforeTransaction(tx);
             }
         }
-        for (TransactionPlugin2 tp : transactionPlugins2) {
+        for (TransactionCallback tp : transactionPlugins2) {
             request = tp.beforeTransaction(request);
         }
 
@@ -462,7 +462,7 @@ public class Transaction {
                 tp.afterTransaction(tx, tr, committed);
             }
         }
-        for (TransactionPlugin2 tp : transactionPlugins2) {
+        for (TransactionCallback tp : transactionPlugins2) {
             tp.afterTransaction(request, result, committed);
         }
     }
@@ -475,7 +475,7 @@ public class Transaction {
                 tp.beforeCommit(tx);
             }
         }
-        for (TransactionPlugin2 tp : transactionPlugins2) {
+        for (TransactionCallback tp : transactionPlugins2) {
             tp.beforeCommit(request);
         }
     }
@@ -684,7 +684,6 @@ public class Transaction {
         public void dataStoreChange(TransactionEvent event)
             throws WFSException {
             dataStoreChange(transactionPlugins, event);
-            dataStoreChange(transactionPlugins2, event);
             dataStoreChange(transactionListeners, event);
         }
     }

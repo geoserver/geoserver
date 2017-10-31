@@ -49,7 +49,7 @@ import org.opengis.referencing.operation.TransformException;
  * @version $Id$
  * 
  */
-public class GWCTransactionListener implements TransactionPlugin2 {
+public class GWCTransactionListener implements TransactionCallback {
 
     private static Logger log = Logging.getLogger(GWCTransactionListener.class);
 

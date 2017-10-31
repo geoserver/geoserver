@@ -24,7 +24,7 @@ Those links also contain the validity domain for the file such as envelope/time/
 dimensions (when present) for multidimensional layers.
 
 Configuration
-=============
+-------------
 
 DirectDownload capability can be activated as default for all layers, as global CSW configuration.
 Go into the CSW service panel and click on the *enable DirectDownload* checkbox if you want it enabled for all layers:
@@ -42,7 +42,7 @@ whole layer data which may contain a wide set of files).
 Note that the size check is performed on the raw data files prior to any compression.
 
 Per Layer configuration
-=======================
+-----------------------
 
 DirectDownload capability can also be enabled/disabled for a specific layer, which will override the
 global CSW configuration.

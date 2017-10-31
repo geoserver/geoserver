@@ -27,8 +27,14 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.footprint.FootprintBehavior;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
@@ -46,6 +52,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import it.geosolutions.jaiext.JAIExt;
 
+import static org.geotools.gml2.GML.coverage;
 import static org.junit.Assert.*;
 
 public class CoverageViewTest extends GeoServerSystemTestSupport {
@@ -554,6 +561,41 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         cat.add(coverageInfo);
         
         return cat.getCoverage(coverageInfo.getId());
+    }
+
+    @Test
+    public void testCoverageViewGranuleSource() throws Exception {
+        final String VIEW_NAME = "view";
+        CoverageInfo info = buildHeterogeneousResolutionView(VIEW_NAME, cv -> {
+            cv.setSelectedResolution(SelectedResolution.BEST);
+        }, "B02", "B03", "B04");
+
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
+        GranuleSource source = reader.getGranules(VIEW_NAME, true);
+        Query query = new Query(VIEW_NAME);
+        // used to throw exception here
+        SimpleFeatureCollection granules = source.getGranules(query);
+        // just check we can pull data from it
+        DataUtilities.first(granules);
+        // there are three bands, so three granules making up the coverage
+        assertEquals(3, granules.size());
+    }
+
+    @Test
+    public void testCoverageViewGranuleSourceAggregation() throws Exception {
+        final String VIEW_NAME = "viewAggregate";
+        CoverageInfo info = buildHeterogeneousResolutionView(VIEW_NAME, cv -> {
+            cv.setSelectedResolution(SelectedResolution.BEST);
+        }, "B02", "B03", "B04", "B01");
+
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
+        GranuleSource source = reader.getGranules(VIEW_NAME, true);
+        Query query = new Query(VIEW_NAME);
+        // used to throw exception here
+        SimpleFeatureCollection granules = source.getGranules(query);
+        MinVisitor visitor = new MinVisitor("location");
+        granules.accepts(visitor, null);
+        assertEquals("20170410T103021026Z_fullres_CC2.1989_T32TMT_B01.tif", visitor.getMin());
     }
 
 }

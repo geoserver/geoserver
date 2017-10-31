@@ -172,7 +172,8 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, "regional_currents", null);
         final GranuleStore granules = (GranuleStore) ((StructuredGridCoverage2DReader) reader).getGranules("regional_currents", true);
         SimpleFeatureCollection granulesCollection = granules.getGranules(null);
-        assertEquals(1, granulesCollection.size());
+        // getting the actual phisical granules behind the view,
+        assertEquals(2, granulesCollection.size());
         final Filter filter = FF.equal(FF.property("location"), FF.literal("sample.grb2"), true);
         final int removed = granules.removeGranules(filter);
         assertEquals (1, removed);

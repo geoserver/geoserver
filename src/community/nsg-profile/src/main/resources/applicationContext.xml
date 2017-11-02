@@ -31,22 +31,12 @@
 			request) that was previously created using the index result type
 		</description>
 		<constructor-arg ref="geoServer"/>
+    <constructor-arg ref="pageResultsService"/>
 	</bean>
 	<!-- Page result service -->
-	<bean class="org.geoserver.nsg.pagination.random.PageResultsWebFeatureService" id="pageResultsTarget">
+	<bean class="org.geoserver.nsg.pagination.random.PageResultsWebFeatureService" id="pageResultsService">
 		<constructor-arg ref="geoServer"/>
 		<constructor-arg ref="indexConfiguration"/>
-	</bean>
-	<bean class="org.geoserver.platform.Service" id="wfsServicePageResults">
-		<constructor-arg index="0" value="wfs"/>
-		<constructor-arg index="1" value="http://www.opengis.net/wfs/2.0"/>
-		<constructor-arg index="2" ref="pageResultsTarget"/>
-		<constructor-arg index="3" value="2.0.2"/>
-		<constructor-arg index="4">
-			<list>
-				<value>PageResults</value>
-			</list>
-		</constructor-arg>
 	</bean>
 	<bean class="org.geoserver.nsg.pagination.random.ResultTypeKvpParser" id="resultType202KvpParser"/>
 	<!-- Clean scheduler -->

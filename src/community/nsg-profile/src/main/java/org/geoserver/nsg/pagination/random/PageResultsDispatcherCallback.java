@@ -5,15 +5,33 @@
 
 package org.geoserver.nsg.pagination.random;
 
+import net.opengis.wfs20.GetFeatureType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.AbstractDispatcherCallback;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.data.DataStore;
+import org.geotools.data.DefaultTransaction;
+import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.filter.text.cql2.CQL;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -28,26 +46,40 @@ import java.util.logging.Logger;
 
 public class PageResultsDispatcherCallback extends AbstractDispatcherCallback {
 
-    private final static Logger LOGGER = Logging.getLogger(PageResultsDispatcherCallback.class);
+    static final String PAGE_RESULTS = "PageResults";
 
+    private final static Logger LOGGER = Logging.getLogger(PageResultsDispatcherCallback.class);
+    private final PageResultsWebFeatureService service;
     private GeoServer gs;
 
-    public PageResultsDispatcherCallback(GeoServer gs) {
+
+    public PageResultsDispatcherCallback(GeoServer gs, PageResultsWebFeatureService service) {
         this.gs = gs;
+        this.service = service;
+
+        // configure the extra operation in WFS 2.0
+        List<Service> services = GeoServerExtensions.extensions(Service.class);
+        for (Service s : services) {
+            if ("wfs".equals(s.getId().toLowerCase()) && Integer.valueOf(2).equals(s.getVersion().getMajor())) {
+                if (!s.getOperations().contains(PAGE_RESULTS)) {
+                    s.getOperations().add(PAGE_RESULTS);
+                }
+            }
+        }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
-        if (service.getService() instanceof PageResultsWebFeatureService) {
-            PageResultsWebFeatureService prService = (PageResultsWebFeatureService) service
-                    .getService();
-            String resultSetId = (String) request.getKvp().get("resultSetID");
-            prService.setResultSetId(resultSetId);
+        Object req = request.getKvp().get("REQUEST");
+        if ("wfs".equals(service.getId().toLowerCase())
+                && PAGE_RESULTS.equals(req)) {
+            // allow the request to be successfully parsed as a GetFeature (needs at least a typename or a featureId)
             request.getKvp().put("featureId", Collections.singletonList("dummy"));
-
+            // replace the service
+            return new Service(service.getId(), this.service, service.getVersion(),
+                    service.getOperations());
         }
-        return super.serviceDispatched(request, service);
+        return service;
     }
 
     @Override

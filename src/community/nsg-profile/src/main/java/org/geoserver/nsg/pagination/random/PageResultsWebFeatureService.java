@@ -11,6 +11,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.DefaultWebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -29,6 +31,7 @@ import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -48,14 +51,14 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
 
     private static final BigInteger DEFAULT_COUNT = new BigInteger("10");
 
-    private String resultSetId;
-
     private IndexConfiguration indexConfiguration;
 
     public PageResultsWebFeatureService(GeoServer geoServer,
             IndexConfiguration indexConfiguration) {
         super(geoServer);
         this.indexConfiguration = indexConfiguration;
+
+
     }
 
     /**
@@ -77,7 +80,8 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
      */
     public FeatureCollectionResponse pageResults(GetFeatureType request) throws Exception {
         // Retrieve stored request
-        GetFeatureType gft = getFeature(this.resultSetId);
+        String resultSetId = (String) Dispatcher.REQUEST.get().getKvp().get("resultSetID");
+        GetFeatureType gft = getFeature(resultSetId);
 
         // Update with incoming parameters or index request or defaults
         Method setBaseUrl = OwsUtils.setter(gft.getClass(), "baseUrl", String.class);
@@ -96,15 +100,6 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
         gft.setResultType(resultType);
         // Execute as getFeature
         return super.getFeature(gft);
-    }
-
-    /**
-     * Sets the resultSetId
-     *
-     * @param resultSetId
-     */
-    public void setResultSetId(String resultSetId) {
-        this.resultSetId = resultSetId;
     }
 
     /**

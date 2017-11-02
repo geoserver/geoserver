@@ -17,17 +17,12 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.DeleteElementType;
-import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.UpdateElementType;
+import net.opengis.wfs.*;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.wfs.TransactionEvent;
-import org.geoserver.wfs.TransactionEventType;
-import org.geoserver.wfs.TransactionPlugin;
-import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.*;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
@@ -54,7 +49,7 @@ import org.opengis.referencing.operation.TransformException;
  * @version $Id$
  * 
  */
-public class GWCTransactionListener implements TransactionPlugin {
+public class GWCTransactionListener implements TransactionCallback {
 
     private static Logger log = Logging.getLogger(GWCTransactionListener.class);
 
@@ -72,10 +67,8 @@ public class GWCTransactionListener implements TransactionPlugin {
     /**
      * Not used, we're interested in the {@link #dataStoreChange} and {@link #afterTransaction}
      * hooks
-     * 
-     * @see org.geoserver.wfs.TransactionPlugin#beforeTransaction(net.opengis.wfs.TransactionType)
      */
-    public TransactionType beforeTransaction(TransactionType request) throws WFSException {
+    public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
         // nothing to do
         return request;
     }
@@ -84,9 +77,9 @@ public class GWCTransactionListener implements TransactionPlugin {
      * Not used, we're interested in the {@link #dataStoreChange} and {@link #afterTransaction}
      * hooks
      * 
-     * @see org.geoserver.wfs.TransactionPlugin#beforeCommit(net.opengis.wfs.TransactionType)
+     * @see org.geoserver.wfs.TransactionPlugin#beforeCommit(net.opengis.wfs.TransactionRequest)
      */
-    public void beforeCommit(TransactionType request) throws WFSException {
+    public void beforeCommit(TransactionRequest request) throws WFSException {
         // nothing to do
     }
 
@@ -96,8 +89,7 @@ public class GWCTransactionListener implements TransactionPlugin {
      * 
      * @see org.geoserver.wfs.TransactionPlugin#afterTransaction
      */
-    public void afterTransaction(final TransactionType request, TransactionResponseType result,
-            boolean committed) {
+    public void afterTransaction(final TransactionRequest request, TransactionResponse result, boolean committed) {
         if (!committed) {
             return;
         }
@@ -109,7 +101,7 @@ public class GWCTransactionListener implements TransactionPlugin {
         }
     }
 
-    private void afterTransactionInternal(final TransactionType transaction, boolean committed) {
+    private void afterTransactionInternal(final TransactionRequest transaction, boolean committed) {
 
         final Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions = getByLayerDirtyRegions(transaction);
         if (byLayerDirtyRegions.isEmpty()) {
@@ -202,15 +194,16 @@ public class GWCTransactionListener implements TransactionPlugin {
         final ReferencedEnvelope affectedBounds = affectedFeatures.getBounds();
 
         final TransactionType transaction = event.getRequest();
+        TransactionRequest request = TransactionRequest.adapt(transaction);
 
         for (String tileLayerName : affectedTileLayers) {
-            addLayerDirtyRegion(transaction, tileLayerName, affectedBounds);
+            addLayerDirtyRegion(request, tileLayerName, affectedBounds);
         }
     }
 
     @SuppressWarnings("unchecked")
     private Map<String, List<ReferencedEnvelope>> getByLayerDirtyRegions(
-            final TransactionType transaction) {
+            final TransactionRequest transaction) {
 
         final Map<Object, Object> extendedProperties = transaction.getExtendedProperties();
         Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions;
@@ -223,7 +216,7 @@ public class GWCTransactionListener implements TransactionPlugin {
         return byLayerDirtyRegions;
     }
 
-    private void addLayerDirtyRegion(final TransactionType transaction, final String tileLayerName,
+    private void addLayerDirtyRegion(final TransactionRequest transaction, final String tileLayerName,
             final ReferencedEnvelope affectedBounds) {
 
         Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions = getByLayerDirtyRegions(transaction);

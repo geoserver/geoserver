@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.opengis.wfs.AllSomeType;
 import net.opengis.wfs.DeleteElementType;
@@ -18,12 +19,9 @@ import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
-import net.opengis.wfs20.DeleteType;
-import net.opengis.wfs20.InsertType;
-import net.opengis.wfs20.ReplaceType;
-import net.opengis.wfs20.UpdateType;
-import net.opengis.wfs20.Wfs20Factory;
+import net.opengis.wfs20.*;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.data.Transaction;
 
@@ -76,11 +74,23 @@ public abstract class TransactionRequest extends RequestObject {
     public abstract boolean isReleaseActionSome();
     
     public abstract void setReleaseActionAll();
+
+    public abstract void setReleaseActionSome();
     
     public abstract List<TransactionElement> getElements();
+
+    public abstract void setElements(List<TransactionElement> elements);
     
     public abstract TransactionResponse createResponse();
-    
+
+    public abstract Insert createInsert();
+
+    public abstract Update createUpdate();
+
+    public abstract Delete createDelete();
+
+    public abstract Replace createReplace();
+
     public static class WFS11 extends TransactionRequest {
         public WFS11(EObject adaptee) {
             super(adaptee);
@@ -100,7 +110,12 @@ public abstract class TransactionRequest extends RequestObject {
         public void setReleaseActionAll() {
             ((TransactionType)adaptee).setReleaseAction(AllSomeType.ALL_LITERAL);
         }
-        
+
+        @Override
+        public void setReleaseActionSome() {
+            ((TransactionType)adaptee).setReleaseAction(AllSomeType.SOME_LITERAL);
+        }
+
         @Override
         public List<TransactionElement> getElements() {
             List<TransactionElement> list = new ArrayList();
@@ -125,7 +140,27 @@ public abstract class TransactionRequest extends RequestObject {
             
             return list;
         }
-        
+
+        @Override
+        public void setElements(List<TransactionElement> elements) {
+            TransactionType tx = (TransactionType) adaptee;
+            tx.getInsert().clear();
+            tx.getDelete().clear();
+            tx.getUpdate().clear();
+
+            for (TransactionElement element : elements) {
+                if (element instanceof Insert) {
+                    tx.getInsert().add(((Insert) element).getAdaptee());
+                } else if (element instanceof Update) {
+                    tx.getUpdate().add(((Update) element).getAdaptee());
+                } else if (element instanceof Delete) {
+                    tx.getDelete().add(((Delete) element).getAdaptee());
+                }
+                // no replace in wfs 1.1, cannot be there
+            }
+            
+        }
+
         @Override
         public TransactionResponse createResponse() {
             WfsFactory factory = (WfsFactory) getFactory();
@@ -139,13 +174,36 @@ public abstract class TransactionRequest extends RequestObject {
             
             return new TransactionResponse.WFS11(tr);
         }
-        
+
+        @Override
+        public Insert createInsert() {
+            WfsFactory factory = (WfsFactory) getFactory();
+            return new Insert.WFS11(factory.createInsertElementType());
+        }
+
+        @Override
+        public Update createUpdate() {
+            WfsFactory factory = (WfsFactory) getFactory();
+            return new Update.WFS11(factory.createUpdateElementType());
+        }
+
+        @Override
+        public Delete createDelete() {
+            WfsFactory factory = (WfsFactory) getFactory();
+            return new Delete.WFS11(factory.createDeleteElementType());
+        }
+
+        @Override
+        public Replace createReplace() {
+            throw new UnsupportedOperationException("Replace not supported in WFS 1.1 transactions");
+        }
+
         public static TransactionType unadapt(TransactionRequest request) {
             if (request instanceof WFS11) {
                 return (TransactionType) request.getAdaptee();
             }
 
-            WfsFactory factory = (WfsFactory) WfsFactory.eINSTANCE;
+            WfsFactory factory = WfsFactory.eINSTANCE;
             TransactionType tx = factory.createTransactionType();
             
             tx.setVersion(request.getVersion());
@@ -173,6 +231,11 @@ public abstract class TransactionRequest extends RequestObject {
             
             return tx;
         }
+
+        @Override
+        public Map getExtendedProperties() {
+            return ((TransactionType) adaptee).getExtendedProperties();
+        }
     }
     
     public static class WFS20 extends TransactionRequest {
@@ -196,7 +259,12 @@ public abstract class TransactionRequest extends RequestObject {
         public void setReleaseActionAll() {
             ((net.opengis.wfs20.TransactionType)adaptee).setReleaseAction(net.opengis.wfs20.AllSomeType.ALL);
         }
-        
+
+        @Override
+        public void setReleaseActionSome() {
+            ((net.opengis.wfs20.TransactionType)adaptee).setReleaseAction(net.opengis.wfs20.AllSomeType.SOME);
+        }
+
         @Override
         public List<TransactionElement> getElements() {
             List<TransactionElement> list = new ArrayList();
@@ -225,7 +293,15 @@ public abstract class TransactionRequest extends RequestObject {
             }
             return list;
         }
-        
+
+        @Override
+        public void setElements(List<TransactionElement> elements) {
+            net.opengis.wfs20.TransactionType tx = (net.opengis.wfs20.TransactionType) adaptee;
+            EList<AbstractTransactionActionType> transactionElements = tx.getAbstractTransactionAction();
+            transactionElements.clear();
+            elements.stream().map(e -> (AbstractTransactionActionType) e.getAdaptee()).forEach(e -> transactionElements.add(e));
+        }
+
         @Override
         public TransactionResponse createResponse() {
             Wfs20Factory factory = (Wfs20Factory) getFactory();
@@ -237,6 +313,35 @@ public abstract class TransactionRequest extends RequestObject {
             tr.getTransactionSummary().setTotalReplaced(BigInteger.valueOf(0));
             
             return new TransactionResponse.WFS20(tr);
+        }
+
+        @Override
+        public Insert createInsert() {
+            Wfs20Factory factory = (Wfs20Factory) getFactory();
+            return new Insert.WFS20(factory.createInsertType());
+        }
+
+        @Override
+        public Update createUpdate() {
+            Wfs20Factory factory = (Wfs20Factory) getFactory();
+            return new Update.WFS20(factory.createUpdateType());
+        }
+
+        @Override
+        public Delete createDelete() {
+            Wfs20Factory factory = (Wfs20Factory) getFactory();
+            return new Delete.WFS20(factory.createDeleteType());
+        }
+
+        @Override
+        public Replace createReplace() {
+            Wfs20Factory factory = (Wfs20Factory) getFactory();
+            return new Replace.WFS20(factory.createReplaceType());
+        }
+
+        @Override
+        public Map getExtendedProperties() {
+            return ((net.opengis.wfs20.TransactionType) adaptee).getExtendedProperties();
         }
     }
 }

@@ -5,32 +5,13 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import com.google.common.collect.ImmutableSet;
 import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
-
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
@@ -39,7 +20,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.namespace.QName;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 public class GWCTransactionListenerTest {
 
@@ -56,9 +50,9 @@ public class GWCTransactionListenerTest {
     @Test
     public void testNoInteractionsInUnusedMethods() {
 
-        TransactionType request = mock(TransactionType.class);
+        TransactionRequest request = mock(TransactionRequest.class);
 
-        TransactionType returned = listener.beforeTransaction(request);
+        TransactionRequest returned = listener.beforeTransaction(request);
         assertSame(request, returned);
         verifyNoMoreInteractions(request, mediator);
 
@@ -69,8 +63,8 @@ public class GWCTransactionListenerTest {
     @Test
     public void testAfterTransactionUncommitted() {
 
-        TransactionType request = mock(TransactionType.class);
-        TransactionResponseType result = mock(TransactionResponseType.class);
+        TransactionRequest request = mock(TransactionRequest.class);
+        TransactionResponse result = mock(TransactionResponse.class);
         boolean committed = false;
 
         listener.afterTransaction(request, result, committed);
@@ -171,8 +165,8 @@ public class GWCTransactionListenerTest {
 
         issueInsert(extendedProperties, transactionBounds);
 
-        TransactionType request = mock(TransactionType.class);
-        TransactionResponseType result = mock(TransactionResponseType.class);
+        TransactionRequest request = mock(TransactionRequest.class);
+        TransactionResponse result = mock(TransactionResponse.class);
         when(request.getExtendedProperties()).thenReturn(extendedProperties);
 
         when(mediator.getDeclaredCrs(anyString())).thenReturn(compoundCrs);
@@ -194,8 +188,8 @@ public class GWCTransactionListenerTest {
 
         issueInsert(extendedProperties, affectedBounds2);
 
-        TransactionType request = mock(TransactionType.class);
-        TransactionResponseType result = mock(TransactionResponseType.class);
+        TransactionRequest request = mock(TransactionRequest.class);
+        TransactionResponse result = mock(TransactionResponse.class);
         when(request.getExtendedProperties()).thenReturn(extendedProperties);
 
         when(mediator.getDeclaredCrs(anyString())).thenReturn(WGS84);

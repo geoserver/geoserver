@@ -71,9 +71,10 @@ public class Transaction {
 
     /** Geotools2 transaction used for this opperations */
     protected org.geotools.data.Transaction transaction;
-    protected List transactionElementHandlers = new ArrayList();
-    protected List transactionListeners = new ArrayList();
-    protected List transactionPlugins = new ArrayList();
+    protected List<TransactionElementHandler> transactionElementHandlers = new ArrayList<>();
+    protected List<TransactionListener> transactionListeners = new ArrayList<>();
+    protected List<TransactionPlugin> transactionPlugins = new ArrayList<>();
+    protected List<TransactionCallback> transactionPlugins2 = new ArrayList<>();
     
     public Transaction(WFSInfo wfs, Catalog catalog, ApplicationContext context) {
         this.wfs = wfs;
@@ -83,10 +84,12 @@ public class Transaction {
         transactionElementHandlers.addAll(GeoServerExtensions.extensions(TransactionElementHandler.class));
         transactionListeners.addAll(GeoServerExtensions.extensions(TransactionListener.class));
         transactionPlugins.addAll(GeoServerExtensions.extensions(TransactionPlugin.class));
+        transactionPlugins2.addAll(GeoServerExtensions.extensions(TransactionCallback.class));
         // plugins are listeners too, but I want to make sure they are notified
         // of
         // changes in the same order as the other plugin callbacks
         transactionListeners.removeAll(transactionPlugins);
+        transactionListeners.removeAll(transactionPlugins2);
         // sort plugins according to priority
         Collections.sort(transactionPlugins, new TransactionPluginComparator());
     }
@@ -157,10 +160,7 @@ public class Transaction {
 
         // inform plugins we're about to start, and let them eventually
         // alter the request
-        for (Iterator it = transactionPlugins.iterator(); it.hasNext();) {
-            TransactionPlugin tp = (TransactionPlugin) it.next();
-            fireBeforeTransaction(request, tp);
-        }
+        request = fireBeforeTransaction(request);
 
         // setup the transaction listener multiplexer
         TransactionListenerMux multiplexer = new TransactionListenerMux();
@@ -344,11 +344,8 @@ public class Transaction {
             if (exception != null) {
                 transaction.rollback();
             } else {
-                // inform plugins we're about to commit
-                for (Iterator it = transactionPlugins.iterator(); it.hasNext();) {
-                    TransactionPlugin tp = (TransactionPlugin) it.next();
-                    fireBeforeCommit(request, tp);
-                }
+                fireBeforeCommit(request);
+
 
                 transaction.commit();
                 committed = true;
@@ -387,10 +384,7 @@ public class Transaction {
         }
 
         // inform plugins we're done
-        for (Iterator it = transactionPlugins.iterator(); it.hasNext();) {
-            TransactionPlugin tp = (TransactionPlugin) it.next();
-            fireAfterTransaction(request, result, committed, tp);
-        }
+        fireAfterTransaction(request, result, committed);
 
         //        
         // if ( result.getTransactionResult().getStatus().getPARTIAL() != null )
@@ -444,22 +438,48 @@ public class Transaction {
         // response = build;
     }
 
-    void fireAfterTransaction(TransactionRequest request, TransactionResponse result, boolean committed, TransactionPlugin tp) {
+    private TransactionRequest fireBeforeTransaction(TransactionRequest request) {
+        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
+        if (tx != null) {
+            // TransactionPlugin cannot alter transactions since the advent of WFS 2.0, it's left like that and
+            // will be deprecated
+            for (TransactionPlugin tp : transactionPlugins) {
+                tp.beforeTransaction(tx);
+            }
+        }
+        for (TransactionCallback tp : transactionPlugins2) {
+            request = tp.beforeTransaction(request);
+        }
+
+        return request;
+    }
+
+    private void fireAfterTransaction(TransactionRequest request, TransactionResponse result, boolean committed) {
         TransactionType tx = TransactionRequest.WFS11.unadapt(request);
         TransactionResponseType tr = TransactionResponse.WFS11.unadapt(result);
-        
-        if (tx != null && tr != null) tp.afterTransaction(tx, tr, committed);
+        if (tx != null && tr != null) {
+            for (TransactionPlugin tp : transactionPlugins) {
+                tp.afterTransaction(tx, tr, committed);
+            }
+        }
+        for (TransactionCallback tp : transactionPlugins2) {
+            tp.afterTransaction(request, result, committed);
+        }
     }
 
-    void fireBeforeCommit(TransactionRequest request, TransactionPlugin tp) {
-        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
-        if (tx != null) tp.beforeCommit(tx);
+    private void fireBeforeCommit(TransactionRequest request) {
+        // inform plugins we're about to commit
+        for (TransactionPlugin tp : transactionPlugins) {
+            TransactionType tx = TransactionRequest.WFS11.unadapt(request);
+            if (tx != null) {
+                tp.beforeCommit(tx);
+            }
+        }
+        for (TransactionCallback tp : transactionPlugins2) {
+            tp.beforeCommit(request);
+        }
     }
 
-    void fireBeforeTransaction(TransactionRequest request, TransactionPlugin tp) {
-        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
-        if (tx != null) tp.beforeTransaction(tx);
-    }
 
     /**
      * Looks up the element handlers to be used for each element

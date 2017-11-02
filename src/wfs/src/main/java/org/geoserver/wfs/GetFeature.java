@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
@@ -34,6 +35,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpMap;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Lock;
@@ -506,7 +508,23 @@ public class GetFeature {
                         queryMaxFeatures, source, request, allPropNames.get(0), viewParam,
                             joins, primaryTypeName, primaryAlias);
 
-                LOGGER.fine("Query is " + query + "\n To gt2: " + gtQuery);
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Query is " + query + "\n To gt2: " + gtQuery);
+                }
+
+                // allow extensions to alter the query being run
+                GetFeatureContext context = new GetFeatureContext(request, meta, source, gtQuery);
+                List<GetFeatureCallback> callbacks = GeoServerExtensions.extensions(GetFeatureCallback.class);
+                if (!callbacks.isEmpty()) {
+                    for (GetFeatureCallback callback : callbacks) {
+                        callback.beforeQuerying(context);
+                    }
+                    if (gtQuery != context.getQuery() && LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("Query after GetFeatureCallback changes: " + source);
+                    }
+                    gtQuery = context.getQuery();
+                }
+
 
                 FeatureCollection<? extends FeatureType, ? extends Feature> features = getFeatures(request, source, gtQuery);
 
@@ -544,9 +562,9 @@ public class GetFeature {
                     else {
                         //no features might have been because of the offset that was specified, check 
                         // the size of the same query but with no offset
-                            org.geotools.data.Query q2 = toDataQuery(query, filter, 0,
-                                    queryMaxFeatures, source, request, allPropNames.get(0),
-                                    viewParam, joins, primaryTypeName, primaryAlias);
+                        org.geotools.data.Query q2 = toDataQuery(query, filter, 0,
+                                queryMaxFeatures, source, request, allPropNames.get(0),
+                                viewParam, joins, primaryTypeName, primaryAlias);
                         
                         //int size2 = getFeatures(request, source, q2).size();
                         int size2 = source.getCount(q2);

@@ -1,31 +1,29 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
+import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 
 
 /**
  * A transaction plugin is able to listen to a transaction evolution, perform
  * checks and throw exceptions, alter transaction requests, as well as
- * @deprecated Use {@link TransactionCallback instead}
  */
-@Deprecated
-public interface TransactionPlugin extends TransactionListener {
+public interface TransactionCallback extends ExtensionPriority {
     /**
      * Check/alter the transaction request elements
      */
-    TransactionType beforeTransaction(TransactionType request)
+    TransactionRequest beforeTransaction(TransactionRequest request)
         throws WFSException;
 
     /**
      * Say the last word before we actually commit the transaction
      */
-    void beforeCommit(TransactionType request) throws WFSException;
+    void beforeCommit(TransactionRequest request) throws WFSException;
 
     /**
      * Notification the transaction ended
@@ -40,11 +38,10 @@ public interface TransactionPlugin extends TransactionListener {
      *            true if the transaction was successful, false if the transaction was aborted for
      *            any reason
      */
-    void afterTransaction(TransactionType request, TransactionResponseType result, boolean committed);
+    void afterTransaction(TransactionRequest request, TransactionResponse result, boolean committed);
 
-    /**
-     * Aspects gets called in a specific order. State your priority, the higher
-     * the number, the earlier the plugin will be processed.
-     */
-    int getPriority();
+    @Override
+    default int getPriority() {
+        return ExtensionPriority.LOWEST;
+    }
 }

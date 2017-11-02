@@ -10,6 +10,7 @@ import net.opengis.wfs.WfsFactory;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.request.Insert.WFS11;
+import org.opengis.filter.Filter;
 
 /**
  * Delete element in a Transaction request.

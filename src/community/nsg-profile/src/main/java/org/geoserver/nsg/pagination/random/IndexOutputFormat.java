@@ -5,26 +5,8 @@
 
 package org.geoserver.nsg.pagination.random;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Request;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -47,14 +29,27 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.opengis.wfs20.GetFeatureType;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * This output format handles requests if the original requested result type was "index" </br>
  * See {@link IndexResultTypeDispatcherCallback}
- * 
- * @author sandr
  *
+ * @author sandr
  */
 public class IndexOutputFormat extends HitsOutputFormat {
 
@@ -78,9 +73,6 @@ public class IndexOutputFormat extends HitsOutputFormat {
     @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
-        // extract GetFeature request
-        GetFeatureType getFeatureType = OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
         // generate an UUID (resultSetID) for this request, GeoTools complained about the - in the
         // ID
         resultSetId = UUID.randomUUID().toString().replaceAll("-", "");
@@ -115,7 +107,7 @@ public class IndexOutputFormat extends HitsOutputFormat {
     /**
      * Helper method that serialize GetFeature request, store it in the file system and associate it
      * with resultSetId
-     * 
+     *
      * @param resultSetId
      * @param getFeatureType
      * @throws RuntimeException
@@ -149,14 +141,10 @@ public class IndexOutputFormat extends HitsOutputFormat {
             data.setKvp(kvp);
             data.setRawKvp(rawKvp);
 
-            FileOutputStream fos = new FileOutputStream(
-                    storageResource.dir().getAbsolutePath() + "\\" + resultSetId + ".feature");
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(data);
-            oos.close();
-
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
+                    new File(storageResource.dir(), resultSetId + ".feature")))) {
+                oos.writeObject(data);
+            }
         } catch (Exception exception) {
             throw new RuntimeException("Error storing feature.", exception);
         } finally {

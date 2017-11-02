@@ -5,15 +5,8 @@
 
 package org.geoserver.nsg.pagination.random;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.logging.Logger;
-
+import net.opengis.wfs20.GetFeatureType;
+import net.opengis.wfs20.ResultTypeType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
@@ -29,12 +22,18 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
-import net.opengis.wfs20.GetFeatureType;
-import net.opengis.wfs20.ResultTypeType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * This service supports the PageResults operation and manage it
- * 
+ *
  * @author sandr
  *
  */
@@ -60,7 +59,7 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
     }
 
     /**
-     * 
+     *
      * Recovers the stored request with associated {@link #resultSetID} and overrides the parameters
      * using the ones provided with current operation or the default values:
      * <ul>
@@ -101,7 +100,7 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
 
     /**
      * Sets the resultSetId
-     * 
+     *
      * @param resultSetId
      */
     public void setResultSetId(String resultSetId) {
@@ -110,7 +109,7 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
 
     /**
      * Helper method that deserializes GetFeature request and updates its last utilization
-     * 
+     *
      * @param resultSetID
      * @return
      * @throws Exception
@@ -130,18 +129,13 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
             // Retrieve GetFeature from file
             Resource storageResource = this.indexConfiguration.getStorageResource();
 
-            FileInputStream fis = new FileInputStream(
-                    storageResource.dir().getAbsolutePath() + "\\" + resultSetId + ".feature");
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            ObjectInputStream objectinputstream = new ObjectInputStream(bis);
-            RequestData data = (RequestData) objectinputstream.readObject();
-
-            objectinputstream.close();
-
-            KvpRequestReader kvpReader = Dispatcher.findKvpRequestReader(GetFeatureType.class);
-            Object requestBean = kvpReader.createRequest();
-            feature = (GetFeatureType) kvpReader.read(requestBean, data.getKvp(), data.getRawKvp());
+            try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(new File(
+                    storageResource.dir(), resultSetId + ".feature")))) {
+                RequestData data = (RequestData) is.readObject();
+                KvpRequestReader kvpReader = Dispatcher.findKvpRequestReader(GetFeatureType.class);
+                Object requestBean = kvpReader.createRequest();
+                feature = (GetFeatureType) kvpReader.read(requestBean, data.getKvp(), data.getRawKvp());
+            }
 
         } catch (Exception t) {
             transaction.rollback();

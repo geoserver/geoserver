@@ -44,7 +44,7 @@ This means that this type of navigation will always be sequential, if the client
 #. request page four and use the provided next URI to retrieve page five
 
 This is not an ideal solution to access random pages, which is common action. 
-PageResults operation will improve this by allowing clients to request random pages directly. 
+PageResults operation adds a standard way to perform request random pages directly. 
 
 Installing the extension
 ------------------------
@@ -156,7 +156,7 @@ The available parameters are this ones:
    :header-rows: 1
 
    * - Name
-     - Mandotry
+     - Mandatory
      - Default Value
    * - service
      - YES

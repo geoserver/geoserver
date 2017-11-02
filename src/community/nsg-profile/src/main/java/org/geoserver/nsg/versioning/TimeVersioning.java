@@ -6,6 +6,8 @@ package org.geoserver.nsg.versioning;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 
+import java.util.Optional;
+
 public final class TimeVersioning {
 
     public static final String ENABLED_KEY = "TIME_VERSIONING_ENABLED";
@@ -25,7 +27,7 @@ public final class TimeVersioning {
     }
 
     public static boolean isEnabled(FeatureTypeInfo featureTypeInfo) {
-        return featureTypeInfo.getMetadata().get(ENABLED_KEY, Boolean.class);
+        return Optional.ofNullable(featureTypeInfo.getMetadata().get(ENABLED_KEY, Boolean.class)).orElse(false);
     }
 
     public static String getNamePropertyName(FeatureTypeInfo featureTypeInfo) {

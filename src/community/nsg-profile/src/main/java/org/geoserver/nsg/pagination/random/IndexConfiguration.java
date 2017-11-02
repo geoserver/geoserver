@@ -5,18 +5,16 @@
 
 package org.geoserver.nsg.pagination.random;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataStore;
 
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 /**
- * 
  * Class used to store the index result type configuration managed by {@link IndexInitializer}
- * 
+ *
  * @author sandr
- * 
  */
 public class IndexConfiguration {
 
@@ -24,25 +22,25 @@ public class IndexConfiguration {
 
     private Resource storageResource;
 
-    private Long timeToLiveInSec = 600l;
+    private Long timeToLiveInSec = 600L;
 
     private Map<String, Object> currentDataStoreParams;
 
     /**
      * Store the DB parameters and the relative {@link DataStore}
-     * 
+     *
      * @param currentDataStoreParams
      * @param currentDataStore
      */
     public void setCurrentDataStore(Map<String, Object> currentDataStoreParams,
-            DataStore currentDataStore) {
+                                    DataStore currentDataStore) {
         this.currentDataStoreParams = currentDataStoreParams;
         this.currentDataStore = currentDataStore;
     }
 
     /**
      * Store the reference to resource used to archive the serialized GetFeatureRequest
-     * 
+     *
      * @param storageResource
      */
     public void setStorageResource(Resource storageResource) {
@@ -51,7 +49,7 @@ public class IndexConfiguration {
 
     /**
      * Store the value of time to live of stored GetFeatureRequest
-     * 
+     *
      * @param timeToLive
      * @param timeUnit
      */

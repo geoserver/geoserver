@@ -10,9 +10,8 @@ import java.util.Map;
 
 /**
  * This class is used to store the data to serialize to recreate previous get feature request
- * 
- * @author sandr
  *
+ * @author sandr
  */
 class RequestData implements Serializable {
 

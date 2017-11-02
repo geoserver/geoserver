@@ -5,8 +5,7 @@
 
 package org.geoserver.nsg.pagination.random;
 
-import java.util.logging.Logger;
-
+import net.opengis.wfs20.ResultTypeType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
@@ -14,7 +13,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geotools.util.logging.Logging;
 
-import net.opengis.wfs20.ResultTypeType;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -29,9 +28,8 @@ import net.opengis.wfs20.ResultTypeType;
  * The object that manage response of type HitsOutputFormat is replaced with IndexOutputFormat
  * before response has been dispatched
  * </p>
- * 
+ *
  * @author sandr
- * 
  */
 
 public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallback {
@@ -66,7 +64,7 @@ public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallbac
 
     @Override
     public Response responseDispatched(Request request, Operation operation, Object result,
-            Response response) {
+                                       Response response) {
         Response newResponse = response;
         if (request.getKvp().get(RESULT_TYPE_INDEX_PARAMETER) != null
                 && (Boolean) request.getKvp().get(RESULT_TYPE_INDEX_PARAMETER)) {

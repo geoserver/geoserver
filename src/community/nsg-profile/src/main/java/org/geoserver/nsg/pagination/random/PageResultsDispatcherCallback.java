@@ -5,9 +5,6 @@
 
 package org.geoserver.nsg.pagination.random;
 
-import java.util.Collections;
-import java.util.logging.Logger;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
@@ -16,8 +13,10 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
 
+import java.util.Collections;
+import java.util.logging.Logger;
+
 /**
- *
  * This dispatcher manages service of type {@link PageResultsWebFeatureService} and sets the
  * parameter ResultSetID present on KVP map.
  * <p>
@@ -25,7 +24,6 @@ import org.geotools.util.logging.Logging;
  * request.
  *
  * @author sandr
- * 
  */
 
 public class PageResultsDispatcherCallback extends AbstractDispatcherCallback {

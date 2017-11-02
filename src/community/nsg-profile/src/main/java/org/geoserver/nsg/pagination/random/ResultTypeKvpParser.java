@@ -7,12 +7,6 @@ package org.geoserver.nsg.pagination.random;
 
 import org.geotools.util.Version;
 
-/**
- * 
- * @author sandr
- *
- */
-
 public class ResultTypeKvpParser extends org.geoserver.wfs.kvp.v2_0.ResultTypeKvpParser {
 
     public ResultTypeKvpParser() {

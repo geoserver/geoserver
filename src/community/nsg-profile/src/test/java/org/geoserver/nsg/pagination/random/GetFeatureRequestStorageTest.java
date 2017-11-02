@@ -95,11 +95,9 @@ public class GetFeatureRequestStorageTest extends WFS20TestSupport {
             public void run() {
                 while (true) {
                     try {
-                        IndexInitializer.READ_WRITE_LOCK.readLock().lock();
                         boolean exists = featureStore
                                 .getFeatures(CQL.toFilter("ID='" + resultSetId + "'")).features()
                                 .hasNext();
-                        IndexInitializer.READ_WRITE_LOCK.readLock().unlock();
                         if (!exists) {
                             done2.countDown();
                             break;

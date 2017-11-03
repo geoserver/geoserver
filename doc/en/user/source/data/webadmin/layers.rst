@@ -117,7 +117,23 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
 
 * **Native SRS**—Specifies the coordinate system the layer is stored in. Clicking the projection link displays a description of the SRS.
 * **Declared SRS**—Specifies the coordinate system GeoServer publishes to clients
-* **SRS Handling**—Determines how GeoServer should handle projection when the two SRSes differ
+* **SRS Handling**—Determines how GeoServer should handle projection when the two SRSes differ. Possible values are:
+  
+  * **Force declared** (default): the declared SRS is forced upon the data, overwriting the native one. This is the default option and normally the best course of action,
+    the declared code comes from the EPSG database and has a wealth of extra information in it, starting from a valid EPSG code, an area of validity, a link back in the
+    database to find the best transformation steps to other coordinate reference systems should reprojection be required. Use this option when the source has no
+    native CRS, has a wrong one, or has one matching the EPSG code (in order to get full metadata in the CRS used by GeoServer).
+  * **Reproject from native**: This setting should be used when the native data set has a CRS that is not matching any official EPSG. OGC protocols need to advertise
+    a EPSG code for the layers, with this setting the declared one will be advertised, and reprojection from native will happen on the fly as needed (in case a third
+    CRS is requested, the reprojection will go directly from native to declared)
+  * **Keep native**: this is a setting that should be used in very rare cases. Keeping native means using the declared one in the capabilities documents, but then
+    using the native CRS in all othe requests (with no reprojection in between, unless explicitly requested from client). This is particularly problematic if the source
+    is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output). 
+    The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection 
+    and datum change.
+    
+In summary, use **Force Declared** as your primary option, **Reproject from native** only if your source data does not match any EPSG code, and **Keep Native**
+only if you really know what you're doing.
 
 Bounding Boxes
 ^^^^^^^^^^^^^^

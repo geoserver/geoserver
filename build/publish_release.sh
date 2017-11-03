@@ -77,7 +77,7 @@ popd > /dev/null
 pushd $DIST_PATH/$tag > /dev/null
 
 if [ -z $SKIP_DEPLOY ]; then
-  rsync -ave "ssh -i $SF_PK" *.zip $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
+  rsync -ave "ssh -i $SF_PK" *-bin.zip *-war.zip *doc.zip *.pdf $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
   
   # don't fail if exe or dmg is not around
   set +e

@@ -129,6 +129,10 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     @Override
     public long size() {
         try {
+            if (getKeywords() != null && getKeywords().length > 0) {
+                // Use a unique key for different queries
+                return cache.get(KEY_SIZE+"."+String.join(",", getKeywords()), sizeCaller);
+            }
             return cache.get(KEY_SIZE, sizeCaller);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);

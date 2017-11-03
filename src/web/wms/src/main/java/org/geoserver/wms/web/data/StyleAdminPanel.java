@@ -155,8 +155,8 @@ public class StyleAdminPanel extends StyleEditTabPanel {
 
         add(wsChoice);
         
-        //always disable the workspace toggle if not admin
-        if (!stylePage.isAuthenticatedAsAdmin()) {
+        //disable the workspace toggle on edit if not admin (can only be set upon creation)
+        if (stylePage instanceof StyleEditPage && !stylePage.isAuthenticatedAsAdmin()) {
             wsChoice.setEnabled(false);
         }
 

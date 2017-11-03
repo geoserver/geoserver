@@ -5,18 +5,21 @@
  */
 package org.geoserver.feature;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.geotools.data.DataUtilities;
 import org.geotools.data.store.DataFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -44,23 +47,35 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
     }
 
     public ReferencedEnvelope getBounds() {
-        return DataUtilities.bounds(this);
+        // crazy, this same mapper inlined in the stream does not compile...
+        Function<FeatureCollection, ReferencedEnvelope> mapper = c -> {
+            final ReferencedEnvelope envelope = c.getBounds();
+            if (envelope == null) {
+                return DataUtilities.bounds(c);
+            } else {
+                return envelope;
+            }
+        };
+        return collections.stream().map(mapper).reduce((e1, e2) -> {
+            CoordinateReferenceSystem crs1 = e1.getCoordinateReferenceSystem();
+            CoordinateReferenceSystem crs2 = e2.getCoordinateReferenceSystem();
+            if (crs1 != crs2 && !CRS.equalsIgnoreMetadata(crs1, crs2)) {
+                throw new RuntimeException("Two collections are returning different CRSs, cannot perform this " +
+                        "accumulation (yet): \n" + crs1 + "\n" + crs2);
+            }
+            e1.expandToInclude(e2);
+            return e1;
+        }).orElse(null);
     }
 
     public int getCount() throws IOException {
-        int count = 0;
-        Iterator i = iterator();
-
-        try {
-            while (i.hasNext()) {
-                i.next();
-                count++;
+        return collections.stream().mapToInt(c -> {
+            int size = c.size();
+            if (size < 0) {
+                size = DataUtilities.count(c);
             }
-        } finally {
-            close(i);
-        }
-
-        return count;
+            return size;
+        }).sum();
     }
 
     class CompositeIterator implements Iterator {

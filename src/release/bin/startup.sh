@@ -71,7 +71,9 @@ fi
 
 cd "$GEOSERVER_HOME"
 
-export MARLIN_JAR=`find \`pwd\` -name "marlin*.jar" | head -1`
+if [ -z $MARLIN_JAR]; then
+    export MARLIN_JAR=`find \`pwd\`/webapps -name "marlin*.jar" | head -1`
+fi
 export MARLIN_ENABLER="-Xbootclasspath/a:$MARLIN_JAR -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
 
 echo "GEOSERVER DATA DIR is $GEOSERVER_DATA_DIR"

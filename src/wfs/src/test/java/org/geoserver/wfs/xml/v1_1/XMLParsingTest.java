@@ -122,8 +122,9 @@ public class XMLParsingTest extends WFSTestSupport {
             InsertElementType insert = (InsertElementType) obj.getInsert().get(0);
             SimpleFeature feature = (SimpleFeature) insert.getFeature().get(0);
             Map<?, ?> attr = (Map<?, ?>) feature.getAttribute("descr");
-            String expected = "1\n2\n3";
-            assertEquals("new lines eaten",expected,attr.get("__text__").toString());
+            String expected = "1\n2\n3\n";
+            
+            assertEquals("new lines eaten",expected,attr.get(null).toString());
     }
     
 }

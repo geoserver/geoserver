@@ -174,6 +174,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     @Before
     public void setupNamespaces() {
         this.namespaceContext = new SimpleNamespaceContext();
+        namespaceContext.bindNamespaceUri("atom", "http://www.w3.org/2005/Atom");
         namespaceContext.bindNamespaceUri("os", "http://a9.com/-/spec/opensearch/1.1/");
         namespaceContext.bindNamespaceUri("param",
                 "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");

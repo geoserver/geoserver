@@ -107,4 +107,14 @@
   <bean id="oseoMetadataResponse" class="org.geoserver.opensearch.eo.response.MetadataResponse"/>
   <bean id="oseoQuicklookResponse" class="org.geoserver.opensearch.eo.response.QuicklookResponse"/>
 
+  <bean id="classpathDocPublisherMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
+        <prop key="/docs/**">classpathPublisher</prop>
+      </props>
+    </property>
+  </bean>
+
 </beans>

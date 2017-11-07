@@ -53,6 +53,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             namespaces.put("xmlns:geo", "http://a9.com/-/opensearch/extensions/geo/1.0/");
             namespaces.put("xmlns:time", "http://a9.com/-/opensearch/extensions/time/1.0/");
             namespaces.put("xmlns:eo", "http://a9.com/-/opensearch/extensions/eo/1.0/");
+            namespaces.put("xmlns:atom  ", "http://www.w3.org/2005/Atom");
             element("OpenSearchDescription", () -> describeOpenSearch(description),
                     attributes(namespaces));
         }
@@ -122,9 +123,27 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     paramSpec + "&httpAccept=" + ResponseUtils.urlEncode(format));
         }
 
+        public String buildSearchTermsDocLink(OSEODescription description) {
+            String baseURL = description.getBaseURL();
+            String url = buildURL(baseURL, "docs/searchTerms.html", null, URLType.RESOURCE);
+            return url;
+        }
+
         private void describeParameters(OSEODescription description) {
             for (Parameter param : description.getSearchParameters()) {
                 Runnable contentsEncoder = null;
+
+                // TODO: make this generic by adding lambdas into the parameter metadata?
+                if ("searchTerms".equals(param.getName()) ) {
+                    String searchTermsDocLink = buildSearchTermsDocLink(description);
+                    contentsEncoder = () -> {
+                        element("atom:link", (Runnable) null,
+                                attributes( //
+                                        "rel", "profile", //
+                                        "href", searchTermsDocLink, //
+                                        "title", "Simple search term parameter specification"));
+                    };
+                }
 
                 final Map<String, String> map = new LinkedHashMap<>();
                 map.put("name", param.key);
@@ -154,6 +173,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     }
                 }
                 element("param:Parameter", contentsEncoder, attributes(map));
+
             }
         }
 

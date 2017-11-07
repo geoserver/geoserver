@@ -39,6 +39,8 @@ public class DescriptionTransformer extends LambdaTransformerBase {
 
     private class OSEODescriptionTranslator extends LambdaTranslatorSupport {
 
+        private static final String CEOS_SUPPORTED_VERSION = "CEOS-OS-BP-V1.2/L1";
+
         public OSEODescriptionTranslator(ContentHandler contentHandler) {
             super(contentHandler);
         }
@@ -68,6 +70,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             element("Contact", gs.getSettings().getContact().getContactEmail());
             String tags = oseo.getKeywords().stream().map(k -> k.getValue())
                     .collect(Collectors.joining(" "));
+            tags = tags + " " + CEOS_SUPPORTED_VERSION;
             element("Tags", tags);
             element("Url", NO_CONTENTS,
                     attributes("rel", "self", //

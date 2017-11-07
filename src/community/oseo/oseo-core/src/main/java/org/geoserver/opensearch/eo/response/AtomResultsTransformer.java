@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.MetadataRequest;
 import org.geoserver.opensearch.eo.OSEOInfo;
@@ -375,7 +376,11 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             }
             Geometry footprint = (Geometry) value(feature, "footprint");
             if (footprint != null) {
+                // geometry is already in lat/lon order here
+                Envelope envelope = footprint.getEnvelopeInternal();
                 element("georss:where", () -> encodeGmlRssGeometry(footprint));
+                element("georss:box", envelope.getMinX() + " " + envelope.getMinY()
+                        + " " + envelope.getMaxX() + " " + envelope.getMaxY());
             }
             String htmlDescription = (String) value(feature, "htmlDescription");
             if (htmlDescription != null) {

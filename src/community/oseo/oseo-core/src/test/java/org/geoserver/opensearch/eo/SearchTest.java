@@ -76,6 +76,10 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry[1]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                         equalTo("89.0 -179.0 89.0 179.0 -89.0 179.0 -89.0 -179.0 89.0 -179.0")));
+        assertThat(dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/georss:box",
+                        equalTo("-89.0 -179.0 89.0 179.0")));
         // ... the links (self, metadata, search)
         assertThat(dom, hasXPath(
                 "/at:feed/at:entry[1]/at:link[@rel='self' and  @type='application/atom+xml']/@href",

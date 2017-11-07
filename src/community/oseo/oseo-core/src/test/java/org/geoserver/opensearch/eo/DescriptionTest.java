@@ -108,7 +108,7 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Description",
                 containsString("Earth Observation")));
         assertThat(dom,
-                hasXPath("/os:OpenSearchDescription/os:Tags", equalTo("EarthObservation OGC")));
+                hasXPath("/os:OpenSearchDescription/os:Tags", equalTo("EarthObservation OGC CEOS-OS-BP-V1.2/L1")));
         assertThat(dom,
                 hasXPath("/os:OpenSearchDescription/os:LongName", containsString("OpenSearch")));
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:SyndicationRight", equalTo("open")));

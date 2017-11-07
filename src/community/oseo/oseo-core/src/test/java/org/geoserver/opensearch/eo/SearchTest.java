@@ -19,6 +19,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
+import org.geoserver.opensearch.eo.response.DescriptionResponse;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
@@ -75,13 +76,16 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry[1]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                         equalTo("89.0 -179.0 89.0 179.0 -89.0 179.0 -89.0 -179.0 89.0 -179.0")));
-        // ... the links (self, metadata)
+        // ... the links (self, metadata, search)
         assertThat(dom, hasXPath(
                 "/at:feed/at:entry[1]/at:link[@rel='self' and  @type='application/atom+xml']/@href",
                 equalTo("http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
         assertThat(dom, hasXPath(
                 "/at:feed/at:entry[1]/at:link[@rel='alternate' and @type='application/vnd.iso.19139+xml']/@href",
                 equalTo("http://localhost:8080/geoserver/oseo/metadata?uid=SENTINEL2&httpAccept=application%2Fvnd.iso.19139%2Bxml")));
+        assertThat(dom, hasXPath(
+                "/at:feed/at:entry[1]/at:link[@rel='search' and @type='" + DescriptionResponse.OS_DESCRIPTION_MIME + "']/@href",
+                equalTo("http://localhost:8080/geoserver/oseo/description?parentId=SENTINEL2")));
 
         // check the html description (right one, and param substitution in links
         XPath xPath = getXPath();

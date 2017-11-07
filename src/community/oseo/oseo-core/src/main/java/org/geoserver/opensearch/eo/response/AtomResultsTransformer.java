@@ -227,6 +227,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
 
             // build links and description replacement variables
             String identifierLink = buildCollectionIdentifierLink(identifier, request);
+            String osddLink = buildOsddLink(identifier, request);
             String metadataLink = buildMetadataLink(null, identifier, MetadataRequest.ISO_METADATA,
                     request);
             Map<String, String> descriptionVariables = new HashMap<>();
@@ -239,6 +240,11 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             // build links to the metadata
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.ISO_METADATA, "title", "ISO metadata"));
+
+            // build link to the collection specific OSDD
+            element("link", NO_CONTENTS, attributes("rel", "search", "href", osddLink,
+                    "type", DescriptionResponse.OS_DESCRIPTION_MIME, "title", "Collection OSDD"));
+
 
             // OGC links
             encodeOgcLinksFromFeature(feature, request);
@@ -482,6 +488,16 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                 kvp.put("httpAccept", mimeType);
             }
             String href = ResponseUtils.buildURL(baseURL, "oseo/metadata", kvp, URLType.SERVICE);
+            return href;
+        }
+
+        private String buildOsddLink(String parentIdentifier, SearchRequest request) {
+            String baseURL = request.getBaseUrl();
+            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            if (parentIdentifier != null) {
+                kvp.put("parentId", String.valueOf(parentIdentifier));
+            }
+            String href = ResponseUtils.buildURL(baseURL, "oseo/description", kvp, URLType.SERVICE);
             return href;
         }
 

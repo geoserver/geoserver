@@ -72,9 +72,10 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     attributes("rel", "self", //
                             "template", buildSelfUrl(description), //
                             "type", "application/opensearchdescription+xml"));
+            String relValue = description.getParentId() == null ? "collection" : "results";
             element("Url", () -> describeParameters(description),
                     attributes( //
-                            "rel", "results", //
+                            "rel", relValue, //
                             "template", buildResultsUrl(description, "atom"), //
                             "type", "application/atom+xml"));
             element("LongName", oseo.getTitle());

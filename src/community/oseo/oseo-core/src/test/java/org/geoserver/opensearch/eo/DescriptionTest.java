@@ -126,7 +126,7 @@ public class DescriptionTest extends OSEOTestSupport {
                         containsString("/oseo/description")));
 
         // check the result link
-        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
+        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='collection'and @type='application/atom+xml']";
         assertThat(dom, hasXPath(resultsBase));
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",

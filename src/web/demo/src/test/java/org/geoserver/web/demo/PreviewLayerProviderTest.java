@@ -151,7 +151,16 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
             getCatalog().remove(singleGroup);
             getCatalog().remove(containerGroup);
         }        
-    }    
+    }
+
+    @Test
+    public void testKewordsFilterSizeCache() {
+        PreviewLayerProvider provider = new PreviewLayerProvider();
+        assertEquals(29, provider.size());
+
+        provider.setKeywords(new String[] {"cite"});
+        assertEquals(12, provider.size());
+    }
 
     @Test(expected=UnsupportedOperationException.class)
     public void testGetItems() throws Exception {

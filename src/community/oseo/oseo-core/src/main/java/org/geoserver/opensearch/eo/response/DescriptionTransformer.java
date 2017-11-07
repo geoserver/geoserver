@@ -81,7 +81,8 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     attributes( //
                             "rel", relValue, //
                             "template", buildResultsUrl(description, "atom"), //
-                            "type", "application/atom+xml"));
+                            "type", "application/atom+xml",
+                            "indexOffset", "1"));
             element("LongName", oseo.getTitle());
             element("Developer", oseo.getMaintainer());
             element("SyndicationRight", "open"); // make configurable?

@@ -135,6 +135,10 @@ public class DescriptionTest extends OSEOTestSupport {
                                 containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"))));
+        assertThat(dom,
+                hasXPath(resultsBase + "/@indexOffset",
+                        equalTo("1")));
+
         // check some parameters have been described
         String paramBase = resultsBase + "/param:Parameter";
         assertThat(dom, hasXPath(paramBase

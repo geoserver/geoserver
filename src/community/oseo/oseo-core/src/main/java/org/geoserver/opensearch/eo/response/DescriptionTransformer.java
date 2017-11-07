@@ -134,6 +134,8 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                 Runnable contentsEncoder = null;
 
                 // TODO: make this generic by adding lambdas into the parameter metadata?
+                // difficulty is passing the methods to build elements (we could make them
+                // visible or pass a lexical handler
                 if ("searchTerms".equals(param.getName()) ) {
                     String searchTermsDocLink = buildSearchTermsDocLink(description);
                     contentsEncoder = () -> {
@@ -142,6 +144,16 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                                         "rel", "profile", //
                                         "href", searchTermsDocLink, //
                                         "title", "Simple search term parameter specification"));
+                    };
+                } else if ("geometry".equals(param.getName())) {
+                    contentsEncoder  = () -> {
+                        for (String type : new String[] {"LINESTRING", "POINT", "POLYGON", "MULTILINESTRING", "MULTIPOINT", "MULTIPOLYGON"}) {
+                            element("atom:link", (Runnable) null, attributes(
+                                    "rel", "profile", //
+                                    "href", "http://www.opengis.net/wkt/" + type, //
+                                    "title", "This service accepts WKT " + type)
+                            );
+                        }  
                     };
                 }
 

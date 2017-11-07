@@ -142,9 +142,22 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath(paramBase
                 + "[@name='count' and @value='{count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='100']"));
 
-        // search profile
+        // search profiles
         assertThat(dom, hasXPath(paramBase
                 + "[@name='searchTerms']/atom:link[@rel='profile' and @href='http://localhost:8080/geoserver/docs/searchTerms.html']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/LINESTRING']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/POINT']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/POLYGON']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTILINESTRING']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTIPOINT']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTIPOLYGON']"));
+
 
         // check some EO parameter
         assertThat(dom, hasXPath(

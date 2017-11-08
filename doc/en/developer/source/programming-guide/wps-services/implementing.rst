@@ -73,11 +73,6 @@ For this example the project will be called "hello_wps".
            <scope>test</scope>
          </dependency>
          <dependency>
-           <groupId>org.geoserver.extension</groupId>
-           <artifactId>gs-wps-core</artifactId>
-           <version>${gs.version}</version>
-         </dependency>
-         <dependency>
            <groupId>junit</groupId>
            <artifactId>junit</artifactId>
            <version>4.11</version>

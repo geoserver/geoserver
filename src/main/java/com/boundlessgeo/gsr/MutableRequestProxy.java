@@ -34,4 +34,13 @@ public class MutableRequestProxy extends HttpServletRequestWrapper {
     public Map<String, String[]> getMutableParams() {
         return mutableParams;
     }
+
+    @Override
+    public String getParameter(String name) {
+        String param = super.getParameter(name);
+        if (param == null) {
+            param = super.getParameter(name.toUpperCase());
+        }
+        return param;
+    }
 }

@@ -65,29 +65,31 @@ public class MapServiceRoot implements GSRModel {
         Comparable overallMin = null;
         Comparable overallMax = null;
         for (LayerInfo l : layers) {
-            FeatureTypeInfo ftInfo = (FeatureTypeInfo) l.getResource();
-            DimensionInfo dimensionInfo = ftInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-            if (dimensionInfo != null && dimensionInfo.isEnabled()) {
-                String timeProperty = dimensionInfo.getAttribute();
-                FeatureSource<? extends FeatureType, ? extends Feature> source = ftInfo.getFeatureSource(null, null);
-                FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures();
-                MaxVisitor max = new MaxVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
-                MinVisitor min = new MinVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
-                features.accepts(min, null);
-                features.accepts(max, null);
-                if (min.getResult() != CalcResult.NULL_RESULT) {
-                    if (overallMin == null) {
-                        overallMin = min.getMin();
-                    } else {
-                        overallMin = min.getMin().compareTo(overallMin) < 0 ? min.getMin() : overallMin;
+            if (l.getResource().getClass().isAssignableFrom(FeatureTypeInfo.class)) {
+                FeatureTypeInfo ftInfo = (FeatureTypeInfo) l.getResource();
+                DimensionInfo dimensionInfo = ftInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                if (dimensionInfo != null && dimensionInfo.isEnabled()) {
+                    String timeProperty = dimensionInfo.getAttribute();
+                    FeatureSource<? extends FeatureType, ? extends Feature> source = ftInfo.getFeatureSource(null, null);
+                    FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures();
+                    MaxVisitor max = new MaxVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
+                    MinVisitor min = new MinVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
+                    features.accepts(min, null);
+                    features.accepts(max, null);
+                    if (min.getResult() != CalcResult.NULL_RESULT) {
+                        if (overallMin == null) {
+                            overallMin = min.getMin();
+                        } else {
+                            overallMin = min.getMin().compareTo(overallMin) < 0 ? min.getMin() : overallMin;
+                        }
                     }
-                }
 
-                if (max.getResult() != CalcResult.NULL_RESULT) {
-                    if (overallMax == null) {
-                        overallMax = max.getMax();
-                    } else {
-                        overallMax = max.getMax().compareTo(overallMax) > 0 ? max.getMax() : overallMax;
+                    if (max.getResult() != CalcResult.NULL_RESULT) {
+                        if (overallMax == null) {
+                            overallMax = max.getMax();
+                        } else {
+                            overallMax = max.getMax().compareTo(overallMax) > 0 ? max.getMax() : overallMax;
+                        }
                     }
                 }
             }

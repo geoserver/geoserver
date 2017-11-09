@@ -1,6 +1,7 @@
 package com.boundlessgeo.gsr.api.map;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,11 +55,20 @@ public class ExportMapController extends AbstractGSRController {
         requestProxy.getMutableParams().put("service", new String[]{"WMS"});
         requestProxy.getMutableParams().put("request", new String[]{"GetMap"});
 
-        requestProxy.getMutableParams().put("layers", translateLayersParam(request.getParameter("layers"), workspaceName));
-        requestProxy.getMutableParams().put("format", translateImageFormatParam(request.getParameter("format")));
-        requestProxy.getMutableParams().put("crs", translateImageSRParam(request.getParameter("imageSR")));
+        Map<String, String[]> parameterMap = request.getParameterMap();
 
-        String sizeParam = request.getParameter("size");
+        String layers = parameterMap.getOrDefault("layers", parameterMap.get("LAYERS"))[0];
+        requestProxy.getMutableParams().put("layers", translateLayersParam(layers, workspaceName));
+
+        String format = parameterMap.getOrDefault("format", parameterMap.get("FORMAT"))[0];
+        requestProxy.getMutableParams().put("format", translateImageFormatParam(format));
+
+        String imageSR = parameterMap.getOrDefault(
+            "imageSR",
+            parameterMap.getOrDefault("IMAGESR", new String[]{""}))[0];
+        requestProxy.getMutableParams().put("crs", translateImageSRParam(imageSR));
+
+        String sizeParam = parameterMap.getOrDefault("size", parameterMap.get("SIZE"))[0];
         String[] sizeParts = sizeParam.split(",");
         requestProxy.getMutableParams().put("width", new String[]{sizeParts[0]});
         requestProxy.getMutableParams().put("height", new String[]{sizeParts[1]});
@@ -79,8 +89,10 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     private String[] translateImageFormatParam(String format) {
-        String jpgFixedFormat = format.replaceAll("jpg", "jpeg");
-        return new String[]{"image/" + jpgFixedFormat};
+        String formatFixed = format.toLowerCase();
+        formatFixed = formatFixed.replaceAll("jpg", "jpeg");
+        formatFixed = formatFixed.replaceAll("png32", "png");
+        return new String[]{"image/" + formatFixed};
     }
 
     private String[] translateLayersParam(String layers, String workspaceName) {

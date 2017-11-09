@@ -70,7 +70,7 @@ public class MapServiceController extends AbstractGSRController {
         }
         List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : geoServer.getCatalog().getLayers()) {
-            if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
+            if (workspace.equals(l.getResource().getStore().getWorkspace())) {
                 layersInWorkspace.add(l);
             }
         }

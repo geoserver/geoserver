@@ -8,24 +8,24 @@ Finally we will look at using YSLD styling for the portrayal of raster data.
 .. figure:: ../style/img/RasterSymbology.svg
 
    Raster Symbology
-    
+
 
 Review of raster symbology:
 
 * Raster data is **Grid Coverage** where values have been recorded in a regular array. In OGC terms a **Coverage** can be used to look up a value or measurement for each location.
-  
+
 * When queried with a "sample" location:
-  
+
   * A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
-  
+
   * A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
-  
+
   * A scientific model can calculate a value for each sample location
-  
+
 * Many raster formats organize information into bands of content. Values recorded in these bands and may be mapped into colors for display (a process similar to theming an attribute for vector data).
-  
+
   For imagery the raster data is already formed into red, green and blue bands for display.
-  
+
 * As raster data has no inherent shape, the format is responsible for describing the orientation and location of the grid used to record measurements.
 
 These raster examples use a digital elevation model consisting of a single band of height measurements. The imagery examples use an RGB image that has been hand coloured for use as a base map.
@@ -33,8 +33,8 @@ These raster examples use a digital elevation model consisting of a single band 
 Reference:
 
 * :ref:`YSLD Reference <ysld_reference>`
-* :ref:`Point <ysld_reference_symbolizers_point>` (YSLD Reference | Raster symbolizer)
-* :ref:`Point <sld_reference_pointsymbolizer>` (User Manual | SLD Reference )
+* :ref:`Raster <ysld_reference_symbolizers_raster>` (YSLD Reference | Raster symbolizer)
+* :ref:`Raster <sld_reference_rastersymbolizer>` (User Manual | SLD Reference )
 
 The exercise makes use of the ``usgs:dem`` and ``ne:ne1`` layers.
 
@@ -47,7 +47,7 @@ The **raster** symbolizer controls the display of raster data. By default, the r
 
 #. Click :guilabel:`Add a new style` and choose the following:
 
-   .. list-table:: 
+   .. list-table::
       :widths: 30 70
       :header-rows: 0
 
@@ -57,6 +57,8 @@ The **raster** symbolizer controls the display of raster data. By default, the r
         - :kbd:`No workspace`
       * - Format:
         - :kbd:`YSLD`
+
+#. Choose :guilabel:`raster` from the ``Generate a default style`` dropdown and click :guilabel:`generate`.
 
 #. Replace the initial YSLD definition with:
 
@@ -72,7 +74,8 @@ The **raster** symbolizer controls the display of raster data. By default, the r
 
 #. The **channels** property can be used to provide a list three band numbers (for images recording in several wave lengths) or a single band number can be used to view a grayscale image.
 
-   .. code-block:: css
+   .. code-block:: yaml
+      :emphasize-lines: 4,5,6
 
       symbolizers:
       - raster:
@@ -96,7 +99,7 @@ The ``usgs:dem`` layer used used for this exercise:
 
 #. Click :guilabel:`Add a new style` and choose the following:
 
-   .. list-table:: 
+   .. list-table::
       :widths: 30 70
       :header-rows: 0
 
@@ -106,6 +109,8 @@ The ``usgs:dem`` layer used used for this exercise:
         - :kbd:`No workspace`
       * - Format:
         - :kbd:`YSLD`
+
+#. Choose :guilabel:`raster` from the ``Generate a default style`` dropdown and click :guilabel:`generate`.
 
 #. The rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
 
@@ -122,6 +127,7 @@ The ``usgs:dem`` layer used used for this exercise:
 #. We can use a bit of image processing to emphasis the generated color mapping by making use of **contrast-enhancement**.
 
    .. code-block:: yaml
+      :emphasize-lines: 4,5,6,7,8
 
       symbolizers:
       - raster:
@@ -143,9 +149,12 @@ The approach of mapping a data channel directly to a color channel is only suita
 
 For qualitative data (such as land use) or simply to use color, we need a different approach:
 
-#. Apply the following CSS to our `usgs:DEM` layer:
+.. note:: We can use a color map to artificially color a single band raster introducing smooth graduations for elevation or tempurature models or clear differentiation for qualitative data.
+
+#. Apply the following YAML to our `usgs:DEM` layer:
 
    .. code-block:: yaml
+      :emphasize-lines: 4,5,6,7,8,9,10
 
       symbolizers:
       - raster:
@@ -159,12 +168,13 @@ For qualitative data (such as land use) or simply to use color, we need a differ
             - ['#FFFFFF', 1.0, 4000, null]
 
 #. Resulting in this artificial color image:
-   
+
    .. image:: ../style/img/raster_dem_3.png
 
 #. An opacity value can also be used with each **color-map** entry.
 
    .. code-block:: yaml
+      :emphasize-lines: 7
 
       symbolizers:
       - raster:
@@ -178,14 +188,14 @@ For qualitative data (such as land use) or simply to use color, we need a differ
             - ['#FFFFFF', 1.0, 4000, null]
 
 #. Allowing the areas of zero height to be transparent:
-   
+
    .. image:: ../style/img/raster_dem_4.png
 
-#. Raster format for GIS work often supply a "no data" value, or contain a mask, limiting the dataset to only the locations with valid information.
+.. note:: Raster format for GIS work often supply a "no data" value, or contain a mask, limiting the dataset to only the locations with valid information.
 
 Custom
 ------
-   
+
 We can use what we have learned about color maps to apply a color brewer palette to our data.
 
 This exploration focuses on accurately communicating differences in value, rather than strictly making a pretty picture. Care should be taken to consider the target audience and medium used during palette selection.
@@ -205,6 +215,7 @@ This exploration focuses on accurately communicating differences in value, rathe
 #. To start with we can provide our own grayscale using two color map entries.
 
    .. code-block:: yaml
+      :emphasize-lines: 4,5,6,7,8
 
       symbolizers:
       - raster:
@@ -215,21 +226,22 @@ This exploration focuses on accurately communicating differences in value, rathe
             - ['#000000', 1.0, 0, null]
             - ['#FFFFFF', 1.0, 4000, null]
 
-#. Use the :guilabel:`Map` tab to zoom in and take a look.
-   
+#. Use the :guilabel:`Layer Preview` tab to zoom in and take a look.
+
    This is much more direct representation of the source data. We have used our knowledge of elevations to construct a more accurate style.
 
    .. image:: ../style/img/raster_02_straight.png
 
 #. While our straightforward style is easy to understand, it does leave a bit to be desired with respect to clarity.
-   
-   The eye has a hard time telling apart dark shades of black (or bright shades of white) and will struggle to make sense of this image. To address this limitation we are going to switch to the ColorBrewer **9-class PuBuGn** palette. This is a sequential palette that has been hand tuned to communicate a steady change of values. 
- 
+
+   The eye has a hard time telling apart dark shades of black (or bright shades of white) and will struggle to make sense of this image. To address this limitation we are going to switch to the ColorBrewer **9-class PuBuGn** palette. This is a sequential palette that has been hand tuned to communicate a steady change of values.
+
    .. image:: ../style/img/raster_03_elevation.png
 
 #. Update your style with the following:
 
    .. code-block:: yaml
+      :emphasize-lines: 8,9,10,11,12,13,14,15
 
       symbolizers:
       - raster:
@@ -252,6 +264,7 @@ This exploration focuses on accurately communicating differences in value, rathe
 #. A little bit of work with alpha (to mark the ocean as a no-data section):
 
    .. code-block:: yaml
+      :emphasize-lines: 7,8
 
       symbolizers:
       - raster:
@@ -269,11 +282,11 @@ This exploration focuses on accurately communicating differences in value, rathe
             - ['#D0D1E6', 1.0, 3000, null]
             - ['#ECE2F0', 1.0, 3500, null]
             - ['#FFF7FB', 1.0, 4000, null]
-      
+
 #. And we are done:
 
    .. image:: ../style/img/raster_05_alpha.png
-   
+
 Bonus
 -----
 

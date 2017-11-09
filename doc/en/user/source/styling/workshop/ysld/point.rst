@@ -3,7 +3,7 @@
 Points
 ======
 
-The next stop of the ysld styling tour is the representation of points. 
+The next stop of the ysld styling tour is the representation of points.
 
 .. figure:: ../style/img/PointSymbology.svg
 
@@ -29,7 +29,7 @@ This exercise makes use of the ``ne:populated_places`` layer.
 
 #. Click :guilabel:`Add a new style` and choose the following:
 
-   .. list-table:: 
+   .. list-table::
       :widths: 30 70
       :header-rows: 0
 
@@ -39,6 +39,8 @@ This exercise makes use of the ``ne:populated_places`` layer.
         - :kbd:`No workspace`
       * - Format:
         - :kbd:`YSLD`
+
+#. Choose :guilabel:`point` from the ``Generate a default style`` dropdown and click :guilabel:`generate`.
 
 #. Replace the initial YSLD definition with the following and click :guilabel:`apply`:
 
@@ -68,7 +70,8 @@ The SLD standard provides "well-known" symbols for use with point symbology: ``c
 #. Change the symbol used by the style to a square:
 
    .. code-block:: yaml
-   
+      :emphasize-lines: 5
+
       symbolizers:
       - point:
           symbols:
@@ -80,10 +83,11 @@ The SLD standard provides "well-known" symbols for use with point symbology: ``c
 
    .. image:: ../style/img/point_mark_1.png
 
-#. Before we continue we will use a selector to cut down the amount of data shown to a reasonable level.
+#. Before we continue we will use a filter to cut down the amount of data shown to a reasonable level.
 
    .. code-block:: yaml
-   
+      :emphasize-lines: 1,2,3
+
       rules:
       - filter: ${SCALERANK < '1'}
         scale: [min, max]
@@ -94,9 +98,10 @@ The SLD standard provides "well-known" symbols for use with point symbology: ``c
                 shape: square
                 stroke-width: 1
 
+.. note:: **symbolizers** has been indented under **rules**
 
 #. Resulting in a considerably cleaner image:
-   
+
    .. image:: ../style/img/point_mark_2.png
 
 #. Additional properties are available to control a mark's presentation:
@@ -104,10 +109,11 @@ The SLD standard provides "well-known" symbols for use with point symbology: ``c
    The **size** property is used to control symbol size.
 
    The **rotation** property controls orientation, accepting input in degrees.
-   
+
    Trying these two settings together:
 
    .. code-block:: yaml
+      :emphasize-lines: 6,7
 
       rules:
       - filter: ${SCALERANK < '1'}
@@ -123,12 +129,13 @@ The SLD standard provides "well-known" symbols for use with point symbology: ``c
 
 
 #. Results in each location being marked with a diamond:
-   
+
    .. image:: ../style/img/point_mark_3.png
 
 #. The **mark** property provides parameters to style the point symbol. Let's change the **fill-color** to gray.
 
    .. code-block:: yaml
+      :emphasize-lines: 13
 
       rules:
       - filter: ${SCALERANK < '1'}
@@ -150,10 +157,11 @@ The SLD standard provides "well-known" symbols for use with point symbology: ``c
    .. image:: ../style/img/point_mark_4.png
 
 #. You can add more symbolizers to apply additional point styles.
-   
+
    Using this approach marks can be composed of multiple symbols, each with its own settings:
 
    .. code-block:: yaml
+      :emphasize-lines: 6,12,13,14,15,16,17,18,19,20,21
 
       rules:
       - filter: ${SCALERANK < '1'}
@@ -189,16 +197,16 @@ Symbols can also be supplied by an external graphic,
 
 .. image:: ../style/img/Point_Graphic.svg
 
-This technique was shown with the initial file:`airport.svg` YSLD example.
+This technique was shown with the initial :file:`airport.svg` YSLD example.
 
 #. To use an external graphic two pieces of information are required.
 
    **url** property is defined with a **url** reference to image.
-   
+
    **format** property is used to tell the rendering engine what file format to expect
-   
+
    This technique is used to reference files placed in the styles directory.
-    
+
    .. code-block:: yaml
 
       rules:
@@ -219,6 +227,7 @@ This technique was shown with the initial file:`airport.svg` YSLD example.
 #. The property **url** reference can also be used to reference external images. We can make use of the GeoServer logo.
 
    .. code-block:: yaml
+      :emphasize-lines: 6,9
 
       rules:
       - filter: ${SCALERANK < '1'}
@@ -266,7 +275,7 @@ The **text** symbolizer with the **label** property are required to label Point 
             placement: point
 
 
-#. Confirm the result in ``Map`` preview.
+#. Confirm the result in ``Layer Preview`` preview.
 
    .. image:: ../style/img/point_label_1.png
 
@@ -275,14 +284,15 @@ The **text** symbolizer with the **label** property are required to label Point 
    **anchor** provides two values expressing how a label is aligned with respect to the starting label position.
 
    **displacement** is be used to provide an initial displacement using and x and y offset. For points this offset is recommended to adjust the label position away for the area used by the symbol.
-   
+
    .. note::
-   
+
       The property **anchor** defines an anchor position relative to the bounding box formed by the resulting label.  This anchor position is snapped to the label position generated by the point location and displacement offset.
 
-#. Using these two facilities together we can center our labels below the symbol, taking care that the displacement used provides an offset just outside the area required for the symbol size.
+   Using these two facilities together we can center our labels below the symbol, taking care that the displacement used provides an offset just outside the area required for the symbol size.
 
    .. code-block:: yaml
+      :emphasize-lines: 6,15,17,18
 
       rules:
       - filter: ${SCALERANK < '1'}
@@ -305,22 +315,23 @@ The **text** symbolizer with the **label** property are required to label Point 
 
 
 #. Each label is now placed under the mark.
-   
+
    .. image:: ../style/img/point_label_2.png
 
 #. One remaining issue is the overlap between labels and symbols.
-   
+
    GeoServer provides a vendor specific parameter to allow symbols to take part in label conflict resolution, preventing labels from overlapping any symbols. This severely limits the area available for labeling and is best used in conjunction with a large maximum displacement vendor option.
 
    **x-labelObstacle** vendor parameter asks the rendering engine to avoid drawing labels over top of the indicated symbol. This applies to the point symbolizer.
-   
+
    **x-maxDisplacement** vendor parameter provides the rendering engine a maximum distance it is allowed to move labels during conflict resolution. This applies to the text symbolizer.
 
    **x-spaceAround** vendor parameter tells the rendering engine to provide a minimum distance between the labels on the map, ensuring they do not overlap. This applies to the text symbolizer.
-   
+
    Update our example to use these settings:
 
    .. code-block:: yaml
+      :emphasize-lines: 13,20,21
 
       rules:
       - filter: ${SCALERANK < '1'}
@@ -352,7 +363,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 Dynamic Styling
 ---------------
 
-#. We will quickly use **scalerank** to select content based on @scale selectors.
+#. We will quickly use **scalerank** to select content based on @scale filters.
 
    .. code-block:: yaml
 
@@ -401,28 +412,26 @@ Dynamic Styling
             <<: *point
 
 
-#. Click :guilabel:`Submit` to update the :guilabel:`Map` after each step.
+#. Click :guilabel:`Apply` to update the :guilabel:`Layer Preview` after each step.
 
    .. image:: ../style/img/point_04_scale.png
 
-#. This YSLD makes use of a **define** to avoid repeating the point symbolizer content multiple times.
+   .. note:: This YSLD makes use of a **define** to avoid repeating the point symbolizer content multiple times. As an example the :kbd:`scale: [min, '4000000.0']` rule, combined with the :kbd:`define:` results in the following collection of properties:
 
-   As an example the :kbd:`scale: [min, '4000000.0']` rule, combined with the :kbd:`define:` results in the following collection of properties:
+     .. code-block:: yaml
 
-   .. code-block:: yaml
+        - scale: [min, '4000000.0']
+          symbolizers:
+          - point:
+              size: 6
+              symbols:
+              - mark:
+                  shape: circle
+                  stroke-color: 'black'
+                  stroke-width: 1
+                  fill-color: 'gray'
 
-      - scale: [min, '4000000.0']
-        symbolizers:
-        - point:
-            size: 6
-            symbols:
-            - mark:
-                shape: circle
-                stroke-color: 'black'
-                stroke-width: 1
-                fill-color: 'gray'
-
-#. To add labeling we must use both a point and text symbolizer in each scale selector.
+#. To add labeling we must use both a point and text symbolizer in each scale filter.
 
    .. code-block:: yaml
 
@@ -492,7 +501,7 @@ Dynamic Styling
         - text:
             <<: *label
 
-   
+
    .. image:: ../style/img/point_05_label.png
 
 #. We will use **displacement** and **anchor** to position the label above each symbol.
@@ -501,7 +510,7 @@ Dynamic Styling
 
    .. code-block:: yaml
       :emphasize-lines: 9,10
-      
+
       define: &label
         label: ${NAME}
         fill-color: 'black'
@@ -521,7 +530,7 @@ Dynamic Styling
 
    .. code-block:: yaml
       :emphasize-lines: 11,12
-      
+
       define: &label
         label: ${NAME}
         fill-color: 'black'
@@ -565,7 +574,7 @@ Dynamic Styling
    * **FEATURECLA**: used to indicate different types of cities. We will check for :kbd:`Admin-0 capital` cities.
 
    The first thing we will do is calculate the point **size** using a quick expression::
-   
+
       ${10-(SCALERANK/2)}
 
    This expression should result in sizes between 5 and 9 and will need to be applied to both point **size** and label **displacement**.
@@ -573,9 +582,9 @@ Dynamic Styling
    Rather than the "first come first served" default to resolve labeling conflicts we can manually provide GeoServer with a label priority. The expression provided is calculated for each label, in the event of a conflict the label with the highest priority takes precedence.
 
    The LABELRANK attribute goes from 1 through 10 and needs to be flipped around before use as a GeoServer label priority::
-   
+
       ${10 - LABELRANK}
-   
+
    This expression will result in values between 0 and 10 and will be used for the **x-labelPriority**.
 
    .. code-block:: yaml
@@ -603,12 +612,12 @@ Dynamic Styling
         priority: ${'10' - LABELRANK}
         x-maxDisplacement: 90
         x-spaceAround: 2
-   
+
    .. image:: ../style/img/point_07_expression.png
 
 #. Next we can use ``FEATURECLA`` to check for capital cities.
 
-   Adding a selector for capital cities at the top of the **rules** list:
+   Adding a filter for capital cities at the top of the **rules** list:
 
    .. code-block:: yaml
 
@@ -643,8 +652,8 @@ Dynamic Styling
             fill-color: 'gray'
             placement: point
 
-   
-   And updating the populated places selectors to ignore capital cities:
+
+   And updating the populated places filters to ignore capital cities:
 
    .. code-block:: yaml
 
@@ -706,9 +715,9 @@ Bonus
 
 .. only:: instructor
 
-   .. admonition:: Instructor Notes 
+   .. admonition:: Instructor Notes
 
-      The exercise section does not review the examples above, instead it explores the use of: 
+      The exercise section does not review the examples above, instead it explores the use of:
 
       * rules using min/max scale and rules using attribute filters
       * recode to map from attribute to symbol
@@ -718,18 +727,18 @@ Bonus
 
 Challenge Geometry Location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   
+
 .. only:: instructor
-  
-   .. admonition:: Instructor Notes 
+
+   .. admonition:: Instructor Notes
 
       As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
- 
+
       The use of filters using the roads **type** attribute provides this opportunity.
 
 #. The **mark** property can be used to render any geometry content.
 
-#. **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property. 
+#. **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property.
 
    .. note:: Answer :ref:`discussed <ysld.point.a1>` at the end of the workbook.
 
@@ -738,7 +747,7 @@ Challenge Geometry Location
 Explore Dynamic Symbolization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#. We went to a lot of work to set up selectors to choose between star and circle for capital cities.
+#. We went to a lot of work to set up filters to choose between star and circle for capital cities.
 
    This approach is straightforward when applied in isolation:
 
@@ -784,11 +793,11 @@ Explore Dynamic Symbolization
                  stroke-width: 1
                  fill-color: 'gray'
 
-   
+
    Which is represented in SLD as:
-   
+
    .. code-block:: xml
-   
+
        <sld:PointSymbolizer>
          <sld:Graphic>
             <sld:Mark>
@@ -809,11 +818,11 @@ Explore Dynamic Symbolization
            symbols:
            - mark:
                shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
-      
+
    Which is represented in SLD as:
-   
+
    .. code-block:: xml
-   
+
        <sld:PointSymbolizer>
          <sld:Graphic>
             <sld:Mark>
@@ -823,7 +832,7 @@ Explore Dynamic Symbolization
             </sld:Mark>
          </sld:Graphic>
       </sld:PointSymbolizer>
-   
+
 #. **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
    .. note:: Answer :ref:`provided <ysld.point.a2>` at the end of the workbook.
@@ -838,7 +847,7 @@ Challenge Layer Group
 ^^^^^^^^^^^^^^^^^^^^^
 
 #. Use a **Layer Group** to explore how symbology works together to form a map.
-   
+
    * ne:NE1
    * ne:states_provincces_shp
    * ne:populated_places
@@ -865,7 +874,7 @@ Challenge Layer Group
 #. This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.
 
 #. **Challenge:** Do your best to style populated_places over this busy background.
-       
+
    Here is an example with labels for inspiration:
 
    .. image:: ../style/img/point_challenge_1.png
@@ -877,7 +886,7 @@ Explore True Type Fonts
 
 #. In addition to image formats GeoServer can make use other kinds of graphics, such as True Type fonts:
 
-   .. code-block:: css
+   .. code-block:: yaml
 
        symbolizers:
        - point:
@@ -886,19 +895,19 @@ Explore True Type Fonts
                shape: ttf://Webdings#0x0064
                stroke-color: 'blue'
                stroke-width: 1
-      
+
 #. Additional fonts dropped in the :file:`styles` directory are available for use.
-   
+
 Explore Custom Graphics
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 #. The GeoServer rendering engine allows Java developers to hook in additional symbol support.
-   
+
    This facility is used by GeoServer to offer the shapes used for pattern fills. Community extensions allow the use of simple custom shapes and even charts.
 
 #. Support has been added for custom graphics using the WKT Geometry representation.
 
-    .. code-block:: css
+    .. code-block:: yaml
 
        symbolizers:
        - point:

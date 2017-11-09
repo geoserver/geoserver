@@ -331,7 +331,7 @@ Labeling polygons follows the same approach used for LineStrings.
 
    The property **text-anchor** provides two numbers expressing how a label is aligned with respect to the centroid. Adjusting the **text-anchor** is the recommended approach to positioning your labels.
 
-#. Using the **anchor** property we can center our labels with respect to geometry centroid.
+#. Using the **text-anchor** property we can center our labels with respect to geometry centroid.
    
    To align the center of our label we select "center" below:
    

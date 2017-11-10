@@ -268,7 +268,7 @@ public class RESTUtils {
         }
         ZipFile archive = new ZipFile(zipFile.file());
 
-        IOUtils.inflate(archive, outputDirectory, null, workspace, store, files, external);
+        IOUtils.inflate(archive, outputDirectory, null, workspace, store, files, external, true);
         zipFile.delete();
     }
 

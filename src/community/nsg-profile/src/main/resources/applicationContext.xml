@@ -45,4 +45,8 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled fixed-delay="1000" initial-delay="10000" method="clean" ref="indexInitializer"/>
 	</task:scheduled-tasks>
+	<!-- Timeout support -->
+	<bean name="nsgTimeoutCallback" class="org.geoserver.nsg.timeout.TimeoutCallback">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
 </beans>

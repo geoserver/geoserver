@@ -121,6 +121,9 @@ public final class IndexInitializer implements GeoServerInitializer {
                 throw new RuntimeException("Error initializing paged results configurations.", exception);
             }
         }
+        // make sure the default locations are created too
+        dd.get(MODULE_DIR).get("resultSets").dir();
+        dd.get(MODULE_DIR).get("db").get("resultSets").dir();
         loadConfigurations(resource);
         // Listen for changes in configuration file and reload properties
         resource.addListener(notify -> {

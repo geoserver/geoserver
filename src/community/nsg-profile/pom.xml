@@ -51,6 +51,10 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-h2</artifactId>
+    </dependency>
     <!-- other tests dependencies -->
     <dependency>
       <groupId>org.hamcrest</groupId>

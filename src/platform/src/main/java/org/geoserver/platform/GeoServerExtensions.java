@@ -11,9 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +20,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 
 import org.geoserver.platform.resource.Paths;
-import org.geotools.factory.FactoryRegistry;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -161,12 +159,9 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         
         // load from factory spi
         List<Object> spiExtensions = spiCache.get(extensionPoint);
-        if(spiExtensions == null) {
+        if (spiExtensions == null) {
             spiExtensions = new ArrayList<Object>();
-            Iterator i = FactoryRegistry.lookupProviders(extensionPoint);
-            while( i.hasNext() ) {
-                spiExtensions.add( i.next() );
-            }
+            ServiceLoader.load(extensionPoint).iterator().forEachRemaining(spiExtensions::add);
             spiCache.put(extensionPoint, spiExtensions);
         }
         // filter the beans coming from SPI (we don't cache the results

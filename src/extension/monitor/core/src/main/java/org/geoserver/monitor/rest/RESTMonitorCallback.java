@@ -5,14 +5,12 @@
  */
 package org.geoserver.monitor.rest;
 
-import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestData.Category;
@@ -43,9 +41,9 @@ public class RESTMonitorCallback extends DispatcherCallbackAdapter {
         
         data.setCategory(Category.REST);
         if (request.getPathInfo() != null) {
-            String resource = Paths.get(request.getPathInfo()).getFileName().toString();
-            resource = FilenameUtils.getBaseName(resource);
-            data.getResources().add(resource);
+            String resource = request.getPathInfo();
+            final String[] pathParts = resource.split("/");
+            data.getResources().add(pathParts[pathParts.length - 1]);
         }
         monitor.update();
     }

@@ -1,4 +1,4 @@
-.. _styling_workshop_point:
+.. _styling_workshop_mbstyle_point:
 
 Points
 ======
@@ -20,7 +20,8 @@ As points have no inherent shape of of their own, emphasis is placed on marking 
 Reference:
 
 * :ref:`MBStyle Reference <mbstyle_reference>`
-* :ref:`MBStyle Reference Point symbolizer <mbstyle_reference_symbolizers_point>` (User Manual | MBStyle Reference)
+* `MapBox Style Spec Symbol Layer <https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-symbol>`_
+* `MapBox Style Spec Circle Layer <https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-circle>`_
 * :ref:`Point <sld_reference_pointsymbolizer>` (User Manual | SLD Reference )
 
 This exercise makes use of the ``ne:populated_places`` layer.
@@ -72,7 +73,7 @@ The **symbol** layer controls the display of point data. Points are typically re
 
 .. figure:: ../style/img/PointSymbology.svg
 
-MBStyle uses a spritesheet defined at the top-level of the style to define a set of icons. You can view the names of all the icons in the spritesheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json`_.
+MBStyle uses a spritesheet defined at the top-level of the style to define a set of icons. You can view the names of all the icons in the spritesheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json <http://localhost:8080/geoserver/styles/sprites.json>`_.
 
 #. Change the symbol used by the style to a square:
 
@@ -162,7 +163,7 @@ Circle
 
 Another way of displaying point data is using the **circle** layer. Rather than rendering an icon from a preset sprite sheet, the circle layer lets us chose size and color for a simple circle.
 
-#. Modify the style to render a grey circle using the **circle** layer::
+#. Modify the style to render a grey circle using the **circle** layer:
 
    .. code-block:: json
 
@@ -1118,8 +1119,6 @@ Dynamic Styling
           }
         }
       }
-    ]
-  }
 
    .. image:: ../style/img/point_09_fill.png
 
@@ -1235,7 +1234,7 @@ Explore Dynamic Symbolization
    This is accomplished by using a function for the value of the **icon-image**:
 
     .. code-block:: json
-        :emphasize-lines: 11-18
+       :emphasize-lines: 11-18
 
        {
          "version": 8,

@@ -392,7 +392,7 @@ Options can be used to enable some quite useful effects, while still providing a
    .. code-block:: css
 
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
@@ -405,7 +405,7 @@ Options can be used to enable some quite useful effects, while still providing a
       :emphasize-lines: 3
    
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
@@ -418,7 +418,7 @@ Options can be used to enable some quite useful effects, while still providing a
       :emphasize-lines: 4
 
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
@@ -439,7 +439,7 @@ Options can be used to enable some quite useful effects, while still providing a
       :emphasize-lines: 6
    
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;

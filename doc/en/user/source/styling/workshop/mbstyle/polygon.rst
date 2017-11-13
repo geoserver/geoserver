@@ -1,4 +1,4 @@
-.. _styling_workshop_polygon:
+.. _styling_workshop_mbstyle_polygon:
 
 Polygons
 ========
@@ -28,7 +28,7 @@ For our Polygon exercises we will try and limit our MBStyle documents to a singl
 Reference:
 
 * :ref:`MBStyle Reference <mbstyle_reference>`
-* :ref:`MBStyle Reference Polygon symbolizer <mbstyle_reference_symbolizers_polygon>` (User Manual | MBStyle Reference)
+* `MapBox Style Spec Fill Layer <https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-fill>`_
 * :ref:`Polygons <sld_reference_polygonsymbolizer>` (User Manual | SLD Reference )
 
 This exercise makes use of the ``ne:states_provinces_shp`` layer.
@@ -116,7 +116,7 @@ The **fill-color** property is used to provide the color used to draw the interi
    The **fill-outline** property is used to provide the color of the polygon boundary. For more advanced boundary styling, use a seperate line layer.
    
    .. code-block:: json
-      :emphasize-lines: 12
+      :emphasize-lines: 11
       
       {
         "version": 8,
@@ -147,7 +147,7 @@ The **fill-color** property is used to provide the color used to draw the interi
    The **stroke-opacity** property is used in a similar fashion, as a range from 0.0 to 1.0.
 
    .. code-block:: json
-      :emphasize-lines: 11
+      :emphasize-lines: 10
       
       {
         "version": 8,
@@ -221,7 +221,7 @@ The fill pattern is defined by repeating an image defined in a spritesheet.
    .. image:: ../style/img/polygon_pattern_0.png
 
 
-#. You can view the names of all the icons in the spritesheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json`_.
+#. You can view the names of all the icons in the spritesheet by looking at its json definition, at `http://localhost:8080/geoserver/styles/sprites.json <http://localhost:8080/geoserver/styles/sprites.json>`_.
 
    .. literalinclude:: ../files/sprites.json
       :language: json
@@ -245,6 +245,10 @@ The fill pattern is defined by repeating an image defined in a spritesheet.
           }
         ]
       }
+
+#. This approach is well suited to printed output or low color devices.
+   
+   .. image:: ../style/img/polygon_pattern_4.png
 
 #. Multiple fills can be applied by using a seperate layer for each fill.
    
@@ -564,7 +568,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
       * We also unpack how cascading occurs, and what the result looks like in the generated XML.
 
-      * care is being taken to introduce the symbology encoding functions as an option for theming ( placing equal importance on their use).
+      * care is being taken to introduce the symbology encoding functions as an option for theming (placing equal importance on their use).
   
       Checklist:
 
@@ -589,7 +593,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
    | #bebada | #fdb462 | #d9d9d9 |
    +---------+---------+---------+
 
-   If you are unfamiliar with theming you may wish to visit http://colorbrewer2.org/js/ to learn more. The **i** icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.
+   If you are unfamiliar with theming you may wish to visit http://colorbrewer2.org to learn more. The **i** icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.
   
 #. The first approach we will take is to directly select content based on **colormap**, providing a color based on the **9-class Set3** palette above:
 

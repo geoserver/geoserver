@@ -1,7 +1,7 @@
 .. _styling_workshop_mbstyle_quickstart:
 
 MBStyle Quickstart
-===============
+==================
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 
@@ -13,7 +13,7 @@ Reference:
 
 * :ref:`MBStyle Reference <mbstyle_reference>`
 
-MBSTyle Syntax
+MBStyle Syntax
 --------------
 
 This section provides a quick introduction to MBStyle syntax for mapping professionals who may not be familiar with JSON.
@@ -54,7 +54,7 @@ The following root-level properties are required for all MBStyles. Additional ro
 `version`   The version of the Mapbox Style specification to use. Must be set to `8`.
 `name`      The name of the style.
 `sources`   An object defining the source data. Not used by GeoServer.
-`name`      An array of layer style objects
+`layers`    An array of layer style objects
 =========== ========================================================================
 
 For example:
@@ -120,7 +120,7 @@ Here is an example :download:`SLD file <../files/airports0.sld>` for reference:
 MBStyle Style
 ^^^^^^^^^^^^^
 
-Here is the same example as :download:`MBStyle <../files/airports0.mbstyle>`: 
+Here is the same example as :download:`MBStyle <../files/airports0.json>`: 
 
 .. literalinclude:: ../files/airports0.json
    :language: json
@@ -192,7 +192,7 @@ Explore Data
 Challenge Compare SLD Generation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-# The rest API can be used to review your YAML file directly.
+#. The rest API can be used to review your YAML file directly.
    
   Browser:
   

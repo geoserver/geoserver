@@ -26,7 +26,7 @@ Each exercise makes use of the ``ne:roads`` layer.
 Reference:
 
 * :ref:`MBStyle Reference <mbstyle_reference>`
-* :ref:`MBStyle Reference Line symbolizer <mbstyle_reference_symbolizers_line>` (User Manual | MBStyle Reference)
+* `MapBox Style Spec Line Layer <https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-line>`_
 * :ref:`LineString <sld_reference_linesymbolizer>` (User Manual | SLD Reference )
 
 Line
@@ -629,9 +629,9 @@ Challenge Classification
    .. image:: ../style/img/line_type.png
    
    
-   note:: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
+   .. note:: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
    
-   note:: Answer :ref:`provided <mbstyle.line.a1>` at the end of the workbook.
+   .. note:: Answer :ref:`provided <mbstyle.line.a1>` at the end of the workbook.
 
 .. _mbstyle.line.q2:
 

@@ -1,4 +1,4 @@
-.. _styling_workshop_raster:
+.. _styling_workshop_mbstyle_raster:
 
 Rasters
 =======
@@ -36,7 +36,7 @@ Since MBStyle is primarily intended for client-side styling, it doesn't have muc
 Reference:
 
 * :ref:`MBStyle Reference <mbstyle_reference>`
-* :ref:`Point <mbstyle_reference_symbolizers_point>` (MBStyle Reference | Raster symbolizer)
+* `MapBox Style Spec Raster Layer <https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-raster>`_
 * :ref:`Point <sld_reference_pointsymbolizer>` (User Manual | SLD Reference )
 
 The exercise makes use of the ``usgs:dem`` and ``ne:ne1`` layers.

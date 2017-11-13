@@ -20,6 +20,7 @@
         <include>opensaml*.jar</include>
         <include>openws*.jar</include>
         <include>velocity*.jar</include>
+        <include>esapi*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

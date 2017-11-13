@@ -795,29 +795,6 @@ The following optional explore and challenge activities offer a chance to review
 
 In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.
 
-.. _mbstyle.polygon.q1:
-
-Explore Antialiasing
-^^^^^^^^^^^^^^^^^^^^
-
-#. When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
-
-   .. image:: ../style/img/polygon_04_preview.png
-
-   This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.
-
-#. Clients can turn this feature off using a GetMap format option::
-
-      format_options=antialiasing=off;
-
-   The **LayerPreview** provides access to this setting from the Open Layers **Options Toolbar**:
-
-   .. image:: ../style/img/polygon_antialias.png
-
-#. **Explore:** Experiment with **fill** and **stroke** settings to eliminate slivers between polygons.
-
-   .. note:: Answer :ref:`provided <mbstyle.polygon.a1>` at the end of the workbook.
-
 .. _mbstyle.polygon.q2:
 
 Explore Interval

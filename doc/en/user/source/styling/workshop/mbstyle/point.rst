@@ -792,7 +792,7 @@ Dynamic Styling
           "text-color": "black",
           "text-translate": [0, -12]
         }
-      },
+      }
 
    Also add the spritesheet url to the top of the style if it is not present:
 

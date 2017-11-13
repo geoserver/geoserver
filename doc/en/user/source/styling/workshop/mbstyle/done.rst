@@ -21,504 +21,464 @@ The following questions were listed through out the workshop as an opportunity t
 
 .. note:: Coming Soon
 
-.. hide:
 
-    .. _mbstyle.line.a1:
+.. _mbstyle.line.a1:
 
-    Classification
-    ^^^^^^^^^^^^^^
+Classification
+^^^^^^^^^^^^^^
 
-    Answer for :ref:`Challenge Classification <mbstyle.line.q1>`:
+Answer for :ref:`Challenge Classification <mbstyle.line.q1>`:
 
-    #. **Challenge:** Create a new style adjust road appearance based on **type**.
+#. **Challenge:** Create a new style adjust road appearance based on **type**.
 
-       .. image:: ../style/img/line_type.png
+   .. image:: ../style/img/line_type.png
 
-       Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
+   Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
 
-    #. Here is an example:
+#. Here is an example:
+  
+   .. code-block:: json
+
+       {
+        "version": 8,
+        "name": "line_example",
+        "layers": [
+          {
+            "id": "line_hwy1",
+            "source-layer": "ne:roads",
+            "type": "line",
+            "filter": ["==", "type", "Major Highway"],
+            "paint": {
+              "line-color": "#000088",
+              "line-width": 1.25,
+              "line-opacity": 0.25 
+            }
+          },
+          {
+            "id": "line_hwy2",
+            "source-layer": "ne:roads",
+            "type": "line",
+            "filter": ["==", "type", "Secondary Highway"],
+            "paint": {
+              "line-color": "#8888AA",
+              "line-width": 0.75,
+              "line-opacity": 0.25
+            }
+          },
+          {
+            "id": "line_road",
+            "source-layer": "ne:roads",
+            "type": "line",
+            "filter": ["==", "type", "Road"],
+            "paint": {
+              "line-color": "#888888",
+              "line-width": 0.75,
+              "line-opacity": 0.25
+            }
+          },
+          {
+            "id": "line_unk",
+            "source-layer": "ne:roads",
+            "type": "line",
+            "filter": ["==", "type", "Unknown"],
+            "paint": {
+              "line-color": "#888888",
+              "line-width": 0.5,
+              "line-opacity": 0.25
+            }
+          }
+        ]
+      }
+
+.. _mbstyle.line.a2:
+
+One Rule Classification
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Answer for :ref:`Challenge One Rule Classification <mbstyle.line.q2>`:
+
+#. **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
+
+#. This exercise requires looking up information in the MBstyle user guide.
+   
+   * The Mapbox Style specification `functions <https://www.mapbox.com/mapbox-gl-js/style-spec/#other-function>`_ provides details.
+
+.. _mbstyle.line.a3:
+
+Label Shields
+^^^^^^^^^^^^^
+
+Answer for :ref:`Challenge Label Shields <mbstyle.line.q3>`:
+
+#. *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in MBStyle.
+
+   .. image:: ../style/img/line_shield.png
+
+#. The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding which symbol layout parameters give the desired behavior, mainly **icon-text-fit** but also the various placement and overlap parameters to allow the text to be drawn atop the labels ( see `symbol layer <https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-symbol>`_).
       
-       .. code-block:: json
-
-           define: &common
-             stroke-opacity: 0.25
-       
-           rules:
-           - filter: ${type = 'Major Highway'}
-             symbolizers:
-             - line:
-                 stroke-color: '#000088'
-                 stroke-width: 1.25
-                 <<: *common
-           - filter: ${type = 'Secondary Highway'}
-             symbolizers:
-             - line:
-                 stroke-color: '#8888AA'
-                 stroke-width: 0.75
-                 <<: *common
-           - filter: ${type = 'Road'}
-             symbolizers:
-             - line:
-                 stroke-color: '#888888'
-                 stroke-width: 0.75
-                 <<: *common
-           - filter: ${type = 'Unknown'}
-             symbolizers:
-             - line:
-                 stroke-color: '#888888'
-                 stroke-width: 0.5
-                 <<: *common
-           - else: true
-             symbolizers:
-             - line:
-                 stroke-color: '#AAAAAA'
-                 stroke-width: 0.5
-                 <<: *common
-                 
-    .. _mbstyle.line.a2:
-
-    One Rule Classification
-    ^^^^^^^^^^^^^^^^^^^^^^^
-
-    Answer for :ref:`Challenge One Rule Classification <mbstyle.line.q2>`:
-
-    #. **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
-
-    #. This exercise requires looking up information in the user guide, the search tearm *recode* provides several examples.
-       
-       * The MBStyle Reference :ref:`theming functions <mbstyle_reference_functions_theming>` provides a clear example.
-
-    .. _mbstyle.line.a3:
-
-    Label Shields
-    ^^^^^^^^^^^^^
-
-    Answer for :ref:`Challenge Label Shields <mbstyle.line.q3>`:
-
-    #. *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in MBStyle.
-
-       .. image:: ../style/img/line_shield.png
-
-    #. The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`TextSymbolizer - Graphic <sld_reference_textsymbolizer>`).
-          
-       .. code-block:: json
-     
-           symbolizers:
-           - line:
-               stroke-color: '#000000'
-               stroke-width: 3
-           - line:
-               stroke-color: '#D3D3D3'
-               stroke-width: 2
-           - text:
-               label: ${name}
-               fill-color: '#000000'
-               font-family: Ariel
-               font-size: 10
-               font-style: normal
-               font-weight: normal
-               placement: point
-               graphic:
-                 size: 18
-                 symbols:
-                 - mark:
-                     shape: square
-                     stroke-color: '#000000'
-                     stroke-width: 1
-                     fill-color: '#FFFFFF'
-
-    .. _mbstyle.polygon.a1:
-
-    Antialiasing
-    ^^^^^^^^^^^^
-
-    Answer for :ref:`Explore Antialiasing <mbstyle.polygon.q1>`:
-
-    #. When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
-
-       .. image:: ../style/img/polygon_04_preview.png
-
-       This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.
-
-    #. **Explore:** Experiment with **fill** and **stroke** settings to eliminate slivers between polygons.
-
-       The obvious approach works - setting both values to the same color:
-
-       .. code-block:: json
-
-          symbolizers:
-          - polygon:
-              stroke-color: 'lightgrey'
-              stroke-width: 1
-              fill-color: 'lightgrey'
-
-    .. _mbstyle.polygon.a2:
-
-    Categorize
-    ^^^^^^^^^^
-
-    Answer for :ref:`Explore Categorize <mbstyle.polygon.q2>`:
-
-    #. An exciting use of the GeoServer **shape** symbols is the theming by changing the **size** used for pattern density.
-
-    #. **Explore:** Use the **Categorize** function to theme by **datarank**.
-
-       .. image:: ../style/img/polygon_categorize.png
-
-       Example:
-
-       .. code-block:: json
-
-          symbolizers:
-          - polygon:
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-              fill-graphic:
-                size: ${Categorize(datarank,'4','4','5','6','8','10','10')}
-                symbols:
-                - mark:
-                    shape: shape://slash
-                    stroke-color: 'darkgray'
-                    stroke-width: 1
-
-    .. _mbstyle.polygon.a4:
-
-    Halo
-    ^^^^
-
-    Answer for :ref:`Challenge Halo <mbstyle.polygon.q4>`:
-
-    #. The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
-
-       A common design choice for emphasis is to outline the text in a contrasting color.
-       
-    #. **Challenge:** Produce a map that uses a white halo around black text.
-
-       Here is an example:
-     
-       .. code-block:: json
-
-          symbolizers:
-          - polygon:
-              stroke-color: 'gray'
-              stroke-width: 1
-              fill-color: '#7EB5D3'
-          - text:
-              label: ${name}
-              fill-color: 'black'
-              halo:
-                fill-color: 'white'
-                radius: 1
-              font-family: Arial
-              font-size: 14
-              font-style: normal
-              font-weight: normal
-              anchor: [0.5, 0.5]
-                    
-    .. _mbstyle.polygon.a5:
-
-    Theming using Multiple Attributes
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    Answer for :ref:`Challenge Theming using Multiple Attributes <mbstyle.polygon.q5>`:
-
-    #. A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
-
-    #. **Challenge:** Combine the **mapcolor9** and **datarank** examples to reproduce the following map.
-
-       .. image:: ../style/img/polygon_multitheme.png
-
-       This should be a cut and paste using the ``recode`` example, and ``categorize`` examples already provided.
-     
-       .. code-block:: json
-
-          symbolizers:
-          - polygon:
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: ${Recode(mapcolor9,
-                '1','#8dd3c7',
-                '2','#ffffb3',
-                '3','#bebada',
-                '4','#fb8072',
-                '5','#80b1d3',
-                '6','#fdb462',
-                '7','#b3de69',
-                '8','#fccde5',
-                '9','#d9d9d9')}
-          - polygon:
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-              fill-graphic:
-                size: ${Categorize(datarank,'6','4','8','6','10','10','12')}
-                symbols:
-                - mark:
-                    shape: shape://slash
-                    stroke-color: 'black'
-                    stroke-width: 1
-                    fill-color: 'gray'
-
-    .. _mbstyle.polygon.a6:
-
-    Use of Feature styles
-    ^^^^^^^^^^^^^^^^^^^^^
-
-    Answer for :ref:`Challenge Use of Feature styles <mbstyle.polygon.q6>`:
-
-    #. Using multiple **feature-styles** to simulate line string casing. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
-       
-    #. **Challenge:** Use what you know of LineString **feature-styles** to reproduce the following map:
-
-       .. image:: ../style/img/polygon_zorder.png
-
-       This is much easier when using MBStyle, where z-order is controlled by feature-style order. In this instance, multiple symbolizers within a feature-style will not work, as the order within a feature-style is only consistent per-feature (not per-layer).
-
-       .. code-block:: json
-
-         feature-styles:
-         - rules:
-           - symbolizers:
-             - polygon:
-                 stroke-width: 1.0
-                 fill-color: 'lightgrey'
-         - rules:
-           - symbolizers:
-             - polygon:
-                 stroke-width: 1.0
-                 fill-color: 'gray'
-                 fill-graphic:
-                   size: 8
-                   symbols:
-                   - mark:
-                       shape: shape://slash
-                       stroke-color: 'black'
-                       stroke-width: 0.75
-         - rules:
-           - symbolizers:
-             - line:
-                 stroke-color: 'lightgrey'
-                 stroke-width: 6
-         - rules:
-           - symbolizers:
-             - line:
-                 stroke-color: 'black'
-                 stroke-width: 1.5
-       
-       The structure of the legend graphic provides an indication on what is going on.
-
-    .. _mbstyle.point.a1:
-
-    Geometry Location
-    ^^^^^^^^^^^^^^^^^
-
-    Answer for :ref:`Challenge Geometry Location <mbstyle.point.q1>`:
-
-    #. The **mark** property can be used to render any geometry content.
-
-    #. **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property. 
-       
-       This can be done one of two ways:
-       
-       * Changing the association of a polygon layer, such as ``ne:states_provinces_shp`` to point_example and using the layer preview page.
-       * Changing the :guilabel:`Layer Preview` tab to a polygon layer, such as ``ne:states_provinces_shp``.
-       
-       The important thing to notice is that the centroid of each polygon is used as a point location.
-
-    .. _mbstyle.point.a2:
-
-    Dynamic Symbolization
-    ^^^^^^^^^^^^^^^^^^^^^
-
-    Answer for :ref:`Explore Dynamic Symbolization <mbstyle.point.q2>`:
-
-    #. SLD Mark and ExternalGraphic provide an opportunity for dynamic symbolization.
-
-       This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with :kbd:`${ }` as shown:
-
-        .. code-block:: json
-
-           - point:
-               symbols:
-               - mark:
-                   shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
-       
-    #. **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
-
-       Example available here :download:`point_example.css <../files/point_example2.mbstyle>` :
-       
-       .. code-block: json
-       
-          define: &point
-            size: ${10-(SCALERANK/2)}
-            symbols:
-            - mark:
-                shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
-                stroke-color: 'black'
-                stroke-width: 1
-                fill-color: 'gray'
-            x-labelObstacle: true
-
-    .. _mbstyle.point.a3:
-
-    Layer Group
-    ^^^^^^^^^^^
-
-    Answer for :ref:`Challenge Layer Group <mbstyle.point.q3>`:
-
-    #. Use a **Layer Group** to explore how symbology works together to form a map.
-       
-       * ne:NE1
-       * ne:states_provincces_shp
-       * ne:populated_places
-
-    #. This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.
-
-    #. **Challenge:** Do your best to style populated_places over this busy background.
-           
-       Here is an example with labels for inspiration:
-
-       .. image:: ../style/img/point_challenge_1.png
-
-       This is opportunity to revisit label halo settings from :doc:`polygon`:
-       
-       .. code-block:: css
-
-          symbolizers:
-          - point:
-              size: ${'5' + '10' - SCALERANK / '3'}
-              symbols:
-              - mark:
-                  shape: circle
-                  stroke-color: 'white'
-                  stroke-width: 1
-                  stroke-opacity: 0.75
-                  fill-color: 'black'
-                  x-labelObstacle: true
-              - text:
-                  label: ${name}
-                  fill-color: 'black'
-                  font-family: Arial
-                  font-size: 14
-                  anchor: [0.5, 1]
-                  offset: [0 ${'-12' + SCALERANK}]
-                  halo:
-                    fill-color: `lightgray`
-                    radius: 2
-                    opacity: 0.7
-                  x-max-displacement: 90
-                  x-label-priority: ${`0` - LABELRANK}
-
-       Using a lightgray halo, 0.7 opacity and radius 2 fades out the complexity immediately surrounding the label text improving legibility.
-
-    .. _mbstyle.raster.a1:
-
-    Contrast Enhancement
-    ^^^^^^^^^^^^^^^^^^^^
-
-    Discussion for :ref:`Explore Contrast Enhancement <mbstyle.raster.q1>`:
-
-    #. A special effect that is effective with grayscale information is automatic contrast adjustment.
-
-    #. Make use of a simple contrast enhancement with ``usgs:dem``:
-
-       .. code-block:: json
-
-          symbolizers:
-          - raster:
-              opacity: 1.0
-              contrast-enhancement:
-                mode: normalize
-
-    #. Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?
-
-       .. image:: ../style/img/raster_contrast_1.png
-
-       What happens is insanity, normalize stretches the palette of the output image to use the full dynamic range. As long as we have ocean on the screen (with value 0) the land area was shown with roughly the same presentation.
-
-       .. image:: ../style/img/raster_contrast_2.png
-
-       Once we zoom in to show only a land area, the lowest point on the screen (say 100) becomes the new black, radically altering what is displayed on the screen.
-
-    .. _mbstyle.raster.a2:
-
-    Intervals
-    ^^^^^^^^^
-
-    Answer for :ref:`Challenge Intervals <mbstyle.raster.q2>`:
-
-    #. The color-map **type** property dictates how the values are used to generate a resulting color.
-
-       * :kbd:`ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
-       * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
-       * :kbd:`values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
-
-    #. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
-
-       By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
-
-       .. image:: ../style/img/raster_interval.png
-       
-       Here is style for you to cut and paste:
-       
-       .. code-block:: json
-
-          symbolizers:
-          - raster:
-              opacity: 1.0
-              color-map:
-                type: intervals
-                entries:
-                - ['#014636', 0, 0, null]
-                - ['#014636', 1.0, 1, null]
-                - ['#016C59', 1.0, 500, null]
-                - ['#02818A', 1.0, 1000, null]
-                - ['#3690C0', 1.0, 1500, null]
-                - ['#67A9CF', 1.0, 2000, null]
-                - ['#A6BDDB', 1.0, 2500, null]
-                - ['#D0D1E6', 1.0, 3000, null]
-                - ['#ECE2F0', 1.0, 3500, null]
-                - ['#FFF7FB', 1.0, 4000, null]
-
-    .. _mbstyle.raster.a3:
-
-    Clear Digital Elevation Model Presentation
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    Answer for :ref:`Challenge Clear Digital Elevation Model Presentation <mbstyle.raster.q3>`:
-
-    #. Now that you have seen the data on screen and have a better understanding how would you modify our initial gray-scale example?
-
-    #. **Challenge:** Use what you have learned to present the ``usgs:dem`` clearly.
-
-       .. image:: ../style/img/raster_grayscale.png
-
-       The original was a dark mess. Consider making use of mid-tones (or adopting a sequential palette from color brewer) in order to fix this. In the following example the ocean has been left dark, allowing the mountains stand out more.
-        
-       .. code-block:: json
-
-          symbolizers:
-          - raster:
-              opacity: 1.0
-              color-map:
-                type: ramp
-                entries:
-                - ['#000000', 1.0, 0, null]
-                - ['#444444', 1.0, 1, null]
-                - ['#FFFFFF', 1.0, 3000, null]
-
-    .. _mbstyle.raster.a4:
-
-    Raster Opacity
-    ^^^^^^^^^^^^^^
-
-    Discussion for :ref:`Challenge Clear Digital Elevation Model Presentation <mbstyle.raster.q3>`:
-
-    #. There is a quick way to make raster data transparent, raster **opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
-
-    #. **Challenge:** Can you think of an example where this would be useful?
-
-       This is difficult as raster data is usually provided for use as a basemap, with layers being drawn over top.
-       
-       The most obvious example here is the display of weather systems, or model output such as fire danger. By drawing the raster with some transparency, the landmass can be shown for context.
+   .. code-block:: json
+ 
+      {
+        "version": 8,
+        "name": "line_example",
+        "sprite": "http://localhost:8080/geoserver/styles/sprites",
+        "layers": [
+          {
+            "id": "line_casing",
+            "source-layer": "ne:roads",
+            "type": "line",
+            "paint": {
+              "line-color": "#000000",
+              "line-width": 3,
+            }
+          },
+          {
+            "id": "line_inner",
+            "source-layer": "ne:roads",
+            "type": "line",
+            "paint": {
+              "line-color": "#D3D3D3",
+              "line-width": 2,
+            }
+          },
+          {
+            "id": "label",
+            "source-layer": "ne:roads",
+            "type": "symbol",
+            "layout": {
+              "icon-image": "white_square16",
+              "icon-text-fit": "width",
+              "icon-text-fit-padding": [2, 2, 2, 2],
+              "text-field": "{name}",
+              "text-font": ["Ariel"],
+              "text-font-size": 10,
+              "text-ignore-placement": true,
+              "text-allow-overlap": true,
+              "icon-ignore-placement": true,
+              "icon-allow-overlap": true,
+              "symbol-placement": "line",
+              "symbol-spacing": 0
+              
+            }
+            "paint": {
+              "text-color": "black"
+            }
+          }
+        ]
+      }
+
+.. _mbstyle.polygon.a2:
+
+Interval
+^^^^^^^^
+
+Answer for :ref:`Explore Interval <mbstyle.polygon.q2>`:
+
+#. An exciting use of the GeoServer **fill-pattern** symbols is theming by changing the pattern used.
+
+#. **Explore:** Use the **interval** function to theme by **datarank**.
+
+   .. image:: ../style/img/polygon_categorize.png
+
+   Example:
+
+   .. code-block:: json
+
+       {
+        "version": 8,
+        "name": "polygon_example",
+        "sprite": "http://localhost:8080/geoserver/styles/sprites",
+        "layers": [
+          {
+            "id": "polygon",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "fill",
+            "paint": {
+              "fill-pattern": {
+                "property": "datarank",
+                "type": "interval",
+                "stops": [
+                  [4, "grey_diag8"],
+                  [6, "grey_diag16"]
+                ]
+              }
+            }
+          }
+        ]
+      }
+
+.. _mbstyle.polygon.a4:
+
+Halo
+^^^^
+
+Answer for :ref:`Challenge Halo <mbstyle.polygon.q4>`:
+
+#. The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
+
+   A common design choice for emphasis is to outline the text in a contrasting color.
+   
+#. **Challenge:** Produce a map that uses a white halo around black text.
+
+   Here is an example:
+ 
+   .. code-block:: json
+
+      {
+        "version": 8,
+        "name": "polygon_example",
+        "layers": [
+          {
+            "id": "polygon_fill",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "fill",
+            "paint": {
+              "fill-color": "#7EB5D3",
+              "fill-outline-color": "gray"
+            }
+          },
+          {
+            "id": "polygon_label",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "symbol",
+            "layout": {
+              "text-field": "{name}",
+              "text-anchor": "center"
+              "text-max-width": 14,
+              "text-font": ["Arial"]
+            },
+            "paint": {
+              "text-color": "white",
+              "text-halo-color": "black",
+              "text-halo-width": 1
+              
+            }
+          }
+        ]
+      }
+
+.. _mbstyle.polygon.a5:
+
+Theming using Multiple Attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Answer for :ref:`Challenge Theming using Multiple Attributes <mbstyle.polygon.q5>`:
+
+#. A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
+
+#. **Challenge:** Combine the **mapcolor9** and **datarank** examples to reproduce the following map.
+
+   .. image:: ../style/img/polygon_multitheme.png
+
+   This should be a cut and paste using the ``categorical`` example, and ``interval`` examples already provided.
+ 
+   .. code-block:: json
+
+      {
+        "version": 8,
+        "name": "polygon_example",
+        "sprite": "http://localhost:8080/geoserver/styles/sprites",
+        "layers": [
+          {
+            "id": "polygon",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "fill",
+            "paint": {
+              "fill-color": {
+                "property": "mapcolor9",
+                "type": "categorical",
+                "stops": [
+                  [1, "#8dd3c7"],
+                  [2, "#ffffb3"],
+                  [3, "#bebada"],
+                  [4, "#fb8072"],
+                  [5, "#80b1d3"],
+                  [6, "#fdb462"],
+                  [7, "#b3de69"],
+                  [8, "#fccde5"],
+                  [9, "#d9d9d9"]
+                ]
+              },
+              "fill-outline-color": "gray"
+            }
+          },
+          {
+            "id": "polygon",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "fill",
+            "paint": {
+              "fill-pattern": {
+                "property": "datarank",
+                "type": "interval",
+                "stops": [
+                  [4, "grey_diag8"],
+                  [6, "grey_diag16"]
+                ]
+              }
+            }
+          }
+        ]
+      }
+
+.. _mbstyle.polygon.a6:
+
+Use of Z-Index
+^^^^^^^^^^^^^^
+
+Answer for :ref:`Challenge Use of Z-Index <mbstyle.polygon.q6>`:
+
+#. Using multiple **layers** to simulate line string casing. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
+   
+#. **Challenge:** Use what you know of LineString rendering order to reproduce the following map:
+
+   .. image:: ../style/img/polygon_zorder.png
+
+   This is much easier when using MBStyle, where z-order is controlled by layer.
+
+   .. code-block:: json
+
+     {
+        "version": 8,
+        "name": "polygon_example",
+        "sprite": "http://localhost:8080/geoserver/styles/sprites",
+        "layers": [
+          {
+            "id": "polygon_fill",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "fill",
+            "paint": {
+              "fill-color": "lightgrey",
+            }
+          },
+          {
+            "id": "polygon_pattern",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "fill",
+            "paint": {
+              "fill-pattern": "grey_diag16"
+            }
+          }
+          {
+            "id": "polygon_casing",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "line",
+            "paint": {
+              "line-color": "lightgrey",
+              "line-width": 6
+            }
+          },
+          {
+            "id": "polygon_outline",
+            "source-layer": "ne:states_provinces_shp",
+            "type": "line",
+            "paint": {
+              "line-color": "black",
+              "line-width": 1.5
+            }
+          }
+        ]
+      }
+   
+   The structure of the legend graphic provides an indication on what is going on.
+
+.. _mbstyle.point.a1:
+
+Geometry Location
+^^^^^^^^^^^^^^^^^
+
+Answer for :ref:`Challenge Geometry Location <mbstyle.point.q1>`:
+
+#. The **symbol** layer can be used to render any geometry content.
+
+#. **Challenge:** Try this yourself by rendering polygon data using a **symbol** layer.
+   
+   This can be done one of two ways:
+   
+   * Changing the association of a polygon layer, such as ``ne:states_provinces_shp`` to point_example and using the layer preview page.
+   * Changing the :guilabel:`Layer Preview` tab to a polygon layer, such as ``ne:states_provinces_shp``.
+   
+   The important thing to notice is that the centroid of each polygon is used as a point location.
+
+.. note :: A layer in an MBStyle is not the same as a layer in GeoServer. A GeoServer layer is a raster or vector dataset that represents a collection of geographic features. A MBStyle layer is a block of styling information, similar to a SLD Symbolizer.
+
+.. _mbstyle.point.a2:
+
+Dynamic Symbolization
+^^^^^^^^^^^^^^^^^^^^^
+
+Answer for :ref:`Explore Dynamic Symbolization <mbstyle.point.q2>`:
+
+#. ``icon-image`` provides an opportunity for dynamic symbolization.
+
+   This is accomplished by using a function for the value of ``icon-image``:
+
+    .. code-block:: json
+
+       {
+         "version": 8,
+         "name": "point_example",
+         "sprite": "http://localhost:8080/geoserver/styles/sprites",
+         "layers": [
+           {
+             "id": "point_capital",
+             "type": "symbol",
+             "source-layer": "ne:populated_places",
+             "layout": {
+               "icon-image": {
+                 "type": "categorical",
+                 "property": "FEATURECLA",
+                 "default": "grey_circle",
+                 "stops": [
+                   ["Admin-0 capital", "star"]
+                 ]
+               }
+             }
+           }
+         ]
+       }
+   
+#. **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
+
+   Example available here :download:`point_example.json <../files/point_example2.json>` :
+   
+   .. code-block: json
+   
+       {
+         "id": "point_example",
+         "type": "symbol",
+         "source-layer": "ne:populated_places",
+         "layout": {
+           "icon-image": {
+             "type": "categorical",
+             "property": "FEATURECLA",
+             "default": "grey_circle",
+             "stops": [
+               ["Admin-0 capital", "star"]
+             ]
+           },
+           "icon-size": {
+             "property": "SCALERANK",
+             "type": "exponential",
+             "stops": [
+               [0, 2.5],
+               [10, 1]
+             ]
+           },
+         }
+       }
+
+
+.. _mbstyle.raster.a4:
+
+Raster Opacity
+^^^^^^^^^^^^^^
+
+Discussion for :ref:`Challenge Raster Opacity <mbstyle.raster.q4>`:
+
+#. There is a quick way to make raster data transparent, raster **opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
+
+#. **Challenge:** Can you think of an example where this would be useful?
+
+   This is difficult as raster data is usually provided for use as a basemap, with layers being drawn over top.
+   
+   The most obvious example here is the display of weather systems, or model output such as fire danger. By drawing the raster with some transparency, the landmass can be shown for context.

@@ -473,7 +473,11 @@
     <artifactId>gt-geopkg</artifactId>
     <version>${gt.version}</version>
    </dependency>
-
+   <dependency>
+     <groupId>org.jdom</groupId>
+     <artifactId>jdom2</artifactId>
+     <version>2.0.6</version>
+   </dependency>
 
    <dependency>
      <groupId>com.google.code.gson</groupId>

@@ -24,9 +24,9 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 /**
  * The MapDecorationLayout class describes a set of overlays to be used to enhance a WMS response.

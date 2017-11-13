@@ -31,6 +31,10 @@
       <artifactId>gt-geojson</artifactId>
       <version>${gt.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

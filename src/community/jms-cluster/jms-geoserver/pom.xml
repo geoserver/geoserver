@@ -54,6 +54,10 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.restlet</groupId>

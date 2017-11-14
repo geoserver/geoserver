@@ -157,13 +157,20 @@ public class StyleParameterFilter extends ParameterFilter {
     public List<String> getLegalValues() {
         checkInitialized();
         Set<String> layerStyles = getLayerStyles();
+        // will contain the layer legal \ allowed styles
+        List<String> finalStyles = new ArrayList<>();
         if (allowedStyles==null) {
             // Values is null so allow any of the backing layer's styles
-            return new ArrayList<String>(layerStyles);
+            finalStyles.addAll(layerStyles);
         } else {
             // Values is set so only allow the intersection of the specified styles and those of the backing layer.
-            return new ArrayList<String>(Sets.intersection(layerStyles, allowedStyles));
+            finalStyles.addAll(Sets.intersection(layerStyles, allowedStyles));
         }
+        // make sure layer default style is considered a legal style
+        if (defaultStyle != null && !finalStyles.contains(defaultStyle)) {
+            finalStyles.add(defaultStyle);
+        }
+        return finalStyles;
     }
     
     /**

@@ -1465,7 +1465,25 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected String getAsString(String path) throws Exception {
         return string(get(path));
     }
-    
+
+    /**
+     * Helper method that extracts the content of HTTP response assuming that the content is XML and parse it.
+     *
+     * @param response HTTP response expected to contain XML content
+     * @param skipSchemaValidation if TRUE XML schema validate wil be performed
+     *
+     * @return the parsed response XML content
+     */
+    protected Document dom(MockHttpServletResponse response, boolean skipSchemaValidation) {
+        try (InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes())) {
+            // parse response XMl content
+            return dom(input, skipSchemaValidation);
+        } catch (Exception exception) {
+            // something bad happen, since this is test code we just throw an exception
+            throw new RuntimeException("Something bad happen when parsing response XML content.", exception);
+        }
+    }
+
     /**
      * Parses a stream into a dom.
      */

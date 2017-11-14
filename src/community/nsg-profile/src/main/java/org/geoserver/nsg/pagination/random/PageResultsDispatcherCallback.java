@@ -23,6 +23,9 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +47,7 @@ import java.util.logging.Logger;
  * @author sandr
  */
 
-public class PageResultsDispatcherCallback extends AbstractDispatcherCallback {
+public class PageResultsDispatcherCallback extends AbstractDispatcherCallback implements ApplicationListener<ContextRefreshedEvent> {
 
     static final String PAGE_RESULTS = "PageResults";
 
@@ -56,16 +59,6 @@ public class PageResultsDispatcherCallback extends AbstractDispatcherCallback {
     public PageResultsDispatcherCallback(GeoServer gs, PageResultsWebFeatureService service) {
         this.gs = gs;
         this.service = service;
-
-        // configure the extra operation in WFS 2.0
-        List<Service> services = GeoServerExtensions.extensions(Service.class);
-        for (Service s : services) {
-            if ("wfs".equals(s.getId().toLowerCase()) && Integer.valueOf(2).equals(s.getVersion().getMajor())) {
-                if (!s.getOperations().contains(PAGE_RESULTS)) {
-                    s.getOperations().add(PAGE_RESULTS);
-                }
-            }
-        }
     }
 
     @Override
@@ -94,4 +87,16 @@ public class PageResultsDispatcherCallback extends AbstractDispatcherCallback {
         return super.operationDispatched(request, newOperation);
     }
 
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        // configure the extra operation in WFS 2.0
+        List<Service> services = GeoServerExtensions.extensions(Service.class);
+        for (Service s : services) {
+            if ("wfs".equals(s.getId().toLowerCase()) && Integer.valueOf(2).equals(s.getVersion().getMajor())) {
+                if (!s.getOperations().contains(PAGE_RESULTS)) {
+                    s.getOperations().add(PAGE_RESULTS);
+                }
+            }
+        }
+    }
 }

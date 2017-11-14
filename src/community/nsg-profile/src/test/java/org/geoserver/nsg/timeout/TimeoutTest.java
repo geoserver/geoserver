@@ -13,6 +13,7 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.servlets.ServiceStrategyFactory;
 import org.w3c.dom.Document;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class TimeoutTest extends WFS20TestSupport {
 
@@ -93,7 +95,7 @@ public class TimeoutTest extends WFS20TestSupport {
 
         Document dom = getAsDOM(
                 "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
-        print(dom);
+        // print(dom);
         checkOws11Exception(dom, "2.0.0", TimeoutVerifier.TIMEOUT_EXCEPTION_CODE, "GetFeature");
     }
 
@@ -105,7 +107,7 @@ public class TimeoutTest extends WFS20TestSupport {
 
         Document dom = getAsDOM(
                 "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", dom);
         assertXpathEvaluatesTo("480", "count(//cdf:Fifteen)", dom);
     }
@@ -121,8 +123,11 @@ public class TimeoutTest extends WFS20TestSupport {
         MockHttpServletResponse response = getAsServletResponse(
                 "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&outputFormat=SHAPE-ZIP");
         assertEquals("application/xml", response.getContentType());
+        // This one does not work due to a bug in MockHttpServletResponse, asking for header values
+        // to be non null, while the javadoc does not make any such request
+        // assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        print(dom);
+        // print(dom);
         checkOws11Exception(dom, "2.0.0", TimeoutVerifier.TIMEOUT_EXCEPTION_CODE, "GetFeature");
     }
 

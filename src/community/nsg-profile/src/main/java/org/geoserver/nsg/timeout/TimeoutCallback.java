@@ -33,12 +33,12 @@ public class TimeoutCallback extends AbstractDispatcherCallback {
     /**
      * The key storing the NSG request timeout in the {@link WFSInfo#getMetadata()} map
      */
-    static final String TIMEOUT_CONFIG_KEY = "org.geoserver.nsg.timeout";
+    public static final String TIMEOUT_CONFIG_KEY = "org.geoserver.nsg.timeout";
 
     /**
      * The default timeout according to specification (5 minutes)
      */
-    static final int TIMEOUT_CONFIG_DEFAULT = 300;
+    public static final int TIMEOUT_CONFIG_DEFAULT = 300;
 
     static final String TIMEOUT_REQUEST_ATTRIBUTE = "timeout";
 

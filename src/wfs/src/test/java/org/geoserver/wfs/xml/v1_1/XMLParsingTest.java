@@ -79,7 +79,7 @@ public class XMLParsingTest extends WFSTestSupport {
                             "<wfs:Name>TYPE</wfs:Name>" + //
                             "<wfs:Value><![CDATA[street\n" + //
                             "line2\n" + //
-                            "line3]]></wfs:Value>" + //
+                            "line3\n]]></wfs:Value>" + //
                             "</wfs:Property>" + //
                             "<ogc:Filter>" + //
                             "<ogc:FeatureId fid=\"tasmania_roads.1\"/>" + //
@@ -91,7 +91,7 @@ public class XMLParsingTest extends WFSTestSupport {
             UpdateElementType update = (UpdateElementType) obj.getUpdate().get(0);
             PropertyType property = (PropertyType) update.getProperty().get(0);
             
-            assertEquals("street\nline2\nline3", property.getValue());
+            assertEquals("street\nline2\nline3\n", property.getValue());
     }
 
     @Test

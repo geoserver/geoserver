@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.catalog.MapXMLConverter;
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.springframework.stereotype.Component;
 
 /**

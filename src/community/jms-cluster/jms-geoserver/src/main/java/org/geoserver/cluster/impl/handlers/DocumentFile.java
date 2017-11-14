@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 
 /**
  * 

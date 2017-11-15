@@ -1,0 +1,42 @@
+<GeoServerGWCConfig>
+  <version>1.1.0</version>
+  <directWMSIntegrationEnabled>false</directWMSIntegrationEnabled>
+  <WMSCEnabled>true</WMSCEnabled>
+  <TMSEnabled>true</TMSEnabled>
+  <securityEnabled>false</securityEnabled>
+  <innerCachingEnabled>false</innerCachingEnabled>
+  <persistenceEnabled>true</persistenceEnabled>
+  <cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass>
+  <cacheConfigurations>
+    <entry>
+      <string>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</string>
+      <InnerCacheConfiguration>
+        <hardMemoryLimit>16</hardMemoryLimit>
+        <policy>NULL</policy>
+        <concurrencyLevel>4</concurrencyLevel>
+        <evictionTime>120</evictionTime>
+      </InnerCacheConfiguration>
+    </entry>
+  </cacheConfigurations>
+  <cacheLayersByDefault>true</cacheLayersByDefault>
+  <cacheNonDefaultStyles>true</cacheNonDefaultStyles>
+  <metaTilingX>4</metaTilingX>
+  <metaTilingY>4</metaTilingY>
+  <gutter>0</gutter>
+  <defaultCachingGridSetIds>
+    <string>EPSG:4326</string>
+    <string>EPSG:900913</string>
+  </defaultCachingGridSetIds>
+  <defaultCoverageCacheFormats>
+    <string>image/png</string>
+    <string>image/jpeg</string>
+  </defaultCoverageCacheFormats>
+  <defaultVectorCacheFormats>
+    <string>image/png</string>
+    <string>image/jpeg</string>
+  </defaultVectorCacheFormats>
+  <defaultOtherCacheFormats>
+    <string>image/png</string>
+    <string>image/jpeg</string>
+  </defaultOtherCacheFormats>
+</GeoServerGWCConfig>

@@ -1,0 +1,14 @@
+<layer>
+  <name>EntitéGénérique</name>
+  <id>LayerInfoImpl--27105a88:1247622085b:-7ff8</id>
+  <path>/</path>
+  <type>VECTOR</type>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--27105a88:1247622085b:-7ff9</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

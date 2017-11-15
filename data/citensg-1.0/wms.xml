@@ -1,0 +1,41 @@
+<wms>
+  <id>wms</id>
+  <enabled>true</enabled>
+  <name>FreeWMS</name>
+  <title>The Open Planning Project Basemap Server</title>
+  <maintainer>http://geoserver.org/comm</maintainer>
+  <abstrct>This is a test server.  It contains some basemap data 
+from New York City.</abstrct>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.1.1</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>WMS</string>
+    <string>TEST</string>
+    <string>NY</string>
+    <string>New York</string>
+  </keywords>
+  <metadataLink/>
+  <citeCompliant>false</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <metadata>
+    <entry key="svgAntiAlias">true</entry>
+    <entry key="svgRenderer">Batik</entry>
+  </metadata>
+  <watermark class="org.geoserver.wms.WatermarkInfoImpl">
+    <enabled>false</enabled>
+    <position>BOT_RIGHT</position>
+    <transparency>0</transparency>
+  </watermark>
+  <interpolation>Nearest</interpolation>
+  <maxBuffer>25</maxBuffer>
+  <maxRequestMemory>0</maxRequestMemory>
+  <maxRenderingTime>0</maxRenderingTime>
+  <maxRenderingErrors>0</maxRenderingErrors>
+</wms>

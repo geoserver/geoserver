@@ -1,0 +1,16 @@
+<layer>
+  <name>PrimitiveGeoFeature</name>
+  <id>LayerInfoImpl--27105a88:1247622085b:-7ff6</id>
+  <path>/</path>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--7f2b5123:15fbf384928:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--27105a88:1247622085b:-7ff7</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

@@ -24,3 +24,13 @@ Notable features currently unsupported:
 - Non-geospatial filters
 - Identify feature
 - Dynamic layer definitions
+
+## Usage Notes
+When using the official JS API, CORS detection does not work correctly. You will need to add
+your server manually to the list of CORS enabled servers:
+
+```javascript
+    require(["esri/config"], function (esriConfig) {
+        esriConfig.request.corsEnabledServers.push("localhost:9191");
+    });
+```

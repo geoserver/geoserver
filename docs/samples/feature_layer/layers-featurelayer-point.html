@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>FeatureLayer - 4.5</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.5/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.5/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        require([
+                "esri/Map",
+                "esri/views/MapView",
+                "esri/layers/FeatureLayer",
+                "dojo/domReady!layers-featurelayer"
+            ],
+            function (Map, MapView,
+                      FeatureLayer) {
+
+                var map = new Map({});
+
+                var view = new MapView({
+                    container: "viewDiv",
+                    map: map,
+
+                    extent: { // autocasts as new Extent()
+                        xmin: -125.0,
+                        ymin: -25.0,
+                        xmax: -65,
+                        ymax: 50,
+                        spatialReference: 4326
+                    }
+                });
+
+                /********************
+                 * Add feature layer
+                 ********************/
+
+                    // Carbon storage of trees in Warren Wilson College.
+                var featureLayer = new FeatureLayer({
+                        url: "http://localhost:9191/geoserver/gsr/services/sf/FeatureServer/0"
+                    });
+
+                map.add(featureLayer);
+
+            });
+
+        require(["esri/config"], function (esriConfig) {
+            esriConfig.request.corsEnabledServers.push("localhost:9191");
+        });
+    </script>
+</head>
+
+<body>
+<div id="viewDiv"></div>
+</body>
+
+</html>

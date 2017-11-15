@@ -21,7 +21,7 @@ public class MapServiceControllerTest extends ControllerTest {
 
     @Test
     public void testBasicQuery() throws Exception {
-        String result = getAsString(query("cite", "?f=json"));
+        String result = getAsString(query("cite", "?f=json&format=jpeg"));
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
          assertTrue(result + " ;Root controller validates", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/root.json"));

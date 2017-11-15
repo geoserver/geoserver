@@ -4,11 +4,9 @@
  */
 package com.boundlessgeo.gsr.api.feature;
 
-import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.feature.FeatureWrapper;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.data.FeatureSource;
@@ -22,8 +20,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
+import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.core.feature.FeatureWrapper;
+import com.boundlessgeo.gsr.core.map.LayerOrTable;
+import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
 /**
  * Controller for the Feature Service feature list endpoint
@@ -59,6 +60,6 @@ public class FeatureController extends AbstractGSRController {
         if (featureArr.length == 0) {
             throw new NoSuchElementException("No feature in layer or table " + layerId + " with id " + featureId);
         }
-        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true));
+        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, null));
     }
 }

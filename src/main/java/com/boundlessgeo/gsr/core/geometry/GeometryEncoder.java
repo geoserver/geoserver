@@ -68,7 +68,8 @@ public final class GeometryEncoder implements Converter {
      * @param geom
      * @return a {@link com.boundlessgeo.gsr.core.geometry.Geometry} or {@link GeometryArray}
      */
-    public static com.boundlessgeo.gsr.core.geometry.Geometry toRepresentation(com.vividsolutions.jts.geom.Geometry geom) {
+    public static com.boundlessgeo.gsr.core.geometry.Geometry toRepresentation(
+        com.vividsolutions.jts.geom.Geometry geom, SpatialReference spatialReference) {
         // Implementation notes.
 
         // We have only directly provided support for the
@@ -78,7 +79,6 @@ public final class GeometryEncoder implements Converter {
         // figure out a good tradeoff of information loss (for example, the spec
         // doesn't distinguish between a linestring and a multilinestring) and
         // generality.
-        SpatialReference spatialReference = new SpatialReferenceWKID(geom.getSRID());
 
         if (geom instanceof com.vividsolutions.jts.geom.Point) {
             com.vividsolutions.jts.geom.Point p = (com.vividsolutions.jts.geom.Point) geom;
@@ -114,13 +114,13 @@ public final class GeometryEncoder implements Converter {
             return new Polygon(rings.toArray(new double[rings.size()][][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
             com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
-            return toRepresentation(mpoly.getGeometryN(0));
+            return toRepresentation(mpoly.getGeometryN(0), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
             GeometryTypeEnum geometryType = determineGeometryType(collection);
             List<com.boundlessgeo.gsr.core.geometry.Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
-                geometries.add(toRepresentation(collection.getGeometryN(i)));
+                geometries.add(toRepresentation(collection.getGeometryN(i), spatialReference));
             }
             return new GeometryArray(geometryType, geometries.toArray(new com.boundlessgeo.gsr.core.geometry.Geometry[geometries.size()]), spatialReference);
         } else {
@@ -149,7 +149,7 @@ public final class GeometryEncoder implements Converter {
             return GeometryTypeEnum.POINT;
         } else {
             String type = collection.getGeometryN(0).getGeometryType();
-            for (int i = 1; i < collection.getNumGeometries(); i++) {
+            for (int i = 0; i < collection.getNumGeometries(); i++) {
                 com.vividsolutions.jts.geom.Geometry g = collection.getGeometryN(i);
                 if (! type.equals(g.getGeometryType())) {
                     throw new IllegalArgumentException("GeoServices REST API Specification does not support mixed geometry types in geometry collections. (Core 9.8)");
@@ -217,7 +217,7 @@ public final class GeometryEncoder implements Converter {
                     geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(0)));
             com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[rings.size() - 1];
             for (int i = 1; i < rings.size(); i++) {
-                holes[i] = geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(i)));
+                holes[i - 1] = geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(i)));
             }
             return geometries.createPolygon(shell, holes);
         } else if (obj.containsKey("geometries")) {

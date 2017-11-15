@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSInfo;
@@ -47,8 +46,8 @@ import com.boundlessgeo.gsr.core.map.MapServiceRoot;
 /**
  * Controller for the root Map Service endpoint
  */
-@RestController
-@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
+@RestController @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType
+    .APPLICATION_JSON_VALUE)
 public class MapServiceController extends AbstractGSRController {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(MapServiceController.class);

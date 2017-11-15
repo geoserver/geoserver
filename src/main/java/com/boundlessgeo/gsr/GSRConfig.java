@@ -4,13 +4,13 @@
  */
 package com.boundlessgeo.gsr;
 
-import org.geotools.util.logging.Logging;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.geotools.util.logging.Logging;
 
 /**
  * Static configuration values used in the api output.
@@ -30,7 +30,7 @@ public class GSRConfig {
         try (InputStream in = GSRConfig.class.getResourceAsStream("config.properties")) {
             properties.load(in);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.FINEST, e, null);
         }
 
         String productName = properties.getProperty("PRODUCT_NAME");
@@ -39,7 +39,8 @@ public class GSRConfig {
         try {
             currentVersion = Double.parseDouble(properties.getProperty("CURRENT_VERSION"));
         } catch (NumberFormatException e) {
-            LOGGER.log(Level.WARNING, "CURRENT_VERSION could not be parsed to double: " + properties.getProperty("CURRENT_VERSION"), e);
+            LOGGER.log(Level.FINEST,
+                "CURRENT_VERSION could not be parsed to double: " + properties.getProperty("CURRENT_VERSION"), e);
         }
         CURRENT_VERSION = currentVersion == null ? 10.1 : currentVersion;
         PRODUCT_NAME = productName == null ? "Boundless Suite" : productName;
@@ -47,7 +48,8 @@ public class GSRConfig {
         try {
             specVersion = Double.parseDouble(properties.getProperty("SPEC_VERSION"));
         } catch (NumberFormatException e) {
-            LOGGER.log(Level.WARNING, "SPEC_VERSION could not be parsed to double: " + properties.getProperty("SPEC_VERSION"), e);
+            LOGGER.log(Level.FINEST,
+                "SPEC_VERSION could not be parsed to double: " + properties.getProperty("SPEC_VERSION"), e);
         }
         SPEC_VERSION = specVersion == null ? 1.0 : specVersion;
 

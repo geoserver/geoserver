@@ -4,10 +4,10 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.opengeo.geoserver</groupId>
+  <groupId>org.boundlessgeo</groupId>
   <artifactId>gsr</artifactId>
   <packaging>jar</packaging>
-  <name>GeoServer GeoServices REST API</name>
+  <name>GeoServices REST API</name>
   <version>0.2</version>
 
   <repositories>
@@ -15,9 +15,6 @@
       <id>boundless</id>
       <name>Boundless Maven Repository</name>
       <url>https://repo.boundlessgeo.com/main/</url>
-      <!-- contains snapshot and release (including third-party-dependences)               -->
-      <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
-      <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -175,6 +172,7 @@
               <descriptors>
                 <descriptor>assembly.xml</descriptor>
               </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
         </executions>

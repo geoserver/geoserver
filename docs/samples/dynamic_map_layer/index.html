@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Create Map and add a dynamic layer</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.21/esri/css/esri.css"/>
+    <style>
+        html, body, #mapDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+    </style>
+    <script src="https://js.arcgis.com/3.21/"></script>
+    <script>
+        var map;
+
+        // Add a known server to the list.
+        require(["esri/config"], function (esriConfig) {
+            esriConfig.request.corsEnabledServers.push("localhost");
+        });
+
+        require([
+            "esri/map",
+            "esri/layers/ArcGISDynamicMapServiceLayer",
+            "esri/layers/ImageParameters"
+        ], function (Map, ArcGISDynamicMapServiceLayer, ImageParameters) {
+
+            map = new Map("mapDiv", {
+                sliderOrientation: "horizontal"
+            });
+
+            var imageParameters = new ImageParameters();
+            imageParameters.format = "jpg"; //set the image type to PNG24, note default is PNG8.
+
+            //Takes a URL to a non cached map service.
+            var dynamicMapServiceLayer =
+                new ArcGISDynamicMapServiceLayer(
+                    "http://localhost:9191/geoserver/gsr/services/cite/MapServer", {
+                        "opacity": 0.5,
+                        "imageParameters": imageParameters
+                    });
+
+            map.addLayer(dynamicMapServiceLayer);
+        });
+    </script>
+</head>
+<body>
+<div id="mapDiv"></div>
+</body>
+</html>

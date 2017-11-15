@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -408,5 +409,38 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
             polygons.getResponseSRS().clear();
             getCatalog().save(polygons);
         }
+    }
+    
+    @Test
+    public void testGetSections() throws Exception {
+        // do not specify sections
+        testSections("", 1, 1, 1, 1, 1);
+        // ask explicitly for all
+        testSections("All", 1, 1, 1, 1, 1);
+        // test sections one by one
+        testSections("ServiceIdentification", 1, 0, 0, 0, 0);
+        testSections("ServiceProvider", 0, 1, 0, 0, 0);
+        testSections("OperationsMetadata", 0, 0, 1, 0, 0);
+        testSections("FeatureTypeList", 0, 0, 0, 1, 0);
+        testSections("Filter_Capabilities", 0, 0, 0, 0, 1);
+        // try a group
+        testSections("ServiceIdentification,Filter_Capabilities", 1, 0, 0, 0, 1);
+        // mix All in the middle
+        testSections("ServiceIdentification,Filter_Capabilities,All", 1, 1, 1, 1, 1);
+        // try an invalid section
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetCapabilities&sections=FooBar");
+        checkOws11Exception(dom, "2.0.0", "InvalidParameterValue", "sections");
+        
+    }
+
+    public void testSections(String sections, int serviceIdentification, int serviceProvider, int
+            operationsMetadata, int featureTypeList, int filterCapabilities) throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetCapabilities&sections=" + sections);
+        // print(dom);
+        assertXpathEvaluatesTo("" + serviceIdentification, "count(//ows:ServiceIdentification)", dom);
+        assertXpathEvaluatesTo("" + serviceProvider, "count(//ows:ServiceProvider)", dom);
+        assertXpathEvaluatesTo("" + operationsMetadata, "count(//ows:OperationsMetadata)", dom);
+        assertXpathEvaluatesTo("" + featureTypeList, "count(//wfs:FeatureTypeList)", dom);
+        assertXpathEvaluatesTo("" + filterCapabilities, "count(//fes:Filter_Capabilities)", dom);
     }
 }

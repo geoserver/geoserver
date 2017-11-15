@@ -5,30 +5,7 @@
 */
 package org.geoserver.wfs;
 
-import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
-import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -65,7 +42,29 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.vividsolutions.jts.geom.Envelope;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
 
 /**
@@ -82,6 +81,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
     /** logger */
     protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CapabilitiesTransformer.class.getPackage()
                                                                                        .getName());
+    
+    enum Sections { ServiceIdentification, ServiceProvider, OperationsMetadata, FeatureTypeList, Filter_Capabilities, All};
+    static final Set<Sections> ALL_SECTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Sections
+            .ServiceIdentification, Sections
+            .ServiceProvider, Sections.OperationsMetadata, Sections.FeatureTypeList, Sections.Filter_Capabilities)));
 
     /** identifer of a http get + post request */
     protected static final String HTTP_GET = "Get";
@@ -235,7 +239,35 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
             };
     }
-    
+
+    /**
+     * Returns the list of requested sections (never null or emtpy)
+     */
+    protected Set<Sections> getSections(GetCapabilitiesRequest request) {
+        List<String> sectionNames = request.getSections();
+        if (sectionNames == null || sectionNames.isEmpty()) {
+            return ALL_SECTIONS;
+        }
+        Set<Sections> sections = new HashSet<>();
+        for (String sectionName : sectionNames) {
+            try {
+                Sections section = Sections.valueOf(sectionName);
+                sections.add(section);
+            } catch (IllegalArgumentException e) {
+                WFSException exception = new WFSException(request, "Unknown section " + sectionName,
+                        "InvalidParameterValue");
+                exception.setLocator("sections");
+                throw exception;
+            }
+        }
+
+        if (sections.contains(Sections.All)) {
+            return ALL_SECTIONS;
+        }
+        return sections;
+    }
+
+
     /**
      * Transformer for wfs 1.0 capabilities document.
      */
@@ -948,12 +980,22 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 start("wfs:WFS_Capabilities", attributes);
 
-                serviceIdentification();
-                serviceProvider(wfs.getGeoServer());
-                operationsMetadata();
-                featureTypeList();
-                //supportsGMLObjectTypeList();
-                filterCapabilities();
+                Set<Sections> sections = getSections(request);
+                if (sections.contains(Sections.ServiceIdentification)) {
+                    serviceIdentification();
+                }
+                if (sections.contains(Sections.ServiceProvider)) {
+                    serviceProvider(wfs.getGeoServer());
+                }
+                if (sections.contains(Sections.OperationsMetadata)) {
+                    operationsMetadata();
+                }
+                if (sections.contains(Sections.FeatureTypeList)) {
+                    featureTypeList();
+                }
+                if (sections.contains(Sections.Filter_Capabilities)) {
+                    filterCapabilities();
+                }
 
                 end("wfs:WFS_Capabilities");
             }
@@ -1215,15 +1257,13 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void getCapabilities() {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0" }),
-                        parameter("AcceptFormats", new String[] { "text/xml" })
-                    //    				parameter( 
-                    //    					"Sections", 
-                    //    					new String[]{ 
-                    //    						"ServiceIdentification", "ServiceProvider", "OperationsMetadata",
-                    //    						"FeatureTypeList", "ServesGMLObjectTypeList", "SupportsGMLObjectTypeList", 
-                    //    						"Filter_Capabilities"
-                    //    					} 
-                    //    				) 
+                        parameter("AcceptFormats", new String[] { "text/xml" }),
+                        parameter("Sections", new String[] {
+                                        "ServiceIdentification", "ServiceProvider", "OperationsMetadata",
+                                        "FeatureTypeList",
+                                        "Filter_Capabilities"
+                                }
+                        ) 
                     };
                 operation("GetCapabilities", parameters, true, true);
             }
@@ -2018,11 +2058,22 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 start("wfs:WFS_Capabilities", attributes);
 
-                delegate.serviceIdentification("2.0.0");
-                delegate.serviceProvider(wfs.getGeoServer());
-                operationsMetadata();
-                featureTypeList();
-                filterCapabilities();
+                Set<Sections> sections = getSections(request);
+                if (sections.isEmpty() || sections.contains(Sections.ServiceIdentification)) {
+                    delegate.serviceIdentification("2.0.0");
+                }
+                if (sections.isEmpty() || sections.contains(Sections.ServiceProvider)) {
+                    delegate.serviceProvider(wfs.getGeoServer());
+                }
+                if (sections.isEmpty() || sections.contains(Sections.OperationsMetadata)) {
+                    operationsMetadata();
+                }
+                if (sections.isEmpty() || sections.contains(Sections.FeatureTypeList)) {
+                    featureTypeList();
+                }
+                if (sections.isEmpty() || sections.contains(Sections.Filter_Capabilities)) {
+                    filterCapabilities();
+                }
 
                 end("wfs:WFS_Capabilities");
             }
@@ -2102,7 +2153,13 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void getCapabilities() {
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0", "2.0.0" }),
-                    parameter("AcceptFormats", new String[] { "text/xml" })
+                    parameter("AcceptFormats", new String[] { "text/xml" }),
+                    parameter("Sections", new String[] {
+                                    "ServiceIdentification", "ServiceProvider", "OperationsMetadata",
+                                    "FeatureTypeList",
+                                    "Filter_Capabilities"
+                            }
+                    )
                 };
                 operation("GetCapabilities", parameters, true, true);
             }

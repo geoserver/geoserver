@@ -35,6 +35,10 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
         super(adaptee);
     }
     
+    public List<String> getSections() {
+        return eGet(adaptee, "sections.section", List.class);
+    }
+    
     public String getUpdateSequence() {
         return eGet(adaptee, "updateSequence", String.class);
     }

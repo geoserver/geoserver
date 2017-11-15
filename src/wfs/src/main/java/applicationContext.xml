@@ -424,7 +424,9 @@
   <bean id="resolveTimeOutKvpParser" class="org.geoserver.ows.util.NumericKvpParser">
 		<constructor-arg index="0" value="resolveTimeOut"/>
 		<constructor-arg index="1" value="java.math.BigInteger"/>
-</bean>
+  </bean>
+	<bean id="sectionsKvpParser20" class="org.geoserver.wfs.kvp.v2_0.SectionsKvpParser"/>
+	<bean id="sectionsKvpParser" class="org.geoserver.wfs.kvp.SectionsKvpParser"/>
     
 	<!-- kvp request readers -->
 	<bean id="wfsGetCapabilitiesKvpReader"  

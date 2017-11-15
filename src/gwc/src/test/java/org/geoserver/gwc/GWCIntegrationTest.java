@@ -1072,9 +1072,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // parse XML response content
         Document document = dom(response, false);
         // check that default styles are advertised
-        WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer/wmts:Style[@isDefault='true']" +
-                "/ows:Identifier[text()=Default])", document);
-
+        String result = WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer/wmts:Style[@isDefault='true']" +
+                "/ows:Identifier[text()='Default'])", document);
+        assertThat(Integer.parseInt(result), greaterThan(0));
+        // check that GeoServer service metadata is available
+        result = WMTS_XPATH_10.evaluate("count(//ows:ServiceProvider/ows:ProviderName[text()='http://geoserver.org'])", document);
+        assertThat(Integer.parseInt(result), is(1));
     }
     
     @Test

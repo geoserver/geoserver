@@ -235,6 +235,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
 
     @Test
     public void testValidCapabilitiesDocument() throws Exception {
+        print(getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities"));
         InputStream in = get("wfs?service=WFS&version=2.0.0&request=getCapabilities");
         Parser p = new Parser(new WFSConfiguration());
         p.setValidating(true);

@@ -1,5 +1,5 @@
 <assembly>
-  <id>nsg-profile</id>
+  <id>nsg-wfs-profile-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory/>
       <includes>
-        <include>gs-nsg-profile*.jar</include>
+        <include>gs-nsg-wfs-profile*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

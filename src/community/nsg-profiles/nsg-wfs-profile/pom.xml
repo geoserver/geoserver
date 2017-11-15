@@ -3,15 +3,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-nsg-profiles</artifactId>
     <version>2.13-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-nsg-profile</artifactId>
+  <artifactId>gs-nsg-wfs-profile</artifactId>
   <packaging>jar</packaging>
   <version>2.13-SNAPSHOT</version>
-  <name>NSG Profile</name>
+  <name>NSG WFS 2.0 Profile</name>
   <dependencies>
     <!-- geoserver dependencies -->
     <dependency>
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-wfs</artifactId>
-      <version>2.13-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <build>

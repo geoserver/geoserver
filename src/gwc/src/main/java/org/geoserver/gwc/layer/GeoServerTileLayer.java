@@ -25,9 +25,14 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geoserver.wms.capabilities.LegendSample;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.ConfigurationException;
@@ -1259,6 +1264,15 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             if (styleInfo == null) {
                 continue;
             }
+            // compute min and max scales denominators od the style
+            NumberRange<Double> scalesDenominator;
+            try {
+                scalesDenominator = CapabilityUtil.searchMinMaxScaleDenominator(Collections.singleton(styleInfo));
+            } catch (Exception exception) {
+                throw new RuntimeException(String.format(
+                        "Error searching max and min scale denominators for style '%s'.",
+                        styleInfo.getName()), exception);
+            }
             org.geoserver.catalog.LegendInfo legendInfo = styleInfo.getLegend();
             LegendInfoBuilder gwcLegendInfo = new LegendInfoBuilder();
             if (legendInfo != null) {
@@ -1267,6 +1281,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                         .withWidth(legendInfo.getWidth())
                         .withHeight(legendInfo.getHeight())
                         .withFormat(legendInfo.getFormat())
+                        .withMinScale(scalesDenominator.getMinimum())
+                        .withMaxScale(scalesDenominator.getMaximum())
                         .withCompleteUrl(buildURL(baseUrl,
                                 legendInfo.getOnlineResource(), null, URLMangler.URLType.RESOURCE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
@@ -1303,6 +1319,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                         .withWidth(finalWidth)
                         .withHeight(finalHeight)
                         .withFormat(finalFormat)
+                        .withMinScale(scalesDenominator.getMinimum())
+                        .withMaxScale(scalesDenominator.getMaximum())
                         .withCompleteUrl(buildURL(baseUrl, "ows", params, URLMangler.URLType.SERVICE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
             }

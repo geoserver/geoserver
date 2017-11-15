@@ -8,6 +8,7 @@ package org.geoserver.jdbcconfig.internal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static org.geoserver.catalog.CatalogFacade.ANY_WORKSPACE;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.isNull;
@@ -16,6 +17,7 @@ import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -145,6 +147,8 @@ public class ConfigDatabase {
 
     private Cache<InfoIdentity, String> identityCache;
 
+    private Cache<ServiceIdentity, ServiceInfo> serviceCache;
+
     private InfoRowMapper<CatalogInfo> catalogRowMapper;
 
     private InfoRowMapper<Info> configRowMapper;
@@ -181,6 +185,7 @@ public class ConfigDatabase {
         }
         cache = cacheProvider.getCache("catalog");
         identityCache = cacheProvider.getCache("catalogNames");
+        serviceCache = cacheProvider.getCache("services");
     }
 
     private Dialect dialect() {
@@ -954,6 +959,29 @@ public class ConfigDatabase {
     }
     
     @Nullable
+    public ServiceInfo getService(final WorkspaceInfo ws, final Class<? extends ServiceInfo> clazz) {
+        Assert.notNull(clazz, "clazz");
+
+        ServiceInfo info = null;
+        try {
+            ServiceIdentity id = new ServiceIdentity(clazz, ws);
+            info = serviceCache.get(id, new ServiceLoader(id));
+
+        } catch (CacheLoader.InvalidCacheLoadException notFound) {
+            return null;
+        } catch (ExecutionException e) {
+            Throwables.propagate(e.getCause());
+        }
+
+        if (info == null) {
+            return null;
+        }
+        resolveTransient(info);
+
+        return info;
+    }
+    
+    @Nullable
     public <T extends Info> T getByIdentity(final Class<T> type, final String... identityMappings) {
         String id = getIdByIdentity(type, identityMappings);
 
@@ -1113,6 +1141,113 @@ public class ConfigDatabase {
             } catch (IllegalArgumentException multipleResults) {
                 return null;
             }
+        }
+    }
+    
+    private static final class ServiceIdentity implements Serializable {
+        private static final long serialVersionUID = 4054478633697271203L;
+        
+        private Class<? extends ServiceInfo> clazz;
+        private WorkspaceInfo workspace;
+        
+        public ServiceIdentity(Class<? extends ServiceInfo> clazz, WorkspaceInfo workspace) {
+            this.clazz = clazz;
+            this.workspace = workspace;
+        }
+
+        public Class<? extends ServiceInfo> getClazz() {
+            return clazz;
+        }
+
+        public WorkspaceInfo getWorkspace() {
+            return workspace;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+            result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ServiceIdentity other = (ServiceIdentity) obj;
+            if (clazz == null) {
+                if (other.clazz != null)
+                    return false;
+            } else if (!clazz.equals(other.clazz))
+                return false;
+            if (workspace == null) {
+                if (other.workspace != null)
+                    return false;
+            } else if (!workspace.equals(other.workspace))
+                return false;
+            return true;
+        }        
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends ServiceInfo> CloseableIterator<T> filterService(final Class<T> clazz, CloseableIterator<ServiceInfo> it) {
+        return (CloseableIterator<T>) CloseableIteratorAdapter.filter(it, 
+                new com.google.common.base.Predicate<ServiceInfo>(){
+            
+            @Override
+            public boolean apply(@Nullable ServiceInfo input) {
+                return clazz.isAssignableFrom(input.getClass());
+            }
+            
+        });
+    }
+    
+    private final class ServiceLoader implements Callable<ServiceInfo> {
+
+        private final ServiceIdentity id;
+
+        public ServiceLoader(final ServiceIdentity id) {
+            this.id = id;
+        }
+
+        @Override
+        public ServiceInfo call() throws Exception {
+            Filter filter;
+            if (id.getWorkspace() != null && 
+                    id.getWorkspace() != ANY_WORKSPACE) {
+                filter = equal("workspace.id", id.getWorkspace().getId());
+            } else {
+                filter = isNull("workspace.id");
+            }
+            
+            // In order to handle new service types, get all services, deserialize them, and then filter
+            // by checking if the implement the given interface.  Since there shouldn't be too many per
+            // workspace, this shouldn't be a significant performance problem.
+            CloseableIterator<? extends ServiceInfo> it = filterService(
+                    id.getClazz(), 
+                    query(ServiceInfo.class, filter, null, null, (SortBy) null));
+            
+            ServiceInfo service;
+            if (it.hasNext()){
+                service = it.next();
+            } else {
+                if(LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Could not find service of type "
+                        + id.getClazz() + " in " + id.getWorkspace());
+                return null;
+            }
+            
+            if(it.hasNext()) {
+                LOGGER.log(Level.WARNING, "Found multiple services of type " + 
+                        id.getClass() + " in " + id.getWorkspace());
+                return null;
+            }
+            return service;
         }
     }
 

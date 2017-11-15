@@ -26,8 +26,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
@@ -43,10 +41,8 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 
 @ParametersAreNonnullByDefault
 public class JDBCGeoServerFacade implements GeoServerFacade {
@@ -288,18 +284,6 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
         return isNull("workspace.id");
     }
     
-    @SuppressWarnings("unchecked")
-    private <T extends ServiceInfo> CloseableIterator<T> filterServices(final Class<T> clazz, CloseableIterator<ServiceInfo> it) {
-        return (CloseableIterator<T>) CloseableIteratorAdapter.filter(it, new Predicate<ServiceInfo>(){
-            
-            @Override
-            public boolean apply(@Nullable ServiceInfo input) {
-                return clazz.isAssignableFrom(input.getClass());
-            }
-            
-        });
-    }
-    
     @Override
     public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
         
@@ -307,41 +291,16 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
         return db.queryAsList(ServiceInfo.class, filter, null, null, null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ServiceInfo> T getService(final Class<T> clazz) {
-        Filter filter = filterForGlobal();
-        List<ServiceInfo> all = db.queryAsList(ServiceInfo.class, filter, null, null, null);
-        for (ServiceInfo si : all) {
-            if (clazz.isAssignableFrom(si.getClass())) {
-                return clazz.cast(si);
-            }
-        }
-        return null;
+        return (T) db.getService(null, clazz);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ServiceInfo> T getService(final WorkspaceInfo workspace, final Class<T> clazz) {
-        
-        Filter filter = filterForWorkspace(workspace);
-        
-        // In order to handle new service types, get all services, deserialize them, and then filter
-        // by checking if the implement the given interface.  Since there shouldn't be too many per
-        // workspace, this shouldn't be a significant performance problem.
-        CloseableIterator<T> it = filterServices(clazz, db.query(ServiceInfo.class, filter, null, null, (SortBy)null));
-        
-        T service;
-        if (it.hasNext()){
-            service = it.next();
-        } else {
-            if(LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Could not find service of type "+clazz+" in "+workspace);
-            return null;
-        }
-        
-        if(it.hasNext()) {
-            LOGGER.log(Level.WARNING, "Found multiple services of type "+clazz+" in "+ workspace);
-            return null;
-        }
-        return service;
+        return (T) db.getService(workspace, clazz);
     }
 
     @Override

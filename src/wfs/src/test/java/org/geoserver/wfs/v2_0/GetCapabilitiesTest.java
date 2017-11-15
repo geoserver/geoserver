@@ -169,7 +169,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
          print(doc);
 
         // let's check the argument count of "abs" function
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//fes:Function[@name=\"abs\"]/fes:Arguments/fes:Argument)", doc);
+        assertXpathEvaluatesTo("1", "count(//fes:Function[@name=\"abs\"]/fes:Arguments/fes:Argument)", doc);
     }
 
     @Test
@@ -309,6 +309,13 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         response = getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0&acceptformats=text/xml");
         assertEquals("text/xml", response.getContentType());
     }
+
+    @Test
+    public void testGetPropertyValueFormat() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetCapabilities&version=2.0.0&acceptformats=text/xml");
+        assertXpathEvaluatesTo("application/gml+xml; version=3.2", 
+                "//ows:Operation[@name='GetPropertyValue']/ows:Parameter[@name='outputFormat']/ows:AllowedValues/ows:Value[1]", dom);
+    }
     
     @Test
     public void testMetadataLinks() throws Exception {
@@ -367,9 +374,9 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                     // we generate the other SRS only if it's not equal to native
                     boolean wgs84Native = "EPSG:4326".equals(ft.getSRS());
                     if(wgs84Native) {
-                        XMLAssert.assertXpathEvaluatesTo("2", "count(" + base + "/wfs:OtherCRS)", doc);
+                        assertXpathEvaluatesTo("2", "count(" + base + "/wfs:OtherCRS)", doc);
                     } else {
-                        XMLAssert.assertXpathEvaluatesTo("3", "count(" + base + "/wfs:OtherCRS)", doc);
+                        assertXpathEvaluatesTo("3", "count(" + base + "/wfs:OtherCRS)", doc);
                         XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::4326']", doc);
                     }
                     XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::3003']", doc);
@@ -400,7 +407,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
             Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
             String base = "//wfs:FeatureType[wfs:Name =\"" + polygonsName + "\"]";
             XMLAssert.assertXpathExists(base, doc);
-            XMLAssert.assertXpathEvaluatesTo("1", "count(" + base + "/wfs:OtherCRS)", doc);
+            assertXpathEvaluatesTo("1", "count(" + base + "/wfs:OtherCRS)", doc);
             XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::32632']", doc);
         } finally {
             wfs.getSRS().clear();

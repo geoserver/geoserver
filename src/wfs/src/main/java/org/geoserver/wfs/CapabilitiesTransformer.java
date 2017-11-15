@@ -2209,7 +2209,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
             protected void getPropertyValue() {
                 Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("resolve", new String[] { "none" }),
+                    parameter("resolve", new String[] { "none" }), 
+                    parameter("outputFormat", new String[] { GML32_FORMAT })
                 };
                 operation("GetPropertyValue", parameters, true, true);
             }

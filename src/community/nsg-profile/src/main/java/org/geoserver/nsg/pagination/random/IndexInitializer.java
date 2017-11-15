@@ -8,8 +8,6 @@ package org.geoserver.nsg.pagination.random;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInitializer;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
@@ -89,8 +87,14 @@ public final class IndexInitializer implements GeoServerInitializer {
     static final String STORE_SCHEMA_NAME = "RESULT_SET";
 
     static final String STORE_SCHEMA = "ID:java.lang.String,created:java.lang.Long,updated:java.lang.Long";
+    private final GeoServerDataDirectory dd;
 
     private IndexConfiguration indexConfiguration;
+
+    public IndexInitializer(IndexConfiguration indexConfiguration, GeoServerDataDirectory dd) {
+        this.indexConfiguration = indexConfiguration;
+        this.dd = dd;
+    }
 
     /*
      * Lock to synchronize activity of clean task with listener that changes the DB and file
@@ -100,9 +104,6 @@ public final class IndexInitializer implements GeoServerInitializer {
 
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
-        indexConfiguration = GeoServerExtensions.bean(IndexConfiguration.class);
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        GeoServerDataDirectory dd = new GeoServerDataDirectory(loader);
         Resource resource = dd.get(MODULE_DIR + "/" + PROPERTY_FILENAME);
         if (resource.getType() == Resource.Type.UNDEFINED) {
             Properties properties = new Properties();
@@ -121,6 +122,9 @@ public final class IndexInitializer implements GeoServerInitializer {
                 throw new RuntimeException("Error initializing paged results configurations.", exception);
             }
         }
+        // make sure the default locations are created too
+        dd.get(MODULE_DIR).get("resultSets").dir();
+        dd.get(MODULE_DIR).get("db").get("resultSets").dir();
         loadConfigurations(resource);
         // Listen for changes in configuration file and reload properties
         resource.addListener(notify -> {

@@ -1836,17 +1836,25 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * and ensuring that a particular exceptionCode is used.
      */
     protected void checkOws11Exception(Document dom, String exceptionCode, String locator) throws Exception {
+        checkOws11Exception(dom, "1.1.0", exceptionCode, locator);
+    }
+
+    /**
+     * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
+     * and ensuring that a particular exceptionCode is used.
+     */
+    protected void checkOws11Exception(Document dom, String version, String exceptionCode, String locator) throws Exception {
         Element root = dom.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName() );
-        assertEquals( "1.1.0", root.getAttribute( "version") );
+        assertEquals( version, root.getAttribute( "version") );
         assertEquals("http://www.opengis.net/ows/1.1", root.getAttribute( "xmlns:ows"));
-        
+
         if ( exceptionCode != null ) {
             assertEquals( 1, dom.getElementsByTagName( "ows:Exception").getLength() );
             Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
             assertEquals( exceptionCode, ex.getAttribute( "exceptionCode") );
         }
-        
+
         if( locator != null)  {
             assertEquals( 1, dom.getElementsByTagName( "ows:Exception").getLength() );
             Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
@@ -1854,7 +1862,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
     }
 
-    
+
+
     /**
      * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator
      * is optional, leave null if you don't want to check it. 

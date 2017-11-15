@@ -67,6 +67,8 @@ public abstract class FeatureCollectionResponse extends RequestObject {
     public abstract String getNext();
     
     public abstract List<FeatureCollection> getFeatures();
+
+    public abstract void setFeatures(List<FeatureCollection> features);
     
     public abstract Object unadapt(Class target);
 
@@ -74,6 +76,8 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         //alias
         return getFeatures();
     }
+
+
 
     public static class WFS11 extends FeatureCollectionResponse {
         BigInteger totalNumberOfFeatures;
@@ -130,6 +134,11 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         @Override
         public List<FeatureCollection> getFeatures() {
             return eGet(adaptee, "feature", List.class);
+        }
+
+        @Override
+        public void setFeatures(List<FeatureCollection> features) {
+            eSet(adaptee, "feature", features);
         }
 
         @Override
@@ -204,6 +213,11 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         @Override
         public List<FeatureCollection> getFeatures() {
             return eGet(adaptee, "member", List.class);
+        }
+
+        @Override
+        public void setFeatures(List<FeatureCollection> features) {
+            eSet(adaptee, "member", features);
         }
 
         @Override

@@ -58,6 +58,7 @@ import org.geotools.xml.EMFUtils;
 import org.geotools.xml.transform.TransformerBase;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.w3c.dom.Document;
@@ -1769,6 +1770,19 @@ public class Dispatcher extends AbstractController {
         if (request.isSOAP() && (handler instanceof OWS10ServiceExceptionHandler || 
                 handler instanceof OWS11ServiceExceptionHandler)) {
             handler = new SOAPServiceExceptionHandler(handler);
+        }
+
+        // remove content disposition if set (to allow browsers inline display of exception, and avoid
+        // proposing to save a file with the wrong extension that some OSs won't know how to open)
+        HttpServletResponse httpResponse = request.getHttpResponse();
+        if (httpResponse.containsHeader(HttpHeaders.CONTENT_DISPOSITION)) {
+            try {
+                httpResponse.setHeader(HttpHeaders.CONTENT_DISPOSITION, null);
+            } catch (Exception e) {
+                // the spec is not clear about setting null, but reportedly works
+                // in Jetty, Tomcat, Glassfish... Not in your test harness though
+                logger.log(Level.FINE, "Failed to reset content disposition header", e);
+            }
         }
 
         handler.handleServiceException(se, request);

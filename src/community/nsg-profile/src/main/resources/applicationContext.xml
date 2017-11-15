@@ -3,16 +3,6 @@
   <bean id="versioning" class="org.geoserver.nsg.versioning.TimeVersioningCallback">
     <constructor-arg ref="catalog"/>
   </bean>
-  <bean id="versioningLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
-    <property name="id" value="wfsVersioningConfig"/>
-    <property name="titleKey" value="data.resource.config.wfs"/>
-    <property name="componentClass" value="org.geoserver.nsg.versioning.web.WfsVersioningConfig"/>
-    <property name="supportedTypes">
-      <list>
-        <value>org.geoserver.catalog.FeatureTypeInfo</value>
-      </list>
-    </property>
-  </bean>
 	<!-- The PagedResults index configuration -->
 	<bean class="org.geoserver.nsg.pagination.random.IndexConfiguration" id="indexConfiguration"/>
 	<!-- Index result dispatcher callback -->
@@ -39,10 +29,35 @@
 		<constructor-arg ref="indexConfiguration"/>
 	</bean>
 	<bean class="org.geoserver.nsg.pagination.random.ResultTypeKvpParser" id="resultType202KvpParser"/>
+
+	<bean class="org.geoserver.nsg.pagination.random.IndexInitializer" id="indexInitializer">
+		<constructor-arg ref="dataDirectory"/>
+		<constructor-arg ref="indexConfiguration"/>
+	</bean>
 	<!-- Clean scheduler -->
-	<bean class="org.geoserver.nsg.pagination.random.IndexInitializer" id="indexInitializer"/>
 	<task:scheduler id="scheduler"/>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled fixed-delay="1000" initial-delay="10000" method="clean" ref="indexInitializer"/>
 	</task:scheduled-tasks>
+	<!-- Timeout support -->
+	<bean name="nsgTimeoutCallback" class="org.geoserver.nsg.timeout.TimeoutCallback">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+	<!-- User interface -->
+	<bean id="versioningLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+		<property name="id" value="wfsVersioningConfig"/>
+		<property name="titleKey" value="data.resource.config.wfs"/>
+		<property name="componentClass" value="org.geoserver.nsg.versioning.web.WfsVersioningConfig"/>
+		<property name="supportedTypes">
+			<list>
+				<value>org.geoserver.catalog.FeatureTypeInfo</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="nsgTimeoutPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+		<property name="id" value="nsgTimeoutPanel"/>
+		<property name="titleKey" value="nsg"/>
+		<property name="componentClass" value="org.geoserver.nsg.timeout.web.NSGTimeoutPanel"/>
+		<property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+	</bean>
 </beans>

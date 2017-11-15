@@ -2256,7 +2256,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * Encodes the CreateStoredQuery ows:Operation element.
              */
             protected void createStoredQuery() {
-                operation("CreateStoredQuery", null, false, true);
+                Map.Entry[] parameters = new Map.Entry[] {
+                        parameter("language", new String[] { CreateStoredQuery.DEFAULT_LANGUAGE }),
+                };
+                operation("CreateStoredQuery", parameters, false, true);
             }
 
             /**

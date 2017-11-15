@@ -28,6 +28,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wfs.CreateStoredQuery;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.wfs.v2_0.WFSConfiguration;
@@ -315,6 +316,13 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         Document dom = getAsDOM("wfs?request=GetCapabilities&version=2.0.0&acceptformats=text/xml");
         assertXpathEvaluatesTo("application/gml+xml; version=3.2", 
                 "//ows:Operation[@name='GetPropertyValue']/ows:Parameter[@name='outputFormat']/ows:AllowedValues/ows:Value[1]", dom);
+    }
+
+    @Test
+    public void testCreateStoredQuery() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetCapabilities&version=2.0.0&acceptformats=text/xml");
+        assertXpathEvaluatesTo(CreateStoredQuery.DEFAULT_LANGUAGE,
+                "//ows:Operation[@name='CreateStoredQuery']/ows:Parameter[@name='language']/ows:AllowedValues/ows:Value[1]", dom);
     }
     
     @Test

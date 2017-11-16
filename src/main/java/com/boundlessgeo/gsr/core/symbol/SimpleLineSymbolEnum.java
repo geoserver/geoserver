@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.core.symbol;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -27,5 +29,10 @@ public enum SimpleLineSymbolEnum {
 
     SimpleLineSymbolEnum(String style) {
         this.style = style;
+    }
+
+    @JsonValue
+    public String value() {
+        return this.style;
     }
 }

@@ -42,7 +42,7 @@ public class GSRConfig {
             LOGGER.log(Level.FINEST,
                 "CURRENT_VERSION could not be parsed to double: " + properties.getProperty("CURRENT_VERSION"), e);
         }
-        CURRENT_VERSION = currentVersion == null ? 10.1 : currentVersion;
+        CURRENT_VERSION = currentVersion == null ? 10.51 : currentVersion;
         PRODUCT_NAME = productName == null ? "Boundless Suite" : productName;
 
         try {

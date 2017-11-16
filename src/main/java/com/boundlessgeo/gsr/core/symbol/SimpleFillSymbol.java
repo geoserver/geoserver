@@ -42,7 +42,7 @@ public class SimpleFillSymbol extends Symbol {
     }
 
     public SimpleFillSymbol(SimpleFillSymbolEnum style, int[] color, SimpleLineSymbol outline) {
-        super("SFS");
+        super("esriSFS");
         this.style = style;
         this.color = color;
         this.outline = outline;

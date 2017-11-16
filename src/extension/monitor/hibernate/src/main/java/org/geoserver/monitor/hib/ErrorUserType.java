@@ -17,10 +17,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.geoserver.platform.GeoServerExtensions;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
-import org.hibernate.lob.BlobImpl;
 import org.hibernate.usertype.UserType;
-import org.springframework.context.ApplicationContext;
 
 public class ErrorUserType implements UserType {
 
@@ -97,7 +96,7 @@ public class ErrorUserType implements UserType {
                 out.flush();
                 
                 if (useHibernateBlob()) {
-                  st.setBlob(index, new BlobImpl(bytes.toByteArray()));
+                    st.setBlob(index, Hibernate.createBlob(bytes.toByteArray()));
                 }
                 else {
                     st.setBytes(index, bytes.toByteArray());    

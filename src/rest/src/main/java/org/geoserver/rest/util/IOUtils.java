@@ -10,7 +10,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -749,12 +748,26 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * 
      * @param archive the {@link ZipFile} to inflate.
      * @param outputDirectory the directory where to inflate the archive.
+     * @param fileName name of the file if present.
      * @throws IOException in case something bad happens.
-     * @throws FileNotFoundException in case something bad happens.
      */
     public static void inflate(ZipFile archive, Resource outputDirectory, String fileName)
             throws IOException {
-        inflate(archive, outputDirectory, fileName, null, null, null, false);
+        inflate(archive, outputDirectory, fileName, null, null, null, false, false);
+    }
+
+    /**
+     * Inflate the provided {@link ZipFile} in the provided output directory.
+     * 
+     * @param archive the {@link ZipFile} to inflate.
+     * @param outputDirectory the directory where to inflate the archive.
+     * @param fileName name of the file if present.
+     * @param external
+     * @throws IOException in case something bad happens.
+     */
+    public static void inflate(ZipFile archive, Resource outputDirectory, String fileName,
+            boolean external) throws IOException {
+        inflate(archive, outputDirectory, fileName, null, null, null, external, false);
     }
 
     /**
@@ -768,8 +781,25 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @throws IOException in case something bad happens.
      */
     public static void inflate(ZipFile archive, Resource outputDirectory, String fileName,
+            String workspace, String store, List<Resource> files, boolean external)
+            throws IOException {
+        inflate(archive, outputDirectory, fileName, null, null, files, external, true);
+    }
+
+    /**
+     * Inflate the provided {@link ZipFile} in the provided output directory.
+     * 
+     * @param archive the {@link ZipFile} to inflate.
+     * @param outputDirectory the directory where to inflate the archive.
+     * @param fileName name of the file if present.
+     * @param external
+     * @param saveFile boolean to specify to save or not the list of the extracted files
+     * @param files empty list of the extracted files (or null if there is no desire to collect the list)
+     * @throws IOException in case something bad happens.
+     */
+    public static void inflate(ZipFile archive, Resource outputDirectory, String fileName,
             String workspace, String store, List<Resource> files,
-            boolean external) throws IOException {
+            boolean external, boolean saveFile) throws IOException {
 
         final Enumeration<? extends ZipEntry> entries = archive.entries();
         try {
@@ -799,7 +829,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 
                     IOUtils.copyStream(in, out, true, true);
                     // If the file must be listed, then the file is added to the list
-                    if (files != null) {
+                    if (saveFile && files != null) {
                         files.add(outFile);
                     }
                 }

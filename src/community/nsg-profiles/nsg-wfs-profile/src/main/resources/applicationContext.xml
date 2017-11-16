@@ -60,4 +60,8 @@
 		<property name="componentClass" value="org.geoserver.nsg.timeout.web.NSGTimeoutPanel"/>
 		<property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
 	</bean>
+	<!-- Capabilities customization -->
+	<bean id="nsgWfsCapabilitiesCustomizer" class="org.geoserver.nsg.NSGWFSExtendedCapabilitiesProvider">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
 </beans>

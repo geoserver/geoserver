@@ -23,6 +23,8 @@ public class Field implements GSRModel {
     private Boolean nullable;
     private String domain = null;
 
+    private String defaultValue = null;
+
 
     public String getName() {
         return name;
@@ -81,4 +83,11 @@ public class Field implements GSRModel {
         this.nullable = nullable;
     }
 
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 }

@@ -114,7 +114,23 @@ public final class GeometryEncoder implements Converter {
             return new Polygon(rings.toArray(new double[rings.size()][][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
             com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
-            return toRepresentation(mpoly.getGeometryN(0), spatialReference);
+            List<double[][]> rings = new ArrayList<>();
+
+            for (int i = 0; i < mpoly.getNumGeometries(); i++) {
+                //for now, assume these are all polygons. that SHOULD be the case anyway
+                com.vividsolutions.jts.geom.Polygon geometryN = (com.vividsolutions.jts.geom.Polygon) mpoly
+                    .getGeometryN(i);
+
+                //encode the outer ring
+                rings.add(embeddedLineString(geometryN.getExteriorRing()));
+
+                for (int j = 0; j < geometryN.getNumInteriorRing(); j++) {
+                    rings.add(embeddedLineString(geometryN.getInteriorRingN(j)));
+                }
+            }
+
+            return new Polygon(rings.toArray(new double[rings.size()][][]), spatialReference);
+
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
             GeometryTypeEnum geometryType = determineGeometryType(collection);

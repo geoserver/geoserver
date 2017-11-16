@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -96,11 +98,20 @@ public class Envelope extends Geometry {
         this.ymin = envelope.getMinY();
         this.ymax = envelope.getMaxY();
 
-        Set<ReferenceIdentifier> ids = envelope.getCoordinateReferenceSystem().getIdentifiers();
         int EPSGid = -1;
-        for(ReferenceIdentifier id : ids) {
-            if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
-                EPSGid = Integer.parseInt(id.getCode());
+
+        try {
+            EPSGid = CRS.lookupEpsgCode(envelope.getCoordinateReferenceSystem(), false);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (EPSGid < 0) {
+            Set<ReferenceIdentifier> ids = envelope.getCoordinateReferenceSystem().getIdentifiers();
+            for (ReferenceIdentifier id : ids) {
+                if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
+                    EPSGid = Integer.parseInt(id.getCode());
+                }
             }
         }
 

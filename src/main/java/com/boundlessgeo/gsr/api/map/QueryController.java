@@ -66,7 +66,8 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
         if (returnIdsOnly) {
             return FeatureEncoder.objectIds(features);
         } else {
-            return new FeatureList(features, returnGeometry);
+            FeatureList featureList = new FeatureList(features, returnGeometry, outSRText);
+            return featureList;
         }
     }
 }

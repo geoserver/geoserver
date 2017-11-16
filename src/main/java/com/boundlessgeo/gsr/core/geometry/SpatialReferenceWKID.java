@@ -16,6 +16,8 @@ public class SpatialReferenceWKID implements SpatialReference {
 
     private int wkid;
 
+    private int latestWkid;
+
     public int getWkid() {
         return wkid;
     }
@@ -26,5 +28,14 @@ public class SpatialReferenceWKID implements SpatialReference {
 
     public SpatialReferenceWKID(int wkid) {
         this.wkid = wkid;
+        this.latestWkid = wkid;
+    }
+
+    public int getLatestWkid() {
+        return latestWkid;
+    }
+
+    public void setLatestWkid(int latestWkid) {
+        this.latestWkid = latestWkid;
     }
 }

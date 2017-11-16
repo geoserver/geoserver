@@ -3,6 +3,7 @@ package com.boundlessgeo.gsr.core.feature;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.type.FeatureType;
@@ -14,6 +15,7 @@ import org.opengis.referencing.FactoryException;
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.SpatialReference;
+import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
 
 /**
@@ -21,7 +23,7 @@ import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
  */
 public class FeatureList implements GSRModel {
 
-    public final String objectIdFieldName = "objectid";
+    public final String objectIdFieldName = "FID";
 
     public final String globalIdFieldName = "";
 
@@ -33,16 +35,19 @@ public class FeatureList implements GSRModel {
 
     public final ArrayList<Feature> features = new ArrayList<>();
 
+    public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(FeatureCollection<T, F> collection, boolean returnGeometry) throws IOException {
+        this(collection, returnGeometry, null);
+    }
+
     public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(
-        FeatureCollection<T, F> collection, boolean returnGeometry) throws IOException {
+        FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR) throws IOException {
 
         T schema = collection.getSchema();
 
         if (returnGeometry) {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             if (geometryDescriptor == null) {
-                throw new RuntimeException(
-                    "No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
+                throw new RuntimeException("No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
             }
             GeometryType geometryType = geometryDescriptor.getType();
             if (geometryType == null) {
@@ -58,7 +63,9 @@ public class FeatureList implements GSRModel {
             this.geometryType = null;
         }
 
-        if (schema.getCoordinateReferenceSystem() != null) {
+        if (StringUtils.isNotEmpty(outputSR)) {
+            spatialReference = new SpatialReferenceWKID(Integer.parseInt(outputSR));
+        } else if (schema.getCoordinateReferenceSystem() != null) {
             try {
                 spatialReference = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
             } catch (FactoryException e) {
@@ -69,15 +76,13 @@ public class FeatureList implements GSRModel {
         }
 
         for (PropertyDescriptor desc : schema.getDescriptors()) {
-            if (schema.getGeometryDescriptor() != null && !desc.getName()
-                .equals(schema.getGeometryDescriptor().getName())) {
+            if (schema.getGeometryDescriptor() != null && !desc.getName().equals(schema.getGeometryDescriptor().getName())) {
                 fields.add(FeatureEncoder.field(desc));
             }
         }
 
         fields.add(FeatureEncoder.syntheticObjectIdField(objectIdFieldName));
 
-        int index = 0; //for synthetic IDs
         try (FeatureIterator<F> iterator = collection.features()) {
             while (iterator.hasNext()) {
                 org.opengis.feature.Feature feature = iterator.next();

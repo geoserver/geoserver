@@ -136,7 +136,7 @@ public class FeatureEncoder {
      * @return
      */
     public static Field syntheticObjectIdField(String objectIdFieldName) {
-        Field idField = new Field(objectIdFieldName, FieldTypeEnum.INTEGER, objectIdFieldName);
+        Field idField = new Field(objectIdFieldName, FieldTypeEnum.OID, objectIdFieldName);
         return idField;
     }
 }

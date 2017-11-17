@@ -33,6 +33,19 @@ public class ExportMapControllerTest extends ControllerTest {
     }
 
     @Test
+    public void exportMapSpecificLayer() throws Exception {
+        String exportMapUrl = getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix()
+            + "/MapServer/0/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers&size=150,150&format=png";
+        MockHttpServletResponse servletResponse = getAsServletResponse(exportMapUrl);
+        System.out.println(servletResponse.getErrorMessage());
+        assertTrue("Response code must be good: " + servletResponse.getStatus(),
+            servletResponse.getStatus() >= 200 && servletResponse.getStatus() < 300);
+        RenderedImage image = ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
+        File resultsFile = new File("src/test/resources/images/export_result1.png");
+        ImageAssert.assertEquals(resultsFile, image, 20);
+    }
+
+    @Test
     public void exportMapJSON() throws Exception {
         String exportMapUrl = getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix()
             + "/MapServer/export?f=json&bbox=-180.0,-90.0,180.0,90.0&layers=show:" + SystemTestData.BASIC_POLYGONS
@@ -42,8 +55,8 @@ public class ExportMapControllerTest extends ControllerTest {
         request.setMethod( "GET" );
         request.setContent(new byte[]{});
         request.addHeader("Accept", "application/json");
-
         MockHttpServletResponse servletResponse = dispatch(request, null);
+
         assertTrue(servletResponse.getContentAsString().contains("f=image")
             && servletResponse.getContentAsString().contains("format=png"));
     }

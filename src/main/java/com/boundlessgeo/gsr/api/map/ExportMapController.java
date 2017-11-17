@@ -13,7 +13,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +24,6 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
  * Handles ArcGIS ExportMap requests
  */
 @RestController
-@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer/export")
 public class ExportMapController extends AbstractGSRController {
 
     @Autowired
@@ -33,7 +31,7 @@ public class ExportMapController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping(produces = "application/json")
+    @GetMapping(produces = "application/json", path = "/gsr/services/{workspaceName}/MapServer/export")
     @ResponseBody
     public ExportMap exportMap(@PathVariable String workspaceName, HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
@@ -43,46 +41,69 @@ public class ExportMapController extends AbstractGSRController {
         return new ExportMap(requestURL + updatedRequestParameters);
     }
 
-    @GetMapping
-    public void exportMap(@PathVariable String workspaceName, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/export")
+    public void exportMap(@PathVariable String workspaceName, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
         this.exportMapImage(workspaceName, request, response);
     }
 
-    private void exportMapImage(String workspaceName, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export")
+    public void exportMapOfLayer(@PathVariable String workspaceName, @PathVariable String layerId,
+        HttpServletRequest request, HttpServletResponse response) throws Exception {
+        this.exportMapImageForLayers(workspaceName, request, response, "show:" + layerId);
+    }
 
-        Dispatcher dispatcher = GeoServerExtensions.bean(Dispatcher.class);
-        MutableRequestProxy requestProxy = new MutableRequestProxy(request);
-        requestProxy.getMutableParams().put("service", new String[]{"WMS"});
-        requestProxy.getMutableParams().put("request", new String[]{"GetMap"});
+    /**
+     * All of the capitalized fallbacks you see in this are for OpenLayers compat, which feels the need to capitalize
+     * EVERY REQUEST PARAMETER. Read RFC 3986 yall query params is case sensitive.
+     *
+     * @param workspaceName the workspace name
+     * @param request       the request
+     * @param response      the response
+     * @throws Exception when an exception occurs
+     */
+    private void exportMapImage(String workspaceName, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
 
         Map<String, String[]> parameterMap = request.getParameterMap();
-
         String layers = parameterMap.getOrDefault("layers", parameterMap.get("LAYERS"))[0];
+
+        exportMapImageForLayers(workspaceName, request, response, layers);
+    }
+
+    private void exportMapImageForLayers(String workspaceName, HttpServletRequest request, HttpServletResponse response,
+        String layers) throws Exception {
+
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        Dispatcher dispatcher = GeoServerExtensions.bean(Dispatcher.class);
+        MutableRequestProxy requestProxy = new MutableRequestProxy(request);
+        requestProxy.getMutableParams().put("service", new String[] { "WMS" });
+        requestProxy.getMutableParams().put("request", new String[] { "GetMap" });
+
         requestProxy.getMutableParams().put("layers", translateLayersParam(layers, workspaceName));
 
         String format = parameterMap.getOrDefault("format", parameterMap.get("FORMAT"))[0];
         requestProxy.getMutableParams().put("format", translateImageFormatParam(format));
 
-        String imageSR = parameterMap.getOrDefault(
-            "imageSR",
-            parameterMap.getOrDefault("IMAGESR", new String[]{""}))[0];
+        String imageSR = parameterMap.getOrDefault("imageSR", parameterMap.getOrDefault("IMAGESR", new String[] { "" }))[0];
         requestProxy.getMutableParams().put("crs", translateImageSRParam(imageSR));
 
         String sizeParam = parameterMap.getOrDefault("size", parameterMap.get("SIZE"))[0];
         String[] sizeParts = sizeParam.split(",");
-        requestProxy.getMutableParams().put("width", new String[]{sizeParts[0]});
-        requestProxy.getMutableParams().put("height", new String[]{sizeParts[1]});
+        requestProxy.getMutableParams().put("width", new String[] { sizeParts[0] });
+        requestProxy.getMutableParams().put("height", new String[] { sizeParts[1] });
         dispatcher.handleRequest(requestProxy, response);
     }
 
     /**
      * Translate the ArcGis image SR parameter into CRS compatible parameter. Only supports EPSG for now.
+     *
      * @param imageSR the image SR parameter
      * @return an EPSG code matching that parameter
      */
     private String[] translateImageSRParam(String imageSR) {
         if (StringUtils.isNotEmpty(imageSR)) {
-            return new String[]{"EPSG:" + imageSR};
+            return new String[] { "EPSG:" + imageSR };
         } else {
             return null;
         }
@@ -92,7 +113,8 @@ public class ExportMapController extends AbstractGSRController {
         String formatFixed = format.toLowerCase();
         formatFixed = formatFixed.replaceAll("jpg", "jpeg");
         formatFixed = formatFixed.replaceAll("png32", "png");
-        return new String[]{"image/" + formatFixed};
+        formatFixed = formatFixed.replaceAll("png24", "png");
+        return new String[] { "image/" + formatFixed };
     }
 
     private String[] translateLayersParam(String layers, String workspaceName) {

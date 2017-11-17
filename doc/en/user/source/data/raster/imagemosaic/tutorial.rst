@@ -313,6 +313,8 @@ To update an ImageMosaic through the file system:
 
 .. note:: Please see the REST section for information on :ref:`rest_examples_curl_imagemosaic`.
 
+.. _multi-crs-mosaic:
+
 Multi-resolution imagery with reprojection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -42,6 +42,8 @@ When supporting large images it is efficient to work on image subsets without lo
 
 *It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.*
 
+.. _JAIEXT:
+
 JAI-EXT  
 -------
 

@@ -4,32 +4,21 @@
  */
 package org.geoserver.rest.catalog;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.NamespaceInfoImpl;
-import org.geoserver.catalog.impl.WorkspaceInfoImpl;
-import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.filters.LoggingFilter;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Files;
-import org.geotools.data.DataUtilities;
-import org.h2.tools.DeleteDbFiles;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import javax.servlet.Filter;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -41,8 +30,31 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-import static org.junit.Assert.*;
+import javax.servlet.Filter;
+
+import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.LoggingFilter;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.util.IOUtils;
+import org.geotools.data.DataUtilities;
+import org.h2.tools.DeleteDbFiles;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Override
@@ -79,6 +91,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         DeleteDbFiles.execute("target", "foo", true);
         DeleteDbFiles.execute("target", "pds", true);
         DeleteDbFiles.execute("target", "chinese_poly", true);
+        DeleteDbFiles.execute("target", "san_andres_y_providencia", true);
     }
 
     @Test
@@ -171,6 +184,10 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     byte[] shpChineseZipAsBytes() throws IOException {
         return toBytes(getClass().getResourceAsStream( "test-data/chinese_poly.zip" ));
+    }
+
+    byte[] shpSanAndresShapefilesZipAsBytes() throws IOException {
+        return toBytes(getClass().getResourceAsStream("test-data/san_andres_y_providencia.zip"));
     }
 
     byte[] shpMultiZipAsBytes() throws IOException {
@@ -322,6 +339,21 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNotNull(ds);
 
         assertEquals(2, cat.getFeatureTypesByDataStore(ds).size());
+    }
+
+    @Test
+    public void testShapefileUploadZip() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getDataStoreByName("gs", "san_andres_y_providencia"));
+
+        put(ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/file.shp",
+                shpSanAndresShapefilesZipAsBytes(),
+                "application/zip");
+
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "san_andres_y_providencia");
+        assertNotNull(ds);
+
+        assertEquals(1, cat.getFeatureTypesByDataStore(ds).size());
     }
 
     @Test

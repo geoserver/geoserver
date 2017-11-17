@@ -127,9 +127,11 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
             }
         }
         // If the File List is empty then the uploaded file must be added
-        if (uploadedFile != null) {
+        if (files.isEmpty() && uploadedFile != null) {
             files.clear();
             files.add(uploadedFile);
+        } else {
+            files.add(0, uploadedFile);
         }
 
         return files;

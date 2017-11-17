@@ -76,7 +76,7 @@
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
-          <!-- <descriptor>release/ext-backup-restore.xml</descriptor> -->
+          <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
           <descriptor>release/ext-onelogin.xml</descriptor> 
           <descriptor>release/ext-notification.xml</descriptor>
@@ -229,7 +229,7 @@
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-s3</module>
-        <!-- <module>backup-restore</module> -->
+        <module>backup-restore</module>
         <module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>

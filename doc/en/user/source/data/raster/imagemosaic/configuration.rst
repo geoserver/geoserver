@@ -278,6 +278,20 @@ The ``PropertyCollectors`` parameter in the example above indicates two addition
 
     regex=[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)
 
+The above is a property file containing a regex used to extract Date and Time represented in `ISO-8601 <https://en.wikipedia.org/wiki/ISO_8601>`_ as part of the filename.
+(Note the T char between digits for date and digits for time, as per ISO-8601)
+
+In case of custom format datetimes in filename, an additional *format* element should be added after the regex, preceded by a comma, defining the custom representation.
+
+| Example:
+| Temperature_2017111319.tif
+| an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)
+|
+| In that case, the timeregex.properties file should be like this:
+
+    regex=.*([0-9]{10}).*,format=yyyyMMddHH
+
+
 :file:`elevationregex.properties`::
 
     regex=(?<=_)(\\d{4}\\.\\d{3})(?=_)

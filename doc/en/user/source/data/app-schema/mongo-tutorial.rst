@@ -196,8 +196,11 @@ MongoDB objects may contain nested elements and nested collections. The followin
      - collectionLink('measurements.values')
      - Used when chaining entities with a nested collection.
    * - collectionId
-     - collectionId('measurements.values')
+     - collectionId()
      - Instructs the mapper to generate a ID for the nested collection.
+   * - nestedCollectionLink
+     - nestedCollectionLink()
+     - Used on the nested collection to create a link with the parent feature.
 
 A station data is composed of some meta-information about the station and a list of measurements. Each measurement as some meta-information and contains a list of values. The mappings will contain three top entities: the station, the measurements and the values.
 
@@ -205,166 +208,167 @@ Follows a the complete mappings file:
 
 .. code-block:: xml
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
-                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
-        <namespaces>
-            <Namespace>
-                <prefix>st</prefix>
-                <uri>http://www.stations.org/1.0</uri>
-            </Namespace>
-            <Namespace>
-                <prefix>gml</prefix>
-                <uri>http://www.opengis.net/gml</uri>
-            </Namespace>
-        </namespaces>
+  <?xml version="1.0" encoding="UTF-8"?>
+  <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+  <namespaces>
+    <Namespace>
+      <prefix>st</prefix>
+      <uri>http://www.stations.org/1.0</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>gml</prefix>
+      <uri>http://www.opengis.net/gml</uri>
+    </Namespace>
+  </namespaces>
 
-        <sourceDataStores>
-            <DataStore>
-                <id>data_source</id>
-                <parameters>
-                    <Parameter>
-                        <name>data_store</name>
-                        <value>mongodb://localhost/stations</value>
-                    </Parameter>
-                    <Parameter>
-                        <name>namespace</name>
-                        <value>http://www.stations.org/1.0</value>
-                    </Parameter>
-                    <Parameter>
-                        <name>schema_store</name>
-                        <value>file:///tmp</value>
-                    </Parameter>
-                    <Parameter>
-                        <name>data_store_type</name>
-                        <value>complex</value>
-                    </Parameter>
-                </parameters>
-            </DataStore>
-        </sourceDataStores>
+  <sourceDataStores>
+    <DataStore>
+      <id>data_source</id>
+      <parameters>
+        <Parameter>
+          <name>data_store</name>
+          <value>mongodb://{mongoHost}:{mongoPort}/{dataBaseName}</value>
+        </Parameter>
+        <Parameter>
+          <name>namespace</name>
+          <value>http://www.stations.org/1.0</value>
+        </Parameter>
+        <Parameter>
+          <name>schema_store</name>
+          <value>file:{schemaStore}</value>
+        </Parameter>
+        <Parameter>
+          <name>data_store_type</name>
+          <value>complex</value>
+        </Parameter>
+      </parameters>
+    </DataStore>
+  </sourceDataStores>
 
-        <targetTypes>
-            <FeatureType>
-                <schemaUri>http://localhost/data/schemas/stations.xsd</schemaUri>
-            </FeatureType>
-        </targetTypes>
+  <targetTypes>
+    <FeatureType>
+      <schemaUri>stations.xsd</schemaUri>
+    </FeatureType>
+  </targetTypes>
 
-        <typeMappings>
-            <FeatureTypeMapping>
-                <sourceDataStore>data_source</sourceDataStore>
-                <sourceType>stations</sourceType>
-                <targetElement>st:StationFeature</targetElement>
-                <attributeMappings>
-                    <AttributeMapping>
-                        <targetAttribute>st:StationFeature</targetAttribute>
-                        <idExpression>
-                            <OCQL>jsonSelect('id')</OCQL>
-                        </idExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:name</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('name')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:contact/st:mail</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('contact.mail')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:measurement</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>collectionLink('measurements')</OCQL>
-                            <linkElement>st:Measurement</linkElement>
-                            <linkField>FEATURE_LINK[1]</linkField>
-                        </sourceExpression>
-                        <isMultiple>true</isMultiple>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:geometry</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('geometry')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                </attributeMappings>
-            </FeatureTypeMapping>
-            <FeatureTypeMapping>
-                <sourceDataStore>data_source</sourceDataStore>
-                <sourceType>stations</sourceType>
-                <targetElement>st:Measurement</targetElement>
-                <attributeMappings>
-                    <AttributeMapping>
-                        <targetAttribute>st:Measurement</targetAttribute>
-                        <idExpression>
-                            <OCQL>collectionId('measurements')</OCQL>
-                        </idExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:name</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('measurements.name')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:unit</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('measurements.unit')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:values</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>collectionLink('measurements.values')</OCQL>
-                            <linkElement>st:Value</linkElement>
-                            <linkField>FEATURE_LINK[2]</linkField>
-                        </sourceExpression>
-                        <isMultiple>true</isMultiple>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>FEATURE_LINK[1]</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>collectionLink('measurements')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                </attributeMappings>
-            </FeatureTypeMapping>
-            <FeatureTypeMapping>
-                <sourceDataStore>data_source</sourceDataStore>
-                <sourceType>stations</sourceType>
-                <targetElement>st:Value</targetElement>
-                <attributeMappings>
-                    <AttributeMapping>
-                        <targetAttribute>st:Value</targetAttribute>
-                        <idExpression>
-                            <OCQL>collectionId('measurements.values')</OCQL>
-                        </idExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:timestamp</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('measurements.values.time')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>st:value</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>jsonSelect('measurements.values.value')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                    <AttributeMapping>
-                        <targetAttribute>FEATURE_LINK[2]</targetAttribute>
-                        <sourceExpression>
-                            <OCQL>collectionLink('measurements.values')</OCQL>
-                        </sourceExpression>
-                    </AttributeMapping>
-                </attributeMappings>
-            </FeatureTypeMapping>
-        </typeMappings>
+  <typeMappings>
+    <FeatureTypeMapping>
+      <sourceDataStore>data_source</sourceDataStore>
+      <sourceType>{collectionName}</sourceType>
+      <targetElement>st:StationFeature</targetElement>
+      <attributeMappings>
+        <AttributeMapping>
+          <targetAttribute>st:StationFeature</targetAttribute>
+          <idExpression>
+            <OCQL>jsonSelect('id')</OCQL>
+          </idExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:name</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('name')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:contact/st:mail</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('contact.mail')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:measurement</targetAttribute>
+          <sourceExpression>
+            <OCQL>collectionLink('measurements')</OCQL>
+            <linkElement>aaa</linkElement>
+            <linkField>FEATURE_LINK[1]</linkField>
+          </sourceExpression>
+          <isMultiple>true</isMultiple>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:geometry</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('geometry')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+      </attributeMappings>
+    </FeatureTypeMapping>
+    <FeatureTypeMapping>
+      <sourceDataStore>data_source</sourceDataStore>
+      <sourceType>{collectionName}</sourceType>
+      <mappingName>aaa</mappingName>
+      <targetElement>st:Measurement</targetElement>
+      <attributeMappings>
+        <AttributeMapping>
+          <targetAttribute>st:Measurement</targetAttribute>
+          <idExpression>
+            <OCQL>collectionId()</OCQL>
+          </idExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:name</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('name')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:unit</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('unit')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:values</targetAttribute>
+          <sourceExpression>
+            <OCQL>collectionLink('values')</OCQL>
+            <linkElement>st:Value</linkElement>
+            <linkField>FEATURE_LINK[2]</linkField>
+          </sourceExpression>
+          <isMultiple>true</isMultiple>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>FEATURE_LINK[1]</targetAttribute>
+          <sourceExpression>
+            <OCQL>nestedCollectionLink()</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+      </attributeMappings>
+    </FeatureTypeMapping>
+    <FeatureTypeMapping>
+      <sourceDataStore>data_source</sourceDataStore>
+      <sourceType>{collectionName}</sourceType>
+      <targetElement>st:Value</targetElement>
+      <attributeMappings>
+        <AttributeMapping>
+          <targetAttribute>st:Value</targetAttribute>
+          <idExpression>
+            <OCQL>collectionId()</OCQL>
+          </idExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:timestamp</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('time')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:value</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('value')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>FEATURE_LINK[2]</targetAttribute>
+          <sourceExpression>
+            <OCQL>nestedCollectionLink()</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+      </attributeMappings>
+    </FeatureTypeMapping>
+  </typeMappings>
 
-    </as:AppSchemaDataAccess>
+  </as:AppSchemaDataAccess>
 
 The mappings for the attributes are straightforward, for example the following mapping:
 
@@ -400,11 +404,11 @@ and in the ``Measurement`` feature type the link to the parent feature is define
     <AttributeMapping>
         <targetAttribute>FEATURE_LINK[1]</targetAttribute>
         <sourceExpression>
-            <OCQL>collectionLink('measurements')</OCQL>
+            <OCQL>nestedCollectionLink()</OCQL>
         </sourceExpression>
     </AttributeMapping>
 
-With the two mapping above we tie the two features types together. When working with a MongoDB data store this mappings will always be petty much the same, only the nested collection path and the feature link index need to be updated.
+With the two mapping above we tie the two features types together. When working with a MongoDB data store this mappings will always be petty much the same, only the nested collection path and the feature link index need to be updated. Note that the JSON path of the nested collections attributes are relative to the parent.
 
 Querying
 --------

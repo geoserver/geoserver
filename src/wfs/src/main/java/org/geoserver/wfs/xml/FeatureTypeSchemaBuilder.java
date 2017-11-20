@@ -780,8 +780,14 @@ public abstract class FeatureTypeSchemaBuilder {
                         Class binding = attribute.getType().getBinding();
                         typeName = findTypeName(binding);
                         if (typeName == null) {
-                            throw new NullPointerException("Could not find a type for property: "
-                                    + attribute.getName() + " of type: " + binding.getName());
+                            // Fallback on String
+                            logger.finer("Fallback mapping: attribute " + attribute.getName() + " to String" );
+                            typeName = findTypeName(String.class);
+                            if (typeName == null) {
+                                throw new NullPointerException(
+                                        "Could not find a type for property: " + attribute.getName()
+                                                + " of type: " + binding.getName());
+                            }
 
                         }
                     }

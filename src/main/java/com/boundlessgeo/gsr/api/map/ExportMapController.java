@@ -2,6 +2,7 @@ package com.boundlessgeo.gsr.api.map;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,7 +81,7 @@ public class ExportMapController extends AbstractGSRController {
         requestProxy.getMutableParams().put("service", new String[] { "WMS" });
         requestProxy.getMutableParams().put("request", new String[] { "GetMap" });
 
-        requestProxy.getMutableParams().put("layers", translateLayersParam(layers, workspaceName));
+        requestProxy.getMutableParams().put("layers", new String[] { translateLayersParam(layers, workspaceName) });
 
         String format = parameterMap.getOrDefault("format", parameterMap.get("FORMAT"))[0];
         requestProxy.getMutableParams().put("format", translateImageFormatParam(format));
@@ -92,6 +93,10 @@ public class ExportMapController extends AbstractGSRController {
         String[] sizeParts = sizeParam.split(",");
         requestProxy.getMutableParams().put("width", new String[] { sizeParts[0] });
         requestProxy.getMutableParams().put("height", new String[] { sizeParts[1] });
+
+        //get rid of DPI, since ESRI will use non-integer DPI
+        requestProxy.getMutableParams().remove("dpi");
+
         dispatcher.handleRequest(requestProxy, response);
     }
 
@@ -117,7 +122,7 @@ public class ExportMapController extends AbstractGSRController {
         return new String[] { "image/" + formatFixed };
     }
 
-    private String[] translateLayersParam(String layers, String workspaceName) {
+    private String translateLayersParam(String layers, String workspaceName) {
         String[] layersSpecAndLayers = layers.split(":");
         if (layersSpecAndLayers.length < 2) {
             throw new IllegalArgumentException(
@@ -132,7 +137,7 @@ public class ExportMapController extends AbstractGSRController {
         //We look up each layer individually to get its name. This has the potential to be slow in non FS based catalogs
         return Arrays.stream(layersSpecAndLayers[1].split(","))
             .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
-            .toArray(String[]::new);
+            .collect(Collectors.joining(","));
     }
 
 }

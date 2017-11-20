@@ -22,7 +22,6 @@ Where topp is the workspace name.
 Notable features currently unsupported:
 
 - Non-geospatial filters
-- Identify feature
 - Dynamic layer definitions
 
 ## Usage Notes

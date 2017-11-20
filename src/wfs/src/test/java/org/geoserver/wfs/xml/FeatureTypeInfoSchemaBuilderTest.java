@@ -11,20 +11,27 @@ import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml2.GML;
 import org.geotools.xml.Schemas;
+import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
 
-	@Test
+    protected QName UUID_TEST = new QName(MockData.CITE_URI, "uuid", MockData.CITE_PREFIX);
+    
+    @Test
     public void testBuildGml2() throws Exception {
         FeatureTypeSchemaBuilder builder = new FeatureTypeSchemaBuilder.GML2(
                 getGeoServer());
@@ -61,5 +68,28 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
                 .getTargetNamespace());
         assertEquals(GML.GEOMETRYASSOCIATIONTYPE.getLocalPart(),
                 geometryAssociationType.getName());
+    }
+	
+    @Override
+    protected void setUpInternal(SystemTestData testData) throws Exception {
+        super.setUpInternal(testData);
+        testData.addVectorLayer(UUID_TEST, null, FeatureTypeInfoSchemaBuilderTest.class, getCatalog());
+    }
+
+    protected XpathEngine xpath;
+
+    @Before
+    public void setXPath() {
+        xpath = XMLUnit.newXpathEngine();
+    }
+
+    @Test
+    public void testUUID() throws Exception {
+        Document dom = getAsDOM(
+                "wfs?service=wfs&version=1.1.0&request=DescribeFeatureType&typeName="
+                        + getLayerId(UUID_TEST));
+        assertEquals("1",
+                (xpath.evaluate("count(//xsd:element[@name='uuid' and @type='xsd:string'])", dom)));
+
     }
 }

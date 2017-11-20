@@ -19,6 +19,11 @@ import net.opengis.wfs20.Wfs20Factory;
  */
 public class CreateStoredQuery {
 
+    /**
+     * The default create stored query language, according to spec
+     */
+    public static final String DEFAULT_LANGUAGE = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression"; 
+
     /** service config */
     WFSInfo wfs;
 
@@ -64,8 +69,7 @@ public class CreateStoredQuery {
 
         try {
             storedQueryProvider.createStoredQuery(sq, false).validate();
-        }
-        catch(WFSException e) {
+        } catch(WFSException e) {
             throw new WFSException(request, e.getMessage(), e, e.getCode());
         }
         catch(Exception e) {

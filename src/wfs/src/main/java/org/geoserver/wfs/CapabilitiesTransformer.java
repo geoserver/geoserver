@@ -5,30 +5,7 @@
 */
 package org.geoserver.wfs;
 
-import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
-import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -49,6 +26,7 @@ import org.geotools.filter.FunctionFactory;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.GML;
+import org.geotools.util.Version;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -65,7 +43,30 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.vividsolutions.jts.geom.Envelope;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
 
 /**
@@ -82,6 +83,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
     /** logger */
     protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CapabilitiesTransformer.class.getPackage()
                                                                                        .getName());
+    
+    enum Sections { ServiceIdentification, ServiceProvider, OperationsMetadata, FeatureTypeList, Filter_Capabilities, All};
+    static final Set<Sections> ALL_SECTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Sections
+            .ServiceIdentification, Sections
+            .ServiceProvider, Sections.OperationsMetadata, Sections.FeatureTypeList, Sections.Filter_Capabilities)));
 
     /** identifer of a http get + post request */
     protected static final String HTTP_GET = "Get";
@@ -235,7 +241,34 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
             };
     }
-    
+
+    /**
+     * Returns the list of requested sections (never null or emtpy)
+     */
+    protected Set<Sections> getSections(GetCapabilitiesRequest request) {
+        List<String> sectionNames = request.getSections();
+        if (sectionNames == null || sectionNames.isEmpty()) {
+            return ALL_SECTIONS;
+        }
+        Set<Sections> sections = new HashSet<>();
+        for (String sectionName : sectionNames) {
+            try {
+                Sections section = Sections.valueOf(sectionName);
+                sections.add(section);
+            } catch (IllegalArgumentException e) {
+                WFSException exception = new WFSException(request, "Unknown section " + sectionName,
+                        "InvalidParameterValue");
+                exception.setLocator("sections");
+                throw exception;
+            }
+        }
+
+        if (sections.contains(Sections.All)) {
+            return ALL_SECTIONS;
+        }
+        return sections;
+    }
+
     /**
      * Transformer for wfs 1.0 capabilities document.
      */
@@ -865,6 +898,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * Transformer for wfs 1.1 capabilities document.
      */
     public static class WFS1_1 extends CapabilitiesTransformer {
+
+        public static final Version VERSION_11 = new Version("1.1.0");
         
         static final Set<String> VALID_LINKS_METADATATYPES = new HashSet<String>(Arrays.asList("TC211", "FGDC", "19115", "13139"));
         
@@ -948,12 +983,22 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 start("wfs:WFS_Capabilities", attributes);
 
-                serviceIdentification();
-                serviceProvider(wfs.getGeoServer());
-                operationsMetadata();
-                featureTypeList();
-                //supportsGMLObjectTypeList();
-                filterCapabilities();
+                Set<Sections> sections = getSections(request);
+                if (sections.contains(Sections.ServiceIdentification)) {
+                    serviceIdentification();
+                }
+                if (sections.contains(Sections.ServiceProvider)) {
+                    serviceProvider(wfs.getGeoServer());
+                }
+                if (sections.contains(Sections.OperationsMetadata)) {
+                    operationsMetadata();
+                }
+                if (sections.contains(Sections.FeatureTypeList)) {
+                    featureTypeList();
+                }
+                if (sections.contains(Sections.Filter_Capabilities)) {
+                    filterCapabilities();
+                }
 
                 end("wfs:WFS_Capabilities");
             }
@@ -1052,6 +1097,19 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 element("ows:ServiceType", "WFS");
                 element("ows:ServiceTypeVersion", version);
+
+                // advertise eventual profiles that might be implemented (only since OWS 1.1, thus WFS 2.0)
+                Version gtVersion = new Version(version);
+                if(gtVersion.compareTo(new Version("2")) >= 0) {
+                    LinkedHashSet<String> profiles = new LinkedHashSet<>();
+                    for (WFSExtendedCapabilitiesProvider provider : extCapsProviders) {
+                        List<String> providerProfiles = provider.getProfiles(gtVersion);
+                        profiles.addAll(providerProfiles);
+                    }
+                    for (String profile : profiles) {
+                        element("ows:Profile", profile);
+                    }
+                }
 
                 element("ows:Fees", wfs.getFees());
                 element("ows:AccessConstraints", wfs.getAccessConstraints());
@@ -1189,19 +1247,27 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void operationsMetadata() {
                 start("ows:OperationsMetadata");
 
-                getCapabilities();
-                describeFeatureType();
-                getFeature();
-                getGmlObject();
-                
-                if (wfs.getServiceLevel().contains( WFSInfo.ServiceLevel.COMPLETE )) {
-                    lockFeature();
-                    getFeatureWithLock();
+                List<OperationMetadata> operations = new ArrayList<>();
+                operations.add(getCapabilities());
+                operations.add(describeFeatureType());
+                operations.add(getFeature());
+                operations.add(getGmlObject());
+
+                if (wfs.getServiceLevel().contains(WFSInfo.ServiceLevel.COMPLETE)) {
+                    operations.add(lockFeature());
+                    operations.add(getFeatureWithLock());
                 }
 
-                if (wfs.getServiceLevel().contains( WFSInfo.ServiceLevel.TRANSACTIONAL) ) {
-                    transaction();
+                if (wfs.getServiceLevel().contains(WFSInfo.ServiceLevel.TRANSACTIONAL)) {
+                    operations.add(transaction());
                 }
+
+                // allow extension points to manipulate/modify the list
+                for (WFSExtendedCapabilitiesProvider provider : extCapsProviders) {
+                    provider.updateOperationMetadata(VERSION_11, operations);
+                }
+                // declare metadata for each operation
+                operations.forEach(o -> operation(o));
 
                 extendedCapabilities();
 
@@ -1209,52 +1275,39 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             /**
-                 * Encodes the GetCapabilities ows:Operation element.
-                 *
-                 */
-            protected void getCapabilities() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0" }),
-                        parameter("AcceptFormats", new String[] { "text/xml" })
-                    //    				parameter( 
-                    //    					"Sections", 
-                    //    					new String[]{ 
-                    //    						"ServiceIdentification", "ServiceProvider", "OperationsMetadata",
-                    //    						"FeatureTypeList", "ServesGMLObjectTypeList", "SupportsGMLObjectTypeList", 
-                    //    						"Filter_Capabilities"
-                    //    					} 
-                    //    				) 
-                    };
-                operation("GetCapabilities", parameters, true, true);
+             * Encodes the GetCapabilities ows:Operation element.
+             *
+             */
+            protected OperationMetadata getCapabilities() {
+                OperationMetadata operation = new OperationMetadata("GetCapabilities", true, true);
+                operation.getParameters().add(new DomainType("AcceptVersions", new String[]{"1.0.0", "1.1.0"}));
+                operation.getParameters().add(new DomainType("AcceptFormats", new String[]{"text/xml"}));
+                operation.getParameters().add(new DomainType("Sections", new String[]{
+                        "ServiceIdentification", "ServiceProvider", "OperationsMetadata",
+                        "FeatureTypeList",
+                        "Filter_Capabilities"}));
+                return operation;
             }
 
             /**
-                 * Encodes the DescribeFeatureType ows:Operation element.
-                 */
-            protected void describeFeatureType() {
-                //TODO: process extension point
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("outputFormat", new String[] { GML_3_1_1_FORMAT })
-                    };
-
-                operation("DescribeFeatureType", parameters, true, true);
+             * Encodes the DescribeFeatureType ows:Operation element.
+             */
+            protected OperationMetadata describeFeatureType() {
+                OperationMetadata operation = new OperationMetadata("DescribeFeatureType", true, true);
+                operation.getParameters().add(new DomainType("outputFormat", new String[]{GML_3_1_1_FORMAT}));
+                return operation;
             }
 
             /**
-                 * Encodes the GetFeature ows:Operation element.
-                 */
-            protected void getFeature() {
-                String[] oflist = getoutputFormatNames();
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("resultType", new String[] { "results", "hits" }),
-                        parameter("outputFormat", oflist)
-                };
-                    
-                Map.Entry[] constraints = new Map.Entry[] {
-                    parameter("LocalTraverseXLinkScope", new String[]{ "2" } )
-                };
-                
-                operation("GetFeature", parameters, constraints, true, true);
+             * Encodes the GetFeature ows:Operation element.
+             */
+            protected OperationMetadata getFeature() {
+                String[] formats = getoutputFormatNames();
+                OperationMetadata operation = new OperationMetadata("GetFeature", true, true);
+                operation.getParameters().add(new DomainType("resultType", new String[]{"results", "hits"}));
+                operation.getParameters().add(new DomainType("outputFormat", formats));
+                operation.getConstraints().add(new DomainType("LocalTraverseXLinkScope", new String[]{"2"}));
+                return operation;
             }
 
             protected String[] getoutputFormatNames() {
@@ -1262,50 +1315,43 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             /**
-                 * Encodes the GetFeatureWithLock ows:Operation element.
-                 */
-            protected void getFeatureWithLock() {
-                String[] oflist = getoutputFormatNames();
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("resultType", new String[] { "results", "hits" }),
-                        parameter("outputFormat", oflist)
-                    };
-
-                operation("GetFeatureWithLock", parameters, true, true);
+             * Encodes the GetFeatureWithLock ows:Operation element.
+             */
+            protected OperationMetadata getFeatureWithLock() {
+                String[] formats = getoutputFormatNames();
+                OperationMetadata operation = new OperationMetadata("GetFeatureWithLock", true, true);
+                operation.getParameters().add(new DomainType("resultType", new String[]{"results", "hits"}));
+                operation.getParameters().add(new DomainType("outputFormat", formats));
+                return operation;
             }
 
             /**
-                 * Encodes the LockFeature ows:Operation element.
-                 */
-            protected void lockFeature() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("releaseAction", new String[] { "ALL", "SOME" })
-                    };
-
-                operation("LockFeature", parameters, true, true);
+             * Encodes the LockFeature ows:Operation element.
+             */
+            protected OperationMetadata lockFeature() {
+                OperationMetadata operation = new OperationMetadata("LockFeature", true, true);
+                operation.getParameters().add(new DomainType("releaseAction", new String[]{"ALL", "SOME"}));
+                return operation;
             }
 
             /**
-                 * Encodes the Transaction ows:Operation element.
-                 */
-            protected void transaction() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("inputFormat", new String[] { GML_3_1_1_FORMAT }),
-                        parameter("idgen",
-                            new String[] { "GenerateNew", "UseExisting", "ReplaceDuplicate" }),
-                        parameter("releaseAction", new String[] { "ALL", "SOME" })
-                    };
-
-                operation("Transaction", parameters, true, true);
+             * Encodes the Transaction ows:Operation element.
+             */
+            protected OperationMetadata transaction() {
+                OperationMetadata operation = new OperationMetadata("Transaction", true, true);
+                operation.getParameters().add(new DomainType("inputFormat", new String[]{GML_3_1_1_FORMAT}));
+                operation.getParameters().add(new DomainType("idgen",
+                        new String[]{"GenerateNew", "UseExisting", "ReplaceDuplicate"}));
+                operation.getParameters().add(new DomainType("releaseAction", new String[]{"ALL", "SOME"}));
+                return operation;
             }
 
             /**
              * Encodes the GetGmlObject ows:Operation element.
              *
              */
-            protected void getGmlObject() {
-                Map.Entry[] parameters = new Map.Entry[] {        };
-                operation("GetGmlObject", parameters, true, true);
+            protected OperationMetadata getGmlObject() {
+                return new OperationMetadata("GetGmlObject", true, true);
             }
 
             protected void extendedCapabilities() {
@@ -1899,6 +1945,38 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:HTTP");
                 end("ows:DCP");
             }
+
+            protected void operation(OperationMetadata operation) {
+                start("ows:Operation", attributes(new String[] { "name", operation.getName() }));
+
+                String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);
+
+                // dcp
+                dcp(serviceURL, operation.isGet(), operation.isPost());
+
+                // parameters
+                for (DomainType parameter : operation.getParameters()) {
+                    domainType("ows:Parameter", parameter);
+                }
+                // constraints
+                for (DomainType constraint : operation.getConstraints()) {
+                    domainType("ows:Constraint", constraint);
+                }
+                end("ows:Operation");
+            }
+
+            protected void domainType(String elementName, DomainType domainType) {
+                start(elementName, attributes(new String[] {"name", domainType.getName()}));
+                if (domainType.getDefaultValue() != null) {
+                    element("ows:Value", domainType.getDefaultValue());
+                }
+                if (!domainType.getAllowedValues().isEmpty()) {
+                    for (String v : domainType.getAllowedValues()) {
+                        element("ows:Value", v);
+                    }
+                }
+                end(elementName);
+            }
         }
     }
 
@@ -1906,6 +1984,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * Transformer for wfs 2.0 capabilities document.
      */
     public static class WFS2_0 extends CapabilitiesTransformer {
+        public static final Version VERSION_20 = new Version("2.0.0");
         /** wfs namespace uri */
         static String WFS20_URI = "http://www.opengis.net/wfs/2.0";
         /** gml 3.2 mime type */
@@ -2018,11 +2097,22 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 start("wfs:WFS_Capabilities", attributes);
 
-                delegate.serviceIdentification("2.0.0");
-                delegate.serviceProvider(wfs.getGeoServer());
-                operationsMetadata();
-                featureTypeList();
-                filterCapabilities();
+                Set<Sections> sections = getSections(request);
+                if (sections.isEmpty() || sections.contains(Sections.ServiceIdentification)) {
+                    delegate.serviceIdentification("2.0.0");
+                }
+                if (sections.isEmpty() || sections.contains(Sections.ServiceProvider)) {
+                    delegate.serviceProvider(wfs.getGeoServer());
+                }
+                if (sections.isEmpty() || sections.contains(Sections.OperationsMetadata)) {
+                    operationsMetadata();
+                }
+                if (sections.isEmpty() || sections.contains(Sections.FeatureTypeList)) {
+                    featureTypeList();
+                }
+                if (sections.isEmpty() || sections.contains(Sections.Filter_Capabilities)) {
+                    filterCapabilities();
+                }
 
                 end("wfs:WFS_Capabilities");
             }
@@ -2030,27 +2120,30 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void operationsMetadata() {
                 start("ows:OperationsMetadata");
 
-                getCapabilities();
-                describeFeatureType();
-                getFeature();
-                getPropertyValue();
-                
-                //TODO: make whether to support stored queries optional like transations
-                listStoredQueries();
-                describeStoredQueries();
-                createStoredQuery();
-                dropStoredQuery();
-
-//                getGmlObject();
-//                
+                // setup basic operations
+                List<OperationMetadata> operations = new ArrayList<>();
+                operations.add(getCapabilities());
+                operations.add(describeFeatureType());
+                operations.add(getFeature());
+                operations.add(getPropertyValue());
+                operations.add(listStoredQueries());
+                operations.add(describeStoredQueries());
+                operations.add(createStoredQuery());
+                operations.add(dropStoredQuery());
                 if (wfs.getServiceLevel().contains( WFSInfo.ServiceLevel.COMPLETE )) {
-                    lockFeature();
-                    getFeatureWithLock();
+                    operations.add(lockFeature());
+                    operations.add(getFeatureWithLock());
+                }
+                if (wfs.getServiceLevel().contains( WFSInfo.ServiceLevel.TRANSACTIONAL) ) {
+                    operations.add(transaction());
                 }
 
-                if (wfs.getServiceLevel().contains( WFSInfo.ServiceLevel.TRANSACTIONAL) ) {
-                    transaction();
+                // allow extension points to manipulate/modify the list
+                for (WFSExtendedCapabilitiesProvider provider : extCapsProviders) {
+                    provider.updateOperationMetadata(VERSION_20, operations);
                 }
+                // declare metadata for each operation
+                operations.forEach(o -> operation(o));
 
                 constraints();
 
@@ -2059,209 +2152,147 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:OperationsMetadata");
             }
 
-            protected void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints,
-                    boolean get, boolean post) {
-                start("ows:Operation", attributes(new String[] { "name", name }));
-
-                String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);
-                
-                //dcp
-                delegate.dcp(serviceURL, get, post);
-
-                //parameters
-                for (int i = 0; parameters != null && i < parameters.length; i++) {
-                    String pname = (String) parameters[i].getKey();
-                    String[] pvalues = (String[]) parameters[i].getValue();
-
-                    start("ows:Parameter", attributes(new String[] { "name", pname }));
-                    start("ows:AllowedValues");
-                    
-                    for (int j = 0; j < pvalues.length; j++) {
-                        element("ows:Value", pvalues[j]);
-                    }
-                    end("ows:AllowedValues");
-                    end("ows:Parameter");
-                }
-                
-                //constraints
-                for (int i = 0; constraints != null && i < constraints.length; i++) {
-                    String cname = (String) constraints[i].getKey();
-                    
-                    constraint(cname, constraints[i].getValue());
-                }
-                end("ows:Operation");
-            }
-            
-            protected void operation(String name, Map.Entry[] parameters, boolean get, boolean post) {
-                operation(name, parameters, null, get, post);
-            }
-            
             /**
              * Encodes the GetCapabilities ows:Operation element.
              */
-            protected void getCapabilities() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0", "2.0.0" }),
-                    parameter("AcceptFormats", new String[] { "text/xml" })
-                };
-                operation("GetCapabilities", parameters, true, true);
+            protected OperationMetadata getCapabilities() {
+                OperationMetadata operation = new OperationMetadata("GetCapabilities", true, true);
+                operation.getParameters().add(new DomainType("AcceptVersions", new String[] { "1.0.0", "1.1.0", "2.0.0" }));
+                operation.getParameters().add(new DomainType("AcceptFormats", new String[] { "text/xml" }));
+                operation.getParameters().add(new DomainType("Sections", new String[] {
+                "ServiceIdentification", "ServiceProvider", "OperationsMetadata",
+                        "FeatureTypeList",
+                        "Filter_Capabilities"}));
+                return operation;
             }
 
             /**
              * Encodes the DescribeFeatureType ows:Operation element.
              */
-            protected void describeFeatureType() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("outputFormat", new String[] { GML32_FORMAT })
-                };
-
-                operation("DescribeFeatureType", parameters, true, true);
+            protected OperationMetadata describeFeatureType() {
+                OperationMetadata operation = new OperationMetadata("DescribeFeatureType", true, true);
+                operation.getParameters().add(new DomainType("outputFormat", new String[] { GML32_FORMAT }));
+                return operation;
             }
 
             /**
              * Encodes the GetFeature ows:Operation element.
              */
-            protected void getFeature() {
-                String[] oflist = getAvailableOutputFormatNames(GML32_FORMAT);
-                Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("resultType", new String[] { "results", "hits" }),
-                    parameter("outputFormat", oflist)
-                };
-                operation("GetFeature", parameters, getFeatureConstraints(), true, true);
-            }
-
-            protected Map.Entry[] getFeatureConstraints() {
-                return new Map.Entry[] {
-                    parameter("PagingIsTransactionSafe", false), 
-                    parameter("CountDefault", wfs.getMaxFeatures())
-                };
+            protected OperationMetadata getFeature() {
+                String[] formats = getAvailableOutputFormatNames(GML32_FORMAT);
+                OperationMetadata operation = new OperationMetadata("GetFeature", true, true);
+                operation.getParameters().add(new DomainType("resultType", new String[] { "results", "hits" }));
+                operation.getParameters().add(new DomainType("outputFormat", formats));
+                operation.getConstraints().add(new DomainType("PagingIsTransactionSafe", "false"));
+                operation.getConstraints().add(new DomainType("CountDefault", String.valueOf(wfs.getMaxFeatures())));
+                return operation;
             }
             
             /**
              * Encodes the GetFeatureWithLock ows:Operation element.
              */
-            protected void getFeatureWithLock() {
-                String[] oflist = getAvailableOutputFormatNames(GML32_FORMAT);
-                Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("resultType", new String[] { "results", "hits" }),
-                    parameter("outputFormat", oflist)
-                };
-    
-                operation("GetFeatureWithLock", parameters, getFeatureConstraints(), true, true);
+            protected OperationMetadata getFeatureWithLock() {
+                String[] formats = getAvailableOutputFormatNames(GML32_FORMAT);
+                OperationMetadata operation = new OperationMetadata("GetFeatureWithLock", true, true);
+                operation.getParameters().add(new DomainType("resultType", new String[] { "results", "hits" }));
+                operation.getParameters().add(new DomainType("outputFormat", formats));
+                return operation;
             }
 
-            protected void getPropertyValue() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("resolve", new String[] { "none" }),
-                };
-                operation("GetPropertyValue", parameters, true, true);
+            protected OperationMetadata getPropertyValue() {
+                OperationMetadata operation = new OperationMetadata("GetPropertyValue", true, true);
+                operation.getParameters().add(new DomainType("resolve", new String[] { "none" }));
+                operation.getParameters().add(new DomainType("outputFormat", new String[] { GML32_FORMAT }));
+                return operation;
             }
             
             /**
              * Encodes the LockFeature ows:Operation element.
              */
-            protected void lockFeature() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                    parameter("releaseAction", new String[] { "ALL", "SOME" })
-                };
-    
-                operation("LockFeature", parameters, true, true);
+            protected OperationMetadata lockFeature() {
+                OperationMetadata operation = new OperationMetadata("LockFeature", true, true);
+                operation.getParameters().add(new DomainType("releaseAction", new String[] { "ALL", "SOME" }));
+                return operation;
             }
 
             /**
              * Encodes the Transaction ows:Operation element.
              */
-            protected void transaction() {
-                Map.Entry[] parameters = new Map.Entry[] {
-                        parameter("inputFormat", new String[] { GML32_FORMAT }),
-                        parameter("releaseAction", new String[] { "ALL", "SOME" })
-                    };
-    
-                operation("Transaction", parameters, true, true);
+            protected OperationMetadata transaction() {
+                OperationMetadata operation = new OperationMetadata("Transaction", true, true);
+                operation.getParameters().add(new DomainType("inputFormat", new String[] { GML32_FORMAT }));
+                operation.getParameters().add(new DomainType("releaseAction", new String[] { "ALL", "SOME" }));
+                return operation;
             }
 
             /**
              * Encodes the ListStoredQueries ows:Operation element.
              */
-            protected void listStoredQueries() {
-                operation("ListStoredQueries", null, true, true);
+            protected OperationMetadata listStoredQueries() {
+                return new OperationMetadata("ListStoredQueries", true, true);
             }
 
             /**
              * Encodes the ListStoredQueries ows:Operation element.
              */
-            protected void describeStoredQueries() {
-                operation("DescribeStoredQueries", null, true, true);
+            protected OperationMetadata describeStoredQueries() {
+                return new OperationMetadata("DescribeStoredQueries", true, true);
             }
 
             /**
              * Encodes the CreateStoredQuery ows:Operation element.
              */
-            protected void createStoredQuery() {
-                operation("CreateStoredQuery", null, false, true);
+            protected OperationMetadata createStoredQuery() {
+                OperationMetadata operation = new OperationMetadata("CreateStoredQuery", false, true);
+                operation.getParameters().add(new DomainType("language", new String[] { CreateStoredQuery.DEFAULT_LANGUAGE }));
+                return operation;
             }
 
             /**
              * Encodes the DropStoredQuery ows:Operation element.
              */
-            protected void dropStoredQuery() {
-                operation("DropStoredQuery", null, true, true);
+            protected OperationMetadata dropStoredQuery() {
+                return new OperationMetadata("DropStoredQuery", true, true);
             }
 
             /**
              * Encodes service constraints.
              */
             protected void constraints() {
-                constraint("ImplementsBasicWFS", true);
-                constraint("ImplementsTransactionalWFS", true);
-                constraint("ImplementsLockingWFS", true);
-                constraint("KVPEncoding", true);
-                constraint("XMLEncoding", true);
-                constraint("SOAPEncoding", true);
-                constraint("ImplementsInheritance", false);
-                constraint("ImplementsRemoteResolve", false);
-                constraint("ImplementsResultPaging", true);
-                constraint("ImplementsStandardJoins", true);
-                constraint("ImplementsSpatialJoins", true);
-                constraint("ImplementsTemporalJoins", true);
-                constraint("ImplementsFeatureVersioning", false);
-                constraint("ManageStoredQueries", true);
+                List<DomainType> constraints = new ArrayList<>();
+                constraints.add(new DomainType("ImplementsBasicWFS", "true"));
+                constraints.add(new DomainType("ImplementsTransactionalWFS", "true"));
+                constraints.add(new DomainType("ImplementsLockingWFS", "true"));
+                constraints.add(new DomainType("KVPEncoding", "true"));
+                constraints.add(new DomainType("XMLEncoding", "true"));
+                constraints.add(new DomainType("SOAPEncoding", "true"));
+                constraints.add(new DomainType("ImplementsInheritance", "false"));
+                constraints.add(new DomainType("ImplementsRemoteResolve", "false"));
+                constraints.add(new DomainType("ImplementsResultPaging", "true"));
+                constraints.add(new DomainType("ImplementsStandardJoins", "true"));
+                constraints.add(new DomainType("ImplementsSpatialJoins", "true"));
+                constraints.add(new DomainType("ImplementsTemporalJoins", "true"));
+                constraints.add(new DomainType("ImplementsFeatureVersioning", "false"));
+                constraints.add(new DomainType("ManageStoredQueries", "true"));
                 
-                //capacity constraints
-                constraint("PagingIsTransactionSafe", false);
-                constraint("QueryExpressions", new String[]{"wfs:Query", "wfs:StoredQuery"});
+                // capacity constraints
+                constraints.add(new DomainType("PagingIsTransactionSafe", "false"));
+                constraints.add(new DomainType("QueryExpressions", new String[]{"wfs:Query", "wfs:StoredQuery"}));
+                
+                // allow extension points to alter the constraints
+                Version serviceVersion = VERSION_20;
+                for (WFSExtendedCapabilitiesProvider provider : extCapsProviders) {
+                    provider.updateRootOperationConstraints(serviceVersion, constraints);
+                }
+                for (DomainType constraint : constraints) {
+                    constraint(constraint);
+                }
             }
 
-            protected void constraint(String name, Object value) {
-                if (value instanceof Boolean) {
-                    constraint(name, ((Boolean)value).booleanValue());
-                }
-                else {
-                    constraint(name, (String) value.toString());
-                }
+            protected void constraint(DomainType constraint) {
+                domainType("ows:Constraint", constraint);
             }
             
-            protected void constraint(String name, boolean value) {
-                constraint(name, String.valueOf(value).toUpperCase());
-            }
-            
-            protected void constraint(String name, String value) {
-                start("ows:Constraint", attributes(new String[]{"name", name}));
-                  element("ows:NoValues", null);
-                  element("ows:DefaultValue", value);
-                end("ows:Constraint");
-            }
-
-            protected void constraint(String name, String[] values) {
-                start("ows:Constraint", attributes(new String[]{"name", name}));
-                start("ows:AllowedValues");
-                for (String v : values) {
-                    element("ows:Value", v);
-                }
-                end("ows:AllowedValues");
-                end("ows:Constraint");
-            }
-
             protected void featureTypeList() {
                 if (catalog.getFeatureTypes().isEmpty()) {
                     return;
@@ -2481,6 +2512,44 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 //               }
              end("fes:Filter_Capabilities");
             }
+
+            protected void operation(OperationMetadata operation) {
+                start("ows:Operation", attributes(new String[] { "name", operation.getName() }));
+
+                String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);
+
+                // dcp
+                delegate.dcp(serviceURL, operation.isGet(), operation.isPost());
+
+                // parameters
+                for (DomainType parameter : operation.getParameters()) {
+                    domainType("ows:Parameter", parameter);
+                }
+                // constraints
+                for (DomainType constraint : operation.getConstraints()) {
+                    domainType("ows:Constraint", constraint);
+                }
+                end("ows:Operation");
+            }
+
+            protected void domainType(String elementName, DomainType domainType) {
+                start(elementName, attributes(new String[] {"name", domainType.getName()}));
+                if (domainType.isNoValues()) {
+                    element("ows:NoValues", null);
+                }
+                if (domainType.getDefaultValue() != null) {
+                    element("ows:DefaultValue", domainType.getDefaultValue());
+                }
+                if (!domainType.getAllowedValues().isEmpty()) {
+                    start("ows:AllowedValues");
+                    for (String v : domainType.getAllowedValues()) {
+                        element("ows:Value", v);
+                    }
+                    end("ows:AllowedValues");
+                }
+                end(elementName);
+            }
+            
         }
 
         protected Name lookupTypeName(List<Schema> profiles, Parameter arg) {

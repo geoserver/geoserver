@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.v1_1;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -177,7 +178,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         // print(doc);
 
         // let's check the argument count of "abs" function
-        XMLAssert.assertXpathEvaluatesTo("1", "//ogc:FunctionName[text()=\"abs\"]/@nArgs", doc);
+        assertXpathEvaluatesTo("1", "//ogc:FunctionName[text()=\"abs\"]/@nArgs", doc);
     }
 
     @Test
@@ -344,9 +345,9 @@ public class GetCapabilitiesTest extends WFSTestSupport {
                     // we generate the other SRS only if it's not equal to native
                     boolean wgs84Native = "EPSG:4326".equals(ft.getSRS());
                     if(wgs84Native) {
-                        XMLAssert.assertXpathEvaluatesTo("2", "count(" + base + "/wfs:OtherSRS)", doc);
+                        assertXpathEvaluatesTo("2", "count(" + base + "/wfs:OtherSRS)", doc);
                     } else {
-                        XMLAssert.assertXpathEvaluatesTo("3", "count(" + base + "/wfs:OtherSRS)", doc);
+                        assertXpathEvaluatesTo("3", "count(" + base + "/wfs:OtherSRS)", doc);
                         XMLAssert.assertXpathExists(base + "[wfs:OtherSRS = 'urn:x-ogc:def:crs:EPSG:4326']", doc);
                     }
                     XMLAssert.assertXpathExists(base + "[wfs:OtherSRS = 'urn:x-ogc:def:crs:EPSG:3003']", doc);
@@ -378,7 +379,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             String base = "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"
                     + "wfs:FeatureType[wfs:Name =\"" + polygonsName + "\"]";
             XMLAssert.assertXpathExists(base, doc);
-            XMLAssert.assertXpathEvaluatesTo("1", "count(" + base + "/wfs:OtherSRS)", doc);
+            assertXpathEvaluatesTo("1", "count(" + base + "/wfs:OtherSRS)", doc);
             XMLAssert.assertXpathExists(base + "[wfs:OtherSRS = 'urn:x-ogc:def:crs:EPSG:32632']", doc);
         } finally {
             wfs.getSRS().clear();
@@ -387,5 +388,38 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             polygons.getResponseSRS().clear();
             getCatalog().save(polygons);
         }
+    }
+
+    @Test
+    public void testGetSections() throws Exception {
+        // do not specify sections
+        testSections("", 1, 1, 1, 1, 1);
+        // ask explicitly for all
+        testSections("All", 1, 1, 1, 1, 1);
+        // test sections one by one
+        testSections("ServiceIdentification", 1, 0, 0, 0, 0);
+        testSections("ServiceProvider", 0, 1, 0, 0, 0);
+        testSections("OperationsMetadata", 0, 0, 1, 0, 0);
+        testSections("FeatureTypeList", 0, 0, 0, 1, 0);
+        testSections("Filter_Capabilities", 0, 0, 0, 0, 1);
+        // try a group
+        testSections("ServiceIdentification,Filter_Capabilities", 1, 0, 0, 0, 1);
+        // mix All in the middle
+        testSections("ServiceIdentification,Filter_Capabilities,All", 1, 1, 1, 1, 1);
+        // try an invalid section
+        Document dom = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetCapabilities&sections=FooBar");
+        checkOws10Exception(dom, "InvalidParameterValue", "sections");
+
+    }
+
+    public void testSections(String sections, int serviceIdentification, int serviceProvider, int
+            operationsMetadata, int featureTypeList, int filterCapabilities) throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetCapabilities&sections=" + sections);
+        // print(dom);
+        assertXpathEvaluatesTo("" + serviceIdentification, "count(//ows:ServiceIdentification)", dom);
+        assertXpathEvaluatesTo("" + serviceProvider, "count(//ows:ServiceProvider)", dom);
+        assertXpathEvaluatesTo("" + operationsMetadata, "count(//ows:OperationsMetadata)", dom);
+        assertXpathEvaluatesTo("" + featureTypeList, "count(//wfs:FeatureTypeList)", dom);
+        assertXpathEvaluatesTo("" + filterCapabilities, "count(//ogc:Filter_Capabilities)", dom);
     }
 }

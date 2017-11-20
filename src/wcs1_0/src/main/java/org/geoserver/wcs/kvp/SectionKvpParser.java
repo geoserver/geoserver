@@ -21,6 +21,7 @@ public class SectionKvpParser extends KvpParser {
 
     public SectionKvpParser() {
         super("section", CapabilitiesSectionType.class);
+        setService("WCS");
 
     }
 

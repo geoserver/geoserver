@@ -9,11 +9,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.v2_0.WFS20TestSupport;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.servlets.ServiceStrategyFactory;
 import org.w3c.dom.Document;
@@ -23,7 +21,6 @@ import java.util.List;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class TimeoutTest extends WFS20TestSupport {
 

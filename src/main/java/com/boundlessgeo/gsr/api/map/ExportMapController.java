@@ -95,9 +95,29 @@ public class ExportMapController extends AbstractGSRController {
         requestProxy.getMutableParams().put("height", new String[] { sizeParts[1] });
 
         //get rid of DPI, since ESRI will use non-integer DPI
-        requestProxy.getMutableParams().remove("dpi");
+        String dpi = translateDPIProperty(request.getParameter("dpi"));
+        if (dpi != null) {
+            requestProxy.getMutableParams().put("dpi", new String[] { dpi });
+        }
 
         dispatcher.handleRequest(requestProxy, response);
+    }
+
+    private String translateDPIProperty(String dpi) {
+
+        if (StringUtils.isNotEmpty(dpi)) {
+            String clampedDPI;
+            try {
+                Double doubleDpi = Double.parseDouble(dpi);
+                clampedDPI = Integer.toString(doubleDpi.intValue());
+                return clampedDPI;
+            } catch (NumberFormatException e) {
+                //suppress
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**

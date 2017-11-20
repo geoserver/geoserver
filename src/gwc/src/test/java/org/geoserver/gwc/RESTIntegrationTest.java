@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
@@ -576,6 +578,87 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     ));
         }
         
+    }
+
+    @Test
+    public void testGetSeed() throws Exception {
+        final String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        final String url = "gwc/rest/seed/" + layerName;
+        final String id = getCatalog().getLayerByName(layerName).getId();
+
+        MockHttpServletResponse sr = getAsServletResponse(url);
+        assertEquals(200, sr.getStatus());
+        assertTrue(sr.getContentType(), sr.getContentType().startsWith("text/html"));
+    }
+
+    @Test
+    public void testGetSeedJson() throws Exception {
+        final String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        final String url = "gwc/rest/seed/" + layerName + ".json";
+        final String id = getCatalog().getLayerByName(layerName).getId();
+
+        MockHttpServletResponse sr = getAsServletResponse(url);
+        assertEquals(200, sr.getStatus());
+        assertTrue(sr.getContentType(), sr.getContentType().startsWith("application/json"));
+        JSONObject json = (JSONObject)getAsJSON(url);
+        assertNotNull(json.getJSONArray("long-array-array"));
+
+    }
+
+    @Test
+    public void testPostSeedXml() throws Exception {
+        final String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        final String url = "gwc/rest/seed/" + layerName + ".xml";
+        final String id = getCatalog().getLayerByName(layerName).getId();
+
+        final String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<seedRequest>\n" +
+                "  <name>"+layerName+"</name>\n" +
+                "  <gridSetId>EPSG:4326</gridSetId>\n" +
+                "  <zoomStart>0</zoomStart>\n" +
+                "  <zoomStop>12</zoomStop>\n" +
+                "  <format>image/png</format>\n" +
+                "  <type>seed</type>\n" +
+                "  <threadCount>1</threadCount>\n" +
+                "</seedRequest>";
+
+        MockHttpServletResponse sr = postAsServletResponse(url, xml);
+        assertEquals(200, sr.getStatus());
+        assertSeedJob(layerName);
+    }
+
+    @Test
+    public void testPostSeedJson() throws Exception {
+        final String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        final String url = "gwc/rest/seed/" + layerName + ".json";
+        final String id = getCatalog().getLayerByName(layerName).getId();
+
+        final String json = "{ \"seedRequest\": {\n" +
+                "  \"name\": \""+layerName+"\",\n" +
+                "  \"gridSetId\": \"EPSG:4326\",\n" +
+                "  \"zoomStart\": 0,\n" +
+                "  \"zoomStop\": 12,\n" +
+                "  \"type\": \"seed\",\n" +
+                "  \"threadCount\": 1,\n" +
+                "}}";
+
+        MockHttpServletResponse sr = postAsServletResponse(url, json);
+        assertEquals(200, sr.getStatus());
+        assertSeedJob(layerName);
+    }
+
+    public void assertSeedJob(String layerName) throws Exception {
+        final String url = "gwc/rest/seed/" + layerName + ".json";
+
+        MockHttpServletResponse sr = getAsServletResponse(url);
+        assertEquals(200, sr.getStatus());
+        assertTrue(sr.getContentType(), sr.getContentType().startsWith("application/json"));
+        JSONObject json = (JSONObject)getAsJSON(url);
+
+        JSONArray jsonArr = json.getJSONArray("long-array-array");
+        assertNotNull(jsonArr);
+        assertTrue(jsonArr.size() > 0);
     }
 
 }

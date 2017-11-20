@@ -76,7 +76,7 @@ paths:
           in: body
           description: The updated layer definition.
           schema:
-            $ref: "#/definitions/SeedRequest"
+            $ref: "#/definitions/seedRequest"
       consumes:
         - application/json
         - application/xml
@@ -87,7 +87,7 @@ paths:
           description: Bad Request
 
 definitions:
-  SeedRequest:
+  seedRequest:
     title: seedRequest
     type: object
     properties:

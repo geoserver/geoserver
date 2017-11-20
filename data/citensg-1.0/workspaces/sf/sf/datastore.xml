@@ -8,7 +8,7 @@
   <connectionParameters>
     <entry key="Estimated extends">false</entry>
     <entry key="database">cite</entry>
-    <entry key="passwd">crypt1:M5YHT4ErOQhPXXFFv9favw==</entry>
+    <entry key="passwd">plain:cite</entry>
     <entry key="port">5432</entry>
     <entry key="validate connections">true</entry>
     <entry key="wkb enabled">true</entry>

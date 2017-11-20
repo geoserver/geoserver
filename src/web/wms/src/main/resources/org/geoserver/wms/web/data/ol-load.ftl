@@ -48,8 +48,6 @@ map.getView().on('change:resolution', function(evt) {
 
 map.getView().fit(extent, map.getSize());
 
-if (!window.olUpdate) {
-  window.olUpdate = function(id, params) {
-    source.updateParams(params);
-  };
-}
+window.olUpdate = function(id, params) {
+  source.updateParams(params);
+};

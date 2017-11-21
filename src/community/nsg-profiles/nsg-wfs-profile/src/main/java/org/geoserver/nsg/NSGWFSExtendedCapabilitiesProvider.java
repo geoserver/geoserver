@@ -152,7 +152,6 @@ public class NSGWFSExtendedCapabilitiesProvider implements WFSExtendedCapabiliti
 
         // build the parameter
         DomainType srsParameter = new DomainType("srsName", new ArrayList<>(srsParameterValues));
-        srsParameter.setNoValues(true);
         return srsParameter;
     }
 

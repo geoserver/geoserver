@@ -78,6 +78,7 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("gs", "http://geoserver.org");
+        namespaces.put("soap12", "http://www.w3.org/2003/05/soap-envelope");
         
         CiteTestData.registerNamespaces(namespaces);
         

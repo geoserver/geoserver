@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs.v1_1;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -15,6 +17,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.Collections;
 
@@ -26,6 +29,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.util.XmlTestUtil;
 import org.geoserver.wfs.GMLInfo;
@@ -35,6 +39,7 @@ import org.geotools.gml3.GML;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -133,8 +138,8 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)",
                 doc);
 
-        XMLAssert.assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.1']", doc);
-        XMLAssert.assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.2']", doc);
+        assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.1']", doc);
+        assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.2']", doc);
     }
 
     @Test
@@ -161,6 +166,35 @@ public class GetFeatureTest extends WFSTestSupport {
             assertTrue(feature.hasAttribute("gml:id"));
         }
 
+    }
+
+    @Test
+    public void testPostSOAP12() throws Exception {
+        String xml =
+                "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> " +
+                        " <soap:Header/> " +
+                        " <soap:Body>" 
+                + "<wfs:GetFeature " + "service=\"WFS\" "
+                + "version=\"1.1.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
+                + "<wfs:Query typeName=\"cdf:Other\"> "
+                + "<wfs:PropertyName>cdf:string2</wfs:PropertyName> "
+                + "</wfs:Query> " 
+                + "</wfs:GetFeature>"
+                + "</soap:Body>" 
+                + "</soap:Envelope>";
+
+        MockHttpServletResponse response = postAsServletResponse("wfs", xml, "application/soap+xml");
+        assertEquals("application/soap+xml", response.getContentType());
+        
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        print(doc);
+        
+        assertXpathExists("/soap12:Envelope", doc);
+        assertXpathExists("/soap12:Envelope/soap12:Body/wfs:FeatureCollection", doc);
+        assertXpathEvaluatesTo("1", "count(/soap12:Envelope/soap12:Body/wfs:FeatureCollection/gml:featureMembers/cdf:Other)", doc);
     }
 
     @Test
@@ -501,8 +535,8 @@ public class GetFeatureTest extends WFSTestSupport {
         
         Document dom = getAsDOM("ows?service=WFS&version=1.1.0&request=GetFeature" +
                 "&typename=" + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
-        XMLAssert.assertXpathExists("//gml:name", dom);
-        XMLAssert.assertXpathExists("//gml:description", dom);
+        assertXpathExists("//gml:name", dom);
+        assertXpathExists("//gml:description", dom);
         XMLAssert.assertXpathNotExists("//sf:name", dom);
         XMLAssert.assertXpathNotExists("//sf:description", dom);
         
@@ -513,8 +547,8 @@ public class GetFeatureTest extends WFSTestSupport {
                 "&typename=" + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         XMLAssert.assertXpathNotExists("//gml:name", dom);
         XMLAssert.assertXpathNotExists("//gml:description", dom);
-        XMLAssert.assertXpathExists("//sf:name", dom);
-        XMLAssert.assertXpathExists("//sf:description", dom);
+        assertXpathExists("//sf:name", dom);
+        assertXpathExists("//sf:description", dom);
         
         gml.setOverrideGMLAttributes(false);
         getGeoServer().save(wfs);
@@ -587,7 +621,7 @@ public class GetFeatureTest extends WFSTestSupport {
     public void testEncodeSrsDimension() throws Exception {
         Document dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typename=" 
             + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
-        XMLAssert.assertXpathExists("//gml:Point[@srsDimension = '2']", dom);
+        assertXpathExists("//gml:Point[@srsDimension = '2']", dom);
 
         WFSInfo wfs = getWFS();
         wfs.setCiteCompliant(true);

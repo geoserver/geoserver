@@ -45,6 +45,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -220,6 +222,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
         encoder.setEncoding(Charset.forName( geoServer.getSettings().getCharset() ));
+        Request dispatcherRequest = Dispatcher.REQUEST.get();
+        if (dispatcherRequest != null) {
+            encoder.setOmitXMLDeclaration(dispatcherRequest.isSOAP());
+        }
 
         if (wfs.isCanonicalSchemaLocation()) {
             encoder.setSchemaLocation(getWfsNamespace(), getCanonicalWfsSchemaLocation());

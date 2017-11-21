@@ -7,12 +7,14 @@ package com.boundlessgeo.gsr.core.feature;
 import java.util.Map;
 
 import com.boundlessgeo.gsr.core.geometry.Geometry;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  *
  * @author Juan Marin, OpenGeo
  *
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Feature {
 
     private Geometry geometry;

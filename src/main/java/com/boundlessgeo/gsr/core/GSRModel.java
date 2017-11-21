@@ -5,9 +5,11 @@
 package com.boundlessgeo.gsr.core;
 
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Marker interface for classes that can/should be written by {@link GeoServicesJacksonJsonConverter}
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public interface GSRModel {
 }

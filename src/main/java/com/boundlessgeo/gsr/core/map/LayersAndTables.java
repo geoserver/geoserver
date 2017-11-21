@@ -42,10 +42,12 @@ import org.opengis.referencing.operation.TransformException;
 import com.boundlessgeo.gsr.Utils;
 import com.boundlessgeo.gsr.core.GSRModel;
 import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * A list of {@link LayerOrTable}
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LayersAndTables implements GSRModel {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
 

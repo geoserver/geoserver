@@ -17,10 +17,12 @@ import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
 import com.boundlessgeo.gsr.core.geometry.SpatialReference;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * List of {@link Feature}
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeatureList implements GSRModel {
 
     public final String objectIdFieldName = "FID";

@@ -1,4 +1,4 @@
-# GeoServer ArcGIS Rest API
+# GeoServices Rest API
 
 This plugin provides an ArcGIS REST compatibility API.
 
@@ -23,6 +23,7 @@ Notable features currently unsupported:
 
 - Non-geospatial filters
 - Dynamic layer definitions
+- Requests to feature layers in non-native spatial reference systems.
 
 ## Usage Notes
 When using the official JS API, CORS detection does not work correctly. You will need to add
@@ -34,6 +35,11 @@ your server manually to the list of CORS enabled servers:
     });
 ```
 
+CORS support also needs to be enabled on the server. _Without_ these settings, it
+will attempt to use JSONP, which may not be as well supported.
+
+For information on enabling CORS in GeoServer, see [here](http://suite.opengeo.org/docs/latest/sysadmin/cors/index.html)
+ 
 ## Web Mercator Spatial Reference
 The official APIs use Spatial Reference 102100 as Web Mercator. In order for this to work,
 add the following custom projection to your `data_dir/user_projections/epsg.properties` file:
@@ -41,3 +47,6 @@ add the following custom projection to your `data_dir/user_projections/epsg.prop
 ```
 102100=PROJCS["WGS 84 / Pseudo-Mercator",GEOGCS["Popular Visualisation CRS",DATUM["Popular_Visualisation_Datum",SPHEROID["Popular Visualisation Sphere",6378137,0,AUTHORITY["EPSG","7059"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6055"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4055"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],PROJECTION["Mercator_1SP"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],AUTHORITY["EPSG","3785"],AXIS["X",EAST],AXIS["Y",NORTH]]
 ```
+
+## Examples
+See the folder `docs/samples` for examples using the official JS client.

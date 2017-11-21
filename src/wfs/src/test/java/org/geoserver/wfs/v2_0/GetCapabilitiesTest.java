@@ -60,6 +60,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
     @Test
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+        print(doc);
         
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement()
                 .getNodeName());
@@ -67,6 +68,11 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         
         XpathEngine xpath =  XMLUnit.newXpathEngine();
         assertTrue(xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength() > 0);
+        
+        // check GET/POST/SOAP are advertised
+        assertXpathEvaluatesTo("TRUE", "//ows:OperationsMetadata/ows:Constraint[@name='KVPEncoding']/ows:DefaultValue", doc);
+        assertXpathEvaluatesTo("TRUE", "//ows:OperationsMetadata/ows:Constraint[@name='XMLEncoding']/ows:DefaultValue", doc);
+        assertXpathEvaluatesTo("TRUE", "//ows:OperationsMetadata/ows:Constraint[@name='SOAPEncoding']/ows:DefaultValue", doc);
     }
     
     @Test

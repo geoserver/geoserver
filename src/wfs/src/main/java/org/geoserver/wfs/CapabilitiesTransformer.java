@@ -83,7 +83,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
     /** logger */
     protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CapabilitiesTransformer.class.getPackage()
                                                                                        .getName());
-    
+    // Constants for constraints (it's case sensitive)
+    private static final String TRUE = "TRUE";
+    private static final String FALSE = "FALSE";
+
     enum Sections { ServiceIdentification, ServiceProvider, OperationsMetadata, FeatureTypeList, Filter_Capabilities, All};
     static final Set<Sections> ALL_SECTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Sections
             .ServiceIdentification, Sections
@@ -2183,7 +2186,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 OperationMetadata operation = new OperationMetadata("GetFeature", true, true);
                 operation.getParameters().add(new DomainType("resultType", new String[] { "results", "hits" }));
                 operation.getParameters().add(new DomainType("outputFormat", formats));
-                operation.getConstraints().add(new DomainType("PagingIsTransactionSafe", "false"));
+                operation.getConstraints().add(new DomainType("PagingIsTransactionSafe", FALSE));
                 operation.getConstraints().add(new DomainType("CountDefault", String.valueOf(wfs.getMaxFeatures())));
                 return operation;
             }
@@ -2260,23 +2263,23 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              */
             protected void constraints() {
                 List<DomainType> constraints = new ArrayList<>();
-                constraints.add(new DomainType("ImplementsBasicWFS", "true"));
-                constraints.add(new DomainType("ImplementsTransactionalWFS", "true"));
-                constraints.add(new DomainType("ImplementsLockingWFS", "true"));
-                constraints.add(new DomainType("KVPEncoding", "true"));
-                constraints.add(new DomainType("XMLEncoding", "true"));
-                constraints.add(new DomainType("SOAPEncoding", "true"));
-                constraints.add(new DomainType("ImplementsInheritance", "false"));
-                constraints.add(new DomainType("ImplementsRemoteResolve", "false"));
-                constraints.add(new DomainType("ImplementsResultPaging", "true"));
-                constraints.add(new DomainType("ImplementsStandardJoins", "true"));
-                constraints.add(new DomainType("ImplementsSpatialJoins", "true"));
-                constraints.add(new DomainType("ImplementsTemporalJoins", "true"));
-                constraints.add(new DomainType("ImplementsFeatureVersioning", "false"));
-                constraints.add(new DomainType("ManageStoredQueries", "true"));
+                constraints.add(new DomainType("ImplementsBasicWFS", TRUE));
+                constraints.add(new DomainType("ImplementsTransactionalWFS", TRUE));
+                constraints.add(new DomainType("ImplementsLockingWFS", TRUE));
+                constraints.add(new DomainType("KVPEncoding", TRUE));
+                constraints.add(new DomainType("XMLEncoding", TRUE));
+                constraints.add(new DomainType("SOAPEncoding", TRUE));
+                constraints.add(new DomainType("ImplementsInheritance", FALSE));
+                constraints.add(new DomainType("ImplementsRemoteResolve", FALSE));
+                constraints.add(new DomainType("ImplementsResultPaging", TRUE));
+                constraints.add(new DomainType("ImplementsStandardJoins", TRUE));
+                constraints.add(new DomainType("ImplementsSpatialJoins", TRUE));
+                constraints.add(new DomainType("ImplementsTemporalJoins", TRUE));
+                constraints.add(new DomainType("ImplementsFeatureVersioning", FALSE));
+                constraints.add(new DomainType("ManageStoredQueries", TRUE));
                 
                 // capacity constraints
-                constraints.add(new DomainType("PagingIsTransactionSafe", "false"));
+                constraints.add(new DomainType("PagingIsTransactionSafe", FALSE));
                 constraints.add(new DomainType("QueryExpressions", new String[]{"wfs:Query", "wfs:StoredQuery"}));
                 
                 // allow extension points to alter the constraints
@@ -2310,43 +2313,43 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 start("fes:Conformance");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsQuery"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name","ImplementsAdHocQuery"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsFunctions"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsMinStandardFilter"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsStandardFilter"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "FALSE");
+                      element("ows:DefaultValue", FALSE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsMinSpatialFilter"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsSpatialFilter"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "FALSE");
+                      element("ows:DefaultValue", FALSE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsMinTemporalFilter"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsTemporalFilter"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "TRUE");
+                      element("ows:DefaultValue", TRUE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsVersionNav"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "FALSE");
+                      element("ows:DefaultValue", FALSE);
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsSorting"}));
                       start("ows:AllowedValues");
@@ -2357,7 +2360,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                    end("fes:Constraint");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsExtendedOperators"}));
                       element("ows:NoValues", null);
-                      element("ows:DefaultValue", "FALSE");
+                      element("ows:DefaultValue", FALSE);
                    end("fes:Constraint");
                end("fes:Conformance");
                

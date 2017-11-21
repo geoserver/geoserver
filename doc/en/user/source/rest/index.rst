@@ -52,7 +52,7 @@ The following links provide direct access to the GeoServer REST API documentatio
   * :api:`/masstruncate <gwcmasstruncate.yaml>`
   * :api:`/statistics <gwcmemorycachestatistics.yaml>`
   * :api:`/reload <gwcreload.yaml>`
-  * :api:`/seed <gwcseed  .yaml>`
+  * :api:`/seed <gwcseed.yaml>`
 
 * Importer extension:
 

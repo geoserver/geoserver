@@ -7,6 +7,7 @@ package org.geoserver.ows.kvp;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.XMLConstants;
@@ -20,14 +21,24 @@ import org.xml.sax.helpers.NamespaceSupport;
  * Parses a list of namespace declarations of the form {@code
  * <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> } into a
  * {@link NamespaceSupport}.
+ * Using the {@link PrefixNamespaceSeparator#COMMA} it's also possible to handle
+ * the WFS 2.0 suggested syntax, {@code
+ * <xmlns(foo,http://name.space1)[,xmlns(bar,http://name.space2)]+> }
  * 
  * @author groldan
  * 
  */
 public class NamespaceKvpParser extends KvpParser {
 
+    private final boolean useComma;
+
     public NamespaceKvpParser(String key) {
+        this(key, false);
+    }
+
+    public NamespaceKvpParser(String key, boolean useComma) {
         super(key, NamespaceSupport.class);
+        this.useComma = useComma;
     }
 
     /**
@@ -39,13 +50,19 @@ public class NamespaceKvpParser extends KvpParser {
     @SuppressWarnings("unchecked")
     @Override
     public NamespaceSupport parse(final String value) throws Exception {
-        List<String> decls = (List<String>) new FlatKvpParser("", String.class).parse(value);
+        List<String> declarations;
+        if (useComma) {
+            String[] parts = value.split(",(?![^()]*+\\))");
+            declarations = Arrays.asList(parts);
+        } else {
+            declarations = (List<String>) new FlatKvpParser("", String.class).parse(value);
+        }
         NamespaceSupport ctx = new NamespaceSupport();
 
         String[] parts;
         String prefix;
         String uri;
-        for (String decl : decls) {
+        for (String decl : declarations) {
             decl = decl.trim();
             if (!decl.startsWith("xmlns(") || !decl.endsWith(")")) {
                 throw new ServiceException("Illegal namespace declaration, "
@@ -53,7 +70,8 @@ public class NamespaceKvpParser extends KvpParser {
             }
             decl = decl.substring("xmlns(".length());
             decl = decl.substring(0, decl.length() - 1);
-            parts = decl.split("=");
+            String separator = useComma ? "," : "=";
+            parts = decl.split(separator);
             if (parts.length == 1) {
                 prefix = XMLConstants.DEFAULT_NS_PREFIX;
                 uri = parts[0];
@@ -62,7 +80,7 @@ public class NamespaceKvpParser extends KvpParser {
                 uri = parts[1];
             } else {
                 throw new ServiceException("Illegal namespace declaration, "
-                        + "should be of the form prefix=<namespace uri>: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
+                        + "should be of the form prefix" + separator + "<namespace uri>: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
             }
 
             try {

@@ -77,6 +77,13 @@ public class GetFeatureTest extends WFS20TestSupport {
     	testGetFifteenAll("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
     	testGetFifteenAll("wfs?request=GetFeature&typenames=(cdf:Fifteen)&version=2.0.0&service=wfs");
     }
+
+    @Test
+    public void testAlternatePrefix() throws Exception {
+        testGetFifteenAll("wfs?request=GetFeature&typenames=abc:Fifteen&version=2.0.0&service=wfs&namespaces=xmlns(abc," + MockData.CDF_URI + ")");
+        testGetFifteenAll("wfs?request=GetFeature&typenames=abc:Fifteen&version=2.0.0&service=wfs&namespaces=xmlns(abc," + MockData.CDF_URI + "),xmlns(wfs," + WFS.NAMESPACE + ")");
+        testGetFifteenAll("wfs?request=GetFeature&typenames=Fifteen&version=2.0.0&service=wfs&namespaces=xmlns(" + MockData.CDF_URI + "),xmlns(wfs," + WFS.NAMESPACE + ")");
+    }
     
     @Test
     public void testConcurrentGet() throws Exception {
@@ -699,8 +706,7 @@ public class GetFeatureTest extends WFS20TestSupport {
     @Test
     public void testUserSuppliedNamespacePrefix() throws Exception {
         testGetFifteenAll("wfs?request=GetFeature&typename=myPrefix:Fifteen&version=2.0.0&service=wfs&"
-                + "namespace=xmlns(myPrefix%3D" // the '=' sign shall be encoded, hence '%3D'
-                + URLEncoder.encode(MockData.FIFTEEN.getNamespaceURI(), "UTF-8") + ")");
+                + "namespaces=xmlns(myPrefix," + URLEncoder.encode(MockData.FIFTEEN.getNamespaceURI(), "UTF-8") + ")");
     }
 
     @Test

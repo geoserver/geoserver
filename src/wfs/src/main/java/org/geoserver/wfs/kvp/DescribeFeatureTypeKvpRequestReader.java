@@ -58,9 +58,11 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
 
         // did the user supply alternate namespace prefixes?
         NamespaceSupport namespaces = null;
-        if (kvp.containsKey("NAMESPACE")) {
+        if (kvp.containsKey("NAMESPACE") || kvp.containsKey("NAMESPACES")) {
             if (kvp.get("NAMESPACE") instanceof NamespaceSupport) {
                 namespaces = (NamespaceSupport) kvp.get("namespace");
+            } else if (kvp.get("NAMESPACES") instanceof NamespaceSupport) {
+                    namespaces = (NamespaceSupport) kvp.get("namespaces");
             } else {
                 LOGGER.warning("There's a namespace parameter but it seems it wasn't parsed to a "
                         + NamespaceSupport.class.getName() + ": " + kvp.get("namespace"));

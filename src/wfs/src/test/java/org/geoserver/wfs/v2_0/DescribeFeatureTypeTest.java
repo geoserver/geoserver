@@ -234,7 +234,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         final QName typeName = CiteTestData.POLYGONS;
         String path = "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&" +
             "typeName=myPrefix:" + typeName.getLocalPart() + 
-            "&namespace=xmlns(myPrefix%3D" + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8") + ")";
+            "&namespaces=xmlns(myPrefix," + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8") + ")";
         
         Document doc = getAsDOM(path);
         assertSchema(doc, CiteTestData.POLYGONS);

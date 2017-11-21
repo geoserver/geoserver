@@ -98,4 +98,14 @@ public class NamespaceKvpParserTest {
         }
         return l;
     }
+    
+    @Test
+    public void testWfs20Syntax() throws Exception {
+        NamespaceKvpParser parser = new NamespaceKvpParser("namespaces", true);
+        NamespaceSupport ctx = parser
+                .parse("xmlns(http://bar), xmlns(ex,http://example.com),xmlns(gs,http://geoserver.org)");
+        assertEquals("http://bar", ctx.getURI(""));
+        assertEquals("http://example.com", ctx.getURI("ex"));
+        assertEquals("http://geoserver.org", ctx.getURI("gs"));
+    }
 }

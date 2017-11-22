@@ -323,7 +323,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
             //then, in cite compliance more, it should not find the type name
             service.setCiteCompliant(true);
             geoServer.save(service);
-            doc = getAsDOM(path);
+            doc = getAsDOM(path, 400);
             //print(doc);
             assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
         } finally {

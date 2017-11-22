@@ -5,13 +5,15 @@
  */
 package org.geoserver.wfs.response;
 
-import java.util.List;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OWS11ServiceExceptionHandler;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.json.JSONType;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Handles a WFS 2.0 service exception by producing an exception report.
@@ -45,6 +47,9 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
 
         boolean verbose = gs.getSettings().isVerboseExceptions();
         String charset = gs.getSettings().getCharset();
+        
+        setHttpHeaders(exception, request);
+        
         // first of all check what kind of exception handling we must perform
         final String exceptions;
         try {
@@ -67,5 +72,21 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
         } else {
             super.handleServiceException(exception, request);
         }
+    }
+
+    private void setHttpHeaders(ServiceException exception, Request request) {
+        HttpServletResponse response = request.getHttpResponse();
+        String code = exception.getCode();
+        if (code == null) {
+            response.setStatus(500);
+        } else if(WFSException.OPERATION_PROCESSING_FAILED.equals(code)) {
+            response.setStatus(500);
+        } else if(WFSException.NOT_FOUND.equals(code)) {
+            response.setStatus(404);
+        } else {
+            // all other codes use 400
+            response.setStatus(400);
+        }
+
     }
 }

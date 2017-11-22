@@ -15,6 +15,9 @@ import org.geoserver.wfs.request.RequestObject;
  * WFS application specific exception.
  */
 public class WFSException extends ServiceException {
+    public static final String NOT_FOUND = "NotFound";
+    public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
+
     public enum Code {
         OperationProcessingFailed
     };

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.concurrent.ExecutorCompletionService;
@@ -224,7 +225,8 @@ public class GetFeatureTest extends WFS20TestSupport {
         try {
             // ask for a typename but with a reosurceid of another one 
             Document doc =
-                    getAsDOM("wfs?request=GetFeature&typeNames=sf:AggregateGeoFeature&version=2.0.0&service=wfs&resourceid=Fifteen.2");
+                    getAsDOM("wfs?request=GetFeature&typeNames=sf:AggregateGeoFeature&version=2.0.0&service=wfs&resourceid=Fifteen.2"
+                            , 400);
             checkOws11Exception(doc, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "RESOURCEID");
         } finally {
             wfs.setCiteCompliant(false);
@@ -242,7 +244,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         try {
             Document doc =
-                    getAsDOM("wfs?request=GetFeature&typeNames=cdf:Fifteen&version=2.0.0&service=wfs&resourceid=Fifteen.2");
+                    getAsDOM("wfs?request=GetFeature&typeNames=cdf:Fifteen&version=2.0.0&service=wfs&resourceid=Fifteen.2", 200);
             assertGML32(doc);
 
             XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)",
@@ -378,7 +380,6 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertEquals(1, features.getLength());
     }
 
-    @Test
     public void testPostWithFailingUrnBboxFilter() throws Exception {
         String xml = 
             "<wfs:GetFeature service='WFS' version='2.0.0'  outputFormat='text/xml; subtype=gml/3.2' "

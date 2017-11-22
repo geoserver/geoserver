@@ -1557,6 +1557,7 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-status-monitoring</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

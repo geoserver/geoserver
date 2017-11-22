@@ -19,6 +19,7 @@ import net.opengis.wfs.DescribeFeatureTypeType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geotools.util.logging.Logging;
@@ -160,7 +161,7 @@ public class DescribeFeatureType {
                         msg += ". \nStrict WFS protocol conformance is being applied.\n"
                                 + "Make sure the type name is correctly qualified";
                     }
-                    throw new WFSException(request, msg);
+                    throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
                 }
             }
         }

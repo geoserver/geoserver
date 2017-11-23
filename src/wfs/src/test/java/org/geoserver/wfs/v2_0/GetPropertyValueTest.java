@@ -53,4 +53,12 @@ public class GetPropertyValueTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member/sf:pointProperty/gml:Point)", dom);
     }
 
+    @Test
+    public void testEmptyValueReference() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetPropertyValue" +
+                "&typeNames=sf:PrimitiveGeoFeature&valueReference=");
+
+        checkOws11Exception(dom, "2.0.0", "InvalidParameterValue", "valueReference");
+    }
+
 }

@@ -20,6 +20,7 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.wfs.PropertyValueCollection;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -60,6 +61,9 @@ public class GetPropertyValue {
 
         if (request.getValueReference() == null) {
             throw new WFSException(request, "No valueReference specified", "MissingParameterValue")
+                    .locator("valueReference");
+        } else if("".equals(request.getValueReference().trim())) {
+            throw new WFSException(request, "ValueReference cannot be empty", ServiceException.INVALID_PARAMETER_VALUE)
                     .locator("valueReference");
         }
 

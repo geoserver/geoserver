@@ -94,7 +94,7 @@ public class ScriptEditPage extends GeoServerSecuredPage {
         form.add(extension);
 
         // Content
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         String mode = scriptManager.lookupPluginEditorMode(script.getResource());
         CodeMirrorEditor content = new CodeMirrorEditor("contents", mode, new PropertyModel<String>(scriptModel, "contents"));
         content.setRequired(true);

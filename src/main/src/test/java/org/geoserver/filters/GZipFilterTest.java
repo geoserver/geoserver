@@ -1,6 +1,8 @@
 package org.geoserver.filters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import javax.servlet.ServletResponse;
 
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletOutputStream;
-
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -126,5 +127,41 @@ public class GZipFilterTest {
         filter.doFilter(request, response, chain);
         assertTrue(response.containsHeader("Content-Length"));
         assertEquals("1000", response.getHeader("Content-Length"));
+    }
+
+    @Test
+    public void testFlushAfterClose() throws ServletException, IOException {
+        // prepare request, response, and chain
+        MockHttpServletRequest request = new MockHttpServletRequest("GET",
+                "http://www.geoserver.org");
+        request.addHeader("accept-encoding", "gzip");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        response.setContentType("text/plain");
+
+        // run the filter
+        GZIPFilter filter = new GZIPFilter();
+
+        MockServletContext context = new MockServletContext();
+        MockFilterConfig config = new MockFilterConfig(context);
+        config.addInitParameter("compressed-types", "text/plain");
+        filter.init(config);
+
+        MockFilterChain chain = new MockFilterChain() {
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response)
+                    throws IOException, ServletException {
+                response.setContentLength(1000);
+                AlternativesResponseStream alternatives = (AlternativesResponseStream) response
+                        .getOutputStream();
+
+                ServletOutputStream gzipStream = alternatives.getStream();
+                gzipStream.write(1);
+                gzipStream.close();
+                // ka-blam! (or not?)
+                gzipStream.flush();
+            }
+        };
+        filter.doFilter(request, response, chain);
+        assertFalse(response.containsHeader("Content-Length"));
     }
 }

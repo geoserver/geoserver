@@ -61,4 +61,16 @@ public class GetPropertyValueTest extends WFS20TestSupport {
         checkOws11Exception(dom, "2.0.0", "InvalidParameterValue", "valueReference");
     }
 
+    @Test
+    public void testGmlId() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetPropertyValue" +
+                "&typeNames=sf:PrimitiveGeoFeature&valueReference=@gml:id");
+        print(dom);
+
+        assertEquals("wfs:ValueCollection", dom.getDocumentElement().getNodeName());
+
+        XMLAssert.assertXpathEvaluatesTo("5", "count(//wfs:member)", dom);
+        XMLAssert.assertXpathEvaluatesTo("5", "count(//wfs:member/gml:identifier)", dom);
+    }
+
 }

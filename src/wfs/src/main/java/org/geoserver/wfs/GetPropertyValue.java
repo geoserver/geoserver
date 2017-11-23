@@ -7,6 +7,7 @@ package org.geoserver.wfs;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -29,6 +30,8 @@ import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class GetPropertyValue {
+    
+    Pattern FEATURE_ID_PATTERN = Pattern.compile("@(\\w+:)?id");
 
     GetFeature delegate;
 
@@ -91,7 +94,8 @@ public class GetPropertyValue {
                     .replaceAll("\\[.*\\]", ""), getNamespaceSupport());
             AttributeDescriptor descriptor = (AttributeDescriptor) propertyNameNoIndexes
                     .evaluate(featureType.getFeatureType());
-            if (descriptor == null) {
+            boolean featureIdRequest = FEATURE_ID_PATTERN.matcher(request.getValueReference()).matches();
+            if (descriptor == null && !featureIdRequest) {
                 throw new WFSException(request, "No such attribute: " + request.getValueReference());
             }
 

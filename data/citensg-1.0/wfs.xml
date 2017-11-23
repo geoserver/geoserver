@@ -22,6 +22,7 @@
     <string>WFS</string>
     <string>TEST</string>
     <string>NSG</string>
+    <string>Aerial</string>
   </keywords>
   <metadataLink/>
   <citeCompliant>true</citeCompliant>
@@ -34,13 +35,6 @@
   </metadata>
   <gml>
     <entry>
-      <version>V_11</version>
-      <gml>
-        <srsNameStyle>URN2</srsNameStyle>
-        <overrideGMLAttributes>false</overrideGMLAttributes>
-      </gml>
-    </entry>
-    <entry>
       <version>V_10</version>
       <gml>
         <srsNameStyle>XML</srsNameStyle>
@@ -49,6 +43,13 @@
     </entry>
     <entry>
       <version>V_20</version>
+      <gml>
+        <srsNameStyle>URN2</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_11</version>
       <gml>
         <srsNameStyle>URN2</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>

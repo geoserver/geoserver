@@ -2188,6 +2188,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 operation.getParameters().add(new DomainType("outputFormat", formats));
                 operation.getConstraints().add(new DomainType("PagingIsTransactionSafe", FALSE));
                 operation.getConstraints().add(new DomainType("CountDefault", String.valueOf(wfs.getMaxFeatures())));
+                operation.getParameters().add(new DomainType("resolve", new String[] { "none", "local" }));
                 return operation;
             }
             
@@ -2199,12 +2200,13 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 OperationMetadata operation = new OperationMetadata("GetFeatureWithLock", true, true);
                 operation.getParameters().add(new DomainType("resultType", new String[] { "results", "hits" }));
                 operation.getParameters().add(new DomainType("outputFormat", formats));
+                operation.getParameters().add(new DomainType("resolve", new String[] { "none", "local" }));
                 return operation;
             }
 
             protected OperationMetadata getPropertyValue() {
                 OperationMetadata operation = new OperationMetadata("GetPropertyValue", true, true);
-                operation.getParameters().add(new DomainType("resolve", new String[] { "none" }));
+                operation.getParameters().add(new DomainType("resolve", new String[] { "none", "local" }));
                 operation.getParameters().add(new DomainType("outputFormat", new String[] { GML32_FORMAT }));
                 return operation;
             }

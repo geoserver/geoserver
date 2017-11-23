@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -120,7 +121,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
     public void testOutputFormats() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
         
-         print(doc);
+        // print(doc);
 
         // let's look for the outputFormat parameter values inside of the GetFeature operation metadata
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -142,6 +143,25 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         }
         
         assertEquals( s1, s2 );
+    }
+
+    /**
+     * Minimum compliance for the resolve parameter
+     * @throws Exception
+     */
+    @Test
+    public void testResolveParameter() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+
+        // print(doc);
+        
+        String xpathTemplate = "//ows:Operation[@name=\"%s\"]/ows:Parameter[@name=\"resolve\"]/ows:AllowedValues[ows:Value='%s']";
+        for (String op : new String[] { "GetFeature", "GetFeatureWithLock", "GetPropertyValue"}) {
+            for (String value : new String[] { "none", "local"}) {
+                String xpath = String.format(xpathTemplate, op, value);
+                assertXpathExists(xpath, doc);
+            }
+        }
     }
 
     @Test

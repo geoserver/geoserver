@@ -5,19 +5,6 @@
  */
 package org.geoserver.wfs.v2_0;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.ServletResponse;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -35,11 +22,22 @@ import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import javax.servlet.ServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class GetCapabilitiesTest extends WFS20TestSupport {
 
@@ -167,6 +165,22 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList(false);
         assertEquals(expectedSpatialOperators.size(), ops.size());
         assertTrue(ops.containsAll(expectedSpatialOperators));
+    }
+
+    /**
+     * See ISO 19142: Table 1, Table 13, A.1.2
+     */
+    @Test
+    public void testBasicWFSFesConstraints() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+
+        String xpathTemplate = "//fes:Constraint[@name='%s']/ows:DefaultValue";
+        for (String constraint : new String[]{"ImplementsAdHocQuery", "ImplementsResourceId", 
+                "ImplementsMinStandardFilter", "ImplementsStandardFilter", "ImplementsMinSpatialFilter", 
+                "ImplementsSorting", "ImplementsMinimumXPath"}) {
+            String xpath = String.format(xpathTemplate, constraint);
+            assertXpathEvaluatesTo("TRUE", xpath, doc);
+        }
     }
 
     @Test

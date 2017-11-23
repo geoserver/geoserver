@@ -42,4 +42,15 @@ public class GetPropertyValueTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member/sf:pointProperty/gml:Point)", dom);
     }
 
+    @Test
+    public void testGETAlternateNamespace() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetPropertyValue" +
+                "&typeNames=abcd:PrimitiveGeoFeature&valueReference=pointProperty&namespaces=xmlns(abcd," + MockData.SF_URI + ")");
+
+        assertEquals("wfs:ValueCollection", dom.getDocumentElement().getNodeName());
+
+        XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member)", dom);
+        XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member/sf:pointProperty/gml:Point)", dom);
+    }
+
 }

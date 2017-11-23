@@ -315,6 +315,13 @@
     <property name="version"><value>2.0.0</value></property>
     <property name="request"><value>GetFeature</value></property>
   </bean>
+	<bean id="getPropertyValue20NamespaceKvpParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
+		<constructor-arg value="namespaces"/>
+		<constructor-arg value="true"/>
+		<property name="service"><value>WFS</value></property>
+		<property name="version"><value>2.0.0</value></property>
+		<property name="request"><value>GetPropertyValue</value></property>
+	</bean>
   <bean id="dftNamespaceKvpParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
     <constructor-arg value="namespace"/>
     <property name="service"><value>WFS</value></property>

@@ -18,20 +18,14 @@ import org.opengis.filter.FilterFactory;
 
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
-    GeoServer geoServer;
 
     public GetFeatureKvpRequestReader(Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
-        super(requestBean, Wfs20Factory.eINSTANCE, geoServer.getCatalog(), filterFactory);
-        this.geoServer = geoServer;
-    }
-
-    WFSInfo getWFS() {
-        return geoServer.getService(WFSInfo.class);
+        super(requestBean, Wfs20Factory.eINSTANCE, geoServer, filterFactory);
     }
 
     @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        //special cite compliance check to ensure the client specified typeNames rather than just
+        // special cite compliance check to ensure the client specified typeNames rather than just
         // typeName
         if (!kvp.containsKey("typenames") && kvp.containsKey("typename")
             && getWFS().isCiteCompliant()) {

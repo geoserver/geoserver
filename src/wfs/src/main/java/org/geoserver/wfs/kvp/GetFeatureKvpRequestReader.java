@@ -5,41 +5,26 @@
  */
 package org.geoserver.wfs.kvp;
 
-import java.math.BigInteger;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Envelope;
 import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.ParameterType;
 import net.opengis.wfs20.StoredQueryType;
 import net.opengis.wfs20.Wfs20Factory;
-
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.NumericKvpParser;
-import org.geoserver.wfs.GetFeature;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
-import org.geoserver.wfs.request.GetFeatureRequest.WFS20;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
@@ -51,10 +36,18 @@ import org.opengis.filter.spatial.BBOX;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
-import com.vividsolutions.jts.geom.Envelope;
-import org.geoserver.ows.KvpParser;
-import org.geoserver.ows.kvp.FormatOptionsKvpParser;
-import org.geoserver.ows.kvp.ViewParamsKvpParser;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import java.math.BigInteger;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -72,15 +65,24 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
      */
     FilterFactory filterFactory;
 
-    public GetFeatureKvpRequestReader(Class requestBean, Catalog catalog, FilterFactory filterFactory) {
-        this(requestBean, WfsFactory.eINSTANCE, catalog, filterFactory);
+    GeoServer geoServer;
+
+    private final QNameKvpParser qNameParser;
+
+    public GetFeatureKvpRequestReader(Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+        this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
-    public GetFeatureKvpRequestReader(Class requestBean, EFactory factory, Catalog catalog, 
-        FilterFactory filterFactory) {
+    public GetFeatureKvpRequestReader(Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
         super(requestBean, factory);
-        this.catalog = catalog;
+        this.catalog = geoServer.getCatalog();
+        this.geoServer = geoServer;
         this.filterFactory = filterFactory;
+        qNameParser = new QNameKvpParser("typeName", catalog);
+    }
+
+    protected WFSInfo getWFS() {
+        return geoServer.getService(WFSInfo.class);
     }
     
     /**
@@ -131,16 +133,17 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         }
         
         //typeName (in WFS 2.0 it is typeNames, not typeName)
+        List<List<QName>> typeNames = null;
         if (kvp.containsKey("typeName") || kvp.containsKey("typeNames")) {
             //HACK, the kvp reader gives us a list of QName, need to wrap in 
             // another
-            List typeName = (List) kvp.get("typeName");
-            if (typeName == null) {
-                typeName = (List) kvp.get("typeNames");
+            typeNames = (List) kvp.get("typeName");
+            if (typeNames == null) {
+                typeNames = (List) kvp.get("typeNames");
             }
             List list = new ArrayList();
 
-            for (Iterator itr = typeName.iterator(); itr.hasNext();) {
+            for (Iterator itr = typeNames.iterator(); itr.hasNext();) {
                 Object obj = itr.next();
                 
                 //we might get a list of qname, or a list of list of qname
@@ -172,25 +175,17 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 List featureId = (List) kvp.get("featureId");
                 featureId = featureId != null ? featureId : (List) kvp.get("resourceId");
                 
-                QNameKvpParser parser = new QNameKvpParser("typeName", catalog);
-
                 Set<List> hTypeNames = new HashSet<>();
                 for (int i = 0; i < featureId.size(); i++) {
-                    String fid = (String) featureId.get(i);
-                    int pos = fid.indexOf(".");
-
-                    if (pos != -1) {
-                        String typeName = fid.substring(0, fid.lastIndexOf("."));
-
-                        //add to a list to set on the query
-                        List<QName> parsed = (List) parser.parse(typeName);
-                        hTypeNames.add(parsed);
+                    QName typeName = getTypeNameFromFeaturId((String) featureId.get(i));
+                    if(typeName != null) {
+                        hTypeNames.add(Arrays.asList(typeName));
                     }
                 }
                 
                 //remove duplicate typeNames from the list
-                List typeNames = new ArrayList<>(hTypeNames);
-                querySet(eObject, "typeName", typeNames);
+                List derivedTypeNames = new ArrayList<>(hTypeNames);
+                querySet(eObject, "typeName", derivedTypeNames);
             } else {
                 //check for stored query id, i have seen both storedQueryId and storedQuery_Id used
                 // so support both
@@ -219,11 +214,25 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         } else if (kvp.containsKey("featureId") || kvp.containsKey("resourceId")) {
             //set filter from featureId
             List featureIdList = (List) kvp.get("featureId");
-            featureIdList = featureIdList != null ? featureIdList : (List) kvp.get("resourceId"); 
+            boolean isFeatureId = featureIdList != null;
+            featureIdList = isFeatureId ? featureIdList : (List) kvp.get("resourceId"); 
             Set ids = new HashSet();
 
             for (Iterator i = featureIdList.iterator(); i.hasNext();) {
                 String fid = (String) i.next();
+                // check consistency between resourceId and typeName (per WFS 2.0 CITE tests) 
+                if (getWFS().isCiteCompliant() && typeNames != null && !typeNames.isEmpty()) {
+                    QName qName = getTypeNameFromFeaturId(fid);
+                    if (qName != null) {
+                        if (!typeNames.stream().flatMap(List::stream).anyMatch(q -> qName.equals(q))) {
+                            String locator = isFeatureId ? "FEATUREID" : "RESOURCEID";
+                            WFSException exception = new WFSException(eObject, "ResourceId is incosistent with typenames");
+                            exception.setCode(ServiceException.INVALID_PARAMETER_VALUE);
+                            exception.setLocator(locator);
+                            throw exception;
+                        }
+                    }
+                }
                 FeatureId featureId = filterFactory.featureId(fid);
                ids.add(featureId);
             }
@@ -333,6 +342,20 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         }
 
         return request;
+    }
+    
+    QName getTypeNameFromFeaturId(String fid) throws Exception {
+        int pos = fid.indexOf(".");
+
+        if (pos != -1) {
+            String typeName = fid.substring(0, fid.lastIndexOf("."));
+
+            //add to a list to set on the query
+            List<QName> parsed = (List) qNameParser.parse(typeName);
+            return parsed.get(0);
+        } else {
+            return null;
+        }
     }
 
     /**

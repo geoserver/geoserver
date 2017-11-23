@@ -32,7 +32,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData data) throws Exception {
-        reader = new GetFeatureKvpRequestReader(GetFeatureType.class, getCatalog(),
+        reader = new GetFeatureKvpRequestReader(GetFeatureType.class, getGeoServer(),
                 CommonFactoryFinder.getFilterFactory(null));
     }
 

@@ -24,7 +24,7 @@
   <dependency>
    <groupId>org.geoscript</groupId>
    <artifactId>geoscript-groovy</artifactId>
-   <version>1.7-SNAPSHOT</version>
+   <version>1.11-SNAPSHOT</version>
   </dependency>
   <dependency>
     <!-- this dependency taken from geoscript-groovy pom but upgraded to 1.0.9 -->

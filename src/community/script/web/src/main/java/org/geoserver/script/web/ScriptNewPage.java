@@ -119,7 +119,7 @@ public class ScriptNewPage extends GeoServerSecuredPage {
 
     private List<String> getExtensions() {
         List<String> extensions = Lists.newArrayList();
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         for (ScriptPlugin plugin : scriptManager.getPlugins()) {
             extensions.add(plugin.getExtension());
         }
@@ -127,7 +127,7 @@ public class ScriptNewPage extends GeoServerSecuredPage {
     }
 
     private String getModeFromExtension(String ext) {
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         String mode = scriptManager.lookupEditorModeByExtension(ext);
         return mode;
     }

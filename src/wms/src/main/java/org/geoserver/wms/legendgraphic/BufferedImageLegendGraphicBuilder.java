@@ -434,7 +434,7 @@ public class BufferedImageLegendGraphicBuilder {
                 if(!StringUtils.isEmpty(request.getLegendOptions().get("labelMargin"))) {
                     labelMargin = Integer.parseInt(request.getLegendOptions().get("labelMargin").toString());
                 }
-                LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, labelMargin, request, forceLabelsOn, forceLabelsOff);
+                LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, labelMargin, request, forceLabelsOn, forceLabelsOff, forceTitlesOff);
                 if(ruleCount > 0) {
                     BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
                             
@@ -446,7 +446,7 @@ public class BufferedImageLegendGraphicBuilder {
             
         }
         // all legend graphics are merged if we have a layer group
-        BufferedImage finalLegend = mergeGroups(layersImages,null,request, forceLabelsOn, forceLabelsOff);
+        BufferedImage finalLegend = mergeGroups(layersImages,null,request, forceLabelsOn, forceLabelsOff, forceTitlesOff);
         if(finalLegend == null) {
             throw new IllegalArgumentException("no legend passed");
         }
@@ -679,8 +679,8 @@ public class BufferedImageLegendGraphicBuilder {
      *             if the list is empty
      */
     private BufferedImage mergeGroups(List<RenderedImage> imageStack, Rule[] rules, GetLegendGraphicRequest req,
-            boolean forceLabelsOn, boolean forceLabelsOff) {
-        LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, 0, req, forceLabelsOn, forceLabelsOff);
+            boolean forceLabelsOn, boolean forceLabelsOff, boolean forceTitlesOff) {
+        LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, 0, req, forceLabelsOn, forceLabelsOff, forceTitlesOff);
         options.setLayout(LegendUtils.getGroupLayout(req));
         return LegendMerger.mergeGroups(rules, options);
 

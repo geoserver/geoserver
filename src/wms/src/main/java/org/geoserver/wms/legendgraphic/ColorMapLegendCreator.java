@@ -935,7 +935,7 @@ public class ColorMapLegendCreator {
             List<RenderedImage> imgs = new ArrayList<RenderedImage>(legendsQueue);
             
             LegendMerger.MergeOptions options = new LegendMerger.MergeOptions(imgs, (int) dx, (int) dy, (int) margin, 0, backgroundColor, transparent, true, layout, rowWidth, 
-                    rows, columnHeight, columns, null ,false, false);
+                    rows, columnHeight, columns, null ,false, false, false);
             finalLegend = LegendMerger.mergeRasterLegends(options);
         }
 

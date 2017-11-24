@@ -177,7 +177,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 
                 Set<List> hTypeNames = new HashSet<>();
                 for (int i = 0; i < featureId.size(); i++) {
-                    QName typeName = getTypeNameFromFeaturId((String) featureId.get(i));
+                    QName typeName = getTypeNameFromFeatureId((String) featureId.get(i));
                     if(typeName != null) {
                         hTypeNames.add(Arrays.asList(typeName));
                     }
@@ -222,9 +222,9 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 String fid = (String) i.next();
                 // check consistency between resourceId and typeName (per WFS 2.0 CITE tests) 
                 if (getWFS().isCiteCompliant() && typeNames != null && !typeNames.isEmpty()) {
-                    QName qName = getTypeNameFromFeaturId(fid);
+                    QName qName = getTypeNameFromFeatureId(fid);
                     if (qName != null) {
-                        if (!typeNames.stream().flatMap(List::stream).anyMatch(q -> qName.equals(q))) {
+                        if (!typeNames.stream().flatMap(List::stream).anyMatch(q -> typeNameMatch(qName, q))) {
                             String locator = isFeatureId ? "FEATUREID" : "RESOURCEID";
                             WFSException exception = new WFSException(eObject, "ResourceId is incosistent with typenames");
                             exception.setCode(ServiceException.INVALID_PARAMETER_VALUE);
@@ -343,8 +343,13 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
 
         return request;
     }
-    
-    QName getTypeNameFromFeaturId(String fid) throws Exception {
+
+    public boolean typeNameMatch(QName maybeUnqualified, QName qualified) {
+        return maybeUnqualified.equals(qualified) || ((maybeUnqualified.getNamespaceURI() == null || maybeUnqualified
+                .getNamespaceURI().isEmpty()) && qualified.getLocalPart().equals(maybeUnqualified.getLocalPart()));
+    }
+
+    QName getTypeNameFromFeatureId(String fid) throws Exception {
         int pos = fid.indexOf(".");
 
         if (pos != -1) {

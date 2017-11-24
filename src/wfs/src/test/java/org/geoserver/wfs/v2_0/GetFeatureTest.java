@@ -196,7 +196,7 @@ public class GetFeatureTest extends WFS20TestSupport {
     @Test
     public void testGetWithResourceId() throws Exception {
         Document doc = 
-                getAsDOM("wfs?request=GetFeature&typeName=cdf:Fifteen&version=2.0.0&service=wfs&resourceid=Fifteen.2");
+                getAsDOM("wfs?request=GetFeature&typeNames=cdf:Fifteen&version=2.0.0&service=wfs&resourceid=Fifteen.2");
         assertGML32(doc);
         
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)",
@@ -231,6 +231,29 @@ public class GetFeatureTest extends WFS20TestSupport {
             gs.save(wfs);
         }
         
+    }
+
+    @Test
+    public void testGetWithConsistentResourceId() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
+
+        try {
+            Document doc =
+                    getAsDOM("wfs?request=GetFeature&typeNames=cdf:Fifteen&version=2.0.0&service=wfs&resourceid=Fifteen.2");
+            assertGML32(doc);
+
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)",
+                    doc);
+            XMLAssert.assertXpathEvaluatesTo("Fifteen.2",
+                    "//wfs:FeatureCollection/wfs:member/cdf:Fifteen/@gml:id", doc);
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+        }
+
     }
 
     @Test

@@ -56,10 +56,11 @@ public class LegendMerger {
         Font labelFont;
         boolean forceLabelsOn;
         boolean forceLabelsOff;
-        
+        boolean forceTitlesOff;
+
         /**
          * Build a new set of options, specifying each option.
-         * 
+         *
          * @param imageStack images representing the icons to merge
          * @param dx horizontal dimension for raster icons
          * @param dy vertical dimension for raster icons
@@ -76,10 +77,12 @@ public class LegendMerger {
          * @param labelFont font to be used for labels
          * @param forceLabelsOn force labels to be always rendered
          * @param forceLabelsOff force labels to be never rendered
+         * @param forceTitlesOff force titles to be never rendered
          */
         public MergeOptions(List<RenderedImage> imageStack, int dx, int dy, int margin, int labelMargin,
-                Color backgroundColor, boolean transparent, boolean antialias, LegendLayout layout,
-                int rowWidth, int rows, int columnHeight, int columns, Font labelFont, boolean forceLabelsOn, boolean forceLabelsOff) {
+                            Color backgroundColor, boolean transparent, boolean antialias, LegendLayout layout,
+                            int rowWidth, int rows, int columnHeight, int columns, Font labelFont,
+                            boolean forceLabelsOn, boolean forceLabelsOff, boolean forceTitlesOff) {
             super();
             this.imageStack = imageStack;
             this.dx = dx;
@@ -97,6 +100,7 @@ public class LegendMerger {
             this.labelFont = labelFont;
             this.forceLabelsOn = forceLabelsOn;
             this.forceLabelsOff = forceLabelsOff;
+            this.forceTitlesOff = forceTitlesOff;
         }
         /**
          * Build a new set of options, getting most of the options from a GetLegendGraphicRequest object.
@@ -108,13 +112,14 @@ public class LegendMerger {
          * @param req GetLegendGraphic request descriptor object
          * @param forceLabelsOn force labels to be always rendered
          * @param forceLabelsOff force labels to be never rendered
+         * @param forceTitlesOff force titles to be never rendered
          */
         public MergeOptions (List<RenderedImage> imageStack, int dx, int dy, int margin, int labelMargin, 
-                GetLegendGraphicRequest req, boolean forceLabelsOn, boolean forceLabelsOff) {
+                GetLegendGraphicRequest req, boolean forceLabelsOn, boolean forceLabelsOff, boolean forceTitlesOff) {
             this(imageStack, dx, dy, margin, labelMargin, LegendUtils.getBackgroundColor(req), 
                     req.isTransparent(), LegendUtils.isFontAntiAliasing(req), LegendUtils.getLayout(req), 
                     LegendUtils.getRowWidth(req), LegendUtils.getRows(req), LegendUtils.getColumnHeight(req), LegendUtils.getColumns(req),
-                    LegendUtils.getLabelFont(req), forceLabelsOn, forceLabelsOff);
+                    LegendUtils.getLabelFont(req), forceLabelsOn, forceLabelsOff, forceTitlesOff);
         }
         public List<RenderedImage> getImageStack() {
             return imageStack;
@@ -206,6 +211,12 @@ public class LegendMerger {
         public void setForceLabelsOff(boolean forceLabelsOff) {
             this.forceLabelsOff = forceLabelsOff;
         }
+        public boolean isForceTitlesOff() {
+            return forceTitlesOff;
+        }
+        public void setForceTitlesOff(boolean forceTitlesOff) {
+            this.forceTitlesOff = forceTitlesOff;
+        }
         public int getLabelMargin() {
             return labelMargin;
         }
@@ -213,9 +224,9 @@ public class LegendMerger {
             this.labelMargin = labelMargin;
         }
         public static MergeOptions createFromRequest(List<RenderedImage> imageStack, int dx, int dy, int margin, int labelMargin,
-                GetLegendGraphicRequest req, boolean forceLabelsOn, boolean forceLabelsOff) {
+                GetLegendGraphicRequest req, boolean forceLabelsOn, boolean forceLabelsOff, boolean forceTitlesOff) {
             return new LegendMerger.MergeOptions(imageStack, dx, dy, margin, labelMargin,
-                    req, forceLabelsOn, forceLabelsOff);
+                    req, forceLabelsOn, forceLabelsOff, forceTitlesOff);
         }
     }
     
@@ -326,13 +337,20 @@ public class LegendMerger {
         }
         
         List<BufferedImage> nodes = new ArrayList<BufferedImage>(imgCount / 2);
-        // Single legend, no rules, no force label
-        for (int i = 0; i < imgCount; i = i + 2) {
-            BufferedImage lbl = (BufferedImage) imageStack.get(i);
-            BufferedImage img = (BufferedImage) imageStack.get(i + 1);
-            img = joinBufferedImageVertically(lbl, img, mergeOptions.getLabelFont(), mergeOptions.isAntialias(), mergeOptions.isTransparent(),
-                    mergeOptions.getBackgroundColor());
-            nodes.add(img);
+
+        if (mergeOptions.isForceTitlesOff()) {
+            for (RenderedImage img : imageStack) {
+                nodes.add((BufferedImage)img);
+            }
+        } else {
+            // merge layer titles with legend images
+            for (int i = 0; i < imgCount; i = i + 2) {
+                BufferedImage lbl = (BufferedImage) imageStack.get(i);
+                BufferedImage img = (BufferedImage) imageStack.get(i + 1);
+                img = joinBufferedImageVertically(lbl, img, mergeOptions.getLabelFont(), mergeOptions.isAntialias(), mergeOptions.isTransparent(),
+                        mergeOptions.getBackgroundColor());
+                nodes.add(img);
+            }
         }
 
         // Sets legend nodes into a matrix according to layout rules

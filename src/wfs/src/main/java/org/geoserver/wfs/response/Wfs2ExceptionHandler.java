@@ -78,6 +78,7 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
         HttpServletResponse response = request.getHttpResponse();
         String code = exception.getCode();
         if (code == null) {
+            exception.setCode(WFSException.OPERATION_PROCESSING_FAILED);
             response.setStatus(500);
         } else if(WFSException.OPERATION_PROCESSING_FAILED.equals(code)) {
             response.setStatus(500);

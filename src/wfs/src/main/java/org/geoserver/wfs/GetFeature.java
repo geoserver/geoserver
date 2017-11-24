@@ -5,27 +5,12 @@
  */
 package org.geoserver.wfs;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Polygon;
 import net.opengis.wfs.XlinkPropertyNameType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.StoredQueryType;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.LazyLoader;
-
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -55,10 +40,14 @@ import org.geotools.filter.expression.AbstractExpressionVisitor;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.filter.v2_0.FESConfiguration;
 import org.geotools.filter.visitor.AbstractFilterVisitor;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteCoordinateSequenceFactory;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.xml.Encoder;
@@ -68,6 +57,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.And;
+import org.opengis.filter.BinaryComparisonOperator;
 import org.opengis.filter.ExcludeFilter;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -78,7 +68,9 @@ import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.PropertyIsLike;
 import org.opengis.filter.PropertyIsNull;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.ExpressionVisitor;
+import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.spatial.BBOX;
@@ -105,6 +97,20 @@ import org.opengis.filter.temporal.TEquals;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
 /**
  * Web Feature Service GetFeature operation.
  * <p>
@@ -983,8 +989,36 @@ public class GetFeature {
         // make sure every bbox and geometry that does not have an attached crs will use
         // the declared crs, and then reproject it to the native crs
         Filter transformedFilter = filter;
-        if(declaredCRS != null)
+        if(declaredCRS != null) {
             transformedFilter = WFSReprojectionUtil.normalizeFilterCRS(filter, source.getSchema(), declaredCRS);
+        }
+
+        // replace gml:boundedBy with an expression
+        transformedFilter = (Filter) transformedFilter.accept(new DuplicatingFilterVisitor(filterFactory) {
+            @Override
+            public Object visit(PropertyName expression, Object extraData) {
+                if (isGmlBoundedBy(expression)) {
+                    // envelope of the default geometry
+                    return filterFactory.function("boundedBy", filterFactory.property(""));
+                } else {
+                    return super.visit(expression, extraData);
+                }
+            }
+
+            @Override
+            public Object visit(BBOX filter, Object extraData) {
+                // BBOX must work against a propertyName, if boundedBy is used we
+                // need to switch to an intersects filter
+                Expression expression1 = filter.getExpression1();
+                if (expression1 instanceof PropertyName && isGmlBoundedBy((PropertyName) expression1)) {
+                    ReferencedEnvelope bounds = ReferencedEnvelope.reference(filter.getBounds());
+                    Polygon polygon = JTS.toGeometry(bounds);
+                    Function boundedBy = filterFactory.function("boundedBy", filterFactory.property(""));
+                    return filterFactory.intersects(boundedBy, filterFactory.literal(polygon));
+                }
+                return super.visit(filter, extraData);
+            }
+        }, null);
 
         //only handle non-joins for now
         QName typeName = primaryTypeName;
@@ -1011,7 +1045,7 @@ public class GetFeature {
         if (target != null && declaredCRS != null && !CRS.equalsIgnoreMetadata(crs, target)) {
             dataQuery.setCoordinateSystemReproject(target);
         }
-        
+
         //handle sorting
         List<SortBy> sortBy = query.getSortBy();
         if (sortBy != null) {
@@ -1192,13 +1226,14 @@ O:      for (String propName : query.getPropertyNames()) {
     void validateFilter(Filter filter, Query query, final FeatureTypeInfo meta,
             final GetFeatureRequest request)
         throws IOException {
-      //1. ensure any property name refers to a property that 
+        
+        // 1. ensure any property name refers to a property that 
         // actually exists
         final FeatureType featureType = meta.getFeatureType();
         ExpressionVisitor visitor = new AbstractExpressionVisitor() {
                 public Object visit(PropertyName name, Object data) {
                     // case of multiple geometries being returned
-                    if (name.evaluate(featureType) == null) {
+                    if (name.evaluate(featureType) == null && !isGmlBoundedBy(name)) {
                         throw new WFSException(request, "Illegal property name: "
                             + name.getPropertyName() + " for feature type " + meta.prefixedName(),
                             "InvalidParameterValue");
@@ -1206,7 +1241,7 @@ O:      for (String propName : query.getPropertyNames()) {
 
                     return name;
                 }
-                ;
+
             };
         filter.accept(new AbstractFilterVisitor(visitor), null);
         
@@ -1227,7 +1262,7 @@ O:      for (String propName : query.getPropertyNames()) {
                     // check against feataure type to make sure its
                     // a geometric type
                     AttributeDescriptor att = (AttributeDescriptor) name.evaluate(featureType);
-                    if ( !( att instanceof GeometryDescriptor ) ) {
+                    if ( !( att instanceof GeometryDescriptor ) && !isGmlBoundedBy(name)) {
                         throw new WFSException(request, "Property " + name
                                 + " is not geometric in feature type " + meta.prefixedName(),
                                 "InvalidParameterValue");
@@ -1299,7 +1334,61 @@ O:      for (String propName : query.getPropertyNames()) {
                 
                 filter.accept(fvisitor, null);
             }
-        }   
+        }
+
+
+        // 4. ensure that spatial properties are not used in non spatial comparisons (CITE WFS 2.0)
+        if (wfs.isCiteCompliant()) {
+            fvisitor = new AbstractFilterVisitor() {
+                @Override
+                protected Object visit(BinaryComparisonOperator filter, Object data) {
+                    Expression ex1 = filter.getExpression1();
+                    Expression ex2 = filter.getExpression2();
+                    if (ex1 instanceof PropertyName) {
+                        checkNonSpatial((PropertyName) ex1);
+                    }
+                    if (ex2 instanceof PropertyName) {
+                        checkNonSpatial((PropertyName) ex2);
+                    }
+
+                    return super.visit(filter, data);
+                }
+
+                private void checkNonSpatial(PropertyName pn) {
+                    AttributeDescriptor ad = (AttributeDescriptor) pn.evaluate(featureType);
+                    if (ad instanceof GeometryDescriptor || isGmlBoundedBy(pn)) {
+                        throw new WFSException(request, "Cannot use a spatial property in a alphanumeric binary " +
+                                "comparison");
+                    }
+                }
+            };
+
+            filter.accept(fvisitor, null);
+        }
+    }
+
+    boolean isGmlBoundedBy(PropertyName name) {
+        String propertyName = name.getPropertyName();
+
+        // we want two non empty parts
+        int idx = propertyName.indexOf(':');
+        if (idx > 1 && propertyName.indexOf(":") < propertyName.length() - 1) {
+            String[] split = propertyName.split("\\:");
+            String prefix = split[0];
+            String localName = split[1];
+            if (!"boundedBy".equals(localName)) {
+                return false;
+            }
+            // lax match in case we don't have namespace support
+            if (name.getNamespaceContext() == null && "gml".equals(prefix)) {
+                return true;
+            }
+            String ns = name.getNamespaceContext().getURI(prefix);
+            return ns == null && "gml".equals(prefix) || (GML.NAMESPACE.equals(ns) || org.geotools
+                    .gml3.v3_2.GML.NAMESPACE.equals(ns));
+
+        }
+        return false;
     }
     
     int maxFeatures(List<FeatureTypeInfo> metas) {

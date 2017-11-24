@@ -23,11 +23,13 @@ import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.StoredQuery;
+import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
@@ -352,6 +354,7 @@ public class GetFeatureTest extends WFS20TestSupport {
             assertTrue(feature.hasAttribute("gml:id"));
         }
     }
+    
     @Test
     public void testPostWithBboxFilter() throws Exception {
         String xml = "<wfs:GetFeature service='WFS' version='2.0.0' "
@@ -372,7 +375,6 @@ public class GetFeatureTest extends WFS20TestSupport {
                 + "</fes:Filter>"
                 + "</wfs:Query>"
             + "</wfs:GetFeature>";
-        print(post("wfs", xml));
         Document doc = postAsDOM("wfs", xml);
         assertGML32(doc);
 
@@ -380,6 +382,83 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertEquals(1, features.getLength());
     }
 
+    @Test
+    public void testPostWithBboxFilterOnBoundedBy() throws Exception {
+        // CITE tests check filters against gml:BoundedBy property....
+        String xml = "<wfs:GetFeature service='WFS' version='2.0.0' "
+                + "outputFormat='text/xml; subtype=gml/3.2' "
+                + "xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" "
+                + "xmlns:gml='" + GML.NAMESPACE + "' "
+                + "xmlns:wfs='" + WFS.NAMESPACE + "' "
+                + "xmlns:fes='" + FES.NAMESPACE + "'>"
+                + "<wfs:Query typeNames='sf:PrimitiveGeoFeature'>"
+                + "<fes:Filter>"
+                + "<fes:BBOX>"
+                + "   <fes:ValueReference>gml:boundedBy</fes:ValueReference>"
+                + "   <gml:Envelope srsName='EPSG:4326'>"
+                + "      <gml:lowerCorner>57.0 -4.5</gml:lowerCorner>"
+                + "      <gml:upperCorner>62.0 1.0</gml:upperCorner>"
+                + "   </gml:Envelope>"
+                + "</fes:BBOX>"
+                + "</fes:Filter>"
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
+        Document doc = postAsDOM("wfs", xml);
+        assertGML32(doc);
+
+        NodeList features = doc.getElementsByTagName("sf:PrimitiveGeoFeature");
+        assertEquals(1, features.getLength());
+    }
+
+    @Test
+    public void testPostWithLessThanOnBoundedBy() throws Exception {
+        // CITE tests check this filter against bounded by and wants
+        // to check an internal error shows up...
+
+        GeoServer gs = getGeoServer();
+        // CITE compliance forces XML validation, which comes from sources in this test
+        GeoServerInfo global = gs.getGlobal();
+        global.setXmlExternalEntitiesEnabled(true);
+        gs.save(global);
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
+
+        try {
+            String xml = "<wfs:GetFeature service='WFS' version='2.0.0' "
+                    + "outputFormat='text/xml; subtype=gml/3.2' "
+                    + "xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" "
+                    + "xmlns:gml='" + GML.NAMESPACE + "' "
+                    + "xmlns:wfs='" + WFS.NAMESPACE + "' "
+                    + "xmlns:fes='" + FES.NAMESPACE + "'>"
+                    + "<wfs:Query typeNames='sf:PrimitiveGeoFeature'>"
+                    + "<fes:Filter>"
+                    + "<fes:PropertyIsLessThanOrEqualTo matchAction=\"Any\" matchCase=\"true\">\n" +
+                    "    <fes:Literal>\n" +
+                    "      <gml:Envelope xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" +
+                    "        srsName=\"urn:ogc:def:crs:EPSG::4326\">\n" +
+                    "        <gml:lowerCorner>-90 -180</gml:lowerCorner>\n" +
+                    "        <gml:upperCorner>90 180</gml:upperCorner>\n" +
+                    "      </gml:Envelope>\n" +
+                    "    </fes:Literal>\n" +
+                    "    <fes:ValueReference>gml:boundedBy</fes:ValueReference>\n" +
+                    "  </fes:PropertyIsLessThanOrEqualTo>"
+                    + "</fes:Filter>"
+                    + "</wfs:Query>"
+                    + "</wfs:GetFeature>";
+            MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+            assertEquals(500, response.getStatus());
+            Document doc = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+            checkOws11Exception(doc, "2.0.0", WFSException.OPERATION_PROCESSING_FAILED, "GetFeature");
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+            global.setXmlExternalEntitiesEnabled(false);
+            gs.save(wfs);
+        }
+    }
+
+    @Test
     public void testPostWithFailingUrnBboxFilter() throws Exception {
         String xml = 
             "<wfs:GetFeature service='WFS' version='2.0.0'  outputFormat='text/xml; subtype=gml/3.2' "

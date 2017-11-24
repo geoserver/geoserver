@@ -1,0 +1,7 @@
+<logoutFilter>
+  <id>-3494f0a1:15fdaa0ecf4:-7ff1</id>
+  <name>formLogout</name>
+  <className>org.geoserver.security.filter.GeoServerLogoutFilter</className>
+  <redirectURL>/web/</redirectURL>
+  <formLogoutChain>/j_spring_security_logout,/j_spring_security_logout/,/logout</formLogoutChain>
+</logoutFilter>

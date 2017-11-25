@@ -369,7 +369,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
      */
     @Test
     public void testHeterogeneousViewDefaults() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBandsDefaults", cv -> {
         }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
         GridCoverage2D coverage = null;
         try {
@@ -404,7 +404,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
      */
     @Test
     public void testHeterogeneousViewIntersectionEnvelope() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBandsIntersection", cv -> {
             cv.setEnvelopeCompositionType(EnvelopeCompositionType.INTERSECTION);
         }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
         GridCoverage2D coverage = null;
@@ -441,7 +441,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     
     @Test
     public void testHeterogeneousViewResolutionLowest() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBandsLowest", cv -> {
             cv.setSelectedResolution(SelectedResolution.WORST);
         }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
         GridCoverage2D coverage = null;
@@ -473,7 +473,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
      */
     @Test
     public void testHeterogeneousViewOutsideBounds() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBandsOutsideBounds", cv -> {
         }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
         GridCoverage2D coverage = null;
         try {
@@ -492,7 +492,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHeterogeneousViewBandSelectionBestResolution() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBandsBest", cv -> {
             // use the default: BEST
         }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
 
@@ -506,7 +506,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHeterogeneousViewBandSelectionWorstResolution() throws Exception {
-        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBands", cv -> {
+        CoverageInfo info = buildHeterogeneousResolutionView("s2AllBandsWorst", cv -> {
             cv.setSelectedResolution(SelectedResolution.WORST);
         }, "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12");
 

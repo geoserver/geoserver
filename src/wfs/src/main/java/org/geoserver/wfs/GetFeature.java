@@ -940,7 +940,12 @@ public class GetFeature {
             Object request, FeatureSource<? extends FeatureType, ? extends Feature> source,
             org.geotools.data.Query gtQuery)
             throws IOException {
-        return source.getFeatures(gtQuery);
+        FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures(gtQuery);
+        
+        if (features.getSchema() instanceof SimpleFeatureType) {
+            features = new FeatureSizeFeatureCollection((SimpleFeatureCollection)features, source, gtQuery);
+        }
+        return features;
     }
 
     /**

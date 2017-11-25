@@ -31,6 +31,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -930,7 +931,8 @@ public class GetFeature {
     }
 
     /**
-     * Allows subclasses to poke with the feature collection extraction
+     * Allows subclasses to poke with the feature collection extraction. The default behavior attempts to
+     * wrap the feature collectio into a {@link FeatureSizeFeatureCollection}.
      * @param source
      * @param gtQuery
      *
@@ -942,9 +944,7 @@ public class GetFeature {
             throws IOException {
         FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures(gtQuery);
         
-        if (features.getSchema() instanceof SimpleFeatureType) {
-            features = new FeatureSizeFeatureCollection((SimpleFeatureCollection)features, source, gtQuery);
-        }
+        features = FeatureSizeFeatureCollection.wrap(features, source, gtQuery);
         return features;
     }
 

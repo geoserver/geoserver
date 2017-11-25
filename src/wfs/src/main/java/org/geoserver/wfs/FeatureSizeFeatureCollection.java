@@ -4,63 +4,66 @@
  */
 package org.geoserver.wfs;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.FeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
-
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
- * A feature collection which caches a configurable (and small) amount of features.
- * 
+ * A feature collection which caches a configurable (and small) amount of features to avoid
+ * repeated reads against datastore that cannot optimize count in a count/read cycle typical
+ * of WFS requests (count as a FeatureCollection attribute, and then read for feature collection
+ * contents)
+ *
  * @author Alvaro Huarte
  */
-class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollection {
-    
+public class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollection {
+
+    /**
+     * The default feature cache size
+     */
+    public static final int DEFAULT_CACHE_SIZE = 16;
+
     /**
      * The original feature source.
      */
-    protected FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
-    
+    protected SimpleFeatureSource featureSource;
+
     /**
      * The feature cache to manage.
      */
-    protected List<SimpleFeature> featureCache;
-    
+    private List<SimpleFeature> featureCache;
+
     /**
      * The original query.
      */
-    protected Query query;
-    
+    private Query query;
+
     /**
-     * Defines the maximum number of cacheable features to avoid successive readings 
-     * of the data source.
+     * Defines the maximum number of feature that will be cached in memory to avoid 
+     * multiple data reads in case there is no fast {@link FeatureSource#getCount(Query)}
+     * implementation for the current query.
      * <p>
-     * With a minimum overload of memory, it takes advantage of a previous reading 
-     * of features when the feature source does not support direct count of the 
-     * collection managed (e.g. shapefile stores).
-     * </p>
-     * <p>
-     * It is very useful when the feature store needs to execute costly queries 
-     * and the filter returns empty or low-count feature results. 
-     * In some contexts, WFS-GetFeature requests need to precalculate the size 
-     * of the results, and (e.g. shapefile stores) the query is executed at 
-     * least twice causing two readings of the data source.
+     * Useful in particular for stores that do not have any way to perform a fast count
+     * against a filtered query, like shapefiles
      * </p>
      */
-    static int FEATURE_CACHE_LIMIT = 
-        Integer.valueOf(System.getProperty("org.geoserver.wfs.getfeature.cachelimit", "16"));
-    
+    private static int FEATURE_CACHE_LIMIT =
+            Integer.valueOf(System.getProperty("org.geoserver.wfs.getfeature.cachelimit", String.valueOf(DEFAULT_CACHE_SIZE)));
+
     /**
      * Allows to programmatically set the maximum number of cacheable features.
      */
@@ -68,88 +71,109 @@ class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollection {
         FEATURE_CACHE_LIMIT = featureCacheLimit;
     }
 
-    public FeatureSizeFeatureCollection(SimpleFeatureCollection delegate, FeatureSource<? extends FeatureType, ? extends Feature> source, Query query) {
+    public FeatureSizeFeatureCollection(SimpleFeatureCollection delegate, SimpleFeatureSource source, Query query) {
         super(delegate);
         this.featureSource = source;
         this.query = query;
     }
 
+    /**
+     * Wraps the {@link FeatureCollection} into {@link FeatureSizeFeatureCollection} in case the feature caching
+     * is enabled and the the features are simple ones
+     * 
+     * @param features
+     * @param source
+     * @param gtQuery
+     * @return
+     */
+    static FeatureCollection<? extends FeatureType, ? extends Feature> wrap(FeatureCollection<? extends FeatureType,
+            ? extends Feature> features, FeatureSource<? extends FeatureType, ? extends Feature> source, Query
+                                                                                    gtQuery) {
+        if (FEATURE_CACHE_LIMIT > 0 && features.getSchema() instanceof SimpleFeatureType) {
+            return new FeatureSizeFeatureCollection((SimpleFeatureCollection) features, DataUtilities.simple
+                    (source), gtQuery);
+        } else {
+            return features;
+        }
+    }
+
     class CachedWrappingFeatureIterator implements SimpleFeatureIterator {
-        
+
         private List<SimpleFeature> featureCache;
         private int featureIndex = 0;
-        
+
         public CachedWrappingFeatureIterator(List<SimpleFeature> featureCache) {
             this.featureCache = featureCache;
         }
-        
+
         @Override
         public boolean hasNext() {
             return featureIndex < featureCache.size();
         }
-        
+
         @Override
         public SimpleFeature next() {
             return featureCache.get(featureIndex++);
         }
-        
+
         @Override
         public void close() {
             featureIndex = 0;
         }
     }
-    
+
     @Override
     public SimpleFeatureIterator features() {
         if (featureCache != null) {
-            return new CachedWrappingFeatureIterator( featureCache );
+            return new CachedWrappingFeatureIterator(featureCache);
         }
         return super.features();
     }
-    
+
     @Override
     public int size() {
         if (featureCache != null) {
             return featureCache.size();
         }
         if (FEATURE_CACHE_LIMIT > 0) {
-            FeatureIterator<? extends Feature> it = null;
-            
             try {
+                // try optimized method, will return -1 if there is no fast way to compute
                 int count = featureSource.getCount(query);
-                
+
+                // zero is a legit value, cache and exit
                 if (count == 0) {
-                    featureCache = new ArrayList<SimpleFeature>();
+                    featureCache = new ArrayList<>();
                     return count;
                 }
+                // fast path, no need to cache
                 if (count > 0) {
                     return count;
                 }
-                
-                // we have to iterate, save to cache to avoid later successive readings of data.
-                List<SimpleFeature> tempFeatureCache = new ArrayList<SimpleFeature>();
-                
-                // bean counting...
-                it = featureSource.getFeatures(query).features();
-                count = 0;
-                while (it.hasNext()) {
-                    SimpleFeature feature = (SimpleFeature) it.next();
-                    if (tempFeatureCache.size() < FEATURE_CACHE_LIMIT) tempFeatureCache.add(feature);
-                    count++;
+
+                // we have to iterate, save to cache to avoid reading data.
+                List<SimpleFeature> tempFeatureCache = new ArrayList<>();
+
+                // bean counting like ContentFeatureCollection would do, but with limited
+                // size feature caching in the mix
+                try (SimpleFeatureIterator it = featureSource.getFeatures(query).features()) {
+                    count = 0;
+                    while (it.hasNext()) {
+                        SimpleFeature feature = it.next();
+                        if (tempFeatureCache.size() < FEATURE_CACHE_LIMIT) {
+                            tempFeatureCache.add(feature);
+                        }
+                        count++;
+                    }
+                    // if the count is below limit, keep the cache, otherwise clear it
+                    if (count <= FEATURE_CACHE_LIMIT) {
+                        featureCache = tempFeatureCache;
+                    } else {
+                        tempFeatureCache.clear();
+                    }
+                    return count;
                 }
-                if (count <= FEATURE_CACHE_LIMIT) {
-                    featureCache = tempFeatureCache;
-                } else {
-                    tempFeatureCache.clear();
-                }
-                return count;
-                
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } finally {
-                if (it != null) {
-                    it.close();
-                }
             }
         }
         return super.size();

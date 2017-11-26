@@ -70,7 +70,7 @@ public class Script implements Serializable {
     }
 
     private Resource findFile(String name, String type, String extension) {
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         try {
             if (name.contains(":")) {
                 name = name.replace(":",File.separator);
@@ -100,7 +100,7 @@ public class Script implements Serializable {
     }
 
     private String findType(Resource file) {
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         return scriptManager.getScriptType(file).getLabel();
     }
 

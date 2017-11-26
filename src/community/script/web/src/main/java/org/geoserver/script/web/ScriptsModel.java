@@ -45,7 +45,7 @@ public class ScriptsModel extends LoadableDetachableModel<List<Script>> {
 
     protected List<Script> getScripts() {
         List<Script> scripts = new ArrayList<Script>();
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         try {
             Resource[] dirs = { scriptManager.wps(), scriptManager.wfsTx(),
                     scriptManager.function(), scriptManager.app() };

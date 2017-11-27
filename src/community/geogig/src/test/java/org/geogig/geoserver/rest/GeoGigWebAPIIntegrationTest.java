@@ -13,22 +13,27 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.locationtech.geogig.model.impl.RevObjectTestSupport.hashString;
 
-import java.io.ByteArrayInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
+import org.geogig.geoserver.spring.config.GeogigMultipartFilter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
@@ -41,10 +46,12 @@ import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
+import org.locationtech.geogig.model.RevCommit;
 import org.locationtech.geogig.model.RevObject;
 import org.locationtech.geogig.plumbing.RefParse;
 import org.locationtech.geogig.plumbing.ResolveTreeish;
 import org.locationtech.geogig.plumbing.RevObjectParse;
+import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.storage.datastream.DataStreamSerializationFactoryV1;
@@ -61,6 +68,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
+import javax.servlet.Filter;
 
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
@@ -146,6 +155,11 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
     public void after() {
         RepositoryManager.close();
         getCatalog().dispose();
+    }
+
+    @Override
+    protected List<Filter> getFilters() {
+        return Collections.singletonList(GeoServerExtensions.bean(GeogigMultipartFilter.class));
     }
 
     /**
@@ -391,4 +405,59 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("new_name", "/response/name", dom);
     }
 
+    @Test
+    public void testGeoPackageImport() throws Exception {
+
+        URL url = getClass().getResource("places.gpkg");
+
+        // create transaction
+        final String beginTransactionUrl = BASE_URL + "/beginTransaction";
+
+        Document dom = getAsDOM(beginTransactionUrl);
+        assertXpathEvaluatesTo("true", "/response/success", dom);
+        String transactionId = XMLUnit.newXpathEngine().evaluate("/response/Transaction/ID", dom);
+
+        // import geopackage
+        final String importUrl = BASE_URL + "/import?format=gpkg&message=Import%20GeoPackage&transactionId="+transactionId;
+        final String endTransactionUrl = BASE_URL + "/endTransaction?transactionId="+transactionId;
+
+        // construct a multipart request with the fileUpload
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        File f = new File(url.getFile());
+        builder.addBinaryBody(
+                "fileUpload",
+                new FileInputStream(f),
+                ContentType.APPLICATION_OCTET_STREAM,
+                f.getName()
+        );
+
+        HttpEntity multipart = builder.build();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        multipart.writeTo(outputStream);
+        MockHttpServletResponse response = postAsServletResponse(importUrl, outputStream.toByteArray(),
+                multipart.getContentType().getValue());
+
+        assertEquals(200, response.getStatus());
+
+        dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()), true);
+        String taskId = XMLUnit.newXpathEngine().evaluate("/task/id", dom);
+        final String taskUrl = "/geogig/tasks/" + taskId + ".xml";
+        while ("RUNNING".equals(XMLUnit.newXpathEngine().evaluate("/task/status", dom))) {
+            Thread.sleep(100);
+            dom = getAsDOM(taskUrl);
+        }
+        assertXpathEvaluatesTo("FINISHED", "/task/status", dom);
+        String commitId = XMLUnit.newXpathEngine().evaluate("//commit/id", dom);
+
+        // close transaction
+        dom = getAsDOM(endTransactionUrl);
+        assertXpathEvaluatesTo("true", "/response/success", dom);
+
+        // verify the repo contains the import
+        Repository repository = geogigData.getGeogig().getRepository();
+        RevCommit head = repository.getCommit(repository.getHead().get().getObjectId());
+        assertEquals(commitId, head.getId().toString());
+        assertEquals("Import GeoPackage", head.getMessage());
+    }
 }

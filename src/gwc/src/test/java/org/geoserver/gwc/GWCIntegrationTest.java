@@ -11,7 +11,13 @@ import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -60,13 +66,31 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -1231,6 +1255,27 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     }
 
+    /**
+     * Test that using an invalid \ non-existing style in a GetTile request will throw
+     * the correct OWS exception.
+     */
+    @Test
+    public void testCetTileWithInvalidStyle() throws Exception {
+        // using cite:BasicPolygons layer for testing
+        String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        // get tile request with an invalid style, this should return an exception report
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts" +
+                "?request=GetTile&layer=" + layerName + "&style=invalid&format=image/png" +
+                "&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(400, response.getStatus());
+        assertEquals("text/xml", response.getContentType());
+        // parse XML response content
+        Document document = dom(response, false);
+        // let's check the content of the exception report
+        String result = WMTS_XPATH_10.evaluate("count(//ows:ExceptionReport/ows:Exception" +
+                "[@exceptionCode='InvalidParameterValue'][@locator='Style'])", document);
+        assertThat(Integer.parseInt(result), is(1));
+    }
 
     /**
      * Helper method that creates a layer group using the provided name and layers names.

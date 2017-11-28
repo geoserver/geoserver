@@ -20,9 +20,16 @@ public class GeogigSpringConfig {
         return new GeogigContentNegotiationStrategy();
     }
 
-    @Bean
-    MultipartResolver multipartResolver() {
+    static final String FILTER_MULTIPART_RESOLVER_NAME = "geogigFilterMultipartResolver";
+    @Bean(name = FILTER_MULTIPART_RESOLVER_NAME)
+    MultipartResolver geogigFilterMultipartResolver() {
         return new CommonsMultipartResolver();
+    }
+
+
+    @Bean
+    GeogigMultipartFilter geogigMultipartFilter() {
+        return new GeogigMultipartFilter();
     }
 }
 

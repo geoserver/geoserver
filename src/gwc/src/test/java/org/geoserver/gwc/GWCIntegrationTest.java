@@ -18,6 +18,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -1113,6 +1114,20 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         result = WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer/wmts:Style/" +
                 "wmts:LegendURL[@minScaleDenominator='100000.0'][@maxScaleDenominator='300000.0'])", document);
         assertThat(Integer.parseInt(result), greaterThan(0));
+        // check that legend URI are correctly encoded in the context of a local workspace
+        WorkspaceInfo workspace = getCatalog().getWorkspaceByName(TEST_WORKSPACE_NAME);
+        assertThat(workspace, notNullValue());
+        LocalWorkspace.set(workspace);
+        try {
+            response = getAsServletResponse(TEST_WORKSPACE_NAME + "/gwc/service/wmts?request=GetCapabilities");
+            document = dom(response, false);
+            result = WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer/wmts:Style/" +
+                    "wmts:LegendURL[contains(@xlink:href,'geoserver/" + TEST_WORKSPACE_NAME + "/ows')])", document);
+            assertThat(Integer.parseInt(result), greaterThan(0));
+        } finally {
+            // make sure we remove the local workspace
+            LocalWorkspace.set(null);
+        }
     }
     
     @Test

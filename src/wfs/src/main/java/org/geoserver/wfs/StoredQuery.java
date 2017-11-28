@@ -198,7 +198,9 @@ public class StoredQuery {
             for (ParameterType p : query.getParameter()) {
                 String name = p.getName();
                 String token = "${" + name + "}";
-                int i = sb.indexOf(token);
+                // stored queries can be used in KVP where the parameter name is case insensitive so do a case
+                // insensitive search
+                int i = sb.toString().toLowerCase().indexOf(token.toLowerCase());
                 while(i > 0) {
                     sb.replace(i, i + token.length(), p.getValue());
                     i = sb.indexOf(token, i + token.length());
@@ -222,5 +224,4 @@ public class StoredQuery {
         }
         return list;
     }
-
 }

@@ -1120,7 +1120,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // checking the service metadata URL
         assertEquals("1", WMTS_XPATH_10.evaluate(
                 "count(//wmts:ServiceMetadataURL[@xlink:href='http://localhost:8080/geoserver/gwc"
-                        + WMTSService.SERVICE_PATH + "?REQUEST=getcapabilities&VERSION=1.0.0'])",
+                        + WMTSService.SERVICE_PATH + "?SERVICE=wmts&REQUEST=getcapabilities&VERSION=1.0.0'])",
                 doc));
         assertEquals("1",
                 WMTS_XPATH_10.evaluate(

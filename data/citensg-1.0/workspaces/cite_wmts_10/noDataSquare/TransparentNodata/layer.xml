@@ -1,0 +1,20 @@
+<layer>
+  <name>TransparentNodata</name>
+  <id>LayerInfoImpl--77332cf0:16004924dc0:-7ffb</id>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--77332cf0:16004924dc0:-7ff9</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl--77332cf0:16004924dc0:-7ff9</id>
+    </style>
+  </styles>
+  <resource class="coverage">
+    <id>CoverageInfoImpl--77332cf0:16004924dc0:-7ffc</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

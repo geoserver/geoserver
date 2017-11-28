@@ -51,6 +51,7 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -78,6 +79,7 @@ import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.Style;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
@@ -88,7 +90,6 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
-import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.MetadataURL;
 import org.geowebcache.locks.MemoryLockProvider;
@@ -96,7 +97,6 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -176,20 +176,27 @@ public class GeoServerTileLayerTest {
         metadataLinkInfo.setType("metadata-format");
         resource.setMetadataLinks(Collections.singletonList(metadataLinkInfo));
 
+        ResourcePool resourcePool = mock(ResourcePool.class);
+        Style style = mock(Style.class);
+        when(style.featureTypeStyles()).thenReturn(Collections.emptyList());
+        when(resourcePool.getStyle(any(StyleInfo.class))).thenReturn(style);
+        catalog = mock(Catalog.class);
+        when(catalog.getResourcePool()).thenReturn(resourcePool);
+
         layerInfo = new LayerInfoImpl();
         layerInfo.setId(layerInfoId);
         layerInfo.setResource(resource);
         layerInfo.setEnabled(true);
         layerInfo.setName("MockLayerInfoName");
         layerInfo.setType(PublishedType.VECTOR);
-        StyleInfo defaultStyle = new StyleInfoImpl(null);
+        StyleInfo defaultStyle = new StyleInfoImpl(catalog);
         defaultStyle.setName("default_style");
 
         layerInfo.setDefaultStyle(defaultStyle);
 
-        StyleInfo alternateStyle1 = new StyleInfoImpl(null);
+        StyleInfo alternateStyle1 = new StyleInfoImpl(catalog);
         alternateStyle1.setName("alternateStyle-1");
-        StyleInfo alternateStyle2 = new StyleInfoImpl(null);
+        StyleInfo alternateStyle2 = new StyleInfoImpl(catalog);
         alternateStyle2.setName("alternateStyle-2");
         Set<StyleInfo> alternateStyles = new HashSet<StyleInfo>(Arrays.asList(alternateStyle1,
                 alternateStyle2));
@@ -211,7 +218,6 @@ public class GeoServerTileLayerTest {
 
         defaults = GWCConfig.getOldDefaults();
 
-        catalog = mock(Catalog.class);
         when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
         when(catalog.getLayerGroup(eq(layerGroupId))).thenReturn(layerGroup);
 
@@ -304,8 +310,8 @@ public class GeoServerTileLayerTest {
         StyleParameterFilter styleFilter = (StyleParameterFilter) parameterFilters.get(0);
         assertEquals("STYLES", styleFilter.getKey());
         assertEquals("default_style", styleFilter.getDefaultValue());
-        assertEquals(new HashSet<String>(Arrays.asList("alternateStyle-1", "alternateStyle-2")),
-                new HashSet<String>(styleFilter.getLegalValues()));
+        assertEquals(new HashSet<>(Arrays.asList("default_style", "alternateStyle-1", "alternateStyle-2")),
+                new HashSet<>(styleFilter.getLegalValues()));
 
         // layerInfoTileLayer.getInfo().getCachedStyles().add("alternateStyle-2");
     }

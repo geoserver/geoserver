@@ -1303,6 +1303,11 @@ public class GWCTest {
 
         for (String style : tileLayer.getInfo().cachedStyles()) {
 
+            if (style != null && style.equals("default")) {
+                // if no styles are provided WMTS assumes a default style named default
+                continue;
+            }
+
             String rawKvpParamName = "styles";
             String rawKvpParamValue = style;
 

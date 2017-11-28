@@ -6,9 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.geoserver.catalog.LayerGroupInfo;
@@ -26,7 +24,7 @@ import org.geotools.util.NumberRange;
  * @author Mauricio Pazos
  *
  */
-final class CapabilityUtil {
+public final class CapabilityUtil {
 	
 	private CapabilityUtil(){
 		//utility class
@@ -36,7 +34,7 @@ final class CapabilityUtil {
 	 * Helper method: aggregates min/max scale denominators of a set of styles.
 	 * 
 	 */
-	private static NumberRange<Double> searchMinMaxScaleDenominator(Set<StyleInfo> styles) throws IOException {
+	public static NumberRange<Double> searchMinMaxScaleDenominator(Set<StyleInfo> styles) throws IOException {
 	    // searches the maximum and minimum denominator in the style's rules that are contained in the style set. 
             double minScaleDenominator =  Double.POSITIVE_INFINITY;
             double maxScaleDenominator = Double.NEGATIVE_INFINITY;

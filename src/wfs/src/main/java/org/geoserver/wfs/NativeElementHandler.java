@@ -10,13 +10,6 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.NativeType;
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
-
-import org.eclipse.emf.ecore.EObject;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.data.FeatureStore;
 import org.geoserver.wfs.request.Native;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
@@ -63,9 +56,9 @@ public class NativeElementHandler implements TransactionElementHandler {
 
     /**
      * @return an empty array.
-     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(TransactionElement)
+     * @see TransactionElementHandler#getTypeNames(TransactionRequest, TransactionElement)
      */
-    public QName[] getTypeNames(TransactionElement element) throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         // we don't handle this
         return EMPTY_QNAMES;
     }

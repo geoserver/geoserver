@@ -9,9 +9,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
-
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.request.TransactionElement;
@@ -38,7 +35,7 @@ public interface TransactionElementHandler {
      * Returns the qualified names of feature types needed to handle this
      * element
      */
-    QName[] getTypeNames(TransactionElement element) throws WFSTransactionException;
+    QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException;
 
     /**
      * Checks the element content is valid, throws an exception otherwise

@@ -924,4 +924,31 @@ public class TransactionTest extends WFS20TestSupport {
         dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&service=wfs&typeNames=gs:bar&featureId=bar.5");
         XMLAssert.assertXpathEvaluatesTo("daffy", "//gml:name/text()", dom);
     }
+    
+    @Test
+    public void testInsertUnknownFeatureType() throws Exception {
+        // perform an insert on an invalid feature type
+        String insert =
+                "<wfs:Transaction service='WFS' version='2.0.0' "
+                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                        + "xmlns:fes='" + FES.NAMESPACE + "' "
+                        + "xmlns:wfs='" + WFS.NAMESPACE + "' "
+                        + "xmlns:gml='" + GML.NAMESPACE + "'> "
+                        + "<wfs:Insert > "
+                        + "<cgf:FooBar>"
+                        + "<cgf:pointProperty>"
+                        + "<gml:Point>"
+                        + "<gml:pos>20 40</gml:pos>"
+                        + "</gml:Point>"
+                        + "</cgf:pointProperty>"
+                        + "<cgf:id>t0002</cgf:id>"
+                        + "</cgf:FooBar>"
+                        + "</wfs:Insert>"
+                        + "</wfs:Transaction>";
+
+        MockHttpServletResponse response = postAsServletResponse("wfs", insert);
+        assertEquals(400, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        checkOws11Exception(dom, "2.0.0", "InvalidValue", "Transaction");
+    }
 }

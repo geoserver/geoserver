@@ -199,7 +199,7 @@ public class Transaction {
             Map featureTypeInfos = new HashMap();
 
             
-            QName[] typeNames = handler.getTypeNames(element);
+            QName[] typeNames = handler.getTypeNames(request, element);
 
             for (int i = 0; i < typeNames.length; i++) {
                 final QName typeName = typeNames[i];
@@ -218,7 +218,7 @@ public class Transaction {
 
                 if (meta == null) {
                     String msg = "Feature type '" + name + "' is not available: ";
-                    throw new WFSTransactionException(msg, (String) null, element.getHandle());
+                    throw new WFSTransactionException(msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
                 }
 
                 featureTypeInfos.put(typeName, meta);

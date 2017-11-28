@@ -5,21 +5,11 @@
  */
 package org.geoserver.wfs;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.feature.ReprojectingFeatureCollection;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.Insert;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
@@ -33,6 +23,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
+import org.geotools.util.Version;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -40,7 +31,16 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Geometry;
+import javax.xml.namespace.QName;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 
 /**
@@ -244,7 +244,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         return Insert.class;
     }
 
-    public QName[] getTypeNames(TransactionElement element) throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         Insert insert = (Insert) element;
         
         List typeNames = new ArrayList();
@@ -252,7 +252,19 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         List features = insert.getFeatures();
         if (!features.isEmpty()) {
             for (Iterator f = features.iterator(); f.hasNext();) {
-                SimpleFeature feature = (SimpleFeature) f.next();
+                Object next = f.next();
+                // if parsing fails the parser just returns a Map, do throw an error in this case
+                if (!(next instanceof SimpleFeature)) {
+                    String version = request.getVersion();
+                    String code;
+                    if (version == null || new Version(version).compareTo(WFSInfo.Version.V_20.getVersion()) >= 0) {
+                        code = WFSException.INVALID_VALUE;
+                    } else {
+                        code = ServiceException.INVALID_PARAMETER_VALUE;
+                    }
+                    throw new WFSException(request, "Could not parse input features", code);
+                }
+                SimpleFeature feature = (SimpleFeature) next;
 
                 String name = feature.getFeatureType().getTypeName();
                 String namespaceURI = feature.getFeatureType().getName().getNamespaceURI();

@@ -7,9 +7,9 @@ package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -24,14 +24,17 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gml3.GML;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -922,6 +925,32 @@ public class TransactionTest extends WFSTestSupport {
 
         dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=baz.5");
         XMLAssert.assertXpathEvaluatesTo("daffy", "//gml:name/text()", dom);
+    }
+
+    @Test
+    public void testInsertUnknownFeatureType() throws Exception {
+        // perform an insert on an invalid feature type
+        String insert =
+                "<wfs:Transaction service='WFS' version='1.1.0' "
+                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                        + "xmlns:wfs='" + WFS.NAMESPACE + "' "
+                        + "xmlns:gml='" + GML.NAMESPACE + "'> "
+                        + "<wfs:Insert > "
+                        + "<cgf:FooBar>"
+                        + "<cgf:pointProperty>"
+                        + "<gml:Point>"
+                        + "<gml:pos>20 40</gml:pos>"
+                        + "</gml:Point>"
+                        + "</cgf:pointProperty>"
+                        + "<cgf:id>t0002</cgf:id>"
+                        + "</cgf:FooBar>"
+                        + "</wfs:Insert>"
+                        + "</wfs:Transaction>";
+
+        MockHttpServletResponse response = postAsServletResponse("wfs", insert);
+        assertEquals(200, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        checkOws10Exception(dom, "InvalidParameterValue");
     }
 }
 

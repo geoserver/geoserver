@@ -8,20 +8,12 @@ package org.geoserver.wfs;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.AllSomeType;
-import net.opengis.wfs.DeleteElementType;
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
-
-import org.eclipse.emf.ecore.EObject;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.request.Delete;
 import org.geoserver.wfs.request.TransactionElement;
@@ -37,7 +29,6 @@ import org.geotools.data.FeatureWriter;
 import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.xml.EMFUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -72,7 +63,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
     /**
      * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
      */
-    public QName[] getTypeNames(TransactionElement element) throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         return new QName[]{element.getTypeName()};
     }
 

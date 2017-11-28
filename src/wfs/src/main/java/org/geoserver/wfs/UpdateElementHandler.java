@@ -328,7 +328,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
     /**
      * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
      */
-    public QName[] getTypeNames(TransactionElement element) throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         return new QName[] { element.getTypeName() };
     }
 }

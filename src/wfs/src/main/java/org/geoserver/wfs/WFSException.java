@@ -17,6 +17,7 @@ import org.geoserver.wfs.request.RequestObject;
 public class WFSException extends ServiceException {
     public static final String NOT_FOUND = "NotFound";
     public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
+    public static final String INVALID_VALUE = "InvalidValue";
 
     public enum Code {
         OperationProcessingFailed

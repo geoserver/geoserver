@@ -124,7 +124,10 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
  * @version $Id$
  */
 public class GetFeature {
-    
+
+    static final String GET_FEATURE_BY_ID_DEPRECATED = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
+    static final String GET_FEATURE_BY_ID = "http://www.opengis.net/def/query/OGC-WFS/0/GetFeatureById";
+
     /** Standard logging instance for class */
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
 
@@ -242,11 +245,11 @@ public class GetFeature {
         }
 
         //stored queries, preprocess compile any stored queries into actual query objects
-        processStoredQueries(request);
+        boolean getFeatureById = processStoredQueries(request);
         queries = request.getQueries();
         
         if (request.isQueryTypeNamesUnset()) {
-            //do a check for FeatureId filters in the queries and update the type names for the 
+            // do a check for FeatureId filters in the queries and update the type names for the 
             // queries accordingly
             for (Query q : queries) {
                 if (!q.getTypeNames().isEmpty()) continue;
@@ -708,13 +711,20 @@ public class GetFeature {
             lockId = response.getLockId();
         }
 
-        return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId);
+        return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId, getFeatureById);
     }
 
 
-
-    protected void processStoredQueries(GetFeatureRequest request) {
+    /**
+     * Expands the stored queries, returns true if a single GetFeatureById stored query was found (as a
+     * different GML encoding is required in that case)
+     * 
+     * @param request
+     * @return
+     */
+    protected boolean processStoredQueries(GetFeatureRequest request) {
         List queries = request.getAdaptedQueries();
+        boolean foundGetFeatureById = false;
         for (int i = 0; i < queries.size(); i++) {
             Object obj = queries.get(i);
             if (obj instanceof StoredQueryType) {
@@ -726,9 +736,11 @@ public class GetFeature {
                 StoredQueryType sq = (StoredQueryType) obj;
 
                 //look up the store query
-                StoredQuery storedQuery = storedQueryProvider.getStoredQuery(sq.getId());
+                String storedQueryId = sq.getId();
+                foundGetFeatureById |= GET_FEATURE_BY_ID.equalsIgnoreCase(storedQueryId) || GET_FEATURE_BY_ID_DEPRECATED.equals(storedQueryId);
+                StoredQuery storedQuery = storedQueryProvider.getStoredQuery(storedQueryId);
                 if (storedQuery == null) {
-                    throw new WFSException(request, "Stored query '" + sq.getId() + "' does not exist.");
+                    throw new WFSException(request, "Stored query '" + storedQueryId + "' does not exist.");
                 }
 
                 List<net.opengis.wfs20.QueryType> compiled = storedQuery.compile(sq);
@@ -737,13 +749,16 @@ public class GetFeature {
                 i += compiled.size();
             }
         }
+        
+        return queries.size() == 1 && foundGetFeatureById;
     }
     
     /**
      * Allows subclasses to alter the result generation
      */
-    protected FeatureCollectionResponse buildResults(GetFeatureRequest request, int offset, int maxFeatures, 
-        int count, BigInteger total, List results, String lockId) {
+    protected FeatureCollectionResponse buildResults(GetFeatureRequest request, int offset, int maxFeatures,
+                                                     int count, BigInteger total, List results, String lockId, 
+                                                     boolean getFeatureById) {
 
         FeatureCollectionResponse result = request.createResponse();
         result.setNumberOfFeatures(BigInteger.valueOf(count));
@@ -751,6 +766,7 @@ public class GetFeature {
         result.setTimeStamp(Calendar.getInstance());
         result.setLockId(lockId);
         result.getFeature().addAll(results);
+        result.setGetFeatureById(getFeatureById);
 
         if (offset > 0 || count < Integer.MAX_VALUE) {
             //paged request, set the values of previous and next

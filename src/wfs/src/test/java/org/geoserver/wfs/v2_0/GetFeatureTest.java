@@ -925,7 +925,7 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
 
     @Test
-    public void testDefaultStoredQuery() throws Exception {
+    public void testDefaultStoredQueryGet() throws Exception {
         Document dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&storedQueryId=" + 
             StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeature.f001");
         
@@ -934,9 +934,12 @@ public class GetFeatureTest extends WFS20TestSupport {
         
         dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&storedQuery_Id=" + 
                 StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeature.f001");
+        // print(dom);
             
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
-        XMLAssert.assertXpathExists("//sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
+        // GetFeatureById is special, should not be wrapped by wfs:FeatureCollection
+        XMLAssert.assertXpathNotExists("//wfs:FeatureCollection", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
+        XMLAssert.assertXpathExists("/sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
     }
 
     @Test

@@ -23,6 +23,8 @@ import org.geotools.feature.FeatureCollection;
  * @author Justin Deoliveira, OpenGeo
  */
 public abstract class FeatureCollectionResponse extends RequestObject {
+    
+    private boolean getFeatureById = false;
 
     public static FeatureCollectionResponse adapt(Object adaptee) {
         if (adaptee instanceof FeatureCollectionType) {
@@ -77,7 +79,13 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         return getFeatures();
     }
 
+    public void setGetFeatureById(boolean getFeatureById) {
+        this.getFeatureById = getFeatureById;
+    }
 
+    public boolean isGetFeatureById() {
+        return getFeatureById;
+    }
 
     public static class WFS11 extends FeatureCollectionResponse {
         BigInteger totalNumberOfFeatures;

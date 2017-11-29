@@ -86,6 +86,7 @@
           <descriptor>release/ext-mbstyle.xml</descriptor> 
           <descriptor>release/ext-status-monitoring.xml</descriptor>
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
+          <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

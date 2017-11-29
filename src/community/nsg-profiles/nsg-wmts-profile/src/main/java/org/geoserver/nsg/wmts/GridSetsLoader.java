@@ -47,7 +47,7 @@ public class GridSetsLoader implements ApplicationListener<ContextLoadedEvent> {
         String description = "The World Mercator (EPSG::3395) well-known scale set is define in this " +
                 "NSG WMTS Implementation Interoperability Profile.";
         // world mercator 3395 grid set, add grid set
-        addGridSet(WORLD_MERCATOR_GRID_SET_NAME, EPSG_3395, resolutions, scaleNames, boundingBox, description, 10.0);
+        addGridSet(WORLD_MERCATOR_GRID_SET_NAME, EPSG_3395, resolutions, scaleNames, boundingBox, description, 1.0);
 
         // ups tiles EPSG::5041 grid set, resolutions
         resolutions = new double[]{
@@ -69,7 +69,7 @@ public class GridSetsLoader implements ApplicationListener<ContextLoadedEvent> {
                 "Stereographic (variant A)) as its projection. WGS 84 / UPS North (E,N) is a CRS for Military mapping by " +
                 "NATO. It was defined by information from US National Geospatial-Intelligence Agency (NGA).";
         // ups tiles EPSG::5041 grid set, add grid set
-        addGridSet(EPSG_5041_GRID_SET_NAME, EPSG_5041, resolutions, scaleNames, boundingBox, description, 10.0);
+        addGridSet(EPSG_5041_GRID_SET_NAME, EPSG_5041, resolutions, scaleNames, boundingBox, description, 1.0);
 
         // ups tiles EPSG::5042 grid set, resolutions
         resolutions = new double[]{
@@ -91,7 +91,7 @@ public class GridSetsLoader implements ApplicationListener<ContextLoadedEvent> {
                 "(variant A)) as its projection. WGS 84 / UPS South (E,N) is a CRS for Military mapping by NATO. It was " +
                 "defined by information from US National Geospatial-Intelligence Agency (NGA).";
         // ups tiles EPSG::5041 grid set, add grid set
-        addGridSet(EPSG_5042_GRID_SET_NAME, EPSG_5042, resolutions, scaleNames, boundingBox, description, 10.0);
+        addGridSet(EPSG_5042_GRID_SET_NAME, EPSG_5042, resolutions, scaleNames, boundingBox, description, 1.0);
     }
 
     /**

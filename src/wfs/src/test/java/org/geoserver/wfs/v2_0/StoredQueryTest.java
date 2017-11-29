@@ -57,6 +57,29 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = '" + StoredQuery.DEFAULT.getName() + "']", dom);
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
     }
+    
+    @Test
+    public void testCreateUnknownLanguage() throws Exception {
+        String xml = "<CreateStoredQuery xmlns=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" " +
+                "version=\"2.0.0\">\n" +
+                "  <StoredQueryDefinition xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                "                          id=\"urn:example:wfs2-query:InvalidLang\">\n" +
+                "      <Title>GetFeatureByTypeName</Title>\n" +
+                "      <Abstract>Returns feature representations by type name.</Abstract>\n" +
+                "      <Parameter name=\"typeName\" type=\"xsd:QName\">\n" +
+                "         <Abstract>Qualified name of feature type (required).</Abstract>\n" +
+                "      </Parameter>\n" +
+                "      <QueryExpressionText isPrivate=\"false\" language=\"http://qry.example.org\" " +
+                "returnFeatureTypes=\"\">\n" +
+                "         <Query typeNames=\"${typeName}\"/>\n" +
+                "      </QueryExpressionText>\n" +
+                "  </StoredQueryDefinition>\n" +
+                "</CreateStoredQuery>";
+        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+        assertEquals(400, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "language");
+    }
 
     @Test
     public void testCreateStoredQuery() throws Exception {
@@ -64,7 +87,7 @@ public class StoredQueryTest extends WFS20TestSupport {
             "<wfs:ListStoredQueries service='WFS' version='2.0.0' " +
             " xmlns:wfs='" + WFS.NAMESPACE + "'/>";
         Document dom = postAsDOM("wfs", xml);
-        print(dom);
+        // print(dom);
         assertEquals("wfs:ListStoredQueriesResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
         

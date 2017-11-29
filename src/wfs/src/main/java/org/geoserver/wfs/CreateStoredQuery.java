@@ -7,8 +7,10 @@ package org.geoserver.wfs;
 
 import net.opengis.wfs20.CreateStoredQueryResponseType;
 import net.opengis.wfs20.CreateStoredQueryType;
+import net.opengis.wfs20.QueryExpressionTextType;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import net.opengis.wfs20.Wfs20Factory;
+import org.geoserver.platform.ServiceException;
 
 /**
  * Web Feature Service CreateStoredQuery operation.
@@ -58,7 +60,18 @@ public class CreateStoredQuery {
             throw new WFSException(request, "Stored query does not specify any queries");
         }
 
-        //check for multiple languages
+        // check for supported language
+        for (QueryExpressionTextType queryExpressionTextType : sq.getQueryExpressionText()) {
+            String language = queryExpressionTextType.getLanguage();
+            if (language != null && !language.equals(storedQueryProvider.getLanguage())) {
+                WFSException e = new WFSException(request, "Invalid language " + queryExpressionTextType.getLanguage
+                        (), ServiceException.INVALID_PARAMETER_VALUE);
+                e.setLocator("language");
+                throw e;
+            }
+        }
+        
+        // check for multiple languages
         String language = sq.getQueryExpressionText().get(0).getLanguage();
         for (int i = 1; i < sq.getQueryExpressionText().size(); i++) {
             if (!language.equals(sq.getQueryExpressionText().get(i).getLanguage())) {

@@ -50,6 +50,8 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
     }
 
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        LOGGER.log(Level.SEVERE, "Error doing GSR processing", ex);
+
         ServiceException exception = new ServiceException(new ServiceError(
                 500, "Internal Server Error", Collections.singletonList(ex.getMessage())));
 

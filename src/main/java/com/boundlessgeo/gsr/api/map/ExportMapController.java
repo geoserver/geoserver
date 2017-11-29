@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
@@ -24,8 +25,7 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
 /**
  * Handles ArcGIS ExportMap requests
  */
-@RestController
-public class ExportMapController extends AbstractGSRController {
+@RestController public class ExportMapController extends AbstractGSRController {
 
     @Autowired
     public ExportMapController(GeoServer geoServer) {
@@ -66,9 +66,7 @@ public class ExportMapController extends AbstractGSRController {
     private void exportMapImage(String workspaceName, HttpServletRequest request, HttpServletResponse response)
         throws Exception {
 
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String layers = parameterMap.getOrDefault("layers", parameterMap.get("LAYERS"))[0];
-
+        String layers = getAllLayersInEsriFormat(workspaceName);
         exportMapImageForLayers(workspaceName, request, response, layers);
     }
 
@@ -86,7 +84,8 @@ public class ExportMapController extends AbstractGSRController {
         String format = parameterMap.getOrDefault("format", parameterMap.get("FORMAT"))[0];
         requestProxy.getMutableParams().put("format", translateImageFormatParam(format));
 
-        String imageSR = parameterMap.getOrDefault("imageSR", parameterMap.getOrDefault("IMAGESR", new String[] { "" }))[0];
+        String imageSR = parameterMap
+            .getOrDefault("imageSR", parameterMap.getOrDefault("IMAGESR", new String[] { "" }))[0];
         requestProxy.getMutableParams().put("crs", translateImageSRParam(imageSR));
 
         String sizeParam = parameterMap.getOrDefault("size", parameterMap.get("SIZE"))[0];
@@ -143,20 +142,32 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     private String translateLayersParam(String layers, String workspaceName) {
-        String[] layersSpecAndLayers = layers.split(":");
-        if (layersSpecAndLayers.length < 2) {
-            throw new IllegalArgumentException(
-                "Malformed layers spec. " + "Expected [show | hide | include | exclude]:layerId1,layerId2");
-        }
+        if (StringUtils.isNotEmpty(layers)) {
+            String[] layersSpecAndLayers = layers.split(":");
+            if (layersSpecAndLayers.length < 2) {
+                throw new IllegalArgumentException(
+                    "Malformed layers spec. " + "Expected [show | hide | include | exclude]:layerId1,layerId2");
+            }
 
-        String layerSpec = layersSpecAndLayers[0];
-        if (!"show".equals(layerSpec)) {
-            throw new UnsupportedOperationException("Only SHOW layer spec is currently supported");
-        }
+            String layerSpec = layersSpecAndLayers[0];
+            if (!"show".equals(layerSpec)) {
+                throw new UnsupportedOperationException("Only SHOW layer spec is currently supported");
+            }
 
-        //We look up each layer individually to get its name. This has the potential to be slow in non FS based catalogs
-        return Arrays.stream(layersSpecAndLayers[1].split(","))
-            .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
+            //We look up each layer individually to get its name. This has the potential to be slow in non FS based
+            // catalogs
+            return Arrays.stream(layersSpecAndLayers[1].split(","))
+                .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
+                .collect(Collectors.joining(","));
+        } else {
+            return null;
+        }
+    }
+
+    private String getAllLayersInEsriFormat(String workspaceName) {
+        return "show:" + catalog.getLayers().stream()
+            .filter(li -> li.getResource().getStore().getWorkspace().getName().equals(workspaceName))
+            .map(LayerInfo::getName)
             .collect(Collectors.joining(","));
     }
 

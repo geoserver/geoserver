@@ -47,13 +47,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * A list of {@link LayerOrTable}
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class LayersAndTables implements GSRModel {
+@JsonInclude(JsonInclude.Include.NON_NULL) public class LayersAndTables implements GSRModel {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
 
     protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
 
     public final ArrayList<LayerOrTable> layers;
+
     public final ArrayList<LayerOrTable> tables;
 
     private LayersAndTables(ArrayList<LayerOrTable> layers, ArrayList<LayerOrTable> tables) {
@@ -64,18 +64,18 @@ public class LayersAndTables implements GSRModel {
     /**
      * Look up a single GSR layer (with at least one geometry column) or table.
      *
-     * @param catalog GeoServer Catalog
+     * @param catalog       GeoServer Catalog
      * @param workspaceName GeoServer workspace name
-     * @param id Index of Layer (based on sorting by layer name)
+     * @param id            Index of Layer (based on sorting by layer name)
      * @return LayerOrTable from workspaceName identified by layerId
      * @throws IOException
      */
-    public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id) throws IOException{
+    public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id) throws IOException {
         // short list all layers
         List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.enabled() && l.getType() == PublishedType.VECTOR &&
-                    l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+            if (l.enabled() && l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace()
+                .getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }
@@ -83,31 +83,33 @@ public class LayersAndTables implements GSRModel {
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
 
         // retrieve indicated layer as LayerOrTable
-        if (id < layersInWorkspace.size()){
+        if (id < layersInWorkspace.size()) {
             LayerInfo resource = layersInWorkspace.get(id);
             return entry(resource, id);
         }
         return null; // not found
     }
 
-    public static ReferencedEnvelope sphericalMercator(LayerInfo layer, ReferencedEnvelope boundingBox){
+    public static ReferencedEnvelope sphericalMercator(LayerInfo layer, ReferencedEnvelope boundingBox) {
         if (boundingBox == null) {
             return null; // bounds not available
         }
         try {
             CoordinateReferenceSystem lonLat = CRS.decode("EPSG:4326");
             CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3857");
-            double minx = Math.max(boundingBox.getMinX(),  -180);
-            double maxx = Math.min(boundingBox.getMaxX(),   180);
+            double minx = Math.max(boundingBox.getMinX(), -180);
+            double maxx = Math.min(boundingBox.getMaxX(), 180);
             double miny = Math.max(boundingBox.getMinY(), -85);
-            double maxy = Math.min(boundingBox.getMaxY(),  85);
+            double maxy = Math.min(boundingBox.getMaxY(), 85);
             ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, lonLat);
             sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
             return sphericalMercatorBoundingBox;
         } catch (FactoryException factoryException) {
-            LOGGER.log(Level.WARNING, "EPSG definition unavailable for transform to EPSG:3857:" + layer, factoryException);
+            LOGGER.log(Level.WARNING, "EPSG definition unavailable for transform to EPSG:3857:" + layer,
+                factoryException);
         } catch (TransformException transformException) {
-            LOGGER.log(Level.WARNING, "EPSG Database unable to transform to Spherical Mercator:" + layer, transformException);
+            LOGGER.log(Level.WARNING, "EPSG Database unable to transform to Spherical Mercator:" + layer,
+                transformException);
         }
         return null; // bounds not available
     }
@@ -130,8 +132,10 @@ public class LayersAndTables implements GSRModel {
         }
         return null; // Skipping layer
     }
+
     /**
      * LayersAndTables lookup for GeoServer workspace.
+     *
      * @param catalog
      * @param workspaceName
      * @return GeoServer Layers gathered into GSR layers (with at least one geometry column) or tables.
@@ -142,16 +146,17 @@ public class LayersAndTables implements GSRModel {
         int idCounter = 0;
         List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.enabled() && l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+            if (l.enabled() && l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace()
+                .getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
         for (LayerInfo l : layersInWorkspace) {
             try {
-                LayerOrTable entry = entry( l, idCounter);
-                if (entry != null){
-                    if (entry.geometryType != null){
+                LayerOrTable entry = entry(l, idCounter);
+                if (entry != null) {
+                    if (entry.geometryType != null) {
                         layers.add(entry);
                     } else {
                         tables.add(entry);

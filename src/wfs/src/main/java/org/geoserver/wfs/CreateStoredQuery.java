@@ -63,7 +63,7 @@ public class CreateStoredQuery {
         // check for supported language
         for (QueryExpressionTextType queryExpressionTextType : sq.getQueryExpressionText()) {
             String language = queryExpressionTextType.getLanguage();
-            if (language != null && !language.equals(storedQueryProvider.getLanguage())) {
+            if (language != null && !storedQueryProvider.supportsLanguage(language)) {
                 WFSException e = new WFSException(request, "Invalid language " + queryExpressionTextType.getLanguage
                         (), ServiceException.INVALID_PARAMETER_VALUE);
                 e.setLocator("language");

@@ -349,4 +349,43 @@ public class StoredQueryTest extends WFS20TestSupport {
         checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "id");
     }
 
+    @Test
+    public void testCreateParametrizedOnTypename() throws Exception {
+        // this evil thing comes from the CITE tests
+        String xml =
+                "<CreateStoredQuery xmlns=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" version=\"2.0.0\">\n" +
+                        "  <StoredQueryDefinition xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                        "                          id=\"urn:example:wfs2-query:GetFeatureByTypeName\">\n" +
+                        "      <Title>GetFeatureByTypeName</Title>\n" +
+                        "      <Abstract>Returns feature representations by type name.</Abstract>\n" +
+                        "      <Parameter name=\"typeName\" type=\"xsd:QName\">\n" +
+                        "         <Abstract>Qualified name of feature type (required).</Abstract>\n" +
+                        "      </Parameter>\n" +
+                        "      <QueryExpressionText isPrivate=\"false\"\n" +
+                        "                           " +
+                        "language=\"urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression\"\n" +
+                        "                           returnFeatureTypes=\"\">\n" +
+                        "         <Query typeNames=\"${typeName}\"/>\n" +
+                        "      </QueryExpressionText>\n" +
+                        "</StoredQueryDefinition>\n" +
+                        "</CreateStoredQuery>";
+
+        // create
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        // verify exists
+        dom = getAsDOM("wfs?request=ListStoredQueries");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'urn:example:wfs2-query:GetFeatureByTypeName']", dom);
+        
+        // run it (the cite tests use a random prefix
+        dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetFeature&storedQuery_id=urn:example:wfs2-query" +
+                ":GetFeatureByTypeName&typename=tns:Fifteen", 200);
+        // print(dom);
+        XMLAssert.assertXpathExists("/wfs:FeatureCollection", dom);
+        XMLAssert.assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
+    }
+
 }

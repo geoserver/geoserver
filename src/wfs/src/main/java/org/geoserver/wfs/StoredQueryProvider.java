@@ -35,9 +35,10 @@ import net.opengis.wfs20.StoredQueryDescriptionType;
 public class StoredQueryProvider {
 
     /**
-     * language for this provider
+     * language(S) for this provider (the name changed across specs versions, apparently before the 2.0 spec was published)
      */
-    public static String LANGUAGE = "urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression";
+    public static String LANGUAGE_20_PRE = "urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression";
+    public static String LANGUAGE_20 = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression";
 
     /** logger */
     static Logger LOGGER = Logging.getLogger(StoredQueryProvider.class);
@@ -57,7 +58,7 @@ public class StoredQueryProvider {
      * The language/type of stored query the provider handles. 
      */
     public String getLanguage() {
-        return LANGUAGE;
+        return LANGUAGE_20;
     }
 
     /**
@@ -206,5 +207,9 @@ public class StoredQueryProvider {
         finally {
             fin.close();
         }
+    }
+
+    public boolean supportsLanguage(String language) {
+        return LANGUAGE_20.equalsIgnoreCase(language) || LANGUAGE_20_PRE.equalsIgnoreCase(language);
     }
 }

@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,7 @@ import net.opengis.wfs20.StoredQueryType;
 import net.opengis.wfs20.TitleType;
 import net.opengis.wfs20.Wfs20Factory;
 
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.kvp.QNameKvpParser;
 import org.geotools.filter.v2_0.FES;
@@ -63,7 +65,7 @@ public class StoredQuery {
         QueryExpressionTextType text = factory.createQueryExpressionTextType();
         text.setIsPrivate(true);
         text.setReturnFeatureTypes(new ArrayList());
-        text.setLanguage(StoredQueryProvider.LANGUAGE);
+        text.setLanguage(StoredQueryProvider.LANGUAGE_20);
         
         String xml = 
             "<wfs:Query xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'>" + 
@@ -164,19 +166,27 @@ public class StoredQuery {
             Set<QName> returnTypes = new HashSet(qe.getReturnFeatureTypes());
             for (Iterator<QName> it = queryTypes.iterator(); it.hasNext();) {
                 QName qName = it.next();
-                if (!returnTypes.contains(qName)) {
+                if (!returnTypes.contains(qName) && !isParameter(qName.getLocalPart(), queryDef.getParameter())) {
                     throw new WFSException(String.format("StoredQuery references typeName %s:%s " +
                         "not listed in returnFeatureTypes: %s", qName.getPrefix(), 
                         qName.getLocalPart(), toString(qe.getReturnFeatureTypes())));
                 }
-                returnTypes.remove(qName);
+                if (returnTypes.contains(qName)) {
+                    returnTypes.remove(qName);
+                }
             }
 
-            if (!returnTypes.isEmpty()) {
+            if (!returnTypes.isEmpty() && !returnTypes.equals(Collections.singleton(new QName("")))) {
                 throw new WFSException(String.format("StoredQuery declares return feature type(s) not " +
                         "not referenced in query definition: %s", toString(returnTypes)));
             }
         }
+    }
+
+    private boolean isParameter(String parameterCandidate, EList<ParameterExpressionType> parameter) {
+        return parameter != null && parameter.stream()
+                .map(pet -> "${" + pet.getName() + "}")
+                .anyMatch(name -> parameterCandidate.equals(name));
     }
 
     String toString(Collection<QName> qNames) {

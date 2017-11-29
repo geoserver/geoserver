@@ -148,7 +148,7 @@ public class StoredQueryProviderTest {
 
     @Test
     public void testGetLanguage() {
-        assertThat(storedQueryProvider.getLanguage(), is(equalTo(storedQueryProvider.LANGUAGE)));
+        assertThat(storedQueryProvider.getLanguage(), is(equalTo(StoredQueryProvider.LANGUAGE_20)));
     }
 
 

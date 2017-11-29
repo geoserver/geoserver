@@ -135,7 +135,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         
         //typeName (in WFS 2.0 it is typeNames, not typeName)
         List<List<QName>> typeNames = null;
-        if (kvp.containsKey("typeName") || kvp.containsKey("typeNames")) {
+        if ((kvp.containsKey("typeName") || kvp.containsKey("typeNames")) && !kvp.containsKey("STOREDQUERY_ID")) {
             //HACK, the kvp reader gives us a list of QName, need to wrap in 
             // another
             typeNames = (List) kvp.get("typeName");
@@ -198,7 +198,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                     storedQueryId = (List<URI>) kvp.get("storedQueryId");
                 }
                 if (storedQueryId != null) {
-                    buildStoredQueries(eObject, storedQueryId, kvp);
+                    buildStoredQueries(eObject, storedQueryId, rawKvp);
                 }
                 else {
                     throw new WFSException(eObject, "The query should specify either typeName, featureId filter" +

@@ -7,6 +7,7 @@ package org.geoserver.web.data.layer;
 
 import java.io.IOException;
 import java.io.Serializable;
+import org.geotools.decorate.Wrapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -194,7 +195,13 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
     protected WFSDataStore getContentDataStore() throws IOException {
         DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
         DataAccess<?,?> da = store.getDataStore(null);
-
+        if (da instanceof Wrapper) {
+            try {
+                da = ((Wrapper)da).unwrap(DataAccess.class);
+            } catch (IllegalArgumentException e) {
+                throw new IOException(e);
+            }
+        }
         return (WFSDataStore)da;
     }
 

@@ -6,6 +6,8 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import org.geotools.decorate.Wrapper;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
@@ -318,6 +320,14 @@ public class NewLayerPage extends GeoServerSecuredPage {
             try {
                 DataAccess<?,?> da = ((DataStoreInfo) store).getDataStore(null);
 
+                if (da instanceof Wrapper) {
+                    try {
+                        da = ((Wrapper) da).unwrap(DataAccess.class);
+                    } catch (IllegalArgumentException e) {
+                        throw new IOException(e);
+                    }
+                }
+                
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
                 
                 if (da instanceof WFSDataStore) {

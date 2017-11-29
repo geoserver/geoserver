@@ -32,6 +32,7 @@ import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.data.store.DecoratingDataStore;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.logging.Logging;
@@ -45,7 +46,7 @@ import org.opengis.filter.Filter;
  * considered is the name change, thought it would not be that hard to extend it so that it
  * could shave off some attribute too) 
  */
-public class RetypingDataStore implements DataStore {
+public class RetypingDataStore extends DecoratingDataStore {
     static final Logger LOGGER = Logging.getLogger(RetypingDataStore.class);
     
     private DataStore wrapped;
@@ -55,13 +56,14 @@ public class RetypingDataStore implements DataStore {
     protected volatile Map<String, FeatureTypeMap> backwardsMap = new ConcurrentHashMap<String, FeatureTypeMap>();
 
     public RetypingDataStore(DataStore wrapped) throws IOException {
+        super(wrapped);
         this.wrapped = wrapped;
         // force update of type mapping maps
         getTypeNames();
     }
     
     public DataStore getWrapped() {
-        return wrapped;
+        return unwrap(DataStore.class);
     }
 
     public void createSchema(SimpleFeatureType featureType) throws IOException {

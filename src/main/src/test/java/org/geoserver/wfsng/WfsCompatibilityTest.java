@@ -9,17 +9,18 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import org.junit.Assume;
+
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataAccess;
 import org.geotools.data.wfs.WFSDataStore;
+import org.geotools.decorate.Wrapper;
+import org.junit.Assume;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -62,8 +63,8 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
         
         DataAccess<? extends FeatureType, ? extends Feature> store = storeInfo.getDataStore(null);
         
-        if (store instanceof RetypingDataStore) {
-            store = ((RetypingDataStore) store).getWrapped();
+        if (store instanceof Wrapper) {
+            store = ((Wrapper) store).unwrap(DataAccess.class);
         }
                 
         assertTrue(store instanceof WFSDataStore);

@@ -17,3 +17,9 @@ target
 # Cucumber Testing artifacts
 cucumber-report
 .mvn
+
+# NSG CITE testst data directory
+data/citensg-1.0/gwc/cite*
+data/citensg-1.0/gwc/geowebcache_*.bak
+data/citensg-1.0/legendsamples/
+data/citensg-1.0/logs/geoserver.log

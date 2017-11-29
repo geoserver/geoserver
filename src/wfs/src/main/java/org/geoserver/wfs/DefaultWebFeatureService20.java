@@ -124,7 +124,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     
     public ListStoredQueriesResponseType listStoredQueries(ListStoredQueriesType request) 
         throws WFSException {
-        return new ListStoredQueries(getServiceInfo(), getStoredQueryProvider()).run(request);
+        return new ListStoredQueries(getServiceInfo(), getCatalog(), getStoredQueryProvider()).run(request);
     }
     
     public DescribeStoredQueriesResponseType describeStoredQueries(DescribeStoredQueriesType request)

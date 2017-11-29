@@ -5,20 +5,22 @@
  */
 package org.geoserver.wfs.v2_0;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
+import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
+import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.wfs.v2_0.WFS;
+import org.geotools.xml.Parser;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import java.io.ByteArrayInputStream;
+
+import static org.junit.Assert.assertEquals;
 
 public class StoredQueryTest extends WFS20TestSupport {
 
@@ -29,8 +31,20 @@ public class StoredQueryTest extends WFS20TestSupport {
 
     @Test
     public void testListStoredQueries() throws Exception {
-        Document dom = getAsDOM("wfs?request=ListStoredQueries&service=wfs&version=2.0.0");
+        MockHttpServletResponse response = getAsServletResponse
+                ("wfs?request=ListStoredQueries&service=wfs&version=2.0.0");
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = '" + StoredQuery.DEFAULT.getName() + "']", dom);
+
+        // schema validate the response
+        FeatureTypeSchemaBuilder sb =
+                new FeatureTypeSchemaBuilder.GML3(getGeoServer());
+        WFSConfiguration configuration = new WFSConfiguration(getGeoServer(), sb, new org.geoserver.wfs.xml
+                .v1_1_0.WFS(sb));
+        Parser parser = new Parser(configuration);
+        parser.parse(new ByteArrayInputStream(response.getContentAsByteArray()));
+
+        assertEquals(0, parser.getValidationErrors().size());
     }
 
     @Test

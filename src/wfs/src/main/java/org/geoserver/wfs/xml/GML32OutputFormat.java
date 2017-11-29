@@ -6,22 +6,20 @@
 package org.geoserver.wfs.xml;
 
 import net.opengis.wfs20.FeatureCollectionType;
+import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.Request;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
+import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.gml3.v3_2.GMLConfiguration;
-import org.geotools.util.Version;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
@@ -116,7 +114,12 @@ public class GML32OutputFormat extends GML3OutputFormat {
         if (results.isGetFeatureById()) {
             List<FeatureCollection> features = results.getFeatures();
             Feature next = DataUtilities.first(features.get(0));
-            encoder.encode(next, GML.AbstractFeature, output);
+            if (next == null) {
+                throw new WFSException((EObject) null, "No feature matching the requested id found", WFSException
+                        .NOT_FOUND);
+            } else {
+                encoder.encode(next, GML.AbstractFeature, output);
+            }
         } else {
             encoder.encode(results.unadapt(FeatureCollectionType.class), WFS.FeatureCollection, output);
         }

@@ -21,6 +21,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Lock;
@@ -261,8 +262,13 @@ public class GetFeature {
                 }
 
                 if (q.getTypeNames().isEmpty()) {
-                    String msg = "No feature types specified";
-                    throw new WFSException(request, msg);
+                    if (getFeatureById) {
+                        // by spec, a 404 should be returned in this case 
+                        throw new WFSException(request, "Could not find feature with specified id", WFSException.NOT_FOUND);
+                    } else {
+                        String msg = "No feature types specified";
+                        throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
+                    }
                 }
             }
         }

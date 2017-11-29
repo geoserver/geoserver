@@ -1,0 +1,25 @@
+<wmts>
+  <id>WMTSInfoImpl--77332cf0:16004924dc0:-7fee</id>
+  <workspace>
+    <id>WorkspaceInfoImpl--77332cf0:16004924dc0:-7ff5</id>
+  </workspace>
+  <enabled>true</enabled>
+  <name>WMTS</name>
+  <title>GeoServer Web Map Tile Service</title>
+  <maintainer>http://geoserver.org/com</maintainer>
+  <abstrct>The statement (A compliant implementation of WMTS service.) should be: This service implements the NSG WMTS 1.0.0 profile version 1.0.</abstrct>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.0.0</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>Information\@language=en\;</string>
+  </keywords>
+  <citeCompliant>true</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+</wmts>

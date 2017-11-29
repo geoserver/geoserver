@@ -1,0 +1,39 @@
+<GeoServerTileLayer>
+  <id>LayerInfoImpl--77332cf0:16004924dc0:-7ffb</id>
+  <enabled>true</enabled>
+  <inMemoryCached>true</inMemoryCached>
+  <name>cite_wmts_10:TransparentNodata</name>
+  <mimeFormats>
+    <string>image/png</string>
+  </mimeFormats>
+  <gridSubsets>
+    <gridSubset>
+      <gridSetName>TransparentNodata</gridSetName>
+      <extent>
+        <coords>
+          <double>-180.0</double>
+          <double>-89.9011075949367</double>
+          <double>-0.0988924050632818</double>
+          <double>90.0</double>
+        </coords>
+      </extent>
+    </gridSubset>
+  </gridSubsets>
+  <metaWidthHeight>
+    <int>4</int>
+    <int>4</int>
+  </metaWidthHeight>
+  <expireCache>0</expireCache>
+  <expireClients>0</expireClients>
+  <parameterFilters>
+    <styleParameterFilter>
+      <key>STYLES</key>
+      <defaultValue></defaultValue>
+      <availableStyles class="sorted-set">
+        <string>cite_wmts_10:Default_style</string>
+      </availableStyles>
+      <defaultStyle>cite_wmts_10:Default_style</defaultStyle>
+    </styleParameterFilter>
+  </parameterFilters>
+  <gutter>0</gutter>
+</GeoServerTileLayer>

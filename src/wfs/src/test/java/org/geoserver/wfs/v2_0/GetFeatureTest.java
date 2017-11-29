@@ -26,6 +26,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.StoredQuery;
@@ -1112,9 +1113,9 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
 
     @Test
-    public void testSOAP() throws Exception {
+    public void testSOAP11() throws Exception {
         String xml = 
-           "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> " + 
+           "<soap:Envelope xmlns:soap='" + Dispatcher.SOAP_11_NS + "'> " + 
                 " <soap:Header/> " + 
                 " <soap:Body>"
                 + "<wfs:GetFeature " + "service='WFS' "
@@ -1130,6 +1131,32 @@ public class GetFeatureTest extends WFS20TestSupport {
               
         MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
         assertEquals("application/soap+xml", resp.getContentType());
+        Document dom = dom(new ByteArrayInputStream(resp.getContentAsByteArray()));
+        assertEquals(Dispatcher.SOAP_11_NS, dom.getDocumentElement().getAttribute("xmlns:soap"));
+    }
+
+    @Test
+    public void testSOAP12() throws Exception {
+        String xml =
+                "<soap:Envelope xmlns:soap='" + Dispatcher.SOAP_12_NS + "'> " +
+                        " <soap:Header/> " +
+                        " <soap:Body>"
+                        + "<wfs:GetFeature " + "service='WFS' "
+                        +   "version='2.0.0' "
+                        +   "xmlns:cdf='http://www.opengis.net/cite/data' "
+                        +   "xmlns:wfs='http://www.opengis.net/wfs/2.0' " + "> "
+                        +   "<wfs:Query typeNames='cdf:Other'> "
+                        +     "<wfs:PropertyName>cdf:string2</wfs:PropertyName> "
+                        +   "</wfs:Query> "
+                        + "</wfs:GetFeature>" +
+                        " </soap:Body> " +
+                        "</soap:Envelope> ";
+
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
+        assertEquals("application/soap+xml", resp.getContentType());
+        Document dom = dom(new ByteArrayInputStream(resp.getContentAsByteArray()));
+        // print(dom);
+        assertEquals(Dispatcher.SOAP_12_NS, dom.getDocumentElement().getAttribute("xmlns:soap"));
     }
 
     @Test

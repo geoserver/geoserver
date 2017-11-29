@@ -143,8 +143,9 @@ public class Dispatcher extends AbstractController {
      */
     List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
 
-    /** SOAP namespace */
-    static final String SOAP_NS = "http://www.w3.org/2003/05/soap-envelope";
+    /** SOAP namespaces */
+    public static final String SOAP_12_NS = "http://www.w3.org/2003/05/soap-envelope";
+    public static final String SOAP_11_NS = "http://schemas.xmlsoap.org/soap/envelope/";
     
     /** SOAP mime type */
     static final String SOAP_MIME = "application/soap+xml";
@@ -324,7 +325,7 @@ public class Dispatcher extends AbstractController {
             if (httpRequest.getContentType() != null && 
                 httpRequest.getContentType().startsWith(SOAP_MIME)) {
                 request.setSOAP(true);
-                request.setInput(soapReader(httpRequest));
+                request.setInput(soapReader(httpRequest, request));
             }
             else if (reqContentType != null && ServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
@@ -437,7 +438,7 @@ public class Dispatcher extends AbstractController {
         return req;
     }
 
-    BufferedReader soapReader(HttpServletRequest httpRequest) throws IOException {
+    BufferedReader soapReader(HttpServletRequest httpRequest, Request request) throws IOException {
         //in order to pull out the payload we have to parse the entire request and then reencode it
         // not nice... but then again neither is using SOAP
         Document dom = null;
@@ -449,10 +450,18 @@ public class Dispatcher extends AbstractController {
         }
 
         //find the soap:Body element
-        NodeList list = dom.getElementsByTagNameNS(SOAP_NS, "Body");
+        NodeList list = dom.getElementsByTagNameNS(SOAP_12_NS, "Body");
         if (list.getLength() != 1) {
-            throw new IOException("SOAP requests should specify a single Body element");
+            list = dom.getElementsByTagNameNS(SOAP_11_NS, "Body");
+            if (list.getLength() != 1) {
+                throw new IOException("SOAP requests should specify a single Body element");
+            } else {
+                request.setSOAPNamespace(SOAP_11_NS);
+            }
+        } else {
+            request.setSOAPNamespace(SOAP_12_NS);
         }
+        
         Element body = (Element) list.item(0);
 
         //pull out the first element child
@@ -998,7 +1007,7 @@ public class Dispatcher extends AbstractController {
             try {
                 if (req.isSOAP()) {
                     //SOAP request, start the SOAP wrapper
-                    startSOAPEnvelope(output, response);
+                    startSOAPEnvelope(output, req, response);
                 }
     
                 //special check for transformer
@@ -1085,8 +1094,8 @@ public class Dispatcher extends AbstractController {
         }
     }
 
-    void startSOAPEnvelope(OutputStream output, Response response) throws IOException {
-        output.write(("<soap:Envelope xmlns:soap='" + SOAP_NS + "'><soap:Header/>").getBytes());
+    void startSOAPEnvelope(OutputStream output, Request request, Response response) throws IOException {
+        output.write(("<soap:Envelope xmlns:soap='" + request.getSOAPNamespace() + "'><soap:Header/>").getBytes());
         output.write("<soap:Body".getBytes());
         if (response != null && response instanceof SOAPAwareResponse) {
             String type = ((SOAPAwareResponse)response).getBodyType();

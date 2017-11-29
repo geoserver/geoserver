@@ -119,6 +119,11 @@ public class Request {
      */
     protected UUID identifier;
 
+    /**
+     * SOAP namespace used in the request
+     */
+    private String soapNamespace;
+
     public Request() {
         timestamp = new Date(); 
         identifier = UUID.randomUUID();
@@ -501,5 +506,21 @@ public class Request {
         } else if (!identifier.equals(other.identifier))
             return false;
         return true;
+    }
+
+    /**
+     * Sets the SOAP namespace used in the request
+     * @param soapNamespace
+     */
+    public void setSOAPNamespace(String soapNamespace) {
+        this.soapNamespace = soapNamespace;
+    }
+
+    /**
+     * Returns the SOAP namespace used in the request, or null if the request was not a SOAP one
+     * @return
+     */
+    public String getSOAPNamespace() {
+        return soapNamespace;
     }
 }

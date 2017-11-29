@@ -746,7 +746,10 @@ public class GetFeature {
                 foundGetFeatureById |= GET_FEATURE_BY_ID.equalsIgnoreCase(storedQueryId) || GET_FEATURE_BY_ID_DEPRECATED.equals(storedQueryId);
                 StoredQuery storedQuery = storedQueryProvider.getStoredQuery(storedQueryId);
                 if (storedQuery == null) {
-                    throw new WFSException(request, "Stored query '" + storedQueryId + "' does not exist.");
+                    WFSException exception = new WFSException(request, "Stored query '" + storedQueryId + "' does not" +
+                            " exist.", ServiceException.INVALID_PARAMETER_VALUE);
+                    exception.setLocator("STOREDQUERY_ID");
+                    throw exception;
                 }
 
                 List<net.opengis.wfs20.QueryType> compiled = storedQuery.compile(sq);

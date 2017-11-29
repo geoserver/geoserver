@@ -935,6 +935,12 @@ public class GetFeatureTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("/sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
     }
 
+    @Test
+    public void testUnknownStoredQuery() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&storedQueryId=foobar", 400);
+        checkOws11Exception(dom, "2.0.0", "InvalidParameterValue", "STOREDQUERY_ID");
+    }
+
     /**
      * Used to NPE, see GEOS-7532
      * @throws Exception

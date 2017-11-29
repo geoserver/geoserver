@@ -7,6 +7,7 @@ package org.geoserver.wfs.v2_0;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
@@ -144,9 +145,8 @@ public class StoredQueryTest extends WFS20TestSupport {
     
     @Test
     public void testDescribeStoredQueries() throws Exception {
-        Document dom = getAsDOM("wfs?request=DescribeStoredQueries&storedQueryId=myStoredQuery");
-        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathExists("//ows:Exception[@exceptionCode = 'InvalidParameterValue']", dom);
+        Document dom = getAsDOM("wfs?request=DescribeStoredQueries&storedQueryId=myStoredQuery", 400);
+        checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "STOREDQUERY_ID");
         
         testCreateStoredQuery();
         
@@ -318,6 +318,12 @@ public class StoredQueryTest extends WFS20TestSupport {
         Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:DropStoredQueryResponse").getLength());
+    }
+
+    @Test
+    public void testDropUnknownStoredQuery() throws Exception {
+        Document dom = getAsDOM("wfs?request=DropStoredQuery&storedQuery_Id=myStoredQuery", 400);
+        checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "id");
     }
 
 }

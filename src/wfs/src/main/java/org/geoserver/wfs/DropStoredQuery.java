@@ -8,6 +8,7 @@ package org.geoserver.wfs;
 import net.opengis.wfs20.DropStoredQueryType;
 import net.opengis.wfs20.ExecutionStatusType;
 import net.opengis.wfs20.Wfs20Factory;
+import org.geoserver.platform.ServiceException;
 
 /**
  * Web Feature Service DropStoredQuery operation.
@@ -38,9 +39,13 @@ public class DropStoredQuery {
         StoredQuery query = storedQueryProvider.getStoredQuery(request.getId());
         if (query != null) {
             storedQueryProvider.removeStoredQuery(query);
-        }
-        else {
-            throw new WFSException(request, String.format("Stored query %s does not exist.", request.getId()));
+        } else {
+            WFSException exception = new WFSException(request, String.format("Stored query %s does not exist.",
+                    request.getId()), ServiceException.INVALID_PARAMETER_VALUE);
+            // CITE tests vagary, the XML uses "id" and KVP uses "STOREDQUERY_ID", the CITE tests mandate "id"
+            // in all bindings
+            exception.setLocator("id");
+            throw exception;
         }
         
         Wfs20Factory factory = Wfs20Factory.eINSTANCE;

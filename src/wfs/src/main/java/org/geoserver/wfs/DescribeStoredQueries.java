@@ -5,14 +5,14 @@
  */
 package org.geoserver.wfs;
 
-import java.net.URI;
-import java.util.List;
-
 import net.opengis.wfs20.DescribeStoredQueriesResponseType;
 import net.opengis.wfs20.DescribeStoredQueriesType;
 import net.opengis.wfs20.Wfs20Factory;
-
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
+
+import java.net.URI;
+import java.util.List;
 
 /**
  * Web Feature Service DescribeStoredQueries operation.
@@ -47,12 +47,14 @@ public class DescribeStoredQueries {
             for (StoredQuery query : storedQueryProvider.listStoredQueries()) {
                 describeStoredQuery(query, response);
             }
-        }
-        else {
+        } else {
             for (URI id : request.getStoredQueryId()) {
                 StoredQuery query = storedQueryProvider.getStoredQuery(id.toString());
                 if (query == null) {
-                    throw new WFSException(request, "No such stored query: " + id, "InvalidParameterValue");
+                    WFSException exception = new WFSException(request, "No such stored query: " + id, 
+                            ServiceException.INVALID_PARAMETER_VALUE);
+                    exception.setLocator("STOREDQUERY_ID");
+                    throw exception;
                 }
 
                 describeStoredQuery(query, response);

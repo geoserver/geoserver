@@ -25,6 +25,7 @@ import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geotools.data.wfs.WFSServiceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
@@ -528,7 +529,9 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         for (URI storedQueryId : storedQueryIds) {
             StoredQuery sq = sqp.getStoredQuery(storedQueryId.toString());
             if (sq == null) {
-                throw new WFSException(req, "No such stored query: " + storedQueryId);
+                WFSException exception = new WFSException(req, "No such stored query: " + storedQueryId, ServiceException.INVALID_PARAMETER_VALUE);
+                exception.setLocator("STOREDQUERY_ID");
+                throw exception;
             }
     
             //JD: since stored queries are 2.0 only we will create 2.0 model objects directly... once

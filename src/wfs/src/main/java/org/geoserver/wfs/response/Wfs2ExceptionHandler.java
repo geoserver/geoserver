@@ -77,12 +77,14 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
     private void setHttpHeaders(ServiceException exception, Request request) {
         HttpServletResponse response = request.getHttpResponse();
         String code = exception.getCode();
+        
         if (code == null) {
-            exception.setCode(WFSException.OPERATION_PROCESSING_FAILED);
+            exception.setCode(WFSException.NO_APPLICABLE_CODE);
+        }
+
+        if (WFSException.OPERATION_PROCESSING_FAILED.equals(code)) {
             response.setStatus(500);
-        } else if(WFSException.OPERATION_PROCESSING_FAILED.equals(code)) {
-            response.setStatus(500);
-        } else if(WFSException.NOT_FOUND.equals(code)) {
+        } else if (WFSException.NOT_FOUND.equals(code)) {
             response.setStatus(404);
         } else {
             // all other codes use 400

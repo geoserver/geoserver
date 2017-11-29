@@ -5,16 +5,8 @@
  */
 package org.geoserver.wfs;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -35,6 +27,12 @@ import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.Name;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
@@ -133,7 +131,10 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (gf != null) {
             for (Query q : gf.getQueries()) {
-                qualifyTypeNames(q.getTypeNames(), workspace, ns);
+                // in case of stored query usage the typenames might be null
+                if (q.getTypeNames() != null) {
+                    qualifyTypeNames(q.getTypeNames(), workspace, ns);
+                }
             }
             return;
         }

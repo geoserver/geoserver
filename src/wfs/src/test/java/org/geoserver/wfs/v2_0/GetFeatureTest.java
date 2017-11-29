@@ -929,13 +929,21 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&storedQueryId=" + 
             StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeature.f001");
         
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
-        XMLAssert.assertXpathExists("//sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
-        
-        dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&storedQuery_Id=" + 
+        // GetFeatureById is special, should not be wrapped by wfs:FeatureCollection
+        XMLAssert.assertXpathNotExists("//wfs:FeatureCollection", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
+        XMLAssert.assertXpathExists("/sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
+    }
+
+    /**
+     * Used to NPE, see GEOS-7532
+     * @throws Exception
+     */
+    @Test
+    public void testDefaultStoredQueryGetWorkspaceQualified() throws Exception {
+        Document dom = getAsDOM("sf/wfs?request=GetFeature&version=2.0.0&storedQueryId=" +
                 StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeature.f001");
-        // print(dom);
-            
+
         // GetFeatureById is special, should not be wrapped by wfs:FeatureCollection
         XMLAssert.assertXpathNotExists("//wfs:FeatureCollection", dom);
         XMLAssert.assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);

@@ -86,6 +86,8 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
             response.setStatus(500);
         } else if (WFSException.NOT_FOUND.equals(code)) {
             response.setStatus(404);
+        } else if (WFSException.LOCK_HAS_EXPIRED.equals(code)) {
+            response.setStatus(403);
         } else {
             // all other codes use 400
             response.setStatus(400);

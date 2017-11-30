@@ -5,19 +5,10 @@
  */
 package org.geoserver.wfs;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.Lock;
 import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureResponse;
@@ -28,12 +19,12 @@ import org.geotools.data.FeatureLock;
 import org.geotools.data.FeatureLockFactory;
 import org.geotools.data.FeatureLocking;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.InProcessLockingManager;
 import org.geotools.data.LockingManager;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.wfs.v2_0.WFS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
@@ -42,6 +33,16 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Web Feature Service 1.0 LockFeature Operation.
@@ -425,31 +426,43 @@ public class LockFeature {
     }
 
     public void refresh(String lockId) throws WFSException {
+        boolean refresh = false;
+        boolean lockFound = false;
         try {
-            boolean refresh = false;
-
             List dataStores = catalog.getDataStores();
 
-            for (Iterator i = dataStores.iterator(); i.hasNext();) {
+            // check for lock existance
+            
+            for (Iterator i = dataStores.iterator(); i.hasNext(); ) {
                 DataStoreInfo meta = (DataStoreInfo) i.next();
                 DataStore dataStore = null;
-                
+
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if ( da instanceof DataStore ) {
+                    if (da instanceof DataStore) {
                         dataStore = (DataStore) da;
                     }
                 }
-                
-                if ( dataStore == null ) {
+
+                if (dataStore == null) {
                     continue; // disabled or not a DataStore
                 }
-                
+
                 LockingManager lockingManager = dataStore.getLockingManager();
 
                 if (lockingManager == null) {
                     continue; // locks not supported
+                }
+                
+                // calling "exists" clears an expired lock, do this instead to verify existence
+                // since for the past 10+ years InProcessLockingManager has been the only game in town
+                if (lockingManager instanceof InProcessLockingManager) {
+                    InProcessLockingManager ip = (InProcessLockingManager) lockingManager;
+                    Set<InProcessLockingManager.Lock> locks = ip.allLocks();
+                    if (locks != null) {
+                        lockFound |= locks.stream().anyMatch(l -> l.isMatch(lockId));
+                    }
                 }
 
                 org.geotools.data.Transaction t = new DefaultTransaction("Refresh "
@@ -471,12 +484,18 @@ public class LockFeature {
                     }
                 }
             }
-
-            if (!refresh) {
-                // throw exception? or ignore...
-            }
         } catch (Exception e) {
             throw new WFSException(e);
+        }
+
+        // the API does not give us a way to check if a lock exists but it's expired, but WFS 2.0
+        // requires to send back a different response... we'll make a guess 
+        if (!refresh) {
+            if (!lockFound) {
+                throw new ServiceException("Unknown lock id", WFSException.INVALID_LOCK_ID, "lockId");
+            } else {
+                throw new ServiceException("Lock has expired", WFSException.LOCK_HAS_EXPIRED, "lockId");
+            }
         }
     }
 

@@ -19,6 +19,9 @@ public class WFSException extends ServiceException {
     public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
     public static final String INVALID_VALUE = "InvalidValue";
     public static final String DUPLICATE_STORED_QUERY_ID_VALUE = "DuplicateStoredQueryIdValue";
+    public static final String LOCK_HAS_EXPIRED = "LockHasExpired";
+    public static final String OPERATION_PARSING_FAILED = "OperationParsingFailed";
+    public static final String INVALID_LOCK_ID = "InvalidLockId";
 
     public enum Code {
         OperationProcessingFailed

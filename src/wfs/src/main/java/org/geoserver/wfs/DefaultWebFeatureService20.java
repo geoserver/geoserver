@@ -23,7 +23,6 @@ import net.opengis.wfs20.LockFeatureType;
 import net.opengis.wfs20.TransactionResponseType;
 import net.opengis.wfs20.TransactionType;
 import net.opengis.wfs20.ValueCollectionType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -32,6 +31,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureRequest;
+import org.geoserver.wfs.request.LockFeatureResponse;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.filter.FilterFactory2;
@@ -110,8 +110,16 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
 
     public LockFeatureResponseType lockFeature(LockFeatureType request) throws WFSException {
         LockFeature lockFeature = new LockFeature(getServiceInfo(), getCatalog(), filterFactory);
-        return (LockFeatureResponseType) 
-            lockFeature.lockFeature(new LockFeatureRequest.WFS20(request)).getAdaptee();
+        if (request.getLockId() != null) {
+            lockFeature.refresh(request.getLockId());
+            LockFeatureResponse response = new LockFeatureRequest.WFS20(request).createResponse();
+            response.setLockId(request.getLockId());
+
+            return (LockFeatureResponseType) response.getAdaptee();
+        } else {
+            return (LockFeatureResponseType) lockFeature.lockFeature(new LockFeatureRequest.WFS20(request))
+                    .getAdaptee();
+        }
     }
     
     public TransactionResponseType transaction(TransactionType request) throws WFSException {

@@ -18,6 +18,7 @@ import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -122,6 +123,10 @@ public class StyleEditPage extends AbstractStylePage {
             getCatalog().save(style);
             // provide feedback to the user
             styleForm.info("Style saved");
+            // retrieve sld style for non-sld formatted styles on update
+            if ((!SLDHandler.FORMAT.equals(format))) {
+              getCatalog().getResourcePool().getStyle(stylePath);
+            }
         } catch( Exception e ) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             styleForm.error( e );

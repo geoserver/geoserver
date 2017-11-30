@@ -36,10 +36,10 @@
                     map: map,
 
                     extent: { // autocasts as new Extent()
-                        xmin: -125.0,
-                        ymin: -25.0,
-                        xmax: -65,
-                        ymax: 50,
+                        xmin: -103.8725637911543,
+                        ymin: 44.37740330855979,
+                        xmax: -103.63794182141925,
+                        ymax: 44.48804280772808,
                         spatialReference: 4326
                     }
                 });
@@ -50,7 +50,7 @@
 
                     // Carbon storage of trees in Warren Wilson College.
                 var featureLayer = new FeatureLayer({
-                        url: "http://localhost:9191/geoserver/gsr/services/sf/FeatureServer/0"
+                        url: "http://localhost:8080/geoserver/gsr/services/sf/FeatureServer/0"
                     });
 
                 map.add(featureLayer);
@@ -58,7 +58,7 @@
             });
 
         require(["esri/config"], function (esriConfig) {
-            esriConfig.request.corsEnabledServers.push("localhost:9191");
+            esriConfig.request.corsEnabledServers.push("localhost:8080");
         });
     </script>
 </head>

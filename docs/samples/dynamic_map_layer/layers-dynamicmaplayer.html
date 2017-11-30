@@ -28,19 +28,19 @@
 
     <script>
         require(["esri/config"], function (esriConfig) {
-            esriConfig.request.corsEnabledServers.push("localhost:9191");
+            esriConfig.request.corsEnabledServers.push("localhost:8080");
         });
         require([
             "esri/Map",
-            "esri/views/SceneView",
+            "esri/views/MapView",
             "esri/layers/MapImageLayer",
             "esri/widgets/Legend",
             "dojo/domReady!"
-        ], function (Map, SceneView, MapImageLayer, Legend) {
+        ], function (Map, MapView, MapImageLayer, Legend) {
 
             var layer = new MapImageLayer({
-                url: "http://localhost:9191/geoserver/gsr/services/topp/MapServer/1",
-                title: "Census Demographics"
+                url: "http://localhost:8080/geoserver/gsr/services/topp/MapServer/3",
+                title: "Topp"
             });
 
             /*****************************************************************
@@ -51,12 +51,16 @@
                 layers: [layer]
             });
 
-            var view = new SceneView({
+            var view = new MapView({
                 container: "viewDiv",
                 map: map,
-                zoom: 13,
-                center: [-122.436, 37.764],
-                spatialReference: 4326
+                extent: { // autocasts as new Extent()
+                    xmin: 143.83482400000003,
+                    ymin: -43.648056,
+                    xmax: 148.47914100000003,
+                    ymax: -39.573891,
+                    spatialReference: 4326
+                }
             });
         });
     </script>
@@ -66,12 +70,6 @@
 <body>
 <div id="viewDiv"></div>
 <div id="info-div">
-    Select a demographic variable<br><br>
-    <select id="layer-select">
-        <option value="0">Population density</option>
-        <option value="1" selected>Renter occupied units</option>
-        <option value="2">Median age</option>
-    </select>
 </div>
 </body>
 

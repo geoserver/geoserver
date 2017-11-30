@@ -28,7 +28,7 @@
 
     <script>
         require(["esri/config"], function (esriConfig) {
-            esriConfig.request.corsEnabledServers.push("localhost:9191");
+            esriConfig.request.corsEnabledServers.push("localhost:8080");
         });
         require([
             "esri/Map",
@@ -39,7 +39,7 @@
         ], function (Map, MapView, MapImageLayer, Legend) {
 
             var layer = new MapImageLayer({
-                url: "http://localhost:9191/geoserver/gsr/services/tiger/MapServer",
+                url: "http://localhost:8080/geoserver/gsr/services/tiger/MapServer",
                 title: "Census Demographics"
             });
 
@@ -54,7 +54,6 @@
             var view = new MapView({
                 container: "viewDiv",
                 map: map,
-
                 extent: { // autocasts as new Extent()
                     xmin: -74.0118315772888,
                     ymin: 40.70754683896324,

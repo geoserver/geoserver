@@ -1,0 +1,1 @@
+wms?bbox=-130,24,-66,50&request=GetMap&layers=topp:states&width=800&height=400&srs=EPSG:4326&styles=population&Format=image/svg+xml

@@ -1,0 +1,1 @@
+wcs?SERVICE=WCS&REQUEST=GetCoverage&VERSION=2.0.1&CoverageId=nurc__mosaic&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(100),http://www.opengis.net/def/axis/OGC/1/j(100)

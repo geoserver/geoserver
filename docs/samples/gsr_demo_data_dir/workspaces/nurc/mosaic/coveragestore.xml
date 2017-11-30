@@ -1,0 +1,12 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--570ae188:124761b8d78:-7fd6</id>
+  <name>mosaic</name>
+  <description>Italian sample mosaic</description>
+  <type>ImageMosaic</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ff7</id>
+  </workspace>
+  <__default>false</__default>
+  <url>file:coverages/mosaic_sample/mosaic.shp</url>
+</coverageStore>

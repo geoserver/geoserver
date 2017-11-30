@@ -53,6 +53,12 @@
       <nillable>false</nillable>
     </attribute>
     <attribute>
+      <name>identifier</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
       <name>attribut.Géométrie</name>
       <minOccurs>1</minOccurs>
       <maxOccurs>1</maxOccurs>

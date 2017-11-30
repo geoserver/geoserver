@@ -62,6 +62,12 @@
       <nillable>false</nillable>
     </attribute>
     <attribute>
+      <name>identifier</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
       <name>multiPointProperty</name>
       <minOccurs>0</minOccurs>
       <maxOccurs>1</maxOccurs>

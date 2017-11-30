@@ -20,8 +20,12 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -695,7 +699,7 @@ public class TransactionTest extends WFS20TestSupport {
             "   <wfs:Property>" +
             "     <wfs:ValueReference>cite:the_geom</wfs:ValueReference>" +
             "     <wfs:Value>" +
-            "      <gml:MultiCurve xmlns:gml=\"http://www.opengis.net/gml\">" + 
+            "      <gml:MultiCurve>" + 
             "       <gml:curveMember>" + 
             "         <gml:LineString>" +
             "            <gml:posList>4.2582 52.0643 4.2584 52.0648</gml:posList>" +
@@ -711,7 +715,8 @@ public class TransactionTest extends WFS20TestSupport {
             "     </fes:PropertyIsEqualTo>" + 
             "   </fes:Filter>" +
             " </wfs:Update>" +
-           "</wfs:Transaction>"; 
+           "</wfs:Transaction>";
+        System.out.println(xml);
             
             Document dom = postAsDOM( "cite/Forests/wfs", xml );
             XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
@@ -950,5 +955,46 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals(400, response.getStatus());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         checkOws11Exception(dom, "2.0.0", "InvalidValue", "Transaction");
+    }
+    
+    @Test
+    public void testUpdateBoundedByWithKML() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
+        GeoServerInfo global = gs.getGlobal();
+        global.setXmlExternalEntitiesEnabled(true);
+        gs.save(global);
+
+        try {
+            // this comes from CITE WFS 2.0 tests... enough said
+            String xml = "<wfs:Transaction xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\n" +
+                    "                 xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" +
+                    "                 service=\"WFS\"\n" +
+                    "                 version=\"2.0.0\">\n" +
+                    "  <wfs:Update xmlns:ns17=\"http://cite.opengeospatial.org/gmlsf\"\n" +
+                    "               typeName=\"ns17:AggregateGeoFeature\">\n" +
+                    "      <wfs:Property>\n" +
+                    "         <wfs:ValueReference action=\"replace\">gml:boundedBy</wfs:ValueReference>\n" +
+                    "         <wfs:Value>\n" +
+                    "            <Point xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                    "               <coordinates>-123.1,49.25</coordinates>\n" +
+                    "            </Point>\n" +
+                    "         </wfs:Value>\n" +
+                    "      </wfs:Property>\n" +
+                    "  </wfs:Update>\n" +
+                    "</wfs:Transaction>";
+
+            MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+            assertEquals(400, response.getStatus());
+            Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+            checkOws11Exception(dom, "2.0.0", WFSException.INVALID_VALUE, "boundedBy");
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+            global.setXmlExternalEntitiesEnabled(false);
+            gs.save(global);
+        }
     }
 }

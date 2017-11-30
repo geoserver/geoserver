@@ -5,20 +5,10 @@
  */
 package org.geoserver.wfs;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.Property;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
@@ -36,8 +26,10 @@ import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.gml2.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
+import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -52,7 +44,18 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
-import com.vividsolutions.jts.geom.Geometry;
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.logging.Logger;
 
 
 /**
@@ -62,6 +65,18 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class UpdateElementHandler extends AbstractTransactionElementHandler {
+    
+    static final Map<String, Class> GML_PROPERTIES_BINDINGS = new HashMap<String, Class>() {{
+        put("name", String.class);
+        put("description", String.class);
+        put("boundedBy", Geometry.class);
+        put("location", Geometry.class);
+        put("metaDataProperty", String.class);
+    }};
+    
+    static final Set<String> GML_NAMESPACES = new HashSet<>(Arrays.asList(GML.NAMESPACE, org.geotools.gml3.GML.NAMESPACE, org.geotools.gml3.v3_2.GML.NAMESPACE));
+    
+    
     /**
      * logger
      */
@@ -105,25 +120,63 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                     }
                 }
                 
-                //check that property names are actually valid
+                // check that property names are actually valid
                 QName name = property.getName();
                 PropertyName propertyName = null;
                 
                 if ( name.getPrefix() != null && !"".equals( name.getPrefix() )) {
                     propertyName = ff.property( name.getPrefix() + ":" + name.getLocalPart() );
-                }
-                else {
+                } else {
                     propertyName = ff.property( name.getLocalPart() ); 
                 }
-                
-                if ( propertyName.evaluate( featureType ) == null ) {
+
+                AttributeDescriptor descriptor = propertyName.evaluate(featureType, AttributeDescriptor.class);
+                if ( descriptor == null ) {
+                    if (getInfo().isCiteCompliant()) {
+                        // was it a common GML property that we don't have backing storage for?
+                        String namespace = name.getNamespaceURI();
+                        Class binding = GML_PROPERTIES_BINDINGS.get(name.getLocalPart());
+                        if (GML_NAMESPACES.contains(namespace) && binding != null) {
+                            // the hack is here, CITE tests want us to report that updating with an un-parseable KML point
+                            // is an invalid value
+                            validateValue(element, property, binding);
+
+                            // if the above did not throw, then move on with the usual behavior
+                        }
+                    }
+                    
                     String msg = "No such property: " + name;
-                    throw new WFSException(element, msg );
+                    throw new WFSException(element, msg, ServiceException.INVALID_PARAMETER_VALUE);
                 }
+
+                // validate contents
+                validateValue(element, property, descriptor.getType().getBinding());
             }
         } catch (IOException e) {
             throw new WFSTransactionException("Could not locate feature type information for " + 
                 update.getTypeName(), e, update.getHandle());
+        }
+    }
+
+    private void validateValue(TransactionElement element, Property property, Class<?> binding) {
+        Object value = property.getValue();
+
+        // was it a null? If so, assume valid (already checked for nulls before)
+        if (value == null // parsed as null 
+                || (value instanceof String && ((String) value).trim().isEmpty()) // as an empty string 
+                || (value instanceof Map && ((Map) value).isEmpty()) // or the usual map that the parser creates 
+                ) {
+            return;
+        }
+
+        // see if the datastore machinery will be able to convert
+        Object converted = Converters.convert(value, binding);
+        if (converted == null) {
+            String propertyName = property.getName().getLocalPart();
+            WFSException e = new WFSException(element, "Invalid value for property " + propertyName, WFSException
+                    .INVALID_VALUE);
+            e.setLocator(propertyName);
+            throw e;
         }
     }
 

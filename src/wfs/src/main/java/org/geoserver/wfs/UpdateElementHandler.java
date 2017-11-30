@@ -224,9 +224,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             for (int j = 0; j < properties.size(); j++) {
                 Property property = properties.get(j);
                 QName propertyName = property.getName();
-                types[j] = store.getSchema().getDescriptor(propertyName.getLocalPart());
-                
-                names[j] = propertyName.getLocalPart();
+                names[j] = cleanupXPath(propertyName.getLocalPart());
+                types[j] = store.getSchema().getDescriptor(names[j]);
                 values[j] = property.getValue();
                 
                 // if geometry, it may be necessary to reproject it to the native CRS before
@@ -369,6 +368,14 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         // update transaction summary
         response.setTotalUpdated(BigInteger.valueOf(updated));
+    }
+
+    private String cleanupXPath(String name) {
+        // saying foo or foo[1] is the same
+        if (name.endsWith("[1]")) {
+            return name.substring(0, name.length() - 3);
+        }
+        return name;
     }
 
     /**

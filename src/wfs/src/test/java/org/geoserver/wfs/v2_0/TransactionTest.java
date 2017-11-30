@@ -716,15 +716,13 @@ public class TransactionTest extends WFS20TestSupport {
             "   </fes:Filter>" +
             " </wfs:Update>" +
            "</wfs:Transaction>";
-        System.out.println(xml);
             
-            Document dom = postAsDOM( "cite/Forests/wfs", xml );
-            XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
-            
-            dom = postAsDOM("cite/RoadSegments/wfs", xml);
-            assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
-            assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
-         
+        Document dom = postAsDOM( "cite/Forests/wfs", xml );
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
+        
+        dom = postAsDOM("cite/RoadSegments/wfs", xml);
+        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+        assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
     }
 
     @Test
@@ -996,5 +994,37 @@ public class TransactionTest extends WFS20TestSupport {
             global.setXmlExternalEntitiesEnabled(false);
             gs.save(global);
         }
+    }
+    
+    @Test
+    public void testUpdateOnSimpleXPath() throws Exception {
+        // from CITE tests WFS 2.0 again
+        String xml = "<wfs:Transaction xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\n" +
+                "                 xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" +
+                "                 xmlns:tns=\"http://cite.opengeospatial.org/gmlsf\"\n" +
+                "                 service=\"WFS\"\n" +
+                "                 version=\"2.0.0\">\n" +
+                "   <wfs:Update handle=\"Update\" typeName=\"tns:GenericEntity\">\n" +
+                "      <wfs:Property>\n" +
+                "         <wfs:ValueReference>tns:featureRef[1]</wfs:ValueReference>\n" +
+                "         <wfs:Value>TEST_VALUE</wfs:Value>\n" +
+                "      </wfs:Property>\n" +
+                "      <fes:Filter xmlns:fes=\"http://www.opengis.net/fes/2.0\">\n" +
+                "         <fes:ResourceId rid=\"GenericEntity.f004\"/>\n" +
+                "      </fes:Filter>\n" +
+                "   </wfs:Update>\n" +
+                "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathExists("//wfs:totalUpdated[text() = 1]", dom);
+
+        // query back and verify it was updated
+        dom = getAsDOM("wfs?service=wfs&version=2.0.0&request=getfeature&typename=sf:GenericEntity" +
+                "&resourceId=GenericEntity.f004");
+        print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:GenericEntity)", dom);
+        XMLAssert.assertXpathEvaluatesTo("TEST_VALUE", "//sf:featureRef", dom);
+
     }
 }

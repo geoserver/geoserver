@@ -226,6 +226,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
                     delete.setFilter(adaptedFilter);
                 }
                 newElements.add(delete);
+            } else if (element instanceof Replace) {
+                newElements.add(element);
             }
         }
         request.setElements(newElements);

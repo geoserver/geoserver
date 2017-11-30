@@ -18,6 +18,7 @@ public class WFSException extends ServiceException {
     public static final String NOT_FOUND = "NotFound";
     public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
     public static final String INVALID_VALUE = "InvalidValue";
+    public static final String DUPLICATE_STORED_QUERY_ID_VALUE = "DuplicateStoredQueryIdValue";
 
     public enum Code {
         OperationProcessingFailed

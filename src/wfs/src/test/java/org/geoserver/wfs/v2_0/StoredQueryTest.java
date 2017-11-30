@@ -10,6 +10,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
+import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.wfs.v2_0.WFS;
@@ -91,8 +92,34 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals("wfs:ListStoredQueriesResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
         
-        xml = 
-        "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
+        xml = getCreatePrimitiveWithinQuery(); 
+        
+        dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+        
+        dom = getAsDOM("wfs?request=ListStoredQueries");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+        XMLAssert.assertXpathExists("//wfs:ReturnFeatureType[text() = 'sf:PrimitiveGeoFeature']", dom);
+    }
+
+    @Test
+    public void testDuplicateStoredQuery() throws Exception {
+        String xml = getCreatePrimitiveWithinQuery();
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+        assertEquals(400, response.getStatus());
+        dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        
+        checkOws11Exception(dom, "2.0.0", WFSException.DUPLICATE_STORED_QUERY_ID_VALUE, "myStoredQuery");
+    }
+
+    public String getCreatePrimitiveWithinQuery() {
+        return "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
         "   xmlns:wfs='http://www.opengis.net/wfs/2.0' " + 
         "   xmlns:fes='http://www.opengis.org/fes/2.0' " + 
         "   xmlns:gml='http://www.opengis.net/gml/3.2' " + 
@@ -114,18 +141,9 @@ public class StoredQueryTest extends WFS20TestSupport {
         "         </wfs:Query> " + 
         "      </wfs:QueryExpressionText> " + 
         "   </wfs:StoredQueryDefinition> " + 
-        "</wfs:CreateStoredQuery>"; 
-        
-        dom = postAsDOM("wfs", xml);
-        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
-        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
-        
-        dom = getAsDOM("wfs?request=ListStoredQueries");
-        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
-        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
-        XMLAssert.assertXpathExists("//wfs:ReturnFeatureType[text() = 'sf:PrimitiveGeoFeature']", dom);
+        "</wfs:CreateStoredQuery>";
     }
-    
+
     @Test
     public void testCreateStoredQueryMismatchingTypes() throws Exception {
         String xml = 

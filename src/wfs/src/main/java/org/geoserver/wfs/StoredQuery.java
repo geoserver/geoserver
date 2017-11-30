@@ -32,7 +32,9 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.kvp.QNameKvpParser;
+import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geotools.filter.v2_0.FES;
+import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
@@ -223,6 +225,7 @@ public class StoredQuery {
             if (catalog != null) {
                 p.getNamespaces().add(new CatalogNamespaceSupport(catalog));
             }
+            p.getNamespaces().declarePrefix("gml", GML.NAMESPACE);
             try {
                 QueryType compiled = 
                     (QueryType) p.parse(new ByteArrayInputStream(sb.toString().getBytes()));

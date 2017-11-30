@@ -39,12 +39,17 @@ public class CreateStoredQuery {
     
     public CreateStoredQueryResponseType run(CreateStoredQueryType request) throws WFSException {
         for (StoredQueryDescriptionType sqd : request.getStoredQueryDefinition()) {
+            if(storedQueryProvider.getStoredQuery(sqd.getId()) != null) {
+                WFSException e = new WFSException(request, "Stored query already exists", WFSException.DUPLICATE_STORED_QUERY_ID_VALUE);
+                e.setLocator(sqd.getId());
+                throw e;
+            }
+            
             validateStoredQuery(request, sqd);
             
             try {
                 storedQueryProvider.createStoredQuery(sqd);
-            }
-            catch(Exception e) {
+            } catch(Exception e) {
                 throw new WFSException(request, "Error occured creating stored query", e);
             }
         }

@@ -26,8 +26,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
@@ -53,6 +55,8 @@ public class GetFeatureTest extends WFS20TestSupport {
     protected void setUpInternal(SystemTestData data) throws Exception {
         data.addVectorLayer(new QName(SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX), Collections.EMPTY_MAP,
             org.geoserver.wfs.v1_1.GetFeatureTest.class, getCatalog());
+        data.addVectorLayer(new QName(SystemTestData.SF_URI, "PrimitiveGeoFeatureId", SystemTestData.SF_PREFIX), Collections.EMPTY_MAP,
+                TestData.class, getCatalog());
     }
 
     @Test
@@ -259,6 +263,16 @@ public class GetFeatureTest extends WFS20TestSupport {
             gs.save(wfs);
         }
 
+    }
+
+    @Test
+    public void testGetWithIdentifier() throws Exception {
+        Document dom =
+                getAsDOM("wfs?request=GetFeature&version=2.0.0&typeName=sf:PrimitiveGeoFeatureId&BBOX=57.0,-4.5,62.0,1.0,EPSG:4326");
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeatureId)", dom);
+        XMLAssert.assertXpathEvaluatesTo("f002", "//sf:PrimitiveGeoFeatureId/gml:identifier", dom);
+        XMLAssert.assertXpathEvaluatesTo(MockData.SF_URI, "//sf:PrimitiveGeoFeatureId/gml:identifier/@codeSpace", dom);
     }
 
     @Test

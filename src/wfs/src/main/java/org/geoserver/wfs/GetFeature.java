@@ -28,6 +28,7 @@ import org.geoserver.wfs.request.Lock;
 import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureResponse;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.request.RequestObject;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
@@ -250,27 +251,7 @@ public class GetFeature {
         queries = request.getQueries();
         
         if (request.isQueryTypeNamesUnset()) {
-            // do a check for FeatureId filters in the queries and update the type names for the 
-            // queries accordingly
-            for (Query q : queries) {
-                if (!q.getTypeNames().isEmpty()) continue;
-                
-                if (q.getFilter() != null) {
-                    TypeNameExtractingVisitor v = new TypeNameExtractingVisitor(catalog);
-                    q.getFilter().accept(v, null);
-                    q.getTypeNames().addAll(v.getTypeNames());
-                }
-
-                if (q.getTypeNames().isEmpty()) {
-                    if (getFeatureById) {
-                        // by spec, a 404 should be returned in this case 
-                        throw new WFSException(request, "Could not find feature with specified id", WFSException.NOT_FOUND);
-                    } else {
-                        String msg = "No feature types specified";
-                        throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
-                    }
-                }
-            }
+            expandTypeNames(request, queries, getFeatureById, getCatalog());
         }
 
         // Optimization Idea
@@ -720,6 +701,30 @@ public class GetFeature {
         return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId, getFeatureById);
     }
 
+    static void expandTypeNames(RequestObject request, List<Query> queries, boolean getFeatureById, Catalog catalog) {
+        // do a check for FeatureId filters in the queries and update the type names for the 
+        // queries accordingly
+        for (Query q : queries) {
+            if (!q.getTypeNames().isEmpty()) continue;
+            
+            if (q.getFilter() != null) {
+                TypeNameExtractingVisitor v = new TypeNameExtractingVisitor(catalog);
+                q.getFilter().accept(v, null);
+                q.getTypeNames().addAll(v.getTypeNames());
+            }
+
+            if (q.getTypeNames().isEmpty()) {
+                if (getFeatureById) {
+                    // by spec, a 404 should be returned in this case 
+                    throw new WFSException(request, "Could not find feature with specified id", WFSException.NOT_FOUND);
+                } else {
+                    String msg = "No feature types specified";
+                    throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
+                }
+            }
+        }
+    }
+
 
     /**
      * Expands the stored queries, returns true if a single GetFeatureById stored query was found (as a
@@ -730,6 +735,20 @@ public class GetFeature {
      */
     protected boolean processStoredQueries(GetFeatureRequest request) {
         List queries = request.getAdaptedQueries();
+        boolean foundGetFeatureById = expandStoredQueries(request, queries, storedQueryProvider);
+
+        return queries.size() == 1 && foundGetFeatureById;
+    }
+
+    /**
+     * Replaces stored queries with actual ad-hoc queries
+     * @param request
+     * @param queries
+     * @param foundGetFeatureById
+     * @param storedQueryProvider
+     * @return
+     */
+    static boolean expandStoredQueries(RequestObject request, List queries, StoredQueryProvider storedQueryProvider) {
         boolean foundGetFeatureById = false;
         for (int i = 0; i < queries.size(); i++) {
             Object obj = queries.get(i);
@@ -758,10 +777,9 @@ public class GetFeature {
                 i += compiled.size();
             }
         }
-        
-        return queries.size() == 1 && foundGetFeatureById;
+        return foundGetFeatureById;
     }
-    
+
     /**
      * Allows subclasses to alter the result generation
      */

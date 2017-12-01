@@ -42,7 +42,7 @@ public class LockFeatureTest extends WFS20TestSupport {
         assertEquals(5, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
         
         // release the lock
-        print(dom);
+        // print(dom);
         String lockId = dom.getDocumentElement().getAttribute("lockId");        
         get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
     }
@@ -126,5 +126,25 @@ public class LockFeatureTest extends WFS20TestSupport {
 
 
     }
+
+    @Test
+    public void testLockWithStoredQuery() throws Exception {
+        String xml = "<wfs:LockFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" expiry=\"1\" service=\"WFS\"\n" +
+                "                 version=\"2.0.0\">\n" +
+                "   <wfs:StoredQuery id=\"urn:ogc:def:query:OGC-WFS::GetFeatureById\">\n" +
+                "      <wfs:Parameter name=\"id\">AggregateGeoFeature.f005</wfs:Parameter>\n" +
+                "   </wfs:StoredQuery>\n" +
+                "</wfs:LockFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+        assertEquals(1, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+
+        // release the lock
+        // print(dom);
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+    }
+
 
 }

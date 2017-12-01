@@ -57,8 +57,11 @@ public abstract class Lock extends RequestObject {
             List typeNames = eGet(adaptee, "typeNames", List.class);
             if (typeNames.size() == 1) {
                 return (QName) typeNames.get(0);
+            } else if(typeNames.size() > 0) {
+                throw new IllegalArgumentException("Multiple type names on single lock not supported");
             }
-            throw new IllegalArgumentException("Multiple type names on single lock not supported");
+            // no typenames found, happens with GetFeatureById stored query for example
+            return null;
         }
         
         @Override

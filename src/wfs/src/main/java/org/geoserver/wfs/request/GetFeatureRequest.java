@@ -189,14 +189,20 @@ public abstract class GetFeatureRequest extends RequestObject {
         
         @Override
         public List<Query> getQueries() {
+            List<Object> adaptedQueries = getAdaptedQueries();
+
+            return getQueries(adaptedQueries);
+        }
+
+        public static List<Query> getQueries(List<?> adaptedQueries) {
             List<Query> list = new ArrayList<Query>();
-            for (Object o : getAdaptedQueries()) {
+            for (Object o : adaptedQueries) {
                 list.add(new Query.WFS20((EObject)o));
             }
-            
+
             return list;
         }
-        
+
         @Override
         public List<Object> getAdaptedQueries() {
             return eGet(adaptee, "abstractQueryExpression", List.class);

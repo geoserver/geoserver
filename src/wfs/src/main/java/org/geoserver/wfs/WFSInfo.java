@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.geoserver.config.ServiceInfo;
+import org.geotools.util.Version;
 
 public interface WFSInfo extends ServiceInfo {
 
@@ -54,6 +55,19 @@ public interface WFSInfo extends ServiceInfo {
                 return V_11;
             }
             return V_20;
+        }
+
+        /**
+         * Compares this value with a given version as string
+         * 
+         * @param version
+         * @return
+         */
+        public int compareTo(String version) {
+            if (version == null) {
+                return (this == latest()) ? 0 : -1;
+            }
+            return this.version.compareTo(new org.geotools.util.Version(version));
         }
 
         public static Version latest() {

@@ -246,6 +246,13 @@ public class GetFeature {
         if (queries.isEmpty()) {
             throw new WFSException(request, "No query specified");
         }
+        
+        // WFS 2.0 validation, with locks "hits" is not allowed
+        if (WFSInfo.Version.V_20.compareTo(request.getVersion()) >= 0
+                && request.isLockRequest() && request.isResultTypeHits()) {
+            throw new WFSException("GetFeatureWithLock cannot be used with result type 'hits'", 
+                    ServiceException.INVALID_PARAMETER_VALUE, "resultType");
+        }
 
         //stored queries, preprocess compile any stored queries into actual query objects
         boolean getFeatureById = processStoredQueries(request);

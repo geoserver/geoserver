@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Test;
@@ -34,6 +35,18 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         Document dom = postAsDOM("wfs", xml);
         assertGML32(dom);
         assertNotNull( dom.getDocumentElement().getAttribute("lockId") );
+    }
+
+    @Test
+    public void testResultTypeHits() throws Exception {
+        String xml = "<wfs:GetFeatureWithLock service='WFS' version='2.0.0' " +
+                "handle='GetFeatureWithLock-tc1' expiry='50' resultType='hits' " +
+                "xmlns:sf='http://cite.opengeospatial.org/gmlsf' xmlns:wfs='" + WFS.NAMESPACE + "'>" +
+                "<wfs:Query handle='qry-1' typeNames='sf:PrimitiveGeoFeature' />" +
+                "</wfs:GetFeatureWithLock>";
+
+        Document dom = postAsDOM("wfs", xml, 400);
+        checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "resultType");
     }
     
 

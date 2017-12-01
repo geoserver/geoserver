@@ -1445,6 +1445,24 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected Document postAsDOM( String path, String xml ) throws Exception {
         return postAsDOM(path, xml, null);
     }
+
+    /**
+     * Executes an ows request using the POST method and returns the result as an
+     * xml document.
+     * <p>
+     *
+     * </p>
+     * @param path The porition of the request after the context ( no query string ), 
+     *      example: 'wms'. 
+     *
+     * @return An input stream which is the result of the request.
+     *
+     */
+    protected Document postAsDOM( String path, String xml, int expectedStatusCode) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse(path, xml);
+        assertEquals(expectedStatusCode, response.getStatus());
+        return dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+    }
     
     /**
      * Executes an ows request using the POST method and returns the result as an

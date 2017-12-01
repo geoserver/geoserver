@@ -9,16 +9,50 @@
   </mimeFormats>
   <gridSubsets>
     <gridSubset>
-      <gridSetName>EPSG3395TiledMercator</gridSetName>
-    </gridSubset>
-    <gridSubset>
       <gridSetName>EPSG:5042</gridSetName>
+      <extent>
+        <coords>
+          <double>-180.35205696202533</double>
+          <double>-89.9011075949367</double>
+          <double>5405880.717371309</double>
+          <double>2000000.0</double>
+        </coords>
+      </extent>
     </gridSubset>
     <gridSubset>
-      <gridSetName>EPSG:4326</gridSetName>
+      <gridSetName>EPSG3395TiledMercator</gridSetName>
+      <extent>
+        <coords>
+          <double>-180.35205696202533</double>
+          <double>-89.9011075949367</double>
+          <double>-0.0988924050632818</double>
+          <double>90.35205696202532</double>
+        </coords>
+      </extent>
     </gridSubset>
     <gridSubset>
       <gridSetName>EPSG:5041</gridSetName>
+      <extent>
+        <coords>
+          <double>-1405880.7173713096</double>
+          <double>-89.9011075949367</double>
+          <double>2039086.8252672695</double>
+          <double>2000000.0</double>
+        </coords>
+      </extent>
+      <zoomStart>0</zoomStart>
+      <zoomStop>5</zoomStop>
+    </gridSubset>
+    <gridSubset>
+      <gridSetName>EPSG:4326</gridSetName>
+      <extent>
+        <coords>
+          <double>-180.0</double>
+          <double>-89.9011075949367</double>
+          <double>-0.0988924050632818</double>
+          <double>90.0</double>
+        </coords>
+      </extent>
     </gridSubset>
   </gridSubsets>
   <metaWidthHeight>

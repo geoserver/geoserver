@@ -5,3 +5,4 @@ target
 .classpath
 .settings
 .idea
+./docs/samples/gsr_demo_data_dir/logs/geoserver.log

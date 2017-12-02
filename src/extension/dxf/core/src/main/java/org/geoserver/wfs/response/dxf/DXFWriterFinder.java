@@ -55,7 +55,7 @@ public final class DXFWriterFinder {
      */
     public static DXFWriter getWriter(String version, Writer writer) {
         FactoryRegistry writerRegistry = getServiceRegistry();
-        Iterator<DXFWriter> it = writerRegistry.getServiceProviders(DXFWriter.class, null, null);
+        Iterator<DXFWriter> it = writerRegistry.getFactories(DXFWriter.class, null, null).iterator();
         DXFWriter candidate;
         while (it.hasNext()) {
             candidate = it.next();

@@ -76,6 +76,8 @@ public abstract class GetFeatureRequest extends RequestObject {
     public abstract boolean isResultTypeHits();
     
     public abstract boolean isLockRequest();
+
+    public abstract boolean isLockActionSome();
     
     public abstract Query createQuery();
     
@@ -153,7 +155,13 @@ public abstract class GetFeatureRequest extends RequestObject {
         public boolean isLockRequest() {
             return adaptee instanceof GetFeatureWithLockType;
         }
-        
+
+        @Override
+        public boolean isLockActionSome() {
+            // no concept of "some" in WFS 1.1 GetFeatureWithLock
+            return false;
+        }
+
         @Override
         public Query createQuery() {
             return new Query.WFS11(((WfsFactory)getFactory()).createQueryType());
@@ -245,7 +253,13 @@ public abstract class GetFeatureRequest extends RequestObject {
         public boolean isLockRequest() {
             return adaptee instanceof net.opengis.wfs20.GetFeatureWithLockType;
         }
-        
+
+        @Override
+        public boolean isLockActionSome() {
+            return ((net.opengis.wfs20.GetFeatureWithLockType)adaptee).getLockAction()
+                    == net.opengis.wfs20.AllSomeType.SOME;
+        }
+
         @Override
         public Query createQuery() {
             return new Query.WFS20(((Wfs20Factory)getFactory()).createQueryType());

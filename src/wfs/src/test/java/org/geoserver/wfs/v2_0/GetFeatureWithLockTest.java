@@ -170,7 +170,7 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
 
 
     @Test
-    public void testGetFeatureWithLockReleaseActionSome() throws Exception {
+    public void testGetFeatureWithLockReleaseActionSomeOnTransaction() throws Exception {
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
                 + "  version=\"2.0.0\"" + "  expiry=\"100\""
                 + "  xmlns:cdf=\"http://www.opengis.net/cite/data\""
@@ -242,6 +242,70 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "//wfs:totalUpdated/text()", dom);
         XMLAssert.assertXpathExists("//wfs:UpdateResults//fes:ResourceId[@rid = '" + fid2 + "']", dom);
+    }
+
+    @Test
+    public void testGetFeatureWithLockActionSome() throws Exception {
+        // get all features
+        String xml = "<wfs:GetFeature" + "  service=\"WFS\""
+                + "  version=\"2.0.0\"" + "  expiry=\"100\""
+                + "  xmlns:cdf=\"http://www.opengis.net/cite/data\""
+                + "  xmlns:fes='" + FES.NAMESPACE + "' "
+                + "  xmlns:wfs='" + WFS.NAMESPACE + "'>"
+                + "  <wfs:Query typeNames=\"cdf:Locks\"/>" + "</wfs:GetFeature>";
+        Document dom = postAsDOM("wfs", xml);
+
+        // get two fids
+        NodeList locks = dom.getElementsByTagName("cdf:Locks");
+        int featureCount = locks.getLength();
+        String fid1 = ((Element) locks.item(0)).getAttribute("gml:id");
+        String fid2 = ((Element) locks.item(1)).getAttribute("gml:id");
+
+        // lock the two fids
+        xml = "<wfs:GetFeatureWithLock" + "  service=\"WFS\""
+                + "  version=\"2.0.0\"" + "  expiry=\"100\""
+                + "  xmlns:cdf=\"http://www.opengis.net/cite/data\""
+                + "  xmlns:fes='" + FES.NAMESPACE + "' "
+                + "  xmlns:wfs='" + WFS.NAMESPACE + "'>"
+                + "  <wfs:Query typeNames=\"cdf:Locks\">" + "    <fes:Filter>"
+                + "      <fes:ResourceId rid=\"" + fid1 + "\"/>"
+                + "      <fes:ResourceId rid=\"" + fid2 + "\"/>"
+                + "    </fes:Filter>" + "  </wfs:Query>"
+                + "</wfs:GetFeatureWithLock>";
+
+        dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement()
+                .getNodeName());
+        XMLAssert.assertXpathExists("//cdf:Locks[@gml:id='" + fid1 + "']", dom);
+        XMLAssert.assertXpathExists("//cdf:Locks[@gml:id='" + fid2 + "']", dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//cdf:Locks)", dom);
+
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        
+        // now try to lock everything with "some", only the ones that can be locked should be returned
+        xml = "<wfs:GetFeatureWithLock" + "  service=\"WFS\""
+                + "  version=\"2.0.0\"" + "  expiry=\"100\""
+                + "  lockAction=\"SOME\""
+                + "  xmlns:cdf=\"http://www.opengis.net/cite/data\""
+                + "  xmlns:fes='" + FES.NAMESPACE + "' "
+                + "  xmlns:wfs='" + WFS.NAMESPACE + "'>"
+                + "  <wfs:Query typeNames=\"cdf:Locks\"/>"
+                + "</wfs:GetFeatureWithLock>";
+
+        dom = postAsDOM("wfs", xml);
+        // print(dom);
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement()
+                .getNodeName());
+        XMLAssert.assertXpathNotExists("//cdf:Locks[@gml:id='" + fid1 + "']", dom);
+        XMLAssert.assertXpathNotExists("//cdf:Locks[@gml:id='" + fid2 + "']", dom);
+        XMLAssert.assertXpathEvaluatesTo(String.valueOf(featureCount - 2), "count(//cdf:Locks)", dom);
+
+        String secondLockId = dom.getDocumentElement().getAttribute("lockId");
+        
+        // release locks
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + secondLockId);
+
     }
  
     @Test

@@ -14,6 +14,7 @@ import net.sf.cglib.proxy.LazyLoader;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.feature.TypeNameExtractingVisitor;
 import org.geoserver.ows.Dispatcher;
@@ -75,6 +76,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.ExpressionVisitor;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.filter.spatial.Beyond;
@@ -110,8 +112,10 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 /**
@@ -260,6 +264,54 @@ public class GetFeature {
         
         if (request.isQueryTypeNamesUnset()) {
             expandTypeNames(request, queries, getFeatureById, getCatalog());
+        }
+
+        // locking, since WFS 2.0 there is a "some" mode that influences how the features should
+        // be returned: "A value of SOME indicates that the WFS shall lock as many feature in the result set as possible. 
+        // The response document shall only contain those features that were successfully locked ..." 
+        String lockId = null;
+        if (request.isLockRequest()) {
+            LockFeatureRequest lockRequest = request.createLockRequest();
+            lockRequest.setExpiry(request.getExpiry());
+            lockRequest.setHandle(request.getHandle());
+            if (request.isLockActionSome()) {
+                lockRequest.setLockActionSome();
+            } else {
+                lockRequest.setLockActionAll();
+            }
+
+            for (int i = 0; i < queries.size(); i++) {
+                Query query = queries.get(i);
+
+                Lock lock = lockRequest.createLock();
+                lock.setFilter(query.getFilter());
+                lock.setHandle(query.getHandle());
+
+                //TODO: joins?
+                List<QName> typeNames = query.getTypeNames();
+                lock.setTypeName(typeNames.get(0));
+                lockRequest.addLock(lock);
+            }
+
+            LockFeature lockFeature = new LockFeature(wfs, catalog);
+            lockFeature.setFilterFactory(filterFactory);
+
+            LockFeatureResponse response = lockFeature.lockFeature(lockRequest);
+            lockId = response.getLockId();
+
+            // in this case we'll modify all queries to only return the locked features 
+            if (request.isLockActionSome()) {
+                Filter lockedFeatureFilter = toFeatureIdFilter(response.getLockedFeatures());
+                for (Query query : queries) {
+                    Filter filter = query.getFilter();
+                    if (filter == null || filter == Filter.INCLUDE) {
+                        query.setFilter(lockedFeatureFilter);
+                    } else {
+                        Filter joined = Predicates.and(filter, lockedFeatureFilter);
+                        query.setFilter(joined);
+                    }
+                }
+            }
         }
 
         // Optimization Idea
@@ -675,38 +727,16 @@ public class GetFeature {
             throw new WFSException(request, "Error occurred getting features", e, request.getHandle());
         }
         
-        
-        
-
-        //locking
-        String lockId = null;
-        if (request.isLockRequest()) {
-            LockFeatureRequest lockRequest = request.createLockRequest();
-            lockRequest.setExpiry(request.getExpiry());
-            lockRequest.setHandle(request.getHandle());
-            lockRequest.setLockActionAll();
-            
-            for (int i = 0; i < queries.size(); i++) {
-                Query query = queries.get(i);
-
-                Lock lock = lockRequest.createLock();
-                lock.setFilter(query.getFilter());
-                lock.setHandle(query.getHandle());
-
-                //TODO: joins?
-                List<QName> typeNames = query.getTypeNames();
-                lock.setTypeName(typeNames.get(0));
-                lockRequest.addLock(lock);
-            }
-
-            LockFeature lockFeature = new LockFeature(wfs, catalog);
-            lockFeature.setFilterFactory(filterFactory);
-
-            LockFeatureResponse response = lockFeature.lockFeature(lockRequest);
-            lockId = response.getLockId();
-        }
-
         return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId, getFeatureById);
+    }
+
+    private Filter toFeatureIdFilter(List<FeatureId> lockedFeatures) {
+        if (lockedFeatures == null || lockedFeatures.isEmpty()) {
+            return Filter.EXCLUDE;
+        }
+        Set<FeatureId> ids = lockedFeatures.stream().map(fid -> filterFactory.featureId(fid.getID())).collect
+                (Collectors.toSet());
+        return filterFactory.id(ids);
     }
 
     static void expandTypeNames(RequestObject request, List<Query> queries, boolean getFeatureById, Catalog catalog) {

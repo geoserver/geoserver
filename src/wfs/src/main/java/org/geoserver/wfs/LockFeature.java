@@ -257,7 +257,7 @@ public class LockFeature {
                 }
             }
 
-            // should we releas all? if not set default to true
+            // should we release all? if not set default to true
             
             boolean lockAll = !request.isLockActionSome();
 

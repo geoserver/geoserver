@@ -40,6 +40,8 @@ public abstract class LockFeatureResponse extends RequestObject {
     
     public abstract List<FeatureId> getNotLockedFeatures();
 
+    public abstract List<FeatureId> getLockedFeatures();
+
     public static class WFS11 extends LockFeatureResponse {
         public WFS11(EObject adaptee) {
             super(adaptee);
@@ -66,6 +68,11 @@ public abstract class LockFeatureResponse extends RequestObject {
         @Override
         public List<FeatureId> getNotLockedFeatures() {
             return eGet(adaptee, "featuresNotLocked.featureId", List.class);
+        }
+
+        @Override
+        public List<FeatureId> getLockedFeatures() {
+            return eGet(adaptee, "featuresLocked.featureId", List.class);
         }
     }
     
@@ -97,6 +104,11 @@ public abstract class LockFeatureResponse extends RequestObject {
         @Override
         public List<FeatureId> getNotLockedFeatures() {
             return eGet(adaptee, "featuresNotLocked.resourceId", List.class);
+        }
+
+        @Override
+        public List<FeatureId> getLockedFeatures() {
+            return eGet(adaptee, "featuresLocked.resourceId", List.class);
         }
 
     }

@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Optional;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -40,15 +41,18 @@ public class GeoServerErrorPage extends GeoServerBasePage {
                 notice = new ResourceModel("GeoServerErrorPage.failedAgain");
             }
         }
+        if ( notice != null && notice.getObject() != null) {
+            error(notice.getObject().toString());
+        }
 
         add(new WebMarkupContainer("loggedOut").setVisible(!trace));
 
         WebMarkupContainer wmc = new WebMarkupContainer("trace-explanation");
         wmc.setVisible(trace);
-        wmc.add(new ExternalLink(
-                    "jiraLink", 
-                    new Model("https://osgeo-org.atlassian.net/projects/GEOS"),
-                    new ResourceModel("GeoServerErrorPage.jiraName")
+            wmc.add(new ExternalLink(
+                    "userListLink",
+                    new ResourceModel("userListLink"),
+                    new ResourceModel("userListText")
                     ).setVisible(trace)
        );
 

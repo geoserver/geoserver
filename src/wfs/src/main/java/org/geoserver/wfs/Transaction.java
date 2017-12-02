@@ -552,6 +552,8 @@ public class Transaction {
             Object principal = authentication.getPrincipal();
             if(principal instanceof UserDetails) {
                 username = ((UserDetails) principal).getUsername(); 
+            } else if(principal instanceof String) { // OAuth
+            	username = principal.toString();
             }
         }
         

@@ -89,6 +89,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.wfs.json.JSONType;
 
@@ -191,6 +192,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         DimensionHelper dimensionHelper;
 
         private boolean skipping;
+
+        private WMSInfo serviceInfo;
         
         private LegendSample legendSample;
 
@@ -211,6 +214,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             this.getMapFormats = getMapFormats;
             this.extCapsProviders = extCapsProviders;
             this.schemaBaseURL = schemaBaseURL;
+            this.serviceInfo = wmsConfig.getServiceInfo();
             
             this.dimensionHelper = new DimensionHelper(Mode.WMS13, wmsConfig) {
                 
@@ -318,7 +322,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         private void handleService() {
             start("Service");
 
-            final WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             element("Name", "WMS");
             element("Title", serviceInfo.getTitle());
             element("Abstract", serviceInfo.getAbstract());
@@ -618,7 +621,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                         public void end(String element) {
                             Capabilities_1_3_0_Translator.this.end(element);
                         }
-                    }, wmsConfig.getServiceInfo(), request);
+                    }, serviceInfo, request);
                 } catch (Exception e) {
                     throw new ServiceException("Extended capabilities provider threw error", e);
                 }
@@ -662,7 +665,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             final Catalog catalog = wmsConfig.getCatalog();
                         
-            WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             if(StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
             	element("Title", serviceInfo.getTitle());            	
             } else {
@@ -690,13 +692,16 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             lgFilter = addNameSpaceFilterIfNeed(lgFilter, "workspace.name");
 
             // handle root bounding box
-            CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, filter);
-            CloseableIterator<LayerGroupInfo> layerGroups = catalog.list(LayerGroupInfo.class, lgFilter);
-            try{
-                handleRootBbox(layers, layerGroups);
-            }finally{
-                layers.close();
+            List<LayerGroupInfo> layerGroups;
+            List<LayerInfo> layers;
+            SortBy lgOrder = asc("name");
+            SortBy order = asc("name");
+            try (CloseableIterator<LayerGroupInfo> lgIter = catalog.list(LayerGroupInfo.class, lgFilter, null, null, lgOrder);
+                    CloseableIterator<LayerInfo> iter = catalog.list(LayerInfo.class, filter, null, null, order)) {
+                layerGroups = Lists.newArrayList(lgIter);
+                layers = Lists.newArrayList(iter);
             }
+            handleRootBbox(layers, layerGroups);
 
             // handle AuthorityURL
             handleAuthorityURL(serviceInfo.getAuthorityURLs());
@@ -707,28 +712,15 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             // encode layer groups
-            {
-                SortBy layerGroupOrder = asc("name");
-                layerGroups = catalog.list(LayerGroupInfo.class, lgFilter, null, null,
-                        layerGroupOrder);
-            }            
             try {
                 layersAlreadyProcessed = handleLayerGroups(layerGroups);
             } catch (Exception e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
-            } finally {
-                layerGroups.close();
             }            
             
             // now encode each layer individually
-            SortBy layerOrder = asc("name");
-            layers = catalog.list(LayerInfo.class, filter, null, null, layerOrder);
-            try {
-                handleLayerTree(layers, layersAlreadyProcessed);
-            } finally {
-                layers.close();
-            }
+            handleLayerTree(layers, layersAlreadyProcessed);
 
             end("Layer");
         }
@@ -813,7 +805,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * @param layers available layers iterator
          * @param layersGroups available layer groups iterator
          */
-        private void handleRootBbox(Iterator<LayerInfo> layers, Iterator<LayerGroupInfo> layersGroups) {
+        private void handleRootBbox(List<LayerInfo> layers, List<LayerGroupInfo> layersGroups) {
 
             final Envelope world = new Envelope(-180, 180, -90, 90);
             Envelope latlonBbox = new Envelope();
@@ -821,17 +813,16 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             LOGGER.finer("Collecting summarized latlonbbox and common SRS...");
 
             // handle layers
-            while (layers.hasNext()) {
+            for (LayerInfo layer : layers) {
                 if (expandEnvelopeToContain(world, latlonBbox,
-                        layers.next().getResource().getLatLonBoundingBox())) {
+                        layer.getResource().getLatLonBoundingBox())) {
                     // our envelope already contains the world
                     break;
                 }
             }
 
             // handle layer groups
-            while (layersGroups.hasNext()) {
-                LayerGroupInfo layerGroup = layersGroups.next();
+            for (LayerGroupInfo layerGroup : layersGroups) {
                 ReferencedEnvelope referencedEnvelope = layerGroup.getBounds();
                 if (referencedEnvelope == null) {
                     // no bounds available move on
@@ -874,14 +865,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             return envelope.contains(world);
         }
 
-        private void handleLayerTree(final Iterator<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {
+        private void handleLayerTree(final List<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {
             // Build a LayerTree only for the layers that have a wms path set. Process the ones that
             // don't first
             LayerTree nestedLayers = new LayerTree();
             
             //handle non nested layers
-            while (layers.hasNext()) {
-                LayerInfo layer = layers.next();
+            for (LayerInfo layer : layers) {
                 if(layersAlreadyProcessed.contains(layer) || !isExposable(layer)){
                     continue;
                 }
@@ -1127,7 +1117,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
         
-        protected Set<LayerInfo> handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
+        protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException, IOException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
@@ -1170,11 +1160,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * @param allGroups
          *
          */
-        private List<LayerGroupInfo> filterNestedGroups(Iterator<LayerGroupInfo> iterator) {
-            List<LayerGroupInfo> allGroups = new ArrayList<LayerGroupInfo>();
-            while(iterator.hasNext()) {
-                allGroups.add(iterator.next());
-            }
+        private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
             LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<LayerGroupInfo>(allGroups);
             for(LayerGroupInfo group : allGroups) {
                 for(PublishedInfo pi : group.getLayers()) {
@@ -1512,10 +1498,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private void handleAdditionalBBox(ReferencedEnvelope bbox, String crs, LayerInfo layer) {
-            WMSInfo info = wmsConfig.getServiceInfo();
-            if (info.isBBOXForEachCRS() && !info.getSRS().isEmpty()) {
+            if (serviceInfo.isBBOXForEachCRS() && !serviceInfo.getSRS().isEmpty()) {
                 //output bounding box for each supported service srs
-                for (String srs : info.getSRS()) {
+                for (String srs : serviceInfo.getSRS()) {
                     srs = qualifySRS(srs);
                     if (crs != null && srs.equals(crs)) {
                         continue; //already did this one

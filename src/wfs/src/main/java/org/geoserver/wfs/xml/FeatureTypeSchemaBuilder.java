@@ -980,7 +980,7 @@ public abstract class FeatureTypeSchemaBuilder {
         }
     }
     
-    public static final class GML32 extends GML3 {
+    public static class GML32 extends GML3 {
         /**
          * Cached gml32 schema
          */
@@ -1075,5 +1075,25 @@ public abstract class FeatureTypeSchemaBuilder {
         
     }
     
+    /**
+     * Derived from {@link GML32}, the only difference is that {@link #getWfsSchema()} is overridden
+     * to make it always return {@code null}.
+     *
+     * Useful when encoding DescribeFeatureType responses, as they don't need to import the WFS schema.
+     */
+    public static final class GML32NoWfsSchemaImport extends GML32 {
+
+        public GML32NoWfsSchemaImport(GeoServer gs) {
+            super(gs);
+        }
+
+        /**
+         * @return always {@code null}, i.e. there is no need to import the WFS schema
+         */
+        @Override
+        protected XSDSchema getWfsSchema() {
+            return null;
+        }
+    }
     
 }

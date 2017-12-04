@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -31,7 +32,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.gml3.v3_2.GML;
-import org.junit.Before;
+import org.geotools.wfs.v2_0.WFS;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -413,4 +414,22 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         dom = dom(new ByteArrayInputStream(decoded));
         assertEquals("xsd:schema", dom.getDocumentElement().getNodeName());
     }
+
+    /**
+     * Tests that WFS schema is not imported in a DescribeFeatureType response.
+     */
+    @Test
+    public void testNoWfsSchemaImport() throws Exception {
+        String typeName = getLayerId(CiteTestData.PRIMITIVEGEOFEATURE);
+
+        MockHttpServletResponse response = getAsServletResponse(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=" + typeName);
+        assertThat(response.getContentType(), is("application/gml+xml; version=3.2"));
+
+        Document doc = dom(response, true);
+
+        assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+        assertXpathNotExists("//xsd:import[@namespace='" + WFS.NAMESPACE + "']", doc);
+    }
+
 }

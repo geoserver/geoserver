@@ -22,6 +22,7 @@ public class WFSException extends ServiceException {
     public static final String LOCK_HAS_EXPIRED = "LockHasExpired";
     public static final String OPERATION_PARSING_FAILED = "OperationParsingFailed";
     public static final String INVALID_LOCK_ID = "InvalidLockId";
+    public static final String CANNOT_LOCK_ALL_FEATURES = "CannotLockAllFeatures";
 
     public enum Code {
         OperationProcessingFailed

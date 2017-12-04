@@ -266,7 +266,7 @@ public class LockFeature {
                 // I think we need to release and fail when lockAll fails
                 //
                 // abort will release the locks
-                throw new WFSException(request, "Could not aquire locks for:" + notLocked);
+                throw new WFSException(request, "Could not acquire locks for:" + notLocked, WFSException.CANNOT_LOCK_ALL_FEATURES);
             }
 
             return response;

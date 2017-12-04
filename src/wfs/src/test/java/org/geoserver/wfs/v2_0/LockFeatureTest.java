@@ -203,5 +203,23 @@ public class LockFeatureTest extends WFS20TestSupport {
         get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
     }
 
+    @Test
+    public void testFailLockAll() throws Exception {
+        // lock one
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=LockFeature&storedQueryId=" +
+                StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeature.f001", 200);
+
+        // print(dom);
+        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+        assertEquals(1, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        
+        // try to lock all now
+        dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=LockFeature&typeNames=sf:PrimitiveGeoFeature", 400);
+        checkOws11Exception(dom, "2.0.0", WFSException.CANNOT_LOCK_ALL_FEATURES, "GeoServer");
+
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+    }
+
 
 }

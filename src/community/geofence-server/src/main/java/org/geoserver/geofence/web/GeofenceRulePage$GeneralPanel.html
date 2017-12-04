@@ -1,0 +1,54 @@
+<html>
+ <body>
+   <wicket:panel>
+    <ul>
+     <li>
+      <fieldset>
+        <ul>
+          <li>
+            <label for="priority"><wicket:message key="priority"></wicket:message></label>
+            <input id="priority" wicket:id="priority" type="text" class="text" />
+          </li>
+          <li>
+            <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
+            <select wicket:id="roleName" id="roleName" />
+          </li>
+          <li>
+            <label for="userName"><wicket:message key="username"></wicket:message></label>
+            <select wicket:id="userName" id="userName" />
+          </li>
+          <li>
+            <label for="service"><wicket:message key="service"></wicket:message></label>
+            <select wicket:id="service" id="service" />
+          </li>
+          <li>
+            <label for="request"><wicket:message key="request"></wicket:message></label>
+            <select wicket:id="request" id="request" />
+          </li>
+          <li>
+            <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
+            <select wicket:id="workspace" id="workspace" />
+          </li>
+          <li>
+            <label for="layer"><wicket:message key="layer"></wicket:message></label>
+            <select wicket:id="layer" id="layer" />
+          </li>
+          <li>
+            <label for="access"><wicket:message key="access"></wicket:message></label>
+            <select wicket:id="access" id="access" />
+          </li>
+          <li>
+            <label wicket:id="catalogModeLabel"></label>
+             <select wicket:id="catalogMode" id="catalogMode" />
+          </li>
+          <li>
+            <label wicket:id="allowedAreaLabel"></label>
+            <textarea wicket:id="allowedArea" id="allowedArea" style="width: 50%; height:100px;"></textarea>
+          </li>
+        </ul>
+      </fieldset>
+     </li>  
+    </ul>
+   </wicket:panel>
+ </body>
+</html>

@@ -16,8 +16,10 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.geofence.core.model.LayerDetails;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.RuleLimits;
+import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
@@ -238,7 +240,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         return rule;
     }
 
-    public void save(Long ruleId, MultiPolygon allowedArea) {
+    public void save(Long ruleId, MultiPolygon allowedArea, CatalogMode catalogMode) {
         Rule rule = adminService().get(ruleId);
         RuleLimits ruleLimits = rule.getRuleLimits();
         if (ruleLimits == null) {
@@ -246,7 +248,12 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             ruleLimits.setRule(rule);
         }
         ruleLimits.setAllowedArea(allowedArea);
+        ruleLimits.setCatalogMode(catalogMode);
         adminService().setLimits(ruleId, ruleLimits);
+    }
+    
+    public void save(Long ruleId, LayerDetails layerDetails) {
+        adminService().setDetails(ruleId, layerDetails);
     }
 
     public RuleLimits getRulesLimits(Long ruleId) {
@@ -268,6 +275,16 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setWorkspace(shortRule.getWorkspace());
         rule.setLayer(shortRule.getLayer());
         rule.setAccess(shortRule.getAccess());
+    }
+
+    public LayerDetails getDetails(Long ruleId) {
+        if (ruleId != null) {
+            Rule rule = adminService().get(ruleId);
+            if (rule != null) {
+                return rule.getLayerDetails();
+            }
+        }
+        return null;
     }
 
 }

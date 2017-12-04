@@ -335,7 +335,21 @@
     <property name="version"><value>2.0.0</value></property>
     <property name="request"><value>DescribeFeatureType</value></property>
   </bean>
-  
+	<bean id="lockFeatureNamespaceParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
+		<constructor-arg value="namespace"/>
+		<property name="service"><value>WFS</value></property>
+		<property name="version"><value>1.1.0</value></property>
+		<property name="request"><value>LockFeature</value></property>
+	</bean>
+	<bean id="lockFeature20NamespaceParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
+		<constructor-arg value="namespaces"/>
+		<constructor-arg value="true"/>
+		<property name="service"><value>WFS</value></property>
+		<property name="version"><value>2.0.0</value></property>
+		<property name="request"><value>LockFeature</value></property>
+	</bean>
+
+
 	<bean id="featureIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
 		<constructor-arg index="0" value="featureId"/>
 		<constructor-arg index="1" value="java.lang.String"/>
@@ -467,8 +481,13 @@
 		<constructor-arg ref="geoServer"/>
 		<constructor-arg ref="filterFactory"/>
 	</bean>
-	<bean id="lockFeatureKvpReader" class="org.geoserver.wfs.kvp.WFSKvpRequestReader">
-		<constructor-arg value="net.opengis.wfs.LockFeatureType"/>
+	<bean id="lockFeatureKvpReader" class="org.geoserver.wfs.kvp.LockFeatureKvpRequestReader">
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg ref="filterFactory"/>
+	</bean>
+	<bean id="lockFeatureKvp20Reader" class="org.geoserver.wfs.kvp.v2_0.LockFeatureKvpRequestReader">
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg ref="filterFactory"/>
 	</bean>
 	<bean id="transactionKvpReader" class="org.geoserver.wfs.kvp.WFSKvpRequestReader">
 		<constructor-arg value="net.opengis.wfs.TransactionType"/>

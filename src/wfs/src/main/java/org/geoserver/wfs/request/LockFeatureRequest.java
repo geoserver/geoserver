@@ -60,7 +60,13 @@ public abstract class LockFeatureRequest extends RequestObject {
     public abstract Lock createLock();
     
     public abstract LockFeatureResponse createResponse();
-    
+
+    public abstract List getAdaptedQueries();
+
+    public abstract RequestObject createQuery();
+
+    public abstract List<Query> getQueries();
+
     public static class WFS11 extends LockFeatureRequest {
 
         public WFS11(EObject adaptee) {
@@ -111,6 +117,21 @@ public abstract class LockFeatureRequest extends RequestObject {
         public LockFeatureResponse createResponse() {
             return new LockFeatureResponse.WFS11(
                 ((WfsFactory)getFactory()).createLockFeatureResponseType());
+        }
+
+        @Override
+        public List getAdaptedQueries() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public RequestObject createQuery() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<Query> getQueries() {
+            throw new UnsupportedOperationException();
         }
     }
     
@@ -166,7 +187,22 @@ public abstract class LockFeatureRequest extends RequestObject {
         public LockFeatureResponse createResponse() {
             return new LockFeatureResponse.WFS20(
                 ((Wfs20Factory)getFactory()).createLockFeatureResponseType());
-        } 
-        
+        }
+
+        @Override
+        public List<Object> getAdaptedQueries() {
+            return eGet(adaptee, "abstractQueryExpression", List.class);
+        }
+
+        @Override
+        public Query createQuery() {
+            return new Query.WFS20(((Wfs20Factory)getFactory()).createQueryType());
+        }
+
+        @Override
+        public List<Query> getQueries() {
+            List<Object> adaptedQueries = getAdaptedQueries();
+            return GetFeatureRequest.WFS20.getQueries(adaptedQueries);
+        }
     }
 }

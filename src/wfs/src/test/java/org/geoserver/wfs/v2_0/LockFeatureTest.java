@@ -11,10 +11,12 @@ import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Test;
+import org.opengis.filter.spatial.BBOX;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -142,6 +144,61 @@ public class LockFeatureTest extends WFS20TestSupport {
 
         // release the lock
         // print(dom);
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+    }
+
+    @Test
+    public void testLockGet() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=LockFeature&typenames=sf:GenericEntity", 200);
+
+        // print(dom);
+        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+        assertEquals(3, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+
+        // release the lock
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+    }
+
+    @Test
+    public void testLockWithNamespacesGet() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=LockFeature&typenames=ns53:GenericEntity" +
+                "&namespaces=xmlns(ns53,http://cite.opengeospatial.org/gmlsf)", 200);
+
+        // print(dom);
+        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+        assertEquals(3, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+
+        // release the lock
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+    }
+    
+    @Test
+    public void testLockWithStoredQueryGet() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=LockFeature&storedQueryId=" + 
+                StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeature.f001", 200);
+
+        // print(dom);
+        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+        assertEquals(1, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+
+        // release the lock
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
+    }
+    
+    @Test
+    public void testLockByBBOX() throws Exception {
+        Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=LockFeature&typeName=sf:PrimitiveGeoFeature" +
+                "&BBOX=57.0,-4.5,62.0,1.0,EPSG:4326", 200);
+
+        // print(dom);
+        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+        assertEquals(1, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+
+        // release the lock
         String lockId = dom.getDocumentElement().getAttribute("lockId");
         get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
     }

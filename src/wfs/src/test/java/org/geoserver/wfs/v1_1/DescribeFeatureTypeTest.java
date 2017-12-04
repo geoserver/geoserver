@@ -5,13 +5,17 @@
  */
 package org.geoserver.wfs.v1_1;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.URLEncoder;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -24,6 +28,8 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.gml3.GML;
+import org.geotools.wfs.v1_1.WFS;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -299,4 +305,22 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
 //            future.get();
 //        }
 //    }
+
+    /**
+     * Tests that WFS schema is not imported in a DescribeFeatureType response.
+     */
+    @Test
+    public void testNoWfsSchemaImport() throws Exception {
+        final String typeName = CiteTestData.POLYGONS.getLocalPart();
+        String path = "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
+            + typeName;
+        Document doc = getAsDOM(path);
+
+        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        assertXpathExists("//xsd:complexType[@name='" + typeName + "Type']", doc);
+        assertXpathExists("//xsd:element[@name='" + typeName + "']", doc);
+        assertXpathExists("//xsd:import[@namespace='" + GML.NAMESPACE + "']", doc);
+        assertXpathNotExists("//xsd:import[@namespace='" + WFS.NAMESPACE + "']", doc);
+    }
+
 }

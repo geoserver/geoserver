@@ -6,6 +6,9 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL;
+import static org.geoserver.test.AbstractAppSchemaMockData.GSML_URI;
+import static org.geoserver.test.FeatureChainingMockData.EX_URI;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -26,8 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
@@ -50,6 +51,9 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsLike;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 /**
  * WFS GetFeature to test integration of {@link AppSchemaDataAccess} with GeoServer.
@@ -406,6 +410,61 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
+    }
+
+    /**
+     * Tests that WFS schema is never imported in a DescribeFeatureType response.
+     *
+     * <p>
+     * <strong>Remarks:</strong> this test only targets WFS 2.0, as 1.1.0 is sufficiently covered
+     * by other tests. 
+     * </p>
+     */
+    @Test
+    public void testDescribeFeatureTypeNoWfsSchemaImport() {
+        // one feature type --> schema is included, no imports
+        Document doc = getAsDOM(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=gsml:GeologicUnit");
+        assertXpathCount(0, "//xsd:import", doc);
+        assertXpathCount(1, "//xsd:include", doc);
+        assertImportNotExists(doc, WFS.NAMESPACE);
+        assertIncludeExists(doc, GSML_SCHEMA_LOCATION_URL);
+
+        // two feature types, same schema / namespace --> schema is included once, no imports
+        doc = getAsDOM(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=gsml:GeologicUnit,gsml:MappedFeature");
+        assertXpathCount(0, "//xsd:import", doc);
+        assertXpathCount(0, "//xsd:import[@namespace='" + WFS.NAMESPACE + "']", doc);
+        assertImportNotExists(doc, WFS.NAMESPACE);
+        assertIncludeExists(doc, GSML_SCHEMA_LOCATION_URL);
+
+        // two feature types, different schemas / namespaces --> first schema is included, second is imported
+        doc = getAsDOM(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=gsml:GeologicUnit,ex:FirstParentFeature");
+        // target namespace is set to the namespace of the first requested feature type
+        assertXpathEvaluatesTo(GSML_URI, "//@targetNamespace", doc);
+        assertXpathCount(1, "//xsd:import", doc);
+        assertXpathCount(1, "//xsd:include", doc);
+        assertImportNotExists(doc, WFS.NAMESPACE);
+        // the schema of the feature type whose namespace is equal to the target namespace is included
+        assertIncludeExists(doc, GSML_SCHEMA_LOCATION_URL);
+        // the other schema is imported
+        assertImportExists(doc, EX_URI);
+        assertXpathEvaluatesTo(getExSchemaOneLocation(), "//xsd:import/@schemaLocation", doc);
+
+        // same thing, reverse order of the requested types
+        doc = getAsDOM(
+                "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=ex:FirstParentFeature,gsml:GeologicUnit");
+        // target namespace is set to the namespace of the first requested feature type
+        assertXpathEvaluatesTo(EX_URI, "//@targetNamespace", doc);
+        assertXpathCount(1, "//xsd:import", doc);
+        assertXpathCount(1, "//xsd:include", doc);
+        assertImportNotExists(doc, WFS.NAMESPACE);
+        // the schema of the feature type whose namespace is equal to the target namespace is included
+        assertIncludeExists(doc, getExSchemaOneLocation());
+        // the other schema is imported
+        assertImportExists(doc, GSML_URI);
+        assertXpathEvaluatesTo(GSML_SCHEMA_LOCATION_URL, "//xsd:import/@schemaLocation", doc);
     }
 
     /**
@@ -1640,4 +1699,17 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         String jsonText = new String(output.toByteArray());
         return JSONObject.fromObject(jsonText);
     }
+
+    private void assertImportExists(Document doc, String ns) {
+        assertXpathCount(1, "//xsd:import[@namespace='" + ns + "']", doc);
+    }
+
+    private void assertImportNotExists(Document doc, String ns) {
+        assertXpathCount(0, "//xsd:import[@namespace='" + ns + "']", doc);
+    }
+
+    private void assertIncludeExists(Document doc, String schemaLocation) {
+        assertXpathCount(1, "//xsd:include[@schemaLocation='" + schemaLocation + "']", doc);
+    }
+
 }

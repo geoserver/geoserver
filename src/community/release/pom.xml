@@ -198,7 +198,7 @@
      <artifactId>gs-geogig</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!-- <dependency>
+   <dependency>
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-core</artifactId>
      <version>${project.version}</version>
@@ -217,7 +217,7 @@
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-web</artifactId>
      <version>${project.version}</version>
-   </dependency> -->
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wmts-multi-dimensional</artifactId>

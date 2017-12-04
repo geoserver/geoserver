@@ -4,6 +4,12 @@
  */
 package org.geoserver.backuprestore;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.geoserver.backuprestore.tasklet.GenericTaskletHandler;
 import org.geoserver.backuprestore.tasklet.GenericTaskletUtils;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -13,12 +19,6 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Test generic handler that backup and restore an extra file that is not used by GeoServer.
@@ -65,15 +65,16 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
             // nothing to copy
             return;
         }
-        File outputFile = new File(outputDirectory, outputFileName);
-        try (InputStream input = new FileInputStream(inputFile);
-             // copy the file to is destination
-             OutputStream output = new FileOutputStream(outputFile)) {
-            IOUtils.copy(input, output);
-        } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error copying file '%s' to file '%s'.",
-                    inputFile, outputFile.getAbsolutePath()), exception);
+        if (outputDirectory.exists() && outputDirectory.isDirectory()) {
+            File outputFile = new File(outputDirectory, outputFileName);
+            try (InputStream input = new FileInputStream(inputFile);
+                    // copy the file to is destination
+                    OutputStream output = new FileOutputStream(outputFile)) {
+                IOUtils.copy(input, output);
+            } catch (Exception exception) {
+                throw new RuntimeException(String.format("Error copying file '%s' to file '%s'.",
+                        inputFile, outputFile.getAbsolutePath()), exception);
+            }
         }
     }
 }

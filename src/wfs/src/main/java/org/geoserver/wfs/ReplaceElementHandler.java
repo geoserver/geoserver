@@ -96,7 +96,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
         //check the supplied filter matches the number of supplied features
         String featureTypeName = featureStore.getSchema().getTypeName();
         
-        //ids of replaced featres
+        //ids of replaced features
         Collection<FeatureId> replaced = new ArrayList();
 
         try {

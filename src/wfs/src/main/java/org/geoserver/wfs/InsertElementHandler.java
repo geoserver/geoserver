@@ -21,7 +21,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.Hints;
+import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.gml3.v3_2.GML;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
 import org.geotools.util.Version;
 import org.opengis.feature.simple.SimpleFeature;
@@ -95,9 +98,17 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                 }
 
                 // do a check for idegen = useExisting, if set try to tell the datastore to use
-                // the privided fid
+                // the provided fid
                 if (insert.isIdGenUseExisting()) {
                     feature.getUserData().put(Hints.USE_PROVIDED_FID, true);
+                } else {
+                    Object identifier = feature.getAttribute(new NameImpl(GML.NAMESPACE, "identifier"));
+                    if (WFSInfo.Version.V_20.compareTo(insert.getVersion()) >= 0 && identifier instanceof String) {
+                        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(feature.getFeatureType());
+                        fb.init(feature);
+                        feature = fb.buildFeature((String) identifier);
+                        feature.getUserData().put(Hints.USE_PROVIDED_FID, true);
+                    }
                 }
 
                 collection.add(feature);

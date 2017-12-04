@@ -5,16 +5,7 @@
  */
 package org.geoserver.wfs.v2_0;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Point;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -24,6 +15,9 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
+import org.geoserver.wfs.GMLInfo;
+import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.DataStore;
@@ -39,7 +33,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.vividsolutions.jts.geom.Point;
+import javax.xml.namespace.QName;
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TransactionTest extends WFS20TestSupport {
 
@@ -49,8 +50,10 @@ public class TransactionTest extends WFS20TestSupport {
     @Before
     public void revert() throws Exception {
         revertLayer(CiteTestData.ROAD_SEGMENTS);
-        getTestData().addVectorLayer(WITH_GML, Collections.EMPTY_MAP,
-                org.geoserver.wfs.v1_1.TransactionTest.class, getCatalog());
+        getTestData().addVectorLayer(WITH_GML, Collections.EMPTY_MAP, org.geoserver.wfs.v1_1.TransactionTest.class, 
+                getCatalog());
+        getTestData().addVectorLayer(new QName(SystemTestData.SF_URI, "PrimitiveGeoFeatureId", SystemTestData
+                .SF_PREFIX), Collections.EMPTY_MAP, TestData.class, getCatalog());
     }
     
     @Test
@@ -1025,6 +1028,55 @@ public class TransactionTest extends WFS20TestSupport {
         print(dom);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:GenericEntity)", dom);
         XMLAssert.assertXpathEvaluatesTo("TEST_VALUE", "//sf:featureRef", dom);
+
+    }
+    
+    @Test
+    public void testInsertPreserveId() throws Exception {
+        WFSInfo wfs = getWFS();
+        GMLInfo gml = wfs.getGML().get(WFSInfo.Version.V_20);
+        gml.setOverrideGMLAttributes(false);
+        getGeoServer().save(wfs);
+        getGeoServer().reset();
+
+        try {
+            String xml = "<wfs:Transaction service='WFS' version='2.0.0' "
+                    + " xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:gml='" + GML.NAMESPACE + "' "
+                    + " xmlns:sf='http://cite.opengeospatial.org/gmlsf'>"
+                    + "<wfs:Insert handle='insert-1'>"
+                    + " <sf:PrimitiveGeoFeatureId gml:id='PrimitiveGeoFeatureId.gmlsf0-f01'>"
+                    + "  <gml:description>"
+                    + "Fusce tellus ante, tempus nonummy, ornare sed, accumsan nec, leo."
+                    + "Vivamus pulvinar molestie nisl."
+                    + "</gml:description>"
+                    + "<gml:name>Aliquam condimentum felis sit amet est.</gml:name>"
+                    + "<gml:identifier codeSpace=\"fooBar\">PrimitiveGeoFeatureId.gmlsf0-f01</gml:identifier>"
+                    //+ "<gml:name codeSpace='http://cite.opengeospatial.org/gmlsf'>cite.gmlsf0-f01</gml:name>"
+                    + "<sf:curveProperty>"
+                    + "  <gml:LineString gml:id='cite.gmlsf0-g01' srsName='urn:x-fes:def:crs:EPSG:6.11.2:4326'>"
+                    + "   <gml:posList>47.608284 19.034142 51.286873 16.7836 49.849854 15.764992</gml:posList>"
+                    + " </gml:LineString>"
+                    + "</sf:curveProperty>"
+                    + "<sf:intProperty>1025</sf:intProperty>"
+                    + "<sf:measurand>7.405E2</sf:measurand>"
+                    + "<sf:dateTimeProperty>2006-06-23T12:43:12+01:00</sf:dateTimeProperty>"
+                    + "<sf:decimalProperty>90.62</sf:decimalProperty>"
+                    + "</sf:PrimitiveGeoFeatureId>"
+                    + "</wfs:Insert>"
+                    + "</wfs:Transaction>";
+
+
+            Document dom = postAsDOM("wfs", xml, 200);
+            assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+            XMLAssert.assertXpathExists("//wfs:totalInserted[text() = 1]", dom);
+
+            // get it back, if it's not found we'll get a 404 not a 200
+            dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&storedQueryId=" +
+                    StoredQuery.DEFAULT.getName() + "&ID=PrimitiveGeoFeatureId.gmlsf0-f01", 200);
+        } finally {
+            gml.setOverrideGMLAttributes(true);
+            getGeoServer().save(wfs);
+        }
 
     }
 }

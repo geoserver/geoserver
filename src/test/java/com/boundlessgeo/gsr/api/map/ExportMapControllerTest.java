@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.image.test.ImageAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -21,10 +22,10 @@ import com.boundlessgeo.gsr.controller.ControllerTest;
  */
 public class ExportMapControllerTest extends ControllerTest {
 
+    @Ignore
     @Test
     public void exportMap() throws Exception {
-        String exportMapUrl = getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix()
-            + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:" + SystemTestData.BASIC_POLYGONS
+        String exportMapUrl = getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix() + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:" + SystemTestData.BASIC_POLYGONS
             .getLocalPart() + "&size=150,150&format=png";
         MockHttpServletResponse servletResponse = getAsServletResponse(exportMapUrl);
         RenderedImage image = ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));

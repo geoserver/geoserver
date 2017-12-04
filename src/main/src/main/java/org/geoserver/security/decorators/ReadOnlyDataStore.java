@@ -33,7 +33,7 @@ import org.opengis.filter.Filter;
  * 
  * @author Andrea Aime - TOPP
  */
-public class ReadOnlyDataStore extends DecoratingDataStore {
+public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataStore {
     
 
     WrapperPolicy policy;

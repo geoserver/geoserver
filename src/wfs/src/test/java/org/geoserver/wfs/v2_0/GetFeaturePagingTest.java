@@ -548,29 +548,26 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         Document doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&count=5&resulttype=hits");
         assertFalse(doc.getDocumentElement().hasAttribute("previous"));
-        // Without startindex, results are not sorted and next would be inconsistent,
-        // so next is not encoded. See GEOS-5085.
-        assertFalse(doc.getDocumentElement().hasAttribute("next"));
         
         doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&startIndex=0&count=5&resulttype=hits");
         assertFalse(doc.getDocumentElement().hasAttribute("previous"));
-        assertStartIndexCount(doc, "next", 5, 5);
+        assertStartIndexCount(doc, "next", 0, 5);
         
         doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
             "typename=" + typeName + "&startIndex=5&count=7&resulttype=hits");
-        assertStartIndexCount(doc, "previous", 0, 5);
-        assertStartIndexCount(doc, "next", 12, 7);
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        assertStartIndexCount(doc, "next", 0, 7);
 
         doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&startIndex=12&count=7&resulttype=hits");
-        assertStartIndexCount(doc, "previous", 5, 7);
-        assertFalse(doc.getDocumentElement().hasAttribute("next"));
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        assertStartIndexCount(doc, "next", 0, 7);
 
         doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&startIndex=15&resulttype=hits");
-        assertStartIndexCount(doc, "previous", 0, 15);
-        assertFalse(doc.getDocumentElement().hasAttribute("next"));
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        assertStartIndexCount(doc, "next", 0, -1 /* not there */);
     }
     
     @Test

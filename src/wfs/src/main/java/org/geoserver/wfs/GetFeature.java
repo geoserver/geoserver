@@ -34,7 +34,6 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -360,7 +359,9 @@ public class GetFeature {
 
         //offset into result set in which to return features
         int totalOffset = request.getStartIndex() != null ? request.getStartIndex().intValue() : -1;
-        if (totalOffset == -1 && request.getVersion().startsWith("2") && wfs.isCiteCompliant()) {
+        if (totalOffset == -1 && request.getVersion().startsWith("2") 
+                && (wfs.isCiteCompliant() || (request.getMaxFeatures() != null 
+                && request.getMaxFeatures().longValue() > 0 && request.isResultTypeHits()))) {
             // Strict compliance with the WFS 2.0 spec requires startindex to default to zero.
             // This is not enforced because startindex triggers sorting and reduces performance.
             // The CITE tests for WFS 2.0 do not yet exist; the CITE compliance setting is taken
@@ -849,13 +850,21 @@ public class GetFeature {
             Map<String,String> kvp = null; 
             if (req.isGet()) {
                 kvp = new KvpMap(req.getRawKvp()); 
-            }
-            else {
+            } else {
                 //generate kvp map from request object
                 kvp = buildKvpFromRequest(request);
             }
+            
+            // WFS 2.0 specific, must have a next and should point to the first result
+            if (request.isResultTypeHits() && (request.getVersion() == null || request.getVersion().startsWith("2"))) {
+                kvp = new KvpMap(kvp);
+                kvp.put("RESULTTYPE", "results");
+                kvp.put("STARTINDEX", "0");
+            }
 
-            if (offset > 0) {
+            // WFS 2.0 has specific requirements for hits, there is no previous link, the next points to the first 
+            // page of results
+            if (offset > 0 && !(request.isResultTypeHits() && request.getVersion().startsWith("2"))) {
                 //previous
                 
                 //previous offset calculated as the current offset - maxFeatures, or 0 if this is a 
@@ -868,16 +877,14 @@ public class GetFeature {
                 result.setPrevious(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
             }
 
-            if (count > 0 && offset > -1) {
-                //next
-
-                // don't return a next if we are at the end.
-                // (ie. are returning less results than requested)
-                if (maxFeatures <= count) {
-                    kvp.put("startIndex", String.valueOf(offset > 0 ? offset + count : count));
-                    kvp.put("count", String.valueOf(maxFeatures));
-                    result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
-                }
+            // don't return a next if we are at the end. But always do in WFS 2.0 HITS
+            // (ie. are returning less results than requested)
+            if (request.isResultTypeHits() && request.getVersion().startsWith("2")) {
+                result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
+            } else  if (count > 0 && offset > -1 && maxFeatures <= count) {
+                kvp.put("startIndex", String.valueOf(offset > 0 ? offset + count : count));
+                kvp.put("count", String.valueOf(maxFeatures));
+                result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
             }
         }
 

@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
@@ -28,6 +29,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.wfs.GMLInfo;
@@ -560,6 +562,26 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         assertEquals("15", doc.getDocumentElement().getAttribute(
                 "numberMatched"));
+    }
+
+    @Test
+    public void testResultTypeHitsGetWithCount() throws Exception {
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen&version=2.0.0&resultType=hits&service=wfs&count=2");
+        print(doc);
+        assertGML32(doc);
+
+        NodeList features = doc.getElementsByTagName("cdf:Fifteen");
+        assertEquals(0, features.getLength());
+
+        assertEquals("15", doc.getDocumentElement().getAttribute("numberMatched"));
+        // there must be a next link pointing to the beginning of the result set
+        String nextLink = doc.getDocumentElement().getAttribute("next");
+        assertNotNull(nextLink);
+        Map<String, Object> kvp = KvpUtils.parseQueryString(nextLink);
+        assertEquals("results", kvp.get("RESULTTYPE"));
+        assertEquals("2", kvp.get("COUNT"));
+        assertEquals("0", kvp.get("STARTINDEX"));
+
     }
 
     @Test

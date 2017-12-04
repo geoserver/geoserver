@@ -72,6 +72,7 @@ public class GetPropertyValue {
 
         // do a getFeature request
         GetFeatureType getFeature = Wfs20Factory.eINSTANCE.createGetFeatureType();
+        getFeature.setBaseUrl(request.getBaseUrl());
         getFeature.getAbstractQueryExpression().add(request.getAbstractQueryExpression());
         getFeature.setResolve(request.getResolve());
         getFeature.setResolveDepth(request.getResolveDepth());

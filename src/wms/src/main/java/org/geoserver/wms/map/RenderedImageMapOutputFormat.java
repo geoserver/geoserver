@@ -84,6 +84,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.RenderingTransformationHelper;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -174,6 +175,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * The lookup table used for data type transformation (it's really the identity one)
      */
     private static LookupTableJAI IDENTITY_TABLE = new LookupTableJAI(getTable());
+    
+    private Class<? extends LabelCache> labelCache = null;
 
     private static byte[] getTable() {
         byte[] arr = new byte[256];
@@ -269,6 +272,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
     public MapProducerCapabilities getCapabilities(String format) {
         return capabilities.get(format);
+    }
+
+    public void setLabelCache(Class<? extends LabelCache> labelCache) {
+        this.labelCache = labelCache;
     }
 
     /**
@@ -473,6 +480,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (request.getFormatOptions().get("dpi") != null) {
             rendererParams.put(StreamingRenderer.DPI_KEY, (request
                     .getFormatOptions().get("dpi")));
+        }
+        
+        if (labelCache != null) {
+            try {
+                rendererParams.put(StreamingRenderer.LABEL_CACHE_KEY, labelCache.newInstance());
+            } catch (Exception e) {
+                throw new ServiceException(e);
+            }
         }
 
         boolean kmplacemark = false;

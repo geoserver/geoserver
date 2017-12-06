@@ -5,20 +5,64 @@
  */
 package org.geoserver.wms.map;
 
-import com.vividsolutions.jts.geom.Envelope;
+import static org.geoserver.data.test.CiteTestData.STREAMS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.media.jai.Interpolation;
+import javax.media.jai.RenderedOp;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.geoserver.catalog.*;
-import org.geoserver.catalog.LayerInfo.WMSInterpolation;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.WMSInterpolation;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
-import org.geoserver.wms.*;
+import org.geoserver.wms.CachedGridReaderLayer;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WMSPartialMapException;
+import org.geoserver.wms.WMSTestSupport;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
@@ -37,11 +81,17 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.renderer.label.LabelCacheImpl;
 import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.resources.coverage.FeatureUtilities;
-import org.geotools.styling.*;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ChannelSelectionImpl;
+import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.SelectedChannelType;
+import org.geotools.styling.SelectedChannelTypeImpl;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.TextSymbolizer;
 import org.geotools.util.NumberRange;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
@@ -55,28 +105,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
-import javax.media.jai.Interpolation;
-import javax.media.jai.RenderedOp;
-import javax.xml.namespace.QName;
-import java.awt.*;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.geoserver.data.test.CiteTestData.STREAMS;
-import static org.junit.Assert.*;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
@@ -398,7 +427,12 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         request.setFormat(getMapFormat());
 
-        this.rasterMapProducer.setLabelCache(CustomLabelCache.class);
+        this.rasterMapProducer.setLabelCache(new Function<WMSMapContent, LabelCache>() {
+            @Override
+            public LabelCache apply(WMSMapContent mapContent) {
+                return new CustomLabelCache();
+            }
+        });
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         BufferedImage image = (BufferedImage) imageMap.getImage();
         imageMap.dispose();

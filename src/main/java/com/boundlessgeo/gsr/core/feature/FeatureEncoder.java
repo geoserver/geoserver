@@ -38,7 +38,8 @@ public class FeatureEncoder {
         GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
         Map<String, Object> attributes = new HashMap<>();
         for (Property prop : feature.getProperties()) {
-            if (geometryAttribute == null || !prop.getName().equals(geometryAttribute.getName())) {
+            if (prop.getValue() != null && (geometryAttribute == null || !prop.getName()
+                .equals(geometryAttribute.getName()))) {
                 final Object value;
                 if (prop.getValue() instanceof java.util.Date) {
                     value = ((java.util.Date) prop.getValue()).getTime();

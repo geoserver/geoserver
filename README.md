@@ -50,3 +50,9 @@ add the following custom projection to your `data_dir/user_projections/epsg.prop
 
 ## Examples
 See the folder `docs/samples` for examples using the official JS client.
+
+## Live Demos
+There are currently two live demos available:
+
+- https://demo-master.boundlessgeo.com/geoserver/gsr-demos/dynamic_map_layer.html
+- https://demo-master.boundlessgeo.com/geoserver/gsr-demos/layers-featurelayer-polygon.html

@@ -5,56 +5,19 @@
  */
 package org.geoserver.wms.map;
 
-import com.vividsolutions.jts.geom.Envelope;
+import static org.geoserver.data.test.CiteTestData.STREAMS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.geoserver.catalog.*;
-import org.geoserver.catalog.LayerInfo.WMSInterpolation;
-import org.geoserver.catalog.CoverageView.CompositionType;
-import org.geoserver.catalog.CoverageView.CoverageBand;
-import org.geoserver.catalog.CoverageView.InputCoverageBand;
-import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.ServiceException;
-import org.geoserver.security.decorators.DecoratingFeatureSource;
-import org.geoserver.wms.*;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.factory.FactoryRegistryException;
-import org.geotools.feature.IllegalAttributeException;
-import org.geotools.feature.SchemaException;
-import org.geotools.filter.IllegalFilterException;
-import org.geotools.gce.imagemosaic.ImageMosaicReader;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.test.ImageAssert;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
-import org.geotools.parameter.Parameter;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.resources.coverage.FeatureUtilities;
-import org.geotools.styling.*;
-import org.geotools.util.URLs;
-import org.geotools.util.logging.Logging;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
-
-import javax.media.jai.Interpolation;
-import javax.media.jai.RenderedOp;
-import javax.xml.namespace.QName;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -66,11 +29,83 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.geoserver.data.test.CiteTestData.STREAMS;
-import static org.junit.Assert.*;
+import javax.media.jai.Interpolation;
+import javax.media.jai.RenderedOp;
+import javax.xml.namespace.QName;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.WMSInterpolation;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.security.decorators.DecoratingFeatureSource;
+import org.geoserver.wms.CachedGridReaderLayer;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WMSPartialMapException;
+import org.geoserver.wms.WMSTestSupport;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.FactoryRegistryException;
+import org.geotools.feature.IllegalAttributeException;
+import org.geotools.feature.SchemaException;
+import org.geotools.filter.IllegalFilterException;
+import org.geotools.gce.imagemosaic.ImageMosaicReader;
+import org.geotools.geometry.jts.LiteShape2;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.test.ImageAssert;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
+import org.geotools.parameter.Parameter;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.renderer.lite.LabelCache;
+import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ChannelSelectionImpl;
+import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.SelectedChannelType;
+import org.geotools.styling.SelectedChannelTypeImpl;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.TextSymbolizer;
+import org.geotools.util.NumberRange;
+import org.geotools.util.URLs;
+import org.geotools.util.logging.Logging;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.opengis.feature.Feature;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
@@ -83,6 +118,76 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     private String mapFormat = "image/gif";
 
+    private static final ThreadLocal<Boolean> usedCustomLabelCache = new ThreadLocal<Boolean>();
+
+    public static class CustomLabelCache implements LabelCache {
+        public CustomLabelCache() {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @Override
+        public void clear(String arg0) {
+
+        }
+
+        @Override
+        public void disableLayer(String arg0) {
+
+        }
+
+        @Override
+        public void enableLayer(String arg0) {
+
+        }
+
+        @Override
+        public void end(Graphics2D arg0, Rectangle arg1) {
+            usedCustomLabelCache.set(true);
+        }
+
+        @Override
+        public void endLayer(String arg0, Graphics2D arg1, Rectangle arg2) {
+
+        }
+
+        @Override
+        public List orderedLabels() {
+            return null;
+        }
+
+        @Override
+        public void put(Rectangle2D arg0) {
+
+        }
+
+        @Override
+        public void put(String arg0, TextSymbolizer arg1, Feature arg2, LiteShape2 arg3,
+                NumberRange<Double> arg4) {
+
+        }
+
+        @Override
+        public void start() {
+
+        }
+
+        @Override
+        public void startLayer(String arg0) {
+
+        }
+
+        @Override
+        public void stop() {
+
+        }
+
+    };
+    
     @Before
     public void setRasterMapProducer() throws Exception {
         Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
@@ -286,7 +391,54 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testBlueLake", image);
     }
     
-    
+    @Test
+    public void testCustomLabelCache() throws IOException {
+        final Catalog catalog = getCatalog();
+        org.geoserver.catalog.FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(
+                MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+        Envelope env = typeInfo.getFeatureSource(null, null).getBounds();
+        double shift = env.getWidth() / 6;
+
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift,
+                env.getMaxY() + shift);
+
+        GetMapRequest request = new GetMapRequest();
+        final WMSMapContent map = new WMSMapContent();
+        int w = 400;
+        int h = (int) Math.round((env.getHeight() * w) / env.getWidth());
+        map.setMapWidth(w);
+        map.setMapHeight(h);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        map.setRequest(request);
+
+        addToMap(map, MockData.FORESTS);
+        addToMap(map, MockData.LAKES);
+        addToMap(map, MockData.STREAMS);
+        addToMap(map, MockData.NAMED_PLACES);
+        addToMap(map, MockData.ROAD_SEGMENTS);
+        addToMap(map, MockData.PONDS);
+        addToMap(map, MockData.BUILDINGS);
+        addToMap(map, MockData.DIVIDED_ROUTES);
+        addToMap(map, MockData.BRIDGES);
+        addToMap(map, MockData.MAP_NEATLINE);
+
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+
+        request.setFormat(getMapFormat());
+
+        this.rasterMapProducer.setLabelCache(new Function<WMSMapContent, LabelCache>() {
+            @Override
+            public LabelCache apply(WMSMapContent mapContent) {
+                return new CustomLabelCache();
+            }
+        });
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        BufferedImage image = (BufferedImage) imageMap.getImage();
+        imageMap.dispose();
+        assertTrue(usedCustomLabelCache.get());
+        assertNotBlank("testBlueLake", image);
+    }
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

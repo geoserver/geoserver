@@ -55,6 +55,7 @@ public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
             serviceProvider.setServiceContact(gwcContactInfo);
         }
         gwcInfo.setServiceProvider(serviceProvider);
+        gwcInfo.setCiteCompliant(gsInfo.isCiteCompliant());
         return gwcInfo;
     }
 }

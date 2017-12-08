@@ -97,7 +97,8 @@ public class StyleParameterFilter extends ParameterFilter {
                 }
             }
             // no match so fail
-            throw new ParameterException(str);
+            throw new ParameterException(400, "InvalidParameterValue",
+                    "Style", String.format("Style '%s' is invalid.", str));
         }
     }
     

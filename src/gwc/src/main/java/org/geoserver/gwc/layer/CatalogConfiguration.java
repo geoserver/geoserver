@@ -167,24 +167,6 @@ public class CatalogConfiguration implements Configuration {
     }
 
     /**
-     * @see org.geowebcache.config.Configuration#getServiceInformation()
-     * @return {@code null}
-     */
-    @Override
-    public ServiceInformation getServiceInformation() {
-        return null;
-    }
-
-    /**
-     * @return {@code true}
-     * @see org.geowebcache.config.Configuration#isRuntimeStatsEnabled()
-     */
-    @Override
-    public boolean isRuntimeStatsEnabled() {
-        return true;
-    }
-
-    /**
      * Returns the list of {@link GeoServerTileLayer} objects matching the GeoServer ones.
      * <p>
      * The list is built dynamically on each call.

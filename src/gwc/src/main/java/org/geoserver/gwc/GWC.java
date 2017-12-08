@@ -86,7 +86,9 @@ import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
+import org.geowebcache.config.BaseConfiguration;
 import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreConfigurationCatalog;
 import org.geowebcache.config.Configuration;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.XMLConfiguration;
@@ -1343,7 +1345,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Adds a layer to the {@link CatalogConfiguration} and saves it.
      */
     public void add(GeoServerTileLayer tileLayer) {
-        Configuration config = tld.addLayer(tileLayer);
+        BaseConfiguration config = tld.addLayer(tileLayer);
         try {
             config.save();
         } catch (IOException e) {
@@ -1552,7 +1554,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 saveConfigurations.add(config);
             }
 
-            for (Configuration config : saveConfigurations) {
+            for (BaseConfiguration config : saveConfigurations) {
                 config.save();
             }
         } finally {
@@ -1634,7 +1636,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         checkNotNull(layer);
         log.info("Saving GeoSeverTileLayer " + layer.getName());
 
-        Configuration modifiedConfig = tld.modify(layer);
+        BaseConfiguration modifiedConfig = tld.modify(layer);
         try {
             modifiedConfig.save();
         } catch (IOException e) {
@@ -1946,7 +1948,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
         }
 
-        for (Configuration conf : confsToSave) {
+        for (BaseConfiguration conf : confsToSave) {
             try {
                 conf.save();
             } catch (IOException e) {
@@ -1997,7 +1999,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         // now make it all persistent
-        for (Configuration config : changedConfigs) {
+        for (BaseConfiguration config : changedConfigs) {
             config.save();
         }
     }
@@ -2060,7 +2062,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         } else {
             return false;
         }
-        Configuration configuration;
+        BaseConfiguration configuration;
         try {
             configuration = tld.getConfiguration(tileLayerId);
         } catch (IllegalArgumentException notFound) {
@@ -2358,7 +2360,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @return the list of configured blobstores
      */
     public List<BlobStoreConfig> getBlobStores() {
-        XMLConfiguration xmlConfig = getXmlConfiguration();
+        BlobStoreConfigurationCatalog xmlConfig = getXmlConfiguration();
 
         return new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
     }
@@ -2368,7 +2370,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         no default
      */
     public BlobStoreConfig getDefaultBlobStore() {
-        XMLConfiguration xmlConfig = getXmlConfiguration();
+        BlobStoreConfigurationCatalog xmlConfig = getXmlConfiguration();
 
         for (BlobStoreConfig config : xmlConfig.getBlobStores()) {
             if (config.isDefault()) {

@@ -185,8 +185,6 @@ public class CatalogConfigurationTest {
 
     @Test public void testGoofyMethods() {
         assertEquals("GeoServer Catalog Configuration", config.getIdentifier());
-        assertNull(config.getServiceInformation());
-        assertTrue(config.isRuntimeStatsEnabled());
     }
 
     @Test public void testInitialize() {

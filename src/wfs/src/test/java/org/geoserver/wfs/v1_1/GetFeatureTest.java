@@ -706,7 +706,10 @@ public class GetFeatureTest extends WFSTestSupport {
             for (int i = 0; i < 100; i++) {
                 Future<Void> future = executorService.submit(() -> {
                     Document doc = postAsDOM("wfs", xml);
-                    print(doc);
+                    // print(doc);
+                    assertEquals("wfs:FeatureCollection", doc.getDocumentElement()
+                            .getNodeName());
+                    
                     return (Void) null;
                 });
                 futures.add(future);

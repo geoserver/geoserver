@@ -19,7 +19,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
@@ -707,4 +712,45 @@ public class GetFeatureTest extends WFSTestSupport {
         count = xpath.evaluate("count(//gml:featureMembers/cite:Buildings)", document);
         assertThat(Integer.parseInt(count), greaterThan(0));
     }
+    
+    @Test
+    public void testNPEOnPaginationLinks() throws Exception {
+        String xml = "<wfs:GetFeature " + "service=\"WFS\" "
+                + "version=\"1.1.0\" "
+                + "outputFormat=\"text/xml; subtype=gml/3.1.1\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\" "
+                + "xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
+                + "<wfs:Query typeName=\"sf:PrimitiveGeoFeature\">"
+                + "<ogc:Filter>"
+                + "<ogc:BBOX>"
+                + "   <ogc:PropertyName>pointProperty</ogc:PropertyName>"
+                + "   <gml:Envelope srsName=\"EPSG:4326\">"
+                + "      <gml:lowerCorner>57.0 -4.5</gml:lowerCorner>"
+                + "      <gml:upperCorner>62.0 1.0</gml:upperCorner>"
+                + "   </gml:Envelope>"
+                + "</ogc:BBOX>"
+                + "</ogc:Filter>"
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        try {
+            List<Future<Void>> futures = new ArrayList<>();
+            for (int i = 0; i < 100; i++) {
+                Future<Void> future = executorService.submit(() -> {
+                    Document doc = postAsDOM("wfs", xml, 200);
+                    print(doc);
+                    return (Void) null;
+                });
+                futures.add(future);
+            }
+            for (Future<Void> future : futures) {
+                future.get();
+            }
+        } finally {
+            executorService.shutdown();
+        }
+    }
+    
 }

@@ -124,7 +124,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         LockFeature lockFeature = new LockFeature(getServiceInfo(), getCatalog(), filterFactory);
         LockFeatureRequest.WFS20 requestWrapper = new LockFeatureRequest.WFS20(request);
         if (request.getLockId() != null) {
-            lockFeature.refresh(request.getLockId());
+            lockFeature.refresh(request.getLockId(), true);
             LockFeatureResponse response = requestWrapper.createResponse();
             response.setLockId(request.getLockId());
 

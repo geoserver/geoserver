@@ -590,8 +590,8 @@ A thematic map (rather than focusing on representing the shape of the world) use
    | #bebada | #fdb462 | #d9d9d9 |
    +---------+---------+---------+
 
-   If you are unfamiliar with theming you may wish to visit http://colorbrewer2.org/js/ to learn more. The **i** icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.
-
+   If you are unfamiliar with theming you may wish to visit http://colorbrewer2.org to learn more. The **i** icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.
+  
 #. The first approach we will take is to directly select content based on **colormap**, providing a color based on the **9-class Set3** palette above:
 
    .. code-block:: yaml

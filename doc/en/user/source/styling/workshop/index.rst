@@ -18,6 +18,9 @@ The following material will be covered in this workshop:
 
 :doc:`ysld/index`
    Introduction to GeoServer styling followed by easy styling with the YSLD module.
+
+:doc:`mbstyle/index`
+   Introduction to GeoServer styling followed by easy styling with the MBStyle module.
    
 .. toctree::
    :maxdepth: 2
@@ -28,4 +31,5 @@ The following material will be covered in this workshop:
    design/index
    css/index
    ysld/index
+   mbstyle/index
 

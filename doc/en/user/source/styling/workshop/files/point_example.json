@@ -168,7 +168,7 @@
             "maxzoom": 4,
             "paint": {
               "circle-color": "gray",
-              "circle-radius": 8
+              "circle-radius": 8,
               "circle-stroke-color": "black",
               "circle-stroke-width": 1
             }

@@ -39,6 +39,7 @@ import org.xml.sax.EntityResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -384,13 +385,15 @@ public class StyleController extends AbstractCatalogController {
         }
         checkFullAdminRequired(workspaceName);
         StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
-        
-        String contentType = request.getContentType();
+
+        // Extracting mimeType and charset from content type formated as "Content-Type: text/html; charset=utf-8"
+        String contentType = getMimeTypeFromContentType(request.getContentType());
+        String charset = getCharsetFromContentType(request.getContentType());
         // String extentsion = "sld"; // TODO: determine this from path
         
         ResourcePool resourcePool = catalog.getResourcePool();
         byte[] rawData = IOUtils.toByteArray(request.getInputStream());
-        String content = new String(rawData);
+        String content = new String(rawData, charset);
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         if (raw) {
             writeRaw(s, new ByteArrayInputStream(rawData));
@@ -655,5 +658,31 @@ public class StyleController extends AbstractCatalogController {
      */
     private boolean existsStyleInCatalog(String workspaceName, String name) {
         return (catalog.getStyleByName(workspaceName, name ) != null);
+    }
+
+    /**
+     * Extracts MimeType from HTTP ContentType header
+     * @param contentType       ContentType header
+     */
+    private String getMimeTypeFromContentType(String contentType) {
+        if (contentType != null) {
+            return contentType.split(";")[0];
+        }
+        return null;
+    }
+
+    /**
+     * Extracts Charset from HTTP ContentType header
+     * @param contentType       ContentType header
+     */
+    private String getCharsetFromContentType(String contentType) {
+        if (contentType != null && contentType.split(";").length > 1) {
+            String charsetRaw = contentType.split(";")[1];
+            if (charsetRaw.contains("=") && charsetRaw.split("=").length > 1) {
+                return charsetRaw.split("=")[1];
+            }
+        }
+        // For retrocompatibility sake
+        return Charset.defaultCharset().name();
     }
 }

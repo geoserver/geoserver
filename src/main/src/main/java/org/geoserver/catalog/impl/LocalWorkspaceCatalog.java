@@ -165,15 +165,14 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             //prefix the unqualified name
             if (name.contains(":")) {
                 //name already prefixed, ensure it is prefixed with the correct one
-                if (name.startsWith(wsName+":")) {
+                if (name.startsWith(wsName + ":")) {
                     //good to go, just pass call through
                     LayerGroupInfo layerGroup = super.getLayerGroupByName(name);
                     if (layerGroup != null) {
                         return wrap(layerGroup);
                     }
                     // else fall back on unqualified lookup
-                }
-                else {
+                } else {
                     //JD: perhaps strip of existing prefix?
                 }
             }

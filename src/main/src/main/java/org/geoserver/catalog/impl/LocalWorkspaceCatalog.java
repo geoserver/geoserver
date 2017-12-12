@@ -338,8 +338,8 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
         CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
         if (iterator.hasNext() && useNameDequalifyingProxy()) {
-            return CloseableIteratorAdapter.transform(iterator,
-                obj -> NameDequalifyingProxy.create(obj, of));
+            return CloseableIteratorAdapter.transform(iterator, obj ->
+                obj == null ? null : NameDequalifyingProxy.create(obj, of));
         }
         return iterator;
     }

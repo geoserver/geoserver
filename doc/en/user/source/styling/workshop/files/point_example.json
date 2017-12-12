@@ -1,0 +1,336 @@
+{
+        "version": 8,
+        "name": "point_example",
+        "sprite": "http://localhost:8080/geoserver/styles/sprites",
+        "layers": [
+          {
+            "id": "point_capital",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["all",["<", "SCALERANK", 2], ["==", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 2,
+            "layout": {
+              "icon-image": "star",
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": [0, -12]
+            }
+          },
+          {
+            "id": "point_7",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 7], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 6,
+            "maxzoom": 7,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, 4.5],
+                  [10, 2.5]
+                ]
+              },
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_7_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 7], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 6,
+            "maxzoom": 7,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          },
+          {
+            "id": "point_5",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 5], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 5,
+            "maxzoom": 6,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, 4.5],
+                  [10, 2.5]
+                ]
+              },
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_5_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 5], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 5,
+            "maxzoom": 6,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          },
+          {
+            "id": "point_4",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 4], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 4,
+            "maxzoom": 5,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, 4.5],
+                  [10, 2.5]
+                ]
+              },
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_4_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 4], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 4,
+            "maxzoom": 5,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          },
+          {
+            "id": "point_3",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 3], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 3,
+            "maxzoom": 4,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": 8,
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_3_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 3], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 3,
+            "maxzoom": 4,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          },
+          {
+            "id": "point_2",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 2], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 2,
+            "maxzoom": 3,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, 4.5],
+                  [10, 2.5]
+                ]
+              },
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_2_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["all", ["<", "SCALERANK", 2], ["!=", "FEATURECLA", "Admin-0 capital"]],
+            "minzoom": 2,
+            "maxzoom": 3,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          },
+          {
+            "id": "point_1",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["<", "SCALERANK", 1],
+            "maxzoom": 2,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, 4.5],
+                  [10, 2.5]
+                ]
+              },
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_1_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["<", "SCALERANK", 1],
+            "maxzoom": 2,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          },
+          {
+            "id": "point_0",
+            "type": "circle",
+            "source-layer": "ne:populated_places",
+            "filter": ["!=", "FEATURECLA", "Admin-0 capital"],
+            "minzoom": 7,
+            "paint": {
+              "circle-color": "gray",
+              "circle-radius": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, 4.5],
+                  [10, 2.5]
+                ]
+              },
+              "circle-stroke-color": "black",
+              "circle-stroke-width": 1
+            }
+          },
+          {
+            "id": "point_0_text",
+            "type": "symbol",
+            "source-layer": "ne:populated_places",
+            "filter": ["!=", "FEATURECLA", "Admin-0 capital"],
+            "minzoom": 7,
+            "layout": {
+              "text-field": "{NAME}",
+              "text-font": ["Arial"],
+              "text-size": 10,
+              "text-padding": 2
+            },
+            "paint": {
+              "text-color": "black",
+              "text-translate": {
+                "property": "SCALERANK",
+                "type": "exponential",
+                "stops": [
+                  [0, [0, -8]],
+                  [10, [0, -6]]
+                ]
+              }
+            }
+          }
+        ]
+      }

@@ -1321,7 +1321,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                         .withFormat(finalFormat)
                         .withMinScale(scalesDenominator.getMinimum())
                         .withMaxScale(scalesDenominator.getMaximum())
-                        .withCompleteUrl(buildURL(baseUrl, "ows", params, URLMangler.URLType.SERVICE));
+                        .withCompleteUrl(buildURL(baseUrl, "ows", params, URLMangler.URLType.RESOURCE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
             }
         }

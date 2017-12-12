@@ -7,7 +7,6 @@ package org.geoserver.importer.rest;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.importer.ImportContext;
@@ -281,6 +280,105 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         checkPoiImport();
 
         //Test delete
+        MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/"+importId);
+        assertEquals(204, resp.getStatus());
+    }
+
+    @Test
+    public void testDirectExecutePhasedAsync() throws Exception {
+        testDirectExecutePhasedInternal(true);
+    }
+
+    @Test
+    public void testDirectExecutePhasedSync() throws Exception {
+        testDirectExecutePhasedInternal(false);
+    }
+
+    void testDirectExecutePhasedInternal(boolean async) throws Exception {
+
+        // set a callback to check that the request spring context is passed to the job thread
+        RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
+        SecurityContextHolder.getContext().setAuthentication(createAuthentication());
+
+        final boolean[] invoked = {false};
+        listener.setCallBack((request, user, resource) -> {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            assertThat(request, notNullValue());
+            assertThat(resource, notNullValue());
+            assertThat(auth, notNullValue());
+            invoked[0] = true;
+        });
+
+        File gmlFile = file("gml/poi.gml2.gml");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        // @formatter:off
+        String contextDefinition = "{\n" +
+                "   \"import\": {\n" +
+                "      \"targetWorkspace\": {\n" +
+                "         \"workspace\": {\n" +
+                "            \"name\": \"" + wsName + "\"\n" +
+                "         }\n" +
+                "      },\n" +
+                "      \"data\": {\n" +
+                "        \"type\": \"file\",\n" +
+                "        \"file\": \"" + jsonSafePath(gmlFile) +  "\"\n" +
+                "      }," +
+                "      targetStore: {\n" +
+                "        dataStore: {\n" +
+                "        name: \"h2\",\n" +
+                "        }\n" +
+                "      }\n" +
+                "   }\n" +
+                "}";
+        // @formatter:on
+
+        // initialize the import
+        JSONObject json = (JSONObject) json(
+                postAsServletResponse("/rest/imports"
+                        + (async ? "?async=true" : ""), contextDefinition, "application/json"));
+        // print(json);
+        String state = null;
+        int importId;
+        importId = json.getJSONObject("import").getInt("id");
+
+        // wait until PENDING:
+        if (async) {
+            for (int i = 0; i < 60 * 2 * 2; i++) {
+                json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+                // print(json);
+                state = json.getJSONObject("import").getString("state");
+                if ("INIT".equals(state)) {
+                    Thread.sleep(500);
+                }
+            }
+        }
+
+        assertThat(invoked[0], is(true));
+        invoked[0] = false;
+
+        // run the import
+        postAsServletResponse("/rest/imports/"+importId + (async ? "?async=true" : ""), "", "application/json");
+
+        if (async) {
+            for (int i = 0; i < 60 * 2 * 2; i++) {
+                json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+                // print(json);
+                state = json.getJSONObject("import").getString("state");
+                if ("INIT".equals(state) || "RUNNING".equals(state) || "PENDING".equals(state)) {
+                    Thread.sleep(500);
+                }
+            }
+        } else {
+            json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+            state = json.getJSONObject("import").getString("state");
+        }
+        Thread.sleep(500);
+        assertEquals("COMPLETE", state);
+        assertThat(invoked[0], is(true));
+        checkPoiImport();
+
+        // test delete
         MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/"+importId);
         assertEquals(204, resp.getStatus());
     }

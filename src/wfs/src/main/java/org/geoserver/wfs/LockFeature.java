@@ -425,7 +425,7 @@ public class LockFeature {
         }
     }
 
-    public void refresh(String lockId) throws WFSException {
+    public void refresh(String lockId, boolean throwOnRefreshFail) throws WFSException {
         boolean refresh = false;
         boolean lockFound = false;
         try {
@@ -490,7 +490,7 @@ public class LockFeature {
 
         // the API does not give us a way to check if a lock exists but it's expired, but WFS 2.0
         // requires to send back a different response... we'll make a guess 
-        if (!refresh) {
+        if (!refresh && throwOnRefreshFail) {
             if (!lockFound) {
                 throw new ServiceException("Unknown lock id", WFSException.INVALID_LOCK_ID, "lockId");
             } else {

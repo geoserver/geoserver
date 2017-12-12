@@ -222,7 +222,47 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
         assertEquals("wfs:WFS_TransactionResponse", dom.getDocumentElement()
                 .getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+    }
 
+    @Test
+    public void testGetFeatureWithLockReleaseActionSome2() throws Exception {
+        String xml = "<wfs:GetFeatureWithLock" + "  service=\"WFS\""
+                + "  version=\"1.0.0\"" + "  expiry=\"10\""
+                + "  xmlns:cdf=\"http://www.opengis.net/cite/data\""
+                + "  xmlns:ogc=\"http://www.opengis.net/ogc\""
+                + "  xmlns:wfs=\"http://www.opengis.net/wfs\"" + ">"
+                + "  <wfs:Query typeName=\"cdf:Locks\">" + "    <ogc:Filter>"
+                + "      <ogc:FeatureId fid=\"Locks.1\"/>"
+                + "    </ogc:Filter>" + "  </wfs:Query>"
+                + "</wfs:GetFeatureWithLock>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement()
+                .getNodeName());
+
+        String lockId = dom.getDocumentElement().getAttribute("lockId");
+        //System.out.println(lockId);
+        
+        // relase with "some" but actually releases the only locked feature
+        xml = "<wfs:Transaction" + "  service=\"WFS\"" + "  version=\"1.0.0\""
+                + "  releaseAction=\"SOME\""
+                + "  xmlns:cdf=\"http://www.opengis.net/cite/data\""
+                + "  xmlns:ogc=\"http://www.opengis.net/ogc\""
+                + "  xmlns:wfs=\"http://www.opengis.net/wfs\"" + ">"
+                + "  <wfs:LockId>" + lockId + "</wfs:LockId>"
+                + "  <wfs:Update typeName=\"cdf:Locks\">"
+                + "    <wfs:Property>" + "      <wfs:Name>cdf:id</wfs:Name>"
+                + "      <wfs:Value>gfwlrs0003</wfs:Value>"
+                + "    </wfs:Property>" + "    <ogc:Filter>"
+                + "      <ogc:FeatureId fid=\"Locks.1\"/>"
+                + "    </ogc:Filter>" + "  </wfs:Update>"
+                + "</wfs:Transaction>";
+
+        dom = postAsDOM("wfs", xml);
+
+        assertEquals("wfs:WFS_TransactionResponse", dom.getDocumentElement()
+                .getNodeName());
+        assertEquals(1, dom.getElementsByTagName("wfs:SUCCESS").getLength());
     }
     
     @Test

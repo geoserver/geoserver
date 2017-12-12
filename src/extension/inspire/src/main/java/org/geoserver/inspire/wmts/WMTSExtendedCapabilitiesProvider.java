@@ -9,6 +9,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.inspire.ViewServicesUtils;
+import org.geowebcache.config.meta.ServiceInformation;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.xml.sax.Attributes;
@@ -99,5 +100,10 @@ public class WMTSExtendedCapabilitiesProvider extends WMTSExtensionImpl {
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
         ViewServicesUtils.addScenario1Elements(translator, metadataURL, mediaType, language);
+    }
+
+    @Override
+    public ServiceInformation getServiceInformation() {
+        return new ServiceInformation();
     }
 }

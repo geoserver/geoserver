@@ -664,7 +664,7 @@ public class Transaction {
      */
     private void lockRefresh(String lockId) throws Exception {
         LockFeature lockFeature = new LockFeature(wfs, catalog);
-        lockFeature.refresh(lockId);
+        lockFeature.refresh(lockId, false);
     }
 
     /**

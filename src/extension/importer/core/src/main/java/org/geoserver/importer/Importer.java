@@ -344,9 +344,9 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public Long createContextAsync(final ImportData data, final WorkspaceInfo targetWorkspace, 
         final StoreInfo targetStore) throws IOException {
-        return jobs.submit(new Job<ImportContext>() {
+        return jobs.submit(new SecurityContextCopyingJob<ImportContext>() {
             @Override
-            protected ImportContext call(ProgressMonitor monitor) throws Exception {
+            protected ImportContext callInternal(ProgressMonitor monitor) throws Exception {
                 return createContext(data, targetWorkspace, targetStore, monitor);
             }
 
@@ -366,9 +366,9 @@ public class Importer implements DisposableBean, ApplicationListener {
      *
      */
     public Long initAsync(final ImportContext context, final boolean prepData) {
-        return jobs.submit(new Job<ImportContext>() {
+        return jobs.submit(new SecurityContextCopyingJob<ImportContext>() {
             @Override
-            protected ImportContext call(ProgressMonitor monitor) throws Exception {
+            protected ImportContext callInternal(ProgressMonitor monitor) throws Exception {
                 try {
                     init(context, prepData);
                 } finally {
@@ -879,33 +879,16 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public Long runAsync(final ImportContext context, final ImportFilter filter, final boolean init) {
-        // we store the current request spring context
-        final RequestAttributes parentRequestAttributes = RequestContextHolder.getRequestAttributes();
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Thread parentThread = Thread.currentThread();
         // creating an asynchronous importer job
-        return jobs.submit(new Job<ImportContext>() {
+        return jobs.submit(new SecurityContextCopyingJob<ImportContext>() {
 
             @Override
-            protected ImportContext call(ProgressMonitor monitor) throws Exception {
-                final Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
-                try {
-                    // set the parent request spring context, some interceptors like the security ones
-                    // for example may need to have access to the original request attributes
-                    RequestContextHolder.setRequestAttributes(parentRequestAttributes);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                    if (init) {
-                        init(context, true);
-                    }
-                    run(context, filter, monitor);
-                    return context;
-                } finally {
-                    if (Thread.currentThread() != parentThread) {
-                        // cleaning request spring context for the current thread
-                        RequestContextHolder.resetRequestAttributes();
-                        SecurityContextHolder.getContext().setAuthentication(oldAuth);
-                    }
+            protected ImportContext callInternal(ProgressMonitor monitor) throws Exception {
+                if (init) {
+                    init(context, true);
                 }
+                run(context, filter, monitor);
+                return context;
             }
 
             @Override
@@ -913,6 +896,39 @@ public class Importer implements DisposableBean, ApplicationListener {
                 return "Processing import " + context.getId();
             }
         });
+    }
+
+    protected abstract class SecurityContextCopyingJob<T> extends Job<T> {
+        final RequestAttributes parentRequestAttributes;
+        final Authentication auth;
+        final Thread parentThread;
+
+        protected SecurityContextCopyingJob() {
+            // we store the current request spring context
+            parentRequestAttributes = RequestContextHolder.getRequestAttributes();
+            auth = SecurityContextHolder.getContext().getAuthentication();
+            parentThread = Thread.currentThread();
+        }
+
+        @Override
+        protected final T call(ProgressMonitor monitor) throws Exception {
+            final Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
+            try {
+                // set the parent request spring context, some interceptors like the security ones
+                // for example may need to have access to the original request attributes
+                RequestContextHolder.setRequestAttributes(parentRequestAttributes);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                return callInternal(monitor);
+            } finally {
+                if (Thread.currentThread() != parentThread) {
+                    // cleaning request spring context for the current thread
+                    RequestContextHolder.resetRequestAttributes();
+                    SecurityContextHolder.getContext().setAuthentication(oldAuth);
+                }
+            }
+        }
+
+        protected abstract T callInternal(ProgressMonitor monitor) throws Exception;
     }
 
     public Task<ImportContext> getTask(Long job) {

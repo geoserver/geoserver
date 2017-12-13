@@ -28,6 +28,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.BufferedRequestWrapper;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.StyleParameterFilter;
@@ -40,6 +41,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.w3c.dom.Document;
 
 import com.google.common.collect.ImmutableList;
@@ -581,7 +583,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testGetSeed() throws Exception {
+    public void testGetSeedHtml() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName;
         final String id = getCatalog().getLayerByName(layerName).getId();
@@ -589,6 +591,28 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse(url);
         assertEquals(200, sr.getStatus());
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("text/html"));
+    }
+
+    @Test
+    public void testPostSeedHtmlForm() throws Exception {
+        final String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        final String url = "gwc/rest/seed/" + layerName;
+        final String id = getCatalog().getLayerByName(layerName).getId();
+
+        final String formData = "threadCount=01&type=seed&gridSetId=EPSG%3A4326&tileFormat=image%2Fpng&zoomStart=00&zoomStop=12&minX=&minY=&maxX=&maxY=";
+
+        //Manually construct request and wrap in BufferedRequestWrapper so that the form data gets parsed as parameters
+        MockHttpServletRequest request = createRequest(url);
+        request.setMethod("POST");
+        request.setContentType("application/x-www-form-urlencoded");
+        request.setContent(formData.getBytes("UTF-8"));
+
+        BufferedRequestWrapper wrapper = new BufferedRequestWrapper(request, "UTF-8", formData.getBytes("UTF-8"));
+
+        MockHttpServletResponse sr = dispatch(wrapper);
+
+        assertEquals(200, sr.getStatus());
+        assertSeedJob(layerName);
     }
 
     @Test

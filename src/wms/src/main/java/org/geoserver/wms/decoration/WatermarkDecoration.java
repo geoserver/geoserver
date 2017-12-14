@@ -5,12 +5,16 @@
  */
 package org.geoserver.wms.decoration;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.wms.WMSMapContent;
+import org.geotools.data.DataUtilities;
+import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.URLs;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,14 +24,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.DataUtilities;
-import org.geotools.util.SoftValueHashMap;
 
 public class WatermarkDecoration implements MapDecoration {
     /** A logger for this class. */
@@ -106,23 +102,37 @@ public class WatermarkDecoration implements MapDecoration {
         BufferedImage logo = null;
 
         // fully resolve the url (consider data dir)
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         URL url = null;
-
         try {
             url = new URL(imageURL);
+
             if (url.getProtocol() == null || url.getProtocol().equals("file")) {
-                GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
                 File file = loader.url(imageURL);
-                if (file.exists()){
+                if (file.exists()) {
                     url = DataUtilities.fileToURL(file);
                 }
             }
         } catch (MalformedURLException e) {
-            url = null;
-        }
+            // could be a relative reference, check if we can find it in the layouts directory
+            Resource layouts = loader.get("layouts");
+            if (layouts.getType() == Resource.Type.DIRECTORY) {
+                Resource image = layouts.get(imageURL);
+                if (image.getType() == Resource.Type.RESOURCE) {
+                    url = URLs.fileToUrl(image.file());
+                } else {
+                    // also check from the root of the data dir (backwards compatibility)
+                    image = loader.get(imageURL);
+                    if (image.getType() == Resource.Type.RESOURCE) {
+                        url = URLs.fileToUrl(image.file());
+                    }
+                }
+            }
 
-        if (url == null)
+        }
+        if (url == null) {
             return null;
+        }
 
         LogoCacheEntry entry = logoCache.get(url);
         if (entry == null || entry.isExpired()) {

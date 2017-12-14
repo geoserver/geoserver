@@ -56,5 +56,23 @@ public class WatermarkDecorationTest extends GeoServerSystemTestSupport {
         assertEquals(180, logo.getWidth());
         assertEquals(90, logo.getHeight());
     }
+
+    @Test
+    public void testRelativeUnqualifiedPath() throws Exception {
+        WatermarkDecoration d = new WatermarkDecoration();
+        Map<String, String> options = new HashMap<>();
+        File file = new File("src/test/resources/org/geoserver/wms/world.png");
+        File styles = getDataDirectory().findOrCreateDir("styles");
+        File logoFile = new File(styles, "world.png").getAbsoluteFile();
+        FileUtils.copyFile(file, logoFile);
+
+        options.put("url", "styles/world.png");
+        d.loadOptions(options);
+        BufferedImage logo = d.getLogo();
+
+        assertNotNull(logo);
+        assertEquals(180, logo.getWidth());
+        assertEquals(90, logo.getHeight());
+    }
     
 }

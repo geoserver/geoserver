@@ -9,11 +9,16 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.process.Processors;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.io.ByteArrayInputStream;
+import java.util.Map;
 
 public class RawInputOutputTest extends WPSTestSupport {
 
@@ -21,6 +26,22 @@ public class RawInputOutputTest extends WPSTestSupport {
 
 	static {
         Processors.addProcessFactory(RawProcess.getFactory());
+    }
+
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("ani", "http://geoserver.org/wps/animation");
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+	    super.onSetUp(testData);
+	    
+        // disable entity resolver as it won't let the tests run in IntelliJ if also GeoTools is loaded...
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setXmlExternalEntitiesEnabled(true);
+        getGeoServer().save(global);
+
     }
 
     @Test
@@ -116,6 +137,41 @@ public class RawInputOutputTest extends WPSTestSupport {
         // System.out.println(response.getContentType());
         assertEquals("text/xml", response.getContentType());
         assertEquals("ABCDE", response.getContentAsString());
+    }
+
+    @Test
+    public void testExecuteEmbeddedXML() throws Exception {
+        String xml =
+                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " +
+                        "xmlns:ows='http://www.opengis.net/ows/1.1'>" +
+                        "<ows:Identifier>gs:Raw</ows:Identifier>" +
+                        "<wps:DataInputs>" +
+                        "<wps:Input>" +
+                        "<ows:Identifier>data</ows:Identifier>" +
+                        "<wps:Data>" +
+                        "<wps:ComplexData mimeType=\"text/xml\" xmlns:ani=\"http://geoserver.org/wps/animation\">" +
+                        "  <ani:Layer>\n" +
+                        "    <ani:Name>test</ani:Name>\n" +
+                        "    <ani:Parameter key=\"CQL_FILTER\">sun_elevation%3C51</ani:Parameter>\n" +
+                        "  </ani:Layer>\n" +
+                        "</wps:ComplexData>" +
+                        "</wps:Data>" +
+                        "</wps:Input>" +
+                        "</wps:DataInputs>" +
+                        "<wps:ResponseForm>" +
+                        "<wps:RawDataOutput mimeType=\"text/xml\">" +
+                        "<ows:Identifier>result</ows:Identifier>" +
+                        "</wps:RawDataOutput>" +
+                        "</wps:ResponseForm>" +
+                        "</wps:Execute>";
+        // System.out.println(xml);
+
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        // the elements are there and the namespace is recognizable
+        assertXpathEvaluatesTo("test", "//ani:Layer/ani:Name", dom);
+        assertXpathEvaluatesTo("CQL_FILTER", "//ani:Layer/ani:Parameter/@key", dom);
+        assertXpathEvaluatesTo("sun_elevation%3C51", "//ani:Layer/ani:Parameter", dom);
     }
     
     @Test

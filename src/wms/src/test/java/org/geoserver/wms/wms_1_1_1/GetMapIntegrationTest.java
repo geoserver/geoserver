@@ -202,7 +202,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addRasterLayer(MASKED, "masked.tif", null, properties,  GetMapIntegrationTest.class, catalog);
 
         testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
-                GetMapTest.class, getCatalog());
+                SystemTestData.class, getCatalog());
 
         testData.addVectorLayer(LARGE_POLYGON, Collections.EMPTY_MAP, "slightlyLessGiantPolygon.properties",
                 GetMapTest.class, getCatalog());

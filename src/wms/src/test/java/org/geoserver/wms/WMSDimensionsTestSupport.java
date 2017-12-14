@@ -120,56 +120,23 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         // a raster layer with time, elevation and custom dimensions as ranges
         testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, catalog);
     }
-    
-    protected void setupVectorDimension(String featureTypeName, String metadata, String attribute, 
-            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
-        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
-        DimensionInfo di = new DimensionInfoImpl();
-        di.setEnabled(true);
-        di.setAttribute(attribute);
-        di.setPresentation(presentation);
-        if(resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
-        }
-        di.setUnits(units);
-        di.setUnitSymbol(unitSymbol);
-        info.getMetadata().put(metadata, di);
-        getCatalog().save(info);
+
+    /**
+     * Checks two dates are the same, within a given tolerance. 
+     * @param d1
+     * @param d2
+     * @param tolerance
+     */
+    protected static void assertDateEquals(java.util.Date d1, java.util.Date d2, long tolerance) {
+        long difference = Math.abs(d1.getTime() - d2.getTime());
+        assertTrue(difference <= tolerance);
     }
 
-    protected void setupVectorDimension(String metadata, String attribute, 
-            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
+    protected void setupVectorDimension(String metadata, String attribute,
+                                        DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
         setupVectorDimension("TimeElevation", metadata, attribute, presentation, resolution, units, unitSymbol);
     }
-    
-    protected void setupRasterDimension(QName layer, String metadata, 
-            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
-        CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
-        DimensionInfo di = new DimensionInfoImpl();
-        di.setEnabled(true);
-        di.setPresentation(presentation);
-        if(resolution != null) {
-            di.setResolution(new BigDecimal(resolution));
-        }
-        di.setUnits(units);
-        di.setUnitSymbol(unitSymbol);
-        info.getMetadata().put(metadata, di);
-        getCatalog().save(info);
-    }
-    
-    protected void setupResourceDimensionDefaultValue(QName name, String dimensionName, DimensionDefaultValueSetting defaultValue) {
-        ResourceInfo info = getCatalog().getResourceByName(name.getLocalPart(), ResourceInfo.class);
-        if (info == null){
-            throw new RuntimeException("Unable to get resource by name "+name.getLocalPart());
-        }
-        DimensionInfo di = new DimensionInfoImpl();
-        di.setEnabled(true);
-        di.setPresentation(DimensionPresentation.LIST);
-        di.setDefaultValue(defaultValue);
-        info.getMetadata().put(dimensionName, di);
-        getCatalog().save(info);
-    }
-    
+
     protected void setupResourceDimensionDefaultValue(QName name, String dimensionName, DimensionDefaultValueSetting defaultValue, String... startEndAttribute) {
         ResourceInfo info = getCatalog().getResourceByName(name.getLocalPart(), ResourceInfo.class);
         if (info == null){
@@ -188,17 +155,5 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         info.getMetadata().put(dimensionName, di);
         getCatalog().save(info);
     }
-    
-    /**
-     * Checks two dates are the same, within a given tolerance. 
-     * @param d1
-     * @param d2
-     * @param tolerance
-     */
-    protected static void assertDateEquals(java.util.Date d1, java.util.Date d2, long tolerance) {
-        long difference = Math.abs(d1.getTime() - d2.getTime());
-        assertTrue(difference <= tolerance);
-    }
-
 
 }

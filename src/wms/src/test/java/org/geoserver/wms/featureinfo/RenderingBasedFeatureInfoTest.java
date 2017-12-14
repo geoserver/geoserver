@@ -99,7 +99,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addVectorLayer(REPEATED, Collections.EMPTY_MAP, "repeated_lines.properties",
                 RenderingBasedFeatureInfoTest.class, getCatalog());
         testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
-                GetMapTest.class, getCatalog());
+                SystemTestData.class, getCatalog());
         
         testData.addStyle("ranged", "ranged.sld",this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld",this.getClass(), getCatalog());

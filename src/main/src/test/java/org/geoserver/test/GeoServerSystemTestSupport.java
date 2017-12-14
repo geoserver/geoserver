@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +68,10 @@ import javax.xml.validation.Validator;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
@@ -78,6 +83,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoaderProxy;
@@ -1755,6 +1761,56 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
   	    int pixel = image.getRGB(i,j);
         assertEquals(true, (pixel>>24) == 0x00);
+    }
+
+    /**
+     * Configures the dimension of a vector layer
+     * @param featureTypeName The feature type name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param attribute The attribute used for the dimension
+     * @param presentation The chosen presentation
+     * @param resolution The resolution
+     * @param units The units
+     * @param unitSymbol The unit symbol
+     */
+    protected void setupVectorDimension(String featureTypeName, String dimensionName, String attribute,
+                                        DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setAttribute(attribute);
+        di.setPresentation(presentation);
+        if(resolution != null) {
+            di.setResolution(new BigDecimal(resolution));
+        }
+        di.setUnits(units);
+        di.setUnitSymbol(unitSymbol);
+        info.getMetadata().put(dimensionName, di);
+        getCatalog().save(info);
+    }
+
+    /**
+     * Configures the dimension of a vector layer
+     * @param featureTypeName The feature type name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param presentation The chosen presentation
+     * @param resolution The resolution
+     * @param units The units
+     * @param unitSymbol The unit symbol
+     */
+    protected void setupRasterDimension(QName layer, String dimensionName,
+                                        DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
+        CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setPresentation(presentation);
+        if(resolution != null) {
+            di.setResolution(new BigDecimal(resolution));
+        }
+        di.setUnits(units);
+        di.setUnitSymbol(unitSymbol);
+        info.getMetadata().put(dimensionName, di);
+        getCatalog().save(info);
     }
 
     //

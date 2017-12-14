@@ -11,7 +11,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.SoftValueHashMap;
-import org.geotools.util.URLs;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -119,14 +118,14 @@ public class WatermarkDecoration implements MapDecoration {
             if (layouts.getType() == Resource.Type.DIRECTORY) {
                 Resource image = layouts.get(imageURL);
                 if (image.getType() == Resource.Type.RESOURCE) {
-                    url = URLs.fileToUrl(image.file());
+                    url = DataUtilities.fileToURL(image.file());
                 }
             } 
             if(url == null) {
                 // also check from the root of the data dir (backwards compatibility)
                 Resource image = loader.get(imageURL);
                 if (image.getType() == Resource.Type.RESOURCE) {
-                    url = URLs.fileToUrl(image.file());
+                    url = DataUtilities.fileToURL(image.file());
                 }
             }
 

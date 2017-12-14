@@ -82,7 +82,6 @@ import org.geotools.process.Processors;
 import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.RenderingTransformationHelper;
@@ -98,7 +97,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.Expression;
-import org.opengis.geometry.BoundingBox;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptorGroup;
@@ -677,7 +675,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
 
         MapDecorationLayout layout = null;
-        if (layoutName != null) {
+        if (layoutName != null && !layoutName.trim().isEmpty()) {
             try {
                 GeoServerResourceLoader loader = wms.getCatalog().getResourceLoader();
                 Resource layouts = loader.get("layouts");
@@ -694,6 +692,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Unable to load layout: " + layoutName, e);
+            }
+
+            if (layout == null) {
+                throw new ServiceException("Could not find decoration layout named: " + layoutName);
             }
         }
 

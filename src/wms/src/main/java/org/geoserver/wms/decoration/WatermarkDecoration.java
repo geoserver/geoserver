@@ -120,12 +120,13 @@ public class WatermarkDecoration implements MapDecoration {
                 Resource image = layouts.get(imageURL);
                 if (image.getType() == Resource.Type.RESOURCE) {
                     url = URLs.fileToUrl(image.file());
-                } else {
-                    // also check from the root of the data dir (backwards compatibility)
-                    image = loader.get(imageURL);
-                    if (image.getType() == Resource.Type.RESOURCE) {
-                        url = URLs.fileToUrl(image.file());
-                    }
+                }
+            } 
+            if(url == null) {
+                // also check from the root of the data dir (backwards compatibility)
+                Resource image = loader.get(imageURL);
+                if (image.getType() == Resource.Type.RESOURCE) {
+                    url = URLs.fileToUrl(image.file());
                 }
             }
 

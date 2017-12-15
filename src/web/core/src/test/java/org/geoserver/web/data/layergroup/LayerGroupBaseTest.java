@@ -51,8 +51,14 @@ public abstract class LayerGroupBaseTest extends GeoServerWicketTestSupport {
         builder.calculateLayerGroupBounds(wslg);
         catalog.add(wslg);
 
-        testData.addStyle("multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
+        lg = catalog.getFactory().createLayerGroup();
+        lg.setName("nestedLayerGroup");
+        lg.getLayers().add(catalog.getLayerByName(lakes));
+        lg.getStyles().add(catalog.getStyleByName(lakes));
+        builder.calculateLayerGroupBounds(lg);
+        catalog.add(lg);
 
+        testData.addStyle("multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
         lg = catalog.getFactory().createLayerGroup();
         lg.setName("styleGroup");
         lg.getLayers().add(null);

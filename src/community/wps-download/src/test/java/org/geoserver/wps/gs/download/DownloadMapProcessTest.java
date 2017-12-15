@@ -92,5 +92,23 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         // making extra sure
         ImageAssert.assertEquals(new File(SAMPLES + "mapTimeFilter.png"), image, 100);
     }
-    
+
+    @Test
+    public void testTimeFilterTimestamped() throws Exception {
+        String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilterTimestamped.xml"));
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "mapTimeFilterTimestamped.png"), image, 200);
+    }
+
+    @Test
+    public void testTimeFilterFormattedTimestamp() throws Exception {
+        String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilterFormattedTimestamp.xml"));
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "mapTimeFilterFormattedTimestamp.png"), image, 200);
+    }
+
 }

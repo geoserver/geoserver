@@ -92,6 +92,14 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             progressListener = new DefaultProgressListener();
         }
 
+        // if height and width are an odd number fix them, cannot encode videos otherwise
+        if (width % 2 == 1) {
+            width++;
+        }
+        if (height % 2 == 1) {
+            height++;
+        }
+
         final Resource output = resourceManager.getTemporaryResource("mp4");
         Rational frameRate = getFrameRate(fps);
 

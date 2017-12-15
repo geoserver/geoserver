@@ -162,6 +162,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
         // Decoration handling, we'll put together a empty GetMap for it
         GetMapRequest request = new GetMapRequest();
+        if (time != null) { // allow text decoration timestamping
+            request.getEnv().put("time", time);
+        }
         request.setFormat(format.getName());
         if (decorationName != null) {
             request.setFormatOptions(Collections.singletonMap("layout", decorationName));
@@ -180,7 +183,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     public RenderedImage mergeImage(RenderedImage result, RenderedImage image) {
         // make sure we can paint on it
         if (!(result instanceof BufferedImage)) {
-            result = PlanarImage.wrapRenderedImage(image).getAsBufferedImage();
+            result = PlanarImage.wrapRenderedImage(result).getAsBufferedImage();
         }
 
         // could use mosaic here, but would require keeping all images in memory to build the op,

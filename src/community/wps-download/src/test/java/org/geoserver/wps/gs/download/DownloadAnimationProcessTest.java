@@ -96,6 +96,30 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         ImageAssert.assertEquals(new File(SAMPLES +  "animateDecorateFirstFrame.png"), frame1, 100);
     }
 
+    @Test
+    public void testAnimateTimestamped() throws Exception {
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"));
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("video/mp4", response.getContentType());
+
+        // JCodec API works off files only... 
+        File testFile = new File("target/animateTimestamped.mp4");
+        FileUtils.writeByteArrayToFile(testFile, response.getContentAsByteArray());
+
+        // check frames and duration
+        Format f = JCodecUtil.detectFormat(testFile);
+        Demuxer d = JCodecUtil.createDemuxer(f, testFile);
+        DemuxerTrack vt = d.getVideoTracks().get(0);
+        DemuxerTrackMeta dtm = vt.getMeta();
+        assertEquals(4, dtm.getTotalFrames());
+        assertEquals(8, dtm.getTotalDuration(), 0d);
+
+        // grab first frame for test
+        FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
+        BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+        ImageAssert.assertEquals(new File(SAMPLES +  "animateBlueMarbleTimestampedFrame1.png"), frame1, 100);
+    }
+
     BufferedImage grabImageFromZip(File file, String entryName) throws IOException {
         ZipFile zipFile = new ZipFile(file);
 

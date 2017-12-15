@@ -13,6 +13,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -227,7 +228,7 @@ public class MapDecorationLayout {
      *
      * @see {Block}
      */
-    private List<Block> blocks;
+    List<Block> blocks;
 
     /**
      * Create a new MapDecorationLayout with no decorations in it yet.
@@ -252,10 +253,38 @@ public class MapDecorationLayout {
         
         Document confFile = new SAXBuilder().build(f.file());
 
+        return fromDocument(dl, confFile);
+    }
+
+    /**
+     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations specified 
+     * therein.
+     *
+     * @param definition The layout definition as a string
+     * @param tiled is this map metatiled?
+     * @return a new MapDecorationLayout containing the MapDecorations specified
+     * @throws Exception if the configuration is invalid or other errors occur while parsing
+     */
+    public static MapDecorationLayout fromString(String definition, boolean tiled) throws Exception {
+        MapDecorationLayout dl = tiled
+                ? new MetatiledMapDecorationLayout()
+                : new MapDecorationLayout();
+
+        Document confFile = new SAXBuilder().build(new StringReader(definition));
+
+        return fromDocument(dl, confFile);
+    }
+
+    private static MapDecorationLayout fromDocument(MapDecorationLayout dl, Document confFile) throws Exception {
         for (Element e : (List<Element>)confFile.getRootElement().getChildren("decoration")){
             Map<String, String> m = new HashMap<String,String>();
             for (Element option : (List<Element>)e.getChildren("option")){
-                m.put(option.getAttributeValue("name"), option.getAttributeValue("value"));
+                String value = option.getAttributeValue("value");
+                if(value == null) {
+                    // pick from body, useful if the content is large
+                    value = option.getValue();
+                }
+                m.put(option.getAttributeValue("name"), value);
             }
 
             MapDecoration decoration = getDecoration(e.getAttributeValue("type"));

@@ -12,9 +12,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Map;
 
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wms.WMSMapContent;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 public class MapDecorationLayoutTest {
@@ -403,4 +406,27 @@ public class MapDecorationLayoutTest {
         dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
     }
         
+    @Test
+    public void testLoadLargeValue() throws Exception {
+        String messageTemplate = "<#setting datetime_format=\"yyyy-MM-dd'T'HH:mm:ss.SSSX\">\n" +
+                "<#setting locale=\"en_US\">\n" +
+                "<#if time??>\n" +
+                "${time?datetime?string[\"dd-MM-yyyy\"]}\n" +
+                "</#if>";
+        String definition = "<layout>\n" +
+                "  <decoration type=\"text\" affinity=\"bottom,right\" offset=\"6,6\" size=\"auto\">\n" +
+                "    <option name=\"message\"><![CDATA[" + messageTemplate +  "]]></option>\n" +
+                "    <option name=\"font-family\" value=\"Bitstream Vera Sans\"/>\n" +
+                "    <option name=\"font-size\" value=\"12\"/>\n" +
+                "    <option name=\"halo-radius\" value=\"2\"/>\n" +
+                "  </decoration>\n" +
+                "</layout>\n";
+        GeoServerExtensionsHelper.singleton("text", new TextDecoration());
+        MapDecorationLayout layout = MapDecorationLayout.fromString(definition, false);
+        List<MapDecorationLayout.Block> blocks = layout.blocks;
+        assertEquals(1, blocks.size());
+        assertThat(blocks.get(0).decoration, CoreMatchers.instanceOf(TextDecoration.class));
+        TextDecoration text = (TextDecoration) blocks.get(0).decoration;
+        assertEquals(messageTemplate, text.messageTemplate); 
+    }
 }

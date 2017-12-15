@@ -5,29 +5,6 @@
  */
 package org.geoserver.wms.decoration;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.geoserver.wms.WMSMapContent;
-import org.geotools.geometry.jts.TransformedShape;
-import org.geotools.renderer.style.FontCache;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.Configuration;
@@ -36,6 +13,23 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.wms.WMSMapContent;
+import org.geotools.renderer.style.FontCache;
+import org.geotools.util.Converters;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A map decoration showing a text message driven by a Freemarker template
@@ -154,6 +148,20 @@ public class TextDecoration implements MapDecoration {
             @Override
             public TemplateModel get(String key) throws TemplateModelException {
                 String value = (String) env.get(key);
+                // also allow using the other request parameters
+                if (value == null) {
+                    Request request = Dispatcher.REQUEST.get();
+                    if (request != null && request.getRawKvp() != null) {
+                        Object obj = request.getRawKvp().get(key);
+                        value = Converters.convert(obj, String.class);
+                        if (obj != null && value == null) {
+                            // try also Spring converters as a fallback, can do some thing GT converters
+                            // cannot do (e.g array -> string). Did not create a bridge to GT converters as it might
+                            // have global consequences
+                            DefaultConversionService.getSharedInstance().convert(obj, String.class);
+                        }
+                    }
+                }
                 if(value != null) {
                     return new StringModel(value, bw);
                 } else {

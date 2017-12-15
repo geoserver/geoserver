@@ -79,19 +79,39 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
      */
     @DescribeResult(name = "result", description = "The output map")
     public RawData execute(
-            @DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection") 
+            @DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection")
                     ReferencedEnvelope bbox,
-            @DescribeParameter(name = "decoration", min = 0, description = "A WMS decoration layout name to watermark the output") String decorationName,
+            @DescribeParameter(name = "decoration", min = 0, description = "A WMS decoration layout name to watermark" +
+                    " the output") String decorationName,
             @DescribeParameter(name = "time", min = 0, description = "Map time specification (a single time value or " +
                     "a range like in WMS time parameter)") String time,
             @DescribeParameter(name = "width", min = 1, description = "Map width", minValue = 1) int width,
             @DescribeParameter(name = "height", min = 1, description = "Map height", minValue = 1) int height,
-            @DescribeParameter(name = "layer", min = 1, description = "The list of layers", minValue = 1) Layer[] 
+            @DescribeParameter(name = "layer", min = 1, description = "The list of layers", minValue = 1) Layer[]
                     layers,
             @DescribeParameter(name = "format", min = 1, description = "The output format", minValue = 1) Format format,
             final ProgressListener progressListener) throws Exception {
+        RenderedImage result = buildImage(bbox, decorationName, time, width, height, layers, format);
 
 
+        // encode the output by faking a normal request
+        GetMapRequest request = new GetMapRequest();
+        request.setFormat(format.getName());
+        List<RenderedImageMapResponse> encoders = GeoServerExtensions.extensions(RenderedImageMapResponse.class);
+        Operation op = new Operation("GetMap", service, null, new Object[]{request});
+        for (RenderedImageMapResponse encoder : encoders) {
+            if (encoder.canHandle(op)) {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                encoder.formatImageOutputStream(result, bos, new WMSMapContent(request));
+                return new ByteArrayRawData(bos.toByteArray(), format.getName());
+            }
+        }
+
+        throw new WPSException("Could not find a map encoder for format: " + format);
+    }
+
+    RenderedImage buildImage(ReferencedEnvelope bbox, String decorationName, String time, int width, int height, 
+                             Layer[] layers, Format format) throws Exception {
         // build GetMap template parameters
         CaseInsensitiveMap template = new CaseInsensitiveMap(new HashMap());
         template.put("service", "WMS");
@@ -135,7 +155,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 result = mergeImage(result, image);
 
             }
-            
+
             // past the first layer switch transparency on to allow overlaying
             template.put("transparent", "true");
         }
@@ -151,23 +171,10 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             content.setTransparent(true);
             RenderedImageMapOutputFormat renderer = new RenderedImageMapOutputFormat(wms);
             RenderedImageMap map = renderer.produceMap(content);
-            
+
             result = mergeImage(result, map.getImage());
         }
-        
-
-        // encode the output by faking a normal request
-        List<RenderedImageMapResponse> encoders = GeoServerExtensions.extensions(RenderedImageMapResponse.class);
-        Operation op = new Operation("GetMap", service, null, new Object[]{request});
-        for (RenderedImageMapResponse encoder : encoders) {
-            if (encoder.canHandle(op)) {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                encoder.formatImageOutputStream(result, bos, new WMSMapContent(request));
-                return new ByteArrayRawData(bos.toByteArray(), format.getName());
-            }
-        }
-
-        throw new WPSException("Could not find a map encoder for format: " + format);
+        return result;
     }
 
     public RenderedImage mergeImage(RenderedImage result, RenderedImage image) {

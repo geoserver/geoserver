@@ -30,43 +30,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class DownloadMapProcessTest extends WPSTestSupport {
-
-    protected static final QName WATERTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-    public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
-    protected static final String UNITS = "foot";
-    protected static final String UNIT_SYMBOL = "ft";
-    public static final String SAMPLES = "src/test/resources/org/geoserver/wps/gs/download/";
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-
-        // disable entity resolver as it won't let the tests run in IntelliJ if also GeoTools is loaded...
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        getGeoServer().save(global);
-        
-        // add water temperature
-        testData.addStyle("temperature", "temperature.sld", DownloadMapProcess.class, catalog);
-        Map propertyMap = new HashMap();
-        propertyMap.put(SystemTestData.LayerProperty.STYLE,"temperature");
-        testData.addRasterLayer(WATERTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);
-        
-        // a world covering layer with no dimensions
-        testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
-                SystemTestData.class, getCatalog());
-
-        // setup dimensions for water temp
-        setupRasterDimension(WATERTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(WATERTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
-        
-        // add a decoration layout
-        File layouts = getDataDirectory().findOrCreateDir("layouts");
-        FileUtils.copyURLToFile(getClass().getResource("watermarker.xml"), new File(layouts, "watermarker.xml"));
-        FileUtils.copyURLToFile(getClass().getResource("geoserver.png"), new File(layouts, "geoserver.png"));
-
-    }
+public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteSingleLayer() throws Exception {

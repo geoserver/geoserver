@@ -29,6 +29,11 @@
 		<constructor-arg index="0" ref="geoServer"/>
 	</bean>
 
+	<bean id="downloadAnimationProcess" class="org.geoserver.wps.gs.download.DownloadAnimationProcess">
+		<constructor-arg index="0" ref="downloadMapProcess"/>
+		<constructor-arg index="1" ref="wpsResourceManager"/>
+	</bean>
+
 
 	<!-- The PPIO that need to be registered into SPI because of their dependencies -->
 	<bean id="archiveZipPPIO" class="org.geoserver.wps.ppio.ZipArchivePPIO">

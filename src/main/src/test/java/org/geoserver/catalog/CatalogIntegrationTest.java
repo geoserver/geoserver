@@ -351,6 +351,26 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testInvalidStyleGroup() throws Exception {
+        Catalog catalog = getCatalog();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        StyleInfo s = catalog.getStyleByName("polygon");
+
+        lg.setWorkspace(null);
+        lg.setName("invalidStyleLayerGroup");
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+
+        try {
+            catalog.add(lg);
+            fail("Should not be able to add an invalid style group to the catalog");
+        } catch (Exception e) {
+            assertEquals("Invalid style group: No layer or layer group named 'Default Polygon' found in the catalog", e.getMessage());
+        }
+    }
+
+    @Test
     public void testSingleStyleGroup() throws Exception {
         Catalog catalog = getCatalog();
 

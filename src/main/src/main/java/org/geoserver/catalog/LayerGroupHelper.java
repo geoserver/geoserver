@@ -480,11 +480,14 @@ public class LayerGroupHelper {
 
         @Override
         public PublishedInfo visitNamedLayerInternal(StyledLayer namedLayer) {
-            LayerGroupInfo lg = catalog.getLayerGroupByName(namedLayer.getName());
-            if (lg == null) {
-                return catalog.getLayerByName(namedLayer.getName());
+            PublishedInfo p = catalog.getLayerGroupByName(namedLayer.getName());
+            if (p == null) {
+                p = catalog.getLayerByName(namedLayer.getName());
+                if (p == null) {
+                    throw new ServiceException("No layer or layer group with name \""+namedLayer.getName()+"\"");
+                }
             }
-            return lg;
+            return p;
         }
 
         @Override

@@ -43,6 +43,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.SLDNamedLayerValidator;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.PublishedType;
@@ -63,10 +64,10 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -842,6 +843,19 @@ public class CatalogImpl implements Catalog {
                 layers.remove(i);
                 styles.remove(i);
             } else {
+                //Validate style group
+                if (layers.get(i) == null) {
+                    try {
+                        // validate style groups
+                        StyledLayerDescriptor sld = styles.get(i).getSLD();
+                        List<Exception> errors = SLDNamedLayerValidator.validate(this, sld);
+                        if (errors.size() > 0) {
+                            throw new IllegalArgumentException("Invalid style group: " + errors.get(0).getMessage(), errors.get(0));
+                        }
+                    } catch (IOException e) {
+                        throw new IllegalArgumentException("Error validating style group: " + e.getMessage(), e);
+                    }
+                }
                 i++;
             }
         }

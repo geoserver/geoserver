@@ -726,4 +726,9 @@ public class CatalogConfiguration implements Configuration {
         // we are already good
         return layerName;
     }
+
+    @Override
+    public String getLocation() {
+        return this.tileLayerCatalog.getPersistenceLocation();
+    }
 }

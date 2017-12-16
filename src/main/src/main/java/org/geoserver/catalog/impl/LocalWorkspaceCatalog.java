@@ -160,11 +160,27 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
         if (LocalWorkspace.get() != null) {
-            LayerGroupInfo layerGroup = super.getLayerGroupByName(LocalWorkspace.get(), name);
+            String wsName = LocalWorkspace.get().getName();
+
+            //prefix the unqualified name
+            if (name.contains(":")) {
+                //name already prefixed, ensure it is prefixed with the correct one
+                if (name.startsWith(wsName + ":")) {
+                    //good to go, just pass call through
+                    LayerGroupInfo layerGroup = super.getLayerGroupByName(name);
+                    if (layerGroup != null) {
+                        return wrap(layerGroup);
+                    }
+                    // else fall back on unqualified lookup
+                } else {
+                    //JD: perhaps strip of existing prefix?
+                }
+            }
+            //prefix it explicitly
+            LayerGroupInfo layerGroup = super.getLayerGroupByName(LocalWorkspace.get().getName(), name);
             if (layerGroup != null) {
                 return wrap(layerGroup);
             }
-            // else fall back on unqualified lookup
         }
 
         return wrap(super.getLayerGroupByName(name));

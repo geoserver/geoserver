@@ -32,17 +32,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.ows.TestDispatcherCallback.Status;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
 import org.geotools.util.Version;
+import org.geotools.xml.XMLUtils;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.DelegatingServletInputStream;
+import org.w3c.dom.Document;
 
 
 public class DispatcherTest extends TestCase {
@@ -976,7 +979,8 @@ public class DispatcherTest extends TestCase {
             final String outputContent = response.getContentAsString();
             assertThat(outputContent, not(containsString("Hello world!")));
             // only the exception
-            assertThat(outputContent, startsWith("<ows:Exception"));
+            Document dom = XMLUnit.buildTestDocument(outputContent);
+            assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
         }
     }
 }

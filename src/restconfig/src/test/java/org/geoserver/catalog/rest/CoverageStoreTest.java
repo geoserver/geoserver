@@ -369,7 +369,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         final File storeDir = loader.url("data/wcs/mosaicfordelete");
         File[] content = storeDir.listFiles();
-        assertThat(content.length, anyOf(equalTo(10), equalTo(11)));
+        assertThat(content.length, anyOf(equalTo(9), equalTo(10), equalTo(11)));
 
         assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/mosaicfordelete?recurse=true&purge="
         +purge).getStatus());

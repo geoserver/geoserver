@@ -27,8 +27,6 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
-import com.google.common.base.Function;
-
 /**
  * Catalog decorator handling cases when a {@link LocalWorkspace} is set.
  * <p>
@@ -113,9 +111,10 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     private boolean useNameDequalifyingProxy() {
         WorkspaceInfo workspaceInfo = LocalWorkspace.get();
-        boolean hidePrefix = geoServer == null || !geoServer.getSettings().isLocalWorkspaceIncludesPrefix();
-        boolean useNameDequalifyingProxy = workspaceInfo != null && hidePrefix;
-        return useNameDequalifyingProxy;
+        if (workspaceInfo == null) {
+            return false;
+        }
+        return geoServer == null || !geoServer.getSettings().isLocalWorkspaceIncludesPrefix();
     }
 
     @Override
@@ -354,16 +353,11 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             final Filter filter, final Integer offset, final Integer count, final SortBy sortBy) {
 
         CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
-        Function<T, T> wrappingFunction = new Function<T, T>() {
-
-            final Class<T> type = of;
-
-            @Override
-            public T apply(T catalogObject) {
-                return wrap(catalogObject, type);
-            }
-        };
-        return CloseableIteratorAdapter.transform(iterator, wrappingFunction);
+        if (iterator.hasNext() && useNameDequalifyingProxy()) {
+            return CloseableIteratorAdapter.transform(iterator, obj ->
+                obj == null ? null : NameDequalifyingProxy.create(obj, of));
+        }
+        return iterator;
     }
 
     public void removeListeners(Class listenerClass) {

@@ -159,9 +159,11 @@ public class LocalWorkspaceCatalogTest {
         layers.add(lc1);
         layers.add(lc2);
         expect(cat.getLayers()).andReturn(layers).anyTimes();
+        List<LayerInfo> layers2 = new ArrayList<>(layers);
+        layers2.add(null);
         expect(cat.list(LayerInfo.class, Filter.INCLUDE, 
                 (Integer) null, (Integer) null, (SortBy) null))
-            .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers.iterator())).anyTimes();
+            .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers2.iterator())).anyTimes();
         replay(cat);
         
         catalog = new LocalWorkspaceCatalog(cat);
@@ -351,6 +353,9 @@ public class LocalWorkspaceCatalogTest {
             Iterator<LayerInfo> layers) {
         while(layers.hasNext()) {
             LayerInfo layerInfo = layers.next();
+            if (layerInfo == null) {
+                continue;
+            }
             String message;
             if(includePrefix) {
                 message = layerInfo.getName() + " should contain a : because the prefix should have been kept";

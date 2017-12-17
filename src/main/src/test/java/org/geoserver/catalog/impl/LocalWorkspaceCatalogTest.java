@@ -129,10 +129,12 @@ public class LocalWorkspaceCatalogTest {
         
         expect(cat.getLayerGroupByName("ws1", "lg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName(ws1, "lg1")).andReturn(lg1).anyTimes();
+        expect(cat.getLayerGroupByName("ws1:lg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName("lg1")).andReturn(null).anyTimes();
         
         expect(cat.getLayerGroupByName("ws2", "lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName(ws2, "lg2")).andReturn(lg2).anyTimes();
+        expect(cat.getLayerGroupByName("ws2:lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName("lg2")).andReturn(null).anyTimes();
 
         //expect(cat.getLayerByName("ws1", "l1")).andReturn(l1).anyTimes();
@@ -204,6 +206,7 @@ public class LocalWorkspaceCatalogTest {
         
         LocalWorkspace.set(ws1);
         assertNotNull(catalog.getLayerGroupByName("lg1"));
+        assertNotNull(catalog.getLayerGroupByName("ws1:lg1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
 
         LocalWorkspace.remove();
@@ -212,6 +215,7 @@ public class LocalWorkspaceCatalogTest {
 
         LocalWorkspace.set(ws2);
         assertNull(catalog.getLayerGroupByName("lg1"));
+        assertNotNull(catalog.getLayerGroupByName("ws2:lg2"));
         assertNotNull(catalog.getLayerGroupByName("lg2"));
 
         LocalWorkspace.remove();

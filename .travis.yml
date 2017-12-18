@@ -10,6 +10,11 @@ before_install:
 env:
   global:
     - MAVEN_OPTS=-Xmx512m
+before_script:
+  - wget https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
+  - tar zxf apache-maven-3.5.0-bin.tar.gz
+  - export M2_HOME=$PWD/apache-maven-3.5.0
+  - export PATH=$M2_HOME/bin:$PATH
 script:
   - mvn -f src/pom.xml -B -U -T4 -fae -Prelease clean install && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install
 notifications:

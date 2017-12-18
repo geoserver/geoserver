@@ -6,6 +6,7 @@ package org.geoserver.wps.gs.download;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
@@ -34,6 +35,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -43,6 +45,15 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     protected void registerNamespaces(Map<String, String> namespaces) {
         super.registerNamespaces(namespaces);
         namespaces.put("kml", "http://www.opengis.net/kml/2.2");
+    }
+    
+    @Test
+    public void testDescribeProcess() throws Exception {
+        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:DownloadMap");
+        // print(d);
+        assertXpathExists("//ComplexOutput/Supported/Format[MimeType='image/png']", d);
+        assertXpathExists("//ComplexOutput/Supported/Format[MimeType='image/jpeg']", d);
+        assertXpathExists("//ComplexOutput/Supported/Format[MimeType='" + KMZMapOutputFormat.MIME_TYPE + "']", d);
     }
 
     @Test

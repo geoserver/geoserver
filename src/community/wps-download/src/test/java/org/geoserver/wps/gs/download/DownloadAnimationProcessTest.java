@@ -7,6 +7,7 @@ package org.geoserver.wps.gs.download;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.kml.KMZMapOutputFormat;
 import org.geotools.image.test.ImageAssert;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.common.Demuxer;
@@ -19,6 +20,7 @@ import org.jcodec.containers.mp4.demuxer.MP4Demuxer;
 import org.jcodec.scale.AWTUtil;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -29,10 +31,18 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 
 public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
+    @Test
+    public void testDescribeProcess() throws Exception {
+        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:DownloadAnimation");
+        // print(d);
+        assertXpathExists("//ComplexOutput/Supported/Format[MimeType='video/mp4']", d);
+    }
+    
     @Test
     public void testAnimateBmTime() throws Exception {
         String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"));

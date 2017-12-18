@@ -61,7 +61,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     }
 
-    @DescribeResult(name = "result", description = "The animation")
+    @DescribeResult(name = "result", description = "The animation",  meta = {"mimeTypes=" + VIDEO_MP4})
     public RawData execute(
             @DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection")
                     ReferencedEnvelope bbox,

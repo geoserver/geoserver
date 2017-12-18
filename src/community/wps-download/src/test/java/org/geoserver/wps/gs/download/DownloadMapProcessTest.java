@@ -6,15 +6,18 @@ package org.geoserver.wps.gs.download;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.kml.KMZMapOutputFormat;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -27,10 +30,20 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
+
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        super.registerNamespaces(namespaces);
+        namespaces.put("kml", "http://www.opengis.net/kml/2.2");
+    }
 
     @Test
     public void testExecuteSingleLayer() throws Exception {
@@ -77,7 +90,52 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         // not a typo, the output should indeed be the same as testExecuteMultiName
         ImageAssert.assertEquals(new File(SAMPLES + "mapMultiName.png"), image, 100);
     }
-    
+
+    @Test
+    public void testExecuteMultiLayerKmz() throws Exception {
+        testExecutMultiLayerKmz(KMZMapOutputFormat.MIME_TYPE);
+    }
+
+    @Test
+    public void testExecuteMultiLayerKmzShort() throws Exception {
+        testExecutMultiLayerKmz("kmz");
+    }
+
+
+    public void testExecutMultiLayerKmz(String mime) throws Exception {
+        String request = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"));
+        request = request.replaceAll("image/png", mime);
+        MockHttpServletResponse response = postAsServletResponse("wps", request);
+        assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
+
+        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()));
+        try {
+            // first entry, the kml document itself
+            ZipEntry entry = zis.getNextEntry();
+            assertEquals("wms.kml", entry.getName());
+            byte[] data = IOUtils.toByteArray(zis);
+            Document dom = dom(new ByteArrayInputStream(data));
+            // print(dom);
+            assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
+            String href = XMLUnit.newXpathEngine().evaluate(
+                    "//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
+            assertEquals("image.png", href);
+            zis.closeEntry();
+
+            // the ground overlay for the raster layer
+            entry = zis.getNextEntry();
+            assertEquals("image.png", entry.getName());
+            BufferedImage image = ImageIO.read(zis);
+            zis.closeEntry();
+            assertNull(zis.getNextEntry());
+
+            // check the output, same as mapMultiName
+            ImageAssert.assertEquals(new File(SAMPLES + "mapMultiName.png"), image, 100);
+        } finally {
+            zis.close();
+        }
+    }
+
     @Test
     public void testTimeFilter() throws Exception {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilter.xml"));

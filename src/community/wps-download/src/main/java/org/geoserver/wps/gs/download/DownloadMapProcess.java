@@ -4,17 +4,31 @@
  */
 package org.geoserver.wps.gs.download;
 
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.GroundOverlay;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.LatLonBox;
+import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
 import org.geoserver.config.GeoServer;
+import org.geoserver.kml.KMLEncoder;
+import org.geoserver.kml.KMZMapOutputFormat;
+import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.kml.icons.IconRenderer;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
+import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
@@ -23,26 +37,34 @@ import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.MapContent;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @DescribeProcess(title = "Map Download Process", description = "Builds a large map given a set of layer definitions, " +
         "area of interest, size and eventual target time.")
@@ -52,6 +74,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     private final WMS wms;
     private final GetMapKvpRequestReader getMapReader;
     private Service service;
+    private ApplicationContext applicationContext;
 
     public DownloadMapProcess(GeoServer geoServer) {
         // TODO: make these configurable
@@ -91,23 +114,86 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     layers,
             @DescribeParameter(name = "format", min = 1, description = "The output format", minValue = 1) Format format,
             final ProgressListener progressListener) throws Exception {
+        // if kmlOutput, reproject request to WGS84 (test is done indirectly to make the code work should KML not be available)
+        AbstractMapOutputFormat kmlOutputFormat = (AbstractMapOutputFormat) GeoServerExtensions.bean("KMZMapProducer");
+        boolean kmlOutput = format.getName() != null && kmlOutputFormat.getOutputFormatNames().contains(format.getName());
+        if(kmlOutput) {
+            bbox = bbox.transform(DefaultGeographicCRS.WGS84, true);
+        }
+
+        // assemble image
         RenderedImage result = buildImage(bbox, decorationName, time, width, height, layers, format);
 
-
-        // encode the output by faking a normal request
+        // encode output (by faking a normal request)
         GetMapRequest request = new GetMapRequest();
+        request.setRawKvp(Collections.emptyMap());
         request.setFormat(format.getName());
+        WMSMapContent mapContent = new WMSMapContent(request);
+        mapContent.getViewport().setBounds(bbox);
+        Operation operation = new Operation("GetMap", service, null, new Object[]{request});
+        if (kmlOutput) {
+            return buildKMLResponse(bbox, format, result, mapContent, operation);
+        } else {
+            RawData response = buildImageResponse(format, result, mapContent, operation);
+            if (response != null) {
+                return response;
+            }
+        }
+        
+        // we got here, no supported format found
+        throw new WPSException("Could not find a image map encoder for format: " + format);
+    }
+
+    public RawData buildImageResponse(@DescribeParameter(name = "format", min = 1, description = "The output format", minValue = 1) Format format, RenderedImage result, WMSMapContent mapContent, Operation operation) throws IOException {
         List<RenderedImageMapResponse> encoders = GeoServerExtensions.extensions(RenderedImageMapResponse.class);
-        Operation op = new Operation("GetMap", service, null, new Object[]{request});
         for (RenderedImageMapResponse encoder : encoders) {
-            if (encoder.canHandle(op)) {
+            if (encoder.canHandle(operation)) {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                encoder.formatImageOutputStream(result, bos, new WMSMapContent(request));
+                encoder.formatImageOutputStream(result, bos, mapContent);
                 return new ByteArrayRawData(bos.toByteArray(), format.getName());
             }
         }
+        return null;
+    }
 
-        throw new WPSException("Could not find a map encoder for format: " + format);
+    public RawData buildKMLResponse(@DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection") ReferencedEnvelope bbox, @DescribeParameter(name = "format", min = 1, description = "The output format", minValue = 1) Format format, RenderedImage result, WMSMapContent mapContent, Operation operation) throws IOException {
+        // custom KMZ building
+        Kml kml = new Kml();
+        Document document = kml.createAndSetDocument();
+        Folder folder = document.createAndAddFolder();
+        GroundOverlay go = folder.createAndAddGroundOverlay();
+        go.setName("Map");
+        Icon icon = go.createAndSetIcon();
+        icon.setHref("image.png");
+        icon.setViewRefreshMode(ViewRefreshMode.NEVER);
+        icon.setViewBoundScale(0.75);
+
+        LatLonBox gobox = go.createAndSetLatLonBox();
+        gobox.setEast(bbox.getMinX());
+        gobox.setWest(bbox.getMaxX());
+        gobox.setNorth(bbox.getMaxY());
+        gobox.setSouth(bbox.getMinY());
+
+        // create the outupt zip
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipOutputStream zip = new ZipOutputStream(bos)) {
+            ZipEntry entry = new ZipEntry("wms.kml");
+            zip.putNextEntry(entry);
+            KMLEncoder kmlEncoder = GeoServerExtensions.bean(KMLEncoder.class);
+            kmlEncoder.encode(kml, zip, new KmlEncodingContext(mapContent, wms, true));
+
+            // build and encode the image
+            final PNGMapResponse pngEncoder = new PNGMapResponse(wms);
+            entry = new ZipEntry("image.png");
+            zip.putNextEntry(entry);
+            pngEncoder.write(new RenderedImageMap(mapContent, result, "image/png"), zip, operation);
+            zip.closeEntry();
+
+            zip.finish();
+            zip.flush();
+        }
+
+        return new ByteArrayRawData(bos.toByteArray(), KMZMapOutputFormat.MIME_TYPE);
     }
 
     RenderedImage buildImage(ReferencedEnvelope bbox, String decorationName, String time, int width, int height, 
@@ -228,6 +314,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.wms.setApplicationContext(applicationContext);
+        this.applicationContext = applicationContext;
         List<Service> services = GeoServerExtensions.extensions(Service.class, applicationContext);
         this.service = services.stream().filter(s -> "WMS".equalsIgnoreCase(s.getId())).findFirst().orElse(null);
         if (service == null) {

@@ -117,7 +117,9 @@ public class BruteForceListener
         if (config.getWhitelistAddressMatchers() == null) {
             return false;
         }
-
+        if(request==null) {
+            return true;
+        }
         return config.getWhitelistAddressMatchers().stream()
                 .anyMatch(matcher -> matcher.matches(request));
     }

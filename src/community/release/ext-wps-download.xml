@@ -11,7 +11,6 @@
       <includes>
         <include>gs-wps-download*.jar</include>
         <include>jcodec*.jar</include>
-        <include>jsr305*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

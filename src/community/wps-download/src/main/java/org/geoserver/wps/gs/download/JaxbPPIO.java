@@ -49,6 +49,7 @@ public class JaxbPPIO extends ComplexPPIO {
         } else {
             // setup the entity resolver
             final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+            saxParserFactory.setNamespaceAware(true);
             final XMLReader reader = saxParserFactory.newSAXParser().getXMLReader();
             reader.setEntityResolver(resolver);
             final SAXSource saxSource = new SAXSource(reader, new InputSource(input));

@@ -32,8 +32,8 @@
     <wps:Input>
       <ows:Identifier>layer</ows:Identifier>
       <wps:Data>
-        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
-          <dwn:Layer>
+        <wps:ComplexData>
+          <dwn:Layer xmlns:dwn="http://geoserver.org/wps/download">
             <dwn:Name>cite:BasicPolygons</dwn:Name>
           </dwn:Layer>
         </wps:ComplexData>

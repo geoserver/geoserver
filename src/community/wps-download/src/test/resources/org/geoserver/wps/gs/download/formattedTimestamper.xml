@@ -1,4 +1,4 @@
-<layout>
+ù<layout>
   <decoration type="text" affinity="bottom,right" offset="6,6" size="auto">
     <option name="message"><![CDATA[
 <#setting datetime_format="yyyy-MM-dd'T'HH:mm:ss.SSSX">

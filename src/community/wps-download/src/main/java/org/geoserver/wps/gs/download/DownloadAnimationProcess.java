@@ -61,7 +61,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     }
 
-    @DescribeResult(name = "result", description = "The animation",  meta = {"mimeTypes=" + VIDEO_MP4})
+    @DescribeResult(name = "result", description = "The animation", meta = {"mimeTypes=" + VIDEO_MP4,
+            "chosenMimeType=format"})
     public RawData execute(
             @DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection")
                     ReferencedEnvelope bbox,
@@ -75,17 +76,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                     "1") double fps,
             @DescribeParameter(name = "layer", min = 1, description = "The list of layers", minValue = 1) Layer[]
                     layers,
-            @DescribeParameter(name = "format", min = 0, description = "The output format") Format format,
             ProgressListener progressListener) throws Exception {
-
-        // default format if missing
-        if (format == null) {
-            format = new Format();
-            format.setName(VIDEO_MP4);
-        } else if (!VIDEO_MP4.equalsIgnoreCase(format.getName())) {
-            // TODO: allow more formats and codecs?
-            throw new WPSException("Currently the only supported format is video/mp4");
-        }
 
         // avoid NPE on progress listener
         if (progressListener == null) {
@@ -110,7 +101,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         for (Object parsedTime : parsedTimes) {
             // turn parsed time into a specification and generate a "WMS" like request based on it
             String mapTime = toWmsTimeSpecification(parsedTime);
-            RenderedImage image = mapper.buildImage(bbox, decorationName, mapTime, width, height, layers, format);
+            RenderedImage image = mapper.buildImage(bbox, decorationName, mapTime, width, height, layers, 
+                    "image/png", new DefaultProgressListener());
             BufferedImage frame = toBufferedImage(image);
             enc.encodeImage(frame);
             progressListener.progress(100 * (parsedTimes.size() / count));
@@ -148,16 +140,15 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         return mapTime;
     }
 
-    public Rational getFrameRate(double fps) {
+    private Rational getFrameRate(double fps) {
         if (fps < 0) {
             throw new WPSException("Frames per second must be greater than zero");
         }
         BigDecimal bigDecimal = BigDecimal.valueOf(fps);
         int numerator = (int) bigDecimal.unscaledValue().longValue();
         int denominator = (int) Math.pow(10L, bigDecimal.scale());
-        Rational frameRate = new Rational(numerator, denominator);
 
-        return frameRate;
+        return new Rational(numerator, denominator);
     }
 
 }

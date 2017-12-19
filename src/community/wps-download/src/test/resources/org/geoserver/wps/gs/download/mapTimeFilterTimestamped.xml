@@ -59,19 +59,9 @@
         </wps:ComplexData>
       </wps:Data>
     </wps:Input>
-    <wps:Input>
-      <ows:Identifier>format</ows:Identifier>
-      <wps:Data>
-        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
-          <dwn:Format>
-            <dwn:Name>image/png</dwn:Name>
-          </dwn:Format>
-        </wps:ComplexData>
-      </wps:Data>
-    </wps:Input>
   </wps:DataInputs>
   <wps:ResponseForm>
-    <wps:RawDataOutput mimeType="image/jpeg">
+    <wps:RawDataOutput mimeType="image/png">
       <ows:Identifier>result</ows:Identifier>
     </wps:RawDataOutput>
   </wps:ResponseForm>

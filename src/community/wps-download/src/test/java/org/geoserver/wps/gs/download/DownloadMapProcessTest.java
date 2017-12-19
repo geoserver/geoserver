@@ -179,5 +179,15 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "mapTimeFilterFormattedTimestamp.png"), image, 200);
     }
+    
+    @Test
+    public void downloadMapGif() throws Exception {
+        String request = IOUtils.toString(getClass().getResourceAsStream("mapSimple.xml"));
+        request = request.replaceAll("image/png", "image/gif");
+        MockHttpServletResponse response = postAsServletResponse("wps", request);
+        assertEquals("image/gif", response.getContentType());
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 200);
+    }
 
 }

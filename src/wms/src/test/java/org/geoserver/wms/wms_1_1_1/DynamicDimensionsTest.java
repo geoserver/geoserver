@@ -147,11 +147,12 @@ public class DynamicDimensionsTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
                 + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" 
+                + "&bgColor=0x0000FF"
                 + "&DIM_" + DIMENSION_NAME + "=100");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
-        // this pixel is red-ish with the default value, 020, but black with 100
-        assertPixel(image, 337, 177, Color.BLACK);
+        // this pixel is red-ish with the default value, 020, but blue with 100
+        assertPixel(image, 337, 177, Color.BLUE);
     }
     
     @Test
@@ -161,12 +162,13 @@ public class DynamicDimensionsTest extends WMSTestSupport {
         // check that we get data when requesting a correct value for custom dimension
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
                 + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
-                + "&height=250" + "&srs=EPSG:4326" 
+                + "&height=250" + "&srs=EPSG:4326"
+                + "&bgColor=0x0000FF"
                 + "&DIM_wAvElEnGtH=100");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
-        // this pixel is red-ish with the default value, 020, but black with 100
-        assertPixel(image, 337, 177, Color.BLACK);
+        // this pixel is red-ish with the default value, 020, but blue with 100
+        assertPixel(image, 337, 177, Color.BLUE);
     }
 
     

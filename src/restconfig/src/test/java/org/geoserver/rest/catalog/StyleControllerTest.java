@@ -411,6 +411,23 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPutAsSLDWithCharset() throws Exception {
+        String xml = newSLDXML();
+
+        MockHttpServletResponse response =
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds", xml, SLDHandler.MIMETYPE_10 + "; charset=utf-8");
+        assertEquals( 200, response.getStatus() );
+
+        Style s = catalog.getStyleByName( "Ponds" ).getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        xml = new String(out.toByteArray());
+        assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
+    }
+
+    @Test
     public void testPutAsSLD11Raw() throws Exception {
         String xml = newSLD11XML();
 

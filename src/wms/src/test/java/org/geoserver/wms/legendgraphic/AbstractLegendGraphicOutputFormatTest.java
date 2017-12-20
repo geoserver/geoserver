@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.media.jai.PlanarImage;
 
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -611,10 +612,11 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
         assertNotBlank("testSymbolContainedInIconUsingExpression", image, LegendUtils.DEFAULT_BG_COLOR);
     
         // background at borders
-        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 1, 20, new Color(255, 255, 255));
     
-        // symbol in the center
-        assertPixel(image, 10, 10, new Color(255, 0, 0));
+        // symbol in the center (second symbol, the first one is attribute dependent and would not
+        // be drawn normally)
+        assertPixel(image, 10, 30, new Color(255, 0, 0));
     }
     
     /**
@@ -656,7 +658,66 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
         assertPixel(image, 1, 61, new Color(255, 255, 255));        
         assertPixel(image, 6, 68, new Color(255, 255, 255));
         assertPixel(image, 10, 70, new Color(255, 0, 0));
-    }   
+    }
+
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
+    public void testProportionalSymbolThickBorder() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbolsThickBorder.sld"));
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testProportionalSymbolSizeThickBorder", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // biggest symbol, thick border
+        assertPixel(image, 1, 1, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 5, new Color(0, 0, 0)); // border
+        assertPixel(image, 10, 10, new Color(255, 0, 0)); // inside
+
+        // second symbol, small, no border
+        assertPixel(image, 1, 21, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 25, new Color(255, 255, 255)); // small, still outside
+        assertPixel(image, 10, 30, new Color(255, 0, 0)); // inside
+    }
+
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
+    public void testProportionalSymbolsLine() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbolsLine.sld"));
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("ProportionalSymbolsLine", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // biggest symbol, thick border
+        assertPixel(image, 1, 1, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 5, new Color(0, 0, 0)); // border
+        assertPixel(image, 7, 12, new Color(255, 0, 0)); // inside
+
+        // second symbol, small, no border
+        assertPixel(image, 1, 21, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 25, new Color(255, 255, 255)); // small, still outside
+        assertPixel(image, 10, 30, new Color(255, 0, 0)); // inside
+
+    }
     
     /**
      * Tests that symbols relative sizes are proportional also if using uoms.
@@ -1094,6 +1155,37 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
                 ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
             }
         }
+    }
+
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
+    public void testThickPolygonBorder() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setWidth(20);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ThickBorder.sld"));
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testThickPolygonBorder", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // thick symbol, there is padding, black thick border, and center
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 6, 6, new Color(0, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+
+        // second symbol, padding, border, green center
+        assertPixel(image, 1, 21, new Color(255, 255, 255));
+        // assertPixel(image, 4, 25, new Color(0, 0, 0)); // unsafe, the border is thin here
+        assertPixel(image, 10, 30, new Color(0, 255, 0));
     }
 
     /**

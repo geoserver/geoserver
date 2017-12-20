@@ -20,7 +20,6 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -61,7 +60,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testGetCapabilitiesOperation() throws Exception {
         // perform the get capabilities request
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?request=GetCapabilities");
-        Document result = getResultAsDocument(response, "application/vnd.ogc.wms_xml");
+        Document result = getResultAsDocument(response, "text/xml");
         // check raster layer dimensions
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension", "4");
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[ows:Identifier='elevation']", "2");
@@ -313,6 +312,15 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "2");
         checkXpathCount(result, "/wmts:feature[wmts:dimension='1.0']", "2");
         checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-11T00:00:00.000Z']", "2");
+    }
+
+    @Test
+    public void testInvalidRequestWithNoOperation() throws Exception {
+        // perform an invalid WMTS request that doesn't provide a valid request
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?request~GetCapabilities!service~!'WMTS'version~'1.0.0");
+        // this request should fail whit an exception report
+        assertThat(response.getContentAsString(), containsString("Missing Request parameter"));
+        assertThat(response.getStatus(), is(400));
     }
 
     /**

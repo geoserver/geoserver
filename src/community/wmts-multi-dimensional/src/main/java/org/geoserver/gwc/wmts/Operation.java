@@ -19,8 +19,23 @@ enum Operation {
     GET_HISTOGRAM,
     GET_FEATURE;
 
+    /**
+     * If the requested operation matches a supported operation we return a conveyor for it otherwise we return NULL.
+     *
+     * @param operationName name of the operation to match, maybe NULL
+     * @param request received HTTP request
+     * @param response HTTP response that will be send to the client
+     * @param storageBroker GWC storage broker, used to instantiate the conveyor
+     * @param parameters normalized KVP parameters of the received HTTP request
+     *
+     * @return NULL if the requested operation is not supported, a conveyor otherwise
+     */
     static SimpleConveyor match(String operationName, HttpServletRequest request,
                                 HttpServletResponse response, StorageBroker storageBroker, KvpMap parameters) {
+        if (operationName == null || operationName.isEmpty()) {
+            // no operation requested, we let invoker handle this a throw the correspondent exception
+            return null;
+        }
         switch (operationName.toUpperCase()) {
             case "DESCRIBEDOMAINS":
                 return new SimpleConveyor(Operation.DESCRIBE_DOMAINS, request, response, storageBroker, parameters);
@@ -29,6 +44,7 @@ enum Operation {
             case "GETFEATURE":
                 return new SimpleConveyor(Operation.GET_FEATURE, request, response, storageBroker, parameters);
             default:
+                // operation not supported
                 return null;
         }
     }

@@ -1,6 +1,6 @@
 .. _community_wpsrendereddownload:
 
-Rendered map/anmination download processes
+Rendered map/animation download processes
 ------------------------------------------
 
 These processes allow download large maps and animations.

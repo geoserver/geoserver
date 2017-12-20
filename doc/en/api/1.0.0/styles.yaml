@@ -87,7 +87,7 @@ paths:
           description: Method Not Allowed
 
 
-  /style/{style}:
+  /styles/{style}:
 
     get:
       operationId: getStyle

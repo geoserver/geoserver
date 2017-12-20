@@ -40,32 +40,33 @@ Versions and revisions
 
 When performing a release we don't require a "code freeze" in which no developers can commit to the repository. Instead we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.
 
-To obtain the GeoServer and Geotools revisions that have passed the `CITE test <http://ares.boundlessgeo.com/jenkins/view/geoserver-cite/>`_, navigate to the latest Hudson run of the CITE test  and view it's console output and select to view its full log. For example::
+To obtain the GeoServer and Geotools revisions that have passed the `CITE test <https://build.geoserver.org/view/testing-cite/>`_, navigate to the latest Jenkins run of the CITE test  and view it's console output and select to view its full log. For example:
 
-    http://ares.boundlessgeo.com/jenkins/view/geoserver-cite/job/cite-wfs-1.1/9/consoleText
+    https://build.geoserver.org/job/2.11-cite-wms-1.1/286/consoleText
 
-Perform a search on the log for 'Git revision' and you should obtain the following.::
+Perform a search on the log for 'git revision' (this is the GeoServer revision) and you should obtain the following:
 
-	version = 2.2-SNAPSHOT
-	Git revision = 4ea8d3fdcdbb130892a03f27ab086068b95a3b01
-	Git branch = 4ea8d3fdcdbb130892a03f27ab086068b95a3b01
-	build date = 03-Aug-2012 03:39
-	geotools version = 8-SNAPSHOT
-	geotools revision = 73e8d0746a4527e46a46e5e8bc778ca92ca89130
+.. code-block:: none
 
-Since we don't make any release from master, ensure you select the right CITE test that passed to obtain the right revision.
+    version = 2.11-SNAPSHOT
+    git revision = 08f43fa77fdcd0698640d823065b6dfda7f87497
+    git branch = origin/2.11.x
+    build date = 18-Dec-2017 19:51
+    geotools version = 17-SNAPSHOT
+    geotools revision = a91a88002c7b2958140321fbba4d5ed0fa85b78d
+    geowebcache version = 1.11-SNAPSHOT
+    geowebcache revision = 0f1cbe9466e424621fae9fefdab4ac5a7e26bd8b/0f1cb
 
-Since most GeoServer releases require an official GeoTools release the GeoTools revision is usually not needed. But if performing a beta release it is
-allowed to release directly from a specific GeoTools revision.
+Since most GeoServer releases require an official GeoTools release, the GeoTools revision is usually not needed, but if performing a beta release, it is permitted to release directly from a specific GeoTools revision.
 
 Release in JIRA
 ---------------
 
 1. Navigate to the `GeoServer project page <https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released-unreleased>`_ in JIRA.
 
-2. Click ``Manage Versions``. Create a new version for the next version to be released after the current release (For example, if you are releasing GeoServer 2.9.1, create version 2.9.2).
+2. Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.
 
-3. Return to the project page, and click on the version you are releasing. Click the ``Release`` button, and enter the release date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2.
+3. Click in the Actions column for the version you are releasing and select Release. Enter the release date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2.
 
 If you are cutting the first RC of a series, create the stable branch
 ---------------------------------------------------------------------

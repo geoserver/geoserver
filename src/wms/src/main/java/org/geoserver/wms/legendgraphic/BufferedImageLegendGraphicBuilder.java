@@ -5,27 +5,15 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
-import java.awt.image.RenderedImage;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import it.geosolutions.jaiext.piecewise.DefaultLinearPiecewiseTransform1DElement;
 import org.geoserver.catalog.LegendInfo;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
@@ -34,7 +22,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Parameter;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -43,6 +30,7 @@ import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.process.Processors;
 import org.geotools.process.function.ProcessFunction;
+import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.renderer.style.SLDStyleFactory;
@@ -58,6 +46,7 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.visitor.DpiRescaleStyleVisitor;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
+import org.geotools.styling.visitor.RescaleStyleVisitor;
 import org.geotools.styling.visitor.UomRescaleStyleVisitor;
 import org.geotools.util.NumberRange;
 import org.opengis.feature.Feature;
@@ -69,19 +58,26 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
-import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.style.GraphicLegend;
 import org.springframework.util.StringUtils;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
+import java.awt.image.RenderedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Template {@linkPlain org.vfny.geoserver.responses.wms.GetLegendGraphicProducer} based on
@@ -125,11 +121,6 @@ public class BufferedImageLegendGraphicBuilder {
      * used to create sample point shapes with LiteShape (not lines nor polygons)
      */
     private static final GeometryFactory geomFac = new GeometryFactory();
-
-    /**
-     * Just a holder to avoid creating many polygon shapes from inside <code>getSampleShape()</code>
-     */
-    private LiteShape2 sampleRect;
 
     /**
      * Just a holder to avoid creating many line shapes from inside <code>getSampleShape()</code>
@@ -355,9 +346,20 @@ public class BufferedImageLegendGraphicBuilder {
                 }
                 // calculate the symbols rescaling factor necessary for them to be
                 // drawn inside the icon box
-                double symbolScale = calcSymbolScale(w, h, layer, sampleFeature,
-                        applicableRules, minimumSymbolSize);
+                int defaultSize = Math.min(w, h);
+                double[] minMax = calcSymbolSize(defaultSize, minimumSymbolSize, layer, sampleFeature, applicableRules);
+                double actualMin = minMax[0];
+                double actualMax = minMax[1];
+                boolean rescalingRequired = actualMin < minimumSymbolSize || actualMax > defaultSize;
+                java.util.function.Function<Double, Double> rescaler = null;
+                if (actualMax == actualMin || ((actualMin / actualMax) * defaultSize) > minimumSymbolSize) {
+                    rescaler = size -> (size / actualMax) * defaultSize;
+                } else {
+                    double finalMinimumSymbolSize = minimumSymbolSize;
+                    rescaler = size -> (size - actualMin) / (actualMax - actualMin) * (defaultSize - finalMinimumSymbolSize) + finalMinimumSymbolSize;
+                }
                 
+                MetaBufferEstimator estimator = new MetaBufferEstimator(sampleFeature);
                 for (int i = 0; i < ruleCount; i++) {
                     
                     final RenderedImage image = ImageUtils.createImage(w, h, (IndexColorModel) null,
@@ -371,7 +373,6 @@ public class BufferedImageLegendGraphicBuilder {
                     Feature sample = getSampleFeatureForRule(layer,
                             sampleFeature, applicableRules[i]);
                     
-                    FilterFactory ff = CommonFactoryFinder.getFilterFactory();
                     final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();
                     final GraphicLegend graphic = applicableRules[i].getLegend();
                     
@@ -389,8 +390,6 @@ public class BufferedImageLegendGraphicBuilder {
                         shapePainter.paint(graphics, this.samplePoint, graphic, scaleDenominator, false);
 
                     } else {
-
-                    
                         for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
                             Symbolizer symbolizer = symbolizers[sIdx];
                             
@@ -398,27 +397,24 @@ public class BufferedImageLegendGraphicBuilder {
                                 // skip it
                             } else {
                                 // rescale symbols if needed
-                                if (symbolScale > 1.0
-                                        && symbolizer instanceof PointSymbolizer) {
-                                    PointSymbolizer pointSymbolizer = cloneSymbolizer(symbolizer);
-                                    if (pointSymbolizer.getGraphic() != null) {
-                                        double size = getPointSymbolizerSize(sample,
-                                                pointSymbolizer, Math.min(w, h) - 4);
-                                        pointSymbolizer.getGraphic().setSize(
-                                                ff.literal(size / symbolScale
-                                                        + minimumSymbolSize));
-        
-                                        symbolizer = pointSymbolizer;
-                                    }
+                                LiteShape2 shape = getSampleShape(symbolizer, w, h, w, h);
+                                if (rescalingRequired && (symbolizer instanceof PointSymbolizer || symbolizer instanceof LineSymbolizer)) {
+                                    double size = getSymbolizerSize(estimator, symbolizer, Math.min(w, h) - 4);
+                                    double newSize = rescaler.apply(size);
+                                    symbolizer = rescaleSymbolizer(symbolizer, size, newSize);
+                                } else if (symbolizer instanceof PolygonSymbolizer) {
+                                    // need to make room for the stroke in the symbol, thus, a smaller rect
+                                    double symbolizerSize = getSymbolizerSize(estimator, symbolizer, 0);
+                                    int rescaledWidth = (int) Math.ceil(Math.max(minimumSymbolSize, w - symbolizerSize));
+                                    int rescaledHeight = (int) Math.ceil(Math.max(minimumSymbolSize, h - symbolizerSize));
+                                    shape = getSampleShape(symbolizer, rescaledWidth, rescaledHeight, w, h);
+
+                                    symbolizer = rescaleSymbolizer(symbolizer, w, (double) rescaledWidth);
                                 }
                                 
-                                Style2D style2d = styleFactory.createStyle(sample,
-                                        symbolizer, scaleRange);
-                                LiteShape2 shape = getSampleShape(symbolizer, w, h);
-        
+                                Style2D style2d = styleFactory.createStyle(sample, symbolizer, scaleRange);
                                 if (style2d != null) {
-                                    shapePainter.paint(graphics, shape, style2d,
-                                            scaleDenominator);
+                                    shapePainter.paint(graphics, shape, style2d, scaleDenominator);
                                 }
                             }
                         }
@@ -453,23 +449,30 @@ public class BufferedImageLegendGraphicBuilder {
         return finalLegend;
     }
 
+    public Symbolizer rescaleSymbolizer(Symbolizer symbolizer, double size, double newSize) {
+        // perform a unit-less rescale
+        double scaleFactor = newSize / size;
+        RescaleStyleVisitor rescaleVisitor = new RescaleStyleVisitor(scaleFactor) {
+            @Override
+            protected Expression rescale(Expression expr) {
+                if(expr == null) {
+                    return null;
+                } else if (expr instanceof Literal) {
+                    Double value = expr.evaluate(null, Double.class);
+                    return ff.literal(value * scaleFactor);
+                } else {
+                    return ff.multiply(expr, ff.literal(scaleFactor));
+                }
+            }
+        };
+        symbolizer.accept(rescaleVisitor);
+        symbolizer = (Symbolizer) rescaleVisitor.getCopy();
+        return symbolizer;
+    }
+
     protected Rule[] updateRuleTitles(FeatureCountProcessor processor, LegendRequest legend,
             Rule[] applicableRules) {
         return processor.preProcessRules(legend, applicableRules);
-    }
-
-    /**
-     * Clones the given (Point)Symbolizer.
-     * 
-     * @param symbolizer symbolizer to clone
-     * @return cloned PointSymbolizer
-     */
-    private PointSymbolizer cloneSymbolizer(Symbolizer symbolizer) {
-        DuplicatingStyleVisitor duplicator = new DuplicatingStyleVisitor();
-        symbolizer.accept(duplicator);
-        PointSymbolizer pointSymbolizer = (PointSymbolizer) duplicator
-                .getCopy();
-        return pointSymbolizer;
     }
 
     /**
@@ -487,22 +490,20 @@ public class BufferedImageLegendGraphicBuilder {
      * @param minimumSymbolSize lower constraint for the symbols size
      *
      */
-    private double calcSymbolScale(int width, int height, FeatureType featureType,
-            Feature feature, final Rule[] rules, double minimumSymbolsSize) {
+    private double[] calcSymbolSize(double defaultMaxSize, double defaultMinSize, FeatureType featureType, Feature feature, final Rule[] rules) {
         // check for max and min size in rendered symbols
-        double minSize = Double.MAX_VALUE;
-        double maxSize = 0.0;
+        double minSize = defaultMaxSize;
+        double maxSize = defaultMinSize;
     
         final int ruleCount = rules.length;
-    
         for (int i = 0; i < ruleCount; i++) {
             Feature sample = getSampleFeatureForRule(featureType, feature, rules[i]);
+            MetaBufferEstimator estimator = new MetaBufferEstimator(sample);
             final Symbolizer[] symbolizers = rules[i].getSymbolizers();
             for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
                 final Symbolizer symbolizer = symbolizers[sIdx];
-                if (symbolizer instanceof PointSymbolizer) {
-                    double size = getPointSymbolizerSize(sample,
-                            (PointSymbolizer) symbolizer, Math.min(width, height));
+                if (symbolizer instanceof PointSymbolizer || symbolizer instanceof LineSymbolizer) {
+                    double size = getSymbolizerSize(estimator, symbolizer, defaultMaxSize);
                     if (size < minSize) {
                         minSize = size;
                     }
@@ -512,40 +513,25 @@ public class BufferedImageLegendGraphicBuilder {
                 }
             }
         }
-        if(minSize != maxSize) {
-            return (maxSize - minSize + 1) / (Math.min(width, height) - minimumSymbolsSize);
-        } else {
-            return maxSize / (Math.min(width, height) - minimumSymbolsSize);
-        }
+        return new double[] {minSize, maxSize};
     }
 
     /**
      * Gets a numeric value for the given PointSymbolizer
      * 
      * @param feature sample to be used for evals
-     * @param pointSymbolizer symbolizer
+     * @param symbolizer symbolizer
      * @param defaultSize size to use is none can be taken from the symbolizer
      */
-    private double getPointSymbolizerSize(Feature feature,
-            PointSymbolizer pointSymbolizer, int defaultSize) {
-        if (pointSymbolizer.getGraphic() != null) {
-            Expression sizeExp = pointSymbolizer.getGraphic().getSize();
-            if (sizeExp instanceof Literal) {
-                Object size = sizeExp.evaluate(feature);
-                if (size != null) {
-                    if (size instanceof Double) {
-                        return (Double) size;
-                    }
-                    try {
-                        return Double.parseDouble(size.toString());
-                    } catch (NumberFormatException e) {
-                        return defaultSize;
-                    }
-    
-                }
-            }
+    private double getSymbolizerSize(MetaBufferEstimator estimator, Symbolizer symbolizer, double defaultSize) {
+        estimator.reset();
+        symbolizer.accept(estimator);
+        int buffer = estimator.getBuffer();
+        if (buffer > 0) {
+            return buffer;
+        } else {
+            return defaultSize;
         }
-        return defaultSize;
     }
 
     /**
@@ -703,10 +689,10 @@ public class BufferedImageLegendGraphicBuilder {
      * @throws IllegalArgumentException
      *             if an unknown symbolizer impl was passed in.
      */
-    private LiteShape2 getSampleShape(Symbolizer symbolizer, int legendWidth, int legendHeight) {
+    private LiteShape2 getSampleShape(Symbolizer symbolizer, int legendWidth, int legendHeight, int areaWidth, int areaHeight) {
         LiteShape2 sampleShape;
-        final float hpad = (legendWidth * LegendUtils.hpaddingFactor);
-        final float vpad = (legendHeight * LegendUtils.vpaddingFactor);
+        final float hpad = (areaWidth * LegendUtils.hpaddingFactor) + (areaWidth - legendWidth) / 2f;
+        final float vpad = (areaWidth * LegendUtils.vpaddingFactor) + (areaHeight - legendWidth) / 2f;;
 
         if (symbolizer instanceof LineSymbolizer) {
             if (this.sampleLine == null) {
@@ -724,24 +710,20 @@ public class BufferedImageLegendGraphicBuilder {
             sampleShape = this.sampleLine;
         } else if ((symbolizer instanceof PolygonSymbolizer)
                 || (symbolizer instanceof RasterSymbolizer)) {
-            if (this.sampleRect == null) {
-                final float w = legendWidth - (2 * hpad) - 1;
-                final float h = legendHeight - (2 * vpad) - 1;
+            final float w = areaWidth - (2 * hpad) - 1;
+            final float h = areaHeight - (2 * vpad) - 1;
 
-                Coordinate[] coords = { new Coordinate(hpad, vpad), new Coordinate(hpad, vpad + h),
-                        new Coordinate(hpad + w, vpad + h), new Coordinate(hpad + w, vpad),
-                        new Coordinate(hpad, vpad) };
-                LinearRing shell = geomFac.createLinearRing(coords);
-                Polygon geom = geomFac.createPolygon(shell, null);
+            Coordinate[] coords = { new Coordinate(hpad, vpad), new Coordinate(hpad, vpad + h),
+                    new Coordinate(hpad + w, vpad + h), new Coordinate(hpad + w, vpad),
+                    new Coordinate(hpad, vpad) };
+            LinearRing shell = geomFac.createLinearRing(coords);
+            Polygon geom = geomFac.createPolygon(shell, null);
 
-                try {
-                    this.sampleRect = new LiteShape2(geom, null, null, false);
-                } catch (Exception e) {
-                    this.sampleRect = null;
-                }
+            try {
+                return new LiteShape2(geom, null, null, false);
+            } catch (Exception e) {
+                return null;
             }
-
-            sampleShape = this.sampleRect;
         } else if (symbolizer instanceof PointSymbolizer || symbolizer instanceof TextSymbolizer) {
             if (this.samplePoint == null) {
                 Coordinate coord = new Coordinate(legendWidth / 2, legendHeight / 2);
@@ -768,7 +750,7 @@ public class BufferedImageLegendGraphicBuilder {
         } catch (SchemaException e) {
             throw new RuntimeException(e);
         }
-        return SimpleFeatureBuilder.template((SimpleFeatureType) type, null);
+        return SimpleFeatureBuilder.template(type, null);
     }
 
     /**

@@ -28,11 +28,11 @@ if [ -z $DIST_PATH ]; then
 fi
 
 if [ -z $DIST_HOST ]; then
-  DIST_HOST=ares.boundlessgeo.com
+  DIST_HOST=build.geoserver.org
 fi
 
 if [ -z $DIST_URL ]; then
-  DIST_URL=http://$DIST_HOST/geoserver/release
+  DIST_URL=https://$DIST_HOST/geoserver/release
 fi
 
 if [ -z $DIST_PORT ]; then

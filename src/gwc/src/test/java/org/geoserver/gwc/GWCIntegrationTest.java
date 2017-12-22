@@ -785,7 +785,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         CatalogConfiguration config = GeoServerExtensions.bean(CatalogConfiguration.class);
 
-        assertNull(config.getTileLayer(layerName));
+        assertNull(config.getLayer(layerName));
         try {
             mediator.getTileLayerByName(layerName);
             fail("Expected IAE");

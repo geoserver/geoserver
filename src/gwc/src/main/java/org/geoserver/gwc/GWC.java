@@ -82,15 +82,14 @@ import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.BaseConfiguration;
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.BlobStoreConfigurationCatalog;
-import org.geowebcache.config.Configuration;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.TileLayerConfiguration;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.XMLGridSet;
 import org.geowebcache.conveyor.ConveyorTile;
@@ -310,7 +309,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     /**
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     * @see #initialize()
      */
     public void afterPropertiesSet() throws Exception {
         GWC.set(this);
@@ -1345,12 +1343,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Adds a layer to the {@link CatalogConfiguration} and saves it.
      */
     public void add(GeoServerTileLayer tileLayer) {
-        BaseConfiguration config = tld.addLayer(tileLayer);
-        try {
-            config.save();
-        } catch (IOException e) {
-            propagate(getRootCause(e));
-        }
+        tld.addLayer(tileLayer);
     }
 
     /**
@@ -1521,7 +1514,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
             final int maxZoomLevel = newGridSet.getNumLevels() - 1;
 
-            Set<Configuration> saveConfigurations = new HashSet<Configuration>();
+            Set<TileLayerConfiguration> saveConfigurations = new HashSet<>();
 
             // now restore the gridsubset for each layer
             for (Map.Entry<TileLayer, GridSubset> entry : affectedLayers.entrySet()) {
@@ -1549,7 +1542,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 layer.removeGridSubset(oldGridSetName);
                 layer.addGridSubset(newGridSubset);
 
-                Configuration config = tld.getConfiguration(layer);
+                TileLayerConfiguration config = tld.getConfiguration(layer);
                 config.modifyLayer(layer);
                 saveConfigurations.add(config);
             }
@@ -1635,14 +1628,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void save(final TileLayer layer) {
         checkNotNull(layer);
         log.info("Saving GeoSeverTileLayer " + layer.getName());
-
-        BaseConfiguration modifiedConfig = tld.modify(layer);
-        try {
-            modifiedConfig.save();
-        } catch (IOException e) {
-            Throwable rootCause = Throwables.getRootCause(e);
-            throw Throwables.propagate(rootCause);
-        }
+        tld.modify(layer);
     }
 
     /**
@@ -1920,7 +1906,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * to handle the deletion of a layer's gridsubset)
      * 
      * @param layerName
-     * @param removedGridset
+     * @param gridSetId
      * @TODO: make async?, it may take a while to the metastore to delete all tiles (sigh)
      */
     public void deleteCacheByGridSetId(final String layerName, final String gridSetId) {
@@ -1939,20 +1925,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void removeTileLayers(final List<String> tileLayerNames) {
         checkNotNull(tileLayerNames);
 
-        Set<Configuration> confsToSave = new HashSet<Configuration>();
-
         for (String tileLayerName : tileLayerNames) {
-            Configuration configuration = tld.removeLayer(tileLayerName);
-            if (configuration != null) {
-                confsToSave.add(configuration);
-            }
-        }
-
-        for (BaseConfiguration conf : confsToSave) {
             try {
-                conf.save();
-            } catch (IOException e) {
-                log.log(Level.WARNING, "Error saving GWC Configuration " + conf.getIdentifier(), e);
+                tld.removeLayer(tileLayerName);
+            } catch (IllegalArgumentException e) {
+                log.log(Level.WARNING, "Error saving GWC Configuration " + tld.getConfiguration(tileLayerName).getIdentifier(), e);
             }
         }
     }
@@ -1962,7 +1939,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         final Set<String> affectedLayers = getLayerNamesForGridSets(gridsetIds);
 
-        final Set<Configuration> changedConfigs = new HashSet<Configuration>();
+        final Set<TileLayerConfiguration> changedConfigs = new HashSet<>();
 
         for (String layerName : affectedLayers) {
             TileLayer tileLayer = getTileLayerByName(layerName);
@@ -1980,8 +1957,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                     tileLayer.setEnabled(false);
                 }
                 try {
-                    Configuration configuration = tld.modify(tileLayer);
-                    changedConfigs.add(configuration);
+                    tld.modify(tileLayer);
                 } catch (IllegalArgumentException ignore) {
                     // layer removed? don't care
                 }
@@ -1992,15 +1968,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
         }
 
-        // All referencing layers updated, now can remove the gridsets
         for (String gridSetId : gridsetIds) {
-            Configuration configuration = tld.removeGridset(gridSetId);
-            changedConfigs.add(configuration);
-        }
-
-        // now make it all persistent
-        for (BaseConfiguration config : changedConfigs) {
-            config.save();
+            tld.removeGridset(gridSetId);
         }
     }
 
@@ -2255,7 +2224,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * Checks the JDBC quota store can be instantiated 
      * 
-     * @param config
      * @param jdbcConfiguration
      * @throws ConfigurationException
      */

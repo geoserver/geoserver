@@ -192,14 +192,14 @@ public class CatalogConfigurationTest {
     }
 
     @Test public void testGetTileLayerCount() {
-        assertEquals(4, config.getTileLayerCount());
+        assertEquals(4, config.getLayerCount());
     }
 
     @Test public void testGetTileLayerNames() {
         Set<String> expected = ImmutableSet.of(tileLayerName(layer1), tileLayerName(layer2),
                 tileLayerName(group1), tileLayerName(group2));
 
-        Set<String> actual = config.getTileLayerNames();
+        Set<String> actual = config.getLayerNames();
 
         assertEquals(expected, actual);
     }
@@ -211,7 +211,7 @@ public class CatalogConfigurationTest {
 
     @Test public void testDeprecatedGetTileLayers() {
         @SuppressWarnings("deprecation")
-        List<GeoServerTileLayer> layers = config.getTileLayers();
+        Iterable<GeoServerTileLayer> layers = config.getLayers();
         testGetLayers(layers);
     }
 
@@ -233,15 +233,15 @@ public class CatalogConfigurationTest {
 
     @Test public void testGetTileLayer() {
         String layerName = tileLayerName(layerWithNoTileLayer);
-        assertNull(config.getTileLayer(layerName));
-        assertNull(config.getTileLayer(tileLayerName(groupWithNoTileLayer)));
+        assertNull(config.getLayer(layerName));
+        assertNull(config.getLayer(tileLayerName(groupWithNoTileLayer)));
 
-        assertNotNull(config.getTileLayer(tileLayerName(layer1)));
-        assertNotNull(config.getTileLayer(tileLayerName(layer2)));
-        assertNotNull(config.getTileLayer(tileLayerName(group1)));
-        assertNotNull(config.getTileLayer(tileLayerName(group2)));
+        assertNotNull(config.getLayer(tileLayerName(layer1)));
+        assertNotNull(config.getLayer(tileLayerName(layer2)));
+        assertNotNull(config.getLayer(tileLayerName(group1)));
+        assertNotNull(config.getLayer(tileLayerName(group2)));
 
-        assertNull(config.getTileLayer("anythingElse"));
+        assertNull(config.getLayer("anythingElse"));
     }
 
     @Test public void testModifyLayer() {
@@ -258,8 +258,8 @@ public class CatalogConfigurationTest {
             assertTrue(e.getMessage().contains("Can't save TileLayer of type"));
         }
 
-        GeoServerTileLayer tileLayer1 = config.getTileLayer(tileLayerName(layer1));
-        GeoServerTileLayer tileLayer2 = config.getTileLayer(tileLayerName(group1));
+        GeoServerTileLayer tileLayer1 = config.getLayer(tileLayerName(layer1));
+        GeoServerTileLayer tileLayer2 = config.getLayer(tileLayerName(group1));
 
         testModifyLayer(tileLayer1);
         testModifyLayer(tileLayer2);
@@ -279,19 +279,19 @@ public class CatalogConfigurationTest {
             modified = new GeoServerTileLayer(orig.getLayerGroupInfo(), gridSetBroker, newState);
         }
 
-        assertEquals(orig.getInfo(), config.getTileLayer(orig.getName()).getInfo());
+        assertEquals(orig.getInfo(), config.getLayer(orig.getName()).getInfo());
 
         config.modifyLayer(modified);
 
-        assertEquals(newState, config.getTileLayer(orig.getName()).getInfo());
+        assertEquals(newState, config.getLayer(orig.getName()).getInfo());
 
         final String origName = orig.getName();
         modified.getInfo().setName("changed");
 
         config.modifyLayer(modified);
 
-        assertNull(config.getTileLayer(origName));
-        assertFalse(config.getTileLayerNames().contains(origName));
+        assertNull(config.getLayer(origName));
+        assertFalse(config.getLayerNames().contains(origName));
     }
 
     @Test public void testRemoveLayer() {
@@ -308,21 +308,21 @@ public class CatalogConfigurationTest {
         String layerName;
 
         layerName = tileLayerName(layer1);
-        assertNotNull(config.getTileLayer(layerName));
+        assertNotNull(config.getLayer(layerName));
 
-        final int initialCount = config.getTileLayerCount();
+        final int initialCount = config.getLayerCount();
 
         assertTrue(config.removeLayer(layerName));
 
-        assertNull(config.getTileLayer(layerName));
-        assertFalse(config.getTileLayerNames().contains(layerName));
-        assertEquals(initialCount - 1, config.getTileLayerCount());
+        assertNull(config.getLayer(layerName));
+        assertFalse(config.getLayerNames().contains(layerName));
+        assertEquals(initialCount - 1, config.getLayerCount());
 
         layerName = GWC.tileLayerName(group1);
-        assertNotNull(config.getTileLayer(layerName));
+        assertNotNull(config.getLayer(layerName));
         assertTrue(config.removeLayer(layerName));
-        assertNull(config.getTileLayer(layerName));
-        assertEquals(initialCount - 2, config.getTileLayerCount());
+        assertNull(config.getLayer(layerName));
+        assertEquals(initialCount - 2, config.getLayerCount());
     }
 
     @Test public void testSaveRename() {
@@ -450,10 +450,10 @@ public class CatalogConfigurationTest {
             
             @Override
             public void run() {
-                config.getTileLayer(layer1.getName());
-                config.getTileLayer(layer2.getName());
-                config.getTileLayer(group1.getName());
-                config.getTileLayer(group2.getName());
+                config.getLayer(layer1.getName());
+                config.getLayer(layer2.getName());
+                config.getLayer(group1.getName());
+                config.getLayer(group2.getName());
             }
         };
         try {

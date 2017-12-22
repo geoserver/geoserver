@@ -119,7 +119,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             MIME_TYPES.add("text/xml; subtype=gml/3.2");
         }
         public V20(GeoServer gs) {
-            super(MIME_TYPES, gs, new FeatureTypeSchemaBuilder.GML32(gs));
+            super(MIME_TYPES, gs, new FeatureTypeSchemaBuilder.GML32NoWfsSchemaImport(gs));
         }
         
         @Override

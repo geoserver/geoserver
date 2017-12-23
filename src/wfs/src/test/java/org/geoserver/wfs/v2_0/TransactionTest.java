@@ -964,9 +964,6 @@ public class TransactionTest extends WFS20TestSupport {
         WFSInfo wfs = gs.getService(WFSInfo.class);
         wfs.setCiteCompliant(true);
         gs.save(wfs);
-        GeoServerInfo global = gs.getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        gs.save(global);
 
         try {
             // this comes from CITE WFS 2.0 tests... enough said
@@ -994,8 +991,6 @@ public class TransactionTest extends WFS20TestSupport {
         } finally {
             wfs.setCiteCompliant(false);
             gs.save(wfs);
-            global.setXmlExternalEntitiesEnabled(false);
-            gs.save(global);
         }
     }
     

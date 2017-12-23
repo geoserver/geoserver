@@ -60,20 +60,9 @@ public class GetFeatureTest extends WFSTestSupport {
         xmlUtil.addNamespace("sf", "http://cite.opengeospatial.org/gmlsf");
         //xmlUtil.setShowXML(System.out); // Uncomment to display XML on failure
     }
-    @Before
-    public void setupExternalEntities() {
-        GeoServerInfo gsi = this.getGeoServer().getGlobal();
-        gsi.setXmlExternalEntitiesEnabled(true);
-        getGeoServer().save(gsi);
-    }
     
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-        this.getGeoServer().getGlobal().setXmlExternalEntitiesEnabled(true);
-    	WFSInfo wfs = getWFS();
-        wfs.setFeatureBounding(true);
-    	getGeoServer().save(wfs);
-    	
     	data.addVectorLayer ( new QName( SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX ), 
     			Collections.EMPTY_MAP, getClass(), getCatalog());
     }
@@ -305,7 +294,6 @@ public class GetFeatureTest extends WFSTestSupport {
     
     @Test
     public void testPostWithMatchingUrnBboxFilter() throws Exception {
-        assertThat(getGeoServer().getGlobal().isXmlExternalEntitiesEnabled(), Matchers.is(true));
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
             + "version=\"1.1.0\" "
             + "outputFormat=\"text/xml; subtype=gml/3.1.1\" "

@@ -193,6 +193,64 @@ public class GetCoverageTest extends WCSTestSupport {
     }
     
     @Test
+    public void testGEOS6540_1() throws Exception {
+        String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
+                "&service=wcs&version=1.0.0&format=ArcGrid&crs=EPSG:4326" +
+                "&bbox=0,0,1,1&width=50&height=60";
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+        assertEquals("text/plain", response.getContentType());
+        String content = response.getContentAsString();
+        assertTrue(content.startsWith("NCOLS 50\nNROWS 60\n"));
+        assertEquals("inline; filename=sf:rasterFilter.asc", response.getHeader("Content-Disposition"));
+    }
+
+    @Test
+    public void testGEOS6540_2() throws Exception {
+        String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
+                "&service=wcs&version=1.0.0&format=ARCGRID&crs=EPSG:4326" +
+                "&bbox=0,0,1,1&width=50&height=60";
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+        String content = response.getContentAsString();
+        assertEquals("text/plain", response.getContentType());
+        assertTrue(content.startsWith("NCOLS 50\nNROWS 60\n"));
+        assertEquals("inline; filename=sf:rasterFilter.asc", response.getHeader("Content-Disposition"));
+    }
+
+    @Test
+    public void testGEOS6540_3() throws Exception {
+        String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
+                "&service=wcs&version=1.0.0&format=ARCGRID-GZIP&crs=EPSG:4326" +
+                "&bbox=0,0,1,1&width=50&height=60";
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+        byte[] content = response.getContentAsByteArray();
+        assertEquals("application/x-gzip", response.getContentType());
+        assertEquals((byte)0x1f, content[0]);
+        assertEquals((byte)0x8b, content[1]);
+        assertEquals((byte)0x08, content[2]);
+        assertEquals((byte)0x00, content[3]);
+        assertEquals("inline; filename=sf:rasterFilter.asc.gz", response.getHeader("Content-Disposition"));
+    }
+
+    @Test
+    public void testGEOS6540_4() throws Exception {
+        String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
+                "&service=wcs&version=1.0.0&format=application/x-gzip&crs=EPSG:4326" +
+                "&bbox=0,0,1,1&width=50&height=60";
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+        byte[] content = response.getContentAsByteArray();
+        assertEquals("application/x-gzip", response.getContentType());
+        assertEquals((byte)0x1f, content[0]);
+        assertEquals((byte)0x8b, content[1]);
+        assertEquals((byte)0x08, content[2]);
+        assertEquals((byte)0x00, content[3]);
+        assertEquals("inline; filename=sf:rasterFilter.asc.gz", response.getHeader("Content-Disposition"));
+    }
+
+    @Test
     public void testNonExistentCoverage() throws Exception {
         String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
             "&crs=EPSG:4326&width=150&height=150";

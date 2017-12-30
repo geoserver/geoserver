@@ -26,7 +26,49 @@ Encoding of a rule in XML::
 		<layer>..</layer>
 		<service>..</service>
 		<request>..</request>
-		<access>..</access>
+		<access> ALLOW | DENY | LIMIT </access>
+		
+		<!-- for LIMIT access rules-->
+		<limits> 
+			<allowedArea>..</allowedArea>
+			<catalogMode> HIDE | CHALLENGE | MIXED </catalogMode>
+		</limits>
+		
+		<!-- for ALLOW access rules with specified layer -->
+		<layerDetails>
+			<layerType> VECTOR | RASTER | LAYERGROUP </layerType>
+
+			<defaultStyle>..</defaultStyle>
+
+			<cqlFilterRead>..</cqlFilterRead>
+
+			<cqlFilterWrite>..</cqlFilterWrite>
+
+			<allowedArea>..</allowedArea>
+
+			<catalogMode> HIDE | CHALLENGE | MIXED </catalogMode>
+
+			<allowedStyle>..</allowedStyle>
+			
+			<allowedStyle>..</allowedStyle>
+			
+			..
+
+			<attribute>
+				<name>..</name>
+				<datatype>..</datatype>
+				<accessType> NONE | READONLY | READWRITE </accessType>
+			</attribute>			
+
+			<attribute>
+				<name>..</name>
+				<datatype>..</datatype>
+				<accessType> NONE | READONLY | READWRITE </accessType>
+			</attribute>
+			
+			..
+			
+		</layerDetails>
 	</Rule>
 
 Encoding of a rule in JSON::

@@ -24,7 +24,6 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
@@ -39,6 +38,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -463,7 +465,39 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     ruleFormModel.getObject().layerDetailsCheck = 
                             ruleFormModel.getObject().layerDetailsCheck 
                             && GrantType.ALLOW.equals(grantTypeChoice.getConvertedInput())
-                            && layerChoice.getConvertedInput() != null;
+                            && layerChoice.getConvertedInput() != null; 
+                    
+
+                    ruleFormModel.getObject().layerDetails.attributes.clear();
+                    if (layerChoice.getConvertedInput() != null) {
+                        LayerInfo li = getCatalog().getLayerByName(layerChoice.getConvertedInput());
+                        switch (li.getType()) {
+                        case VECTOR: case REMOTE:
+                            ruleFormModel.getObject().layerDetails.layerType = LayerType.VECTOR;
+                            break;
+                        case RASTER: case WMS: case WMTS: 
+                            ruleFormModel.getObject().layerDetails.layerType = LayerType.VECTOR;
+                            break;
+                        case GROUP:
+                            ruleFormModel.getObject().layerDetails.layerType = LayerType.LAYERGROUP;
+                            break;
+                        }
+                        
+                        if (li.getResource() instanceof FeatureTypeInfo) {
+                            FeatureTypeInfo fti = (FeatureTypeInfo) li.getResource();
+                            try {
+                                for (AttributeTypeInfo ati : fti.attributes()) {
+                                    ruleFormModel.getObject().layerDetails.attributes.add(
+                                            new LayerAttribute(ati.getName(),
+                                                    ati.getBinding() == null ? null : ati.getBinding().getName(),
+                                                    AccessType.NONE));
+                                    
+                                }
+                            } catch (IOException e) {
+                                LOGGER.log(Level.WARNING, "Could not fetch attributes.", e);
+                            }
+                        }
+                    }
                 }
                 
             });
@@ -493,6 +527,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             ruleFormModel.getObject().layerDetailsCheck 
                             && grantTypeChoice.getConvertedInput().equals(GrantType.ALLOW)
                             && !layerChoice.getConvertedInput().isEmpty();
+                    
                 }
             });
 
@@ -530,7 +565,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         
         private static final long serialVersionUID = 2996490022169801394L;
         
-        private AjaxSubmitLink remove;
+        //private AjaxSubmitLink remove;
 
         public LayerDetailsPanel(String id) {
             super(id);
@@ -561,6 +596,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             DropDownChoice<LayerType> layerType = 
                     new DropDownChoice<>("layerType", ruleFormModel.bind("layerDetails.layerType"),
                     Arrays.asList(LayerType.values()), new LayerTypeRenderer());
+            layerType.setEnabled(false);
             container.add(layerType);
 
             DropDownChoice<String> defaultStyle = 
@@ -608,6 +644,10 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             container.add(new DropDownChoice<>("catalogMode", ruleFormModel.bind("layerDetails.catalogMode"),
                     Arrays.asList(CatalogMode.values()), new CatalogModeRenderer()));    
             
+            Label layerAttsLabel = new Label("layerAttributesLabel",
+                    new ResourceModel("layerAttributes", "Layer Attributes"));
+            container.add(layerAttsLabel);
+            
             GeoServerTablePanel<LayerAttribute> layerAttsTable;            
             container.add(layerAttsTable = new GeoServerTablePanel<LayerAttribute>("layerAttributes", 
                     new LayerAttributeModel(ruleFormModel.getObject().layerDetails.attributes), true) {
@@ -617,80 +657,24 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 @Override
                 protected Component getComponentForProperty(String id, IModel<LayerAttribute> itemModel,
                         Property<LayerAttribute> property) {
-                    if (LayerAttributeModel.NAME.equals(property) || 
-                            LayerAttributeModel.DATATYPE.equals(property)) {
-                        return new TextFieldWrapperPanel<String>(id,
-                                (IModel<String>) property.getModel(itemModel));
-                    } else if (LayerAttributeModel.ACCESS.equals(property)) {
+                    if (LayerAttributeModel.ACCESS.equals(property)) {
                         return new DropDownChoiceWrapperPanel<AccessType>(id, 
                                         (IModel<AccessType>) property.getModel(itemModel),
                                         Arrays.asList(AccessType.values()), new AccessTypeRenderer());
                     }
                     return null;
                 }
-
-                @Override
-                protected void onSelectionUpdate(AjaxRequestTarget target) {
-                    remove.setEnabled(getSelection().size() > 0);
-                    target.add(remove);
-                }
                 
             });
             layerAttsTable.setFilterVisible(false);
             layerAttsTable.setPageable(false);
             layerAttsTable.setSortable(false);
+            layerAttsTable.setSelectable(false);
             layerAttsTable.setOutputMarkupId(true);
             
-            // the add button
-            container.add(new AjaxSubmitLink("addNew") {
-                private static final long serialVersionUID = 8443763075141885559L;
-
-                @Override
-                public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    ruleFormModel.getObject().layerDetails.attributes.add(new LayerAttribute());
-                    
-                    //bit of a hack - updates the selected array inside the panel
-                    //with the new count
-                    layerAttsTable.setPageable(false); 
-                    
-                    target.add(layerAttsTable);
-                }
-                
-                @Override
-                protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.add(getFeedbackPanel());
-                }
-            });
+            layerAttsLabel.setVisible(!ruleFormModel.getObject().layerDetails.attributes.isEmpty());
+            layerAttsTable.setVisible(!ruleFormModel.getObject().layerDetails.attributes.isEmpty());
             
-            
-
-            // the removal button
-            container.add(remove = new AjaxSubmitLink("removeSelected") {
-                private static final long serialVersionUID = 3581476968062788921L;
-
-                @Override
-                public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    ruleFormModel.getObject().layerDetails.attributes.removeAll(
-                            layerAttsTable.getSelection());
-                    
-                    remove.setEnabled(false);
-                    
-                    
-                    //bit of a hack - updates the selected array inside the panel
-                    //with the new count
-                    layerAttsTable.setPageable(false); 
-                    
-                    target.add(layerAttsTable);
-                    target.add(remove);
-                }
-                
-                @Override
-                protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.add(getFeedbackPanel());
-                }
-            });
-            remove.setOutputMarkupId(true);
-            remove.setEnabled(false);
         }
         
         
@@ -779,20 +763,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             return object.toUpperCase();
         }
     }
-    
-
-    public class TextFieldWrapperPanel<T> extends Panel {
         
-        private static final long serialVersionUID = 5677425055959281304L;
-    
-        public TextFieldWrapperPanel(String id, IModel<T> model) {
-            super(id, model);
-            add(new TextField<T>("innerComponent", model).setRequired(true));
-        }
-    
-    }
-    
-    public class DropDownChoiceWrapperPanel<T> extends Panel {
+    protected class DropDownChoiceWrapperPanel<T> extends Panel {
 
         private static final long serialVersionUID = 5677425055959281304L;
 

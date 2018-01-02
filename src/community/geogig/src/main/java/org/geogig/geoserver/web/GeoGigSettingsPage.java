@@ -17,10 +17,7 @@ public class GeoGigSettingsPage extends GeoServerSecuredPage {
 
     protected AjaxTabbedPanel<ITab> tabbedPanel;
 
-    protected FeedbackPanel feedbackPanel;
-
     public GeoGigSettingsPage() {
-        this.feedbackPanel = super.feedbackPanel;
         initUI();
     }
 

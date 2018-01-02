@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -68,7 +67,7 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
             doReturn();
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving config", e);
-            feedbackPanel.error(e);
+            error(e);
         }
     }
 }

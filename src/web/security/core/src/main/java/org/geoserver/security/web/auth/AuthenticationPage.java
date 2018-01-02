@@ -51,21 +51,18 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
-import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
-import org.geoserver.security.config.BruteForcePreventionConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.h2.bnf.Bnf;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 /**
@@ -281,7 +278,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                     catch(Exception e) {
                         error(e);
                         LOGGER.log(Level.WARNING, "Connection error", e);
-                        target.add(feedbackPanel);
+                        addFeedbackPanels(target);
                     }
                 }
                 protected GeoServerSecurityFilterChainProxy getProxy() {

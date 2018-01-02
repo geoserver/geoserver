@@ -235,7 +235,7 @@ public class WPSRequestBuilderPanel extends Panel {
                 // check for GeoServerBasePage, because parent page can also be a SubProcessBuilder
                 WebPage page = getWebPage();
                 if (page instanceof GeoServerBasePage) {
-                    target.add(((GeoServerBasePage) page).getFeedbackPanel());
+                    ((GeoServerBasePage) page).addFeedbackPanels(target);
                 }
             }
         });

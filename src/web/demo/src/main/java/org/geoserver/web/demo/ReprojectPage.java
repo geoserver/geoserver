@@ -132,12 +132,12 @@ public class ReprojectPage extends GeoServerBasePage {
                         }
                     }
                 }
-                at.add(feedbackPanel);
+                addFeedbackPanels(at);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         };
         form.add(forward);
@@ -162,12 +162,12 @@ public class ReprojectPage extends GeoServerBasePage {
                         }
                     }
                 }
-                at.add(feedbackPanel);
+                addFeedbackPanels(at);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         };
         form.add(backward);

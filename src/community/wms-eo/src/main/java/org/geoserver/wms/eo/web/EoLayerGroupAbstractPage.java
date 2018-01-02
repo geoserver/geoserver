@@ -264,7 +264,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                     outlinesEntryChooser.setDefaultModelObject(null);
                 }
                 target.add(lgEntryPanel);
-                target.add(getFeedbackPanel());
+                addFeedbackPanels(target);
                 target.add(outlinesEntryChooser);
             }
             
@@ -298,7 +298,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                 }
                 target.add(createStoreLink);
                 target.add(addFromStoreLink);
-                target.add(getFeedbackPanel());
+                addFeedbackPanels(target);
             }
             
         });

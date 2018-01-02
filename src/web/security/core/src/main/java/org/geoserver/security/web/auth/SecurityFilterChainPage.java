@@ -182,7 +182,7 @@ public  class SecurityFilterChainPage
             doReturn();
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving config", e);
-            feedbackPanel.error(e);
+            error(e);
         }
     }
     

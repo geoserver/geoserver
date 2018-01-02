@@ -79,7 +79,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 for (BlobStoreConfig config : blobStoresPanel.getSelection()) {
                     if (config.isDefault()) {
                         error(new ParamResourceModel("deleteError", getPage()).getString());
-                        target.add(feedbackPanel);
+                        addFeedbackPanels(target);
                         return;
                     }
                     ids.add(config.getId());
@@ -130,7 +130,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         public void onClose(AjaxRequestTarget target) {
                             if (error != null) {
                                 error(error);
-                                target.add(feedbackPanel);
+                                addFeedbackPanels(target);
                             } else {
                                 target.add(blobStoresPanel);
                             }
@@ -142,7 +142,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         GWC.get().removeBlobStores(ids);
                     } catch (ConfigurationException e) {
                         error(e.toString());
-                        target.add(feedbackPanel);
+                        addFeedbackPanels(target);
                     }
                     target.add(blobStoresPanel);
                 }

@@ -41,7 +41,7 @@ public abstract class GeoServerAjaxFormLink extends AjaxSubmitLink {
     protected final void onSubmit(AjaxRequestTarget target, Form<?> form) {
         onClick(target, form);
         if(getPage() instanceof GeoServerBasePage) {
-            target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
+            ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
         }
     }
 

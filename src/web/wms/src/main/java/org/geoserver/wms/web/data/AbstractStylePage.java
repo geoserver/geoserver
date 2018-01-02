@@ -257,15 +257,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             switch (index) {
                                 case 1:
                                     tabbedPanel.error("Cannot show Publishing options: No Layers available.");
-                                    target.add(feedbackPanel);
+                                    addFeedbackPanels(target);
                                     return;
                                 case 2:
                                     tabbedPanel.error("Cannot show Layer Preview: No Layers available.");
-                                    target.add(feedbackPanel);
+                                    addFeedbackPanels(target);
                                     return;
                                 case 3:
                                     tabbedPanel.error("Cannot show Attribute Preview: No Layers available.");
-                                    target.add(feedbackPanel);
+                                    addFeedbackPanels(target);
                                     return;
                                 default:
                                     break;
@@ -306,7 +306,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                     getRequestCycle().setResponsePage(StyleEditPage.class, parameters);
                 }
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
                 //Update preview if we are on the preview tab
                 if (style != null && tabbedPanel.getSelectedTab() == 2) {
                     tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
@@ -332,21 +332,21 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         });
         add(new AjaxSubmitLink("submit", styleForm) {
             @Override
             protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
                 if (form.hasError()) {
-                    target.add(feedbackPanel);
+                    addFeedbackPanels(target);
                 } else {
                     doReturn(StylePage.class);
                 }
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         });
         Link<StylePage> cancelLink = new Link<StylePage>("cancel") {

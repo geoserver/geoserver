@@ -35,8 +35,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Url;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.http.WebRequest;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -109,7 +107,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
                     parent.configurationChanged();
-                    target.add(parent.getFeedbackPanel());
+                    parent.addFeedbackPanels(target);
                     target.add(parent.styleForm);
                 }
             });

@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -308,7 +306,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     private void startCopy(AjaxRequestTarget target, Form<?> form) {
         Session.get().getFeedbackMessages().clear();
-        target.add(getFeedbackPanel());
+        addFeedbackPanels(target);
 
         final boolean recursive = this.recursive.getModelObject();
         final int numCopies = duplicateCount.getModelObject();

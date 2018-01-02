@@ -77,7 +77,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
                 crsContainer.setVisible(attribute.getBinding() != null
                         && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-                target.add(getFeedbackPanel());
+                addFeedbackPanels(target);
                 target.add(form);
             }
 

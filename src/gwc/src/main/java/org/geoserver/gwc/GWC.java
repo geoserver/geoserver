@@ -1631,6 +1631,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         tld.modify(layer);
     }
 
+    public void rename(String oldTileLayerName, String newTileLayerName) {
+        checkNotNull(oldTileLayerName);
+        checkNotNull(newTileLayerName);
+        log.info("Renaming GeoSeverTileLayer " + oldTileLayerName + " to " + newTileLayerName);
+        tld.rename(oldTileLayerName, newTileLayerName);
+    }
+
     /**
      * Returns the tile layers that refer to the given style, either as the tile layer's
      * {@link GeoServerTileLayer#getStyles() default style} or one of the
@@ -2016,24 +2023,24 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         is not an instance of {@link LayerInfo} or {@link LayerGroupInfo}
      */
     public boolean hasTileLayer(CatalogInfo source) {
-        final String tileLayerId;
+        final String tileLayerName;
         if (source instanceof ResourceInfo) {
             LayerInfo layerInfo = getCatalog().getLayerByName(
                     ((ResourceInfo) source).prefixedName());
             if (layerInfo == null) {
                 return false;
             }
-            tileLayerId = layerInfo.getId();
+            tileLayerName = tileLayerName(layerInfo);
         } else if (source instanceof LayerInfo) {
-            tileLayerId = ((LayerInfo) source).getId();
+            tileLayerName = tileLayerName((LayerInfo) source);
         } else if (source instanceof LayerGroupInfo) {
-            tileLayerId = ((LayerGroupInfo) source).getId();
+            tileLayerName = tileLayerName((LayerGroupInfo) source);
         } else {
             return false;
         }
         BaseConfiguration configuration;
         try {
-            configuration = tld.getConfiguration(tileLayerId);
+            configuration = tld.getConfiguration(tileLayerName);
         } catch (IllegalArgumentException notFound) {
             return false;
         }

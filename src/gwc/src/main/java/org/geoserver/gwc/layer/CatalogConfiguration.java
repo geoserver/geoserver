@@ -549,6 +549,38 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
+     * @see org.geowebcache.config.TileLayerConfiguration#modifyLayer(org.geowebcache.layer.TileLayer)
+     */
+    @Override
+    public synchronized void renameLayer(String oldName, String newName) throws NoSuchElementException {
+        TileLayer tl = getLayer(oldName);
+        checkNotNull(tl, "TileLayer " + oldName+ " not found");
+        checkArgument(canSave(tl), "Can't rename TileLayer of type ", tl.getClass());
+
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) tl;
+
+        checkNotNull(tileLayer.getInfo(), "GeoServerTileLayerInfo is null");
+        checkNotNull(tileLayer.getInfo().getId(), "id is null");
+        checkNotNull(tileLayer.getInfo().getName(), "name is null");
+
+        final GeoServerTileLayerInfo info = tileLayer.getInfo();
+        lock.acquireWriteLock();
+        try {
+            final String layerId = info.getId();
+            info.setName(newName);
+            // check pendingModifications too to catch unsaved adds
+            boolean exists = pendingModications.containsKey(layerId)
+                    || tileLayerCatalog.exists(layerId);
+            checkArgument(exists, "No GeoServerTileLayer named '" + info.getName() + "' exists");
+            pendingModications.put(layerId, info);
+            layerCache.invalidate(layerId);
+        } finally {
+            lock.releaseWriteLock();
+        }
+        save();
+    }
+
+    /**
      * {@link TileLayerDispatcher} is requesting to remove the layer named after {@code layerName}
      * 
      * @see org.geowebcache.config.TileLayerConfiguration#removeLayer(java.lang.String)

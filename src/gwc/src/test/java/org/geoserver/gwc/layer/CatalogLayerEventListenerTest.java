@@ -191,11 +191,9 @@ public class CatalogLayerEventListenerTest {
 
         listener.handlePostModifyEvent(postModifyEvent);
 
-        ArgumentCaptor<GeoServerTileLayer> captor = ArgumentCaptor
-                .forClass(GeoServerTileLayer.class);
-        verify(mockMediator).save(captor.capture());
+        verify(mockMediator).rename(oldTileLayerName, renamedPrefixedResouceName);
 
-        GeoServerTileLayer saved = captor.getValue();
+        GeoServerTileLayer saved = mockMediator.getTileLayer(mockResourceInfo);
         assertNotNull(saved);
         assertNotNull(saved.getInfo());
         GeoServerTileLayerInfo savedInfo = saved.getInfo();
@@ -271,11 +269,9 @@ public class CatalogLayerEventListenerTest {
 
         listener.handlePostModifyEvent(postModifyEvent);
 
-        ArgumentCaptor<GeoServerTileLayer> captor = ArgumentCaptor
-                .forClass(GeoServerTileLayer.class);
-        verify(mockMediator).save(captor.capture());
+        verify(mockMediator).rename(oldGroupName, renamedGroupName);
 
-        GeoServerTileLayer saved = captor.getValue();
+        GeoServerTileLayer saved = mockMediator.getTileLayer(mockLayerGroupInfo);
         assertNotNull(saved);
         assertNotNull(saved.getInfo());
         GeoServerTileLayerInfo savedInfo = saved.getInfo();
@@ -321,11 +317,9 @@ public class CatalogLayerEventListenerTest {
 
         listener.handlePostModifyEvent(postModifyEvent);
 
-        ArgumentCaptor<GeoServerTileLayer> captor = ArgumentCaptor
-                .forClass(GeoServerTileLayer.class);
-        verify(mockMediator).save(captor.capture());
+        verify(mockMediator).rename(oldLayerName, prefixedName);
 
-        GeoServerTileLayer saved = captor.getValue();
+        GeoServerTileLayer saved = mockMediator.getTileLayer(mockLayerGroupInfo);
         assertNotNull(saved);
         assertNotNull(saved.getInfo());
         GeoServerTileLayerInfo savedInfo = saved.getInfo();
@@ -369,11 +363,9 @@ public class CatalogLayerEventListenerTest {
 
         listener.handlePostModifyEvent(postModifyEvent);
 
-        ArgumentCaptor<GeoServerTileLayer> captor = ArgumentCaptor
-                .forClass(GeoServerTileLayer.class);
-        verify(mockMediator).save(captor.capture());
+        verify(mockMediator).rename(oldPrefixedName, newPrefixedName);
 
-        GeoServerTileLayer saved = captor.getValue();
+        GeoServerTileLayer saved = mockMediator.getTileLayer(mockResourceInfo);
         assertNotNull(saved);
         assertNotNull(saved.getInfo());
         GeoServerTileLayerInfo savedInfo = saved.getInfo();

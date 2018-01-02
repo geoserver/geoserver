@@ -21,17 +21,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -281,14 +273,26 @@ public class CatalogConfigurationTest {
 
         assertEquals(orig.getInfo(), config.getLayer(orig.getName()).getInfo());
 
+        //Update mocks
+        when(tileLayerCatalog.save(modified.getInfo())).thenReturn(orig.getInfo());
+
         config.modifyLayer(modified);
+
+        when(tileLayerCatalog.getLayerById(modified.getId())).thenReturn(modified.getInfo());
 
         assertEquals(newState, config.getLayer(orig.getName()).getInfo());
 
         final String origName = orig.getName();
         modified.getInfo().setName("changed");
 
+        when(tileLayerCatalog.save(modified.getInfo())).thenReturn(orig.getInfo());
+
         config.modifyLayer(modified);
+
+        //Update mocks
+        when(tileLayerCatalog.getLayerById(orig.getId())).thenReturn(null);
+        when(tileLayerCatalog.getLayerId(orig.getName())).thenReturn(null);
+        when(tileLayerCatalog.getLayerNames()).thenReturn(Collections.emptySet());
 
         assertNull(config.getLayer(origName));
         assertFalse(config.getLayerNames().contains(origName));
@@ -314,6 +318,14 @@ public class CatalogConfigurationTest {
 
         assertTrue(config.removeLayer(layerName));
 
+        //Update mocks
+        when(tileLayerCatalog.getLayerByName(layerName)).thenReturn(null);
+        when(tileLayerCatalog.getLayerId(layerName)).thenReturn(null);
+        when(tileLayerCatalog.getLayerNames()).thenReturn(
+                ImmutableSet.of(tileLayerName(layer2), tileLayerName(group1), tileLayerName(group2)));
+        when(tileLayerCatalog.getLayerIds()).thenReturn(
+                ImmutableSet.of(layer2.getId(), group1.getId(), group2.getId()));
+
         assertNull(config.getLayer(layerName));
         assertFalse(config.getLayerNames().contains(layerName));
         assertEquals(initialCount - 1, config.getLayerCount());
@@ -321,6 +333,15 @@ public class CatalogConfigurationTest {
         layerName = GWC.tileLayerName(group1);
         assertNotNull(config.getLayer(layerName));
         assertTrue(config.removeLayer(layerName));
+
+        //Update mocks
+        when(tileLayerCatalog.getLayerByName(layerName)).thenReturn(null);
+        when(tileLayerCatalog.getLayerId(layerName)).thenReturn(null);
+        when(tileLayerCatalog.getLayerNames()).thenReturn(
+                ImmutableSet.of(tileLayerName(layer2), tileLayerName(group2)));
+        when(tileLayerCatalog.getLayerIds()).thenReturn(
+                ImmutableSet.of(layer2.getId(), group2.getId()));
+
         assertNull(config.getLayer(layerName));
         assertEquals(initialCount - 2, config.getLayerCount());
     }
@@ -336,28 +357,22 @@ public class CatalogConfigurationTest {
         config.modifyLayer(new GeoServerTileLayer(layer1, gridSetBroker, forceState1));
 
         verify(mockMediator, never()).layerRemoved(anyString());
-        verify(mockMediator, never()).layerRenamed(anyString(), anyString());
-
-        config.save();
-
         verify(tileLayerCatalog, times(1)).save(same(forceState1));
-
-        // and gwc has been instructed on the changes
         verify(mockMediator, times(1)).layerRenamed(eq(layerInfo1.getName()), eq("newName"));
     }
 
     @Test public void testSave() {
-        // add a pending delete
+        // delete layer
         when(tileLayerCatalog.delete(eq(layerInfo2.getId()))).thenReturn(layerInfo2);
         assertTrue(config.removeLayer(layerInfo2.getName()));
 
-        // and a failed one at save
+        // failing delete
         when(tileLayerCatalog.delete(eq(groupInfo1.getId()))).thenReturn(groupInfo1);
         assertTrue(config.removeLayer(groupInfo1.getName()));
         doThrow(new IllegalArgumentException("failedDelete")).when(tileLayerCatalog).delete(
                 eq(group1.getId()));
 
-        // add two pending modifications
+        // modify two layers, one will fail
         GeoServerTileLayerInfo forceState1 = TileLayerInfoUtil.loadOrCreate(layer1, defaults);
         forceState1.setName("newName");
 
@@ -370,9 +385,6 @@ public class CatalogConfigurationTest {
         doThrow(new IllegalArgumentException("failedSave")).when(tileLayerCatalog).save(
                 eq(forceState2));
 
-        verify(mockMediator, times(1)).layerRemoved(layerInfo2.getName());
-        verify(mockMediator, never()).layerRenamed(anyString(), anyString());
-
         GeoServerTileLayerInfo addedState1 = TileLayerInfoUtil.loadOrCreate(layerWithNoTileLayer,
                 defaults);
         config.addLayer(new GeoServerTileLayer(layerWithNoTileLayer, gridSetBroker, addedState1));
@@ -383,7 +395,6 @@ public class CatalogConfigurationTest {
                 defaults);
         config.addLayer(new GeoServerTileLayer(groupWithNoTileLayer, gridSetBroker, addedState2));
 
-        config.save();
 
         verify(tileLayerCatalog, times(1)).delete(eq(group1.getId()));
         verify(tileLayerCatalog, times(1)).delete(eq(layer2.getId()));
@@ -392,7 +403,6 @@ public class CatalogConfigurationTest {
         verify(tileLayerCatalog, times(1)).save(same(addedState1));
         verify(tileLayerCatalog, times(1)).save(same(addedState2));
 
-        // and gwc has been instructed on the changes
         verify(mockMediator, times(1)).layerRemoved(eq(layerInfo2.getName()));
         verify(mockMediator, times(1)).layerRenamed(eq(layerInfo1.getName()), eq("newName"));
         verify(mockMediator, times(1)).layerAdded(eq(addedState1.getName()));

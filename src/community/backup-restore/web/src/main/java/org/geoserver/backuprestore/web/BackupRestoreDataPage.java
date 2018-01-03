@@ -182,7 +182,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
             
             protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
@@ -213,7 +213,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     //update the button back to original state
                     resetButtons(form, target, "newBackupStart");
 
-                    target.add(feedbackPanel);
+                    addFeedbackPanels(target);
                 }
 
                 cancel.setDefaultModelObject(jobid);
@@ -251,7 +251,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                //update the button back to original state
                                resetButtons(form, target, "newBackupStart");
 
-                               target.add(feedbackPanel);
+                               addFeedbackPanels(target);
                            }
                            return;
                        }
@@ -373,7 +373,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
             
             protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
@@ -404,7 +404,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     //update the button back to original state
                     resetButtons(form, target, "newRestoreStart");
 
-                    target.add(feedbackPanel);
+                    addFeedbackPanels(target);
                 }
 
                 cancel.setDefaultModelObject(jobid);
@@ -442,7 +442,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                //update the button back to original state
                                resetButtons(form, target, "newRestoreStart");
 
-                               target.add(feedbackPanel);
+                               addFeedbackPanels(target);
                            }
                            return;
                        }

@@ -856,6 +856,11 @@ margin-bottom: 1em;
 padding-top: 18px;
 }
 
+.page-footer {
+padding-top: 1em;
+}
+
+
 * html .page-header { /* IE6 */
 background-position: 0 -2px;
 }
@@ -1216,6 +1221,12 @@ margin-bottom: 0px;
 margin: 0.2em; /* override blueprint's settings for unordered lists */
 list-style-type: none;
 }
+
+.page-footer ul {
+margin: 0.2em; /* override blueprint's settings for unordered lists */
+list-style-type: none;
+}
+
 
 /*-------------
   Customize Wicket's autocomplete

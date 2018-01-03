@@ -6,7 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
-import java.sql.SQLException;
+
 import org.geotools.decorate.Wrapper;
 import java.util.logging.Level;
 
@@ -283,7 +283,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     createTypeContainer.setVisible(false);
                 }
                 target.add(selectLayersContainer);
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
 
             }
 

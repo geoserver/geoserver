@@ -18,7 +18,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -126,13 +125,13 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                     xmlWindow.show(target);
                 } catch (Exception e) {
                     error(e.getMessage());
-                    target.add(getFeedbackPanel());
+                    addFeedbackPanels(target);
                 }
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                target.add(getFeedbackPanel());
+                addFeedbackPanels(target);
             }
         });
     }

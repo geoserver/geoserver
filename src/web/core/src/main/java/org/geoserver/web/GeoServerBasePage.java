@@ -17,6 +17,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -68,9 +69,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     protected static volatile GeoServerNodeInfo NODE_INFO;
     
     /**
-     * feedback panel for subclasses to report errors and information.
+     * feedback panels to report errors and information.
      */
-    protected FeedbackPanel feedbackPanel;
+    protected FeedbackPanel topFeedbackPanel;
+    protected FeedbackPanel bottomFeedbackPanel;
 
     /**
      * page for this page to return to when the page is finished, could be null.
@@ -310,8 +312,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             }
         });
 
-        add(feedbackPanel = new FeedbackPanel("feedback"));
-        feedbackPanel.setOutputMarkupId( true );
+        add(topFeedbackPanel = new FeedbackPanel("topFeedback"));
+        topFeedbackPanel.setOutputMarkupId( true );
+        add(bottomFeedbackPanel = new FeedbackPanel("bottomFeedback"));
+        bottomFeedbackPanel.setOutputMarkupId( true );
         
         // ajax feedback image
         add(new Image("ajaxFeedbackImage", 
@@ -511,11 +515,12 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
    }
    
    /**
-    * Returns the feedback panel included in the GeoServer base page
-    *
+    * Returns the top feedback panel included in the GeoServer base page
+    * @deprecated Use {@link #addFeedbackPanels(AjaxRequestTarget)} instead
     */
+   @Deprecated
    public FeedbackPanel getFeedbackPanel() {
-       return feedbackPanel;
+       return topFeedbackPanel;
    }
 
    /**
@@ -576,4 +581,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
        defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
        setResponsePage(defaultPageClass);
    }
+
+    public void addFeedbackPanels(AjaxRequestTarget target) {
+        target.add(topFeedbackPanel);
+        target.add(bottomFeedbackPanel);
+    }
+
 }

@@ -123,7 +123,7 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 updateCoveragesList(true);
                 target.add(coveragesContainer);
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
 
         });

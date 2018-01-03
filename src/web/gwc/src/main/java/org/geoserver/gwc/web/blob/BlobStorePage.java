@@ -27,7 +27,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.gwc.GWC;
-import org.geoserver.gwc.web.blob.BlobStoreType;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -217,7 +216,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                                 doReturn(BlobStoresPage.class);
                             } else if (error != null) {
                                 error(error);
-                                target.add(feedbackPanel);
+                                addFeedbackPanels(target);
                             }
                         }
 
@@ -228,13 +227,13 @@ public class BlobStorePage extends GeoServerSecuredPage {
                         doReturn(BlobStoresPage.class);
                     } catch (ConfigurationException e) {
                         error(e.getMessage());
-                        target.add(feedbackPanel);
+                        addFeedbackPanels(target);
                     }
                 }
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         });
         blobStoreForm

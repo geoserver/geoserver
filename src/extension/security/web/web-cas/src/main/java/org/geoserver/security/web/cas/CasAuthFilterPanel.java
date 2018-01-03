@@ -10,7 +10,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -64,9 +63,8 @@ public class CasAuthFilterPanel
                     info(new StringResourceModel("casConnectionSuccessful",CasAuthFilterPanel.this, null).getObject());
                 }
                 catch(Exception e) {
-                    //getSession().error(e);
                     error(e);
-                    target.add( ((GeoServerBasePage)getPage()).getFeedbackPanel() ); // to display message
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target); // to display message
                     LOGGER.log(Level.WARNING, "CAS connection error ", e);
                 }
             }
@@ -83,7 +81,7 @@ public class CasAuthFilterPanel
                 }
                 catch(Exception e) {
                     error(e);
-                    target.add( ((GeoServerBasePage)getPage()).getFeedbackPanel() ); // to display message
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target); // to display message
                     LOGGER.log(Level.WARNING, "CAS proxy callback  error ", e);
                 }
             }
@@ -102,7 +100,7 @@ public class CasAuthFilterPanel
                 }
                 catch(Exception e) {
                     error(e);
-                    target.add( ((GeoServerBasePage)getPage()).getFeedbackPanel() ); // to display message
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target); // to display message
                     LOGGER.log(Level.WARNING, "CAs url in logout page error ", e);
                 }
             }

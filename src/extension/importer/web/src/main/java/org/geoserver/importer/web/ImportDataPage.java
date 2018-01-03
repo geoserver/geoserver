@@ -171,7 +171,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
             
             protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
@@ -247,7 +247,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                //update the button back to original state
                                resetButtons(form, target);
 
-                               target.add(feedbackPanel);
+                               addFeedbackPanels(target);
                            }
                            return;
                        }

@@ -305,9 +305,18 @@ public class CatalogConfigurationTest {
         } catch (RuntimeException e) {
             assertTrue(true);
         }
-
-        assertFalse(config.removeLayer(GWC.tileLayerName(layerWithNoTileLayer)));
-        assertFalse(config.removeLayer(GWC.tileLayerName(groupWithNoTileLayer)));
+        try {
+            config.removeLayer(GWC.tileLayerName(layerWithNoTileLayer));
+            fail("expected precondition violation exception");
+        } catch (RuntimeException e) {
+            assertTrue(true);
+        }
+        try {
+            config.removeLayer(GWC.tileLayerName(groupWithNoTileLayer));
+            fail("expected precondition violation exception");
+        } catch (RuntimeException e) {
+            assertTrue(true);
+        }
 
         String layerName;
 
@@ -316,7 +325,7 @@ public class CatalogConfigurationTest {
 
         final int initialCount = config.getLayerCount();
 
-        assertTrue(config.removeLayer(layerName));
+        config.removeLayer(layerName);
 
         //Update mocks
         when(tileLayerCatalog.getLayerByName(layerName)).thenReturn(null);
@@ -332,7 +341,7 @@ public class CatalogConfigurationTest {
 
         layerName = GWC.tileLayerName(group1);
         assertNotNull(config.getLayer(layerName));
-        assertTrue(config.removeLayer(layerName));
+        config.removeLayer(layerName);
 
         //Update mocks
         when(tileLayerCatalog.getLayerByName(layerName)).thenReturn(null);
@@ -364,11 +373,11 @@ public class CatalogConfigurationTest {
     @Test public void testSave() {
         // delete layer
         when(tileLayerCatalog.delete(eq(layerInfo2.getId()))).thenReturn(layerInfo2);
-        assertTrue(config.removeLayer(layerInfo2.getName()));
+        config.removeLayer(layerInfo2.getName());
 
         // failing delete
         when(tileLayerCatalog.delete(eq(groupInfo1.getId()))).thenReturn(groupInfo1);
-        assertTrue(config.removeLayer(groupInfo1.getName()));
+        config.removeLayer(groupInfo1.getName());
         doThrow(new IllegalArgumentException("failedDelete")).when(tileLayerCatalog).delete(
                 eq(group1.getId()));
 

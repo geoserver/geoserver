@@ -7,18 +7,12 @@ package org.geoserver.gwc.layer;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.base.Predicates;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
@@ -31,18 +25,13 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -152,7 +141,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     
     /**
      * 
-     * @see org.geowebcache.config.TileLayerConfiguration#getIdentifier()
+     * @see TileLayerConfiguration#getIdentifier()
      */
     @Override
     public String getIdentifier() {
@@ -165,7 +154,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      * The list is built dynamically on each call.
      * </p>
      * 
-     * @see org.geowebcache.config.TileLayerConfiguration#getTileLayers()
+     * @see TileLayerConfiguration#getTileLayers()
      * @deprecated
      */
     @Deprecated
@@ -176,26 +165,20 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#getLayers()
+     * @see TileLayerConfiguration#getLayers()
      */
     @Override
-    public Iterable<GeoServerTileLayer> getLayers() {
+    public Collection<GeoServerTileLayer> getLayers() {
         lock.acquireReadLock();
         try {
             final Set<String> layerNames = tileLayerCatalog.getLayerNames();
 
-            Function<String, GeoServerTileLayer> lazyLayerFetch = new Function<String, GeoServerTileLayer>() {
-                @Override
-                public GeoServerTileLayer apply(final String layerName) {
-                    return CatalogConfiguration.this.getLayer(layerName);
-                }
-            };
+            Function<String, GeoServerTileLayer> lazyLayerFetch =
+                    layerName -> CatalogConfiguration.this.getLayer(layerName);
 
             // removing the NULL results
-            return Iterables.filter(
-                Iterables.transform(layerNames, lazyLayerFetch),
-                Predicates.notNull()
-            );
+            return Lists.newArrayList(layerNames.stream().map(lazyLayerFetch::apply).collect(Collectors.toList())
+                    .stream().filter(java.util.Objects::nonNull).collect(Collectors.toList()));
         } finally {
             lock.releaseReadLock();
         }
@@ -204,7 +187,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     /**
      * Returns a dynamic list of cached layer names out of the GeoServer {@link Catalog}
      *
-     * @see org.geowebcache.config.TileLayerConfiguration#getLayerNames()
+     * @see TileLayerConfiguration#getLayerNames()
      */
     @Override
     public Set<String> getLayerNames() {
@@ -245,7 +228,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     /**
      * Returns a dynamic list of cached layer names out of the GeoServer {@link Catalog}
      * 
-     * @see org.geowebcache.config.TileLayerConfiguration#getTileLayerNames()
+     * @see TileLayerConfiguration#getTileLayerNames()
      */
     @Deprecated
     @Override
@@ -332,7 +315,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#getLayer(java.lang.String)
+     * @see TileLayerConfiguration#getLayer(String)
      */
     @Override
     public GeoServerTileLayer getLayer(final String layerName) {
@@ -353,7 +336,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#getTileLayer(java.lang.String)
+     * @see TileLayerConfiguration#getTileLayer(String)
      */
     @Deprecated
     @Override
@@ -418,7 +401,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#getLayerCount()
+     * @see TileLayerConfiguration#getLayerCount()
      */
     @Override
     public int getLayerCount() {
@@ -443,7 +426,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#getTileLayerCount()
+     * @see TileLayerConfiguration#getTileLayerCount()
      */
     @Deprecated
     @Override
@@ -452,7 +435,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#initialize(org.geowebcache.grid.GridSetBroker)
+     * @see TileLayerConfiguration#initialize(GridSetBroker)
      */
     @Override
     public int initialize(GridSetBroker gridSetBroker) {
@@ -470,7 +453,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
 
     /**
      * @return {@code true} only if {@code tl instanceof} {@link GeoServerTileLayer} .
-     * @see org.geowebcache.config.TileLayerConfiguration#canSave(org.geowebcache.layer.TileLayer)
+     * @see TileLayerConfiguration#canSave(TileLayer)
      */
     @Override
     public boolean canSave(TileLayer tl) {
@@ -519,7 +502,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#modifyLayer(org.geowebcache.layer.TileLayer)
+     * @see TileLayerConfiguration#modifyLayer(TileLayer)
      */
     @Override
     public synchronized void modifyLayer(TileLayer tl) throws NoSuchElementException {
@@ -549,7 +532,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see org.geowebcache.config.TileLayerConfiguration#modifyLayer(org.geowebcache.layer.TileLayer)
+     * @see TileLayerConfiguration#modifyLayer(TileLayer)
      */
     @Override
     public synchronized void renameLayer(String oldName, String newName) throws NoSuchElementException {
@@ -583,11 +566,10 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     /**
      * {@link TileLayerDispatcher} is requesting to remove the layer named after {@code layerName}
      * 
-     * @see org.geowebcache.config.TileLayerConfiguration#removeLayer(java.lang.String)
-     * @return {@code true} if the layer was removed, false if it didn't exist
+     * @see TileLayerConfiguration#removeLayer(String)
      */
     @Override
-    public boolean removeLayer(final String layerName) {
+    public void removeLayer(final String layerName) throws NoSuchElementException {
         checkNotNull(layerName);
         lock.acquireWriteLock();
         try {
@@ -609,13 +591,12 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                 pendingDeletes.add(layerId);
                 layerCache.invalidate(layerId);
             } else {
-                return false;
+                throw new NoSuchElementException("Tile layer " + layerName + " does not exist");
             }
         } finally {
             lock.releaseWriteLock();
         }
         save();
-        return true;
     }
 
     /**
@@ -624,7 +605,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      * @see GWC#layerRenamed(String, String)
      * @see GWC#truncateByLayerAndStyle(String, String)
      * @see GWC#truncate(String, String, String, BoundingBox, String)
-     * @see org.geowebcache.config.TileLayerConfiguration#save()
+     * @see TileLayerConfiguration#save()
      */
     @Override
     public synchronized void save() {

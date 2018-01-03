@@ -394,8 +394,8 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        when(tld.removeLayer(eq(tileLayer.getName()))).thenReturn(true);
-        when(tld.removeLayer(eq(tileLayerGroup.getName()))).thenReturn(true);
+        doNothing().when(tld).removeLayer(eq(tileLayer.getName()));
+        doNothing().when(tld).removeLayer(eq(tileLayerGroup.getName()));
 
         List<String> layerNames = Arrays.asList(tileLayer.getName(), tileLayerGroup.getName());
         mediator.removeTileLayers(layerNames);

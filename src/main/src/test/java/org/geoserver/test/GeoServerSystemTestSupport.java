@@ -41,8 +41,6 @@ import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
@@ -69,7 +67,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -112,6 +109,7 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Log4JLoggerFactory;
@@ -144,6 +142,8 @@ import org.springframework.mock.web.MockServletContext;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
+import org.geotools.xml.PreventLocalEntityResolver;
+import org.xml.sax.EntityResolver;
 
 /**
  * Base test class for GeoServer system tests that require a fully configured spring context and
@@ -194,6 +194,48 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Cached dispatcher, it has its own app context, so it's expensive to build
      */
     protected static DispatcherServlet dispatcher;
+
+    /**
+     * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this
+     * resolver allows them to be resolved while blocking the rest
+     */
+    public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+            if (isLocalGeoToolsSchema(null, systemId)) {
+                return null;
+            }
+
+            return super.resolveEntity(publicId, systemId);
+        }
+
+        @Override
+        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId) throws SAXException, IOException {
+            if (isLocalGeoToolsSchema(baseURI, systemId)) {
+                return null;
+            }
+
+            return super.resolveEntity(name, publicId, baseURI, systemId);
+        }
+
+        private boolean isLocalGeoToolsSchema(String baseURI, String systemId) {
+            if (systemId.startsWith("file:/")) {
+                return isLocalGeotoolsSchema(systemId);
+            } else if (!systemId.contains("://") && baseURI != null) {
+                // location relative to a baseURI
+                return isLocalGeotoolsSchema(baseURI);
+            }
+            return false;
+        }
+
+        private boolean isLocalGeotoolsSchema(String path) {
+            // Windows case insensitive filesystem work-around
+            path = path.toLowerCase();
+            // Match the GeoTools locations having schemas we resolve against
+            return path.matches(".*modules[\\\\/]extension[\\\\/]xsd[\\\\/].*\\.xsd") ||
+                    path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
+        }
+    };
 
     protected final void setUp(SystemTestData testData) throws Exception {
         // speed up xpath evaluations
@@ -262,6 +304,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                 WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
 
             dispatcher = buildDispatcher();
+
+            // Allow resolution of XSDs from local file system
+            EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
 
             onSetUp(testData);
         }

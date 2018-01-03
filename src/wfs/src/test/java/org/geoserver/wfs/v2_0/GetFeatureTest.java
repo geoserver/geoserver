@@ -434,9 +434,6 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         GeoServer gs = getGeoServer();
         // CITE compliance forces XML validation, which comes from sources in this test
-        GeoServerInfo global = gs.getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        gs.save(global);
         WFSInfo wfs = gs.getService(WFSInfo.class);
         wfs.setCiteCompliant(true);
         gs.save(wfs);
@@ -469,8 +466,6 @@ public class GetFeatureTest extends WFS20TestSupport {
             checkOws11Exception(doc, "2.0.0", WFSException.OPERATION_PROCESSING_FAILED, "GetFeature");
         } finally {
             wfs.setCiteCompliant(false);
-            gs.save(wfs);
-            global.setXmlExternalEntitiesEnabled(false);
             gs.save(wfs);
         }
     }

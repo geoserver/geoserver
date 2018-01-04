@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -76,25 +77,12 @@ public class GeoServerFileChooser extends Panel {
 
         this.file = file;
         this.hideFileSystem = hideFileSystem;
-        
-        // build the roots
-        ArrayList<File> roots = new ArrayList<File>();
-        if (!hideFileSystem) {
-            roots.addAll(Arrays.asList(File.listRoots()));
-        }
-        Collections.sort(roots);
-        
-        // TODO: find a better way to deal with the data dir
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        File dataDirectory = loader.getBaseDirectory();
-        
-        roots.add(0, dataDirectory );
-        
-        // add the home directory as well if it was possible to determine it at all
-        if(!hideFileSystem && USER_HOME != null) {
-            roots.add(1, USER_HOME);
-        }
-        
+        FileRootsFinder fileRootsFinder = new FileRootsFinder(hideFileSystem, true);
+        ArrayList<File> roots = fileRootsFinder.getRoots();
+        GeoServerResourceLoader loader = fileRootsFinder.getLoader();
+        File dataDirectory = fileRootsFinder.getDataDirectory();
+
+
         // find under which root the selection should be placed
         File selection = (File) file.getObject();
         
@@ -144,7 +132,7 @@ public class GeoServerFileChooser extends Panel {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                File selection = (File) choice.getModelObject();
+                File selection = choice.getModelObject();
                 breadcrumbs.setRootFile(selection);
                 updateFileBrowser(selection, target);
             }
@@ -181,7 +169,7 @@ public class GeoServerFileChooser extends Panel {
         fileTable.setOutputMarkupId(true);
         add(fileTable);
     }
-    
+
     void updateFileBrowser(File file, AjaxRequestTarget target) {
         if(file.isDirectory()) {
             directoryClicked(file, target);
@@ -266,22 +254,22 @@ public class GeoServerFileChooser extends Panel {
 //        return "file://" + file.getAbsolutePath();
 //    }
 //    
-    class FileRootsRenderer extends ChoiceRenderer<File> {
+static class FileRootsRenderer extends ChoiceRenderer<File> {
     
         private static final long serialVersionUID = 1389015915737006638L;
-        
-        public Object getDisplayValue(File f) {
+
+
+    public Object getDisplayValue(File f, Component component) {
         
             if (f == USER_HOME) {
-                return new ParamResourceModel("userHome", GeoServerFileChooser.this)
+                return new ParamResourceModel("userHome", component)
                         .getString();
             } else {
                 GeoServerResourceLoader loader = GeoServerExtensions
                         .bean(GeoServerResourceLoader.class);
         
                 if (f.equals(loader.getBaseDirectory())) {
-                    return new ParamResourceModel("dataDirectory",
-                            GeoServerFileChooser.this).getString();
+                    return new ParamResourceModel("dataDirectory", component).getString();
                 }
             }
         
@@ -306,4 +294,5 @@ public class GeoServerFileChooser extends Panel {
         }
     
     }
+
 }

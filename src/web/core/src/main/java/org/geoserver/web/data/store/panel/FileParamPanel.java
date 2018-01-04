@@ -5,12 +5,10 @@
  */
 package org.geoserver.web.data.store.panel;
 
-import java.io.File;
-import java.io.FileFilter;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -21,7 +19,16 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidator;
+import org.geoserver.web.wicket.browser.FileRootsFinder;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
+import org.geotools.util.logging.Logging;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A label, a text field, a file chooser
@@ -29,7 +36,7 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
  * @author Andrea Aime - GeoSolutions
  */
 public class FileParamPanel extends Panel implements ParamPanel {
-
+    private static final Logger LOGGER = Logging.getLogger(FileParamPanel.class);
 	private static final long serialVersionUID = 2630421795437249103L;
 	TextField<String> textField;
     ModalWindow dialog;
@@ -60,7 +67,23 @@ public class FileParamPanel extends Panel implements ParamPanel {
         add(label);
 
         // the text field, with a decorator for validations
-        textField = new TextField<String>("paramValue", new FileModel(paramValue));
+        FileRootsFinder rootsFinder = new FileRootsFinder(false);
+        textField = new AutoCompleteTextField<String>("paramValue", new FileModel(paramValue)) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                try {
+                    // do we need to filter files?
+                    FileFilter fileFilter = FileParamPanel.this.fileFilter != null ?
+                            FileParamPanel.this.fileFilter.getObject() : null;
+
+                    return rootsFinder.getMatches(input, fileFilter).iterator();
+                } catch(Exception e) {
+                    // this is a helper, don't let it break the UI at runtime but log errors instead
+                    LOGGER.log(Level.SEVERE, "Failed to provide autocomplete for path " + input, e);
+                    return Collections.emptyIterator();
+                }
+            }
+        };
         textField.setRequired(required);
         textField.setOutputMarkupId(true);
         // set the label to be the paramLabelModel otherwise a validation error would look like

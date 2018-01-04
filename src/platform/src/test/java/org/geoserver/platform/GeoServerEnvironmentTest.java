@@ -4,6 +4,8 @@
  */
 package org.geoserver.platform;
 
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,27 +14,30 @@ import javax.servlet.ServletContext;
 
 import org.easymock.EasyMock;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-
-import junit.framework.TestCase;
 
 /**
  * Unit test suite for {@link GeoServerEnvironment}
  * 
  * @author Alessio Fabiani, GeoSolutions
  */
-public class GeoServerEnvironmentTest extends TestCase {
+public class GeoServerEnvironmentTest {
 
     /**
      * logger
      */
     protected static final Logger LOGGER = Logging.getLogger("org.geoserver.platform");
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+        Assume.assumeThat(System.getenv("GEOSERVER_DATA_DIR"), CoreMatchers.nullValue());
+
         System.setProperty("TEST_SYS_PROPERTY", "ABC");
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "false");
 
@@ -72,9 +77,8 @@ public class GeoServerEnvironmentTest extends TestCase {
         gsext.setApplicationContext(appContext);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         System.clearProperty("TEST_SYS_PROPERTY");
         System.clearProperty("ALLOW_ENV_PARAMETRIZATION");
     }

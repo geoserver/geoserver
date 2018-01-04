@@ -17,7 +17,9 @@ import javax.servlet.ServletContext;
 import org.easymock.EasyMock;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.ResourceStore;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -79,6 +81,7 @@ public class GeoServerResourceLoaderTest {
      */
     @Test
     public void testLookupRequireExistingFileJava() {
+        Assume.assumeThat(System.getenv("GEOSERVER_DATA_DIR"), CoreMatchers.nullValue());
         ServletContext context = EasyMock.createMock(ServletContext.class);
         EasyMock.expect(context.getInitParameter("GEOSERVER_REQUIRE_FILE")).andReturn(null);
         EasyMock.expect(context.getInitParameter("GEOSERVER_DATA_DIR")).andReturn(null);
@@ -86,6 +89,7 @@ public class GeoServerResourceLoaderTest {
         EasyMock.expect(context.getRealPath("/data")).andReturn("data");
         EasyMock.replay(context);
         System.setProperty("GEOSERVER_REQUIRE_FILE", "pom.xml");
+        System.clearProperty("GEOSERVER_DATA_DIR");
         try {
             Assert.assertEquals("data",
                     GeoServerResourceLoader.lookupGeoServerDataDirectory(context));

@@ -13,10 +13,12 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import javax.media.jai.PlanarImage;
 
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -300,6 +302,7 @@ public class LegendLayoutTest extends BaseLegendTest{
 
         HashMap legendOptions = new HashMap();
         legendOptions.put("forceTitles", "on");
+        legendOptions.put("fontName", "Bitstream Vera Sans");
         req.setLegendOptions(legendOptions);
 
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);

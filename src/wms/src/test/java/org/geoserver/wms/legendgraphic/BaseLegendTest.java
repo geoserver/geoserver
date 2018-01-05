@@ -5,9 +5,7 @@
 
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.util.HashMap;
@@ -22,6 +20,7 @@ import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.ImageUtils;
+import org.geotools.renderer.style.FontCache;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +47,9 @@ public class BaseLegendTest extends WMSTestSupport {
         // add raster layer for rendering transform test
         testData.addRasterLayer(new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"),
                 "tazdem.tiff", "tiff", new HashMap(), MockData.class, catalog);
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, WMSTestSupport.class.getResourceAsStream("Vera.ttf")));
     }
 
     @Before

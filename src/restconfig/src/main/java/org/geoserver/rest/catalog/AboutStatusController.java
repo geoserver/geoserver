@@ -107,8 +107,13 @@ public class AboutStatusController extends RestBaseController {
                                 status.getVersion().ifPresent(version -> hash.put("version", version));
                                 //Make sure to escape the string, otherwise strange chars here will bork the XML parser later
                                 
-                                status.getMessage().ifPresent(message -> hash.put("message", 
-                                        StringEscapeUtils.escapeXml(message.replace("\u001b", "ESC")).replace("\n", "<br/>")));
+                                status.getMessage().ifPresent(message -> {
+                                    String noControlChars = message.replaceAll("\u001b", "ESC")
+                                            .replaceAll("\u0008", "BACK")
+                                            .replaceAll("\u0007", "BELL");
+                                    String escaped = StringEscapeUtils.escapeXml(noControlChars).replaceAll("\n", "<br/>");
+                                    hash.put("message", escaped);
+                                });
 
                                 return hash;
                             }

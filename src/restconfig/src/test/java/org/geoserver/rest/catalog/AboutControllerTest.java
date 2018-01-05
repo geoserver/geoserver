@@ -97,7 +97,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetStatusAsHTML() throws Exception {
         //add an escape char to the environment
-        System.setProperty("badString", "[46m");
+        System.setProperty("badString", "\u0007\u0008\u001b[46m");
         // make the request, parsing the result into a Dom object
         Document dom = getAsDOM(BASEPATH + "/about/status");
         checkHTMLModel(dom);

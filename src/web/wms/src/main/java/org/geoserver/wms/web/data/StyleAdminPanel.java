@@ -60,6 +60,7 @@ import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
@@ -132,7 +133,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         
         IModel<WorkspaceInfo> wsBinding = styleModel.bind("workspace");
         wsChoice = 
-            new DropDownChoice<WorkspaceInfo>("workspace", wsBinding, new WorkspacesModel(), new WorkspaceChoiceRenderer());
+            new Select2DropDownChoice<WorkspaceInfo>("workspace", wsBinding, new WorkspacesModel(), new WorkspaceChoiceRenderer());
         wsChoice.setNullValid(true);
         if (!stylePage.isAuthenticatedAsAdmin()) {
             wsChoice.setNullValid(false);
@@ -170,7 +171,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         }
 
         IModel<String> formatBinding = styleModel.bind("format");
-        formatChoice = new DropDownChoice<String>("format", formatBinding, new StyleFormatsModel(), 
+        formatChoice = new Select2DropDownChoice<String>("format", formatBinding, new StyleFormatsModel(), 
                 new ChoiceRenderer<String>() {
 
             private static final long serialVersionUID = 2064887235303504013L;
@@ -214,7 +215,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         }
         
         // style generation functionality
-        templates = new DropDownChoice<StyleType>("templates", new Model<StyleType>(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
+        templates = new Select2DropDownChoice<StyleType>("templates", new Model<StyleType>(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
         templates.setOutputMarkupId(true);
         templates.add(new AjaxFormComponentUpdatingBehavior("change") {
 
@@ -233,7 +234,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         add(generateLink);
 
         // style copy functionality
-        styles = new DropDownChoice<StyleInfo>("existingStyles", new Model<StyleInfo>(), new StylesModel(), new StyleChoiceRenderer());
+        styles = new Select2DropDownChoice<>("existingStyles", new Model<>(), new StylesModel(), new StyleChoiceRenderer());
         styles.setOutputMarkupId(true);
         styles.add(new AjaxFormComponentUpdatingBehavior("change") {
 

@@ -38,6 +38,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 
 /**
  * Configures {@link LayerInfo} WMS specific attributes
@@ -61,7 +62,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         // default style chooser. A default style is required
         StylesModel styles = new StylesModel();
         final PropertyModel<StyleInfo> defaultStyleModel = new PropertyModel<StyleInfo>(layerModel, "defaultStyle");
-        final DropDownChoice<StyleInfo> defaultStyle = new DropDownChoice<StyleInfo>("defaultStyle", defaultStyleModel,
+        final Select2DropDownChoice<StyleInfo> defaultStyle = new Select2DropDownChoice<>("defaultStyle", defaultStyleModel,
                 styles, new StyleChoiceRenderer());
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);

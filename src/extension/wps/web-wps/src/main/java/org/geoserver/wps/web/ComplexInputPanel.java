@@ -32,6 +32,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
@@ -121,7 +122,7 @@ public class ComplexInputPanel extends Panel {
 
             new PropertyModel(getDefaultModel(), "mime").setObject("text/xml");
             Fragment f = new Fragment("editor", "vectorLayer", this);
-            DropDownChoice layer = new DropDownChoice("layer", new PropertyModel(valueModel,
+            DropDownChoice layer = new Select2DropDownChoice("layer", new PropertyModel(valueModel,
                     "layerName"), getVectorLayerNames());
             f.add(layer);
             add(f);
@@ -132,7 +133,7 @@ public class ComplexInputPanel extends Panel {
             }
 
             Fragment f = new Fragment("editor", "rasterLayer", this);
-            final DropDownChoice layer = new DropDownChoice("layer", new PropertyModel(valueModel,
+            final DropDownChoice layer = new Select2DropDownChoice("layer", new PropertyModel(valueModel,
                     "layerName"), getRasterLayerNames());
             f.add(layer);
             add(f);

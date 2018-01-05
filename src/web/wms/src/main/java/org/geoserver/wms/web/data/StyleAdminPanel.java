@@ -60,6 +60,7 @@ import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
@@ -93,7 +94,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     protected DropDownChoice<StyleType> templates;
     protected AjaxSubmitLink generateLink;
     
-    protected DropDownChoice<StyleInfo> styles;
+    protected Select2DropDownChoice<StyleInfo> styles;
     protected AjaxSubmitLink copyLink;
     
     protected FileUploadField fileUploadField;
@@ -233,7 +234,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         add(generateLink);
 
         // style copy functionality
-        styles = new DropDownChoice<StyleInfo>("existingStyles", new Model<StyleInfo>(), new StylesModel(), new StyleChoiceRenderer());
+        styles = new Select2DropDownChoice<>("existingStyles", new Model<>(), new StylesModel(), new StyleChoiceRenderer());
         styles.setOutputMarkupId(true);
         styles.add(new AjaxFormComponentUpdatingBehavior("change") {
 

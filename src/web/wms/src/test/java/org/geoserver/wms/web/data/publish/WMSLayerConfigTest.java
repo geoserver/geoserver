@@ -15,7 +15,6 @@ import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
-import org.apache.wicket.feedback.FeedbackMessages;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
@@ -30,6 +29,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.geoserver.wms.web.publish.WMSLayerConfig;
 import org.junit.Before;
@@ -37,7 +37,7 @@ import org.junit.Test;
 
 @SuppressWarnings("serial")
 public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
-    
+
     @Before
     public void resetPondStyle() {
         Catalog catalog = getCatalog();
@@ -59,16 +59,16 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertComponent("form", Form.class);
-        tester.assertComponent("form:panel:styles:defaultStyle", DropDownChoice.class);
+        tester.assertComponent("form:panel:styles:defaultStyle", Select2DropDownChoice.class);
         
         // check selecting something else works
         StyleInfo target = ((List<StyleInfo>) new StylesModel().getObject()).get(0); 
         FormTester ft = tester.newFormTester("form");
-        ft.select("panel:styles:defaultStyle", 0);
+        select(ft, "panel:styles:defaultStyle", 0);
         ft.submit();
         tester.assertModelValue("form:panel:styles:defaultStyle", target);
     }
-    
+
     @Test
     public void testNew() {
         final LayerInfo layer = getCatalog().getFactory().createLayer();
@@ -85,7 +85,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertComponent("form", Form.class);
-        tester.assertComponent("form:panel:styles:defaultStyle", DropDownChoice.class);
+        tester.assertComponent("form:panel:styles:defaultStyle", Select2DropDownChoice.class);
         
         // check submitting like this will create errors, there is no selection
         tester.submitForm("form");
@@ -95,7 +95,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         // now set something and check there are no messages this time
         page.getSession().getFeedbackMessages().clear();
         FormTester ft = tester.newFormTester("form");
-        ft.select("panel:styles:defaultStyle", 0);
+        select(ft, "panel:styles:defaultStyle", 0);
         ft.submit();
         assertFalse(layerConfig.getFeedbackMessages().hasMessage(FeedbackMessage.ERROR));
     }
@@ -155,16 +155,16 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         // By default, no interpolation method is specified
         FormTester ft = tester.newFormTester("form");
         ft.submit();
+        tester.assertNoErrorMessage();
 
-        tester.assertModelValue("form:panel:defaultInterpolationMethod",
-                null);
+        tester.assertModelValue("form:panel:defaultInterpolationMethod", null);
 
         // Select Bicubic interpolation method
         ft = tester.newFormTester("form");
         ft.select("panel:defaultInterpolationMethod", 2);
         ft.submit();
+        tester.assertNoErrorMessage();
 
-        tester.assertModelValue("form:panel:defaultInterpolationMethod",
-                WMSInterpolation.Bicubic);
+        tester.assertModelValue("form:panel:defaultInterpolationMethod", WMSInterpolation.Bicubic);
     }
 }

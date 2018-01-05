@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.Arrays;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -55,8 +56,9 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         assertNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));
         
         // select the first datastore
-        tester.newFormTester("selector").select("storesDropDown", 1);
+        select(tester.newFormTester("selector"), "storesDropDown", 1);
         tester.executeAjaxEvent("selector:storesDropDown", "change");
+        
         
         // now it should be there
         assertNotNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));

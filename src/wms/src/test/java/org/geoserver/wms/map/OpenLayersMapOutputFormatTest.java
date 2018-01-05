@@ -301,7 +301,8 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         request.setFormat("application/openlayers");
 
         String htmlDoc = getAsHTML(map);
-        int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}\n");
+        System.out.println(htmlDoc);
+        int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}");
 
         assertTrue(index > -1);
     }

@@ -475,6 +475,10 @@ padding: 0.2em;
 width: 25em;
 }
 
+input.longtext {
+  width: 50em;
+}
+
 /* standard ul inside form */
 form ul.plain-ul {
 	margin: 0 1.5em 1.5em;

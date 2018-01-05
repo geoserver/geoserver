@@ -79,7 +79,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
                     return rootsFinder.getMatches(input, fileFilter).iterator();
                 } catch(Exception e) {
                     // this is a helper, don't let it break the UI at runtime but log errors instead
-                    LOGGER.log(Level.SEVERE, "Failed to provide autocomplete for path " + input, e);
+                    LOGGER.log(Level.INFO, "Failed to provide autocomplete for path " + input, e);
                     return Collections.emptyIterator();
                 }
             }

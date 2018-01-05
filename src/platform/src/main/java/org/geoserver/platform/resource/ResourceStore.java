@@ -40,6 +40,8 @@ package org.geoserver.platform.resource;
  * 
  * The base directory is available using {@link Paths#BASE} (as "") but relative paths ("." and "..") are not supported.
  * 
+ * This abstraction assumes a unix like file system, all paths should use forward slash "/" as the separator.
+ * 
  * @see Resources
  * @see Resource
  */
@@ -59,7 +61,7 @@ public interface ResourceStore {
      * The returned Resource acts as a handle, and may be UNDEFINED. In general Resources are created
      * in a lazy fashion when used for the first time.
      * 
-     * @param path Path (using unix conventions) of requested resource
+     * @param path Path (using unix conventions, forward slash as separator) of requested resource
      * @return Resource at the indicated location (null is never returned although Resource may be UNDEFINED).
      * @throws IllegalArgumentException If path is invalid
      */
@@ -73,7 +75,7 @@ public interface ResourceStore {
      * from being removed <code>false</code> is returned.
      * </p>
      * 
-     * @param path Path of resource to remove
+     * @param path Path of resource to remove (using unix conventions, forward slash as separator)
      * @return <code>false</code> if doesn't exist or unable to remove
      */
     boolean remove( String path);
@@ -81,7 +83,7 @@ public interface ResourceStore {
     /**
      * Move resource at indicated path (including individual resources or directories).
      * 
-     * @param path Path of resource to move
+     * @param path Path of resource to move (using unix conventions, forward slash as separator)
      * @param target path for moved resource
      * @return true if resource was moved target path
      */

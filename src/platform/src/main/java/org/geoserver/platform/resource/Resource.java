@@ -57,7 +57,7 @@ public interface Resource {
     }
 
     /**
-     * Resource path used by {@link ResourceStore#get(String)}.
+     * Resource path used by {@link ResourceStore#get(String)}. The path uses unix conventions, thus uses "/" as the separator.
      * 
      * @return resource path
      */
@@ -150,7 +150,7 @@ public interface Resource {
      * 
      * This method is used to access directory contents, relative paths such as ".." and "." are not supported.
      * 
-     * @param resourcePath path to child resource
+     * @param resourcePath path to child resource (using unix conventions, forward slash as separator)
      * @return Resource at the indicated path
      */
     Resource get(String resourcePath);

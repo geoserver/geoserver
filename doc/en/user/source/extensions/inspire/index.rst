@@ -9,8 +9,6 @@ In practice this means adding some extra elements into an extended capabilities 
 
 .. note:: The current INSPIRE extension fulfills "Scenario 1" of the View Service extended metadata requirements.  "Scenario 2" is not currently supported in GeoServer, but is certainly possible to implement.  If you are interested in implementing or funding this, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
 
-.. note:: At the time of writing there isn't published INSPIRE technical guidance on using a WCS as a download service but GeoServer allows setting the same ExtendedCapabilities parameters as for a WFS in anticipation of this change being made.
-
 For more information on the INSPIRE directive, please see the European Commission's `INSPIRE website <http://inspire.ec.europa.eu/>`_.
 
 .. toctree::

@@ -169,20 +169,12 @@
     </testResources>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
         <configuration>
-          <instrumentation>
-            <!-- ignores>
-             <ignore>**/*Exception.class</ignore>
-            </ignores-->
-            <excludes>
-              <exclude>**/*Exception.class</exclude>
-            </excludes>
-            <!-- includes>
-              <include>**/*Test.class</include>
-            </includes-->
-          </instrumentation>
+          <excludes>
+            <exclude>**/*Exception.class</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>

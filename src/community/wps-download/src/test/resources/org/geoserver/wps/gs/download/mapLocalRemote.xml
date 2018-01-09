@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
+             xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0"
+             xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml"
+             xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+  <ows:Identifier>gs:DownloadMap</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>bbox</ows:Identifier>
+      <wps:Data>
+        <wps:BoundingBoxData crs="EPSG:4326">
+          <ows:LowerCorner>0 -0.003</ows:LowerCorner>
+          <ows:UpperCorner>0.004 0.001</ows:UpperCorner>
+        </wps:BoundingBoxData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>width</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>256</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>height</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>256</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <dwn:Layer xmlns:dwn="http://geoserver.org/wps/download">
+            <dwn:Name>cite:Streams</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <dwn:Layer xmlns:dwn="http://geoserver.org/wps/download">
+            <dwn:Capabilities>http://geoserver.org/geoserver/wms?request=GetCapabilities&amp;version=1.1.0</dwn:Capabilities>
+            <dwn:Name>cite:Lakes</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="image/png">
+      <ows:Identifier>result</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>

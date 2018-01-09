@@ -33,20 +33,27 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
+import org.geotools.data.ows.HTTPClient;
+import org.geotools.data.ows.MultithreadedHttpClient;
+import org.geotools.data.wms.WebMapServer;
+import org.geotools.data.wms.response.GetMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapContent;
+import org.geotools.ows.ServiceException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DefaultProgressListener;
+import org.geotools.util.Version;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -54,10 +61,13 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -69,6 +79,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     private final WMS wms;
     private final GetMapKvpRequestReader getMapReader;
     private Service service;
+    private Supplier<HTTPClient> httpClientSupplier = () -> new MultithreadedHttpClient();
 
     public DownloadMapProcess(GeoServer geoServer) {
         // TODO: make these configurable
@@ -241,14 +252,13 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 RenderedImageMap map = renderInternalLayer(layer, template);
                 image = map.getImage();
             } else {
-                throw new UnsupportedOperationException("Including cascaded layers is not yet implemented");
+                image = getImageFromWebMapServer(layer, template, bbox);
             }
 
             if (result == null) {
                 result = image;
             } else {
                 result = mergeImage(result, image);
-
             }
 
             // past the first layer switch transparency on to allow overlaying
@@ -283,6 +293,85 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         progressListener.progress(100);
         
         return result;
+    }
+
+    /**
+     * Retrieves the image from the remote web map server
+     * @param layer
+     * @param template
+     * @param bbox
+     * @return
+     */
+    private RenderedImage getImageFromWebMapServer(Layer layer, CaseInsensitiveMap template, ReferencedEnvelope bbox) throws IOException, ServiceException, FactoryException {
+        HTTPClient client = httpClientSupplier.get();
+        // using a WMS client so that it respects the GetMap URL from the capabilities
+        WebMapServer server = new WebMapServer(new URL(layer.getCapabilities()), client);
+        org.geotools.data.wms.request.GetMapRequest getMap = server.createGetMapRequest();
+        String requestFormat = getCascadingFormat(server);
+
+        // going low level to apply all the properties we have verbatim
+        template.keySet().stream()
+                .filter(k -> !"version".equalsIgnoreCase((String) k) && !"srs".equalsIgnoreCase((String) k))
+                .forEach(key -> getMap.setProperty((String) key, (String) template.get(key)));
+        getMap.setProperty("layers", layer.getName());
+        getMap.setFormat(requestFormat);
+        getMap.setVersion(server.getCapabilities().getVersion());
+        
+        // check version, if we are using 1.3 we might need to flip the bbox, if version 1.1 and the
+        // original bbox was flipped, we'll need to un-flip (what a mess...)
+        Integer code = CRS.lookupEpsgCode(bbox.getCoordinateReferenceSystem(), false);
+        CoordinateReferenceSystem epsgOrderCrs = CRS.decode("urn:ogc:def:crs:EPSG:" + code, false);
+        CRS.AxisOrder axisOrder = CRS.getAxisOrder(epsgOrderCrs);
+        getMap.setSRS("EPSG:" + code); // takes into account the version already here
+        boolean flipNeeded = !template.containsKey("crs") && new Version(server.getCapabilities().getVersion()).compareTo
+                (new Version("1.3.0")) >= 0;
+        boolean unflipNeeded = template.containsKey("crs") && new Version(server.getCapabilities().getVersion()).compareTo
+                (new Version("1.3.0")) < 0;
+        if (flipNeeded || unflipNeeded) {
+            if (flipNeeded && axisOrder == CRS.AxisOrder.NORTH_EAST) {
+                getMap.setBBox(bbox.getMinY() + "," + bbox.getMinX() + "," + bbox.getMaxY() + "," + bbox.getMaxX());
+            } else if(unflipNeeded && axisOrder == CRS.AxisOrder.NORTH_EAST) {
+                getMap.setBBox(bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY());
+            }
+        } else {
+            
+        }
+
+        GetMapResponse response = server.issueRequest(getMap);
+        try(InputStream is = response.getInputStream()) {
+            BufferedImage image = ImageIO.read(is);
+            if (image == null) {
+                throw new IOException("GetMap failed: " + getMap.getFinalURL());
+            }
+            return image;
+        }
+    }
+
+    private String getCascadingFormat(WebMapServer server) {
+        // best guess at the format with a preference for PNG (since it's normally transparent)
+        List<String> formats = server.getCapabilities().getRequest().getGetMap().getFormats();
+        String requestFormat = null;
+        for (String format : formats) {
+            if (format.toLowerCase().contains("image/png")  || "png".equalsIgnoreCase(format)) {
+                requestFormat = format;
+                break;
+            }
+        }
+        // if we did not find any format looking like PNG choose any that ImageIO would likely read
+        if (requestFormat == null) {
+            for (String format : formats) {
+                String loFormat = format.toLowerCase();
+                if (loFormat.contains("jpeg")  || loFormat.contains("gif") || loFormat.contains("tif")) {
+                    requestFormat = format;
+                    break;
+                }    
+            }
+        }
+
+        if(requestFormat == null) {
+            throw new WPSException("Could not find a suitable WMS cascading format among server supported formats: " + formats);
+        }
+        return requestFormat;
     }
 
     private RenderedImage mergeImage(RenderedImage result, RenderedImage image) {
@@ -337,4 +426,22 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             throw new RuntimeException("Could not find a WMS service");
         }
     }
+
+    /**
+     * Returns the current {@link Supplier<HTTPClient>} building http clients for remote WMS connection
+     * @return
+     */
+    public Supplier<HTTPClient> getHttpClientSupplier() {
+        return httpClientSupplier;
+    }
+
+    /**
+     * Sets the {@link Supplier<HTTPClient>} used to build http clients for remote WMS connections
+     * @param httpClientSupplier
+     */
+    public void setHttpClientSupplier(Supplier<HTTPClient> httpClientSupplier) {
+        this.httpClientSupplier = httpClientSupplier;
+    }
+
+
 }

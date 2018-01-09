@@ -6,31 +6,24 @@ package org.geoserver.wps.gs.download;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.catalog.DimensionPresentation;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.config.GeoServerInfo;
-import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.kml.KMZMapOutputFormat;
-import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
+import org.geotools.data.ows.HTTPClient;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
-import javax.xml.namespace.QName;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -190,4 +183,89 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 200);
     }
 
+    @Test
+    public void downloadRemoteSimple11() throws Exception {
+        String request = IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple11.xml"));
+        String caps111 = IOUtils.toString(getClass().getResourceAsStream("caps111.xml"));
+        byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
+        DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
+        MockHttpClient client = new MockHttpClient();
+        client.expectGet(new URL("http://geoserver" +
+                ".org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"), new
+                MockHttpResponse(caps111, "text/xml"));
+        // check it follows the links in the caps document
+        client.expectGet(new URL("http://mock.test.geoserver" +
+                ".org/wms11?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false" +
+                "&REQUEST=GetMap&WIDTH=256&BBOX=-2.4,1.4,0.4,4.2&SRS=EPSG:4326&VERSION=1.1.1"), new
+                MockHttpResponse(getMapBytes, "image/png"));
+        // switch from the standard supplier to one using the mock client prepared above
+        Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
+        try {
+            process.setHttpClientSupplier(() -> client);
+
+            MockHttpServletResponse response = postAsServletResponse("wps", request);
+            assertEquals("image/png", response.getContentType());
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
+        } finally {
+            process.setHttpClientSupplier(oldSupplier);
+        }
+    }
+
+    @Test
+    public void downloadRemoteSimple13() throws Exception {
+        String request = IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple13.xml"));
+        String caps130 = IOUtils.toString(getClass().getResourceAsStream("caps130.xml"));
+        byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
+        DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
+        MockHttpClient client = new MockHttpClient();
+        client.expectGet(new URL("http://geoserver.org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0"), new
+                MockHttpResponse(caps130, "text/xml"));
+        // check it follows the links in the caps document and does axis flipping as required
+        client.expectGet(new URL("http://mock.test.geoserver" +
+                ".org/wms13?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false" +
+                "&REQUEST=GetMap&WIDTH=256&BBOX=1.4,-2.4,4.2,0.4&CRS=EPSG:4326&VERSION=1.3.0"), new
+                MockHttpResponse(getMapBytes, "image/png"));
+        // switch from the standard supplier to one using the mock client prepared above
+        Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
+        try {
+            process.setHttpClientSupplier(() -> client);
+
+            MockHttpServletResponse response = postAsServletResponse("wps", request);
+            assertEquals("image/png", response.getContentType());
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
+        } finally {
+            process.setHttpClientSupplier(oldSupplier);
+        }
+    }
+
+    @Test
+    public void downloadLocalRemote() throws Exception {
+        String request = IOUtils.toString(getClass().getResourceAsStream("mapLocalRemote.xml"));
+        String caps111 = IOUtils.toString(getClass().getResourceAsStream("caps111.xml"));
+        byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "lakes.png"));
+        DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
+        MockHttpClient client = new MockHttpClient();
+        client.expectGet(new URL("http://geoserver" +
+                ".org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"), new
+                MockHttpResponse(caps111, "text/xml"));
+        // check it follows the links in the caps document
+        client.expectGet(new URL("http://mock.test.geoserver" +
+                ".org/wms11?SERVICE=WMS&LAYERS=cite:Lakes&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=true" +
+                "&REQUEST=GetMap&WIDTH=256&BBOX=0.0,-0.003,0.004,0.001&SRS=EPSG:4326&VERSION=1.1.1"), new
+                MockHttpResponse(getMapBytes, "image/png"));
+        // switch from the standard supplier to one using the mock client prepared above
+        Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
+        try {
+            process.setHttpClientSupplier(() -> client);
+
+            MockHttpServletResponse response = postAsServletResponse("wps", request);
+            assertEquals("image/png", response.getContentType());
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            ImageAssert.assertEquals(new File(SAMPLES + "localRemote.png"), image, 100);
+        } finally {
+            process.setHttpClientSupplier(oldSupplier);
+        }
+    }
 }

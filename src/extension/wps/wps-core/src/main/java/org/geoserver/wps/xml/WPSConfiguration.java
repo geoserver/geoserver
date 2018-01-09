@@ -8,6 +8,7 @@ package org.geoserver.wps.xml;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.geoserver.wfs.xml.v1_0_0.GetFeatureTypeBinding;
 import org.geotools.wfs.WFSParserDelegate;
 import org.geotools.wfs.v1_0.WFS;
@@ -69,7 +70,18 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
             super(ns);
             this.container = container;
         }
-        
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            if (buffer == null) {
+                buffer = new StringBuffer();
+            }
+
+            String escapedXML = StringEscapeUtils.escapeXml(new String(ch, start, length));
+            buffer.append(escapedXML);
+        }
+
+
         @Override
         public boolean canHandle(QName elementName, Attributes attributes, Handler handler, Handler parent) {
             if(parent == null || !("ComplexData".equals(parent.getComponent().getName()))) {

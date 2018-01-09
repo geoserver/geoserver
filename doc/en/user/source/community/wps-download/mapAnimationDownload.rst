@@ -37,11 +37,8 @@ For example:
       </dwn:Layer>
     </wps:ComplexData>
 
-.. warning:: Currently support for remote layers is not implemented, will be added shortly
-
-
-Sample DownloadMap request
-++++++++++++++++++++++++++
+Sample DownloadMap requests
+++++++++++++++++++++++++++++
 
 The map download process has only the basic inputs described above, the ``time`` parameter is optional.
 The map download process uses the WMS machinery to produce the output, but it's not subject to the WMS service

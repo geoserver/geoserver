@@ -32,7 +32,7 @@ The Oracle data store zip file comes with ``ojdbc4.jar``, an old, Oracle 10 comp
 However, minor glitches have been observed with 11g (issues computing layer bounds when session initiation scripts are in use) and the driver
 has not been tested with 12i.
 
-If you encounter functionality or performance issues it is advices to remote this driver and download the latest version from the Oracle web site.
+If you encounter functionality or performance issues it is advised to remove this driver and download the latest version from the Oracle web site.
 
 Adding an Oracle datastore
 --------------------------

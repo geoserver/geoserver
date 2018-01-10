@@ -1301,17 +1301,6 @@
  </dependencies>
 
  <build>
-  <!-- Forces some plugin versions since latest and greatest are not working properly -->
-  <pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.6</version>
-      </plugin>
-    </plugins>
-  </pluginManagement>
- 
   <!-- TODO: the resources stuff hardcodes paths to source + test directories,
       we should be able to use some properties here -->
   <resources>
@@ -1438,7 +1427,6 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1499,19 +1487,6 @@
      <finalName>geoserver-2.13-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
-   </plugin>
-
-   <!-- code coverage -->
-   <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>cobertura-maven-plugin</artifactId>
-    <executions>
-     <execution>
-      <goals>
-       <goal>clean</goal>
-      </goals>
-     </execution>
-    </executions>
    </plugin>
 
    <!-- eclipse ide integration -->
@@ -1795,11 +1770,11 @@
     </configuration>
    </plugin>
 
-   <!-- cobertura plugin (test code coverage reports) -->
+   <!-- jacoco plugin (test code coverage reports) -->
    <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>cobertura-maven-plugin</artifactId>
-    <version>2.5.2</version>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.0</version>
     <configuration>
        <formats>
           <format>html</format>
@@ -1896,6 +1871,7 @@
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
+  <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
  </properties>
 
  <profiles>
@@ -2059,6 +2035,34 @@
      <properties>
        <remoteOwsTests>true</remoteOwsTests>
      </properties>
+    </profile>
+
+    <!-- code coverage -->
+    <profile>
+      <id>jacoco</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>pre-unit-test</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-unit-test</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
  </profiles>
 

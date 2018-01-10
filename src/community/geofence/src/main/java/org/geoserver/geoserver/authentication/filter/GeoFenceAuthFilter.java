@@ -124,50 +124,6 @@ public class GeoFenceAuthFilter
         // chain.doFilter(request, response);
     }
 
-    private void doAuth(ServletRequest request, ServletResponse response) {
-
-        BasicUser basicUser = getBasicAuth(request);
-        AuthUser authUser = null;
-
-        if (basicUser != null) {
-            LOGGER.fine("Checking auth for user " + basicUser.name);
-            authUser = ruleReaderService.authorize(basicUser.name, basicUser.pw);
-
-            if (authUser == null) {
-                LOGGER.info("Could not authenticate user " + basicUser.name);
-            }
-
-        } else {
-            LOGGER.fine("No basicauth");
-        }
-
-        if (authUser != null) {
-            LOGGER.fine("Found user " + authUser);
-
-            List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-            authorities.add(GeoServerRole.AUTHENTICATED_ROLE);
-
-            if (authUser.getRole() == AuthUser.Role.ADMIN) {
-                authorities.add(GeoServerRole.ADMIN_ROLE);
-                authorities.add(new SimpleGrantedAuthority("ADMIN")); // needed for REST?!?
-            } else {
-                authorities.add(new SimpleGrantedAuthority(USER_ROLE)); // ??
-            }
-
-            UsernamePasswordAuthenticationToken upa = new UsernamePasswordAuthenticationToken(
-                    basicUser.name, basicUser.pw, authorities);
-            SecurityContextHolder.getContext().setAuthentication(upa);
-
-        } else {
-            LOGGER.fine("Anonymous access");
-            //
-            // Authentication authentication = new AnonymousAuthenticationToken("geoserver", "null",
-            // Arrays.asList(new GrantedAuthority[] { new SimpleGrantedAuthority(ANONYMOUS_ROLE) }));
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        }
-    }
-
     /**
      * Simple username+password container
      */
@@ -180,43 +136,6 @@ public class GeoFenceAuthFilter
             this.name = name;
             this.pw = pw;
         }
-    }
-
-    /**
-     * Reads username and password from Basic auth headers.
-     * 
-     * @return a BasicUser instance, or null if no basic auth detected.
-     */
-    private BasicUser getBasicAuth(ServletRequest request) {
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-
-        String header = ((httpRequest.getHeader("Authorization") != null)
-                ? httpRequest.getHeader("Authorization")
-                : httpRequest.getHeader("X-CUSTOM-USERID"));
-
-        if (header != null) {
-            String base64Token = header.startsWith("Basic ") ? header.substring(6) : header;
-            String token = new String(Base64.decodeBase64(base64Token.getBytes()));
-
-            int delim = token.indexOf(":");
-
-            String username = null;
-            String password = null;
-
-            if (delim != -1) {
-                username = token.substring(0, delim);
-                password = token.substring(delim + 1);
-            } else {
-                username = header;
-                password = null;
-            }
-
-            return new BasicUser(username, password);
-        } else {
-            return null;
-        }
-
     }
 
     /**

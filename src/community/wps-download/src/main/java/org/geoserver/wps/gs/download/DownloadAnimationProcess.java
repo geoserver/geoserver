@@ -11,6 +11,7 @@ import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.data.wms.WebMapServer;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
@@ -18,25 +19,39 @@ import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.DateRange;
 import org.geotools.util.DefaultProgressListener;
+import org.geotools.util.logging.Logging;
 import org.jcodec.api.awt.AWTSequenceEncoder;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Rational;
 import org.opengis.util.ProgressListener;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @DescribeProcess(title = "Animation Download Process", description = "Builds an animation given a set of layer " +
         "definitions, " +
         "area of interest, size and a series of times for animation frames.")
 public class DownloadAnimationProcess implements GeoServerProcess {
+    
+    static final Logger LOGGER = Logging.getLogger(DownloadAnimationProcess.class);
 
     public static final String VIDEO_MP4 = "video/mp4";
     private static final Format MAP_FORMAT;
@@ -98,18 +113,35 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         Collection parsedTimes = timeParser.parse(time);
         progressListener.started();
         int count = 1;
-        for (Object parsedTime : parsedTimes) {
-            // turn parsed time into a specification and generate a "WMS" like request based on it
-            String mapTime = toWmsTimeSpecification(parsedTime);
-            RenderedImage image = mapper.buildImage(bbox, decorationName, mapTime, width, height, layers, 
-                    "image/png", new DefaultProgressListener());
-            BufferedImage frame = toBufferedImage(image);
-            enc.encodeImage(frame);
-            progressListener.progress(100 * (parsedTimes.size() / count));
-            if (progressListener.isCanceled()) {
-                throw new ProcessException("Bailing out due to progress cancellation");
+        Map<String, WebMapServer> serverCache = new HashMap<>();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            List<Future<Void>> futures = new ArrayList<>();
+            for (Object parsedTime : parsedTimes) {
+                // turn parsed time into a specification and generate a "WMS" like request based on it
+                String mapTime = toWmsTimeSpecification(parsedTime);
+                LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
+                RenderedImage image = mapper.buildImage(bbox, decorationName, mapTime, width, height, layers,
+                        "image/png", new DefaultProgressListener(), serverCache);
+                BufferedImage frame = toBufferedImage(image);
+                LOGGER.log(Level.FINE, "Got frame %s", frame);
+                Future<Void> future = executor.submit(() -> {
+                    enc.encodeImage(frame);
+                    return (Void) null;
+                });
+                futures.add(future);
+                progressListener.progress(100 * (parsedTimes.size() / count));
+                if (progressListener.isCanceled()) {
+                    throw new ProcessException("Bailing out due to progress cancellation");
+                }
+                count++;
             }
-            count++;
+            for (Future<Void> future : futures) {
+                future.get();
+            }
+        } finally {
+            executor.shutdown();
         }
         enc.finish();
 

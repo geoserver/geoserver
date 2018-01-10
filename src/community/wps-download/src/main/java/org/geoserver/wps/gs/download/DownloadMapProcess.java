@@ -35,6 +35,7 @@ import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.MultithreadedHttpClient;
+import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wms.response.GetMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -46,6 +47,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
@@ -54,6 +56,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -68,6 +71,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -75,11 +80,13 @@ import java.util.zip.ZipOutputStream;
         "area of interest, size and eventual target time.")
 public class DownloadMapProcess implements GeoServerProcess, ApplicationContextAware {
 
+    static final Logger LOGGER = Logging.getLogger(DownloadMapProcess.class);
 
     private final WMS wms;
     private final GetMapKvpRequestReader getMapReader;
     private Service service;
-    private Supplier<HTTPClient> httpClientSupplier = () -> new MultithreadedHttpClient();
+    // defaulting to a stateless but reliable http client
+    private Supplier<HTTPClient> httpClientSupplier = () -> new SimpleHttpClient();
 
     public DownloadMapProcess(GeoServer geoServer) {
         // TODO: make these configurable
@@ -134,7 +141,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         }
 
         // assemble image
-        RenderedImage result = buildImage(bbox, decorationName, time, width, height, layers, format, progressListener);
+        RenderedImage result = buildImage(bbox, decorationName, time, width, height, layers, format, progressListener, new HashMap<>());
 
         // encode output (by faking a normal request)
         GetMapRequest request = new GetMapRequest();
@@ -215,7 +222,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     }
 
     RenderedImage buildImage(ReferencedEnvelope bbox, String decorationName, String time, int width, int height,
-                             Layer[] layers, String format, ProgressListener progressListener) throws Exception {
+                             Layer[] layers, String format, ProgressListener progressListener, Map<String, WebMapServer> serverCache) throws Exception {
         // build GetMap template parameters
         CaseInsensitiveMap template = new CaseInsensitiveMap(new HashMap());
         template.put("service", "WMS");
@@ -247,12 +254,13 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         progressListener.started();
         int i = 0;
         for (Layer layer : layers) {
+            LOGGER.log(Level.FINE, "Rendering layer %s",  layer);
             RenderedImage image;
             if (layer.getCapabilities() == null) {
                 RenderedImageMap map = renderInternalLayer(layer, template);
                 image = map.getImage();
             } else {
-                image = getImageFromWebMapServer(layer, template, bbox);
+                image = getImageFromWebMapServer(layer, template, bbox, serverCache);
             }
 
             if (result == null) {
@@ -300,12 +308,13 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
      * @param layer
      * @param template
      * @param bbox
+     * @param cache
      * @return
      */
-    private RenderedImage getImageFromWebMapServer(Layer layer, CaseInsensitiveMap template, ReferencedEnvelope bbox) throws IOException, ServiceException, FactoryException {
-        HTTPClient client = httpClientSupplier.get();
+    private RenderedImage getImageFromWebMapServer(Layer layer, CaseInsensitiveMap template, ReferencedEnvelope bbox,
+                                                   Map cache) throws IOException, ServiceException, FactoryException {
         // using a WMS client so that it respects the GetMap URL from the capabilities
-        WebMapServer server = new WebMapServer(new URL(layer.getCapabilities()), client);
+        WebMapServer server = getServer(layer, cache);
         org.geotools.data.wms.request.GetMapRequest getMap = server.createGetMapRequest();
         String requestFormat = getCascadingFormat(server);
 
@@ -333,18 +342,28 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             } else if(unflipNeeded && axisOrder == CRS.AxisOrder.NORTH_EAST) {
                 getMap.setBBox(bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY());
             }
-        } else {
-            
         }
 
         GetMapResponse response = server.issueRequest(getMap);
         try(InputStream is = response.getInputStream()) {
-            BufferedImage image = ImageIO.read(is);
+            BufferedImage image = ImageIO.read(new MemoryCacheImageInputStream(is));
             if (image == null) {
                 throw new IOException("GetMap failed: " + getMap.getFinalURL());
             }
             return image;
         }
+    }
+
+    private WebMapServer getServer(Layer layer, Map<String, WebMapServer> cache) throws IOException, ServiceException {
+        String capabilitiesUrl = layer.getCapabilities();
+        WebMapServer server = cache.get(capabilitiesUrl);
+        if (server == null) {
+            HTTPClient client = httpClientSupplier.get();
+            server = new WebMapServer(new URL(layer.getCapabilities()), client);
+            cache.put(capabilitiesUrl, server);
+        }
+        
+        return server;
     }
 
     private String getCascadingFormat(WebMapServer server) {

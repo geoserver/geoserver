@@ -26,4 +26,6 @@ public class Layer extends AbstractParametricEntity {
     public void setCapabilities(String capabilities) {
         this.capabilities = capabilities;
     }
+    
+    
 }

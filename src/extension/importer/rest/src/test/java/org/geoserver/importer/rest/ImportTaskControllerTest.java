@@ -469,6 +469,34 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         State state = context.getState();
         assertEquals("Invalid context state", State.PENDING, state);
     }
+
+    /**
+     * This variant matches exactly the documentation and puts the changes directly on the layer
+     * @throws Exception
+     */
+    @Test
+    public void testPutItemSRSOnLayer() throws Exception {
+        File dir = unpack("shape/archsites_no_crs.zip");
+        importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
+
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/1/tasks/0");
+        JSONObject task = json.getJSONObject("task");
+        assertEquals("NO_CRS", task.get("state"));
+        assertFalse(task.getJSONObject("layer").containsKey("srs"));
+
+        setSRSRequest(RestBaseController.ROOT_PATH+"/imports/1/tasks/0/layer","EPSG:26713");
+
+        ImportContext context = importer.getContext(1);
+
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/1/tasks/0?expand=2");
+        task = json.getJSONObject("task");
+        assertEquals("READY", task.get("state"));
+
+        assertEquals("EPSG:26713",
+                task.getJSONObject("layer").getString("srs"));
+        State state = context.getState();
+        assertEquals("Invalid context state", State.PENDING, state);
+    }
     
     private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) throws UnsupportedEncodingException {
         assertEquals(HttpStatus.BAD_REQUEST.value(), resp.getStatus());

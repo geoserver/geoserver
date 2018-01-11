@@ -216,6 +216,12 @@ public class FeatureDataConverter {
             }
             return converted;
         }
+
+        @Override
+        protected String convertAttributeName(String attName) {
+            // the type conversion did not alter attribute names, so this should also avoid it
+            return attName;
+        }
     };
 
     public static final FeatureDataConverter TO_ORACLE = new FeatureDataConverter() {

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.opengis.net/nsg/2.0" 
+    xmlns:nsg="http://www.opengis.net/nsg/2.0"
+    xmlns:wfs="http://www.opengis.net/wfs/2.0"
+    xmlns:fes="http://www.opengis.net/fes/2.0" 
+    xmlns:ows="http://www.opengis.net/ows/1.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+    elementFormDefault="qualified">
+    <xsd:annotation>
+        <xsd:documentation>
+            This XML Schema Document is a Profile of the wfs.xsd schema document from the OGC Web Feature Service 2.0 Standard. 
+            This profile defines additional elements and values required by OGC Web Feature Services deployed in the National System of Geospatial-Intelligence (NSG).
+            
+            The OGC Web Feature Service Schema Document includes and imports, directly or indirectly, all the XML Schemas defined by the Web Feature Service (WFS) 
+            Implementation Specification.
+            
+            WFS is an OGC Standard.
+            Copyright (c) 2010, 2014 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+            
+            This WFS Schema Profile document was created by Charles Heazel in support of the NGA Standards Program, March 31, 2017
+        </xsd:documentation>
+    </xsd:annotation>
+    <!-- ==============================================================
+        Includes and Imports
+        ============================================================== -->
+    <xsd:import namespace="http://www.opengis.net/wfs/2.0"
+        schemaLocation="../wfs-2_0_2/wfs/2.0.2/wfs.xsd"/>
+    <xsd:import namespace="http://www.opengis.net/fes/2.0"
+        schemaLocation="http://schemas.opengis.net/filter/2.0/filterAll.xsd"/>
+    <xsd:import namespace="http://www.w3.org/1999/xlink"
+        schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+    <xsd:include schemaLocation="../ows-1_1/owsAll_nsg.xsd"/>
+    
+    <!-- ================================================================== -->
+    <!-- =   NSG STANDARD PRESENTATION PARAMETERS                         = -->
+    <!-- ================================================================== -->
+    <xsd:attributeGroup name="StandardPresentationParameters">
+        <xsd:annotation>
+            <xsd:documentation>
+                The NSG Standard Presentation Parameters attribute group is a copy of the WFS Standard Presentation Parameters 
+                extended to support NSG-specific requirements.  These include:
+                - Requirement 14: The count parameter shall have a default value of 10.
+                - Requirement 15: Addition of a timeout parameter for the request.
+                - Requirement 17: Added "index" as a valid value for the resultType parameter.
+            </xsd:documentation>
+        </xsd:annotation>
+        
+        <xsd:attribute name="startIndex" type="xsd:nonNegativeInteger" default="0"/>
+        <xsd:attribute name="count" type="xsd:nonNegativeInteger" default="10"/>
+        <xsd:attribute name="resultType" type="nsg:ResultTypeType" default="results"/>
+        <xsd:attribute name="outputFormat" type="xsd:string" default="application/gml+xml; version=3.2"/>
+        <xsd:attribute name="timeout" type="xsd:positiveInteger" default="300"/>
+    </xsd:attributeGroup>
+    <xsd:simpleType name="ResultTypeType">
+        <xsd:annotation>
+            <xsd:documentation>
+                The NSG Result Type attribute group extends the WFS Result Type enumeration to include 
+                "index" as a valid value.
+                - Requirement 17: Addition of "index" as a result type
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="results"/>
+            <xsd:enumeration value="hits"/>
+            <xsd:enumeration value="index"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <!-- ================================================================== -->
+    <!-- =   RESOLVE PARAMETERS                                           = -->
+    <!-- =   Not Modified by the NSG Profile                              = -->
+    <!-- ================================================================== -->
+   
+    <!-- ================================================================== -->
+    <!-- =   STANDARD INPUT PARAMETERS                                    = -->
+    <!-- =   Not Modified by the NSG Profile                              = -->
+    <!-- ================================================================== -->
+    <xsd:attributeGroup name="StandardInputParameters">
+        <xsd:annotation>
+            <xsd:documentation>
+                The NSG Standard Input Parameters attribute group may in the future extend the WFS Standard 
+                Input Parameters to support NSG-specific requirements.  For now they are a place-holder to 
+                document the necessary tailoring of the WFS Transaction request.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="wfs:StandardInputParameters"/>
+     </xsd:attributeGroup>
+    
+    <!-- ================================================================== -->
+    <!-- =   NSG STANDARD RESPONSE PARAMETERS                             = -->
+    <!-- ================================================================== -->
+    <xsd:attributeGroup name="StandardResponseParameters">
+        <xsd:annotation>
+            <xsd:documentation>
+                The NSG Standard Response Parameters attribute group extends the WFS Standard Response Parameters 
+                to support NSG-specific requirements.  These include:
+                - Requirement 19: Added resultSetID parameter to be used when resultType = "index"
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="wfs:StandardResponseParameters"/>
+        <xsd:attribute name="resultSetID" type="nsg:uuid"/>
+    </xsd:attributeGroup>
+    
+    <!-- ================================================================== -->
+    <!-- =   COMMON FEATURE METADATA ELEMENTS                             = -->
+    <!-- =   Added types for NSG identifiers                              = -->
+    <!-- ================================================================== -->
+    
+    <!-- = ITU-T X.667 compliant Universal Unique Identifier              = -->
+    <xsd:simpleType name="uuid">
+        <xsd:restriction base="xsd:anyURI"/>
+    </xsd:simpleType> 
+    
+    <!-- = IC.ID compliant "GUIDE" identifier                             = -->
+    <xsd:simpleType name="guideid">
+        <xsd:restriction base="xsd:anyURI"/>
+    </xsd:simpleType>
+    
+    <!-- ================================================================== -->
+    <!-- =   QUERY ELEMENTS                                               = -->
+    <!-- ================================================================== -->
+    <!-- === ADHOC QUERY ================================================== -->
+    <!-- =   Not Modified by the NSG Profile                              = -->
+    
+    <!-- === STORED QUERY ================================================= -->
+    <!-- =   Not Modified by the NSG Profile                              = -->
+    
+    <!-- ================================================================== -->
+    <!-- =   WFS Operations and Responses                                 = -->
+    <!-- ================================================================== -->
+        
+    <!-- ================================================================== -->
+    <!-- =   GETCAPABILITIES Request and Response                         = -->
+    <!-- =   Capabilities document is extended to support:                = -->
+    <!-- =   - ISM Security Markings (Requirement 25)                     = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="GetCapabilities" type="nsg:GetCapabilitiesType"/>
+    <xsd:complexType name="GetCapabilitiesType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:GetCapabilitiesType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- RESPONSE  -->
+    <xsd:element name="WFS_Capabilities" type="nsg:WFS_CapabilitiesType"/>
+    <xsd:complexType name="WFS_CapabilitiesType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:CapabilitiesBaseType">
+                <xsd:sequence>
+                    <xsd:element name="WSDL" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:complexContent>
+                                <xsd:restriction base="xsd:anyType">
+                                    <xsd:attributeGroup ref="xlink:simpleAttrs"/>
+                                </xsd:restriction>
+                            </xsd:complexContent>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element ref="wfs:FeatureTypeList" minOccurs="0"/>
+                    <xsd:element ref="fes:Filter_Capabilities" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>   
+   
+    <!-- ================================================================== -->
+    <!-- =   DESCRIBEFEATURETYPE Request and Response                     = -->
+    <!-- =   No changes                                                   = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="DescribeFeatureType" type="nsg:DescribeFeatureTypeType"/>
+    <xsd:complexType name="DescribeFeatureTypeType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:DescribeFeatureTypeType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <!-- ================================================================== -->
+    <!-- For the outputFormat value of 'application/gml+xml; version=3.2'   -->
+    <!-- a WFS shall generate a valid XML-Schema/GML3 application schema    -->
+    <!-- that describes that requested feature type(s).                     -->
+    <!-- ================================================================== -->
+    
+    <!-- ================================================================== -->
+    <!-- =   GETPROPERTYVALUE Request and Response                        = -->
+    <!-- =   Included NSG Standard Presentation and Standard Response     = -->
+    <!-- =   Paramaters (Requirement 31)                                  = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="GetPropertyValue" type="nsg:GetPropertyValueType"/>
+    <xsd:complexType name="GetPropertyValueType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:BaseRequestType">
+                <xsd:sequence>
+                    <xsd:element ref="fes:AbstractQueryExpression"/>
+                </xsd:sequence>
+                <xsd:attribute name="valueReference" type="xsd:string"
+                    use="required"/>
+                <xsd:attribute name="resolvePath" type="xsd:string"/>
+                <xsd:attributeGroup ref="nsg:StandardPresentationParameters"/>
+                <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- RESPONSE -->
+    <xsd:element name="ValueCollection" type="nsg:ValueCollectionType"/>
+    <xsd:complexType name="ValueCollectionType">
+        <xsd:sequence>
+            <xsd:element ref="wfs:member" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="wfs:additionalValues" minOccurs="0"/>
+            <xsd:element ref="wfs:truncatedResponse" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="nsg:StandardResponseParameters"/>
+    </xsd:complexType>
+    
+    <!-- ================================================================== -->
+    <!-- =   GETFEATURE Request & Response                                = -->
+    <!-- =   Included NSG Standard Presentation and Response              = -->
+    <!-- =   Parameters (Requirements 32 and 36)                          = -->
+    <!-- ================================================================== -->
+    <xsd:element name="GetFeature" type="nsg:GetFeatureType"/>
+    <xsd:complexType name="GetFeatureType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:BaseRequestType">
+                <xsd:sequence>
+                    <xsd:element ref="fes:AbstractQueryExpression"
+                        maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="nsg:StandardPresentationParameters"/>
+                <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <!-- see GETFEATUREWITHLOCK -->
+    
+    <!-- === GETFEATUREWITHLOCK REQUEST =================================== -->
+    <xsd:element name="GetFeatureWithLock" type="nsg:GetFeatureWithLockType"/>
+    <xsd:complexType name="GetFeatureWithLockType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:GetFeatureType">
+                <xsd:attribute name="expiry" type="xsd:positiveInteger"
+                    default="300"/>
+                <xsd:attribute name="lockAction" type="wfs:AllSomeType"
+                    default="ALL"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- RESPONSE  -->
+    <xsd:element name="FeatureCollection" type="nsg:FeatureCollectionType"
+        substitutionGroup="nsg:SimpleFeatureCollection"/>
+    
+    <xsd:complexType name="FeatureCollectionType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:SimpleFeatureCollectionType">
+                <xsd:sequence>
+                    <xsd:element ref="wfs:additionalObjects" minOccurs="0"/>
+                    <xsd:element ref="wfs:truncatedResponse" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="nsg:StandardResponseParameters"/>
+                <xsd:attribute name="lockId" type="xsd:string"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="SimpleFeatureCollection" type="nsg:SimpleFeatureCollectionType"/>
+   
+    <xsd:complexType name="SimpleFeatureCollectionType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:SimpleFeatureCollectionType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- ================================================================== -->
+    <!-- =   LIST STORED QUERIES                                          = -->
+    <!-- =   No changes                                                   = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="ListStoredQueries" type="nsg:ListStoredQueriesType"/>
+    <xsd:complexType name="ListStoredQueriesType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:ListStoredQueriesType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <xsd:element name="ListStoredQueriesResponse" type="wfs:ListStoredQueriesResponseType"/>
+   
+    <!-- ================================================================== -->
+    <!-- =   DESCRIBE STORED QUERIES                                      = -->
+    <!-- =   No changes                                                   = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="DescribeStoredQueries"
+        type="nsg:DescribeStoredQueriesType"/>
+    <xsd:complexType name="DescribeStoredQueriesType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:DescribeStoredQueriesType"/>
+         </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <xsd:element name="DescribeStoredQueriesResponse" type="wfs:DescribeStoredQueriesResponseType"/>
+    
+    <!-- ================================================================== -->
+    <!-- =   CREATE STORED QUERIES                                        = -->
+    <!-- =   No changes                                                   = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="CreateStoredQuery" type="nsg:CreateStoredQueryType"/>
+    <xsd:complexType name="CreateStoredQueryType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:CreateStoredQueryType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <xsd:element name="CreateStoredQueryResponse" type="wfs:CreateStoredQueryResponseType"/>
+    
+    <!-- ================================================================== -->
+    <!-- =   DROP STORED QUERIES                                          = -->
+    <!-- =   No changes                                                   = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="DropStoredQuery">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="wfs:BaseRequestType">
+                    <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- RESPONSE  -->
+    <xsd:element name="DropStoredQueryResponse" type="wfs:ExecutionStatusType"/>
+    
+    <!-- ================================================================== -->
+    <!-- =   LOCKFEATURE Request and Response                             = -->
+    <!-- =   No changes                                                   = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="LockFeature" type="nsg:LockFeatureType"/>
+    <xsd:complexType name="LockFeatureType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:LockFeatureType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <xsd:element name="LockFeatureResponse" type="wfs:LockFeatureResponseType"/>
+    
+    <!-- ================================================================== -->
+    <!-- =   TRANSACTION Request and Response                             = -->
+    <!-- =   Included NSG Standard Input Parameters (Requirement 37)      = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="Transaction" type="nsg:TransactionType"/>
+    <xsd:complexType name="TransactionType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:BaseRequestType">
+                <xsd:sequence>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element ref="nsg:AbstractTransactionAction"/>
+                    </xsd:sequence>
+                </xsd:sequence>
+                <xsd:attribute name="lockId" type="xsd:string"/>
+                <xsd:attribute name="releaseAction" type="wfs:AllSomeType" default="ALL"/>
+                <xsd:attribute name="srsName" type="xsd:anyURI"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="AbstractTransactionAction" type="nsg:AbstractTransactionActionType" abstract="true"/>
+    <xsd:complexType name="AbstractTransactionActionType" abstract="true">
+        <xsd:attribute name="handle" type="xsd:string"/>
+    </xsd:complexType>
+    
+    <xsd:element name="Insert" type="nsg:InsertType" substitutionGroup="nsg:AbstractTransactionAction"/>
+    <xsd:complexType name="InsertType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:AbstractTransactionActionType">
+                <xsd:sequence>
+                    <xsd:any namespace="##other" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="nsg:StandardInputParameters"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="Update" type="nsg:UpdateType" substitutionGroup="nsg:AbstractTransactionAction"/>
+    <xsd:complexType name="UpdateType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:AbstractTransactionActionType">
+                <xsd:sequence>
+                    <xsd:element ref="wfs:Property" maxOccurs="unbounded"/>
+                    <xsd:element ref="fes:Filter" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+                <xsd:attributeGroup ref="nsg:StandardInputParameters"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="Replace" type="nsg:ReplaceType" substitutionGroup="nsg:AbstractTransactionAction"/>
+    <xsd:complexType name="ReplaceType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:AbstractTransactionActionType">
+                <xsd:sequence>
+                    <xsd:any namespace="##other"/>
+                    <xsd:element ref="fes:Filter"/>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="nsg:StandardInputParameters"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="Delete" type="nsg:DeleteType" substitutionGroup="nsg:AbstractTransactionAction"/>
+    <xsd:complexType name="DeleteType">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:AbstractTransactionActionType">
+                <xsd:sequence>
+                    <xsd:element ref="fes:Filter"/>
+                </xsd:sequence>
+                <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="Native" type="nsg:NativeType" substitutionGroup="nsg:AbstractTransactionAction"/>
+    <xsd:complexType name="NativeType" mixed="true">
+        <xsd:complexContent>
+            <xsd:extension base="nsg:AbstractTransactionActionType">
+                <xsd:sequence>
+                    <xsd:any processContents="lax" namespace="##other" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attribute name="vendorId" type="xsd:string" use="required"/>
+                <xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <xsd:element name="TransactionResponse" type="wfs:TransactionResponseType"/>
+
+    <!-- ================================================================== -->
+    <!-- =   PageResults Request and Response                             = -->
+    <!-- =   New operation - Supports random access to results.           = -->
+    <!-- =   Supports compatibility with ODNI CDR standards.              = -->
+    <!-- =   Requirements 33 and 34                                       = -->
+    <!-- ================================================================== -->
+    <!-- REQUEST -->
+    <xsd:element name="PageResults" type="nsg:PageResultsType"/>
+    <xsd:complexType name="PageResultsType">
+        <xsd:complexContent>
+            <xsd:extension base="wfs:BaseRequestType">
+                <xsd:sequence>
+                    <xsd:element name="resultSetID" type="xsd:anyURI"/>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="nsg:StandardPresentationParameters"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- RESPONSE  -->
+    <!-- see GETFEATUREWITHLOCK -->
+    
+</xsd:schema>

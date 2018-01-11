@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ism25x="urn:us:gov:ic:cvenum:ism:25x"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:25x">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISM25X Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISM25X.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISM25XValues">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently authorized authority block declass date/event exemptions.
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISM25X.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="AEA">
+            <xsd:annotation>
+               <xsd:documentation>
+				When using a source document that contains portions of Restricted Data (RD)
+				or Formerly Restricted Data (FRD) where the RD/FRD source document(s) 
+				do not have declassification instructions, the derivatively classified 
+				document shall not contain a declassification date or event on the 
+				Declassify On line.  The following shall be annotated on the Declassify On 
+				line:  "Not Applicable or (N/A) to RD/FRD portions" and 
+				"See source list for NSI portions" separated by a period.  
+				The source list must include the declassification instruction 
+				for each of the source documents classified under E.O. 13526 and 
+				shall not appear in the classification authority block
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X1">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal the identity of a confidential 
+				human source, a human intelligence source, 
+				a relationship with an intelligence or security
+				service of a foreign government or 
+				international organization, or a non-human 
+				intelligence source; or impair the 
+				effectiveness of an intelligence method 
+				currently in use, available for use, or under 
+				development.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X1-EO-12951">
+            <xsd:annotation>
+               <xsd:documentation>
+				"25X1, EO 12951" (prescribed by the DNI for use on information described in E.O. 12951, 
+				Release of Imagery Acquired by Space-Based National Intelligence Reconnaissance Systems)
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X2">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal information that would assist 
+				in the development, production, or use of 
+				weapons of mass destruction.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X3">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal information that would 
+				impair U.S. cryptologic systems or activities.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X4">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal information that would 
+				impair the application of state-of-the-art 
+				technology within a U.S. weapon system.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X5">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal formally named or numbered 
+				U.S. military war plans that remain in effect, 
+				or reveal operational or tactical elements of 
+				prior plans that are contained in such active 
+				plans;</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X6">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal information, including foreign 
+				government information, that would cause 
+				serious harm to relations between the United 
+				States and a foreign government, or to 
+				ongoing diplomatic activities of the United 
+				States
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X7">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal information that would 
+				impair the current ability of United States 
+				Government officials to protect the President, 
+				Vice President, and other protectees for 
+				whom protection services, in the interest of 
+				the national security, are authorized.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X8">
+            <xsd:annotation>
+               <xsd:documentation>
+				Reveal information that would 
+				seriously impair current national security 
+				emergency preparedness plans or reveal 
+				current vulnerabilities of systems, 
+				installations, or infrastructures relating to the 
+				national security.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="25X9">
+            <xsd:annotation>
+               <xsd:documentation>
+				Violate a statute, treaty, or 
+				international agreement that does not permit 
+				the automatic or unilateral declassification of 
+				information at 25 years.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="50X1-HUM">
+            <xsd:annotation>
+               <xsd:documentation>
+				When the information clearly and 
+				demonstrably could be expected to 
+				reveal the identity of a confidential 
+				human source or a human intelligence 
+				source.				
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="50X2-WMD">
+            <xsd:annotation>
+               <xsd:documentation>
+				When the information clearly and 
+				demonstrably could reveal key design 
+				concepts of weapons of mass 
+				destruction.
+			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="CVEnumISM25X">
+      <xsd:restriction>
+         <xsd:simpleType>
+            <xsd:list itemType="ism25x:CVEnumISM25XValues"/>
+         </xsd:simpleType>
+         <xsd:maxLength value="13"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

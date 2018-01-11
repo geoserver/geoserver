@@ -74,9 +74,9 @@ import java.util.logging.Logger;
  * @author sandr
  */
 
-public final class IndexInitializer implements GeoServerInitializer {
+public final class IndexConfigurationManager implements GeoServerInitializer {
 
-    static Logger LOGGER = Logging.getLogger(IndexInitializer.class);
+    static Logger LOGGER = Logging.getLogger(IndexConfigurationManager.class);
 
     static final String PROPERTY_DB_PREFIX = "resultSets.db.";
 
@@ -89,10 +89,9 @@ public final class IndexInitializer implements GeoServerInitializer {
     static final String STORE_SCHEMA = "ID:java.lang.String,created:java.lang.Long,updated:java.lang.Long";
     private final GeoServerDataDirectory dd;
 
-    private IndexConfiguration indexConfiguration;
+    private final IndexConfiguration indexConfiguration = new IndexConfiguration();
 
-    public IndexInitializer(IndexConfiguration indexConfiguration, GeoServerDataDirectory dd) {
-        this.indexConfiguration = indexConfiguration;
+    public IndexConfigurationManager(GeoServerDataDirectory dd) {
         this.dd = dd;
     }
 
@@ -107,7 +106,7 @@ public final class IndexInitializer implements GeoServerInitializer {
         Resource resource = dd.get(MODULE_DIR + "/" + PROPERTY_FILENAME);
         if (resource.getType() == Resource.Type.UNDEFINED) {
             Properties properties = new Properties();
-            try (InputStream stream = IndexInitializer.class
+            try (InputStream stream = IndexConfigurationManager.class
                     .getResourceAsStream("/" + PROPERTY_FILENAME)) {
                 properties.load(stream);
                 // Replace GEOSERVER_DATA_DIR placeholder
@@ -143,10 +142,13 @@ public final class IndexInitializer implements GeoServerInitializer {
      */
     private void loadConfigurations(Resource resource) throws Exception {
         try {
-            IndexInitializer.READ_WRITE_LOCK.writeLock().lock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().lock();
             Properties properties = new Properties();
             InputStream is = resource.in();
             properties.load(is);
+            // Replace GEOSERVER_DATA_DIR placeholder
+            properties.replaceAll((k, v) -> ((String) v).replace("${GEOSERVER_DATA_DIR}",
+                    dd.root().getPath()));
             is.close();
             // Reload database
             Map<String, Object> params = new HashMap<>();
@@ -182,7 +184,7 @@ public final class IndexInitializer implements GeoServerInitializer {
         } catch (Exception exception) {
             throw new RuntimeException("Error reload configurations.", exception);
         } finally {
-            IndexInitializer.READ_WRITE_LOCK.writeLock().unlock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().unlock();
         }
     }
 
@@ -340,7 +342,7 @@ public final class IndexInitializer implements GeoServerInitializer {
     public void clean() throws Exception {
         Transaction session = new DefaultTransaction("RemoveOld");
         try {
-            IndexInitializer.READ_WRITE_LOCK.writeLock().lock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().lock();
             // Remove record
             Long timeToLive = indexConfiguration.getTimeToLiveInSec();
             DataStore currentDataStore = indexConfiguration.getCurrentDataStore();
@@ -376,7 +378,107 @@ public final class IndexInitializer implements GeoServerInitializer {
             LOGGER.log(Level.WARNING, "Error on clean data", t);
         } finally {
             session.close();
-            IndexInitializer.READ_WRITE_LOCK.writeLock().unlock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().unlock();
         }
+    }
+
+    public DataStore getCurrentDataStore() {
+        IndexConfigurationManager.READ_WRITE_LOCK.readLock().lock();
+        try {
+            return indexConfiguration.getCurrentDataStore();
+        } finally {
+            IndexConfigurationManager.READ_WRITE_LOCK.readLock().unlock();
+        }
+    }
+
+    public Map<String, Object> getCurrentDataStoreParams() {
+        IndexConfigurationManager.READ_WRITE_LOCK.readLock().lock();
+        try {
+            return indexConfiguration.getCurrentDataStoreParams();
+        } finally {
+            IndexConfigurationManager.READ_WRITE_LOCK.readLock().unlock();
+        }
+    }
+
+    public Resource getStorageResource() {
+        IndexConfigurationManager.READ_WRITE_LOCK.readLock().lock();
+        try {
+            return indexConfiguration.getStorageResource();
+        } finally {
+            IndexConfigurationManager.READ_WRITE_LOCK.readLock().unlock();
+        }
+    }
+
+    public Long getTimeToLiveInSec() {
+        IndexConfigurationManager.READ_WRITE_LOCK.readLock().lock();
+        try {
+            return indexConfiguration.getTimeToLiveInSec();
+        } finally {
+            IndexConfigurationManager.READ_WRITE_LOCK.readLock().unlock();
+        }
+    }
+
+    /**
+     * Class used to store the index result type configuration managed by {@link IndexConfigurationManager}
+     *
+     * @author sandr
+     */
+    public class IndexConfiguration {
+
+        private DataStore currentDataStore;
+
+        private Resource storageResource;
+
+        private Long timeToLiveInSec = 600L;
+
+        private Map<String, Object> currentDataStoreParams;
+
+        /**
+         * Store the DB parameters and the relative {@link DataStore}
+         *
+         * @param currentDataStoreParams
+         * @param currentDataStore
+         */
+        public void setCurrentDataStore(Map<String, Object> currentDataStoreParams,
+                                        DataStore currentDataStore) {
+            this.currentDataStoreParams = currentDataStoreParams;
+            this.currentDataStore = currentDataStore;
+        }
+
+        /**
+         * Store the reference to resource used to archive the serialized GetFeatureRequest
+         *
+         * @param storageResource
+         */
+        public void setStorageResource(Resource storageResource) {
+            this.storageResource = storageResource;
+        }
+
+        /**
+         * Store the value of time to live of stored GetFeatureRequest
+         *
+         * @param timeToLive
+         * @param timeUnit
+         */
+        public void setTimeToLive(Long timeToLive, TimeUnit timeUnit) {
+            this.timeToLiveInSec = timeUnit.toSeconds(timeToLive);
+        }
+
+        public DataStore getCurrentDataStore() {
+            return currentDataStore;
+        }
+
+        public Map<String, Object> getCurrentDataStoreParams() {
+            return currentDataStoreParams;
+        }
+
+        public Resource getStorageResource() {
+            return storageResource;
+        }
+
+        public Long getTimeToLiveInSec() {
+            return timeToLiveInSec;
+        }
+
     }
 }

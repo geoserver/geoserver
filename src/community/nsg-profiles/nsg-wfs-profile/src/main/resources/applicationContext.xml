@@ -3,8 +3,6 @@
   <bean id="versioning" class="org.geoserver.nsg.versioning.TimeVersioningCallback">
     <constructor-arg ref="catalog"/>
   </bean>
-	<!-- The PagedResults index configuration -->
-	<bean class="org.geoserver.nsg.pagination.random.IndexConfiguration" id="indexConfiguration"/>
 	<!-- Index result dispatcher callback -->
 	<bean class="org.geoserver.nsg.pagination.random.IndexResultTypeDispatcherCallback" id="indexResultTypeDispatcherCallback">
 		<description>When a request using the index result type comes in a
@@ -30,14 +28,13 @@
 	</bean>
 	<bean class="org.geoserver.nsg.pagination.random.ResultTypeKvpParser" id="resultType202KvpParser"/>
 
-	<bean class="org.geoserver.nsg.pagination.random.IndexInitializer" id="indexInitializer">
+	<bean class="org.geoserver.nsg.pagination.random.IndexConfigurationManager" id="indexConfiguration">
 		<constructor-arg ref="dataDirectory"/>
-		<constructor-arg ref="indexConfiguration"/>
 	</bean>
 	<!-- Clean scheduler -->
 	<task:scheduler id="scheduler"/>
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled fixed-delay="1000" initial-delay="10000" method="clean" ref="indexInitializer"/>
+		<task:scheduled fixed-delay="1000" initial-delay="10000" method="clean" ref="indexConfiguration"/>
 	</task:scheduled-tasks>
 	<!-- Timeout support -->
 	<bean name="nsgTimeoutCallback" class="org.geoserver.nsg.timeout.TimeoutCallback">
@@ -64,4 +61,10 @@
 	<bean id="nsgWfsCapabilitiesCustomizer" class="org.geoserver.nsg.NSGWFSExtendedCapabilitiesProvider">
 		<constructor-arg index="0" ref="geoServer"/>
 	</bean>
+	<!-- NSG custom XML reader for WFS GetFeature operation -->
+	<bean id="nsgWfsXmlReader" class="org.geoserver.nsg.pagination.random.NsgWfsXmlReader">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+	<!-- NSG GeoServer extensions filter -->
+	<bean id="nsgExtensionsFilter" class="org.geoserver.nsg.NsgExtensionsFilter"/>
 </beans>

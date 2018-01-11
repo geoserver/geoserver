@@ -21,6 +21,8 @@ class RequestData implements Serializable {
 
     private Map rawKvp;
 
+    private String postRequest;
+
     public Map getKvp() {
         return kvp;
     }
@@ -37,4 +39,11 @@ class RequestData implements Serializable {
         this.rawKvp = rawKvp;
     }
 
+    public String getPostRequest() {
+        return postRequest;
+    }
+
+    public void setPostRequest(String postRequest) {
+        this.postRequest = postRequest;
+    }
 }

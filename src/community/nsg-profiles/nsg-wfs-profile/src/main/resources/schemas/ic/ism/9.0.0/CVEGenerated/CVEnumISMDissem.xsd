@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismdissem="urn:us:gov:ic:cvenum:ism:dissem"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:dissem">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMDissem Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMDissem.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMDissemValues">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently valid Dissemination controls from the published register
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMDissem.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="RS">
+            <xsd:annotation>
+               <xsd:documentation>RISK SENSITIVE</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="FOUO">
+            <xsd:annotation>
+               <xsd:documentation>FOR OFFICIAL USE ONLY</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="OC">
+            <xsd:annotation>
+               <xsd:documentation>ORIGINATOR CONTROLLED</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="IMC">
+            <xsd:annotation>
+               <xsd:documentation>CONTROLLED IMAGERY</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="NF">
+            <xsd:annotation>
+               <xsd:documentation>NOT RELEASABLE TO FOREIGN NATIONALS</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="PR">
+            <xsd:annotation>
+               <xsd:documentation>CAUTION-PROPRIETARY INFORMATION INVOLVED</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="REL">
+            <xsd:annotation>
+               <xsd:documentation>AUTHORIZED FOR RELEASE TO</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="RELIDO">
+            <xsd:annotation>
+               <xsd:documentation>RELEASABLE BY INFORMATION DISCLOSURE OFFICIAL</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="EYES">
+            <xsd:annotation>
+               <xsd:documentation>EYES ONLY</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DSEN">
+            <xsd:annotation>
+               <xsd:documentation>DEA SENSITIVE</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="FISA">
+            <xsd:annotation>
+               <xsd:documentation>FOREIGN INTELLIGENCE SURVEILLANCE ACT</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DISPLAYONLY">
+            <xsd:annotation>
+               <xsd:documentation>AUTHORIZED FOR DISPLAY BUT NOT RELEASE TO</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="CVEnumISMDissem">
+      <xsd:restriction>
+         <xsd:simpleType>
+            <xsd:list itemType="ismdissem:CVEnumISMDissemValues"/>
+         </xsd:simpleType>
+         <xsd:maxLength value="12"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

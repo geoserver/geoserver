@@ -11,11 +11,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.Service;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.DefaultWebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.xml.v2_0.WfsXmlReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
@@ -24,14 +23,12 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -51,14 +48,14 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
 
     private static final BigInteger DEFAULT_COUNT = new BigInteger("10");
 
-    private IndexConfiguration indexConfiguration;
+    private IndexConfigurationManager indexConfiguration;
 
-    public PageResultsWebFeatureService(GeoServer geoServer,
-            IndexConfiguration indexConfiguration) {
+    private final WfsXmlReader wfsXmlReader;
+
+    public PageResultsWebFeatureService(GeoServer geoServer, IndexConfigurationManager indexConfiguration) {
         super(geoServer);
         this.indexConfiguration = indexConfiguration;
-
-
+        wfsXmlReader = new WfsXmlReader("GetFeature", geoServer);
     }
 
     /**
@@ -113,11 +110,11 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
         GetFeatureType feature = null;
         Transaction transaction = new DefaultTransaction("Update");
         try {
-            IndexInitializer.READ_WRITE_LOCK.writeLock().lock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().lock();
             // Update GetFeature utilization
             DataStore currentDataStore = this.indexConfiguration.getCurrentDataStore();
             SimpleFeatureStore store = (SimpleFeatureStore) currentDataStore
-                    .getFeatureSource(IndexInitializer.STORE_SCHEMA_NAME);
+                    .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
             store.setTransaction(transaction);
             Filter filter = CQL.toFilter("ID = '" + resultSetId + "'");
             store.modifyFeatures("updated", new Date().getTime(), filter);
@@ -127,9 +124,15 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
             try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(new File(
                     storageResource.dir(), resultSetId + ".feature")))) {
                 RequestData data = (RequestData) is.readObject();
-                KvpRequestReader kvpReader = Dispatcher.findKvpRequestReader(GetFeatureType.class);
-                Object requestBean = kvpReader.createRequest();
-                feature = (GetFeatureType) kvpReader.read(requestBean, data.getKvp(), data.getRawKvp());
+                if (data == null) {
+                    KvpRequestReader kvpReader = Dispatcher.findKvpRequestReader(GetFeatureType.class);
+                    Object requestBean = kvpReader.createRequest();
+                    feature = (GetFeatureType) kvpReader.read(requestBean, data.getKvp(), data.getRawKvp());
+                } else {
+                    byte[] bytes = data.getPostRequest().getBytes(StandardCharsets.UTF_8.name());
+                    ByteArrayInputStream input = new ByteArrayInputStream(bytes);
+                    feature = (GetFeatureType) wfsXmlReader.read(null, new InputStreamReader(input), Collections.emptyMap());
+                }
             }
 
         } catch (Exception t) {
@@ -137,7 +140,7 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
             throw new RuntimeException("Error on retrive feature", t);
         } finally {
             transaction.close();
-            IndexInitializer.READ_WRITE_LOCK.writeLock().unlock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().unlock();
         }
         return feature;
 

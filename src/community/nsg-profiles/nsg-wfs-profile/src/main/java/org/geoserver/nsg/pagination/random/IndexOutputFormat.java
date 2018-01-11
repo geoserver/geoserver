@@ -46,7 +46,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
- * This output format handles requests if the original requested result type was "index" </br>
+ * This output format handles requests if the original requested result type was "index"
  * See {@link IndexResultTypeDispatcherCallback}
  *
  * @author sandr
@@ -59,9 +59,9 @@ public class IndexOutputFormat extends HitsOutputFormat {
 
     private Request request;
 
-    private IndexConfiguration indexConfiguration;
+    private IndexConfigurationManager indexConfiguration;
 
-    public IndexOutputFormat(GeoServer gs, IndexConfiguration indexConfiguration) {
+    public IndexOutputFormat(GeoServer gs, IndexConfigurationManager indexConfiguration) {
         super(gs);
         this.indexConfiguration = indexConfiguration;
     }
@@ -114,11 +114,11 @@ public class IndexOutputFormat extends HitsOutputFormat {
      */
     private void storeGetFeature(String resultSetId, Request request) throws RuntimeException {
         try {
-            IndexInitializer.READ_WRITE_LOCK.writeLock().lock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().lock();
             DataStore dataStore = this.indexConfiguration.getCurrentDataStore();
             // Create and store new feature
             SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                    .getFeatureSource(IndexInitializer.STORE_SCHEMA_NAME);
+                    .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
             SimpleFeatureBuilder builder = new SimpleFeatureBuilder(featureStore.getSchema());
             Long now = System.currentTimeMillis();
             // Add ID field value (see IndexInitializer.STORE_SCHEMA)
@@ -140,6 +140,9 @@ public class IndexOutputFormat extends HitsOutputFormat {
             RequestData data = new RequestData();
             data.setKvp(kvp);
             data.setRawKvp(rawKvp);
+            if (kvp.containsKey("POST_REQUEST")) {
+                data.setPostRequest((String) kvp.get("POST_REQUEST"));
+            }
 
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
                     new File(storageResource.dir(), resultSetId + ".feature")))) {
@@ -148,7 +151,7 @@ public class IndexOutputFormat extends HitsOutputFormat {
         } catch (Exception exception) {
             throw new RuntimeException("Error storing feature.", exception);
         } finally {
-            IndexInitializer.READ_WRITE_LOCK.writeLock().unlock();
+            IndexConfigurationManager.READ_WRITE_LOCK.writeLock().unlock();
         }
     }
 

@@ -11,10 +11,22 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geoserver.importer.*;
+import org.geoserver.importer.Directory;
+import org.geoserver.importer.FileData;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
+import org.geoserver.importer.ValidationException;
 import org.geoserver.importer.rest.converters.ImportJSONReader;
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.importer.transform.TransformChain;
@@ -33,13 +45,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -198,7 +220,7 @@ public class ImportTaskController extends ImportBaseController {
         return (writer, builder, converter) -> {
             updateLayer(task, layer, importer, converter);
             importer.changed(task);
-            converter.task(builder,task, true, converter.expand(expand, 1));
+            converter.layer(builder,task, true, converter.expand(expand, 1));
         };
     }
 
@@ -400,6 +422,16 @@ public class ImportTaskController extends ImportBaseController {
             }
             if (r.getDescription() != null) {
                 resource.setDescription(r.getDescription());
+            }
+            if (r.getName() != null) {
+                resource.setName(r.getName());
+            }
+            if (r.getNativeName() != null) {
+                // seems weird I know, but check the code of getOriginalLayerName...
+                if (!r.getNativeName().equalsIgnoreCase(orig.getOriginalLayerName())) {
+                    orig.setOriginalLayerName(orig.getOriginalLayerName());
+                }
+                resource.setNativeName(r.getNativeName());
             }
         }
 

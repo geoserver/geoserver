@@ -1204,8 +1204,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         Transaction transaction = new DefaultTransaction();
         try {
 
-            SimpleFeatureType featureType = (SimpleFeatureType) task.getMetadata()
-                    .get(FeatureType.class);
+            SimpleFeatureType featureType = (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
+            task.setOriginalLayerName(featureType.getTypeName());
+            String nativeName = task.getLayer().getResource().getNativeName();
+            if (!featureType.getName().equals(nativeName)) {
+                SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+                tb.init(featureType);
+                tb.setName(nativeName);
+                featureType = tb.buildFeatureType();
+            }
 
             final String featureTypeName = featureType.getName().getLocalPart();
 
@@ -1225,7 +1232,6 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (updateMode == UpdateMode.CREATE) {
                 // find a unique type name in the target store
                 uniquifiedFeatureTypeName = findUniqueNativeFeatureTypeName(featureType, store);
-                task.setOriginalLayerName(featureTypeName);
 
                 if (!uniquifiedFeatureTypeName.equals(featureTypeName)) {
                     // update the metadata

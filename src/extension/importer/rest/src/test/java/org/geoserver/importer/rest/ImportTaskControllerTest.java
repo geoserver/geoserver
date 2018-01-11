@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.rest;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -12,15 +13,22 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.*;
 import org.geoserver.importer.ImportContext.State;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataStore;
 import org.geotools.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
@@ -40,6 +48,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -496,6 +505,50 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
                 task.getJSONObject("layer").getString("srs"));
         State state = context.getState();
         assertEquals("Invalid context state", State.PENDING, state);
+    }
+
+    /**
+     * Rename layer test
+     * @throws Exception
+     */
+    @Test
+    public void testRenameLayerAndImportIntoH2() throws Exception {
+        // create H2 store to act as a target
+        DataStoreInfo h2Store = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "testTarget");
+
+        // create context with default name
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+        ImportContext context = importer.createContext(0l);
+        context.setTargetStore(h2Store);
+        importer.changed(context);
+        importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
+
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/1/tasks/0");
+        JSONObject task = json.getJSONObject("task");
+        assertEquals("READY", task.get("state"));
+
+        // now rename the layer
+        String renamer = "{\n" +
+                "  \"layer\": {\n" +
+                "\t\t\t\"name\": \"test123\",\n" +
+                "\t\t  \"nativeName\": \"test123\",\n" +
+                "\t\t}\n" +
+                "}";
+        JSONObject response = (JSONObject) putAsJSON(RestBaseController.ROOT_PATH + "/imports/1/tasks/0/layer", renamer, "application/json");
+        JSONObject layer = response.getJSONObject("layer");
+        assertEquals("test123", layer.getString("name"));
+        assertEquals("test123", layer.getString("nativeName"));
+        assertEquals("archsites", layer.getString("originalName"));
+
+        context = importer.getContext(1);
+        importer.run(context);
+
+        // check created type, layer and database table
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("test123");
+        assertNotNull(ftInfo);
+        assertEquals("test123", ftInfo.getNativeName());
+        DataStore store = (DataStore) h2Store.getDataStore(null);
+        assertThat(Arrays.asList(store.getTypeNames()), CoreMatchers.hasItem("test123"));
     }
     
     private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) throws UnsupportedEncodingException {

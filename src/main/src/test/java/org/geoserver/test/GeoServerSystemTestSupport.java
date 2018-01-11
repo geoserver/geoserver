@@ -1373,6 +1373,30 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletResponse response = getAsServletResponse(path);
         return json(response);
     }
+
+    /**
+     * Executes a request using the POST method and parses the result as a json object.
+     *
+     * @param path The path to request.
+     *
+     * @return The result parsed as json.
+     */
+    protected JSON postAsJSON(final String path, String body, String contentType) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse(path, body, contentType);
+        return json(response);
+    }
+
+    /**
+     * Executes a request using the PUT method and parses the result as a json object.
+     *
+     * @param path The path to request.
+     *
+     * @return The result parsed as json.
+     */
+    protected JSON putAsJSON(final String path, String body, String contentType) throws Exception {
+        MockHttpServletResponse response = putAsServletResponse(path, body, contentType);
+        return json(response);
+    }
     
     protected JSON json(MockHttpServletResponse response) throws UnsupportedEncodingException {
         String content = response.getContentAsString();

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismnonus="urn:us:gov:ic:cvenum:ism:nonuscontrols"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:nonuscontrols">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMNonUSControls Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMNonUSControls.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMNonUSControlsValues">
+      <xsd:annotation>
+         <xsd:documentation>(U) NonUS Control markings supported by ISM
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMNonUSControls.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="ATOMAL">
+            <xsd:annotation>
+               <xsd:documentation>NATO Atomal mark</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="BOHEMIA">
+            <xsd:annotation>
+               <xsd:documentation>NATO Bohemia mark</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="BALK">
+            <xsd:annotation>
+               <xsd:documentation>NATO Balk mark</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="CVEnumISMNonUSControls">
+      <xsd:restriction>
+         <xsd:simpleType>
+            <xsd:list itemType="ismnonus:CVEnumISMNonUSControlsValues"/>
+         </xsd:simpleType>
+         <xsd:maxLength value="3"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

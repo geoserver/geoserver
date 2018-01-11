@@ -2,10 +2,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.nsg.versioning;
+package org.geoserver.nsg;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.nsg.versioning.TimeVersioning;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;

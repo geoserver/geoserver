@@ -38,7 +38,7 @@ public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallbac
 
     private GeoServer gs;
 
-    private IndexConfiguration indexConfiguration;
+    private IndexConfigurationManager indexConfiguration;
 
     private static final String RESULT_TYPE_PARAMETER = "resultType";
 
@@ -46,7 +46,7 @@ public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallbac
 
     static final String RESULT_TYPE_INDEX_PARAMETER = "RESULT_TYPE_INDEX";
 
-    public IndexResultTypeDispatcherCallback(GeoServer gs, IndexConfiguration indexConfiguration) {
+    public IndexResultTypeDispatcherCallback(GeoServer gs, IndexConfigurationManager indexConfiguration) {
         this.gs = gs;
         this.indexConfiguration = indexConfiguration;
     }

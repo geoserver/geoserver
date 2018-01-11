@@ -5,25 +5,26 @@
 
 package org.geoserver.nsg.pagination.random;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.nsg.TestsUtils;
 import org.geoserver.wfs.v2_0.WFS20TestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 public class IndexResultTypeTest extends WFS20TestSupport {
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
-        IndexConfiguration ic = applicationContext.getBean(IndexConfiguration.class);
+        IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
         DataStore dataStore = ic.getCurrentDataStore();
         dataStore.dispose();
         super.onTearDown(testData);
@@ -37,14 +38,40 @@ public class IndexResultTypeTest extends WFS20TestSupport {
         assertEquals("15", doc.getDocumentElement().getAttribute("numberMatched"));
         assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
         XMLAssert.assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", doc);
-        IndexConfiguration ic = applicationContext.getBean(IndexConfiguration.class);
+        IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
         DataStore dataStore = ic.getCurrentDataStore();
         SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                .getFeatureSource(IndexInitializer.STORE_SCHEMA_NAME);
+                .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
         String resultSetId = doc.getDocumentElement().getAttribute("resultSetID");
         SimpleFeature feature = featureStore.getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
                 .features().next();
         assertNotNull(feature);
+    }
+
+    @Test
+    public void testIndexResultTypePost() throws Exception {
+        String request = TestsUtils.readResource("/org/geoserver/nsg/pagination/random/get_request_1.xml");
+        MockHttpServletResponse response = postAsServletResponse("wfs", request);
+        assertThat(response.getStatus(), is(200));
+        Document document = dom(response, true);
+        assertGML32(document);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection[@resultSetID])", document);
+        IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
+        DataStore dataStore = ic.getCurrentDataStore();
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
+                .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
+        String resultSetId = document.getDocumentElement().getAttribute("resultSetID");
+        SimpleFeature feature = featureStore.getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
+                .features().next();
+        assertNotNull(feature);
+        // check that is possible to perform a PageResults operation on the obtained resultSetID
+        response = getAsServletResponse("ows?service=WFS&version=2.0.0&request=PageResults&resultSetID=" + resultSetId);
+        assertThat(response.getStatus(), is(200));
+        document = dom(response, true);
+        assertGML32(document);
+        XMLAssert.assertXpathEvaluatesTo("5", "count(//wfs:FeatureCollection/wfs:member)", document);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection[@numberMatched='15'])", document);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection[@numberReturned='5'])", document);
     }
 
     @Test
@@ -61,10 +88,10 @@ public class IndexResultTypeTest extends WFS20TestSupport {
                 "http://localhost:8080/geoserver/wfs?REQUEST=GetFeature&RESULTTYPE=index&VERSION=2.0.0&TYPENAMES=cdf%3AFifteen&SERVICE=WFS&COUNT=2&STARTINDEX=8",
                 doc.getDocumentElement().getAttribute("next"));
         XMLAssert.assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", doc);
-        IndexConfiguration ic = applicationContext.getBean(IndexConfiguration.class);
+        IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
         DataStore dataStore = ic.getCurrentDataStore();
         SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                .getFeatureSource(IndexInitializer.STORE_SCHEMA_NAME);
+                .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
         String resultSetId = doc.getDocumentElement().getAttribute("resultSetID");
         SimpleFeature feature = featureStore.getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
                 .features().next();

@@ -43,6 +43,7 @@ import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
 import org.geoserver.importer.mosaic.Mosaic;
 import org.geoserver.importer.rest.ImportWrapper;
+import org.geoserver.importer.transform.AttributeComputeTransform;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
@@ -428,6 +429,11 @@ public class ImportJSONWriter {
                 AttributeRemapTransform art = (AttributeRemapTransform) transform;
                 json.key("field").value(art.getField());
                 json.key("target").value(art.getType().getName());
+            } else if (transform instanceof AttributeComputeTransform) {
+                AttributeComputeTransform act = (AttributeComputeTransform) transform;
+                json.key("field").value(act.getField());
+                json.key("fieldType").value(act.getType().getName());
+                json.key("cql").value(act.getCql());
             } else if (transform.getClass() == AttributesToPointGeometryTransform.class) {
                 AttributesToPointGeometryTransform atpgt = (AttributesToPointGeometryTransform) transform;
                 json.key("latField").value(atpgt.getLatField());

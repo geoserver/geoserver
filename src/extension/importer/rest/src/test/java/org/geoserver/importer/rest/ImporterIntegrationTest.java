@@ -12,11 +12,14 @@ import org.geoserver.catalog.*;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
+import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -33,6 +36,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,6 +47,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -486,6 +491,46 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // check we now also have a layer
         LayerInfo layer = catalog.getLayerByName(mosaicName);
         assertNotNull(layer);
+    }
+
+    /**
+     * Attribute computation integration test
+     * @throws Exception
+     */
+    @Test
+    public void testAttributeCompute() throws Exception {
+        // create H2 store to act as a target
+        DataStoreInfo h2Store = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
+
+        // create context with default name
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+        ImportContext context = importer.createContext(0l);
+        context.setTargetStore(h2Store);
+        importer.changed(context);
+        importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
+
+        // add a transformation to compute a new attribute
+        String json = "{\n" +
+                "  \"type\": \"AttributeComputeTransform\",\n" +
+                "  \"field\": \"label\",\n" +
+                "  \"fieldType\": \"java.lang.String\",\n" +
+                "  \"cql\": \"'Test string'\"\n" +
+                "}";
+
+        MockHttpServletResponse resp = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
+
+        // run it
+        context = importer.getContext(0);
+        importer.run(context);
+
+        // check created type, layer and database table
+        DataStore store = (DataStore) h2Store.getDataStore(null);
+        SimpleFeatureSource fs = store.getFeatureSource("archsites");
+        assertNotNull(fs.getSchema().getType("label"));
+        SimpleFeature first = DataUtilities.first(fs.getFeatures());
+        assertEquals("Test string", first.getAttribute("label"));
     }
 
     private void ensureClean(File mosaicRoot) throws IOException {

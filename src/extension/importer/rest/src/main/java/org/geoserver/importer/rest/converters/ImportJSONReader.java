@@ -35,6 +35,7 @@ import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.ValidationException;
 import org.geoserver.importer.mosaic.Mosaic;
 import org.geoserver.importer.mosaic.TimeMode;
+import org.geoserver.importer.transform.AttributeComputeTransform;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
@@ -49,6 +50,7 @@ import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -311,6 +313,18 @@ public class ImportJSONReader {
                 throw new ValidationException("unable to locate target class " + json.getString("target"));
             }
             transform = new AttributeRemapTransform(json.getString("field"), clazz);
+        } else if ("AttributeComputeTransform".equalsIgnoreCase(type)) {
+            Class clazz;
+            try {
+                clazz = Class.forName( json.getString("fieldType") );
+            } catch (ClassNotFoundException cnfe) {
+                throw new ValidationException("unable to locate target class " + json.getString("type"));
+            }
+            try {
+                transform = new AttributeComputeTransform(json.getString("field"), clazz, json.getString("cql"));
+            } catch (CQLException e) {
+                throw new IOException(e);
+            }
         } else if ("AttributesToPointGeometryTransform".equalsIgnoreCase(type)) {
             String latField = json.getString("latField");
             String lngField = json.getString("lngField");

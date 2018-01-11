@@ -21,6 +21,7 @@ import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.rest.RequestInfo;
+import org.geotools.data.DataTestCase;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.context.request.AbstractRequestAttributes;
 import org.springframework.web.context.request.RequestAttributes;
@@ -32,7 +33,11 @@ import junit.framework.TestCase;
  *
  * @author Ian Schneider <ischneider@opengeo.org>
  */
-public abstract class TransformTestSupport extends TestCase {
+public abstract class TransformTestSupport extends DataTestCase {
+
+    public TransformTestSupport() {
+        super(TransformTestSupport.class.getName());
+    }
 
     public void doJSONTest(ImportTransform transform) throws Exception {
         StringWriter buffer = new StringWriter();

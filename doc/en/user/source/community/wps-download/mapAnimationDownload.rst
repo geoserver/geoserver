@@ -31,7 +31,7 @@ For example:
 
     <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
       <dwn:Layer>
-        <dwn:Capabilities>http://demo.geo-solutions.it/geoserver/ows?service=wms&mp;version=1.1.1&mp;request=GetCapabilities</dwn:Name>
+        <dwn:Capabilities>http://demo.geo-solutions.it/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</dwn:Name>
         <dwn:Name>topp:states</dwn:Name>
         <dwn:Parameter key="CQL_FILTER"><![CDATA[PERSONS > 1000000]]></dwn:Parameter>
       </dwn:Layer>
@@ -215,4 +215,12 @@ The ``formattedTimestamper`` decoration ensures the frame time is included in th
     </layout>
 
 
+
+Decoration Layout
++++++++++++++++++
+
+| The ``decoration`` parameter specifies the file name (without extension) of the layout to be used to decorate the map.
+| The layout is a list of decorators that should draw on top of the requested image.
+| The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.
+| Decorators are described in detail in the :ref:`wms_decorations` section.
 

@@ -37,6 +37,7 @@ public class FeatureDataConverterTest {
         SimpleFeatureType t = FeatureDataConverter.TO_POSTGIS.convertType(buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
         assertEquals("_123_number_first", t.getAttributeDescriptors().get(0).getLocalName());
         assertEquals("i_has_spaces", t.getAttributeDescriptors().get(1).getLocalName());
+        assertEquals("_123_number_first", FeatureDataConverter.TO_POSTGIS.convertAttributeName("_123_number_first"));
     }
 
     SimpleFeatureType buildFeatureTypeWithXMLUnsafeAtts() {

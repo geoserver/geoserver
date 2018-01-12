@@ -87,10 +87,13 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.CacheProvider;
 import org.geoserver.util.DefaultCacheProvider;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -291,35 +294,57 @@ public class ConfigDatabase {
         checkNotNull(filter);
         checkArgument(offset == null || offset.intValue() >= 0);
         checkArgument(limit == null || limit.intValue() >= 0);
-
+         
         QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter)
                 .offset(offset).limit(limit).sortOrder(sortOrder);
-
         final StringBuilder sql = sqlBuilder.build();
-        final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
+        
+        List<String> ids = null;
+        
+        final SimplifyingFilterVisitor filterSimplifier = new SimplifyingFilterVisitor();
+        final Filter simplifiedFilter = (Filter) sqlBuilder.getSupportedFilter().accept(filterSimplifier, null);
+        if (simplifiedFilter instanceof PropertyIsEqualTo) {
+            String id = null;
+            PropertyIsEqualTo isEqualTo = (PropertyIsEqualTo) simplifiedFilter;
+            if (isEqualTo.getExpression1() instanceof PropertyName
+                    && isEqualTo.getExpression2() instanceof Literal
+                    && ((PropertyName) isEqualTo.getExpression1()).getPropertyName().equals("id")) {
+                ids = Collections.singletonList(((Literal) isEqualTo.getExpression2()).getValue().toString());
+            }
+            if (isEqualTo.getExpression2() instanceof PropertyName
+                    && isEqualTo.getExpression1() instanceof Literal
+                    && ((PropertyName) isEqualTo.getExpression2()).getPropertyName().equals("id")) {
+                ids = Collections.singletonList(((Literal) isEqualTo.getExpression1()).getValue().toString());                
+            }
+        }
+
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
         final boolean fullySupported = Filter.INCLUDE.equals(unsupportedFilter);
 
-        if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer("Original filter: " + filter);
-            LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
-            LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
-        }
-        logStatement(sql, namedParameters);
-
-        Stopwatch sw = Stopwatch.createStarted();
-        // the oracle offset/limit implementation returns a two column result set
-        // with rownum in the 2nd - queryForList will throw an exception
-        List<String> ids = template.query(sql.toString(), namedParameters, new RowMapper<String>() {
-            @Override
-            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getString(1);
+        if (ids == null) {
+            final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
+    
+            if (LOGGER.isLoggable(Level.FINER)) {
+                LOGGER.finer("Original filter: " + filter);
+                LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
+                LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
             }
-        });
-        sw.stop();
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ",
-                    sw.toString()));
+            logStatement(sql, namedParameters);
+    
+            Stopwatch sw = Stopwatch.createStarted();
+            // the oracle offset/limit implementation returns a two column result set
+            // with rownum in the 2nd - queryForList will throw an exception
+            ids = template.query(sql.toString(), namedParameters, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString(1);
+                }
+            });
+            sw.stop();
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ",
+                        sw.toString()));
+            }
         }
 
         List<T> lazyTransformed = Lists.transform(ids, new Function<String, T>() {
@@ -329,7 +354,6 @@ public class ConfigDatabase {
                 return getById(id, of);
             }
         });
-
 
         CloseableIterator<T> result;
         Iterator<T> iterator = Iterators.filter(lazyTransformed.iterator(),

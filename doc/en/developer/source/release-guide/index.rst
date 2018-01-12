@@ -128,6 +128,7 @@ When creating the first release candidate of a series, there are some extra step
   
   * disable the maintenance jobs, and remove them from the geoserver view
   * create new jobs, copying from the existing master jobs, editing the branch and the ver=master configuration.
+  * modify the last line of the live-docs builds, changing ``stable`` to ``maintain`` for the previous stable branch. The new job you created should publish to ``stable``, and master will continue to publish to ``latest``.
 
 * Update the cite tests on build.geoserver.org:
   * disable the maintenance jobs, and remove them from the geoserver view
@@ -256,34 +257,6 @@ Post the Documentation
     </tr>
 
 #. Save and close this file.
-
-#. If you are cutting the first RC of a series, you will also need to update the stable and maintenance links in the documentation:
-
-   #. Open the file :file:`/etc/apache2/sites-available/docs.geoserver.org` in a text editor.
-
-   #. Add the lines::
-
-        ProxyPass /a.b.x/ https://build.geoserver.org/geoserver/a.b.x/doc/
-        ProxyPassReverse /a.b.x/ https://build.geoserver.org/geoserver/a.b.x/doc/
-
-      after the last similar entry.
-
-   #. Modify the lines::
-
-        ProxyPass /maintain/ https://build.geoserver.org/geoserver/2.8.x/doc/
-        ProxyPassReverse /maintain/ https://build.geoserver.org/geoserver/2.8.x/doc/
-        ProxyPass /stable/ https://build.geoserver.org/geoserver/2.9.x/doc/
-        ProxyPassReverse /stable/ https://build.geoserver.org/geoserver/2.9.x/doc/
-        ProxyPass /latest/ https://build.geoserver.org/geoserver/master/doc/
-        ProxyPassReverse /latest/ https://build.geoserver.org/geoserver/master/doc/
-
-      replacing ``2.8.x`` with the new maintenance and ``2.9.x`` with the newly created stable branch.
-
-   #. Save and close the file.
-
-   #. Restart the web server::
-
-        sudo service apache2 restart
 
 Announce the Release
 --------------------

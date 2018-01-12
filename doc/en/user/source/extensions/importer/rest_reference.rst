@@ -913,6 +913,28 @@ Remaps a certain field to a given target data type
      - The "target" field type, as a fully qualified Java class name
 
 
+AttributeComputeTransform
+"""""""""""""""""""""""""
+
+Computes a new field based on an expression that can use the other field values
+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Optional
+     - Description
+   * - field
+     - N
+     - The name of the field to be computed
+   * - fieldType
+     - N
+     - The field type, as a fully qualified Java class name (e.g., ``java.lang.String``, ``java.lang.Integer``, ``java.util.Date`` and so on)
+   * - cql
+     - N
+     - The (E)CQL expression used to compute the new field (can be a constant value, e.g. ``'My String'``)
+
+
 AttributesToPointGeometryTransform
 """"""""""""""""""""""""""""""""""
 

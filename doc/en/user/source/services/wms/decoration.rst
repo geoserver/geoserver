@@ -14,7 +14,9 @@ layouts are stored in a subdirectory called ``layouts`` in the :ref:`datadir` as
 Each layout file must have the extension ``.xml``.  Once a layout ``foo.xml`` is defined, users can request it by
 adding ``&format_options=layout:foo`` to the request parameters.
 
-Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements. 
+Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements.
+The order of the decoration elements is the order they are drawn so, in case they are overlapping, the first one will appear under the others.
+
 Each decoration element has several attributes:
 
 .. list-table::

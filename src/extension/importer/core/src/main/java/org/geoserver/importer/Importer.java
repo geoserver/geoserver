@@ -5,24 +5,11 @@
  */
 package org.geoserver.importer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.thoughtworks.xstream.XStream;
+import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -60,6 +47,7 @@ import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.util.EntityResolverProvider;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -72,7 +60,6 @@ import org.geotools.data.Transaction;
 import org.geotools.data.directory.DirectoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -95,11 +82,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.thoughtworks.xstream.XStream;
-import com.vividsolutions.jts.geom.Geometry;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Primary controller/facade of the import subsystem.
@@ -592,9 +591,33 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
         }
 
+        // are we setting up an harvest against an existing store, and the input is also multi-coverage?
+        if (targetStore instanceof CoverageStoreInfo && targetStore.getId() != null && isMultiCoverageInput(format, data)) {
+            CoverageStoreInfo cs = (CoverageStoreInfo) targetStore;
+            GridCoverageReader reader = cs.getGridCoverageReader(null, null);
+
+            if (!(reader instanceof StructuredGridCoverage2DReader)) {
+                throw new IllegalArgumentException("Harversting a file into a target raster store can only be done if " +
+                        "the store is a structured one (e.g., a mosaic)");
+            }
+            StructuredGridCoverage2DReader structured = (StructuredGridCoverage2DReader) reader;
+            if (structured.isReadOnly()) {
+                throw new IllegalArgumentException("The target structured raster store is read only, cannot harvest into it");
+            }
+            
+            ImportTask task = new ImportTask(data);
+            task.setDirect(false);
+            task.setStore(targetStore);
+            prep(task);
+            task.setState(State.READY);
+            task.setError(null);
+            task.setTransform(new RasterTransformChain());
+            context.addTask(task);
+            return Arrays.asList(task);
+        }
+
         if (format != null) {
-            // create the set of tasks by having the format list the avialable items
-            // from the input data
+            // create the set of tasks by having the format list the available items from the input data
             for (ImportTask t : format.list(data, catalog, context.progress())) {
                 //initialize transform chain based on vector vs raster
                 if (t.getTransform() == null) {
@@ -631,6 +654,23 @@ public class Importer implements DisposableBean, ApplicationListener {
             context.addTask(t);
         }
         return tasks;
+    }
+
+    private boolean isMultiCoverageInput(DataFormat format, ImportData data) throws IOException {
+        if(!(format instanceof GridFormat)) {
+            return false;
+        }
+        
+        GridFormat gf = (GridFormat) format;
+        AbstractGridCoverage2DReader reader = gf.gridReader(data);
+        try {
+            return reader instanceof StructuredGridCoverage2DReader;
+        } finally {
+            if (reader != null) {
+                reader.dispose();
+            }
+        }
+            
     }
 
     boolean prep(ImportTask task) {
@@ -1082,7 +1122,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             // check we have a target resource, if not, create it
             if (task.getUpdateMode() == UpdateMode.CREATE) {
-                if (task.getLayer().getId() == null) {
+                if (task.getLayer() != null && task.getLayer().getId() == null) {
                     addToCatalog(task);
                 }
             }

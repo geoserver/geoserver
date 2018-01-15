@@ -34,6 +34,7 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.ImporterTest;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -41,6 +42,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.factory.gridshift.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
@@ -50,6 +52,7 @@ import org.w3c.dom.Document;
 public class ImporterMosaicTest extends ImporterTestSupport {
 
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static QName POLYPHEMUS = new QName(MockData.SF_URI, "polyphemus", MockData.SF_PREFIX);
 
 
     @Test
@@ -241,6 +244,50 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         // check we now also have a layer
         LayerInfo layer = catalog.getLayerByName(mosaicName);
         assertNotNull(layer);
+    }
+
+    @Test
+    public void testHarvestNetCDF() throws Exception {
+        Catalog catalog = getCatalog();
+        getTestData().addRasterLayer(POLYPHEMUS, "test-data/mosaic/polyphemus.zip", null, null, ImporterTest.class,
+                catalog);
+
+        // check how many layers we have
+        int initialLayerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+
+        // grab the original count
+        CoverageStoreInfo store = catalog.getCoverageStoreByName(POLYPHEMUS.getLocalPart());
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
+                .getGridCoverageReader(null, null);
+        GranuleSource gs = reader.getGranules(reader.getGridCoverageNames()[0], true);
+        int originalCount = gs.getCount(Query.ALL);
+
+        String mosaicLocation = store.getURL();
+        File mosaicFolder = URLs.urlToFile(new URL(mosaicLocation));
+
+        File fileToHarvest = new File(mosaicFolder, "polyphemus_20130302_test.nc");
+        try(InputStream is = ImporterTest.class.getResourceAsStream("test-data/mosaic/polyphemus_20130302_test.nc")) {
+            FileUtils.copyInputStreamToFile(is, fileToHarvest);
+        }
+        assertTrue(fileToHarvest.exists());
+
+        ImportContext context = importer.createContext(new SpatialFile(fileToHarvest), store);
+        assertEquals(1, context.getTasks().size());
+        assertEquals(ImportTask.State.READY, context.getTasks().get(0).getState());
+
+        importer.run(context);
+        
+        // check it succeeded
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        // check the import added slices (2 times per file)
+        assertEquals(originalCount + 2, gs.getCount(Query.ALL));
+        assertEquals(2, gs.getCount(new Query(null, ECQL.toFilter("location = 'polyphemus_20130301_test.nc'"))));
+        assertEquals(2, gs.getCount(new Query(null, ECQL.toFilter("location = 'polyphemus_20130302_test.nc'"))));
+
+        // make sure we did not create a new layer
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        assertEquals(initialLayerCount, layerCount);
     }
 
     Date date(int year, int month) {

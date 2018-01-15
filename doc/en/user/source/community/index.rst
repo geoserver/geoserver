@@ -33,6 +33,7 @@ officially part of the GeoServer releases. They are however built along with the
    rest-upload/index
    geomesa/index
    gwc-distributed/index
+   geofence/index
    geofence-server/index
    gdal/index
    gwc-s3/index

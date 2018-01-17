@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.AttributeTypeBuilder;
@@ -94,8 +95,9 @@ public class FeatureDataConverter {
     public void convert(SimpleFeature from, SimpleFeature to) {
         Set<String> fromAttrNames = attributeNames(from);
         Set<String> toAttrNames = attributeNames(to);
-        Set<String> commonNames = new HashSet<String>(fromAttrNames);
-        commonNames.retainAll(toAttrNames);
+        Set<String> commonNames = fromAttrNames.stream()
+                .filter(name -> toAttrNames.contains(convertAttributeName(name)))
+                .collect(Collectors.toSet());
         for (String attrName : commonNames) {
             to.setAttribute(convertAttributeName(attrName), from.getAttribute(attrName));
         }

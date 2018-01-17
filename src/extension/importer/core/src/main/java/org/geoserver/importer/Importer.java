@@ -664,7 +664,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         GridFormat gf = (GridFormat) format;
         AbstractGridCoverage2DReader reader = gf.gridReader(data);
         try {
-            return reader instanceof StructuredGridCoverage2DReader;
+            if (reader instanceof StructuredGridCoverage2DReader) {
+                StructuredGridCoverage2DReader structured = (StructuredGridCoverage2DReader) reader;
+                // clean up eventual ancillary files (NetCDF case) as the image mosaic might want them
+                // created in some other way
+                structured.delete(false);
+                return true;
+            } else {
+                return false;
+            }
         } finally {
             if (reader != null) {
                 reader.dispose();

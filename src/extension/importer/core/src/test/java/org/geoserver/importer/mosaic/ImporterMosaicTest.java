@@ -290,6 +290,51 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         assertEquals(initialLayerCount, layerCount);
     }
 
+    @Test
+    public void testHarvestNetCDFWithAuxiliaryNetCDFStore() throws Exception {
+        Catalog catalog = getCatalog();
+        // same as test above, but using a auxiliary datastore for netcdf internal indexes
+        getTestData().addRasterLayer(POLYPHEMUS, "test-data/mosaic/polyphemus_aux.zip", null, null, ImporterTest.class,
+                catalog);
+
+        // check how many layers we have
+        int initialLayerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+
+        // grab the original count
+        CoverageStoreInfo store = catalog.getCoverageStoreByName(POLYPHEMUS.getLocalPart());
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
+                .getGridCoverageReader(null, null);
+        GranuleSource gs = reader.getGranules(reader.getGridCoverageNames()[0], true);
+        int originalCount = gs.getCount(Query.ALL);
+
+        String mosaicLocation = store.getURL();
+        File mosaicFolder = URLs.urlToFile(new URL(mosaicLocation));
+
+        File fileToHarvest = new File(mosaicFolder, "polyphemus_20130302_test.nc");
+        try(InputStream is = ImporterTest.class.getResourceAsStream("test-data/mosaic/polyphemus_20130302_test.nc")) {
+            FileUtils.copyInputStreamToFile(is, fileToHarvest);
+        }
+        assertTrue(fileToHarvest.exists());
+
+        ImportContext context = importer.createContext(new SpatialFile(fileToHarvest), store);
+        assertEquals(1, context.getTasks().size());
+        assertEquals(ImportTask.State.READY, context.getTasks().get(0).getState());
+
+        importer.run(context);
+
+        // check it succeeded
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        // check the import added slices (2 times per file)
+        assertEquals(originalCount + 2, gs.getCount(Query.ALL));
+        assertEquals(2, gs.getCount(new Query(null, ECQL.toFilter("location = 'polyphemus_20130301_test.nc'"))));
+        assertEquals(2, gs.getCount(new Query(null, ECQL.toFilter("location = 'polyphemus_20130302_test.nc'"))));
+
+        // make sure we did not create a new layer
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        assertEquals(initialLayerCount, layerCount);
+    }
+
     Date date(int year, int month) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);

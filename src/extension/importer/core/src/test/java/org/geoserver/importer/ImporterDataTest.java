@@ -1098,4 +1098,34 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         return getCatalog().getStyle(imp.getTasks().get(0).getLayer().getDefaultStyle().getId());
     }
+
+    @Test
+    public void testImportSpaceInNames() throws Exception {
+        File dir = unpack("shape/spaceInNames.zip");
+        DataStoreInfo ds = createH2DataStore(null, "spaceInNamesContainer");
+
+        ImportContext context =
+                importer.createContext(new SpatialFile(new File(dir, "spaceInNames.shp")), ds);
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.NO_CRS, task.getState());
+        task.getLayer().getResource().setSRS("EPSG:26713");
+        importer.changed(task);
+
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("spaceInNames", task.getLayer().getResource().getName());
+
+        importer.run(context);
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("spaceInNames"));
+
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        SimpleFeatureSource fs = (SimpleFeatureSource) cat.getFeatureTypeByName("spaceInNames").getFeatureSource(null, null);
+        SimpleFeature sf = DataUtilities.first(fs.getFeatures());
+        assertNotNull(sf.getAttribute("WIND_SPEED"));
+        assertNotNull(sf.getAttribute("WIND_DIREC"));
+    }
 }

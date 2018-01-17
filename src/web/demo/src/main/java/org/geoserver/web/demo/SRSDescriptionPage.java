@@ -62,10 +62,11 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
     private double jsMaxResolution;
 
     /**
-     * Adds the call to the {@code initMap()} js function at the onload event of the body tag
-     * 
+     * Initializes the OpenLayers map when the page loads
      */
+    @Override
     public void renderHead(IHeaderResponse headerResponse) {
+        super.renderHead(headerResponse);
         String onLoadJsCall = "initMap('" + jsSrs + "', '" + jsUnit + "', " + jsBbox + ", " + jsMaxResolution + ")";
         headerResponse.render(new OnDomReadyHeaderItem(onLoadJsCall));
     }

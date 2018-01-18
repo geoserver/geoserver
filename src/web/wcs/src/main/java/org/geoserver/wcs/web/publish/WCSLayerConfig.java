@@ -23,6 +23,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import static org.geoserver.wcs.responses.AscCoverageResponseDelegate.ARCGRID_COVERAGE_FORMAT;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
@@ -34,7 +35,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     private static final long serialVersionUID = 6120092654147588736L;
     
-    private static final List<String> WCS_FORMATS = Arrays.asList("GIF","PNG","JPEG","TIFF","GTOPO30","GEOTIFF","IMAGEMOSAIC","ARCGRID");
+    private static final List<String> WCS_FORMATS = Arrays.asList("GIF","PNG","JPEG","TIFF","GTOPO30","GEOTIFF","IMAGEMOSAIC", ARCGRID_COVERAGE_FORMAT);
     private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbor","bilinear","bicubic");
     
     private List<String> selectedRequestSRSs;

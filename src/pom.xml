@@ -1837,7 +1837,7 @@
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
   <imageio-ext.version>1.1.19</imageio-ext.version>
-  <jaiext.version>1.0.17</jaiext.version>
+  <jaiext.version>1.0.19</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>

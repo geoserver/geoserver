@@ -233,6 +233,37 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             getGeoServer().save(global);
         }
     }
+
+    @Test
+    public void testAuthentication() {
+        final FormTester requestFormTester = tester.newFormTester("demoRequestsForm");
+
+        final String requestName = "WMS_describeLayer.url";
+        requestFormTester.select("demoRequestsList", 1);
+
+        /*
+         * There's an AjaxFormSubmitBehavior attached to onchange so force it
+         */
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
+        tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
+
+        String username = "admin";
+        String password = "geoserver";
+
+        requestFormTester.setValue("username", username);
+        requestFormTester.setValue("password", password);
+
+        final boolean isAjax = true;
+        tester.clickLink("demoRequestsForm:submit", isAjax);
+
+        tester.assertVisible("responseWindow");
+
+        IModel model = tester.getLastRenderedPage().getDefaultModel();
+        assertTrue(model.getObject() instanceof DemoRequest);
+
+        assertEquals(username, tester.getLastRequest().getPostParameters().getParameterValue("username").toString());
+        assertEquals(password, tester.getLastRequest().getPostParameters().getParameterValue("password").toString());
+    }
     
     @Test
     public void testSerializable() {

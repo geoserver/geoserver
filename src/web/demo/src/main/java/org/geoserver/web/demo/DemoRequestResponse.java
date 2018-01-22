@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.GeoServerBasePage;
 import org.vfny.geoserver.wfs.servlets.TestWfsPost;
@@ -48,10 +49,24 @@ public class DemoRequestResponse extends WebPage {
 
         Form form = new Form("form");
         add(form);
-        form.add(new HiddenField("url", new PropertyModel(model, "requestUrl")));
-        form.add(new TextArea("body", new PropertyModel(model, "requestBody")));
-        form.add(new HiddenField("username", new PropertyModel(model, "userName")));
-        form.add(new HiddenField("password", new PropertyModel(model, "password")));
+        form.add(new HiddenField<String>("url", new PropertyModel<>(model, "requestUrl")));
+        form.add(new TextArea<>("body", new PropertyModel<>(model, "requestBody")));
+        form.add(new HiddenField<String>("username", new PropertyModel<>(model, "userName")));
+        //[WICKET-6211] Wicket clears the password after submission, so we need to save as a string now.
+        HiddenField<String> passwordField = new HiddenField<String>("password", new Model<>(((DemoRequest)model.getObject()).getPassword())) {
+            @Override
+            protected void onDetach() {
+                //clear the password after we are done with it
+                clearInput();
+                if (getModel() != null) {
+                    setModelObject(null);
+                }
+                super.onDetach();
+            }
+        };
+
+        form.add(passwordField);
+
 
         // override the action property of the form to submit to the TestWfsPost
         // servlet

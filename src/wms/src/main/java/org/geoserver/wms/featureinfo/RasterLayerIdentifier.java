@@ -101,7 +101,8 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
 
         CoordinateReferenceSystem targetCRS;
-        if (cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) {
+        if ((cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) ||
+                (cinfo.getProjectionPolicy() == ProjectionPolicy.REPROJECT_TO_DECLARED)) {
             targetCRS = cinfo.getNativeCRS();
         } else {
             targetCRS = cinfo.getCRS();

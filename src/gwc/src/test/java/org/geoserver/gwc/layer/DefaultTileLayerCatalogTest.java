@@ -10,6 +10,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -93,6 +94,44 @@ public class DefaultTileLayerCatalogTest {
             info.setName("name1");
             info.getMimeFormats().add("image/png");
             info.getMimeFormats().add("image/jpeg");
+
+            assertNull(catalog.save(info));
+
+            original = catalog.getLayerById("id1");
+            assertEquals(info.getMimeFormats(), original.getMimeFormats());
+        }
+
+        original.getMimeFormats().clear();
+        original.getMimeFormats().add("image/gif");
+        original.setName("name2");
+
+        final GeoServerTileLayerInfo oldValue = catalog.save(original);
+
+        assertNotNull(oldValue);
+        assertEquals(ImmutableSet.of("image/png", "image/jpeg"), oldValue.getMimeFormats());
+        assertEquals("name1", oldValue.getName());
+
+        assertNull(catalog.getLayerByName("name1"));
+        assertNotNull(catalog.getLayerByName("name2"));
+
+        GeoServerTileLayerInfo modified = catalog.getLayerById("id1");
+        assertEquals(ImmutableSet.of("image/gif"), modified.getMimeFormats());
+    }
+
+    @Test
+    public void testSaveWithEmptyStyleParamFilter() {
+        final GeoServerTileLayerInfo original;
+        {
+            final GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
+            info.setId("id1");
+            info.setName("name1");
+            info.getMimeFormats().add("image/png");
+            info.getMimeFormats().add("image/jpeg");
+
+            StyleParameterFilter parameterFilter = new StyleParameterFilter();
+            parameterFilter.setStyles(Collections.emptySet());
+            info.addParameterFilter(parameterFilter);
+
             assertNull(catalog.save(info));
 
             original = catalog.getLayerById("id1");

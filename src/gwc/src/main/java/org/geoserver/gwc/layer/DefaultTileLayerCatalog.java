@@ -15,10 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -82,7 +79,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         // setup xstream security for local classes
         this.serializer = configuredXstream;
         this.serializer.allowTypeHierarchy(GeoServerTileLayerInfo.class);
-        this.serializer.allowTypeHierarchy(SortedSet.class);
+        //have to use a string here because UnmodifiableSet is private
+        this.serializer.allowTypes(new String[]{"java.util.Collections$UnmodifiableSet"});
 
     }
 

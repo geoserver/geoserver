@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +21,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,8 +38,12 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+
+import net.minidev.json.JSONArray;
 
 /**
  * @author Alessio Fabiani, GeoSolutions S.A.S.
@@ -48,6 +57,8 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     static final Map<String, String> emptyMap = Collections.emptyMap();
 
+    static Cache<String, String> cachedResponses;
+    
     /**
      * Sets a specified timeout value, in milliseconds, to be used when opening a 
      * communications link to the resource referenced by this URLConnection. 
@@ -117,6 +128,12 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
         if (!isEmpty(restRoleServiceConfig.getGroupAdminRoleName())) {
             this.groupAdminGroup = restRoleServiceConfig.getGroupAdminRoleName();
         }
+
+        cachedResponses = CacheBuilder.newBuilder()
+                .concurrencyLevel(restRoleServiceConfig.getCacheConcurrencyLevel())
+                .maximumSize(restRoleServiceConfig.getCacheMaximumSize())
+                .expireAfterWrite(restRoleServiceConfig.getCacheExpirationTime(), TimeUnit.MILLISECONDS)
+                .build(); // look Ma, no CacheLoader
     }
 
     /**
@@ -173,22 +190,23 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
             return (SortedSet<GeoServerRole>) connectToRESTEndpoint(
                     restRoleServiceConfig.getBaseUrl(),
                     restRoleServiceConfig.getUsersRESTEndpoint() + "/" + username,
-                    restRoleServiceConfig.getUsersJSONPath(),
+                    restRoleServiceConfig.getUsersJSONPath().replace("${username}", username),
                     new RestEndpointConnectionCallback() {
 
                         @Override
                         public Object executeWithContext(String json) throws Exception {
                             try {
-                                List<String> rolesString = JsonPath.read(json, 
-                                        restRoleServiceConfig.getUsersJSONPath());
+                                List<Object> rolesString = JsonPath.read(json, 
+                                        restRoleServiceConfig.getUsersJSONPath().replace("${username}", username));
 
-                                for (String role : rolesString) {
-                                    if (role.startsWith(rolePrefix)) {
-                                        // remove standard role prefix
-                                        role = role.substring(rolePrefix.length());
+                                for (Object roleObj : rolesString) {
+                                    if (roleObj instanceof String) {
+                                        populateRoles((String) roleObj, roles);
+                                    } else if (roleObj instanceof JSONArray) {
+                                        for(Object role : ((JSONArray) roleObj)) {
+                                            populateRoles((String) role, roles);
+                                        }
                                     }
-
-                                    roles.add(createRoleObject(role));
                                 }
                             } catch (PathNotFoundException ex) {
                                 Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
@@ -203,6 +221,16 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                             }
                             
                             return finalRoles;
+                        }
+
+                        private void populateRoles(String role, final SortedSet<GeoServerRole> roles)
+                                throws IOException {
+                            if (role.startsWith(rolePrefix)) {
+                                // remove standard role prefix
+                                role = role.substring(rolePrefix.length());
+                            }
+
+                            roles.add(createRoleObject(role));
                         }
                     });
         } catch (Exception ex) {
@@ -448,63 +476,83 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
             final String roleRESTEndpoint, 
             final String roleJSONPath,
             RestEndpointConnectionCallback callback) throws Exception {
-        // HttpURLConnection conn = null;
-        ClientHttpRequest clientRequest = null;
-        ClientHttpResponse clientResponse = null;
+        final String restEndPoint = roleRESTBaseURL + roleRESTEndpoint + roleJSONPath;
+        // First search on cache
+        final String hash = getHash(restEndPoint);
+        
         try {
-            final URI baseURI = new URI(roleRESTBaseURL);
+            // If the key wasn't in the "easy to compute" group, we need to
+            // do things the hard way.
+            final String cachedResponse = cachedResponses.get(hash, new Callable<String>() {
 
-            URL url = baseURI.resolve(roleRESTEndpoint).toURL();
-            
-            /*conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("Content-length", "0");
-            conn.setUseCaches(false);
-            conn.setAllowUserInteraction(false);
-            conn.setConnectTimeout(CONN_TIMEOUT);
-            conn.setReadTimeout(READ_TIMEOUT);
-            conn.connect();
-            int status = conn.getResponseCode();*/
-            clientRequest = getRestTemplate().getRequestFactory().createRequest(url.toURI(), HttpMethod.GET);
-            clientResponse = clientRequest.execute();
-            int status = clientResponse.getRawStatusCode();
+                @Override
+                public String call() throws Exception {
+                    
+                    LOGGER.fine("GeoServer REST Role Service CACHE MISS for '" + restEndPoint + "'");
 
-            switch (status) {
-            case 200:
-            case 201:
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(clientResponse.getBody()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line + "\n");
+                    ClientHttpRequest clientRequest = null;
+                    ClientHttpResponse clientResponse = null;
+                    try {
+                        final URI baseURI = new URI(roleRESTBaseURL);
+
+                        URL url = baseURI.resolve(roleRESTEndpoint).toURL();
+
+                        clientRequest = getRestTemplate().getRequestFactory()
+                                .createRequest(url.toURI(), HttpMethod.GET);
+                        clientResponse = clientRequest.execute();
+                        int status = clientResponse.getRawStatusCode();
+
+                        switch (status) {
+                        case 200:
+                        case 201:
+                            BufferedReader br = new BufferedReader(
+                                    new InputStreamReader(clientResponse.getBody()));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = br.readLine()) != null) {
+                                sb.append(line + "\n");
+                            }
+                            br.close();
+
+                            String json = sb.toString();
+
+                            return json;
+                        }
+                    } catch (MalformedURLException ex) {
+                        Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                    } catch (URISyntaxException ex) {
+                        Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                    } finally {
+                        if (clientResponse != null) {
+                            try {
+                                clientResponse.close();
+                            } catch (Exception ex) {
+                                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+
+                    return null;
                 }
-                br.close();
+            });
 
-                String json = sb.toString();
-
-                return callback.executeWithContext(json);
-            }
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
-        } finally {
-            if (clientResponse != null) {
-                try {
-                    clientResponse.close();
-                } catch (Exception ex) {
-                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            return callback.executeWithContext(cachedResponse);
+        } catch (ExecutionException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            return null;
         }
-
-        return null;
     }
 
+    private static String getHash(String stringToEncrypt) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+        messageDigest.update(stringToEncrypt.getBytes());
+        final String encryptedString = new String(messageDigest.digest());
+        
+        return encryptedString;
+    }
+    
     /**
      * Callback interface to be used in the REST call methods for performing operations on individually HTTP JSON responses.
      * 

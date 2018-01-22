@@ -7,6 +7,7 @@ package org.geoserver.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -19,6 +20,8 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.common.util.concurrent.ExecutionError;
 
 /**
  * @author Alessio Fabiani, GeoSolutions S.A.S.
@@ -48,16 +51,18 @@ public class GeoServerRestRoleServiceTest {
                         "{\"users\": [{\"username\": \"test\", \"groups\": [\"test\"]}]}",
                         MediaType.APPLICATION_JSON));
 
-        mockServer.expect(requestTo(uri + "/api/adminRole"))
-                .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON));
-
+        // Not needed anymore thanks to the internal cache
+        /* mockServer.expect(requestTo(uri + "/api/adminRole"))
+            .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON)); */
+        
         mockServer.expect(requestTo(uri + "/api/users/test@geoserver.org"))
                 .andRespond(withSuccess(
-                        "{\"users\": [{\"username\": \"test\", \"groups\": [\"test\"]}]}",
+                        "{\"users\": [{\"username\": \"test@geoserver.org\", \"groups\": [\"test\"]}]}",
                         MediaType.APPLICATION_JSON));
 
-        mockServer.expect(requestTo(uri + "/api/adminRole"))
-                .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON));
+        // Not needed anymore thanks to the internal cache
+        /* mockServer.expect(requestTo(uri + "/api/adminRole"))
+            .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON)); */
 
         mockServer.expect(requestTo(uri + "/api/users/admin"))
                 .andRespond(withSuccess(
@@ -95,5 +100,25 @@ public class GeoServerRestRoleServiceTest {
         assertTrue(!testUserRoles.contains(GeoServerRole.ADMIN_ROLE));
         assertTrue(!testUserRoles.contains(adminRole));
         assertTrue(adminUserRoles.contains(GeoServerRole.ADMIN_ROLE));
+    }
+
+    @Test
+    public void testGeoServerRestRoleServiceInternalCache() throws IOException, InterruptedException {
+        GeoServerRestRoleServiceConfig roleServiceconfig = new GeoServerRestRoleServiceConfig();
+        roleServiceconfig.setBaseUrl(uri);
+
+        GeoServerRestRoleService roleService = new GeoServerRestRoleService(roleServiceconfig);
+        roleService.setRestTemplate(template);
+
+        roleService.getRoles();
+        roleService.getAdminRole();
+        roleService.getRolesForUser("test");
+        Thread.sleep(31 * 1000);
+        try {
+            roleService.getRolesForUser("test@geoserver.org");
+            fail("Expecting ExecutionError to be thrown");
+        } catch (ExecutionError e) {
+            // OK
+        }
     }
 }

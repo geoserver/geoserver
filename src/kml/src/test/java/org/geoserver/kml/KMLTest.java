@@ -428,6 +428,10 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//kml:GroundOverlay)", dom);
         String pngOverlay = "http://localhost:8080/geoserver/wms?service=wms&request=GetMap&version=1.1.1&format=image%2Fpng&layers=cite%3ABasicPolygons&styles=BasicPolygons&height=512&width=1024&transparent=true&bbox=-180.0%2C-90.0%2C180.0%2C90.0&srs=EPSG%3A4326&format_options=AUTOFIT%3Atrue%3BKMSCORE%3A0%3BMODE%3Arefresh";
         assertXpathEvaluatesTo(pngOverlay, "//kml:GroundOverlay/kml:Icon/kml:href", dom);
+        assertXpathEvaluatesTo("-180.0", "//kml:GroundOverlay/kml:LatLonBox/kml:west", dom);
+        assertXpathEvaluatesTo("180.0", "//kml:GroundOverlay/kml:LatLonBox/kml:east", dom);
+        assertXpathEvaluatesTo("90.0", "//kml:GroundOverlay/kml:LatLonBox/kml:north", dom);
+        assertXpathEvaluatesTo("-90.0", "//kml:GroundOverlay/kml:LatLonBox/kml:south", dom);
     }
     
     @Test

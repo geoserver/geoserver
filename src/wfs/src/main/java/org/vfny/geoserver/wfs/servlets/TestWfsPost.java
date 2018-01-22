@@ -241,12 +241,20 @@ public class TestWfsPost extends HttpServlet {
                 // Above 400 they're all error codes, see:
                 // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
                 if (acon.getResponseCode() >= 400) {
+                    //Construct the full response before writing, so that we don't throw an exception partway through.
+                    StringBuilder responseContent = new StringBuilder();
+                    responseContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+                    responseContent.append("<servlet-exception>\n");
+                    responseContent.append("HTTP response: ");
+                    responseContent.append(acon.getResponseCode());
+                    responseContent.append("\n");
+                    if (acon.getResponseMessage() != null) {
+                        responseContent.append(URLDecoder.decode(acon.getResponseMessage(), "UTF-8"));
+                    }
+                    responseContent.append("</servlet-exception>\n");
+
                     PrintWriter out = response.getWriter();
-                    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    out.println("<servlet-exception>");
-                    out.println("HTTP response: " + acon.getResponseCode() + "\n"
-                        + URLDecoder.decode(acon.getResponseMessage(), "UTF-8"));
-                    out.println("</servlet-exception>");
+                    out.print(responseContent.toString());
                     out.close();
                 } else {
                     // xmlIn = new BufferedReader(new InputStreamReader(
@@ -276,10 +284,7 @@ public class TestWfsPost extends HttpServlet {
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, "Failure dealing with the request", e);
                 PrintWriter out = response.getWriter();
-                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                out.println("<servlet-exception>");
-                out.println(ResponseUtils.encodeXML(e.toString()));
-                out.println("</servlet-exception>");
+                out.print(errorResponse(e));
                 out.close();
             } finally {
                 try {
@@ -289,10 +294,7 @@ public class TestWfsPost extends HttpServlet {
                 } catch (Exception e1) {
                     LOGGER.log(Level.FINE, "Internal failure dealing with the request", e1);
                     PrintWriter out = response.getWriter();
-                    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    out.println("<servlet-exception>");
-                    out.println(ResponseUtils.encodeXML(e1.toString()));
-                    out.println("</servlet-exception>");
+                    out.print(errorResponse(e1));
                     out.close();
                 }
 
@@ -303,14 +305,21 @@ public class TestWfsPost extends HttpServlet {
                 } catch (Exception e2) {
                     LOGGER.log(Level.FINE, "Internal failure dealing with the request", e2);
                     PrintWriter out = response.getWriter();
-                    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    out.println("<servlet-exception>");
-                    out.println(ResponseUtils.encodeXML(e2.toString()));
-                    out.println("</servlet-exception>");
+                    out.print(errorResponse(e2));
                     out.close();
                 }
             }
         }
+    }
+
+    public String errorResponse(Exception e) {
+        StringBuilder responseContent = new StringBuilder();
+        responseContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        responseContent.append("<servlet-exception>\n");
+        responseContent.append(ResponseUtils.encodeXML(e.toString()));
+        responseContent.append("</servlet-exception>\n");
+
+        return responseContent.toString();
     }
 
     String getProxyBaseURL() {

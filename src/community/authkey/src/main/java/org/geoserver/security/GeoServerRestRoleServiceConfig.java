@@ -17,6 +17,12 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
     /** serialVersionUID */
     private static final long serialVersionUID = -8380244566532287415L;
 
+    private static final int defaultCacheConcurrencyLevel = 4;
+
+    private static final long defaultCacheMaximumSize = 10000;
+
+    private static final long defaultCacheExpirationTime = 30000;
+
     private String adminGroup;
 
     private String groupAdminGroup;
@@ -33,7 +39,13 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
     
     private String adminRoleJSONPath = "$.adminRole";
     
-    private String usersJSONPath = "$.users[0].groups";
+    private String usersJSONPath = "$.users[?(@.username=='${username}')].groups";
+
+    private int cacheConcurrencyLevel = defaultCacheConcurrencyLevel;
+    
+    private long cacheMaximumSize = defaultCacheMaximumSize;
+    
+    private long cacheExpirationTime = defaultCacheExpirationTime;
     
     @Override
     public String getAdminRoleName() {
@@ -151,6 +163,60 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
      */
     public void setUsersJSONPath(String usersJSONPath) {
         this.usersJSONPath = usersJSONPath;
+    }
+
+    /**
+     * @return the cacheConcurrencyLevel
+     */
+    public int getCacheConcurrencyLevel() {
+        if (cacheConcurrencyLevel > 1) {
+            return cacheConcurrencyLevel;
+        } else {
+            return defaultCacheConcurrencyLevel;
+        }
+    }
+
+    /**
+     * @param cacheConcurrencyLevel the cacheConcurrencyLevel to set
+     */
+    public void setCacheConcurrencyLevel(int cacheConcurrencyLevel) {
+        this.cacheConcurrencyLevel = cacheConcurrencyLevel;
+    }
+
+    /**
+     * @return the cacheMaximumSize
+     */
+    public long getCacheMaximumSize() {
+        if (cacheMaximumSize > 0) {
+            return cacheMaximumSize;
+        } else {
+            return defaultCacheMaximumSize;
+        }
+    }
+
+    /**
+     * @param cacheMaximumSize the cacheMaximumSize to set
+     */
+    public void setCacheMaximumSize(long cacheMaximumSize) {
+        this.cacheMaximumSize = cacheMaximumSize;
+    }
+
+    /**
+     * @param cacheExpirationTime the cacheExpirationTime to set
+     */
+    public void setCacheExpirationTime(long cacheExpirationTime) {
+        this.cacheExpirationTime = cacheExpirationTime;
+    }
+
+    /**
+     * @return
+     */
+    public long getCacheExpirationTime() {
+        if (cacheExpirationTime > 0) {
+            return cacheExpirationTime;
+        } else {
+            return defaultCacheExpirationTime;
+        }
     }
 
 }

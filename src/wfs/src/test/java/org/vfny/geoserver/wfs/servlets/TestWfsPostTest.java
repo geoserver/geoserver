@@ -81,7 +81,7 @@ public class TestWfsPostTest {
         }
     }
     
-    private MockHttpServletRequest buildMockRequest() {
+    protected static MockHttpServletRequest buildMockRequest() {
         
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("http");

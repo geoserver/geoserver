@@ -14,7 +14,7 @@ function get_file() {
     rm $dir/$file
   fi
   pushd $dir > /dev/null
-  wget $base_url/$file
+  wget --no-check-certificate $base_url/$file
   popd > /dev/null
 }
 

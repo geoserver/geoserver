@@ -99,6 +99,34 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         assertTrue(content.contains("<sld:Name>foo</sld:Name>"));
         catalog.remove(styleInfo);
     }
+
+    @Test
+    public void testPostYSLD() throws Exception {
+        // step 1 create style info with correct format
+        Catalog cat = getCatalog();
+        assertNull("foo not available",cat.getStyleByName("foo"));
+
+        String content = newYSLD();
+        MockHttpServletResponse response = postAsServletResponse( "/rest/styles?name=foo", content, YsldHandler.MIMETYPE);
+        assertEquals( 201, response.getStatus() );
+
+        GeoServerResourceLoader resources = catalog.getResourceLoader();
+
+        Resource resource = resources.get("/styles/foo.yaml");
+
+        String definition = new String(resource.getContents());
+        assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
+
+        StyleInfo styleInfo = catalog.getStyleByName( "foo" );
+        Style s = styleInfo.getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        content = new String(out.toByteArray());
+        assertTrue(content.contains("<sld:Name>foo</sld:Name>"));
+        catalog.remove(styleInfo);
+    }
     
     @Test
     public void testPutYSLD() throws Exception {

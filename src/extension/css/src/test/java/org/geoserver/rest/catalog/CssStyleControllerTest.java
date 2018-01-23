@@ -125,6 +125,33 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testPostCSS() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull("foo not available", cat.getStyleByName("foo"));
+
+        String content = newCSS();
+        MockHttpServletResponse response = postAsServletResponse("/rest/styles?name=foo", content, CssHandler.MIME_TYPE);
+        assertEquals(201, response.getStatus());
+
+        GeoServerResourceLoader resources = catalog.getResourceLoader();
+
+        Resource resource = resources.get("/styles/foo.css");
+
+        String definition = new String(resource.getContents());
+        assertTrue("is css", definition.contains("stroke: red"));
+
+        StyleInfo styleInfo = catalog.getStyleByName("foo");
+        Style s = styleInfo.getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        content = new String(out.toByteArray());
+        assertTrue(content.contains("<sld:Name>foo</sld:Name>"));
+        catalog.remove(styleInfo);
+    }
+
+    @Test
     public void testPutCSS() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();

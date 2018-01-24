@@ -1103,6 +1103,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
            handleLatLonBBox(latLonBounds);
            handleBBox(layerGroupBounds, authority);
+           handleAdditionalBBox(layerGroupBounds, authority, layerGroup);
 
            if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
                LayerInfo rootLayer = layerGroup.getRootLayer();
@@ -1425,7 +1426,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             element("BoundingBox", null, bboxAtts);
         }
 
-        private void handleAdditionalBBox(ReferencedEnvelope bbox, String srs, LayerInfo layer) {
+        private void handleAdditionalBBox(ReferencedEnvelope bbox, String srs, PublishedInfo layer) {
             //TODO: this method is copied from wms 1.3 caps (along with a lot of things), we 
             // should refactor
             //WMSInfo info = wmsConfig.getServiceInfo();

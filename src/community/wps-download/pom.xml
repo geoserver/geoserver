@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
-			<version>0.2.2-bof</version>
+			<version>0.2.2-bof2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jcodec</groupId>

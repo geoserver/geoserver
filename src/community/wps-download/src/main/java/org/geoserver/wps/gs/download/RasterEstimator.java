@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geotools.coverage.TypeMap;
@@ -39,14 +40,18 @@ class RasterEstimator {
     /** The downloadServiceConfiguration object containing the limits to check */
     private DownloadServiceConfiguration downloadServiceConfiguration;
 
+    private Catalog catalog;
+
     /**
      * Constructor
      * 
      * @param limits the parent {@link DownloadEstimatorProcess} that contains the download limits to be enforced.
+     * @param catalog 
      * 
      */
-    public RasterEstimator(DownloadServiceConfiguration limits) {
+    public RasterEstimator(DownloadServiceConfiguration limits, Catalog catalog) {
         this.downloadServiceConfiguration = limits;
+        this.catalog = catalog;
         if (limits == null) {
             throw new NullPointerException("The provided DownloadEstimatorProcess is null!");
         }
@@ -98,6 +103,9 @@ class RasterEstimator {
             roiManager = new ROIManager(roi, roiCRS);
             // set use nativeCRS
             roiManager.useNativeCRS(nativeCRS);
+            if (targetCRS != null) {
+                roiManager.useTargetCRS(targetCRS);
+            }
         }
 
         // get a reader for this CoverageInfo
@@ -139,7 +147,16 @@ class RasterEstimator {
             scaling = new ScaleToTarget(reader);
         }
         scaling.setTargetSize(targetSizeX, targetSizeY);
-        GridGeometry2D gg = scaling.getGridGeometry();
+        
+        GridGeometry2D gg = null;
+
+        if (targetSizeX == null && targetSizeY == null) {
+            // Ask to the GridGeometryProvider
+            GridGeometryProvider provider = new GridGeometryProvider(reader, roiManager, filter, catalog);
+            gg = provider.getGridGeometry();
+        } else {
+            gg = scaling.getGridGeometry();    
+        }
 
         areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
 

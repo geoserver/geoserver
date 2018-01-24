@@ -157,7 +157,7 @@ public class DownloadEstimatorProcess implements GSProcess {
                 LOGGER.log(Level.FINE, "Working with Raster dataset");
             }
             final CoverageInfo coverage = (CoverageInfo) resourceInfo;
-            return new RasterEstimator(limits).execute(progressListener, coverage, roi, targetCRS,
+            return new RasterEstimator(limits, catalog).execute(progressListener, coverage, roi, targetCRS,
                     clip, filter, targetSizeX, targetSizeY, bandIndices);
         }
 

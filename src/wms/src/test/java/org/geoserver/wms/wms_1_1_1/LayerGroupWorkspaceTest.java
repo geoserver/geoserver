@@ -115,6 +115,16 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         
         assertXpathExists("//Layer/Name[text() = 'cite:base']", dom);
         assertBounds(cite, "cite:base", dom);
+
+        String layer = "base";
+        assertXpathNotExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", dom);
+
+        addSRSAndSetFlag();
+
+        dom = getAsDOM("wms?request=getcapabilities&version=1.1.1", true);
+
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:4326']", dom);
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", dom);
     }
 
     @Test 
@@ -218,6 +228,15 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("//Layer/Name[text() = 'base']", dom);
         assertXpathNotExists("//Layer/Name[text() = 'sf:base']", dom);
         assertBounds(sf, "base", dom);
+
+        String layer = "base";
+        assertXpathNotExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", dom);
+
+        addSRSAndSetFlag();
+        dom = getAsDOM("wms?request=getcapabilities&version=1.1.1", true);
+
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:4326']", dom);
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", dom);
     }
 
     @Test 
@@ -374,5 +393,22 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
                 "round(//Layer[Name/text() = '"+name+"']/BoundingBox/@miny)", dom);
         assertXpathEvaluatesTo(String.valueOf(Math.round(lg.getBounds().getMaxY())), 
                 "round(//Layer[Name/text() = '"+name+"']/BoundingBox/@maxy)", dom);
+    }
+
+    void addSRSAndSetFlag() {
+        WMSInfo wms = getWMS().getServiceInfo();
+        wms.getSRS().add("4326");
+        wms.getSRS().add("3005");
+        wms.setBBOXForEachCRS(true);
+        getGeoServer().save(wms);
+    }
+
+    @After
+    public void removeSRS() {
+        WMSInfo wms = getWMS().getServiceInfo();
+        wms.getSRS().remove("4326");
+        wms.getSRS().remove("3005");
+        wms.setBBOXForEachCRS(false);
+        getGeoServer().save(wms);
     }
 }

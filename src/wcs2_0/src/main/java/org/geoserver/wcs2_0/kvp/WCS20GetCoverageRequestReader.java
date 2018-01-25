@@ -7,6 +7,7 @@ package org.geoserver.wcs2_0.kvp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
@@ -76,20 +77,27 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
+        // the early spec draft had un-qualified params, keeping it for backwards compatibility
         List<String> geoTiffParams = Arrays.asList("compression", "jpeg_quality", "predictor",
                 "interleave", "tiling", "tileheight", "tilewidth");
-        parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS);
+        parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS, null);
+        // the current has the qualified as "geotiff:xyz"
+        parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS, "geotiff");
     }
 
     private void parseCRSExtension(GetCoverageType gc, Map kvp) {
         List<String> geoTiffParams = Arrays.asList("subsettingCrs", "outputCrs");
-        parseSimpleContentList(gc, kvp, geoTiffParams, CRS_NS);
+        parseSimpleContentList(gc, kvp, geoTiffParams, CRS_NS, null);
     }
 
     private void parseSimpleContentList(GetCoverageType gc, Map kvp, List<String> geoTiffParams,
-            String namespace) {
+            String namespace, String kvpPrefix) {
         for (String param : geoTiffParams) {
-            String value = KvpUtils.firstValue(kvp, param);
+            String key = param;
+            if (kvpPrefix != null) {
+                key = kvpPrefix + ":" + param;
+            }
+            String value = KvpUtils.firstValue(kvp, key);
             if (value != null) {
                 ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
                 item.setNamespace(namespace);

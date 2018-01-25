@@ -35,6 +35,18 @@
         <property name="titleKey" value="AuthenticationKeyFilterPanel.title"/>
         <property name="descriptionKey" value="AuthenticationKeyFilterPanel.description"/>
    </bean>
+
+  <!-- WebService UserGroup service panel infos -->
+  <bean id="authKeyWebServiceBodyResponseSecurityProvider" class="org.geoserver.security.WebServiceBodyResponseSecurityProvider">
+    <constructor-arg ref="geoServerSecurityManager"/>
+  </bean>
+  
+  <bean id="authKeyWebServiceBodyResponseUserGroupServicePanelInfo" class="org.geoserver.security.web.WebServiceBodyResponseUserGroupServicePanelInfo">
+      <property name="id" value="security.authKeyWebServiceBodyResponseUserGroupService" />
+      <property name="shortTitleKey" value="WebServiceBodyResponseUserGroupServicePanel.short"/>
+      <property name="titleKey" value="WebServiceBodyResponseUserGroupServicePanel.title"/>
+      <property name="descriptionKey" value="WebServiceBodyResponseUserGroupServicePanel.description"/>
+  </bean>
   
   <!-- REST based role service panel infos -->
   <bean id="authKeyRESTRoleServicePanelInfo" class="org.geoserver.security.web.GeoServerRestRoleServicePanelInfo">

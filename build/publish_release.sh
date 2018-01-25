@@ -64,7 +64,7 @@ if [ -z $SKIP_DEPLOY ]; then
    # deploy released community modules
    pushd community > /dev/null
    set +e
-   mvn deploy -P communityRelease -DskipTests
+   mvn clean install deploy -P communityRelease -DskipTests
    set -e
    popd > /dev/null
 else

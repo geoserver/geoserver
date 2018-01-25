@@ -164,4 +164,29 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         catalog.remove(styleInfo);
     }
 
+    @Test
+    public void testPostJson() throws Exception {
+        String jsonBody = newMbStyle();
+        Catalog cat = getCatalog();
+        assertNull("foo not available", cat.getStyleByName("foo"));
+
+        MockHttpServletResponse response = postAsServletResponse("/rest/styles?name=foo",jsonBody, MBStyleHandler.MIME_TYPE);
+        assertEquals(201, response.getStatus());
+
+        GeoServerResourceLoader resources = catalog.getResourceLoader();
+        Resource resource = resources.get("/styles/foo.json");
+        String definition = new String(resource.getContents());
+        assertTrue("is json", definition.contains("\"circle-color\": \"#FFFFFF\""));
+
+        StyleInfo styleInfo = catalog.getStyleByName("foo");
+        Style s = styleInfo.getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        String contentOut = new String(out.toByteArray());
+        assertTrue(contentOut.contains("<sld:Name>foo</sld:Name>"));
+        catalog.remove(styleInfo);
+    }
+
 }

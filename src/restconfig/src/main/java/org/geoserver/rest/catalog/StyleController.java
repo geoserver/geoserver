@@ -7,7 +7,17 @@ package org.geoserver.rest.catalog;
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CascadeDeleteVisitor;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFacade;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.SLDNamedLayerValidator;
+import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
@@ -37,8 +47,12 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.xml.sax.EntityResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -93,9 +107,7 @@ public class StyleController extends AbstractCatalogController {
             @PathVariable(required = false) String workspaceName,
             @RequestParam(defaultValue = "false", name = "default") boolean makeDefault) {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
+        checkWorkspaceName(workspaceName);
         checkFullAdminRequired(workspaceName);
         
         if (layerName != null) {
@@ -127,78 +139,86 @@ public class StyleController extends AbstractCatalogController {
     }
 
     @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
-            SLDHandler.MIMETYPE_11,
-            SLDHandler.MIMETYPE_10})
+            MediaTypeExtensions.APPLICATION_ZIP_VALUE})
+    public ResponseEntity<String> stylePost(
+            InputStream stream,
+            @RequestParam(required = false) String name,
+            @PathVariable(required = false) String workspaceName,
+            UriComponentsBuilder builder) throws IOException {
+
+        checkWorkspaceName(workspaceName);
+        checkFullAdminRequired(workspaceName);
+
+        File directory = unzipSldPackage(stream);
+        File uploadedFile = getSldFileFromDirectory(directory);
+
+        Style styleSld = parseSld(uploadedFile);
+
+        if (name == null) {
+            name = getNameFromStyle(styleSld);
+        }
+        checkStyleNotExists(workspaceName, name);
+
+        saveImageResources(directory, workspaceName);
+
+        StyleHandler handler = Styles.handler("sld");
+        Version version = handler.version(uploadedFile);
+        StyleInfo styleInfo = createStyleInfo(workspaceName, name, handler, handler.mimeType(version));
+
+
+        checkStyleResourceNotExists(styleInfo);
+        writeStyleRaw(styleInfo, new FileInputStream(uploadedFile));
+
+        catalog.add(styleInfo);
+
+        LOGGER.info("POST Style Package: " + name + ", workspace: " + workspaceName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(getUri(name, workspaceName, builder));
+        return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {MediaType.ALL_VALUE})
     public ResponseEntity<String> styleSLDPost(
-            @RequestBody Style style,
+            InputStream inputStream,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false) String name,
-            @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder) {
+            @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder) throws IOException {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
+        checkWorkspaceName(workspaceName);
         checkFullAdminRequired(workspaceName);
+
+        String mimeType = getMimeTypeFromContentType(contentType);
+        String charset = getCharsetFromContentType(contentType);
+
+        byte[] rawData = IOUtils.toByteArray(inputStream);
+        String content = new String(rawData, charset);
+        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+
+        StyleHandler handler = Styles.handler(mimeType);
+        Version version = handler.versionForMimeType(mimeType);
+
+        StyledLayerDescriptor sld = handler.parse( content, version, null, entityResolver);
+        Style style = Styles.style(sld);
         
-        StyleHandler handler = org.geoserver.catalog.Styles.handler(contentType);
         if (name == null) {
-            name = findNameFromObject(style);
+            name = getNameFromStyle(style);
         }
+        checkStyleNotExists(workspaceName, name);
+        StyleInfo sinfo = createStyleInfo(workspaceName, name, handler, mimeType);
+        checkStyleResourceNotExists(sinfo);
 
-        //ensure that the style does not already exist
-        if (catalog.getStyleByName(workspaceName, name) != null) {
-            throw new RestException("Style " + name + " already exists.",
-                    HttpStatus.FORBIDDEN);
-        }
-
-        StyleInfo sinfo = catalog.getFactory().createStyle();
-        sinfo.setName(name);
-        sinfo.setFilename(name + "." + handler.getFileExtension());
-        sinfo.setFormat(handler.getFormat());
-        sinfo.setFormatVersion(handler.versionForMimeType(contentType));
-
-        if (workspaceName != null) {
-            sinfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
-        }
-
-        // ensure that a existing resource does not already exist, because we may not want to overwrite it
-        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
-        if (dataDir.style(sinfo).getType() != Resource.Type.UNDEFINED) {
-            String msg = "Style resource " + sinfo.getFilename() + " already exists.";
-            throw new RestException(msg, HttpStatus.FORBIDDEN);
-        }
-
-
-        ResourcePool resourcePool = catalog.getResourcePool();
         try {
-            if (style instanceof Style) {
-                resourcePool.writeStyle(sinfo, (Style) style);
-            } else {
-                resourcePool.writeStyle(sinfo, (InputStream) style);
-            }
-        } catch (IOException e) {
+            writeStyle(sinfo, sld, rawData, handler, version);
+        } catch (Exception e) {
             throw new RestException("Error writing style", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
 
         catalog.add(sinfo);
         LOGGER.info("POST Style " + name);
         //build the new path
-        UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
-    }
-
-    private UriComponents getUriComponents(String name, String workspace,
-        UriComponentsBuilder builder) {
-        UriComponents uriComponents;
-        if (workspace != null) {
-            uriComponents = builder.path("/workspaces/{workspaceName}/styles/{styleName}")
-                .buildAndExpand(workspace, name);
-        } else {
-            uriComponents = builder.path("/styles/{id}").buildAndExpand(name);
-        }
-        return uriComponents;
+        headers.setLocation(getUri(name, workspaceName, builder));
+        return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 
     @GetMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, produces = {MediaType.ALL_VALUE})
@@ -240,10 +260,8 @@ public class StyleController extends AbstractCatalogController {
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false, defaultValue = "false") boolean recurse,
             @RequestParam(required = false, defaultValue = "false") boolean purge) throws IOException {
-        
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
+
+        checkWorkspaceName(workspaceName);
 
         StyleInfo style = workspaceName != null ? catalog.getStyleByName(workspaceName, styleName) :
                 catalog.getStyleByName(styleName);
@@ -268,87 +286,6 @@ public class StyleController extends AbstractCatalogController {
         LOGGER.info("DELETE style " + styleName);
     }
 
-    String findNameFromObject(Object object) {
-        String name = null;
-        if (object instanceof Style) {
-            name = ((Style)object).getName();
-        }
-
-        if (name == null) {
-            // generate a random one
-            for (int i = 0; name == null && i < 100; i++) {
-                String candidate = "style-"+ UUID.randomUUID().toString().substring(0, 7);
-                if (catalog.getStyleByName(candidate) == null) {
-                    name = candidate;
-                }
-            }
-        }
-
-        if (name == null) {
-            throw new RestException("Unable to generate style name, specify one with 'name' "
-                + "parameter", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return name;
-    }
-
-    @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
-            MediaTypeExtensions.APPLICATION_ZIP_VALUE})
-    public ResponseEntity<String> stylePost(
-            InputStream stream,
-            @RequestParam(required = false) String name,
-            @PathVariable(required = false) String workspaceName,
-            UriComponentsBuilder builder) throws IOException {
-
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
-        checkFullAdminRequired(workspaceName);
-        
-        File directory = unzipSldPackage(stream);
-        File uploadedFile = retrieveSldFile(directory);
-
-        Style styleSld = parseSld(uploadedFile);
-
-        if (name == null) {
-            name = findNameFromObject(styleSld);
-        }
-
-        //ensure that the style does not already exist
-        if (catalog.getStyleByName(workspaceName, name) != null) {
-            throw new RestException("Style " + name + " already exists.", HttpStatus.FORBIDDEN);
-        }
-
-        // save image resources
-        saveImageResources(directory, workspaceName);
-
-        //create a style info object
-        StyleInfo styleInfo = catalog.getFactory().createStyle();
-        styleInfo.setName(name);
-        styleInfo.setFilename(name + ".sld");
-
-        if (workspaceName != null) {
-            styleInfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
-        }
-
-        Resource style = dataDir.style(styleInfo);
-        // ensure that a existing resource does not already exist, because we may not want to overwrite it
-        if (dataDir.style(styleInfo).getType() != Resource.Type.UNDEFINED) {
-            String msg = "Style resource " + styleInfo.getFilename() + " already exists.";
-            throw new RestException(msg, HttpStatus.FORBIDDEN);
-        }
-
-        serializeSldFileInCatalog(style, uploadedFile);
-
-        catalog.add(styleInfo);
-
-        LOGGER.info("POST Style Package: " + name + ", workspace: " + workspaceName);
-        UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
-    }
-
     @PutMapping( value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public void styleZipPut(
@@ -356,7 +293,46 @@ public class StyleController extends AbstractCatalogController {
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
 
-        putZipInternal(is, workspaceName, styleName);
+        checkWorkspaceName(workspaceName);
+        checkFullAdminRequired(workspaceName);
+
+
+        File directory = null;
+        try {
+            directory = unzipSldPackage(is);
+            File uploadedFile = getSldFileFromDirectory(directory);
+
+            Style styleSld = parseSld(uploadedFile);
+
+            if (styleName == null) {
+                styleName = getNameFromStyle(styleSld);
+            }
+
+            if (styleName == null) {
+                throw new RestException("Style must have a name.", HttpStatus.BAD_REQUEST);
+            }
+
+            //ensure that the style already exists
+            if (!existsStyleInCatalog(workspaceName, styleName)) {
+                throw new RestException("Style " + styleName + " doesn't exist.", HttpStatus.FORBIDDEN);
+            }
+
+            // save image resources
+            saveImageResources(directory, workspaceName);
+
+            // Save the style: serialize the style out into the data directory
+            StyleInfo styleInfo = catalog.getStyleByName(workspaceName, styleName);
+            writeStyleRaw(styleInfo, new FileInputStream(uploadedFile));
+            catalog.save(styleInfo);
+
+            LOGGER.info("PUT Style Package: " + styleName + ", workspace: " + workspaceName);
+
+        } catch (Exception e) {
+            LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());
+            throw new RestException("Error processing the style", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        } finally {
+            FileUtils.deleteQuietly(directory);
+        }
     }
 
     /**
@@ -375,37 +351,33 @@ public class StyleController extends AbstractCatalogController {
     @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaType.ALL_VALUE})
     public void stylePut(
+            InputStream inputStream,
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(name = "raw", required = false, defaultValue = "false") boolean raw,
-            HttpServletRequest request) throws IOException {
+            @RequestHeader("Content-Type") String contentType) throws IOException {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
+        checkWorkspaceName(workspaceName);
         checkFullAdminRequired(workspaceName);
-        StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
+        StyleInfo info = catalog.getStyleByName( workspaceName, styleName );
 
         // Extracting mimeType and charset from content type formated as "Content-Type: text/html; charset=utf-8"
-        String contentType = getMimeTypeFromContentType(request.getContentType());
-        String charset = getCharsetFromContentType(request.getContentType());
-        // String extentsion = "sld"; // TODO: determine this from path
-        
-        ResourcePool resourcePool = catalog.getResourcePool();
-        byte[] rawData = IOUtils.toByteArray(request.getInputStream());
+        String mimeType = getMimeTypeFromContentType(contentType);
+        String charset = getCharsetFromContentType(contentType);
+
+        byte[] rawData = IOUtils.toByteArray(inputStream);
         String content = new String(rawData, charset);
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         if (raw) {
-            writeRaw(s, new ByteArrayInputStream(rawData));
+            writeStyleRaw(info, new ByteArrayInputStream(rawData));
 
             try {
                 // figure out if we need a version switch
-                for (StyleHandler format : Styles.handlers()) {
-                    if (Objects.equals(s.getFormat(), format.getFormat())) {
-                        Version version = Styles.handler(s.getFormat()).version(content);
+                for (StyleHandler handler : Styles.handlers()) {
+                    if (Objects.equals(info.getFormat(), handler.getFormat())) {
+                        Version version = Styles.handler(info.getFormat()).version(content);
                         if (version != null) {
-                            s.setFormatVersion(version);
-                            catalog.save(s);
+                            info.setFormatVersion(version);
                         }
                     }
                 }
@@ -413,51 +385,21 @@ public class StyleController extends AbstractCatalogController {
                 LOGGER.log(Level.WARNING, "Could not determine the version of the raw style, the previous one was " +
                         "retained", e);
             }
+            catalog.save(info);
         } else {
-            for (StyleHandler format : Styles.handlers()) {
-                for (Version version : format.getVersions()) {
-                    String mimeType = format.mimeType(version);
-                    if( !mimeType.equals(contentType)){
-                        continue; // skip this format
-                    }
-                    try {
-                        StyledLayerDescriptor sld = format.parse( content, version, null, entityResolver);
-                        //If there are more than one layers, assume this is a style group and validate accordingly.
-                        if (sld.getStyledLayers().length > 1) {
-                            List<Exception> validationErrors = SLDNamedLayerValidator.validate(catalog, sld);
-                            if (validationErrors.size() > 0) {
-                                throw validationErrors.get(0);
-                            }
-                        }
+            try {
+                StyleHandler handler = Styles.handler(mimeType);
+                Version version = handler.versionForMimeType(mimeType);
 
-                        Style style = Styles.style(sld);
-                        if (format instanceof SLDHandler && sld.getStyledLayers().length <= 1) {
-                            s.setFormat(format.getFormat());
-                            resourcePool.writeStyle(s, style, true);
-                            catalog.save(s);
-                        } else {
-                            s.setFormat(format.getFormat());
-                            s.setFormatVersion(version);
-                            writeRaw(s, new ByteArrayInputStream(rawData));
-                        }
-                        return;
-                    }
-                    catch(Exception invalid){
-                        throw new RestException("Invalid style:"+invalid.getMessage(), HttpStatus.BAD_REQUEST, invalid);
-                    }
-                }
+                StyledLayerDescriptor sld = handler.parse( content, version, null, entityResolver);
+                writeStyle(info, sld, rawData, handler, version);
+                catalog.save(info);
+            } catch(Exception invalid) {
+                throw new RestException("Invalid style:"+invalid.getMessage(), HttpStatus.BAD_REQUEST, invalid);
             }
-            throw new RestException("Unknown style format '"+contentType+"'", HttpStatus.BAD_REQUEST);
         }
     }
-    
-    private void writeRaw( StyleInfo info, InputStream input) throws IOException{
-        ResourcePool resourcePool = catalog.getResourcePool();
-        
-        resourcePool.writeStyle(info, input);
-        catalog.save( info);
-    }
-    
+
     @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -468,9 +410,7 @@ public class StyleController extends AbstractCatalogController {
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
+        checkWorkspaceName(workspaceName);
         checkFullAdminRequired(workspaceName);
         
         StyleInfo original = catalog.getStyleByName(workspaceName, styleName);
@@ -487,51 +427,75 @@ public class StyleController extends AbstractCatalogController {
         catalog.save(original);
     }
 
-    /**
-     * Unzips the ZIP stream.
-     *
-     */
-    private File unzipSldPackage(InputStream object) throws IOException {
-        File tempDir = Files.createTempDir();
-
-        org.geoserver.util.IOUtils.decompress(object, tempDir);
-
-        return tempDir;
-    }
+    /* Style parsing and encoding utilities ******************************************************/
 
     /**
-     * Returns the sld file in the given directory. If no sld file, throws an exception
+     * Writes a valid StyledLayerDescriptor to a style resource in the requested format.
+     * If the requested format does not support encoding from a StyledLayerDescriptor, instead writes the raw style to
+     * the style resource.
      *
-     * @param directory
+     * If the StyledLayerDescriptor contains multiple StyledLayers, assumes it represents a style group, and verifies
+     * that all StyledLayers contain valid layer references.
      *
+     * @param info Style info object, containing details about the style format and location
+     * @param sld StyledLayerDescriptor representing the style
+     * @param rawData Raw bytes of the original style, before it was parsed to a StyledLayerDescriptor
+     * @param handler A {@link StyleHandler} compatible with the format of the style
+     * @param version The version of the style format.
+     * @throws Exception if there was an error persisting the style, or if there was a validation error.
      */
-    private File retrieveSldFile(File directory) {
-        File[] matchingFiles = directory.listFiles((dir, name) -> name.endsWith("sld"));
+    private void writeStyle(StyleInfo info, StyledLayerDescriptor sld, byte[] rawData, StyleHandler handler, Version version) throws Exception {
+        ResourcePool resourcePool = catalog.getResourcePool();
 
-        if (matchingFiles.length == 0) {
-            throw new RestException("No sld file provided:", HttpStatus.FORBIDDEN);
+        //If there is more than one layer, assume this is a style group and validate accordingly.
+        if (sld.getStyledLayers().length > 1) {
+            List<Exception> validationErrors = SLDNamedLayerValidator.validate(catalog, sld);
+            if (validationErrors.size() > 0) {
+                throw validationErrors.get(0);
+            }
         }
 
-        LOGGER.fine("retrieveSldFile (sldFile): " + matchingFiles[0].getAbsolutePath());
-
-        return matchingFiles[0];
+        Style style = Styles.style(sld);
+        if (handler instanceof SLDHandler && sld.getStyledLayers().length <= 1) {
+            info.setFormat(handler.getFormat());
+            resourcePool.writeStyle(info, style, true);
+        } else {
+            info.setFormat(handler.getFormat());
+            info.setFormatVersion(version);
+            writeStyleRaw(info, new ByteArrayInputStream(rawData));
+        }
     }
 
     /**
-     * Parses the sld file.
+     * Writes the content of an input stream to a style resource, without validation
      *
-     * @param sldFile
-     *
+     * @param info Style info object, containing details about the style format and location
+     * @param input The style contents
+     * @throws IOException if there was an error persisting the style
      */
-    private Style parseSld(File sldFile) {
+    private void writeStyleRaw(StyleInfo info, InputStream input) throws IOException {
+        try {
+            catalog.getResourcePool().writeStyle(info, input);
+        } finally {
+            IOUtils.closeQuietly(input);
+        }
+    }
+
+    /**
+     * Parses the sld file from a zipfile upload, returning it as a Style object
+     *
+     * @param sldFile The sld file to parse
+     * @return The parsed style
+     * @throws RestException if there was an error parsing the style.
+     */
+    private Style parseSld(File sldFile) throws RestException {
         Style style = null;
         InputStream is = null;
 
         try {
             is = new FileInputStream(sldFile);
 
-            SLDParser parser
-                = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
+            SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
             EntityResolver resolver = catalog.getResourcePool().getEntityResolver();
             if(resolver != null) {
                 parser.setEntityResolver(resolver);
@@ -541,11 +505,9 @@ public class StyleController extends AbstractCatalogController {
             if (styles.length > 0) {
                 style = styles[0];
             }
-
             if (style == null) {
                 throw new RestException("Style error.", HttpStatus.BAD_REQUEST);
             }
-
             return style;
 
         } catch (Exception ex) {
@@ -557,112 +519,158 @@ public class StyleController extends AbstractCatalogController {
         }
     }
 
+    /* Parameter/request parsing utilities *******************************************************/
+
     /**
-     * Save the image resources in the styles folder
+     * Extracts an input stream representing a zipped directory containing an sld file and any number of image files
+     * to a temporary location on the filesystem.
      *
-     * @param directory     Temporary directory with images from SLD package
-     * @param workspace     Geoserver workspace name for the style
-     * @throws java.io.IOException
+     * @param object The input stream containing the zipped directory
+     * @return A file pointing to the (temporary) unzipped directory
+     * @throws IOException if there was an error extracting the archive
      */
-    private void saveImageResources(File directory, String workspace) throws IOException {
-        Resource stylesDir = workspace == null ? dataDir.getStyles() : dataDir.getStyles(catalog.getWorkspaceByName(workspace));
+    private File unzipSldPackage(InputStream object) throws IOException {
+        File tempDir = Files.createTempDir();
 
-        File[] imageFiles = retrieveImageFiles(directory);
+        org.geoserver.util.IOUtils.decompress(object, tempDir);
 
-        for (int i = 0; i < imageFiles.length; i++) {
-            IOUtils.copyStream(new FileInputStream(imageFiles[i]),
-                stylesDir.get(imageFiles[i].getName()).out(), true, true);
-        }
+        return tempDir;
     }
 
     /**
-     * Returns a list of image files in the given directory
+     * Returns the sld file in the given directory. If no sld file, throws an appropriate exception
      *
-     * @param directory
-     *
+     * @param directory The directory containing the sld file
+     * @throws RestException it the sld file does not exist
      */
-    private File[] retrieveImageFiles(File directory) {
+    private File getSldFileFromDirectory(File directory) throws RestException {
+        File[] matchingFiles = directory.listFiles((dir, name) -> name.endsWith("sld"));
+
+        if (matchingFiles == null || matchingFiles.length == 0) {
+            throw new RestException("No sld file provided:", HttpStatus.FORBIDDEN);
+        }
+
+        LOGGER.fine("getSldFileFromDirectory (sldFile): " + matchingFiles[0].getAbsolutePath());
+
+        return matchingFiles[0];
+    }
+
+    /**
+     * Returns an array of image files (svg, png, or jpg) in the given directory
+     *
+     * @param directory The directory containing the image files
+     * @return an array of image files
+     */
+    private File[] listImageFiles(File directory) {
         return directory.listFiles((dir, name) ->
                 validImageFileExtensions.contains(FilenameUtils.getExtension(name).toLowerCase()));
     }
 
     /**
-     * Serializes the uploaded sld file in the catalog
+     * Save the image resources in the styles folder
      *
-     * @param sldFile
-     * @param uploadedSldFile
+     * @param directory Temporary directory containing the image files to save
+     * @param workspaceName Name of the workspace of the style (or null for a global style)
+     * @throws IOException if there was an error saving the image resources
      */
-    private void serializeSldFileInCatalog(Resource sldFile, File uploadedSldFile) {
-        BufferedOutputStream out = null;
-        try {
-            out = new BufferedOutputStream(sldFile.out());
-            byte[] sldContent = FileUtils.readFileToByteArray(uploadedSldFile);
-            out.write(sldContent);
-            out.flush();
-        } catch (IOException e) {
-            throw new RestException("Error creating file", HttpStatus.INTERNAL_SERVER_ERROR, e);
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
-    }
-    
-    private void putZipInternal(InputStream is, String workspace, String style) {
-        if(workspace != null && catalog.getWorkspaceByName(workspace) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspace + " not found");
-        }
-        checkFullAdminRequired(workspace);
+    private void saveImageResources(File directory, String workspaceName) throws IOException {
+        Resource stylesDir = workspaceName == null ? dataDir.getStyles() : dataDir.getStyles(catalog.getWorkspaceByName(workspaceName));
 
-        
-        File directory = null;
-        try {
-            directory = unzipSldPackage(is);
-            File uploadedFile = retrieveSldFile(directory);
+        File[] imageFiles = listImageFiles(directory);
 
-            Style styleSld = parseSld(uploadedFile);
-
-            if (style == null) {
-                style = findNameFromObject(styleSld);
-            }
-
-            if (style == null) {
-                throw new RestException("Style must have a name.", HttpStatus.BAD_REQUEST);
-            }
-
-            //ensure that the style already exists
-            if (!existsStyleInCatalog(workspace, style)) {
-                throw new RestException("Style " + style + " doesn't exist.", HttpStatus.FORBIDDEN);
-            }
-
-            // save image resources
-            saveImageResources(directory, workspace);
-
-            // Save the style: serialize the style out into the data directory
-            StyleInfo styleInfo = catalog.getStyleByName(workspace, style);
-            serializeSldFileInCatalog(dataDir.style(styleInfo), uploadedFile);
-
-            LOGGER.info("PUT Style Package: " + style + ", workspace: " + workspace);
-
-        } catch (Exception e) {
-            LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());
-            throw new RestException("Error processing the style", HttpStatus.INTERNAL_SERVER_ERROR, e);
-        } finally {
-            FileUtils.deleteQuietly(directory);
+        for (File imageFile : imageFiles) {
+            IOUtils.copyStream(new FileInputStream(imageFile),
+                    stylesDir.get(imageFile.getName()).out(), true, true);
         }
     }
 
     /**
-     * Checks if style is in the catalog.
+     * Generates a name from a style object.
+     * If {@link Style#getName()} is not null, returns that.
+     * Otherwise generates a unique identifier of the form "style-UUID", and returns that.
      *
-     * @param workspaceName     Workspace name
-     * @param name              Style name
+     * @param style The style to get the name from
+     * @return A unique name for the style
+     * @throws RestException if there was an error generating a unique name
      */
-    private boolean existsStyleInCatalog(String workspaceName, String name) {
-        return (catalog.getStyleByName(workspaceName, name ) != null);
+    private String getNameFromStyle(Style style) throws RestException {
+        String name = null;
+        if (style != null) {
+            name = style.getName();
+        }
+        if (name == null) {
+            // generate a random one
+            for (int i = 0; name == null && i < 100; i++) {
+                String candidate = "style-"+ UUID.randomUUID().toString().substring(0, 7);
+                if (catalog.getStyleByName(candidate) == null) {
+                    name = candidate;
+                }
+            }
+        }
+        if (name == null) {
+            throw new RestException("Unable to generate style name, specify one with 'name' "
+                    + "parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return name;
     }
 
     /**
-     * Extracts MimeType from HTTP ContentType header
-     * @param contentType       ContentType header
+     * Constructs a new StyleInfo object, given a style name and format.
+     *
+     * Note: It is up to the caller to add this style info to the catalog.
+     *
+     * @param workspaceName The workspace of the style, or null for a global style
+     * @param name The name of the style
+     * @param handler StyleHandler, containing format information of the style
+     * @param mimeType Declared mime type of the style
+     * @return A new StyleInfo object, constructed from the provided data
+     * @throws RestException if a style of the given name and workspace already exists in the catalog.
+     */
+    private StyleInfo createStyleInfo(String workspaceName, String name, StyleHandler handler, String mimeType) throws RestException {
+
+        //ensure that the style does not already exist
+        if (catalog.getStyleByName(workspaceName, name) != null) {
+            throw new RestException("Style " + name + " already exists.",
+                    HttpStatus.FORBIDDEN);
+        }
+
+        StyleInfo sinfo = catalog.getFactory().createStyle();
+        sinfo.setName(name);
+        sinfo.setFilename(name + "." + handler.getFileExtension());
+        sinfo.setFormat(handler.getFormat());
+        sinfo.setFormatVersion(handler.versionForMimeType(mimeType));
+
+        if (workspaceName != null) {
+            sinfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
+        }
+
+        return sinfo;
+    }
+
+    /**
+     * Builds the REST URI to a style of the provided name.
+     *
+     * @param name Name of the style
+     * @param workspace Workspace of the style, or null for a global style
+     * @param builder The {@link UriComponentsBuilder} for the request
+     * @return the {@link URI} to the named style
+     */
+    private URI getUri(String name, String workspace, UriComponentsBuilder builder) {
+        UriComponents uriComponents;
+        if (workspace != null) {
+            uriComponents = builder.path("/workspaces/{workspaceName}/styles/{styleName}")
+                    .buildAndExpand(workspace, name);
+        } else {
+            uriComponents = builder.path("/styles/{id}").buildAndExpand(name);
+        }
+        return uriComponents.toUri();
+    }
+
+    /**
+     * Extracts the MimeType from the HTTP Content-Type header value.
+     * Example: For a Content-Type of "text/html; charset=utf-8", would return "text/html".
+     *
+     * @param contentType       Content-Type header value
      */
     private String getMimeTypeFromContentType(String contentType) {
         if (contentType != null) {
@@ -672,8 +680,12 @@ public class StyleController extends AbstractCatalogController {
     }
 
     /**
-     * Extracts Charset from HTTP ContentType header
-     * @param contentType       ContentType header
+     * Extracts Charset from HTTP Content-Type header value.
+     * Example: For a Content-Type of "text/html; charset=utf-8", would return "utf-8".
+     *
+     * If the charset is not included in the Content-Type, returns the default charset of the JVM.
+     *
+     * @param contentType       Content-Type header value
      */
     private String getCharsetFromContentType(String contentType) {
         if (contentType != null && contentType.split(";").length > 1) {
@@ -684,5 +696,57 @@ public class StyleController extends AbstractCatalogController {
         }
         // For retrocompatibility sake
         return Charset.defaultCharset().name();
+    }
+
+    /* Validation / Verification utilities *******************************************************/
+
+    /**
+     * Checks if style is in the catalog.
+     *
+     * @param workspaceName The name of the workspace, or null for a global style
+     * @param styleName The name of the style
+     * @return true if the style exists in the catalog, false otherwise.
+     */
+    private boolean existsStyleInCatalog(String workspaceName, String styleName) {
+        return (catalog.getStyleByName(workspaceName, styleName ) != null);
+    }
+
+    /**
+     * Verifies the workspace name (if not null) for a REST request, throwing an appropriate exception if invalid
+     *
+     * @param workspaceName The workspace name. Ignored if null.
+     * @throws RestException if the workspace name is not null and the workspace doesn't exist in the catalog
+     */
+    private void checkWorkspaceName(String workspaceName) throws RestException {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+    }
+
+    /**
+     * Verifies that a style with the given name doesn't exist, throwing an appropriate exception if it does
+     *
+     * @param workspaceName The name of the workspace (or null for a global style)
+     * @param styleName The name of the style
+     * @throws RestException if the style exists
+     */
+    private void checkStyleNotExists(String workspaceName, String styleName) throws RestException {
+        if (existsStyleInCatalog(workspaceName, styleName)) {
+            throw new RestException("Style " + styleName + " already exists.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Verifies that the style resource for the passed style does not yet exist, throwing an appropriate exception if it does
+     *
+     * @param info The style info to test. Filename should be set.
+     * @throws RestException if the style resource associated with the style info exists.
+     */
+    private void checkStyleResourceNotExists(StyleInfo info) throws RestException {
+        // ensure that a existing resource does not already exist, because we may not want to overwrite it
+        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
+        if (dataDir.style(info).getType() != Resource.Type.UNDEFINED) {
+            throw new RestException("Style resource " + info.getFilename() + " already exists.", HttpStatus.FORBIDDEN);
+        }
     }
 }

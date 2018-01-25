@@ -1,5 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,11 +10,9 @@ import java.util.List;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AuthenticationKeyMapper;
-import org.geoserver.security.web.auth.AuthenticationFilterPanel;
 
 /**
  * Drop down choice widget for {@link AuthenticationKeyMapper} configurations.

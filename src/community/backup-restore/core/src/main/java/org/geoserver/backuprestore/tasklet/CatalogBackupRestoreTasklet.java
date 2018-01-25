@@ -268,11 +268,15 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             
             // Set Default Namespace and Workspace
             if (Resources.exists(sourceWorkspacesFolder.get("default.xml"))) {
-                NamespaceInfo newDefaultNamespace = (NamespaceInfo) doRead(sourceWorkspacesFolder,
-                        "defaultnamespace.xml");
+                if (Resources.exists(sourceWorkspacesFolder.get("defaultnamespace.xml"))) {
+                    NamespaceInfo newDefaultNamespace = (NamespaceInfo) doRead(sourceWorkspacesFolder,
+                            "defaultnamespace.xml");
+                    if (newDefaultNamespace != null) {
+                        getCatalog().setDefaultNamespace(newDefaultNamespace);
+                    }
+                }
                 WorkspaceInfo newDefaultWorkspace = (WorkspaceInfo) doRead(sourceWorkspacesFolder,
                         "default.xml");
-                getCatalog().setDefaultNamespace(newDefaultNamespace);
                 getCatalog().setDefaultWorkspace(newDefaultWorkspace);
             }
         } catch (Exception e) {

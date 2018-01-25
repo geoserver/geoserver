@@ -28,6 +28,9 @@ public class GeoServerRestRoleServicePanel
         add(new TextField<String>("rolesJSONPath").setRequired(true));
         add(new TextField<String>("adminRoleJSONPath").setRequired(true));
         add(new TextField<String>("usersJSONPath").setRequired(true));
+        add(new TextField<Integer>("cacheConcurrencyLevel").setRequired(true));
+        add(new TextField<Long>("cacheMaximumSize").setRequired(true));
+        add(new TextField<Long>("cacheExpirationTime").setRequired(true));
     }
 
 }

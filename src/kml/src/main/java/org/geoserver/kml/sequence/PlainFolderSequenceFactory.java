@@ -113,8 +113,8 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
             }
 
             LatLonBox gobox = go.createAndSetLatLonBox();
-            gobox.setEast(box.getMinX());
-            gobox.setWest(box.getMaxX());
+            gobox.setEast(box.getMaxX());
+            gobox.setWest(box.getMinX());
             gobox.setNorth(box.getMaxY());
             gobox.setSouth(box.getMinY());
         }

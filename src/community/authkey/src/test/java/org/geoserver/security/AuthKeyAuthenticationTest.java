@@ -1,5 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -28,7 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.http.AbstractHttpClient;
@@ -390,7 +391,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
-    public void testWebServiceAutheKeyMapper() throws Exception {
+    public void testWebServiceAuthKeyMapper() throws Exception {
         GeoServerUserGroupService ugservice = createUserGroupService("testWebServiceAuthKey");
         GeoServerUserGroupStore ugstore = ugservice.createStore();
         GeoServerUser u1 = ugstore.createUserObject("user1", "passwd1", true);
@@ -418,7 +419,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
-    public void testWebServiceAutheKeyMapperSearchUser() throws Exception {
+    public void testWebServiceAuthKeyMapperSearchUser() throws Exception {
         GeoServerUserGroupService ugservice = createUserGroupService("testWebServiceAuthKey2");
         GeoServerUserGroupStore ugstore = ugservice.createStore();
         GeoServerUser u1 = ugstore.createUserObject("user1", "passwd1", true);
@@ -446,15 +447,50 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertNotNull(user);
         assertEquals(user.getUsername(), "user1");
 
-        boolean error = false;
-        try {
-            user = propMapper.getUser("wrongkey");
-        } catch (UsernameNotFoundException e) {
-            error = true;
-        }
-        assertTrue(error);
+        user = propMapper.getUser("wrongkey");
+        assertNull(user);
     }
 
+    @Test
+    public void testWebServiceAuthKeyBodyResponseUGS() throws Exception {
+        WebServiceBodyResponseUserGroupServiceConfig config = 
+                new WebServiceBodyResponseUserGroupServiceConfig();
+        config.setName("testWebServiceAuthKey3");
+        config.setClassName(WebServiceBodyResponseUserGroupService.class.getName());
+        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
+        config.setSearchRoles("^.*?\"roles\"\\s*:\\s*\"([^\"]+)\".*$");
+        config.setAvailableGroups("GROUP_MYROLE_1, GROUP_MYROLE_2");
+        
+        getSecurityManager().saveUserGroupService(config/*,isNewUGService(name)*/);
+        GeoServerUserGroupService webServiceAuthKeyBodyResponseUGS = 
+                getSecurityManager().loadUserGroupService("testWebServiceAuthKey3");
+        
+        assertNotNull(webServiceAuthKeyBodyResponseUGS);
+        
+        WebServiceAuthenticationKeyMapper propMapper = GeoServerExtensions
+                .extensions(WebServiceAuthenticationKeyMapper.class).iterator().next();
+        propMapper.setUserGroupServiceName("testWebServiceAuthKey3");
+        propMapper.setSecurityManager(getSecurityManager());
+        propMapper.setWebServiceUrl("http://service/{key}");
+        propMapper.setSearchUser("^.*?\"user\"\\s*:\\s*\"([^\"]+)\".*$");
+        propMapper.setHttpClient(new TestHttpClient("testkey",
+                "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
+        GeoServerUser user = propMapper.getUser("testkey");
+        assertNotNull(user);
+        assertEquals(user.getUsername(), "user1");
+        
+        assertNotNull(user.getAuthorities());
+        assertEquals(2, user.getAuthorities().size());
+        assertTrue(user.getAuthorities().contains(new GeoServerRole("ROLE_MYROLE_1")));
+        assertTrue(user.getAuthorities().contains(new GeoServerRole("ROLE_MYROLE_2")));
+        
+        assertEquals(2, webServiceAuthKeyBodyResponseUGS.getGroupCount());
+        assertEquals(2, webServiceAuthKeyBodyResponseUGS.getUserGroups().size());
+        assertEquals(webServiceAuthKeyBodyResponseUGS.getUserGroups(), 
+                webServiceAuthKeyBodyResponseUGS.getGroupsForUser(user));
+    }
+    
     @Test
     public void testAuthKeyMapperSynchronize() throws Exception {
 

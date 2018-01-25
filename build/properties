@@ -36,7 +36,7 @@ if [ -z $DIST_URL ]; then
 fi
 
 if [ -z $DIST_PORT ]; then
-  DIST_PORT=7777
+  DIST_PORT=22
 fi
 
 if [ -z $DIST_USER ]; then

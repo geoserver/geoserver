@@ -12,6 +12,7 @@ import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
@@ -101,7 +102,10 @@ public abstract class XStreamCatalogListConverter
                     MarshallingContext context) {
 
                 String ref;
-                if (OwsUtils.getter(clazz, "name", String.class) != null) {
+                //Special case for layer list, since there is no workspace-specific endpoint for layers
+                if (clazz.equals(LayerInfo.class) && OwsUtils.getter(clazz, "prefixedName", String.class) != null) {
+                    ref = (String) OwsUtils.get(source, "prefixedName");
+                } else if (OwsUtils.getter(clazz, "name", String.class) != null) {
                     ref = (String) OwsUtils.get(source, "name");
                 } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
                     ref = (String) OwsUtils.get(source, "id");

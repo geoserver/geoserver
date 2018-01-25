@@ -8,6 +8,8 @@ package org.geoserver.rest.catalog;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.rest.RestBaseController;
 import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -40,6 +43,17 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
         super.onTearDown(testData);
+    }
+
+    @Test
+    public void testGetListAsXML() throws Exception {
+        Document dom = getAsDOM( ROOT_PATH + "/layers.xml",200);
+        assertEquals( "layers", dom.getDocumentElement().getNodeName() );
+
+        // verify layer name and links for cite:Buildings
+        assertXpathExists("//layer[name='cite:Buildings']", dom);
+        assertThat(xp.evaluate("//layer[name='cite:Buildings']/atom:link/@href", dom),
+                endsWith(RestBaseController.ROOT_PATH + "/layers/cite%3ABuildings.xml"));
     }
 
     @Test

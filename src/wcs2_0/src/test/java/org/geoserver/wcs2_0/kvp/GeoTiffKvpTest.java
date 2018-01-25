@@ -4,30 +4,11 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
-
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Map;
-
-import javax.imageio.IIOException;
-import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.stream.FileImageInputStream;
-import javax.mail.BodyPart;
-import javax.mail.Multipart;
-
 import net.opengis.wcs20.GetCoverageType;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wcs.WCSInfo;
@@ -40,10 +21,26 @@ import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import javax.imageio.IIOException;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.FileImageInputStream;
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
@@ -56,6 +53,24 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         
         Map<String, Object> extensions = getExtensionsMap(gc);
         
+        assertEquals("JPEG", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:compression"));
+        assertEquals("75", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:jpeg_quality"));
+        assertEquals("None", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:predictor"));
+        assertEquals("pixel", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:interleave"));
+        assertEquals("true", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tiling"));
+        assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tileheight"));
+        assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tilewidth"));
+    }
+
+    @Test
+    public void extensionGeotiffPrefixed() throws Exception {
+        // complete
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=theCoverage&geotiff:compression=JPEG&geotiff:jpeg_quality=75&geotiff:predictor=None" +
+                "&geotiff:interleave=pixel&geotiff:tiling=true&geotiff:tileheight=256&geotiff:tilewidth=256");
+
+        Map<String, Object> extensions = getExtensionsMap(gc);
+
         assertEquals("JPEG", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:compression"));
         assertEquals("75", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:jpeg_quality"));
         assertEquals("None", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:predictor"));
@@ -92,9 +107,22 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
     
     @Test
     public void jpeg() throws Exception {
+        jpeg(false);
+    }
+
+    @Test
+    public void jpegPrefix() throws Exception {
+        jpeg(true);
+    }
+
+    private void jpeg(boolean prefix) throws Exception {
+        String params = "compression=JPEG&jpeg_quality=75";
+        if (prefix) {
+            params = "geotiff:compression=JPEG&geotiff:jpeg_quality=75";
+        }
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                        "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=75");
-        
+                "&coverageId=wcs__BlueMarble&" + params);
+
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
         checkJpegTiff(tiffContents);

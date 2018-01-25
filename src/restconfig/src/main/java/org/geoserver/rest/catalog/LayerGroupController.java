@@ -239,7 +239,7 @@ public class LayerGroupController extends AbstractCatalogController {
                     converter.encodeLink(link.toString(), writer);
                 }
                 if ( obj instanceof LayerInfo ) {
-                    converter.encodeLink("/layers/" + converter.encode(prefix +":"+ref), writer);
+                    converter.encodeLink("/workspaces/"+prefix+"/layers/" + converter.encode(ref), writer);
                 } else if ( obj instanceof LayerGroupInfo) {
                     LayerGroupInfo lg = (LayerGroupInfo) obj;
                     if (lg.getWorkspace() != null) {

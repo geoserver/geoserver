@@ -144,7 +144,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
         // check layer link
         assertThat(xp.evaluate("//published[name='sf:PrimitiveGeoFeature']/atom:link/@href", dom),
-                endsWith(RestBaseController.ROOT_PATH + "/layers/sf%3APrimitiveGeoFeature.xml"));
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/sf/layers/PrimitiveGeoFeature.xml"));
         assertThat(xp.evaluate("//published[name='sf:PrimitiveGeoFeature']/atom:link/@type", dom),
                 equalTo("application/xml"));
         // check style link
@@ -764,11 +764,11 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "cite:Lakes", "//publishables/published[2]/name", dom );
         // verify layer links
         assertThat(xp.evaluate("//published[name='sf:Lakes']/atom:link/@href", dom),
-                endsWith(RestBaseController.ROOT_PATH + "/layers/sf%3ALakes.xml"));
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/sf/layers/Lakes.xml"));
         assertThat(xp.evaluate("//published[name='sf:Lakes']/atom:link/@type", dom),
                 equalTo("application/xml"));
         assertThat(xp.evaluate("//published[name='cite:Lakes']/atom:link/@href", dom),
-                endsWith(RestBaseController.ROOT_PATH + "/layers/cite%3ALakes.xml"));
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/cite/layers/Lakes.xml"));
         assertThat(xp.evaluate("//published[name='cite:Lakes']/atom:link/@type", dom),
                 equalTo("application/xml"));
 

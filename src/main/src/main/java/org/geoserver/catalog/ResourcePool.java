@@ -579,7 +579,7 @@ public class ResourcePool {
                         // call this method to execute the hack which recognizes 
                         // urls which are relative to the data directory
                         // TODO: find a better way to do this
-                        connectionParameters = ResourcePool.getParams(connectionParameters, catalog.getResourceLoader() );
+                        connectionParameters = ResourcePool.getParams(connectionParameters, catalog.getResourceLoader());
                         
                         // obtain the factory
                         DataAccessFactory factory = null;
@@ -692,12 +692,12 @@ public class ResourcePool {
     }
         
     /**
-     * Process conneciton parameters into a synchronized map.
+     * Process connection parameters into a synchronized map.
      *
      * <p>
      * This is used to smooth any relative path kind of issues for any file
      * URLS or directory. This code should be expanded to deal with any other context
-     * sensitve isses data stores tend to have.
+     * sensitive issues data stores tend to have.
      * </p>
      * <ul>
      * <li>key ends in URL, and value is a string</li>
@@ -706,8 +706,8 @@ public class ResourcePool {
      * </ul>
      * 
      * @return Processed parameters with relative file URLs resolved
-     * @param m
-     * @param baseDir Base directory used to resolve relative file URLs
+     * @param m a map of data store connection parameters
+     * @parm loader
      * @task REVISIT: cache these?
      */
     public static <K,V> Map<K,V> getParams(Map<K,V> m, GeoServerResourceLoader loader) {
@@ -739,7 +739,7 @@ public class ResourcePool {
                 URL url = (URL) value;
                 File fixedPath = loader.url( url.toString() );
                 entry.setValue( (V) DataUtilities.fileToURL(fixedPath));
-            } else if ((key != null) && key.equals("directory") && value instanceof String) {
+            } else if ((key != null) && (key.equals("directory")|| key.equals("database")) && value instanceof String) {
                 String path = (String) value;
                 //if a url is used for a directory (for example property store), convert it to path
                 

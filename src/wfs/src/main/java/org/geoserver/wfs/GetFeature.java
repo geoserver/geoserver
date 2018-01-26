@@ -533,6 +533,23 @@ public class GetFeature {
                 
                 //update the count
                 count += size;
+
+                // collect queries required to return numberMatched/totalSize
+                // check maxFeatures and offset, if they are unset we can use the size we 
+                // calculated above
+                isNumberMatchedSkipped = meta.getSkipNumberMatched() && !request.isResultTypeHits();
+                if (!isNumberMatchedSkipped) {
+                    if (calculateSize
+                            && (queryMaxFeatures == Integer.MAX_VALUE || size < queryMaxFeatures)
+                            && offset <= 0) {
+                        totalCountExecutors.add(new CountExecutor(size));
+                    } else {
+                        org.geotools.data.Query qTotal = toDataQuery(query, filter, 0,
+                                Integer.MAX_VALUE, source, request, allPropNames.get(0), viewParam,
+                                joins, primaryTypeName, primaryAlias);
+                        totalCountExecutors.add(new CountExecutor(source, qTotal));
+                    }
+                }
                 
                 //if offset is present we need to check the size of this returned feature collection
                 // and adjust the offset for the next feature collection accordingly
@@ -554,24 +571,6 @@ public class GetFeature {
                             //adjust the offset for the next query
                             offset = Math.max(0, offset - size2);
                         }
-                    }
-                }
-
-                // collect queries required to return numberMatched/totalSize
-                // check maxFeatures and offset, if they are unset we can use the size we 
-                // calculated above
-                isNumberMatchedSkipped = meta.getSkipNumberMatched()
-                        && !request.isResultTypeHits();
-                if (!isNumberMatchedSkipped) {
-                        if (calculateSize
-                                && (queryMaxFeatures == Integer.MAX_VALUE || size < queryMaxFeatures)
-                                && offset <= 0) {
-                        totalCountExecutors.add(new CountExecutor(size));
-                    } else {
-                        org.geotools.data.Query qTotal = toDataQuery(query, filter, 0,
-                                Integer.MAX_VALUE, source, request, allPropNames.get(0), viewParam,
-                                joins, primaryTypeName, primaryAlias);
-                        totalCountExecutors.add(new CountExecutor(source, qTotal));
                     }
                 }
 
@@ -618,8 +617,9 @@ public class GetFeature {
             // where the client has limited the result set size, so we compute it lazily
             if (isNumberMatchedSkipped) {
                 totalCount = BigInteger.valueOf(-1);
-            } else if(count < maxFeatures && calculateSize) {
+            } else if(count < maxFeatures && calculateSize && totalOffset == 0) {
                  // optimization: if count < max features then total count == count
+                 // can't use this optimization for v2
                  totalCount = BigInteger.valueOf(count);
             } else {
                 // ok, in this case we're forced to run the queries to discover the actual total count

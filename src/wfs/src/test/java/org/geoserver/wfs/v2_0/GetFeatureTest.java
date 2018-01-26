@@ -158,6 +158,33 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
 
     @Test
+    public void testGetWithCountAndStartIndex0() throws Exception {
+        Document dom = getAsDOM(
+            "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5&startIndex=0");
+        XMLAssert.assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
+        assertEquals("5", dom.getDocumentElement().getAttribute("numberReturned"));
+        assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
+    }
+
+    @Test
+    public void testGetWithCountAndStartIndexMiddle() throws Exception {
+        Document dom = getAsDOM(
+            "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5&startIndex=7");
+        XMLAssert.assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
+        assertEquals("5", dom.getDocumentElement().getAttribute("numberReturned"));
+        assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
+    }
+
+    @Test
+    public void testGetWithCountAndStartIndexEnd() throws Exception {
+        Document dom = getAsDOM(
+            "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5&startIndex=11");
+        XMLAssert.assertXpathEvaluatesTo("4", "count(//cdf:Fifteen)", dom);
+        assertEquals("4", dom.getDocumentElement().getAttribute("numberReturned"));
+        assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
+    }
+
+    @Test
     public void testGetPropertyNameEmpty() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=2.0.0&service=wfs&propertyname=");
     }

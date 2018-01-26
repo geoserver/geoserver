@@ -28,6 +28,8 @@ import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -741,5 +743,30 @@ public class GetFeatureTest extends WFSTestSupport {
             executorService.shutdown();
         }
     }
+
+    @Test
+    public void testGetWithCountAndStartIndex0() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(
+                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=1.1.0&service=wfs&maxFeatures=5&startIndex=0&outputFormat=JSON");
+        assertEquals(5, json.getJSONArray("features").size());
+        assertEquals(15, json.getInt("totalFeatures"));
+    }
+
+    @Test
+    public void testGetWithCountAndStartIndexMiddle() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(
+                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=1.1.0&service=wfs&maxFeatures=5&startIndex=7&outputFormat=JSON");
+        assertEquals(5, json.getJSONArray("features").size());
+        assertEquals(15, json.getInt("totalFeatures"));
+    }
     
+    @Test
+    public void testGetWithCountAndStartIndexEnd() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(
+                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=1.1.0&service=wfs&maxFeatures=5&startIndex=11&outputFormat=JSON");
+        assertEquals(4, json.getJSONArray("features").size());
+        assertEquals(15, json.getInt("totalFeatures"));
+    }
+
+
 }

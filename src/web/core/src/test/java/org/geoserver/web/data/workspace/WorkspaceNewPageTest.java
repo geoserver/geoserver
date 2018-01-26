@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.data.test.MockTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,5 +87,31 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Invalid workspace name: \"default\" is a reserved keyword"});
+    }
+
+    @Test
+    public void testDuplicateURI()  {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("name", "def");
+        form.setValue("uri", MockTestData.CITE_URI);
+        form.submit();
+
+        tester.assertRenderedPage(WorkspaceNewPage.class);
+        tester.assertErrorMessages(new String[] {"Namespace with URI '"+MockTestData.CITE_URI+"' already exists."});
+
+        //Make sure the workspace doesn't get added if the namespace fails
+        assertNull(getCatalog().getWorkspaceByName("def"));
+        assertNull(getCatalog().getNamespaceByPrefix("def"));
+    }
+
+    @Test
+    public void testDuplicateName()  {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("name", MockTestData.CITE_PREFIX);
+        form.setValue("uri", "http://www.geoserver.org");
+        form.submit();
+
+        tester.assertRenderedPage(WorkspaceNewPage.class);
+        tester.assertErrorMessages(new String[] {"Workspace named '"+MockTestData.CITE_PREFIX+"' already exists."});
     }
 }

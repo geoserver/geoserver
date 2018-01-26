@@ -10,7 +10,7 @@ To download and install the required extensions by hand:
 
 #. Download the geoserver-2.10-SNAPSHOT-backup-restore-plugin.zip from:
 
-   * `Community Builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_ (GeoServer WebSite)
+   * `Community Builds <https://build.geoserver.org/geoserver/master/community-latest/>`_ (GeoServer WebSite)
    
    It is important to download the version that matches the GeoServer you are running.
 

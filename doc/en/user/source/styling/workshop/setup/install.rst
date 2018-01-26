@@ -29,7 +29,7 @@ To download and install the required extensions by hand:
 
 #. Download the geoserver-2.10-SNAPSHOT-ysld-plugin.zip from:
 
-   * `Community Builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_ (GeoServer WebSite)
+   * `Community Builds <https://build.geoserver.org/geoserver/master/community-latest/>`_ (GeoServer WebSite)
 
 #. Stop the GeoServer application.
 

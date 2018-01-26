@@ -21,7 +21,7 @@ This is a community module, which means that it will not be available in the Geo
 
 This module can be installed following these steps:
 
-1. Download this module package from the `nightly builds <http://ares.boundlessgeo.com/geoserver/>`_, the module version should match the desired GeoServer version.
+1. Download this module package from the `nightly builds <https://build.geoserver.org/geoserver/>`_, the module version should match the desired GeoServer version.
 
 2. Extract the contents of the package into the ``WEB-INF/lib`` directory of the GeoServer installation.
 

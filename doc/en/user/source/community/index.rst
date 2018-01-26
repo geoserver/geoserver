@@ -5,7 +5,7 @@ Community modules
 
 This section is devoted to GeoServer community modules. Community modules are considered "pending" in that they are not
 officially part of the GeoServer releases. They are however built along with the
-`nightly builds <http://ares.boundlessgeo.com/geoserver/>`_, so you can download and play with them.
+`nightly builds <https://build.geoserver.org/geoserver/>`_, so you can download and play with them.
 
 .. warning::
 

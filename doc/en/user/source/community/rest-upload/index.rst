@@ -7,7 +7,7 @@ This plugin can be used for managing the upload of files in GeoServer via REST w
 Installing the Plugin
 ----------------------------------------------
 
-    #. Download the plugin from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.
+    #. Download the plugin from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
     .. warning:: Make sure the version of the extension matches the version of the GeoServer instance!
 

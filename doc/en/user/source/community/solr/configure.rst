@@ -22,7 +22,7 @@ set of selected attributes, and a different filter to select the documents conta
 Installing the SOLR extension
 -----------------------------------
 
-#. Download the SOLR extension from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.
+#. Download the SOLR extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance.
 

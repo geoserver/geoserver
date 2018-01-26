@@ -90,7 +90,7 @@ Hazelcast Cache
 +++++++++++++++
 
 `Hazelcast <http://docs.hazelcast.org/docs/3.3/manual/html/>`_ is an open-source API for distributed structures like clusters. GWC supports this API for creating a distributed in memory cache. 
-At the time of writing, Hazelcast requires the installation of the *gs-gwc-distributed* plugin in the `WEB_INF/lib` directory of your geoserver application. This plugin can be found at the following `link <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.
+At the time of writing, Hazelcast requires the installation of the *gs-gwc-distributed* plugin in the `WEB_INF/lib` directory of your geoserver application. This plugin can be found at the following `link <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
 There are 2 ways for configuring distributed caching in GWC:
 

@@ -671,4 +671,17 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertThat(hints2, hasEntry(Hints.REPOSITORY, pool.repository));
         assertThat(hints2, hasEntry(Hints.KEY_ANTIALIASING, Hints.VALUE_ANTIALIAS_ON));
     }
+
+    @Test
+    public void testGetParamsFixesDatabaseFilePath() {
+        Catalog catalog = getCatalog();
+        ResourcePool pool = new ResourcePool(catalog);
+        DataStoreInfo ds = getCatalog().getFactory().createDataStore();
+        ds.getConnectionParameters().put("database", "file:data/test.gpkg");
+        Map newParams = pool.getParams(ds.getConnectionParameters(), getResourceLoader());
+        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(getResourceLoader());
+        String absolutePath = dataDir.get("data/test.gpkg").dir().getAbsolutePath();
+        assertNotEquals(newParams.get("database"), "file:data/test.gpkg");
+        assertTrue(((String)newParams.get("database")).contains(absolutePath));
+    }
 }

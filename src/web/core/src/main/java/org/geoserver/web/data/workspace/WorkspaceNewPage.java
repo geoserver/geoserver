@@ -25,6 +25,8 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
 
+import java.util.logging.Level;
+
 /**
  * Allows creation of a new workspace
  */
@@ -51,14 +53,31 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                 NamespaceInfo ns = catalog.getFactory().createNamespace();
                 ns.setPrefix ( ws.getName() );
                 ns.setURI(nsUriTextField.getDefaultModelObjectAsString());
-                
-                catalog.add( ws );
-                catalog.add( ns );
-                if(defaultWs)
-                    catalog.setDefaultWorkspace(ws);
-                
-                //TODO: set the response page to be the edit 
-                doReturn(WorkspacePage.class);
+
+                try {
+                    catalog.add( ws );
+                    catalog.add( ns );
+
+                    if(defaultWs)
+                        catalog.setDefaultWorkspace(ws);
+
+                    //TODO: set the response page to be the edit
+                    doReturn(WorkspacePage.class);
+                } catch (RuntimeException e1) {
+                    LOGGER.log(Level.WARNING, "Failed to add workspace", e1);
+                    error(e1.getMessage() == null ? "Failed to add workspace, no error message available, see logs for details" : e1.getMessage());
+                    try {
+                        //remove anything that got added before the error
+                        if (ws.getId() != null) {
+                            catalog.remove(ws);
+                        }
+                        if (ns.getId() != null) {
+                            catalog.remove(ns);
+                        }
+                    } catch (RuntimeException e2) {
+                        LOGGER.log(Level.WARNING, "Failed to remove invalid workspace", e2);
+                    }
+                }
             }
         };
         add(form);

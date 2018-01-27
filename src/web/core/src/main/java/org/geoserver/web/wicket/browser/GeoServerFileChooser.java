@@ -125,7 +125,7 @@ public class GeoServerFileChooser extends Panel {
         
         
         // the root chooser
-        final DropDownChoice<File> choice = new DropDownChoice<File>("roots", new Model<File>(selectionRoot), new Model<ArrayList<File>>(roots), new FileRootsRenderer());
+        final DropDownChoice<File> choice = new DropDownChoice<File>("roots", new Model<File>(selectionRoot), new Model<ArrayList<File>>(roots), new FileRootsRenderer(this));
         choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             private static final long serialVersionUID = -1527567847101388940L;
@@ -257,9 +257,14 @@ public class GeoServerFileChooser extends Panel {
 static class FileRootsRenderer extends ChoiceRenderer<File> {
     
         private static final long serialVersionUID = 1389015915737006638L;
+        
+        Component component;
 
+    public FileRootsRenderer(Component component) {
+        this.component = component;
+    }
 
-    public Object getDisplayValue(File f, Component component) {
+    public Object getDisplayValue(File f) {
         
             if (f == USER_HOME) {
                 return new ParamResourceModel("userHome", component)

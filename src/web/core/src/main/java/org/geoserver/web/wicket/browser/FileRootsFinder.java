@@ -41,10 +41,15 @@ public class FileRootsFinder implements Serializable {
             this.separator = dataDirectoryPath ? "/" : File.separator;
             this.dataDirectoryPath = dataDirectoryPath;
             
-            // remove protocol part if needed (
+            // remove protocol part if needed (we have messy inputs stored that do not always start with
+            // file:// but sometimes with file:/ and sometimes with file: (no / at all)
             if (input.startsWith("file:")) {
                 if (input.startsWith("file:/")) {
-                    input = input.substring(6);
+                    if (input.startsWith("file://")) {
+                        input = input.substring(7);
+                    } else {
+                        input = input.substring(6);
+                    }
                 } else {
                     input = input.substring(5);
                 }
@@ -155,7 +160,6 @@ public class FileRootsFinder implements Serializable {
                     pathInRoot = pathInRoot.substring(1);
                 }
             } else {
-
                 continue;
             }
 

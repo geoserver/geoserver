@@ -110,7 +110,7 @@ public class WatermarkDecoration implements MapDecoration {
             if (url.getProtocol() == null || url.getProtocol().equals("file")) {
                 File file = loader.url(imageURL);
                 if (file.exists()) {
-                    url = DataUtilities.fileToURL(file);
+                    url = URLs.fileToUrl(file);
                 }
             }
         } catch (MalformedURLException e) {

@@ -17,6 +17,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
 import org.geotools.image.test.ImageAssert;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -98,7 +99,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
         BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
 
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
+        ImageAssert.assertEquals(URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {

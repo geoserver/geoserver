@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -63,7 +64,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
             return null;
         }
         
-        File file = DataUtilities.urlToFile(url);
+        File file = URLs.urlToFile(url);
         if(file != null && file.exists() && file.isDirectory()) {
             String uri = request.getRequestURI();
             uri += uri.endsWith("/") ? "index.html" : "/index.html";

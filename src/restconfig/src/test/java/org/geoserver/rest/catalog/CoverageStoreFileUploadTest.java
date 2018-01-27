@@ -36,6 +36,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testWorldImageUploadZipped() throws Exception {
         URL zip = getClass().getResource( "test-data/usa.zip" );
-        byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip) );
+        byte[] bytes = FileUtils.readFileToByteArray( URLs.urlToFile(zip) );
         
         MockHttpServletResponse response = 
             putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/sf/coveragestores/usa/file.worldimage", bytes, "application/zip");
@@ -82,7 +83,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     // name has been made
     public void testUploadWithSpaces() throws Exception {
         URL zip = getClass().getResource( "test-data/usa.zip" );
-        byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip) );
+        byte[] bytes = FileUtils.readFileToByteArray( URLs.urlToFile(zip) );
         
         MockHttpServletResponse response = 
             putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/store%20with%20spaces/file.worldimage", bytes, "application/zip");
@@ -272,7 +273,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Check if an already existing directory called "mosaic" is present
         URL resource = getClass().getResource("test-data/mosaic");
         if (resource != null) {
-            File oldDir = DataUtilities.urlToFile(resource);
+            File oldDir = URLs.urlToFile(resource);
             if (oldDir.exists()) {
                 FileUtils.deleteDirectory(oldDir);
             }
@@ -285,7 +286,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("gs");
         // Creation of a CoverageStore
         CoverageStoreInfo store = builder.buildCoverageStore("watertemp4");
-        store.setURL(DataUtilities.fileToURL(Resources.find(mosaic)).toExternalForm());
+        store.setURL(URLs.fileToUrl(Resources.find(mosaic)).toExternalForm());
         store.setWorkspace(ws);
         ImageMosaicFormat imageMosaicFormat = new ImageMosaicFormat();
         store.setType((imageMosaicFormat.getName()));
@@ -367,7 +368,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Check if an already existing directory called "mosaic" is present
         URL resource = getClass().getResource("test-data/mosaic");
         if (resource != null) {
-            File oldDir = DataUtilities.urlToFile(resource);
+            File oldDir = URLs.urlToFile(resource);
             if (oldDir.exists()) {
                 FileUtils.deleteDirectory(oldDir);
             }
@@ -380,7 +381,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("gs");
         // Creation of a CoverageStore
         CoverageStoreInfo store = builder.buildCoverageStore("watertemp5");
-        store.setURL(DataUtilities.fileToURL(Resources.find(mosaic)).toExternalForm());
+        store.setURL(URLs.fileToUrl(Resources.find(mosaic)).toExternalForm());
         store.setWorkspace(ws);
         ImageMosaicFormat imageMosaicFormat = new ImageMosaicFormat();
         store.setType((imageMosaicFormat.getName()));
@@ -473,7 +474,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     private Resource readMosaic() throws FactoryException, IOException {
         // Select the zip file containing the mosaic
         URL mosaicZip = getClass().getResource("test-data/watertemp2.zip");
-        Resource zipFile = Files.asResource(DataUtilities.urlToFile(mosaicZip));
+        Resource zipFile = Files.asResource(URLs.urlToFile(mosaicZip));
 
         // Creation of another zip file which is a copy of the one before
         Resource newZip = zipFile.parent().get("watertemp2_temp.zip");

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 
 /**
  * 
@@ -80,7 +81,7 @@ public final class URIs {
 
         @Override
         public File file() {
-            return DataUtilities.urlToFile(url);
+            return URLs.urlToFile(url);
         }
 
         @Override

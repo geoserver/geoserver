@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 
 /**
  * Assorted IO related utilities
@@ -624,7 +625,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         inputNotNull(fileURL);
         try {
 
-            return DataUtilities.urlToFile(fileURL);
+            return URLs.urlToFile(fileURL);
         
         }catch (Throwable t) {
             if(LOGGER.isLoggable(Level.FINE))

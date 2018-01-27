@@ -19,6 +19,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
+import org.geotools.util.URLs;
 
 /**
  * Stores the values of dynamic style properties needed to generate an icon for a particular
@@ -131,7 +132,7 @@ public abstract class IconProperties {
                    String graphicProtocol = target.getProtocol();
                    
                    if("file".equals(graphicProtocol)) {
-                       File file = DataUtilities.urlToFile(target);
+                       File file = URLs.urlToFile(target);
                        File styles = null;
                        File graphicFile = null;
                        

@@ -27,6 +27,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.util.URLs;
 
 /**
  * Handles input and output of feature collections as zipped shapefiles
@@ -110,7 +111,7 @@ public class ShapeZipPPIO extends BinaryPPIO {
             FileUtils.deleteDirectory(tempDir);
             throw new IOException("Could not find any file with .shp extension in the zip file");
         } else {
-            ShapefileDataStore store = new ShapefileDataStore(DataUtilities.fileToURL(shapeFile));
+            ShapefileDataStore store = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
             resources.addResource(new ShapefileResource(store, tempDir));
             return store.getFeatureSource().getFeatures();
         }

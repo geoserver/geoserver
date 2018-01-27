@@ -14,6 +14,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.impl.LayerGroupContainmentCache.LayerGroupSummary;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
+import org.geotools.util.URLs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,7 +68,7 @@ public class LayerGroupContainmentCacheTest {
         // setup the store
         String nsURI = catalog.getDefaultNamespace().getURI();
         URL buildings = MockData.class.getResource("Buildings.properties");
-        File testData = DataUtilities.urlToFile(buildings).getParentFile();
+        File testData = URLs.urlToFile(buildings).getParentFile();
         DataStoreInfo storeInfo = cb.buildDataStore("store");
         storeInfo.getConnectionParameters().put("directory", testData);
         storeInfo.getConnectionParameters().put("namespace", nsURI);

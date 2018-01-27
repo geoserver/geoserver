@@ -26,6 +26,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.process.geometry.GeometryProcessFactory;
 import org.geotools.process.raster.RasterProcessFactory;
 import org.geotools.util.NumberRange;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -336,7 +337,7 @@ public class InputLimitsTest extends WPSTestSupport {
                 + "<ows:Identifier>geom</ows:Identifier>"
                 + "  <wps:Reference mimeType=\"application/wkt\" "
                 + "xlink:href=\""
-                + DataUtilities.fileToURL(wktDataFile)
+                + URLs.fileToUrl(wktDataFile)
                 + "\"/>\n"
                 + "</wps:Input>"
                 + "</wps:DataInputs>"

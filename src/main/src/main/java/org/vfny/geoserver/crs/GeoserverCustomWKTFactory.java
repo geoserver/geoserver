@@ -16,6 +16,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataUtilities;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
+import org.geotools.util.URLs;
 
 
 /**
@@ -45,7 +46,7 @@ public class GeoserverCustomWKTFactory extends FactoryUsingWKT {
             // Attempt to load user-defined projections
             File proj_file = new File(cust_proj_file);
             if (proj_file.exists()) {
-                URL url = DataUtilities.fileToURL(proj_file);
+                URL url = URLs.fileToUrl(proj_file);
                 if( url != null ){
                     return url;
                 }

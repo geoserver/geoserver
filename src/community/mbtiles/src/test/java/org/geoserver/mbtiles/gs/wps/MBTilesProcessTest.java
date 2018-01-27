@@ -18,6 +18,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.mbtiles.MBTilesMetadata;
 import org.geotools.util.logging.Logging;
+import org.geotools.util.URLs;
 import org.junit.Test;
 
 public class MBTilesProcessTest extends WPSTestSupport {
@@ -64,7 +65,7 @@ public class MBTilesProcessTest extends WPSTestSupport {
                 + "  <ows:Identifier>gs:MBTiles</ows:Identifier>" + "  <wps:DataInputs>"
                 + "    <wps:Input>" + "      <ows:Identifier>path</ows:Identifier>"
                 + "      <wps:Data>" + "        <wps:LiteralData>"
-                + DataUtilities.fileToURL(temp)
+                + URLs.fileToUrl(temp)
                 + "</wps:LiteralData>"
                 + "      </wps:Data>"
                 + "    </wps:Input>"

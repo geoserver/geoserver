@@ -17,6 +17,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.util.URLs;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory;
@@ -36,7 +37,7 @@ public class JavaScriptFunctionTest extends ScriptIntTestSupport {
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        File fromDir = DataUtilities.urlToFile(getClass().getResource("scripts"));
+        File fromDir = URLs.urlToFile(getClass().getResource("scripts"));
         File toDir = new File(dataDirectory.getDataDirectoryRoot(), "scripts");
         IOUtils.deepCopy(fromDir, toDir);
         super.populateDataDirectory(dataDirectory);

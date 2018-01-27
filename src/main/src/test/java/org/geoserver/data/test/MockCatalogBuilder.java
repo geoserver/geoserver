@@ -62,6 +62,7 @@ import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.opengis.feature.type.FeatureType;
 
@@ -219,7 +220,7 @@ public class MockCatalogBuilder {
     
         File covDir = new File(dataDirRoot, name);
         final File covFile = new File(covDir, filename);
-        expect(cs.getURL()).andReturn(DataUtilities.fileToURL(covFile).toString()).anyTimes();
+        expect(cs.getURL()).andReturn(URLs.fileToUrl(covFile).toString()).anyTimes();
         expect(cs.getType()).andAnswer(new IAnswer<String>() {
             @Override
             public String answer() throws Throwable {

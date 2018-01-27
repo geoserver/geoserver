@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
 import org.geotools.data.DataUtilities;
 import org.geotools.image.test.ImageAssert;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -36,7 +37,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource(
+                URLs.urlToFile(getClass().getResource(
                         "/test-data/img/datareference_simplelithology.png")), imageBuffer, 250);
     }
 
@@ -46,7 +47,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource(
+                URLs.urlToFile(getClass().getResource(
                         "/test-data/img/datareference_stratchart.png")), imageBuffer, 250);
     }
 
@@ -58,7 +59,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource(
+                URLs.urlToFile(getClass().getResource(
                         "/test-data/img/datareference_stratchart.png")), imageBuffer, 250);
     }
 

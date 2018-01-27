@@ -53,6 +53,7 @@ import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.data.DataUtilities;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
+import org.geotools.util.URLs;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xml.Parser;
 import org.junit.After;
@@ -149,7 +150,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                             }
                             File file = new File(localPosition + systemId);
                             if (file.exists()) {
-                                URL url = DataUtilities.fileToURL(file);
+                                URL url = URLs.fileToUrl(file);
                                 systemId = url.toURI().toASCIIString();
                                 LSInput input = dom.createLSInput();
                                 input.setPublicId(publicId);

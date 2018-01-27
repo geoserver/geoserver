@@ -18,6 +18,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -998,7 +999,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNull(cat.getStyleByName("gs", "foo"));
 
         URL zip = getClass().getResource("test-data/foo.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
         MockHttpServletResponse response =
             postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/styles", bytes, "application/zip");
@@ -1020,7 +1021,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPostWithExternalEntities() throws Exception {
         URL zip = getClass().getResource("test-data/externalEntities.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
         MockHttpServletResponse response =
             postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/styles", bytes, "application/zip");
@@ -1040,7 +1041,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNotNull(cat.getStyleByName("gs", "foo"));
 
         URL zip = getClass().getResource("test-data/foo.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
         MockHttpServletResponse response =
             putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/styles/foo", bytes, "application/zip");
@@ -1065,7 +1066,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNull(cat.getStyleByName("foo"));
 
         URL zip = getClass().getResource("test-data/foo.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
         MockHttpServletResponse response =
             postAsServletResponse( RestBaseController.ROOT_PATH + "/styles", bytes, "application/zip");
@@ -1092,7 +1093,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNotNull(cat.getStyleByName("foo"));
 
         URL zip = getClass().getResource("test-data/foo.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
         //@TODO i had to change this from foo.zip to just foo. see the long comments below
         MockHttpServletResponse response =

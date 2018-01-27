@@ -54,6 +54,7 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
+import org.geotools.util.URLs;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
@@ -111,7 +112,7 @@ public class GeoPackageProcess implements GSProcess {
        
         String outputName = contents.getName() + ".gpkg";
        if(!remove && path != null){ 
-           File urlToFile = DataUtilities.urlToFile(path);
+           File urlToFile = URLs.urlToFile(path);
            urlToFile.mkdirs();
            file =new File(urlToFile, contents.getName()+ ".gpkg");
        }else{

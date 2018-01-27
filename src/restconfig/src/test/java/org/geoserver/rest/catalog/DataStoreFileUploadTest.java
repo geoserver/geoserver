@@ -36,6 +36,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.LoggingFilter;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
@@ -136,7 +137,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             assertTrue(file.delete());
         }
 
-        URL url = DataUtilities.fileToURL(file.getCanonicalFile());
+        URL url = URLs.fileToUrl(file.getCanonicalFile());
         String body = url.toExternalForm();
         MockHttpServletResponse response = putAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/external.shp",
                 body, "text/plain");

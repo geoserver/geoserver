@@ -24,6 +24,7 @@ import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.context.support.ServletContextResourceLoader;
 import org.springframework.web.servlet.ModelAndView;
@@ -107,7 +108,7 @@ public class FilePublisher extends AbstractURLPublisher {
         }
         
         if(file != null) {
-            return DataUtilities.fileToURL(file);
+            return URLs.fileToUrl(file);
         } else {
             return null;
         }

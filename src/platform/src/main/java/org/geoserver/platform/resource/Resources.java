@@ -31,6 +31,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.util.Filter;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 
 /**
  * Utility methods for working with {@link ResourceStore}.
@@ -542,7 +543,7 @@ public class Resources {
         // if path looks like an absolute file: URL, try standard conversion
         if (url.startsWith("file:/")) {
             try {
-                return Files.asResource(DataUtilities.urlToFile(new URL(url)));
+                return Files.asResource(URLs.urlToFile(new URL(url)));
             } catch (Exception e) {
                 // failure, so fall through
             }
@@ -621,7 +622,7 @@ public class Resources {
         if(url.getProtocol().equalsIgnoreCase("resource")) {
             return baseDirectory.get(Paths.convert(url.getPath()));
         } else if (url.getProtocol().equalsIgnoreCase("file")){
-            return Files.asResource(DataUtilities.urlToFile(url));
+            return Files.asResource(URLs.urlToFile(url));
         } else {
             return null;
         }

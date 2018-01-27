@@ -37,6 +37,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.process.geometry.GeometryProcessFactory;
 import org.geotools.process.raster.RasterProcessFactory;
 import org.geotools.util.NumberRange;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -68,7 +69,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
     public void testBackFormatXmlComatibility() throws Exception {
         GeoServer gs = createMock(GeoServer.class);
         URL url = Thread.currentThread().getContextClassLoader().getResource("org/geoserver/wps/");
-        File file = DataUtilities.urlToFile(url);
+        File file = URLs.urlToFile(url);
         WPSXStreamLoader loader = new WPSXStreamLoader(new GeoServerResourceLoader(file));
         WPSInfo wps = loader.load(gs);
         boolean found1 = false;

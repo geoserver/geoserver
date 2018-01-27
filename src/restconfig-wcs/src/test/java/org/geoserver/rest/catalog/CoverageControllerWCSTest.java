@@ -20,6 +20,7 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.NumberRange;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -50,7 +51,7 @@ public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
 
     void addCoverageStore(boolean autoConfigureCoverage) throws Exception {
         URL zip = getClass().getResource( "test-data/usa.zip" );
-        byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip)  );
+        byte[] bytes = FileUtils.readFileToByteArray( URLs.urlToFile(zip)  );
         
         MockHttpServletResponse response = 
             putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/file.worldimage" +

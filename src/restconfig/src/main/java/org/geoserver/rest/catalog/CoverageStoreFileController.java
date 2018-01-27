@@ -37,6 +37,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
+import org.geotools.util.URLs;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +154,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
 
         info.setType(coverageFormat.getName());
-        URL uploadedFileURL = DataUtilities.fileToURL(Resources.find(uploadedFile));
+        URL uploadedFileURL = URLs.fileToUrl(Resources.find(uploadedFile));
         if (method.isInline()) {
             // TODO: create a method to figure out the relative url instead of making assumption
             // about the structure
@@ -433,7 +434,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
                 if (workspaceName == null || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
                     // If the coverage exists then the associated directory is defined by its URL
                     directory = Resources.fromPath(
-                            DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
+                            URLs.urlToFile(new URL(coverage.getURL())).getPath(),
                             catalog.getResourceLoader().get(""));
                 }
             }

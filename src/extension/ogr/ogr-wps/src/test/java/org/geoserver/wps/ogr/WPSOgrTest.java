@@ -28,6 +28,7 @@ import org.geoserver.wfs.response.OgrConfiguration;
 import org.geoserver.wfs.response.OgrFormat;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class WPSOgrTest extends WPSTestSupport {
 
         XStream xstream = buildXStream();
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = DataUtilities.urlToFile(classLoader.getResource(ogrConfigruationName));
+        File file = URLs.urlToFile(classLoader.getResource(ogrConfigruationName));
         OgrConfiguration ogrConfiguration = (OgrConfiguration) xstream.fromXML(file);
         ogrConfiguration.ogr2ogrLocation = Ogr2OgrTestUtil.getOgr2Ogr();
         ogrConfiguration.gdalData = Ogr2OgrTestUtil.getGdalData();

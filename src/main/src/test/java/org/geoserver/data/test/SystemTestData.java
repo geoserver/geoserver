@@ -61,6 +61,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
@@ -820,7 +821,7 @@ public class SystemTestData extends CiteTestData {
             store.setName(name);
             store.setWorkspace(catalog.getWorkspaceByName(prefix));
             store.setEnabled(true);
-            store.setURL(DataUtilities.fileToURL(file).toString());
+            store.setURL(URLs.fileToUrl(file).toString());
             store.setType(format.getName());
 
             if (store.getId() == null) {

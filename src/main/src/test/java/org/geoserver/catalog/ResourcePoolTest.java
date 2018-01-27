@@ -70,6 +70,7 @@ import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -349,7 +350,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ExternalGraphic eg = (ExternalGraphic) ps.getFill().getGraphicFill().graphicalSymbols().get(0);
         URI uri = eg.getOnlineResource().getLinkage();
         assertNotNull(uri);
-        File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
+        File actual = URLs.urlToFile(uri.toURL()).getCanonicalFile();
         assertEquals(rockFillSymbolFile, actual);
     }
     
@@ -365,7 +366,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 .get(0);
         URI uri = eg.getOnlineResource().getLinkage();
         assertNotNull(uri);
-        File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
+        File actual = URLs.urlToFile(uri.toURL()).getCanonicalFile();
         assertEquals(rockFillSymbolFile, actual);
     }
 

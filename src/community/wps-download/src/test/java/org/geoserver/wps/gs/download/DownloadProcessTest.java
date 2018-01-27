@@ -52,6 +52,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.NullProgressListener;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1726,7 +1727,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 throw new IOException("Could not find any file with .shp extension in the zip file");
             }
         } else {
-            ShapefileDataStore store = new ShapefileDataStore(DataUtilities.fileToURL(shapeFile));
+            ShapefileDataStore store = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
             return store.getFeatureSource().getFeatures();
         }
     }

@@ -23,6 +23,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,7 +116,7 @@ public class JDBCConfigPropertiesTest {
     public void testLoadFromURL() throws Exception {
         File configFile = createDummyConfigFile();
 
-        System.setProperty(CONFIG_SYSPROP, DataUtilities.fileToURL(configFile).toString());
+        System.setProperty(CONFIG_SYSPROP, URLs.fileToUrl(configFile).toString());
         try {
             JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();

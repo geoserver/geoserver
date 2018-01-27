@@ -110,6 +110,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleImpl;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.URLs;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.DocumentFactory;
@@ -732,13 +733,13 @@ public class ResourcePool {
 
                 if (path.startsWith("file:")) {
                     File fixedPath = loader.url(path);
-                    URL url = DataUtilities.fileToURL(fixedPath);
+                    URL url = URLs.fileToUrl(fixedPath);
                     entry.setValue( (V) url.toExternalForm());
                 }
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
                 URL url = (URL) value;
                 File fixedPath = loader.url( url.toString() );
-                entry.setValue( (V) DataUtilities.fileToURL(fixedPath));
+                entry.setValue( (V) URLs.fileToUrl(fixedPath));
             } else if ((key != null) && (key.equals("directory")|| key.equals("database")) && value instanceof String) {
                 String path = (String) value;
                 //if a url is used for a directory (for example property store), convert it to path

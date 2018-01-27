@@ -31,6 +31,7 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
 import org.springframework.http.HttpHeaders;
@@ -71,7 +72,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         listener.started();
         try {
             if ("file".equalsIgnoreCase(destination.getProtocol())) {
-                File file = DataUtilities.urlToFile(destination);
+                File file = URLs.urlToFile(destination);
                 if (maxSize > 0 && maxSize < file.length()) {
                     throw new WPSException("Input " + getInputId() + " size " + file.length()
                             + " exceeds maximum allowed size of " + maxSize, "NoApplicableCode",

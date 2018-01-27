@@ -32,6 +32,7 @@ import org.geotools.styling.SLDParser;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Encoder;
@@ -205,7 +206,7 @@ public class SLDHandler extends StyleHandler {
     Parser createSld11Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver) {
         if (resourceLocator == null && input instanceof File) {
             // setup for resolution of relative paths
-            final java.net.URL surl = DataUtilities.fileToURL((File) input);
+            final java.net.URL surl = URLs.fileToUrl((File) input);
             DefaultResourceLocator defResourceLocator = new DefaultResourceLocator();
             defResourceLocator.setSourceUrl(surl);
             resourceLocator = defResourceLocator;

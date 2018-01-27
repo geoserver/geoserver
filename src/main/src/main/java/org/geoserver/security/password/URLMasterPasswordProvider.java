@@ -34,6 +34,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
 /**
@@ -147,7 +148,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     static OutputStream output(URL url, Resource configDir) throws IOException {
         //check for file url
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            File f = DataUtilities.urlToFile(url);
+            File f = URLs.urlToFile(url);
             if (!f.isAbsolute()) {
                 //make relative to config dir
                 return configDir.get(f.getPath()).out();
@@ -165,7 +166,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     static InputStream input(URL url, Resource configDir) throws IOException {
         //check for a file url
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            File f = DataUtilities.urlToFile(url);
+            File f = URLs.urlToFile(url);
             //check if the file is relative
             if (!f.isAbsolute()) {
                 //make it relative to the config directory for this password provider

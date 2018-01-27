@@ -25,6 +25,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class DefaultGeoServerLoaderTest {
     @Before
     public void setUp() {
         URL url = DefaultGeoServerLoaderTest.class.getResource("/data_dir/nested_layer_groups");
-        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(DataUtilities.urlToFile(url)) {
+        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(URLs.urlToFile(url)) {
             @Override
             public File createFile(File parentFile, String location) throws IOException {
                 if ("hello.xml".equals(location)) {

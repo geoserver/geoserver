@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.geotools.util.URLs;
 import org.junit.Assert;
 
 import org.apache.commons.io.FileUtils;
@@ -30,7 +31,7 @@ public class WatermarkDecorationTest extends GeoServerSystemTestSupport {
         WatermarkDecoration d = new WatermarkDecoration();
         Map<String, String> options = new HashMap<String, String>();
         File file = new File("src/test/resources/org/geoserver/wms/world.png");
-        options.put("url", DataUtilities.fileToURL(file.getAbsoluteFile().getCanonicalFile()).toExternalForm());
+        options.put("url", URLs.fileToUrl(file.getAbsoluteFile().getCanonicalFile()).toExternalForm());
         d.loadOptions(options);
         BufferedImage logo = d.getLogo();
         

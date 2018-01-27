@@ -54,6 +54,7 @@ import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.util.URLs;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +186,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 } else if(URL.class.isAssignableFrom(param.getType())) {
                     Object result = param.lookUp(paramValues);
                     if(result instanceof URL) {
-                        directory = DataUtilities.urlToFile((URL) result);
+                        directory = URLs.urlToFile((URL) result);
                     }
                 }
 
@@ -572,7 +573,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 if (workspaceName == null || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
                     // If the coverage exists then the associated directory is defined by its URL
                     directory = Resources.fromPath(
-                            DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
+                            URLs.urlToFile(new URL(coverage.getURL())).getPath(),
                             catalog.getResourceLoader().get(""));
                 }
             }
@@ -642,7 +643,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                     converted = f.toURI();
                 }
                 else if ( URL.class.equals( p.type ) ) {
-                    converted = DataUtilities.fileToURL(f);
+                    converted = URLs.fileToUrl(f);
                 }
 
                 if ( converted != null ) {

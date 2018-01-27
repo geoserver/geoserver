@@ -37,6 +37,7 @@ import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.geotools.util.URLs;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 @DescribeProcess(title = "MBTiles", description = "MBTiles Process")
@@ -128,7 +129,7 @@ public class MBTilesProcess implements GSProcess {
 
         String outputResourceName = name + ".mbtiles";
         if (path != null) {
-            File urlToFile = DataUtilities.urlToFile(path);
+            File urlToFile = URLs.urlToFile(path);
             urlToFile.mkdirs();
             file = new File(urlToFile, outputResourceName);
         } else {
@@ -288,7 +289,7 @@ public class MBTilesProcess implements GSProcess {
 
         // Add to storage only if it is a temporary file
         if (path != null) {
-            return DataUtilities.fileToURL(file);
+            return URLs.fileToUrl(file);
         } else {
             return new URL(resources.getOutputResourceUrl(outputResourceName,
                     "application/x-mbtiles"));

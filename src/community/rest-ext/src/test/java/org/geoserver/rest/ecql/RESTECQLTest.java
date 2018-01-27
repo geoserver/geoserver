@@ -37,6 +37,7 @@ import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -132,7 +133,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
         // Selection of a zip file
         URL zip = MockData.class.getResource("watertemp.zip");
 
-        //byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+        //byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
         
         InputStream is = null;
         byte[] bytes;

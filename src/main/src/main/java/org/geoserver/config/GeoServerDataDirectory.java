@@ -17,6 +17,7 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.*;
+import org.geotools.util.URLs;
 import org.xml.sax.EntityResolver;
 
 import javax.annotation.Nonnull;
@@ -1421,7 +1422,7 @@ public class GeoServerDataDirectory {
      * Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates.
      */ 
     public static URL fileToUrlPreservingCqlTemplates(File file) {
-        URL url = DataUtilities.fileToURL(file);
+        URL url = URLs.fileToUrl(file);
         if (!file.getPath().contains("${")) {
             // guard against situations in which braces are used but not for CQL templates
             return url;

@@ -44,6 +44,7 @@ import org.geotools.feature.type.DateUtil;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.io.DefaultFileFilter;
 import org.geotools.util.Range;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -320,7 +321,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
             store.setName(name);
             store.setWorkspace(catalog.getWorkspaceByName(prefix));
             store.setEnabled(true);
-            store.setURL(DataUtilities.fileToURL(file).toString());
+            store.setURL(URLs.fileToUrl(file).toString());
             store.setType(format.getName());
 
             if (store.getId() == null) {

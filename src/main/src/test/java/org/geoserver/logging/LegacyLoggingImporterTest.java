@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ public class LegacyLoggingImporterTest {
         
         importer = new LegacyLoggingImporter();
         importer.imprt( 
-        		DataUtilities.urlToFile(getClass().getResource("services.xml")).getParentFile());
+        		URLs.urlToFile(getClass().getResource("services.xml")).getParentFile());
     }
     
     @Test

@@ -16,6 +16,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
+import org.geotools.util.URLs;
 import org.opengis.referencing.operation.CoordinateOperationAuthorityFactory;
 
 /**
@@ -46,7 +47,7 @@ public class GeoserverWKTOperationFactory extends CoordinateOperationFactoryUsin
             Resource definition = loader.get("user_projections/" + FILENAME);
             if( definition.getType() == Type.RESOURCE ){
                 File file = definition.file();
-                URL url = DataUtilities.fileToURL(file);
+                URL url = URLs.fileToUrl(file);
                 if( url != null ){
                     return url;
                 }

@@ -14,6 +14,7 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.*;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 
 import java.io.File;
 import java.io.IOException;
@@ -578,7 +579,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
             return dataDir;
         }
         
-        return DataUtilities.urlToFile(url);
+        return URLs.urlToFile(url);
     }
 
     /**

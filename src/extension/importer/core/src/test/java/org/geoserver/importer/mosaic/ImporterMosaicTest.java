@@ -169,7 +169,7 @@ public class ImporterMosaicTest extends ImporterTestSupport {
 
 
         String mosaicLocation = store.getURL();
-        File mosaicFolder = DataUtilities.urlToFile(new URL(mosaicLocation));
+        File mosaicFolder = URLs.urlToFile(new URL(mosaicLocation));
         
         try (InputStream is = MockData.class.getResourceAsStream("harvesting.zip")) {
             IOUtils.decompress(is, mosaicFolder);

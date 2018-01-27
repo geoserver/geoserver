@@ -15,6 +15,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.Hints;
+import org.geotools.util.URLs;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 
 /**
@@ -55,7 +56,7 @@ public class NetCDFCRSOverridingAuthorityFactory extends NetCDFCRSAuthorityFacto
             File proj_file = new File(cust_proj_file);
 
             if (proj_file.exists()) {
-                URL url = DataUtilities.fileToURL(proj_file);
+                URL url = URLs.fileToUrl(proj_file);
                 if (url != null) {
                     return url;
                 } else {

@@ -317,7 +317,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
             if(url == null) {
                 File styles = resources.findOrCreateDirectory("styles");
-                URL base = DataUtilities.fileToURL(styles);
+                URL base = URLs.fileToUrl(styles);
                 url = new URL(base, onlineResource);
             }
         }

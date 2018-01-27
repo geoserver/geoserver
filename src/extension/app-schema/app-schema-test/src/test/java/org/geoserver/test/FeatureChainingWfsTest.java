@@ -45,6 +45,7 @@ import org.geotools.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.NestedFilterToSQL;
 import org.geotools.util.NullProgressListener;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.opengis.filter.And;
 import org.opengis.filter.Filter;
@@ -102,7 +103,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Return first ex schema location.
      */
     private String getExSchemaOneLocation() {
-        return DataUtilities.fileToURL(getExSchemaOne()).toString();
+        return URLs.fileToUrl(getExSchemaOne()).toString();
     }
 
     /**
@@ -116,7 +117,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Return second ex schema location.
      */
     private String getExSchemaTwoLocation() {
-        return DataUtilities.fileToURL(getExSchemaTwo()).toString();
+        return URLs.fileToUrl(getExSchemaTwo()).toString();
     }
 
     /**
@@ -130,7 +131,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Return third ex schema location.
      */
     private String getExSchemaThreeLocation() {
-        return DataUtilities.fileToURL(getExSchemaThree()).toString();
+        return URLs.fileToUrl(getExSchemaThree()).toString();
     }
 
     /**

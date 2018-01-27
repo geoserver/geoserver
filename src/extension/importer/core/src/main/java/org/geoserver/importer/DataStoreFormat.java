@@ -34,6 +34,7 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -229,7 +230,7 @@ public class DataStoreFormat extends VectorFormat {
 
             if (f != null) {
                 Map<String,Serializable> map = new HashMap<String, Serializable>();
-                map.put("url", relativeDataFileURL(DataUtilities.fileToURL(f).toString(), catalog));
+                map.put("url", relativeDataFileURL(URLs.fileToUrl(f).toString(), catalog));
                 if (data.getCharsetEncoding() != null) {
                     // @todo this map only work for shapefile
                     map.put("charset",data.getCharsetEncoding());

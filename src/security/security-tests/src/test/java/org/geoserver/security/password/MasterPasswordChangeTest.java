@@ -12,6 +12,7 @@ import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
 import org.geoserver.security.validation.MasterPasswordChangeException;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,7 +68,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         mpConfig.setReadOnly(false);
 
         File tmp = new File(getSecurityManager().get("security").dir(),"mpw1.properties");
-        mpConfig.setURL(DataUtilities.fileToURL(tmp));
+        mpConfig.setURL(URLs.fileToUrl(tmp));
         getSecurityManager().saveMasterPasswordProviderConfig(mpConfig);
         
         config = getSecurityManager().getMasterPasswordConfig();
@@ -85,7 +86,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         mpConfig.setReadOnly(true);
         
         tmp = new File(getSecurityManager().get("security").dir(),"mpw2.properties");
-        mpConfig.setURL(DataUtilities.fileToURL(tmp));
+        mpConfig.setURL(URLs.fileToUrl(tmp));
         
         FileUtils.writeStringToFile(tmp, "geoserver2");
         

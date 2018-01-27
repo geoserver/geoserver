@@ -21,6 +21,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.CRS;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
@@ -657,7 +658,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         assertNotBlank("app-schema test getmap", imageBuffer, Color.WHITE);
         ImageAssert
                 .assertEquals(
-                        DataUtilities.urlToFile(getClass().getResource(
+                        URLs.urlToFile(getClass().getResource(
                                 "/test-data/img/mappedfeature.png")), imageBuffer, 10);
     }
 

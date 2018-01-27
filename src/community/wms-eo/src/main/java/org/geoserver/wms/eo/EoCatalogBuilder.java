@@ -53,6 +53,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.geotools.util.URLs;
 
 /**
  * Builder class which provides convenience methods for managing EO stores, resources, layers and
@@ -276,7 +277,7 @@ public class EoCatalogBuilder implements EoStyles {
             Map<String, Serializable> params = new HashMap<String, Serializable>();
 
             // TODO is there a better way to convert a path to a URL?
-            // DataUtilities.fileToURL(file) doesn't work (GeoServer saves an empty url)
+            // URLs.fileToUrl(file) doesn't work (GeoServer saves an empty url)
             params.put(ShapefileDataStoreFactory.URLP.key, "file://" + shpFile.getAbsolutePath());
 
             params.put(ShapefileDataStoreFactory.MEMORY_MAPPED.key, true);
@@ -292,7 +293,7 @@ public class EoCatalogBuilder implements EoStyles {
      */
     public LayerInfo createEoOutlineLayer(String url, WorkspaceInfo ws, String groupName,
             String coverageName, StructuredGridCoverage2DReader reader) throws Exception {
-        File dir = DataUtilities.urlToFile(new URL(url));
+        File dir = URLs.urlToFile(new URL(url));
 
         if (ws == null) {
             ws = catalog.getDefaultWorkspace();

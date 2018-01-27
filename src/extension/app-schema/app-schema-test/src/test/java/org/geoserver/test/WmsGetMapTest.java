@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.image.test.ImageAssert;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -43,7 +44,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
+                URLs.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
                 imageBuffer, 10);
     }
 
@@ -53,7 +54,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop_3857.png")),
+                URLs.urlToFile(getClass().getResource("/test-data/img/outcrop_3857.png")),
                 imageBuffer, 10);
 
     }
@@ -64,7 +65,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource("/test-data/img/posacc.png")),
+                URLs.urlToFile(getClass().getResource("/test-data/img/posacc.png")),
                 imageBuffer, 10);
     }
 
@@ -76,7 +77,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
+                URLs.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
                 imageBuffer, 10);
     }
     
@@ -88,7 +89,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(
-                DataUtilities.urlToFile(getClass().getResource("/test-data/img/occurrence.png")),
+                URLs.urlToFile(getClass().getResource("/test-data/img/occurrence.png")),
                 imageBuffer, 10);
         
     }

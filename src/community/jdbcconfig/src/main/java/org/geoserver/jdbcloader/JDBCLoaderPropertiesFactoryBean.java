@@ -26,6 +26,7 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
+import org.geotools.util.URLs;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -151,7 +152,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
                 //failed, try as a file path
                 File f = new File(propUrl);
                 if (f.canRead() && f.exists()) {
-                    url = DataUtilities.fileToURL(f);
+                    url = URLs.fileToUrl(f);
                 }
             }
         }

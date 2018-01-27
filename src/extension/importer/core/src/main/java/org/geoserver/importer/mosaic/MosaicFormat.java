@@ -21,6 +21,7 @@ import org.geoserver.importer.GridFormat;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geotools.util.URLs;
 
 public class MosaicFormat extends GridFormat {
 
@@ -34,7 +35,7 @@ public class MosaicFormat extends GridFormat {
         index.write();
 
         CoverageStoreInfo store = super.createStore(data, workspace, catalog);
-        store.setURL(DataUtilities.fileToURL(index.getFile()).toString());
+        store.setURL(URLs.fileToUrl(index.getFile()).toString());
         return store;
     }
 

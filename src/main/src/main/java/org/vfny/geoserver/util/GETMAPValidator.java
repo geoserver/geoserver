@@ -25,6 +25,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -47,7 +48,7 @@ public class GETMAPValidator {
         Resource schema = loader.get("data/capabilities/sld/GetMap.xsd");
         File schemaFile = schema.file();
         try {
-            return validateGETMAP(xml, DataUtilities.fileToURL(schemaFile));
+            return validateGETMAP(xml, URLs.fileToUrl(schemaFile));
         } catch (Exception e) {
             ArrayList al = new ArrayList();
             al.add(new SAXException(e));
@@ -88,7 +89,7 @@ public class GETMAPValidator {
 //                "/data/capabilities/sld/GetMap.xsd");
 
         try {
-            return validateGETMAP(xml, DataUtilities.fileToURL(schemaFile));
+            return validateGETMAP(xml, URLs.fileToUrl(schemaFile));
         } catch (Exception e) {
             ArrayList al = new ArrayList();
             al.add(new SAXException(e));

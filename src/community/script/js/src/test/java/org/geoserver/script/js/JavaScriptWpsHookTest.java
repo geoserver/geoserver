@@ -27,6 +27,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.Process;
+import org.geotools.util.URLs;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -46,7 +47,7 @@ public class JavaScriptWpsHookTest extends ScriptIntTestSupport {
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        File fromDir = DataUtilities.urlToFile(getClass().getResource("scripts"));
+        File fromDir = URLs.urlToFile(getClass().getResource("scripts"));
         File toDir = new File(dataDirectory.getDataDirectoryRoot(), "scripts");
         IOUtils.deepCopy(fromDir, toDir);
         super.populateDataDirectory(dataDirectory);

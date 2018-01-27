@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -31,7 +32,7 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
         config.setName("test");
         config.setReadOnly(false);
         config.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
-        config.setURL(DataUtilities.fileToURL(tmp));
+        config.setURL(URLs.fileToUrl(tmp));
         config.setEncrypting(true);
 
         URLMasterPasswordProvider mpp = new URLMasterPasswordProvider();

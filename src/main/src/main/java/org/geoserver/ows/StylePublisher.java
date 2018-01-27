@@ -18,6 +18,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.springframework.web.context.support.ServletContextResourceLoader;
 
 /**
@@ -84,7 +85,7 @@ public class StylePublisher extends AbstractURLPublisher {
             
             switch (resource.getType()) {
             case RESOURCE:
-                return DataUtilities.fileToURL(resource.file());
+                return URLs.fileToUrl(resource.file());
             case DIRECTORY:
             case UNDEFINED:
             default:

@@ -14,6 +14,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.ysld.UomMapper;
 import org.geotools.ysld.Ysld;
@@ -102,7 +103,7 @@ public class YsldHandler extends StyleHandler {
         
         if (resourceLocator == null && input instanceof File) {
             resourceLocator = new DefaultResourceLocator();
-            ((DefaultResourceLocator)resourceLocator).setSourceUrl(DataUtilities.fileToURL((File) input));
+            ((DefaultResourceLocator)resourceLocator).setSourceUrl(URLs.fileToUrl((File) input));
         }
         
         return Ysld.parse(toReader(input), Collections.singletonList(zoomFinder), resourceLocator, uomMapper);

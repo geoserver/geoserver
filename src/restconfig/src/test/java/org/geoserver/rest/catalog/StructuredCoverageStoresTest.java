@@ -30,6 +30,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -309,7 +310,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         File target = new File(mosaic, file.getName());
         assertTrue(file.renameTo(target));
         
-        URL url = DataUtilities.fileToURL(target.getCanonicalFile());
+        URL url = URLs.fileToUrl(target.getCanonicalFile());
         String body = url.toExternalForm();
         MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
                 body, "text/plain");
@@ -329,7 +330,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         }
         
         // re-harvest the entire mosaic (two files refreshed, two files added)
-        URL url = DataUtilities.fileToURL(mosaic.getCanonicalFile());
+        URL url = URLs.fileToUrl(mosaic.getCanonicalFile());
         String body = url.toExternalForm();
         MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
                 body, "text/plain");

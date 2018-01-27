@@ -4,7 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -22,7 +22,14 @@ public class CommaSeparatedListConverter implements IConverter<List<String>> {
 
     @Override
     public List<String> convertToObject(String value, Locale locale) throws ConversionException {
-        return Arrays.asList(value.split("\\s*,\\s*"));
+        String[] split = value.split("\\s*,\\s*");
+        final ArrayList list = new ArrayList<>();
+        // Need to return an implementation of List<String> that isn't private.
+        // Arrays.asList returns a private inner class inside Arrays that can't be added to the allowed XStream types.
+        for (String val : split) {
+            list.add(val);
+        }
+        return list;
     }
 
     @Override

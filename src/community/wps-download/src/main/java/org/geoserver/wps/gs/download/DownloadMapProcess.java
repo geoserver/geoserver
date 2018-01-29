@@ -175,19 +175,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 encoder.formatImageOutputStream(result, bos, mapContent);
 
                 // try to build an extension from the format, pleasing Windows clients as possible
-                String extension = format;
-                if (extension.startsWith("image/")) {
-                    extension = extension.substring(6);
-                }
-                int subTypeIdx = extension.indexOf(";");
-                if (subTypeIdx > 0) {
-                    extension = extension.substring(0, subTypeIdx);
-                }
-                if (extension.toLowerCase().contains("tiff")) {
-                    extension = "tif";
-                } else if (extension.toLowerCase().contains("jpeg")) {
-                    extension = "jpg";
-                }
+                String extension = encoder.getExtension(result, mapContent);
                 return new ByteArrayRawData(bos.toByteArray(), format, extension);
             }
         }

@@ -364,4 +364,10 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             return CAPABILITIES;
         }
     }
+
+    @Override
+    public String getExtension(RenderedImage image, WMSMapContent mapContent) {
+        return "gif";
+    }
+
 }

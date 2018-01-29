@@ -23,6 +23,11 @@ public class ByteArrayRawData extends AbstractRawData {
         this.data = data;
     }
 
+    public ByteArrayRawData(byte[] data, String mimeType, String extension) {
+        super(mimeType, extension);
+        this.data = data;
+    }
+
     @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(data);

@@ -34,7 +34,6 @@ import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.MultithreadedHttpClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wms.response.GetMapResponse;
@@ -58,7 +57,7 @@ import org.springframework.context.ApplicationContextAware;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.media.jai.PlanarImage;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -174,7 +173,22 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             if (encoder.canHandle(operation)) {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 encoder.formatImageOutputStream(result, bos, mapContent);
-                return new ByteArrayRawData(bos.toByteArray(), format);
+
+                // try to build an extension from the format, pleasing Windows clients as possible
+                String extension = format;
+                if (extension.startsWith("image/")) {
+                    extension = extension.substring(6);
+                }
+                int subTypeIdx = extension.indexOf(";");
+                if (subTypeIdx > 0) {
+                    extension = extension.substring(0, subTypeIdx);
+                }
+                if (extension.toLowerCase().contains("tiff")) {
+                    extension = "tif";
+                } else if (extension.toLowerCase().contains("jpeg")) {
+                    extension = "jpg";
+                }
+                return new ByteArrayRawData(bos.toByteArray(), format, extension);
             }
         }
         return null;
@@ -218,7 +232,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             zip.flush();
         }
 
-        return new ByteArrayRawData(bos.toByteArray(), org.geoserver.kml.KMZMapOutputFormat.MIME_TYPE);
+        return new ByteArrayRawData(bos.toByteArray(), org.geoserver.kml.KMZMapOutputFormat.MIME_TYPE, "kmz");
     }
 
     RenderedImage buildImage(ReferencedEnvelope bbox, String decorationName, String time, int width, int height,

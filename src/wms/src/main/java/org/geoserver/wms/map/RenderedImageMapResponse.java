@@ -208,4 +208,13 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      *
      */
     public abstract MapProducerCapabilities getCapabilities(String outputFormat);
+
+    /**
+     * Returns a three letter extension for clients needing to name return files 
+     * 
+     * @return
+     */
+    public String getExtension(RenderedImage image, WMSMapContent mapContent) {
+        return "img";
+    }
 }

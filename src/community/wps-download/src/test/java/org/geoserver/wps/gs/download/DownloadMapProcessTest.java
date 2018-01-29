@@ -31,6 +31,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
@@ -81,6 +82,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapMultiName.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
+        assertEquals("inline; filename=result.png", response.getHeader("Content-disposition"));
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "mapMultiName.png"), image, 100);
     }
@@ -105,12 +107,21 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         testExecutMultiLayerKmz("kmz");
     }
 
+    @Test
+    public void testExecuteGeotiff() throws Exception {
+        String request = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"));
+        request = request.replaceAll("image/png", "image/geotiff");
+        MockHttpServletResponse response = postAsServletResponse("wps", request);
+        assertEquals("image/geotiff", response.getContentType());
+        assertEquals("attachment; filename=result.tif", response.getHeader("Content-disposition"));
+    }
 
     public void testExecutMultiLayerKmz(String mime) throws Exception {
         String request = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"));
         request = request.replaceAll("image/png", mime);
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
+        assertEquals("inline; filename=result.kmz", response.getHeader("Content-disposition"));
 
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()));
         try {

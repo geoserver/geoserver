@@ -74,4 +74,14 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
         return CAPABILITIES;
     }
 
+    @Override
+    public String getExtension(RenderedImage image, WMSMapContent mapContent) {
+        JpegOrPngChooser chooser = JpegOrPngChooser.getFromMapContent(image, mapContent);
+        if (chooser.isJpegPreferred()) {
+            return "jpg";
+        } else {
+            return "png";
+        }
+    }
+    
 }

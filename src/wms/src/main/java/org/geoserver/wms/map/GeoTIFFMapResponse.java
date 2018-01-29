@@ -146,4 +146,10 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
     public MapProducerCapabilities getCapabilities(String outputFormat) {
         return CAPABILITIES;
     }
+
+    @Override
+    public String getExtension(RenderedImage image, WMSMapContent mapContent) {
+        return "tif";
+    }
+
 }

@@ -7,6 +7,7 @@ package org.geoserver.security.oauth2;
 import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +30,8 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.RoleCalculator;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,7 +60,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         extends GeoServerPreAuthenticatedUserNameFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
 
-    static final String GEONODE_COOKIE_NAME = "sessionid";
+    static final String CUSTOM_SESSION_COOKIE_NAME = "sessionid";
 
     OAuth2FilterConfig filterConfig;
 
@@ -112,30 +113,34 @@ public abstract class GeoServerOAuthAuthenticationFilter
         if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
             restTemplate.getOAuth2ClientContext().setAccessToken(null);
         }
-        
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
         /*
-         * This cookie works only locally, when accessing the GeoServer GUI and on the same domain.
-         * For remote access you need to logout from the GeoServer GUI.
+         * This cookie works only locally, when accessing the GeoServer GUI and on the same domain. For remote access you need to logout from the
+         * GeoServer GUI.
          */
-        final String gnCookie = getGeoNodeCookieValue(httpRequest);
+        final String customSessionCookie = getCustomSessionCookieValue(httpRequest, httpResponse);
 
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         final Collection<? extends GrantedAuthority> authorities = (authentication != null
-                ? authentication.getAuthorities() : null);
+                ? authentication.getAuthorities()
+                : null);
 
-        if (accessToken == null && gnCookie == null && 
-                (authentication != null && (authentication instanceof PreAuthenticatedAuthenticationToken) &&  
-                !(authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE)))) {
+        if (accessToken == null && customSessionCookie == null
+                && (authentication != null
+                        && (authentication instanceof PreAuthenticatedAuthenticationToken)
+                        && !(authorities.size() == 1
+                                && authorities.contains(GeoServerRole.ANONYMOUS_ROLE)))) {
             final AccessTokenRequest accessTokenRequest = restTemplate.getOAuth2ClientContext()
                     .getAccessTokenRequest();
             if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
                 restTemplate.getOAuth2ClientContext()
                         .removePreservedState(accessTokenRequest.getStateKey());
             }
-            
+
             try {
                 accessTokenRequest.remove("access_token");
             } finally {
@@ -150,7 +155,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
 
-        if (accessToken != null || authentication == null || (authentication != null
+        if ((authentication == null && accessToken != null) || authentication == null || (authentication != null
                 && authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
 
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
@@ -163,7 +168,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
             }
         }
-
+        
         chain.doFilter(request, response);
     }
 
@@ -204,9 +209,9 @@ public abstract class GeoServerOAuthAuthenticationFilter
         return retval;
     }
 
-    private String getGeoNodeCookieValue(HttpServletRequest request) {
+    private String getCustomSessionCookieValue(HttpServletRequest request, HttpServletResponse response) {
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Inspecting the http request looking for the GeoNode Session ID.");
+            LOGGER.fine("Inspecting the http request looking for the Custom Session ID.");
         }
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -214,9 +219,9 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 LOGGER.fine("Found " + cookies.length + " cookies!");
             }
             for (Cookie c : cookies) {
-                if (GEONODE_COOKIE_NAME.equals(c.getName())) {
+                if (c.getName().toLowerCase().contains(CUSTOM_SESSION_COOKIE_NAME)) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Found GeoNode cookie: " + c.getValue());
+                        LOGGER.fine("Found Custom Session cookie: " + c.getValue());
                     }
                     return c.getValue();
                 }
@@ -229,7 +234,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
         return null;
     }
-    
+
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) {
@@ -302,7 +307,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         } else {
             if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
                 result = new PreAuthenticatedAuthenticationToken(principal, null,
-                        Collections.singleton(GeoServerRole.ADMIN_ROLE));
+                        Arrays.asList(GeoServerRole.ADMIN_ROLE, GeoServerRole.GROUP_ADMIN_ROLE, GeoServerRole.AUTHENTICATED_ROLE));
             } else {
                 Collection<GeoServerRole> roles = null;
                 try {
@@ -312,6 +317,18 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
                 if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
                     roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+                
+                RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
+                if (calc != null) {
+                    try {
+                        roles.addAll(calc.calculateRoles(principal));
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING,
+                                "Error while trying to fetch default Roles with the following Exception cause:",
+                                e.getCause());
+                    }
+                }
+                
                 result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
 
             }
@@ -379,18 +396,26 @@ public abstract class GeoServerOAuthAuthenticationFilter
                         }
                     }
                 }
-            } else if (e instanceof BadCredentialsException || e instanceof ResourceAccessException) {
+            } else if (e instanceof BadCredentialsException
+                    || e instanceof ResourceAccessException) {
                 if (e.getCause() instanceof OAuth2AccessDeniedException) {
-                    LOGGER.log(Level.WARNING, "Error while trying to authenticate to OAuth2 Provider with the following Exception cause:", e.getCause());
-                }
-
-                if (e instanceof ResourceAccessException) {
-                    LOGGER.log(Level.SEVERE, "Could not Authorize OAuth2 Resource due to the following exception:", e);
-                }
-
-                if (e instanceof ResourceAccessException || e.getCause() instanceof OAuth2AccessDeniedException) {
-                    LOGGER.log(Level.WARNING, "It is worth notice that if you try to validate credentials against an SSH protected Endpoint, you need either your server exposed on a secure SSL channel or OAuth2 Provider Certificate to be trusted on your JVM!");
-                    LOGGER.info("Please refer to the GeoServer OAuth2 Plugin Documentation in order to find the steps for importing the SSH certificates.");
+                    LOGGER.log(Level.WARNING,
+                            "Error while trying to authenticate to OAuth2 Provider with the following Exception cause:",
+                            e.getCause());
+                } else if (e instanceof ResourceAccessException) {
+                    LOGGER.log(Level.SEVERE,
+                            "Could not Authorize OAuth2 Resource due to the following exception:",
+                            e);
+                } else if (e instanceof ResourceAccessException
+                        || e.getCause() instanceof OAuth2AccessDeniedException) {
+                    LOGGER.log(Level.WARNING,
+                            "It is worth notice that if you try to validate credentials against an SSH protected Endpoint, you need either your server exposed on a secure SSL channel or OAuth2 Provider Certificate to be trusted on your JVM!");
+                    LOGGER.info(
+                            "Please refer to the GeoServer OAuth2 Plugin Documentation in order to find the steps for importing the SSH certificates.");
+                } else {
+                    LOGGER.log(Level.SEVERE,
+                            "Could not Authorize OAuth2 Resource due to the following exception:",
+                            e.getCause());
                 }
             }
         }

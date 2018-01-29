@@ -39,4 +39,6 @@
         <property name="componentClass" value="org.geoserver.web.netcdf.layer.NetCDFOutTabPanel"/>
         <property name="order" value="400"/>
     </bean>
+  
+  <bean id="defaultNetCDFEncoderFactory" class="org.geoserver.wcs.responses.DefaultNetCDFEncoderFactory"/>
 </beans>

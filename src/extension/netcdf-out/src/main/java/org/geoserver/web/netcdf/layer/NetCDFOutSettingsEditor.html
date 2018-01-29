@@ -2,6 +2,9 @@
 <head></head>
 <body>
     <wicket:panel>
+        <ul>
+            <li>
+                <fieldset>
         <legend>
             <span>
                 <wicket:message key="NetCDFOut.title">NetCDF Output Settings</wicket:message>
@@ -177,6 +180,12 @@
                 </li>
             </ul>
         </div>
+                </fieldset>
+            </li>
+            <li wicket:id="extensions">
+            <div wicket:id="content"></div>
+            </li>
+        </ul>
     </wicket:panel>
 </body>
 </html>

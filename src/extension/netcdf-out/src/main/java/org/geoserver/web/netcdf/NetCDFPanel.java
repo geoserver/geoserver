@@ -4,11 +4,8 @@
  */
 package org.geoserver.web.netcdf;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -26,6 +23,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
@@ -34,6 +32,10 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponentPanel<T>{
 
@@ -57,6 +59,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     protected final DropDownChoice<DataPacking> dataPacking;
 
     protected final WebMarkupContainer container;
+    protected final ListView<NetCDFExtensionPanelInfo> extensionPanels;
 
     @SuppressWarnings({ "rawtypes", "serial", "unchecked" })
     public NetCDFPanel(String id, IModel<T> netcdfModel) {
@@ -331,9 +334,13 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         if (object == null) {
             netcdfModel.setObject((T) new NetCDFSettingsContainer());
         }
-
+        
+        // extension panels
+        extensionPanels = createExtensionPanelList("extensions", netcdfModel);
+        extensionPanels.setReuseItems(true);
+        add(extensionPanels);
     }
-
+    
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
@@ -359,6 +366,35 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         convertedInput.setShuffle(shuffle.getModelObject());
         convertedInput.setCopyAttributes(copyAttributes.getModelObject());
         convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
+
+        extensionPanels.visitChildren((component, visit) -> {
+            if (component instanceof NetCDFExtensionPanel) {
+                NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+                extension.convertInput(convertedInput);
+            }
+        });
+        
         setConvertedInput((T) convertedInput);
     }
+
+    protected ListView<NetCDFExtensionPanelInfo> createExtensionPanelList(String id, final IModel infoModel) {
+        List<NetCDFExtensionPanelInfo> panels =
+                GeoServerApplication.get().getBeansOfType(NetCDFExtensionPanelInfo.class);
+        return new ListView<NetCDFExtensionPanelInfo>(id, panels) {
+
+            @Override
+            protected void populateItem(ListItem<NetCDFExtensionPanelInfo> item) {
+                NetCDFExtensionPanelInfo info = item.getModelObject();
+                try {
+                    NetCDFExtensionPanel panel = info.getComponentClass().getConstructor(
+                            String.class, IModel.class, NetCDFPanel.class).newInstance("content", infoModel, NetCDFPanel.this);
+                    item.add(panel);
+                } catch (Exception e) {
+                    throw new WicketRuntimeException("Failed to create NetCDF extension panel of " +
+                            "type " + info.getComponentClass().getSimpleName(), e);
+                }
+            }
+        };
+    }
+
 }

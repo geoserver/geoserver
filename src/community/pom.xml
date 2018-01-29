@@ -564,5 +564,11 @@
         <module>nsg-profiles/nsg-wmts-profile</module>
       </modules>
     </profile>
+    <profile>
+      <id>ghrsst</id>
+      <modules>
+        <module>netcdf-ghrsst</module>
+      </modules>
+    </profile>
   </profiles>  
 </project>

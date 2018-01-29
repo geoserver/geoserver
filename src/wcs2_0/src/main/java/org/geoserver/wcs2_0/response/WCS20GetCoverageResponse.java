@@ -114,9 +114,9 @@ public class WCS20GetCoverageResponse extends Response {
         
         // grab the delegate and thus the extension
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
-        String extension = delegate.getFileExtension(format);
         
         // collect the name of the coverages that have been requested
-        return getCoverage.getCoverageId() + "." + extension;
+        String extension = delegate.getFileExtension(format);
+        return delegate.getFileName((GridCoverage2D) value, getCoverage.getCoverageId(), format);
     }
 }

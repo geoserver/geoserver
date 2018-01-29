@@ -110,6 +110,22 @@ public enum DataPacking {
         public Integer getReservedValue() {
             return INT_RESERVED;
         }
+    },
+    LONG {
+        @Override
+        public DataType getDataType() {
+            return DataType.LONG;
+        }
+
+        @Override
+        public Integer getDenominator() {
+            return LONG_DENOMINATOR;
+        }
+
+        @Override
+        public Integer getReservedValue() {
+            return LONG_RESERVED;
+        }
     };
 
     public static DataPacking getDefault() {
@@ -124,11 +140,15 @@ public enum DataPacking {
      *  
      * (2^n - 2) is a precomputed denominator.
      */
-    private final static Integer BYTE_DENOMINATOR = ((int) Math.pow(2, 8)) - 2;
+    // this one uses only half range in order to encode positive bytes, some clients
+    // do not handle negative ones well        
+    private final static Integer BYTE_DENOMINATOR = ((int) Math.pow(2, 7)) - 2;
 
     private final static Integer SHORT_DENOMINATOR = ((int) Math.pow(2, 16)) - 2;
 
     private final static Integer INT_DENOMINATOR = ((int) Math.pow(2, 32)) - 2;
+
+    private final static Integer LONG_DENOMINATOR = ((int) Math.pow(2, 64)) - 2;
 
     /** 
      * Reserved special values dataType related. 
@@ -141,6 +161,8 @@ public enum DataPacking {
     private final static Integer SHORT_RESERVED = -((int) Math.pow(2, 15));
 
     private final static Integer INT_RESERVED = -((int) Math.pow(2, 31));
+
+    private final static Integer LONG_RESERVED = -((int) Math.pow(2, 63));
 
     /** Return the denominator to be used in computing the scale_factor */
     public abstract Integer getDenominator();
@@ -196,6 +218,9 @@ public enum DataPacking {
          * @return the packed value 
          */
         public int pack(double sample) {
+            if (Double.isNaN(sample)) {
+                return reservedValue;
+            }
             double unrounded = ((sample - offset) / scale);
             return (int) (unrounded + 0.5);
         }

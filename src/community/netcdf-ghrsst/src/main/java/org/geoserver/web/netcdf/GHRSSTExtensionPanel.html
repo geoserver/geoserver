@@ -1,0 +1,52 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <fieldset>
+        <legend>
+            <span>
+                <wicket:message key="GHRSSTExtensionPanel.title">GHRSST Output Settings</wicket:message>
+            </span>
+        </legend>
+        <div>
+            <ul>
+                <li class="choiceItem">
+                    <input id="enabled" type="checkbox" wicket:id="enabled"/>
+                    <label for="enabled" class="checkbox">
+                        <wicket:message key="enable">enable</wicket:message>
+                    </label>
+                </li>
+                <li wicket:id="settings">
+                    <ul>
+                        <li>
+                            <label for="rdac" class="text">
+                                <wicket:message key="rdac">RDAC</wicket:message>
+                            </label>
+                            <input id="rdac" class="field text" type="text" wicket:id="rdac"/>
+                        </li>
+                        <li>
+                            <label for="processingLevel" class="text">
+                                <wicket:message key="processingLevel">processingLevel</wicket:message>
+                            </label>
+                            <input id="processingLevel" class="field text" type="text" wicket:id="processingLevel"/>
+                        </li>
+                        <li>
+                            <label for="sstType" class="text">
+                                <wicket:message key="sstType">sstType</wicket:message>
+                            </label>
+                            <input id="sstType" class="field text" type="text" wicket:id="sstType"/>
+                        </li>
+                        <li>
+                            <label for="productString" class="text">
+                                <wicket:message key="productString">productString</wicket:message>
+                            </label>
+                            <input id="productString" class="field text" type="text" wicket:id="productString"/>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </fieldset>
+</wicket:panel>
+</body>
+</html>

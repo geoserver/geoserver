@@ -1386,7 +1386,7 @@ public class GWCTest {
 
     @Test
     public void testSetBlobStoresWrapsStorageException() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
@@ -1395,21 +1395,21 @@ public class GWCTest {
 
         expected.expect(ConfigurationException.class);
         expected.expectMessage("Error connecting to BlobStore");
-        mediator.setBlobStores(ImmutableList.<BlobStoreConfig> of());
+        mediator.setBlobStores(ImmutableList.<BlobStoreInfo> of());
     }
 
     @Test
     public void testSetBlobStoresSavesConfig() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
-        List<BlobStoreConfig> configList = Lists.newArrayList(mock(BlobStoreConfig.class),
-                mock(BlobStoreConfig.class));
+        List<BlobStoreInfo> configList = Lists.newArrayList(mock(BlobStoreInfo.class),
+                mock(BlobStoreInfo.class));
         when(xmlConfig.getBlobStores()).thenReturn(configList);
 
-        BlobStoreConfig config = new FileBlobStoreConfig();
-        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig> of(config);
+        BlobStoreInfo config = new FileBlobStoreInfo();
+        List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         mediator.setBlobStores(newStores);
 
         verify(composite, times(1)).setBlobStores(same(newStores));
@@ -1419,18 +1419,18 @@ public class GWCTest {
 
     @Test
     public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
         doThrow(new IOException("expected")).when(xmlConfig).save();
 
-        List<BlobStoreConfig> oldStores = Lists.newArrayList(mock(BlobStoreConfig.class),
-                mock(BlobStoreConfig.class));
+        List<BlobStoreInfo> oldStores = Lists.newArrayList(mock(BlobStoreInfo.class),
+                mock(BlobStoreInfo.class));
         when(xmlConfig.getBlobStores()).thenReturn(oldStores);
 
-        BlobStoreConfig config = new FileBlobStoreConfig();
-        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig> of(config);
+        BlobStoreInfo config = new FileBlobStoreInfo();
+        List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         try {
             mediator.setBlobStores(newStores);
             fail("Expected ConfigurationException");

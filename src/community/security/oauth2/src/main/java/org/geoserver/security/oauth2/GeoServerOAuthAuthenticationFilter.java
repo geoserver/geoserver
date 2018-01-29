@@ -7,8 +7,7 @@ package org.geoserver.security.oauth2;
 import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.RoleCalculator;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -155,7 +155,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
 
-        if (accessToken != null || authentication == null || (authentication != null
+        if ((authentication == null && accessToken != null) || authentication == null || (authentication != null
                 && authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
 
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
@@ -168,7 +168,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
             }
         }
-
+        
         chain.doFilter(request, response);
     }
 
@@ -219,7 +219,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 LOGGER.fine("Found " + cookies.length + " cookies!");
             }
             for (Cookie c : cookies) {
-                if (c.getName().toLowerCase().contains(CUSTOM_SESSION_COOKIE_NAME)) {
+                if (c.getName().equalsIgnoreCase(CUSTOM_SESSION_COOKIE_NAME)) {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Found Custom Session cookie: " + c.getValue());
                     }
@@ -307,7 +307,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         } else {
             if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
                 result = new PreAuthenticatedAuthenticationToken(principal, null,
-                        Collections.singleton(GeoServerRole.ADMIN_ROLE));
+                        Arrays.asList(GeoServerRole.ADMIN_ROLE, GeoServerRole.GROUP_ADMIN_ROLE, GeoServerRole.AUTHENTICATED_ROLE));
             } else {
                 Collection<GeoServerRole> roles = null;
                 try {
@@ -317,6 +317,18 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
                 if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
                     roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+                
+                RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
+                if (calc != null) {
+                    try {
+                        roles.addAll(calc.calculateRoles(principal));
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING,
+                                "Error while trying to fetch default Roles with the following Exception cause:",
+                                e.getCause());
+                    }
+                }
+                
                 result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
 
             }

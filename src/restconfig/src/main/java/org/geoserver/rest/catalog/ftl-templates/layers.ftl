@@ -2,7 +2,7 @@
 Layers:
 <ul>
 <#list values as l>
-  <li><a href="${page.pageURI(l.properties.name + '.html')}">${l.properties.name}</a></li>
+  <li><a href="${page.pageURI(l.properties.prefixedName + '.html')}">${l.properties.prefixedName}</a></li>
 </#list>
 </ul>
 <#include "tail.ftl">

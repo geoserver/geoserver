@@ -839,7 +839,7 @@ public class CatalogImpl implements Catalog {
         List<PublishedInfo> layers = layerGroup.getLayers();
         List<StyleInfo> styles = layerGroup.getStyles();
         for (int i = 0; i < layers.size(); ) {
-            if(layers.get(i) == null && styles.get(i) == null) {
+            if(layers != null && styles != null && layers.get(i) == null && styles.get(i) == null) {
                 layers.remove(i);
                 styles.remove(i);
             } else {

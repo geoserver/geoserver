@@ -5,14 +5,19 @@
  */
 package org.geoserver.rest.catalog;
 
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -39,8 +44,13 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -229,7 +239,7 @@ public class LayerGroupController extends AbstractCatalogController {
                     converter.encodeLink(link.toString(), writer);
                 }
                 if ( obj instanceof LayerInfo ) {
-                    converter.encodeLink("/layers/" + converter.encode(ref), writer);
+                    converter.encodeLink("/workspaces/"+prefix+"/layers/" + converter.encode(ref), writer);
                 } else if ( obj instanceof LayerGroupInfo) {
                     LayerGroupInfo lg = (LayerGroupInfo) obj;
                     if (lg.getWorkspace() != null) {
@@ -240,5 +250,54 @@ public class LayerGroupController extends AbstractCatalogController {
                 }
             }
         });
+    }
+
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<LayerGroupInfo>(LayerGroupInfo.class) {
+            @Override
+            protected void wrapInternal(Map<String, Object> properties, SimpleHash model, LayerGroupInfo layerGroup) {
+                if (properties == null) {
+                    try {
+                        properties = model.toMap();
+                    } catch (TemplateModelException e) {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        return;
+                    }
+                }
+                List<Map<String, Map<String, String>>> layerProps = new ArrayList<>();
+                for (PublishedInfo info : layerGroup.getLayers()) {
+                    Map<String, String> props = new HashMap<>();
+                    if (info != null) {
+                        props.put("name", info.getName());
+                        props.put("prefixedName", info.prefixedName());
+                    }
+                    layerProps.add(Collections.singletonMap("properties", props));
+                }
+                properties.put("layers", layerProps);
+
+                List<Map<String, Map<String, String>>> styleProps = new ArrayList<>();
+                for (StyleInfo info : layerGroup.getStyles()) {
+                    Map<String, String> props = new HashMap<>();
+                    if (info != null) {
+                        props.put("name", info.getName());
+                        if (info.getWorkspace() != null) {
+                            props.put("workspace", info.getWorkspace().getName());
+                        }
+                    }
+                    styleProps.add(Collections.singletonMap("properties", props));
+                }
+                properties.put("styles", styleProps);
+            }
+
+            @Override
+            protected void wrapInternal(SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+                for (Object l : object) {
+                    LayerGroupInfo lg = (LayerGroupInfo) l;
+                    wrapInternal(null, model, lg);
+                }
+
+            }
+        };
     }
 }

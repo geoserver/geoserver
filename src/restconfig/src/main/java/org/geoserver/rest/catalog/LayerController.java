@@ -6,6 +6,7 @@ package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -52,7 +53,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/layers")
+@RequestMapping(path = {RestBaseController.ROOT_PATH+"/layers", RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/layers"})
 public class LayerController extends AbstractCatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerController.class);
 
@@ -70,8 +71,17 @@ public class LayerController extends AbstractCatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> layersGet() {
-        List<LayerInfo> layers = catalog.getLayers();
+    public RestWrapper<LayerInfo> layersGet(@PathVariable(required = false) String workspaceName) {
+
+        List<LayerInfo> layers;
+        if (workspaceName == null) {
+            layers = catalog.getLayers();
+        } else {
+            layers = new ArrayList<>();
+            for (ResourceInfo resourceInfo : catalog.getResourcesByNamespace(workspaceName, ResourceInfo.class)) {
+                layers.addAll(catalog.getLayers(resourceInfo));
+            }
+        }
         return wrapList(layers, LayerInfo.class);
     }
 
@@ -85,8 +95,12 @@ public class LayerController extends AbstractCatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> layerGet(@PathVariable String layerName) {
+    public RestWrapper<LayerInfo> layerGet(@PathVariable String layerName,
+                                           @PathVariable(required = false) String workspaceName) {
 
+        if (workspaceName != null) {
+            layerName = workspaceName + ":" + layerName;
+        }
         LayerInfo layer = catalog.getLayerByName(layerName);
         if (layer == null) {
             throw new ResourceNotFoundException("No such layer: "+layerName);
@@ -97,7 +111,12 @@ public class LayerController extends AbstractCatalogController {
     @DeleteMapping(value = "/{layerName}")
     public void layerDelete(
             @PathVariable String layerName,
+            @PathVariable(required = false) String workspaceName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse) throws IOException {
+
+        if (workspaceName != null) {
+            layerName = workspaceName + ":" + layerName;
+        }
         
         LayerInfo layer = catalog.getLayerByName(layerName);
         if(layer == null) {
@@ -114,7 +133,13 @@ public class LayerController extends AbstractCatalogController {
     }
     
     @PutMapping(value = "/{layerName}")
-    public void layerPut(@RequestBody LayerInfo layer,@PathVariable String layerName) {
+    public void layerPut(@RequestBody LayerInfo layer,
+                         @PathVariable String layerName,
+                         @PathVariable(required = false) String workspaceName) {
+
+        if (workspaceName != null) {
+            layerName = workspaceName + ":" + layerName;
+        }
 
         LayerInfo original = catalog.getLayerByName(layerName);
         

@@ -12,9 +12,11 @@ import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -101,7 +103,12 @@ public abstract class XStreamCatalogListConverter
                     MarshallingContext context) {
 
                 String ref;
-                if (OwsUtils.getter(clazz, "name", String.class) != null) {
+                //Special case for layer list, to handle the non-workspace-specific endpoint for layers
+                if (clazz.equals(LayerInfo.class) && OwsUtils.getter(clazz, "prefixedName", String.class) != null
+                        && RequestInfo.get() != null && !RequestInfo.get().getPagePath().contains("/workspaces/")) {
+
+                    ref = (String) OwsUtils.get(source, "prefixedName");
+                } else if (OwsUtils.getter(clazz, "name", String.class) != null) {
                     ref = (String) OwsUtils.get(source, "name");
                 } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
                     ref = (String) OwsUtils.get(source, "id");

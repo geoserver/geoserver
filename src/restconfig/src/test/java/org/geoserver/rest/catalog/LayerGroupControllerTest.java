@@ -26,6 +26,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -45,6 +46,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
 
     @Before
     public void revertChanges() throws Exception {
+        removeLayer("sf", "Lakes");
         removeLayerGroup(null, "nestedLayerGroupTest");
         removeLayerGroup(null, "citeLayerGroup");
         removeLayerGroup(null, "sfLayerGroup");
@@ -53,6 +55,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
         removeLayerGroup(null, "newLayerGroupWithTypeEO");
         removeLayerGroup(null, "newLayerGroupWithStyleGroup");
+        removeLayerGroup(null, "doubleLayerGroup");
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName("sfLayerGroup");
@@ -140,9 +143,9 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "2", "count(//published)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
         // check layer link
-        assertThat(xp.evaluate("//published[name='PrimitiveGeoFeature']/atom:link/@href", dom), 
-                endsWith(RestBaseController.ROOT_PATH + "/layers/PrimitiveGeoFeature.xml"));
-        assertThat(xp.evaluate("//published[name='PrimitiveGeoFeature']/atom:link/@type", dom), 
+        assertThat(xp.evaluate("//published[name='sf:PrimitiveGeoFeature']/atom:link/@href", dom),
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/sf/layers/PrimitiveGeoFeature.xml"));
+        assertThat(xp.evaluate("//published[name='sf:PrimitiveGeoFeature']/atom:link/@type", dom),
                 equalTo("application/xml"));
         // check style link
         assertThat(xp.evaluate("//style[1]/atom:link/@href", dom), 
@@ -701,6 +704,74 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatus());
 
         assertNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup"));
+    }
+
+    @Test
+    public void testLayerGroupDuplicateLayerNames() throws Exception {
+        //Create a Lakes layer in the sf workspace
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo lakesFt = catalog.getFactory().createFeatureType();
+        lakesFt.setName("Lakes");
+        lakesFt.setNamespace(catalog.getNamespaceByPrefix("sf"));
+        lakesFt.setStore(catalog.getDefaultDataStore(catalog.getWorkspaceByName("sf")));
+        lakesFt.setNativeBoundingBox(new ReferencedEnvelope(-10, 10, -10, 10, DefaultGeographicCRS.WGS84));
+
+        catalog.add(lakesFt);
+        lakesFt = catalog.getFeatureTypeByName("sf", "Lakes");
+
+        LayerInfo lakes = catalog.getFactory().createLayer();
+        lakes.setResource(lakesFt);
+
+        catalog.add(lakes);
+
+        assertNotNull(catalog.getLayerByName("sf:Lakes"));
+        assertNotNull(catalog.getLayerByName("cite:Lakes"));
+
+        //POST a new layer group consisting of sf:Lakes and cite:Lakes
+        String xml =
+                "<layerGroup>" +
+                "<name>doubleLayerGroup</name>" +
+                "<layers>" +
+                "<layer>sf:Lakes</layer>" +
+                "<layer>cite:Lakes</layer>" +
+                "</layers>" +
+                "</layerGroup>";
+
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml );
+        assertEquals( 201, response.getStatus() );
+
+        //Verify the new layer group in the catalog
+        LayerGroupInfo lg = catalog.getLayerGroupByName( "doubleLayerGroup");
+        assertNotNull( lg );
+
+        assertEquals( 2, lg.getLayers().size() );
+        assertEquals( "Lakes", lg.getLayers().get( 0 ).getName() );
+        assertEquals( "sf:Lakes", lg.getLayers().get( 0 ).prefixedName() );
+        assertEquals( "Lakes", lg.getLayers().get( 1 ).getName() );
+        assertEquals( "cite:Lakes", lg.getLayers().get( 1 ).prefixedName() );
+
+        //GET layer group and verify layer names
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups/doubleLayerGroup.xml");
+        print(dom);
+
+        assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
+        assertXpathEvaluatesTo("doubleLayerGroup", "/layerGroup/name", dom );
+        assertXpathEvaluatesTo( "2", "count(//published)", dom );
+        assertXpathEvaluatesTo( "2", "count(//style)", dom );
+
+        // verify layer order
+        assertXpathEvaluatesTo( "sf:Lakes", "//publishables/published[1]/name", dom );
+        assertXpathEvaluatesTo( "cite:Lakes", "//publishables/published[2]/name", dom );
+        // verify layer links
+        assertThat(xp.evaluate("//published[name='sf:Lakes']/atom:link/@href", dom),
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/sf/layers/Lakes.xml"));
+        assertThat(xp.evaluate("//published[name='sf:Lakes']/atom:link/@type", dom),
+                equalTo("application/xml"));
+        assertThat(xp.evaluate("//published[name='cite:Lakes']/atom:link/@href", dom),
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/cite/layers/Lakes.xml"));
+        assertThat(xp.evaluate("//published[name='cite:Lakes']/atom:link/@type", dom),
+                equalTo("application/xml"));
+
     }
 
     public void testLayersStylesInWorkspace() throws Exception {

@@ -101,11 +101,11 @@ paths:
                 <publishables>
                   <published type="layer">
                     <name>sfdem</name>
-                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/sfdem.xml" type="application/xml"/>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/layers/sfdem.xml" type="application/xml"/>
                   </published>
                   <published type="layer">
                     <name>streams</name>
-                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/streams.xml" type="application/xml"/>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/layers/streams.xml" type="application/xml"/>
                   </published>
                 </publishables>
                 <styles>
@@ -139,10 +139,10 @@ paths:
                 "publishables":{"published":[
                     {"@type":"layer",
                     "name":"sfdem",
-                    "href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},
+                    "href":"http://localhost:8080/geoserver/rest/workspaces/sf/layers/sfdem.json"},
                     {"@type":"layer",
                     "name":"streams",
-                    "href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},
+                    "href":"http://localhost:8080/geoserver/rest/workspaces/sf/layers/streams.json"}]},
                 "styles": {"style":[
                     {"name":"dem",
                     "href":"http://localhost:8080/geoserver/rest/styles/dem.json"},
@@ -292,7 +292,7 @@ paths:
             $ref: "#/definitions/Layergroup"
           examples:
             application/json: |
-              {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","workspace":{"name":"sf"},"publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
+              {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","workspace":{"name":"sf"},"publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/workspaces/sf/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/workspaces/sf/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
               
             application/xml: |
               <layerGroup>
@@ -306,11 +306,11 @@ paths:
                 <publishables>
                   <published type="layer">
                     <name>sfdem</name>
-                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/sfdem.xml" type="application/xml"/>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/layers/sfdem.xml" type="application/xml"/>
                   </published>
                   <published type="layer">
                     <name>streams</name>
-                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/streams.xml" type="application/xml"/>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/layers/streams.xml" type="application/xml"/>
                   </published>
                 </publishables>
                 <styles>

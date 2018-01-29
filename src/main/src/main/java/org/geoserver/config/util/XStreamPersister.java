@@ -1078,6 +1078,15 @@ public class XStreamPersister {
                         wsName = workspace.getName();
                     }
                 }
+
+                //use prefixed name to get wsName if available
+                String prefixedName;
+                if (wsName == null && OwsUtils.has(source, "prefixedName")) {
+                    prefixedName = (String) OwsUtils.get(source, "prefixedName");
+                    if (prefixedName != null  && prefixedName.indexOf(":") > 0) {
+                        wsName = prefixedName.substring(0, prefixedName.indexOf(":"));
+                    }
+                }
                 
                 if ( name != null ) {
                     writer.startNode("name");

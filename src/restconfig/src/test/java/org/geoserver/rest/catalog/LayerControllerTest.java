@@ -8,6 +8,8 @@ package org.geoserver.rest.catalog;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -16,8 +18,10 @@ import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.rest.RestBaseController;
 import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -43,8 +47,42 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetListAsXML() throws Exception {
+        Document dom = getAsDOM( ROOT_PATH + "/layers.xml",200);
+        assertEquals( "layers", dom.getDocumentElement().getNodeName() );
+
+        // verify layer name and links for cite:Buildings
+        assertXpathExists("//layer[name='cite:Buildings']", dom);
+        assertThat(xp.evaluate("//layer[name='cite:Buildings']/atom:link/@href", dom),
+                endsWith(RestBaseController.ROOT_PATH + "/layers/cite%3ABuildings.xml"));
+    }
+
+    @Test
+    public void testGetListInWorkspaceAsXML() throws Exception {
+        Document dom = getAsDOM( ROOT_PATH + "/workspaces/cite/layers.xml",200);
+        assertEquals( "layers", dom.getDocumentElement().getNodeName() );
+        print(dom);
+        // verify layer name and links for cite:Buildings
+        assertXpathExists("//layer[name='Buildings']", dom);
+        assertThat(xp.evaluate("//layer[name='Buildings']/atom:link/@href", dom),
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/cite/layers/Buildings.xml"));
+    }
+
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( ROOT_PATH + "/layers/cite:Buildings.xml",200);
+        assertEquals( "layer", dom.getDocumentElement().getNodeName() );
+        assertXpathEvaluatesTo("Buildings", "/layer/name", dom );
+        // check the layer name is actually the first child (GEOS-3336 risked modifying
+        // the order)
+        assertXpathEvaluatesTo("Buildings", "/layer/*[1]", dom );
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver"+ROOT_PATH+"/styles/Buildings.xml",
+                "/layer/defaultStyle/atom:link/attribute::href", dom);
+    }
+
+    @Test
+    public void testGetInWorkspaceAsXML() throws Exception {
+        Document dom = getAsDOM( ROOT_PATH + "/workspaces/cite/layers/Buildings.xml",200);
         assertEquals( "layer", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("Buildings", "/layer/name", dom );
         // check the layer name is actually the first child (GEOS-3336 risked modifying
@@ -86,6 +124,13 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( ROOT_PATH + "/layers.xml",200);
         assertXpathEvaluatesTo(catalog.getLayers().size()+"", "count(//layer)", dom );
     }
+
+    @Test
+    public void testGetAllInWorkspaceAsXML() throws Exception {
+        Document dom = getAsDOM( ROOT_PATH + "/workspaces/cite/layers.xml",200);
+        int count = catalog.getResourcesByNamespace("cite", ResourceInfo.class).stream().mapToInt(info -> catalog.getLayers(info).size()).sum();
+        assertXpathEvaluatesTo(count+"", "count(//layer)", dom );
+    }
     
     @Test
     public void testGetAllAsHTML() throws Exception {
@@ -110,6 +155,26 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals( "Forests", l.getDefaultStyle().getName() );
     }
+
+    @Test
+    public void testPutInWorkspace() throws Exception {
+        LayerInfo l = catalog.getLayerByName( "cite:Buildings" );
+        assertEquals( "Buildings", l.getDefaultStyle().getName() );
+        String xml =
+                "<layer>" +
+                        "<defaultStyle>Forests</defaultStyle>" +
+                        "<styles>" +
+                        "<style>Ponds</style>" +
+                        "</styles>" +
+                        "</layer>";
+        MockHttpServletResponse response =
+                putAsServletResponse(ROOT_PATH + "/workspaces/cite/layers/Buildings", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+
+        l = catalog.getLayerByName("cite:Buildings");
+        assertEquals( "Forests", l.getDefaultStyle().getName() );
+    }
+
     @Test
     public void testPutNonDestructive() throws Exception {
         LayerInfo l = catalog.getLayerByName( "cite:Buildings" );
@@ -161,6 +226,13 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         assertNotNull(catalog.getLayerByName( "cite:Buildings" ));
         assertEquals(200, deleteAsServletResponse(ROOT_PATH + "/layers/cite:Buildings").getStatus());
+        assertNull(catalog.getLayerByName( "cite:Buildings" ));
+    }
+
+    @Test
+    public void testDeleteInWorkspace() throws Exception {
+        assertNotNull(catalog.getLayerByName( "cite:Buildings" ));
+        assertEquals(200, deleteAsServletResponse(ROOT_PATH + "/workspaces/cite/layers/Buildings").getStatus());
         assertNull(catalog.getLayerByName( "cite:Buildings" ));
     }
     

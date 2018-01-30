@@ -44,6 +44,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     protected final ListView<ExtraVariable> extraVariables;
     protected final CheckBox shuffle;
     protected final CheckBox copyAttributes;
+    protected final CheckBox copyGlobalAttributes;
 
     protected final TextField<Integer> compressionLevel;
 
@@ -68,6 +69,9 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         copyAttributes = new CheckBox("copyAttributes",
                 new PropertyModel(netcdfModel, "copyAttributes"));
         container.add(copyAttributes);
+        copyGlobalAttributes = new CheckBox("copyGlobalAttributes",
+                new PropertyModel(netcdfModel, "copyGlobalAttributes"));
+        container.add(copyGlobalAttributes);
         compressionLevel = new TextField<Integer>("compressionLevel",
                 new PropertyModel(netcdfModel, "compressionLevel"));
         List<DataPacking> dataPackings = Arrays.asList(DataPacking.values());
@@ -345,6 +349,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         dataPacking.processInput();
         shuffle.processInput();
         copyAttributes.processInput();
+        copyGlobalAttributes.processInput();
         NetCDFSettingsContainer convertedInput = new NetCDFSettingsContainer();
         convertedInput.setCompressionLevel(compressionLevel.getModelObject());
         convertedInput.setGlobalAttributes(globalAttributes.getModelObject());
@@ -353,6 +358,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         convertedInput.setDataPacking(dataPacking.getModelObject());
         convertedInput.setShuffle(shuffle.getModelObject());
         convertedInput.setCopyAttributes(copyAttributes.getModelObject());
+        convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
         setConvertedInput((T) convertedInput);
     }
 }

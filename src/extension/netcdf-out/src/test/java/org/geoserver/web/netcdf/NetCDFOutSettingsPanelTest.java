@@ -46,6 +46,7 @@ public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
 //        assertEquals(container.getNetcdfVersion(), container2.getNetcdfVersion());
         assertEquals(container.isShuffle(), container2.isShuffle());
         assertEquals(container.isCopyAttributes(), container2.isCopyAttributes());
+        assertEquals(container.isCopyGlobalAttributes(), container2.isCopyGlobalAttributes());
 
         assertNotNull(container.getGlobalAttributes());
         assertNotNull(container2.getGlobalAttributes());

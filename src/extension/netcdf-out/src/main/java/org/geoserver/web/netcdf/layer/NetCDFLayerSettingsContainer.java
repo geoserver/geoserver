@@ -28,6 +28,7 @@ public class NetCDFLayerSettingsContainer extends NetCDFSettingsContainer {
         setDataPacking(globalContainer.getDataPacking());
         setShuffle(globalContainer.isShuffle());
         setCopyAttributes(globalContainer.isCopyAttributes());
+        setCopyGlobalAttributes(globalContainer.isCopyGlobalAttributes());
         setGlobalAttributes(globalContainer.getGlobalAttributes());
         setVariableAttributes(globalContainer.getVariableAttributes());
         setExtraVariables(globalContainer.getExtraVariables());

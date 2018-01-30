@@ -164,6 +164,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         dataPacking.processInput();
         shuffle.processInput();
         copyAttributes.processInput();
+        copyGlobalAttributes.processInput();
         standardName.processInput();
         uom.processInput();
         NetCDFLayerSettingsContainer convertedInput = new NetCDFLayerSettingsContainer();
@@ -174,6 +175,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         convertedInput.setDataPacking(dataPacking.getModelObject());
         convertedInput.setShuffle(shuffle.getModelObject());
         convertedInput.setCopyAttributes(copyAttributes.getModelObject());
+        convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
         convertedInput.setLayerName(standardName.getModelObject());
         convertedInput.setLayerUOM(uom.getModelObject());
         setConvertedInput(convertedInput);

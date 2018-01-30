@@ -145,6 +145,9 @@ public class NetCDFOutputManager {
     /** Whether to copy attributes from NetCDF source variable to output variable */
     private boolean copyAttributes = NetCDFSettingsContainer.DEFAULT_COPY_ATTRIBUTES;
 
+    /** Weather to copy global attributes from NetCDF source to output */
+    private boolean copyGlobalAttributes = NetCDFSettingsContainer.DEFAULT_COPY_GLOBAL_ATTRIBUTES;
+
     private int compressionLevel = NetCDFSettingsContainer.DEFAULT_COMPRESSION;
 
     private DataPacking dataPacking = DataPacking.getDefault();
@@ -360,6 +363,7 @@ public class NetCDFOutputManager {
                             NetCDFLayerSettingsContainer.class);
                     shuffle = settings.isShuffle();
                     copyAttributes = settings.isCopyAttributes();
+                    copyGlobalAttributes = settings.isCopyGlobalAttributes();
                     dataPacking = settings.getDataPacking();
                     compressionLevel = checkLevel(settings.getCompressionLevel());
                     variableName = settings.getLayerName();
@@ -1085,6 +1089,24 @@ public class NetCDFOutputManager {
      * Add global attributes to the Dataset if needed
      */
     private void initializeGlobalAttributes() {
+        // Copy global attributes from source NetCDF
+        if (copyGlobalAttributes) {
+            try (NetcdfDataset source = getSourceNetcdfDataset(sampleGranule)) {
+                if (source != null) {
+                    if (copyGlobalAttributes) {
+                        for (Attribute att : source.getGlobalAttributes()) {
+                            writer.addGroupAttribute(null, att);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                if (LOGGER.isLoggable(Level.SEVERE)) {
+                    LOGGER.severe("Failed to copy from source NetCDF: " + e.getMessage());
+                }
+            }
+        }
+
+        // Add global attributes from settings
         if (globalAttributes != null) {
             for (GlobalAttribute att : globalAttributes) {
                 if (att.getKey().equalsIgnoreCase(NetCDFUtilities.CONVENTIONS)) {

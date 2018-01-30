@@ -50,6 +50,7 @@ NetCDF output settings can be configured for each raster layer. The similar sect
     * For an ImageMosaic, one granule is chosen as the source.
 * Copy Global Attributes from NetCDF/GRIB Source
     * Attributes are copied from the source NetCDF/GRIB global attributes.
+    * For an ImageMosaic, one granule is chosen as the source.
 * Variable Attributes
     * Values are encoded as integers or doubles if possible, otherwise strings.
     * Values set here overwrite attributes set elsewhere, such as those copied from a source NetCDF/GRIB variable.

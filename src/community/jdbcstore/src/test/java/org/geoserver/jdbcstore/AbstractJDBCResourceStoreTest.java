@@ -301,6 +301,7 @@ public abstract class AbstractJDBCResourceStoreTest {
     
     @Test
     public void testIgnoreDir() throws Exception {
+        support.initialize();
         JDBCResourceStoreProperties config = getConfig(true, false);
         
         ResourceStore dataDirStore = new DataDirectoryResourceStore();

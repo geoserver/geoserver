@@ -94,11 +94,17 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
                 .getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:shuffle");
         assertEquals(shuffle.getModelObject(), container.isShuffle());
 
-        // Ensure the Copy Attributes component value is correct
+        // Ensure the Copy Variable Attributes component value is correct
         tester.assertComponent("form:panel:netcdfeditor:container:copyAttributes", CheckBox.class);
         CheckBox copyAttributes = (CheckBox) tester.getComponentFromLastRenderedPage(
                 "form:panel:netcdfeditor:container:copyAttributes");
         assertEquals(copyAttributes.getModelObject(), container.isCopyAttributes());
+
+        // Ensure the Copy Global Attributes component value is correct
+        tester.assertComponent("form:panel:netcdfeditor:container:copyGlobalAttributes", CheckBox.class);
+        CheckBox copyGlobalAttributes = (CheckBox) tester.getComponentFromLastRenderedPage(
+                "form:panel:netcdfeditor:container:copyGlobalAttributes");
+        assertEquals(copyGlobalAttributes.getModelObject(), container.isCopyGlobalAttributes());
 
         // Ensure the Compression Component value is correct
         tester.assertComponent("form:panel:netcdfeditor:container:compressionLevel",

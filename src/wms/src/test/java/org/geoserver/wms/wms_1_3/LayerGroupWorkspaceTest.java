@@ -10,17 +10,16 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
-import java.util.Arrays;
-
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.After;
 import org.junit.Before;
@@ -101,18 +100,28 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         catch(Exception e) {}
     }
 
-    @Test 
+    @Test
     public void testGlobalCapabilities() throws Exception {
         Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
-        
+
         assertXpathExists("//wms:Layer/wms:Name[text() = 'base']", dom);
         assertBounds(global, "base", dom);
-        
+
         assertXpathExists("//wms:Layer/wms:Name[text() = 'sf:base']", dom);
         assertBounds(sf, "sf:base", dom);
-        
+
         assertXpathExists("//wms:Layer/wms:Name[text() = 'cite:base']", dom);
         assertBounds(cite, "cite:base", dom);
+
+        String layer = "base";
+        assertXpathNotExists("//wms:Layer[wms:Name='" + layer + "']/wms:BoundingBox[@CRS = 'EPSG:3005']", dom);
+
+        addSRSAndSetFlag();
+
+        dom = getAsDOM("wms?request=getcapabilities&version=1.3.0", true);
+
+        assertXpathExists("//wms:Layer[wms:Name='" + layer + "']/wms:BoundingBox[@CRS = 'EPSG:4326']", dom);
+        assertXpathExists("//wms:Layer[wms:Name='" + layer + "']/wms:BoundingBox[@CRS = 'EPSG:3005']", dom);
     }
 
     @Test 
@@ -208,15 +217,23 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name[text() = 'base']]/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
         assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name[text() = 'base']]/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);                
     }
-    
-    @Test 
-    public 
-    void testWorkspaceCapabilities() throws Exception {
+
+    @Test
+    public void testWorkspaceCapabilities() throws Exception {
         Document dom = getAsDOM("sf/wms?request=getcapabilities&version=1.3.0");
 
         assertXpathExists("//wms:Layer/wms:Name[text() = 'base']", dom);
         assertXpathNotExists("//wms:Layer/wms:Name[text() = 'sf:base']", dom);
         assertBounds(sf, "base", dom);
+
+        String layer = "base";
+        assertXpathNotExists("//wms:Layer[wms:Name='" + layer + "']/wms:BoundingBox[@CRS = 'EPSG:3005']", dom);
+
+        addSRSAndSetFlag();
+        dom = getAsDOM("wms?request=getcapabilities&version=1.3.0", true);
+
+        assertXpathExists("//wms:Layer[wms:Name='" + layer + "']/wms:BoundingBox[@CRS = 'EPSG:4326']", dom);
+        assertXpathExists("//wms:Layer[wms:Name='" + layer + "']/wms:BoundingBox[@CRS = 'EPSG:3005']", dom);
     }
 
     @Test
@@ -370,8 +387,17 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         double maxx = lg.getBounds().getMaxX();
         double maxy = lg.getBounds().getMaxY();
 
+        assertXpathEvaluatesTo(String.valueOf(Math.round(minx)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'CRS:84']/@minx)", dom);
+        assertXpathEvaluatesTo(String.valueOf(Math.round(maxx)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'CRS:84']/@maxx)", dom);
+        assertXpathEvaluatesTo(String.valueOf(Math.round(miny)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'CRS:84']/@miny)", dom);
+        assertXpathEvaluatesTo(String.valueOf(Math.round(maxy)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'CRS:84']/@maxy)", dom);
+
         if (lg.getBounds().getCoordinateReferenceSystem() instanceof GeographicCRS) {
-            //flip
+            // flip
             double tmp = minx;
             minx = miny;
             miny = tmp;
@@ -380,13 +406,32 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
             maxx = maxy;
             maxy = tmp;
         }
-        assertXpathEvaluatesTo(String.valueOf(Math.round(minx)), 
-            "round(//wms:Layer[wms:Name/text() = '"+name+"']/wms:BoundingBox/@minx)", dom);
-        assertXpathEvaluatesTo(String.valueOf(Math.round(maxx)), 
-                "round(//wms:Layer[wms:Name/text() = '"+name+"']/wms:BoundingBox/@maxx)", dom);
-        assertXpathEvaluatesTo(String.valueOf(Math.round(miny)), 
-                "round(//wms:Layer[wms:Name/text() = '"+name+"']/wms:BoundingBox/@miny)", dom);
-        assertXpathEvaluatesTo(String.valueOf(Math.round(maxy)), 
-                "round(//wms:Layer[wms:Name/text() = '"+name+"']/wms:BoundingBox/@maxy)", dom);
+
+        assertXpathEvaluatesTo(String.valueOf(Math.round(minx)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'EPSG:4326']/@minx)", dom);
+        assertXpathEvaluatesTo(String.valueOf(Math.round(maxx)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'EPSG:4326']/@maxx)", dom);
+        assertXpathEvaluatesTo(String.valueOf(Math.round(miny)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'EPSG:4326']/@miny)", dom);
+        assertXpathEvaluatesTo(String.valueOf(Math.round(maxy)),
+                "round(//wms:Layer[wms:Name/text() = '" + name + "']/wms:BoundingBox[@CRS = 'EPSG:4326']/@maxy)", dom);
+
+    }
+
+    void addSRSAndSetFlag() {
+        WMSInfo wms = getWMS().getServiceInfo();
+        wms.getSRS().add("4326");
+        wms.getSRS().add("3005");
+        wms.setBBOXForEachCRS(true);
+        getGeoServer().save(wms);
+    }
+
+    @After
+    public void removeSRS() {
+        WMSInfo wms = getWMS().getServiceInfo();
+        wms.getSRS().remove("4326");
+        wms.getSRS().remove("3005");
+        wms.setBBOXForEachCRS(false);
+        getGeoServer().save(wms);
     }
 }

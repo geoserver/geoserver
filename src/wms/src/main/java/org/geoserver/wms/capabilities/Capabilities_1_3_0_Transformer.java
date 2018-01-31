@@ -1226,7 +1226,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("CRS", authority);
 
             handleGeographicBoundingBox(latLonBounds);
+            handleBBox(latLonBounds, "CRS:84");
             handleBBox(layerGroupBounds, authority);
+            handleAdditionalBBox(layerGroupBounds, authority, layerGroup);
 
             if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
                 LayerInfo rootLayer = layerGroup.getRootLayer();
@@ -1511,7 +1513,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("BoundingBox", null, bboxAtts);
         }
 
-        private void handleAdditionalBBox(ReferencedEnvelope bbox, String crs, LayerInfo layer) {
+        private void handleAdditionalBBox(ReferencedEnvelope bbox, String crs, PublishedInfo layer) {
             WMSInfo info = wmsConfig.getServiceInfo();
             if (info.isBBOXForEachCRS() && !info.getSRS().isEmpty()) {
                 //output bounding box for each supported service srs

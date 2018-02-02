@@ -419,7 +419,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         rawKvp.put("format", "image/png"); // fake format, we are building a RenderedImage
         rawKvp.put("layers", layer.getName());
         for (Parameter parameter : layer.getParameters()) {
-            rawKvp.putIfAbsent(parameter.key, parameter.value);
+            rawKvp.put(parameter.key, parameter.value);
         }
         // for merging layers, unless the request stated otherwise
         rawKvp.putIfAbsent("transparent", "true");

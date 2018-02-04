@@ -5,27 +5,48 @@
  */
 package org.geoserver.web.data.resource;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.list.ListView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
+import org.geoserver.web.data.store.panel.ColorPickerPanel;
+import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
+import org.geoserver.web.data.store.panel.ParamPanel;
+import org.geoserver.web.data.store.panel.TextParamPanel;
+import org.geoserver.web.util.MapModel;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.feature.NameImpl;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import javax.xml.namespace.QName;
+
+import static org.geotools.coverage.grid.io.AbstractGridFormat.*;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
+
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
     
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+    }
+
     @Test
     public void testBasic() {
         LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
@@ -84,6 +105,42 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(4.5, re.getMinY(), 0.1);
         assertEquals(-93, re.getMaxX(), 0.1);
         assertEquals(4.5, re.getMaxY(), 0.1);
+    }
+    
+    @Test
+    public void testParametersUI() throws Exception {
+        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(TIMERANGES));
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        print(tester.getLastRenderedPage(), true, true);
+        
+        // get the list of parameters in the UI
+        ListView parametersList = (ListView) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:1:content:parameters");
+        parametersList.visitChildren(ParamPanel.class, (c, v) -> {
+            MapModel mapModel = (MapModel) c.getDefaultModel();
+            String parameterKey = mapModel.getExpression();
+            if (USE_JAI_IMAGEREAD.getName().getCode().equals(parameterKey) ||
+                    ACCURATE_RESOLUTION.getName().getCode().equals(parameterKey) ||
+                    ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)) {
+                assertThat(parameterKey, c, CoreMatchers.instanceOf(CheckBoxParamPanel.class));
+            } else if (EXCESS_GRANULE_REMOVAL.getName().getCode().equals(parameterKey) ||
+                        FOOTPRINT_BEHAVIOR.getName().getCode().equals(parameterKey) ||
+                        MERGE_BEHAVIOR.getName().getCode().equals(parameterKey) ||
+                        OVERVIEW_POLICY.getName().getCode().equals(parameterKey)) {
+                assertThat(parameterKey, c, CoreMatchers.instanceOf(DropDownChoiceParamPanel.class));
+            } else if(BACKGROUND_COLOR.getName().getCode().equals(parameterKey) ||
+                    OUTPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey) ||
+                    INPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey)) {
+                assertThat(parameterKey, c, CoreMatchers.instanceOf(ColorPickerPanel.class));
+            } else if (SORT_BY.getName().getCode().equals(parameterKey) ||
+                    BACKGROUND_VALUES.getName().getCode().equals(parameterKey) ||
+                    SUGGESTED_TILE_SIZE.getName().getCode().equals(parameterKey)) {
+                assertThat(parameterKey, c, CoreMatchers.instanceOf(TextParamPanel.class));
+            }
+        });
+        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:parameters:0:parameterPanel", 
+                CheckBoxParamPanel.class);
     }
     
 }

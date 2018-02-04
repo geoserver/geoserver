@@ -7,6 +7,7 @@ package org.geoserver.web.data.layer;
 
 import java.io.IOException;
 
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geotools.decorate.Wrapper;
 import java.util.logging.Level;
 
@@ -16,7 +17,6 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -250,8 +250,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
             }
         };
     }
-    private DropDownChoice<StoreInfo> storesDropDown() {
-        final DropDownChoice<StoreInfo> stores = new DropDownChoice<>("storesDropDown", new Model<StoreInfo>(),
+    private Select2DropDownChoice<StoreInfo> storesDropDown() {
+        final Select2DropDownChoice<StoreInfo> stores = new Select2DropDownChoice<>("storesDropDown", new Model<>(),
                 new StoreListModel(), new StoreListChoiceRenderer());
         stores.setOutputMarkupId(true);
         stores.add(new AjaxFormComponentUpdatingBehavior("change") {

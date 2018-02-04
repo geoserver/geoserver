@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.util.Locale;
 import java.util.logging.Level;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
@@ -151,12 +152,12 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
             // print(tester.getLastRenderedPage(), true, true);
 
             // test the copy style link
-            tester.newFormTester("styleForm").select("context:panel:existingStyles", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "onchange");
+            select(tester.newFormTester("styleForm"), "context:panel:existingStyles", 1);
+            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "change");
             Component copyLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
-            tester.executeAjaxEvent(copyLink, "onClick");
+            tester.executeAjaxEvent(copyLink, "click");
             // check single quote in the message has been escaped
-            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
+            assertThat(tester.getLastResponseAsString(), containsString("l\\'éditeur"));
         } finally {
             session.clear();
             session.setLocale(Locale.getDefault());

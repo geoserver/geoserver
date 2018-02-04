@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.wicket.Component;
@@ -12,12 +13,16 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.feedback.IFeedbackMessageFilter;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityTestSupport;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -118,7 +123,26 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         root.visitChildren(componentClass, finder);
         return finder.candidate;
     }
-    
+
+    /**
+     * Helper method to select the n-th item in a drop down regardless of whether it's a standard {@link DropDownChoice}
+     * or a {@link Select2DropDownChoice}
+     * @param ft
+     * @param dropDownPath
+     * @param selectIdx
+     */
+    protected void select(FormTester ft, String dropDownPath, int selectIdx) {
+        Form<?> form = ft.getForm();
+        Component component = form.get(dropDownPath);
+        if(component instanceof DropDownChoice) {
+            ft.select(dropDownPath, selectIdx);
+        } else if(component instanceof Select2DropDownChoice) {
+            Select2DropDownChoice choice = (Select2DropDownChoice) component;
+            List choices = (List) choice.getChoicesModel().getObject();
+            ft.setValue(dropDownPath, choice.getChoiceRenderer().getIdValue(choices.get(selectIdx), selectIdx));
+        }
+    }
+
     class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;

@@ -39,6 +39,8 @@ import org.opengis.referencing.crs.EngineeringCRS;
  */
 public class GeoTiffWriterHelper {
 
+    private static final float DEFAULT_QUALITY = 0.75f;
+
     private final static GeoTiffFormat TIFF_FORMAT = new GeoTiffFormat();
 
     private GridCoverage2D coverage;
@@ -168,8 +170,14 @@ public class GeoTiffWriterHelper {
                     tileWidth = ri.getTileWidth();
                     tileHeight = ri.getTileHeight();
                 }
-                 
-                new ImageWorker(ri).writeTIFF(stream, null, 0.75f, tileWidth, tileHeight);
+                float quality = DEFAULT_QUALITY;
+                String compression = null;
+                if (imageIoWriteParams.getCompressionMode() == GeoToolsWriteParams.MODE_EXPLICIT) {
+                    compression = imageIoWriteParams.getCompressionType();
+                    quality = imageIoWriteParams.getCompressionQuality();
+                }
+
+                new ImageWorker(ri).writeTIFF(stream, compression, quality, tileWidth, tileHeight);
             } else {
                 final GeneralParameterValue[] wps = (GeneralParameterValue[]) geotoolsWriteParams.values()
                         .toArray(new GeneralParameterValue[geotoolsWriteParams.values().size()]);

@@ -45,6 +45,11 @@
 		<constructor-arg index="1" ref="entityResolverProvider"/>
 	</bean>
 
+	<bean id="downloadParametersPPIO" class="org.geoserver.wps.gs.download.JaxbPPIO">
+		<constructor-arg index="0" value="org.geoserver.wps.gs.download.Parameters"/>
+		<constructor-arg index="1" ref="entityResolverProvider"/>
+	</bean>
+
 	<bean id="downloadFormatPPIO" class="org.geoserver.wps.gs.download.JaxbPPIO">
 		<constructor-arg index="0" value="org.geoserver.wps.gs.download.Format"/>
 		<constructor-arg index="1" ref="entityResolverProvider"/>

@@ -7,6 +7,7 @@ package org.geoserver.wps.ppio;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Process parameter input / output for arbitrary data on a specific mime type.
@@ -62,9 +63,17 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
     }
     
     /**
-     * Encodes the internal object representation of a parameter into an output strteam
+     * Encodes the internal object representation of a parameter into an output stream
      */
     public abstract void encode( Object value, OutputStream os) throws Exception;
+
+    /**
+     * Encodes the internal object representation of a parameter into an output stream
+     * using specific encoding parameters
+     */
+    public void encode (Object value, Map<String, Object> encodingParameters, OutputStream os) throws Exception {
+        encode(value, os);
+    };
 
     /**
      * Provides a suitable extension for the output file. Implement this if the file extension is

@@ -34,6 +34,7 @@ The parameters to set are
  * ``targetSizeX`` : size X in pixels of the output (optional, applies for raster input only)
  * ``targetSizeY`` : size Y in pixels of the output (optional, applies for raster input only)
  * ``selectedBands`` : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)
+ * ``writeParameters`` : a set of writing parameters (optional, applies for raster input only). See :ref:`writing_params` below section for more details on writing parameters defintion.
 
 The ``targetCRS`` and ``RoiCRS`` parameters are using EPSG code terminology, so, valid parameters are literals like ``EPSG:4326`` (if we are referring to a the  Geogaphic WGS84 CRS), ``EPSG:3857`` (for WGS84 Web Mercator CRS), etc.
 
@@ -151,7 +152,7 @@ A ``filter`` parameter is a definition of a vector filter operation:
 
  * as ``TEXT``, in various textual formats/representations
  * as ``REFERENCE``, which is the textual result of an HTTP GET/POST request to a specific url
- * as a ``SUPPROCESS`` result: the format produced as result of the process execution must be a compatible geometry textual format. 
+ * as a ``SUBPROCESS`` result: the format produced as result of the process execution must be a compatible geometry textual format. 
  
 Compatible text formats for filter definitions are:
 
@@ -378,3 +379,48 @@ This time, when issued (and process has finished on the server), the GET request
       </wps:Output>
     </wps:ProcessOutputs>
   </wps:ExecuteResponse>
+
+
+.. _writing_params:
+
+Writing parameters
+++++++++++++++++++
+
+The ``writeParameters`` input element of a process execution allows to specify parameters to be applied by the ``outputFormat`` encoder when producing the output file.
+Writing parameters are listed as multiple ``<dwn:Parameter key="writingParameterName">value</dwn:Parameter>`` within a ``<dwn:Parameters>`` parent element.
+See the below xml containing full syntax of a valid example for TIFF output format:
+
+.. code-block:: xml
+
+    <wps:Input>
+      <ows:Identifier>writeParameters</ows:Identifier>
+        <wps:Data>
+           <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+             <dwn:Parameters>
+                <dwn:Parameter key="tilewidth">128</dwn:Parameter>
+                <dwn:Parameter key="tileheight">128</dwn:Parameter>
+                <dwn:Parameter key="compression">JPEG</dwn:Parameter>
+                <dwn:Parameter key="quality">0.75</dwn:Parameter>
+             </dwn:Parameters>
+           </wps:ComplexData>
+        </wps:Data>
+    </wps:Input>
+
+GeoTIFF/TIFF supported writing parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The supported writing parameters are:
+
+ * ``tilewidth`` : Width of internal tiles, in pixels
+ * ``tileheight`` : Height of internal tiles, in pixels
+ * ``compression`` : Compression type used to store internal tiles. Supported values are:
+
+   * ``CCITT RLE`` (Lossless) (Huffman)
+   * ``LZW``       (Lossless)
+   * ``JPEG``      (Lossy)
+   * ``ZLib``      (Lossless)
+   * ``PackBits``  (Lossless)
+   * ``Deflate``   (Lossless)
+   
+
+ * ``quality`` : Compression quality for lossy compression (JPEG). Value is in the range [0 : 1] where 0 is for worst quality/higher compression and 1 is for best quality/lower compression
+

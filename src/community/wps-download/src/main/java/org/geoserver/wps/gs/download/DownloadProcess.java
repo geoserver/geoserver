@@ -101,6 +101,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
      * @param bandIndices the band indices selected for output, in case of raster input
+     * @param writeParameters optional writing parameters
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -118,6 +119,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
             @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
             @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
             @DescribeParameter(name = "selectedBands", description = "Band Selection Indices", min = 0) int[] bandIndices,
+            @DescribeParameter(name = "writeParameters", description = "Optional writing parameters", min = 0) Parameters writeParameters,
             final ProgressListener progressListener) throws ProcessException {
 
         try {
@@ -226,7 +228,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 // convert/reproject/crop if needed the coverage
                 internalOutput = new RasterDownload(limits, resourceManager, context).execute(
                         mimeType, progressListener, cInfo, roi, targetCRS, clip, filter,
-                        interpolation, targetSizeX, targetSizeY, bandIndices);
+                        interpolation, targetSizeX, targetSizeY, bandIndices, writeParameters);
             } else {
 
                 // wrong type

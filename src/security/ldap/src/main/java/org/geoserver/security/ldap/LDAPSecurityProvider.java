@@ -71,6 +71,9 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
         authenticator.setUserFilter(ldapConfig.getUserFilter());
         authenticator.setUserFormat(ldapConfig.getUserFormat());
 
+        authenticator.setBindUsername(ldapConfig.getBindUsername());
+        authenticator.setBindPassword(ldapConfig.getBindPassword());
+
         // authenticate and extract user using a distinguished name
         if (ldapConfig.getUserDnPattern() != null) {
             authenticator.setUserDnPatterns(new String[] { ldapConfig

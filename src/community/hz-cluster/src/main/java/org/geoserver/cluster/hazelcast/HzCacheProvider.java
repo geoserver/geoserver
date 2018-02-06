@@ -47,6 +47,11 @@ public class HzCacheProvider implements CacheProvider {
 
     private static final TimeUnit DEFAULT_TTL_UNIT = TimeUnit.MINUTES;
 
+    public static final String DEFAULT_TIME_KEY = "evictionTime";
+
+    /** Expiration time in minutes for each entry*/
+    public final long expirationMinutes = Long.parseLong(System.getProperty(DEFAULT_TIME_KEY, DEFAULT_TTL + ""));
+
     private Map<String, Cache<?, ?>> inUse = Maps.newConcurrentMap();
 
     private XStreamPersisterFactory serializationFactory;
@@ -64,10 +69,10 @@ public class HzCacheProvider implements CacheProvider {
         if (distributedCache == null) {
             // distributedCache = new NullCache<K, V>();
             if ("catalog".equals(cacheName)) {
-                distributedCache = (Cache<K, V>) new HzCatalogCache(cacheName, DEFAULT_TTL,
+                distributedCache = (Cache<K, V>) new HzCatalogCache(cacheName, expirationMinutes,
                         DEFAULT_TTL_UNIT, serializationFactory);
             } else {
-                distributedCache = new HzCache<K, V>(cacheName, DEFAULT_TTL, DEFAULT_TTL_UNIT);
+                distributedCache = new HzCache<K, V>(cacheName, expirationMinutes, DEFAULT_TTL_UNIT);
             }
             inUse.put(cacheName, distributedCache);
         }

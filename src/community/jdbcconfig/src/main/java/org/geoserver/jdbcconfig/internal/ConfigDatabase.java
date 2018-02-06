@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,6 +90,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -98,7 +101,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
@@ -110,11 +112,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.springframework.jdbc.core.RowMapper;
 
 /**
  * 
@@ -306,8 +303,7 @@ public class ConfigDatabase {
         });
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ",
-                    sw.toString()));
+            LOGGER.fine("query returned " + ids.size() + " records in " + sw);
         }
 
         List<T> lazyTransformed = Lists.transform(ids, new Function<String, T>() {
@@ -601,12 +597,16 @@ public class ConfigDatabase {
         String deleteObject = "delete from object where id = :id";
         String deleteRelatedProperties = "delete from object_property where related_oid = :oid";
 
-        int updateCount = template.update(deleteObject, ImmutableMap.of("id", info.getId()));
+        Map<String, ?> params = ImmutableMap.of("id", info.getId());
+        logStatement(deleteObject, params);
+        int updateCount = template.update(deleteObject, params);
         if (updateCount != 1) {
             LOGGER.warning("Requested to delete " + info + " (" + info.getId()
                     + ") but nothing happened on the database.");
         }
-        final int relatedPropCount = template.update(deleteRelatedProperties, params("oid", oid));
+        params = params("oid", oid);
+        logStatement(deleteRelatedProperties, params);
+        final int relatedPropCount = template.update(deleteRelatedProperties, params);
         LOGGER.fine("Removed " + relatedPropCount + " related properties of " + info.getId());
 
         cache.invalidate(info.getId());
@@ -796,8 +796,9 @@ public class ConfigDatabase {
                 String sql = "delete from object_property where oid=:oid and property_type=:property_type "
                         + "and colindex > :maxIndex";
                 Integer maxIndex = Integer.valueOf(values.size());
-                template.update(sql,
-                        params("oid", oid, "property_type", propertyType, "maxIndex", maxIndex));
+                params = params("oid", oid, "property_type", propertyType, "maxIndex", maxIndex);
+                logStatement(sql, params);
+                template.update(sql, params);
             }
         }
     }
@@ -904,7 +905,13 @@ public class ConfigDatabase {
 
         final String sql = "select id from object where type_id in ( :types ) order by id";
 
+        logStatement(sql, params);
+        Stopwatch sw = Stopwatch.createStarted();
         List<String> ids = template.queryForList(sql, params, String.class);
+        sw.stop();
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("query returned " + ids.size() + " records in " + sw);
+        }
 
         List<T> transformed = Lists.transform(ids, new Function<String, T>() {
             @Nullable
@@ -933,12 +940,15 @@ public class ConfigDatabase {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void setDefault(final String key, @Nullable final String id) {
-        String sql;
-        sql = "DELETE FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
-        template.update(sql, params("key", key));
+        String sql = "DELETE FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
+        Map<String, ?> params = params("key", key);
+        logStatement(sql, params);
+        template.update(sql, params);
         if (id != null) {
             sql = "INSERT INTO DEFAULT_OBJECT (DEF_KEY, ID) VALUES(:key, :id)";
-            template.update(sql, params("key", key, "id", id));
+            params = params("key", key, "id", id);
+            logStatement(sql, params);
+            template.update(sql, params);
         }
     }
 
@@ -982,8 +992,10 @@ public class ConfigDatabase {
         public Info call() throws Exception {
             Info info;
             try {
-                info = template.queryForObject("select blob from object where id = :id",
-                        ImmutableMap.of("id", id), configRowMapper);
+                String sql = "select blob from object where id = :id";
+                Map<String, String> params = ImmutableMap.of("id", id);
+                logStatement(sql, params);
+                info = template.queryForObject(sql, params, configRowMapper);
             } catch (EmptyResultDataAccessException noSuchObject) {
                 return null;
             }

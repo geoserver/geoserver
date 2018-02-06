@@ -314,7 +314,10 @@ public class GeoPackageProcess implements GSProcess {
                }
                request.setFormat("none");
                Map formatOptions = new HashMap();
-               formatOptions.put("format",tiles.getFormat());
+               formatOptions.put("flipy", "true");
+               if (tiles.getFormat() != null) {
+                    formatOptions.put("format",tiles.getFormat());
+               }
                if (tiles.getCoverage() != null) {
                    if (tiles.getCoverage().getMinZoom() != null) {
                        formatOptions.put("min_zoom", tiles.getCoverage().getMinZoom());

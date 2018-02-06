@@ -8,6 +8,7 @@ package org.geoserver.wps.gs.download;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,17 +108,17 @@ class RasterDownload {
      * @param roi input ROI object
      * @param targetCRS CRS of the file to write
      * @param clip indicates if the clipping geometry must be exactly that of the ROI or simply its envelope
+     * @param filter the {@link Filter} to load the data
      * @param interpolation interpolation method to use when reprojecting / scaling
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
      * @param bandIndices the indices of the bands used for the final result
-     * @param filter the {@link Filter} to load the data
-     *
+     * @param writeParams optional writing params
      */
     public Resource execute(String mimeType, final ProgressListener progressListener,
             CoverageInfo coverageInfo, Geometry roi, CoordinateReferenceSystem targetCRS,
             boolean clip, Filter filter, Interpolation interpolation, Integer targetSizeX,
-            Integer targetSizeY, int[] bandIndices) throws Exception {
+            Integer targetSizeY, int[] bandIndices, Parameters writeParams) throws Exception {
 
         GridCoverage2D scaledGridCoverage = null, clippedGridCoverage = null, reprojectedGridCoverage = null, bandFilteredCoverage = null, originalGridCoverage = null;
         try {
@@ -322,7 +323,7 @@ class RasterDownload {
             //
             // STEP 4 - Writing
             //
-            return writeRaster(mimeType, coverageInfo, scaledGridCoverage);
+            return writeRaster(mimeType, coverageInfo, scaledGridCoverage, writeParams);
         } finally {
             if (originalGridCoverage != null) {
                 resourceManager.addResource(new GridCoverageResource(originalGridCoverage));
@@ -345,10 +346,12 @@ class RasterDownload {
      * @param mimeType result mimetype
      * @param coverageInfo resource associated to the input coverage
      * @param gridCoverage gridcoverage to write
+     * @param writeParams writing parameters
      * @return a {@link File} that points to the GridCoverage we wrote.
      * 
      */
-    private Resource writeRaster(String mimeType, CoverageInfo coverageInfo, GridCoverage2D gridCoverage)
+    private Resource writeRaster(String mimeType, CoverageInfo coverageInfo, 
+            GridCoverage2D gridCoverage, Parameters writeParams)
             throws Exception {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing raster");
@@ -406,7 +409,8 @@ class RasterDownload {
                 os = fileImageOutputStreamExtImpl;
             }
             // Encoding the GridCoverage
-            complexPPIO.encode(gridCoverage, new OutputStreamAdapter(os));
+            Map encodingParams = writeParams != null ? writeParams.getParametersMap() : null;
+            complexPPIO.encode(gridCoverage, encodingParams, new OutputStreamAdapter(os));
             os.flush();
         } finally {
             try {

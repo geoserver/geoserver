@@ -13,10 +13,16 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.imageio.metadata.IIOMetadataNode;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -36,7 +42,7 @@ import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
-import org.geotools.data.DataUtilities;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -60,11 +66,15 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
+
+import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 
 /**
  * This class tests checks if the DownloadProcess class behaves correctly.
@@ -184,6 +194,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
 
@@ -248,8 +259,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(shpeZip);
@@ -305,8 +318,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(gml2Zip);
@@ -332,8 +347,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(gml3Zip);
@@ -439,8 +456,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
         // Final checks on the result
         Assert.assertNotNull(jsonZip);
 
@@ -492,8 +511,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(rasterZip);
@@ -552,8 +573,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(rasterZip);
@@ -610,8 +633,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
         // Final checks on the result
         Assert.assertNotNull(resampledZip);
 
@@ -643,6 +668,123 @@ public class DownloadProcessTest extends WPSTestSupport {
             resourceManager.finished(resourceManager.getExecutionId(true));
         }
 
+    }
+
+    /**
+     * Test Writing parameters are used
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadWithWriteParameters() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(), getGeoServer());
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+
+        // test ROI
+        double firstXRoi = -127.57473954542964;
+        double firstYRoi = 54.06575021619523;
+        Polygon roi = (Polygon) new WKTReader2()
+                .read("POLYGON (( " + firstXRoi + " " + firstYRoi + ", -130.88669845369998 52.00807146727025, -129.50812897394974 49.85372324691927, -130.5300633861675 49.20465679591609, -129.25955033314003 48.60392508062591, -128.00975216684665 50.986137055052474, -125.8623089087404 48.63154492960477, -123.984159178178 50.68231871628503, -126.91186316993704 52.15307567440926, -125.3444367403868 53.54787804784162, -127.57473954542964 54.06575021619523 ))");
+        roi.setSRID(4326);
+        
+
+        // Setting up custom writing parameters
+        Parameters parameters = new Parameters();
+        List<Parameter> parametersList = parameters.getParameters();
+        final String tileWidthValue = "32";
+        final String tileHeightValue = "32";
+        final String compressionValue = "LZW";
+        
+        parametersList.add(new Parameter("tilewidth", tileWidthValue));
+        parametersList.add(new Parameter("tileheight", tileHeightValue));
+        parametersList.add(new Parameter("compression", compressionValue));
+        parametersList.add(new Parameter("not_supported_ignore_this", "NOT_VALID_IGNORE_THIS"));
+        
+        // Download the coverage as tiff 
+        File rasterZip = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                roi, // roi
+                true, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                parameters, // Writing params
+                new NullProgressListener() // progressListener
+                );
+
+
+        // Final checks on the result
+        Assert.assertNotNull(rasterZip);
+        GeoTiffReader reader = null;
+
+        final Map<String, String> expectedTiffTagValues = new HashMap<String, String>();
+        expectedTiffTagValues.put(Integer.toString(BaselineTIFFTagSet.TAG_TILE_WIDTH), tileWidthValue);
+        expectedTiffTagValues.put(Integer.toString(BaselineTIFFTagSet.TAG_TILE_LENGTH), tileHeightValue);
+        expectedTiffTagValues.put(Integer.toString(BaselineTIFFTagSet.TAG_COMPRESSION), compressionValue);
+        int matchingStillRequired = 3;
+        
+        try {
+            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            GeoTiffIIOMetadataDecoder metadata = reader.getMetadata();
+            IIOMetadataNode rootNode = metadata.getRootNode();
+
+            // Parsing metadata for check
+            Node child = rootNode.getFirstChild().getFirstChild();
+            
+            if (child != null) {
+                Set<String> expectedTiffTagKeys = expectedTiffTagValues.keySet();
+                while (child != null) {
+                    NamedNodeMap map = child.getAttributes();
+                    if (map != null) { // print attribute values
+                        int length = map.getLength();
+
+                        // Loop over the TIFFTags
+                        for (int i = 0; i < length; i++) {
+                            Node attr = map.item(i);
+                            String nodeValue = attr.getNodeValue();
+
+                            if (expectedTiffTagKeys.contains(nodeValue)) {
+                                // We have found a required TIFFTag
+                                Node childNode = child.getFirstChild().getFirstChild();
+                                NamedNodeMap attributesMap = childNode.getAttributes();
+                                int attributesMapLength = attributesMap.getLength();
+                                for (int k = 0; k < attributesMapLength; k++) {
+                                    Node attrib = attributesMap.item(k);
+
+                                    // Check the TIFFTag Value is matching the expected one
+                                    if (expectedTiffTagValues.get(nodeValue)
+                                            .equals(attrib.getNodeValue())) {
+                                        matchingStillRequired--;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    child = child.getNextSibling();
+                }
+            }
+            Assert.assertEquals(0, matchingStillRequired);
+
+        } finally {
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
     }
     
     /**
@@ -676,8 +818,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 new int[]{0,2}, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(rasterZip);
@@ -766,8 +910,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 40, // targetSizeX
                 40, // targetSizeY
                 new int[]{1}, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(rasterZip);
@@ -844,6 +990,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 80, // targetSizeX
                 80, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
 
@@ -902,8 +1049,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 160, // targetSizeX
                 null, // targetSizeY not specified, will be calculated based on targetSizeX and aspect ratio of the original image
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(largerZip);
@@ -952,8 +1101,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 80, // targetSizeX
                 80, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(resampledZip);
@@ -1025,8 +1176,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
+
 
         // Final checks on the result
         Assert.assertNotNull(rasterZip);
@@ -1082,8 +1235,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeX
                     null, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     new NullProgressListener() // progressListener
                     );
+
             Assert.assertFalse(true);
         } catch (ProcessException e) {
             Assert.assertEquals(
@@ -1129,8 +1284,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeX
                     null, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     new NullProgressListener() // progressListener
                     );
+
 
             Assert.assertFalse(true);
         } catch (ProcessException e) {
@@ -1171,6 +1328,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 null, // targetSizeX
                 null, // targetSizeY
                 null, // bandSelectIndices
+                null, // Writing params
                 new NullProgressListener() // progressListener
                 );
 
@@ -1201,8 +1359,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     targetSizeX, // targetSizeX
                     targetSizeY, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     new NullProgressListener() // progressListener
                     );
+
 
             // exception should have been thrown at this stage
             Assert.assertFalse(true);
@@ -1250,8 +1410,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     targetSizeX, // targetSizeX
                     targetSizeY, // targetSizeY
                     bandIndices, // bandSelectIndices
+                    null, // Writing params
                     new NullProgressListener() // progressListener
                     );
+
 
             // exception should have been thrown at this stage
             Assert.assertFalse(true);
@@ -1301,8 +1463,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     100000, // targetSizeX
                     60000, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     new NullProgressListener() // progressListener
                     );
+
             Assert.fail();
         } catch (ProcessException e) {
             Assert.assertEquals(
@@ -1343,8 +1507,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeX
                     null, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     new NullProgressListener() // progressListener
                     );
+
 
             Assert.assertFalse(true);
         } catch (ProcessException e) {
@@ -1393,8 +1559,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeX
                     null, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     listener // progressListener
                     );
+
         } catch (Exception e) {
             Throwable e1 = listener.exception;
             Assert.assertNotNull(e1);
@@ -1441,8 +1609,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeX
                     null, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     listener // progressListener
                     );
+
 
         } catch (ProcessException e) {
             Assert.assertEquals(
@@ -1494,8 +1664,10 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeX
                     null, // targetSizeY
                     null, // bandSelectIndices
+                    null, // Writing params
                     progressListener // progressListener
                     );
+
             Assert.assertTrue("We did not get an exception", false);
         } catch (Exception e) {
             Assert.assertTrue("Everything as expected", true);

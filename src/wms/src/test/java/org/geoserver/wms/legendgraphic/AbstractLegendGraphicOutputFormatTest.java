@@ -23,7 +23,6 @@ import java.util.Map;
 
 import javax.media.jai.PlanarImage;
 
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -1186,6 +1185,40 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
         assertPixel(image, 1, 21, new Color(255, 255, 255));
         // assertPixel(image, 4, 25, new Color(0, 0, 0)); // unsafe, the border is thin here
         assertPixel(image, 10, 30, new Color(0, 255, 0));
+    }
+
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
+    public void testLargeCirclePlacement() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setWidth(48);
+        req.setHeight(25);
+
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("largeCircle.sld"));
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("largeCircle", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // the border is visible both top middle and bottom middle. Different JDK
+        // build wildly different colors for the border unfortunately, so the test 
+        // checks that pixels at top/middle bottom/middle are similar color (they used to be different, significantly)
+        Color colorTop = getPixelColor(image, 24, 0);
+        Color colorBottom = getPixelColor(image, 24, 24);
+        assertColorSimilar(colorTop, colorBottom, 20);
+    }
+
+    private void assertColorSimilar(Color expected, Color actual, int componentTolerance) {
+        assertEquals(expected.getRed(), actual.getRed(), componentTolerance);
+        assertEquals(expected.getGreen(), actual.getGreen(), componentTolerance);
+        assertEquals(expected.getBlue(), actual.getBlue(), componentTolerance);
     }
 
     /**

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.media.jai.PlanarImage;
 
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -811,7 +812,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
         req.setStyle(readSLD("ProportionalSymbols.sld"));
         
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-        
+                
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
     
         // biggest symbol
@@ -1219,6 +1220,33 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
         assertEquals(expected.getRed(), actual.getRed(), componentTolerance);
         assertEquals(expected.getGreen(), actual.getGreen(), componentTolerance);
         assertEquals(expected.getBlue(), actual.getBlue(), componentTolerance);
+    }
+
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
+    public void testSimpleLine() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setWidth(20);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("line.sld"));
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("line", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // line in the middle, but off the middle, it's white
+        Color colorCenter= getPixelColor(image, 10, 10);
+        assertColorSimilar(Color.BLUE, colorCenter, 20);
+        Color colorOutsideCenter= getPixelColor(image, 6, 6);
+        assertColorSimilar(Color.WHITE, colorOutsideCenter, 20);
     }
 
     /**

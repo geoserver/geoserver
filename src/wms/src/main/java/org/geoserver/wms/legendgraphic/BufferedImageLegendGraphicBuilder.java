@@ -28,6 +28,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.LiteShape2;
+import org.geotools.grid.Lines;
 import org.geotools.process.Processors;
 import org.geotools.process.function.ProcessFunction;
 import org.geotools.renderer.lite.MetaBufferEstimator;
@@ -504,7 +505,8 @@ public class BufferedImageLegendGraphicBuilder {
                 final Symbolizer symbolizer = symbolizers[sIdx];
                 if (symbolizer instanceof PointSymbolizer || symbolizer instanceof LineSymbolizer) {
                     double size = getSymbolizerSize(estimator, symbolizer, defaultMaxSize);
-                    if (size < minSize) {
+                    // a line symbolizer is depicted as a line of the requested size, so don't go below min
+                    if (size < minSize && !(symbolizer instanceof LineSymbolizer)) {
                         minSize = size;
                     }
                     if (size > maxSize) {

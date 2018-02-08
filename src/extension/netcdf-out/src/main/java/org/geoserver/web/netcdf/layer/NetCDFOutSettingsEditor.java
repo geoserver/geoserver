@@ -32,6 +32,7 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.netcdf.NetCDFExtensionPanel;
 import org.geoserver.web.netcdf.NetCDFPanel;
 import org.geotools.coverage.io.netcdf.cf.Entry;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
@@ -178,6 +179,14 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
         convertedInput.setLayerName(standardName.getModelObject());
         convertedInput.setLayerUOM(uom.getModelObject());
+
+        extensionPanels.visitChildren((component, visit) -> {
+            if (component instanceof NetCDFExtensionPanel) {
+                NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+                extension.convertInput(convertedInput);
+            }
+        });
+        
         setConvertedInput(convertedInput);
     }
 

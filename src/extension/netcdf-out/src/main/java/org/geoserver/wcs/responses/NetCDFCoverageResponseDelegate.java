@@ -12,17 +12,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -31,9 +36,10 @@ import ucar.ma2.InvalidRangeException;
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate implements
-        CoverageResponseDelegate {
+        CoverageResponseDelegate, ApplicationContextAware {
 
     public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
+    private List<NetCDFEncoderFactory> encoderFactories;
 
     @SuppressWarnings("serial")
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
@@ -61,23 +67,19 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
     public void encode(GridCoverage2D sourceCoverage, String outputFormat,
             Map<String, String> encodingParameters, OutputStream output) throws ServiceException,
             IOException {
-        if (sourceCoverage == null) {
-            throw new IllegalStateException(new StringBuffer(
-                    "It seems prepare() has not been called").append(" or has not succeed")
-                    .toString());
-        }
-        if (!(sourceCoverage instanceof GranuleStack)) {
-            throw new IllegalArgumentException(
-                    "NetCDF encoding only supports granuleStack coverages");
-        }
-        GranuleStack granuleStack = (GranuleStack) sourceCoverage;
+        GranuleStack granuleStack = toGranuleStack(sourceCoverage);
 
         File tempFile = null;
-        NetCDFOutputManager manager = null;
         try {
             tempFile = File.createTempFile("tempNetCDF", ".nc");
-            manager = new NetCDFOutputManager(granuleStack, tempFile, encodingParameters, outputFormat);
-            manager.write();
+            for (NetCDFEncoderFactory factory : encoderFactories) {
+                NetCDFEncoder encoder = factory.getEncoderFor(granuleStack, tempFile, encodingParameters, outputFormat);
+                if (encoder != null) {
+                    encoder.write();
+                    encoder.close();
+                    break;
+                }
+            }
             streamBack(tempFile, output);
 
         } catch (InvalidRangeException e) {
@@ -88,10 +90,20 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
             if (!deleted) {
                 LOGGER.warning("Could not delete temp file: " + tempFile.getAbsolutePath());
             }
-            if (manager != null) {
-                manager.close();
-            }
         }
+    }
+
+    public GranuleStack toGranuleStack(GridCoverage2D sourceCoverage) {
+        if (sourceCoverage == null) {
+            throw new IllegalStateException(new StringBuffer(
+                    "It seems prepare() has not been called").append(" or has not succeed")
+                    .toString());
+        }
+        if (!(sourceCoverage instanceof GranuleStack)) {
+            throw new IllegalArgumentException(
+                    "NetCDF encoding only supports granuleStack coverages");
+        }
+        return (GranuleStack) sourceCoverage;
     }
 
     /**
@@ -119,4 +131,22 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
 
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.encoderFactories = GeoServerExtensions.extensions(NetCDFEncoderFactory.class);
+    }
+
+    @Override
+    public String getFileName(GridCoverage2D value, String coverageId, String format) {
+        GranuleStack granuleStack = toGranuleStack(value);
+
+        for (NetCDFEncoderFactory factory : encoderFactories) {
+            String fileName = factory.getOutputFileName(granuleStack, coverageId, format);
+            if (fileName != null) {
+                return fileName;
+            }
+        }
+        
+        return super.getFileName(value, coverageId, format);
+    }
 }

@@ -10,16 +10,25 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.DimensionBean.DimensionType;
+import org.geoserver.wcs2_0.response.GranuleStack;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCoordinateReferenceSystemType.NetCDFCoordinate;
+import org.geotools.coverage.io.util.DateRangeComparator;
+import org.geotools.coverage.io.util.NumberRangeComparator;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 
+import org.geotools.util.logging.Logging;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -32,7 +41,10 @@ import ucar.nc2.Dimension;
  * @author Daniele Romagnoli, GeoSolutions SAS
  *
  */
-class NetCDFDimensionsManager {
+public class NetCDFDimensionsManager {
+    
+    static final Logger LOGGER = Logging.getLogger(NetCDFDimensionsManager.class);
+    
     /**
      * A dimension mapping between dimension names and dimension mapper 
      * instances We use a Linked map to preserve the dimension order
@@ -54,6 +66,80 @@ class NetCDFDimensionsManager {
     public void addDimensions (Map<String, NetCDFDimensionMapping> mapping) {
         netcdfDimensions.putAll(mapping);
     }
+
+    /**
+     * Initialize the Manager by collecting all dimensions from the granule stack 
+     * and preparing the mapping. 
+     */
+    public void collectCoverageDimensions(GranuleStack granuleStack) {
+
+        final List<DimensionBean> dimensions = granuleStack.getDimensions();
+        for (DimensionBean dimension : dimensions) {
+
+            // Create a new DimensionManager for each dimension
+            final String name = dimension.getName();
+            final NetCDFDimensionsManager.NetCDFDimensionMapping mapper = new NetCDFDimensionsManager
+                    .NetCDFDimensionMapping(name);
+
+            // Set the input coverage dimension
+            mapper.setCoverageDimension(dimension);
+
+            // Set the dimension values type
+            final DimensionBean.DimensionType dimensionType = dimension.getDimensionType();
+            final boolean isRange = dimension.isRange();
+            TreeSet<Object> tree = null;
+            switch (dimensionType) {
+                case TIME:
+                    tree = new TreeSet(new DateRangeComparator());
+//                isRange ? new TreeSet(new DateRangeComparator()) : new TreeSet<Date>();
+                    break;
+                case ELEVATION:
+                    tree = new TreeSet(new NumberRangeComparator());
+//                isRange ? new TreeSet(new NumberRangeComparator()) : new TreeSet<Number>();
+                    break;
+                case CUSTOM:
+                    String dataType = dimension.getDatatype();
+                    if (NetCDFUtilities.isATime(dataType)) {
+                        tree =
+                                //new TreeSet(new DateRangeComparator());
+                                isRange ? new TreeSet(new DateRangeComparator()) : new TreeSet<Object>();
+                    } else {
+                        tree = //new TreeSet<Object>();
+                                isRange ? new TreeSet(new NumberRangeComparator()) : new TreeSet<Object>();
+                    }
+            }
+            mapper.setDimensionValues(new NetCDFDimensionsManager.NetCDFDimensionMapping.DimensionValuesSet(tree));
+            add(name, mapper);
+        }
+
+        // Get the dimension values from the coverage and put them on the mapping
+        // Note that using tree set allows to respect the ordering when writing
+        // down the NetCDF dimensions
+        for (GridCoverage2D coverage : granuleStack.getGranules()) {
+            updateDimensionValues(coverage);
+        }
+    }
+
+    /**
+     * Update the dimension values of a Dimension, by inspecting the coverage properties
+     *
+     * @param coverage
+     */
+    private void updateDimensionValues(GridCoverage2D coverage) {
+        Map properties = coverage.getProperties();
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : getDimensions()) {
+            final String dimensionName = dimension.getName();
+            final Object value = properties.get(dimensionName);
+            if (value == null) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("No Dimensions available with the specified name: " + dimensionName);
+                }
+            } else {
+                dimension.getDimensionValues().addValue(value);
+            }
+        }
+    }
+
 
     public void dispose() {
         if (netcdfDimensions != null) {

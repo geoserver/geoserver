@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 
 /**
@@ -54,6 +55,8 @@ public class NetCDFSettingsContainer implements Serializable {
     private List<VariableAttribute> variableAttributes = DEFAULT_VARIABLE_ATTRIBUTES;
 
     private List<ExtraVariable> extraVariables = DEFAULT_EXTRA_VARIABLES;
+
+    private MetadataMap metadata = new MetadataMap();
 
     public int getCompressionLevel() {
         return compressionLevel;
@@ -139,6 +142,14 @@ public class NetCDFSettingsContainer implements Serializable {
     public void setExtraVariables(List<ExtraVariable> extraVariables) {
         this.extraVariables = extraVariables;
     }
+
+    public MetadataMap getMetadata() {
+        if (metadata == null) {
+            metadata = new MetadataMap();
+        }
+        return metadata;
+    }
+
 
     private abstract static class AbstractAttribute implements Serializable {
 

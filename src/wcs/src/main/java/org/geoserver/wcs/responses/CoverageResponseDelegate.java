@@ -72,5 +72,15 @@ public interface CoverageResponseDelegate {
      *
      */
     String getConformanceClass(String format);
-    
+
+    /**
+     * Allows the delegate to specify the output format given the object to encode and the 
+     * @param value
+     * @param coverageId
+     * @param format
+     * @return
+     */
+    default String getFileName(GridCoverage2D value, String coverageId, String format) {
+        return coverageId + "." + getFileExtension(format);
+    }
 }

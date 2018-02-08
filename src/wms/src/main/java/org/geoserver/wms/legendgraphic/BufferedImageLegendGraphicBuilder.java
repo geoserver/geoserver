@@ -726,7 +726,7 @@ public class BufferedImageLegendGraphicBuilder {
             }
         } else if (symbolizer instanceof PointSymbolizer || symbolizer instanceof TextSymbolizer) {
             if (this.samplePoint == null) {
-                Coordinate coord = new Coordinate(legendWidth / 2, legendHeight / 2);
+                Coordinate coord = new Coordinate(legendWidth / 2d, legendHeight / 2d);
 
                 try {
                     this.samplePoint = new LiteShape2(geomFac.createPoint(coord), null, null, false);

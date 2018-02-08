@@ -21,7 +21,7 @@ abstract class AbstractGetLegendGraphicResponse extends Response {
     }
 
     private static Set<String> caseInsensitive(String outputFormat) {
-        Set<String> set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> set = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         set.add(outputFormat);
         return set;
     }

@@ -19,6 +19,8 @@ builds, pick the zip file form ``master/community-latest``).
 To install the module, unpack the zip file contents into GeoServer own ``WEB-INF/lib`` directory and
 restart GeoServer.
 
+For the module to work, the :ref:`netcdf` and :ref:`_netcdf-out`` extensions must also be installed.
+
 Input preparation
 -----------------
 
@@ -31,6 +33,9 @@ the plugin to work):
    :align: center
 
    *Setting up a coverage view with all variables as bands*
+
+A GHRSST output must also have a time, so the time dimension of this layer should be enabled (the output generation will fail
+with an error otherwise).
 
 At the time of writing a coverage view requires the source bands to be of uniform data type, and the data sources might 
 not be. In case setting up the view is not possible with the data available, a NCML file can be used to reprocess

@@ -87,6 +87,7 @@
           <descriptor>release/ext-status-monitoring.xml</descriptor>
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
+          <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -251,6 +252,7 @@
         <module>status-monitoring</module>
         <module>nsg-profiles/nsg-wfs-profile</module>
         <module>nsg-profiles/nsg-wmts-profile</module>
+        <module>netcdf-ghrsst</module>
       </modules>
     </profile>
     <profile>

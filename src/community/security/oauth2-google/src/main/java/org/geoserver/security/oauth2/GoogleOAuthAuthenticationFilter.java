@@ -4,6 +4,11 @@
  */
 package org.geoserver.security.oauth2;
 
+import java.util.logging.Level;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
@@ -19,6 +24,33 @@ public class GoogleOAuthAuthenticationFilter extends GeoServerOAuthAuthenticatio
             GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration,
             OAuth2RestOperations oauth2RestTemplate) {
         super(config, tokenServices, oauth2SecurityConfiguration, oauth2RestTemplate);
+    }
+
+    @Override
+    protected String getCustomSessionCookieValue(HttpServletRequest request) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Inspecting the http request looking for the JSession ID.");
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Found " + cookies.length + " cookies!");
+            }
+            for (Cookie c : cookies) {
+                if (c.getName().equalsIgnoreCase(SESSION_COOKIE_NAME)) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("Found Custom Session cookie: " + c.getValue());
+                    }
+                    return c.getValue();
+                }
+            }
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Found no cookies!");
+            }
+        }
+
+        return null;
     }
 
 }

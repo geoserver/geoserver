@@ -1265,6 +1265,17 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.jdbc.version}</version>
     </dependency>
+   <dependency>
+    <groupId>org.apache.solr</groupId>
+    <artifactId>solr-solrj</artifactId>
+    <version>${solrj.version}</version>
+    <exclusions>
+     <exclusion>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+     </exclusion>
+    </exclusions>
+   </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1871,6 +1882,7 @@
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
+  <solrj.version>7.2.1</solrj.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
  </properties>
 

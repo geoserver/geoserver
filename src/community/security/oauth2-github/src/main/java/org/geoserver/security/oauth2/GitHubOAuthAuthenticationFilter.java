@@ -37,7 +37,7 @@ public class GitHubOAuthAuthenticationFilter extends GeoServerOAuthAuthenticatio
                 LOGGER.fine("Found " + cookies.length + " cookies!");
             }
             for (Cookie c : cookies) {
-                if (c.getName().equalsIgnoreCase(SESSION_COOKIE_NAME)) {
+                if (c.getName().toLowerCase().contains(SESSION_COOKIE_NAME)) {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Found Custom Session cookie: " + c.getValue());
                     }

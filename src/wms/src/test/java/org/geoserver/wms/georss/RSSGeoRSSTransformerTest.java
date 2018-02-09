@@ -11,6 +11,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -18,7 +23,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSMapContent;
@@ -33,9 +47,9 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 
 public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
@@ -59,14 +73,15 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         NodeList description = channel.getElementsByTagName("description");
         assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
     }
-	
+
     @Test
     public void testLinkTemplate() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
 
         try {
-            File linkFile = new File(testData.getDataDirectoryRoot().getAbsolutePath() + "/workspaces/cite/cite/BasicPolygons/link.ftl");
+            File linkFile = new File(testData.getDataDirectoryRoot().getAbsolutePath()
+                    + "/workspaces/cite/cite/BasicPolygons/link.ftl");
             FileOutputStream out = new FileOutputStream(linkFile);
             out.write("http://dummp.com".getBytes());
             out.close();
@@ -90,7 +105,8 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         assertEquals(n, items.getLength());
         for (int i = 0; i < items.getLength(); i++) {
             Element item = (Element) items.item(i);
-			assertEquals("http://dummp.com", item.getElementsByTagName("link").item(0).getChildNodes().item(0).getNodeValue());
+            assertEquals("http://dummp.com", item.getElementsByTagName("link").item(0)
+                    .getChildNodes().item(0).getNodeValue());
         }
     }
 
@@ -120,13 +136,13 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, item.getElementsByTagName("geo:long").getLength());
         }
     }
-    
-    @Test 
+
+    @Test
     public void testLatLongWMS() throws Exception {
         Document document = getAsDOM(
-                "wms/reflect?format_options=encoding:latlong&format=application/rss+xml&layers=" 
-                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
-                );
+                "wms/reflect?format_options=encoding:latlong&format=application/rss+xml&layers="
+                        + MockData.BASIC_POLYGONS.getPrefix() + ":"
+                        + MockData.BASIC_POLYGONS.getLocalPart());
 
         Element element = document.getDocumentElement();
         assertEquals("rss", element.getNodeName());
@@ -143,7 +159,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, item.getElementsByTagName("geo:long").getLength());
         }
     }
-    
+
     @Test
     public void testSimpleInternal() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
@@ -171,12 +187,12 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
 
-    @Test 
+    @Test
     public void testSimpleWMS() throws Exception {
         Document document = getAsDOM(
-                "wms/reflect?format_options=encoding:simple&format=application/rss+xml&layers=" 
-                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
-                );
+                "wms/reflect?format_options=encoding:simple&format=application/rss+xml&layers="
+                        + MockData.BASIC_POLYGONS.getPrefix() + ":"
+                        + MockData.BASIC_POLYGONS.getLocalPart());
 
         Element element = document.getDocumentElement();
         assertEquals("rss", element.getNodeName());
@@ -192,13 +208,49 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("georss:polygon").getLength());
         }
     }
-    
-    @Test 
+
+    /**
+     * Check for errors in concurrent output from WMS, such as in templated fields. This is a
+     * best-effort test that will usually, but not always, fail in the presence of bugs.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testConcurrentWMS() throws Exception {
+        Callable<Document> getter = () -> getAsDOM(
+                "wms/reflect?format_options=encoding:simple&format=application/rss+xml&layers="
+                        + MockData.BASIC_POLYGONS.getPrefix() + ":"
+                        + MockData.BASIC_POLYGONS.getLocalPart());
+        StringWriter writer = new StringWriter();
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+
+        // Filter timestamps to prevent time-based errors in test
+        Document document = filterTimestamps(getter.call());
+        t.transform(new DOMSource(document), new StreamResult(writer));
+        String expected = writer.toString();
+
+        int calls = 100;
+        CompletionService<Document> cs = new ExecutorCompletionService<>(
+                Executors.newFixedThreadPool(calls));
+        for (int i = 0; i < calls; i++) {
+            cs.submit(getter);
+        }
+
+        for (int i = 0; i < calls; i++) {
+            writer = new StringWriter();
+            t.transform(new DOMSource(filterTimestamps(cs.take().get())),
+                    new StreamResult(writer));
+
+            assertEquals(expected, writer.toString());
+        }
+    }
+
+    @Test
     public void testGmlWMS() throws Exception {
         Document document = getAsDOM(
-                "wms/reflect?format_options=encoding:gml&format=application/rss+xml&layers=" 
-                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
-                );
+                "wms/reflect?format_options=encoding:gml&format=application/rss+xml&layers="
+                        + MockData.BASIC_POLYGONS.getPrefix() + ":"
+                        + MockData.BASIC_POLYGONS.getLocalPart());
 
         Element element = document.getDocumentElement();
         assertEquals("rss", element.getNodeName());
@@ -215,7 +267,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
 
-    @Test 
+    @Test
     public void testFilter() throws Exception {
         // Set up a map context with a filtered layer
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BUILDINGS));
@@ -233,13 +285,13 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         NodeList items = document.getDocumentElement().getElementsByTagName("item");
         assertEquals(1, items.getLength());
     }
-    
+
     @Test
     public void testReproject() throws Exception {
         // Set up a map context with a projected layer
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.LINES));
         map.addLayer(createMapLayer(MockData.LINES));
-        
+
         Document document;
         try {
             document = getRSSResponse(map, AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
@@ -247,10 +299,10 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
             map.dispose();
         }
         NodeList items = document.getDocumentElement().getElementsByTagName("item");
-        
+
         // check all items are there
         assertEquals(1, items.getLength());
-        
+
         // check coordinates are in wgs84, originals aren't
         for (int i = 0; i < items.getLength(); i++) {
             Element item = (Element) items.item(i);
@@ -264,7 +316,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     String getOrdinate(Element item, String ordinate) {
         return item.getElementsByTagName(ordinate).item(0).getChildNodes().item(0).getNodeValue();
     }
-    
+
     /**
      * Returns a DOM given a map context and a geometry encoder
      */

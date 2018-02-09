@@ -80,6 +80,11 @@ public class GHRSSTExtensionPanel extends NetCDFExtensionPanel {
                 GHRSSTEncoder.SETTINGS_PRODUCT_STRING, String.class), PRODUCT_STRINGS);
         productString.setRequired(true);
         settings.add(productString);
+        
+        // enable/disable on open 
+        settings.visitChildren((component, visit) -> {
+            component.setEnabled(Boolean.TRUE.equals(enabled.getModelObject()));
+        });
 
         enabled.add(new AjaxEventBehavior("change") {
             @Override

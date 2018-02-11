@@ -551,10 +551,10 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final String propertyTypesParam = propertyTypesParam(propertyName);
 
         StringBuilder builder = append(extraData,
-                "oid IN (select oid from object_property where property_type in (:",
+                "(oid IN (select oid from object_property where property_type in (:",
                 propertyTypesParam,
                 ") and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
-                        + propertyTypesParam + ")) /* ", filter.toString(), " */ \n");
+                        + propertyTypesParam + "))) /* ", filter.toString(), " */ \n");
         return builder;
     }
 

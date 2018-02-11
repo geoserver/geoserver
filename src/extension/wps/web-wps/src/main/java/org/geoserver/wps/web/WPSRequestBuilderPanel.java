@@ -47,6 +47,7 @@ import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
@@ -105,7 +106,7 @@ public class WPSRequestBuilderPanel extends Panel {
         setOutputMarkupId(true);
         this.execute = executeRequest;
 
-        final DropDownChoice<String> processChoice = new DropDownChoice<String>("process", new PropertyModel<String>(
+        final DropDownChoice<String> processChoice = new Select2DropDownChoice<String>("process", new PropertyModel<String>(
                 execute, "processName"), buildProcessList());
         add(processChoice);
 

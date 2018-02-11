@@ -45,6 +45,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.global.ConfigurationException;
 import org.geoserver.config.GeoServer;
@@ -134,7 +135,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         final List<String> demoList = getDemoList(demoDir);
         final DropDownChoice demoRequestsList;
         final IModel reqFileNameModel = new PropertyModel(requestModel, "requestFileName");
-        demoRequestsList = new DropDownChoice("demoRequestsList", reqFileNameModel, demoList,
+        demoRequestsList = new Select2DropDownChoice("demoRequestsList", reqFileNameModel, demoList,
                 new ChoiceRenderer() {
                     public String getIdValue(Object obj, int index) {
                         return String.valueOf(obj);

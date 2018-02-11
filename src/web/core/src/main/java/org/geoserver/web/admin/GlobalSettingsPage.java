@@ -41,6 +41,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.springframework.context.ApplicationContext;
 
 public class GlobalSettingsPage extends ServerAdminPage {
@@ -67,8 +68,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("verboseExceptions"));
         form.add(new CheckBox("globalServices"));
         form.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
-        form.add(new DropDownChoice<String>("charset", AVAILABLE_CHARSETS));
-        form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values()),
+        form.add(new Select2DropDownChoice<>("charset", AVAILABLE_CHARSETS));
+        form.add(new Select2DropDownChoice<>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values()),
                 new ResourceErrorHandlingRenderer()));
         form.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
         
@@ -91,7 +92,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         providers.remove("lockProvider"); // remove the global lock provider
         Collections.sort(providers);;
         
-        DropDownChoice<String> lockProviderChoice = new DropDownChoice<String>("lockProvider", lockProviderModel, providers, new LocalizedChoiceRenderer(this));
+        DropDownChoice<String> lockProviderChoice = new Select2DropDownChoice<>("lockProvider", lockProviderModel, providers, new LocalizedChoiceRenderer(this));
         
         form.add( lockProviderChoice );
         
@@ -99,7 +100,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         if (webUIModeModel.getObject() == null) {
             webUIModeModel.setObject(GeoServerInfo.WebUIMode.DEFAULT);
         }
-        DropDownChoice<GeoServerInfo.WebUIMode> webUIModeChoice = new DropDownChoice<GeoServerInfo.WebUIMode>("webUIMode", 
+        DropDownChoice<GeoServerInfo.WebUIMode> webUIModeChoice = new Select2DropDownChoice<>("webUIMode", 
                 webUIModeModel, Arrays.asList(GeoServerInfo.WebUIMode.values()));
 
         form.add(webUIModeChoice);

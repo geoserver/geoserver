@@ -4,14 +4,11 @@
  */
 package org.geogig.geoserver.web.repository;
 
-import static org.geoserver.web.GeoServerWicketTestSupport.tester;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Page;
@@ -21,7 +18,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geogig.geoserver.model.DropDownModel;
-import org.geogig.geoserver.model.DropDownTestUtil;
 import org.geogig.geoserver.web.RepositoriesPage;
 import org.geogig.geoserver.web.RepositoryImportPage;
 import org.junit.Test;

@@ -31,7 +31,9 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
@@ -54,7 +56,8 @@ import org.w3c.dom.Document;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
-@TestSetup(run = TestSetupFrequency.REPEAT)
+@TestSetup(run = TestSetupFrequency.ONCE)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // zz_testCommitsSurviveShutDown run the latest
 public class WFSIntegrationTest extends WFSTestSupport {
 
     private static final String NAMESPACE = "http://geogig.org";
@@ -63,9 +66,9 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
     private static final String STORE = "geogigstore";
 
-    private TestHelper helper;
+    private static TestHelper helper;
 
-    private class TestHelper extends RepositoryTestCase {
+    private static class TestHelper extends RepositoryTestCase {
         @Override
         protected Context createInjector() {
             TestPlatform testPlatform = (TestPlatform) createPlatform();
@@ -75,7 +78,6 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
         @Override
         protected void setUpInternal() throws Exception {
-            configureGeogigDataStore();
         }
 
         File getRepositoryDirectory() {
@@ -86,10 +88,10 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
-
         helper = new TestHelper();
         helper.repositoryTempFolder.create();
         helper.setUp();
+        configureGeogigDataStore();
     }
 
     @Override
@@ -175,7 +177,12 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
     @Test
     public void testInsert() throws Exception {
-        Document dom = insert();
+        Document dom;
+        dom = getAsDOM(
+                "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
+        int initial = dom.getElementsByTagName("geogig:Lines").getLength();
+
+        dom = insert();
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
         assertEquals("1",
@@ -186,7 +193,7 @@ public class WFSIntegrationTest extends WFSTestSupport {
         // print(dom);
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
 
-        assertEquals(2, dom.getElementsByTagName("geogig:Lines").getLength());
+        assertEquals(1 + initial, dom.getElementsByTagName("geogig:Lines").getLength());
     }
 
     private Document insert() throws Exception {
@@ -254,8 +261,8 @@ public class WFSIntegrationTest extends WFSTestSupport {
     }
 
     /**
-     * Test case to expose issue https://github.com/boundlessgeo/geogig/issues/310
-     * "Editing Features changes the feature type"
+     * Test case to expose issue https://github.com/boundlessgeo/geogig/issues/310 "Editing Features
+     * changes the feature type"
      * 
      * @see #testUpdateDoesntChangeFeatureType()
      */
@@ -316,8 +323,8 @@ public class WFSIntegrationTest extends WFSTestSupport {
     }
 
     /**
-     * Test case to expose issue https://github.com/boundlessgeo/geogig/issues/310
-     * "Editing Features changes the feature type"
+     * Test case to expose issue https://github.com/boundlessgeo/geogig/issues/310 "Editing Features
+     * changes the feature type"
      * 
      * @see #testInsertDoesntChangeFeatureType()
      */
@@ -372,8 +379,11 @@ public class WFSIntegrationTest extends WFSTestSupport {
         }
     }
 
+    // HACK: forcing this test to run the latest through
+    // @FixMethodOrder(MethodSorters.NAME_ASCENDING) as it calls destroyGeoserver() and we really
+    // want to use TestSetupFrequency.ONCE
     @Test
-    public void testCommitsSurviveShutDown() throws Exception {
+    public void zz_testCommitsSurviveShutDown() throws Exception {
         GeoGIG geogig = helper.getGeogig();
 
         insert();
@@ -388,13 +398,13 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
         TestPlatform testPlatform = new TestPlatform(repoDir);
         Context context = new CLITestContextBuilder(testPlatform).build();
-        geogig = new GeoGIG(context);
+        GeoGIG geogig2 = new GeoGIG(context);
         try {
-            assertNotNull(geogig.getRepository());
-            List<RevCommit> actual = ImmutableList.copyOf(geogig.command(LogOp.class).call());
+            assertNotNull(geogig2.getRepository());
+            List<RevCommit> actual = ImmutableList.copyOf(geogig2.command(LogOp.class).call());
             assertEquals(expected, actual);
         } finally {
-            geogig.close();
+            geogig2.close();
         }
     }
 }

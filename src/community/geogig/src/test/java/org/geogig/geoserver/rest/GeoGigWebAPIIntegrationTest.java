@@ -13,12 +13,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.locationtech.geogig.model.impl.RevObjectTestSupport.hashString;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import javax.servlet.Filter;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
@@ -38,9 +46,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
@@ -69,32 +75,20 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import javax.servlet.Filter;
-
-@TestSetup(run = TestSetupFrequency.REPEAT)
+@TestSetup(run = TestSetupFrequency.ONCE)
 public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
 
     /**
      * {@code /geogig/repos/<repoId>}
      */
-    private String BASE_URL;
+    private static String BASE_URL;
 
     private static final Random rnd = new Random();
 
-    @Rule
-    public GeoGigTestData geogigData = new GeoGigTestData();
+    public static @ClassRule GeoGigTestData geogigData = new GeoGigTestData();
 
-    /**
-     * Override to avoid creating default geoserver test data
-     */
     @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // do nothing
-    }
-
-    @Before
-    public void before() throws Exception {
-        // protected void onSetUp(SystemTestData testData) throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
         geogigData.init()//
                 .config("user.name", "gabriel")//
@@ -149,12 +143,6 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         RepositoryInfo repositoryInfo = RepositoryManager.get().getByRepoName(repoName);
         assertNotNull(repositoryInfo);
         BASE_URL = "/geogig/repos/testrepo";
-    }
-
-    @After
-    public void after() {
-        RepositoryManager.close();
-        getCatalog().dispose();
     }
 
     @Override
@@ -418,25 +406,23 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         String transactionId = XMLUnit.newXpathEngine().evaluate("/response/Transaction/ID", dom);
 
         // import geopackage
-        final String importUrl = BASE_URL + "/import?format=gpkg&message=Import%20GeoPackage&transactionId="+transactionId;
-        final String endTransactionUrl = BASE_URL + "/endTransaction?transactionId="+transactionId;
+        final String importUrl = BASE_URL
+                + "/import?format=gpkg&message=Import%20GeoPackage&transactionId=" + transactionId;
+        final String endTransactionUrl = BASE_URL + "/endTransaction?transactionId="
+                + transactionId;
 
         // construct a multipart request with the fileUpload
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         File f = new File(url.getFile());
-        builder.addBinaryBody(
-                "fileUpload",
-                new FileInputStream(f),
-                ContentType.APPLICATION_OCTET_STREAM,
-                f.getName()
-        );
+        builder.addBinaryBody("fileUpload", new FileInputStream(f),
+                ContentType.APPLICATION_OCTET_STREAM, f.getName());
 
         HttpEntity multipart = builder.build();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         multipart.writeTo(outputStream);
-        MockHttpServletResponse response = postAsServletResponse(importUrl, outputStream.toByteArray(),
-                multipart.getContentType().getValue());
+        MockHttpServletResponse response = postAsServletResponse(importUrl,
+                outputStream.toByteArray(), multipart.getContentType().getValue());
 
         assertEquals(200, response.getStatus());
 

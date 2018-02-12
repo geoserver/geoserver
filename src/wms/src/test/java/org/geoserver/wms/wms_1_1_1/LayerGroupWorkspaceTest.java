@@ -31,7 +31,7 @@ import org.w3c.dom.Document;
 
 public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
-    LayerGroupInfo global, global2, sf, cite, nested;
+    LayerGroupInfo global, global2, sf, cite, nested, world;
 
     @Before
     public void prepare() throws Exception {
@@ -60,6 +60,10 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
             layer(cat, MockData.BUILDINGS));
         cite.setWorkspace(cat.getWorkspaceByName("cite"));
         cat.add(cite);
+
+        world = createLayerGroup(cat, "world", "world base", layer(cat, MockData.WORLD), 
+                layer(cat, MockData.WORLD));
+        cat.add(world);
     }
     
     @After
@@ -72,6 +76,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         cat.remove(sf);
         cat.remove(global);
         cat.remove(global2);
+        cat.remove(world);
     }
 
     LayerInfo layer(Catalog cat, QName name) {
@@ -125,6 +130,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:4326']", dom);
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", dom);
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3857']", dom);
     }
 
     @Test 
@@ -237,6 +243,10 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:4326']", dom);
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", dom);
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3857']", dom);
+
+        layer = "world";
+        assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3857']", dom);
     }
 
     @Test 
@@ -399,6 +409,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         wms.getSRS().add("4326");
         wms.getSRS().add("3005");
+        wms.getSRS().add("3857");
         wms.setBBOXForEachCRS(true);
         getGeoServer().save(wms);
     }
@@ -408,6 +419,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         wms.getSRS().remove("4326");
         wms.getSRS().remove("3005");
+        wms.getSRS().remove("3857");
         wms.setBBOXForEachCRS(false);
         getGeoServer().save(wms);
     }

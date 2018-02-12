@@ -77,6 +77,7 @@ import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.InternationalString;
 import org.springframework.util.Assert;
@@ -1438,15 +1439,36 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         continue; //already did this one
                     }
                     
+                    CoordinateReferenceSystem targetCrs = null;
                     try {
-                        ReferencedEnvelope tbbox = bbox.transform(CRS.decode(crs), true);
+                        targetCrs = CRS.decode(crs);
+                        ReferencedEnvelope tbbox = bbox.transform(targetCrs, true);
                         handleBBox(tbbox, crs);
-                    } 
-                    catch(Exception e) {
-                        LOGGER.warning(String.format("Unable to transform bounding box for '%s' layer" +
-                                " to %s", layer != null ? layer.getName() : "root", srs));
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+                    }  catch(Exception e) {
+                        // An exception is occurred during transformation. Try using a ProjectionHandler 
+                        try {
+                            // Try transformation with a ProjectionHandler
+                            CapabilitiesTransformerProjectionHandler handler = CapabilitiesTransformerProjectionHandler.
+                                    create(targetCrs, bbox.getCoordinateReferenceSystem());
+                            if (handler == null) {
+                                // Still no luck. Report the original issue
+                                LOGGER.warning(String.format(
+                                        "Unable to transform bounding box for '%s' layer"
+                                                + " to %s", layer != null ? layer.getName() : "root", crs));
+                                if (LOGGER.isLoggable(Level.FINE)) {
+                                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+                                }
+                            } else {
+                                ReferencedEnvelope tbbox = handler.transformEnvelope(bbox, targetCrs);
+                                handleBBox(tbbox, crs);
+                            }
+                        } catch (FactoryException | TransformException e1) {
+                            LOGGER.warning(String.format(
+                                    "Unable to transform bounding box for '%s' layer" + " to %s",
+                                    layer != null ? layer.getName() : "root", crs));
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.log(Level.FINE, e1.getLocalizedMessage(), e1);
+                            }
                         }
                     }
                 }

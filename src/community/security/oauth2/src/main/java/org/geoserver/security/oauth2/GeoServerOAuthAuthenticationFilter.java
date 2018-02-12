@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
-import org.geoserver.security.filter.AuthenticationCachingFilter;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
@@ -60,7 +59,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         extends GeoServerPreAuthenticatedUserNameFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
 
-    static final String CUSTOM_SESSION_COOKIE_NAME = "sessionid";
+    public static final String SESSION_COOKIE_NAME = "sessionid";
 
     OAuth2FilterConfig filterConfig;
 
@@ -102,11 +101,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        String cacheKey = authenticateFromCache(this, (HttpServletRequest) request,
-                (HttpServletResponse) response);
-
         // Search for an access_token on the request (simulating SSO)
-        String accessToken = request.getParameter("access_token");
+        final String accessToken = request.getParameter("access_token");
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
@@ -115,15 +111,14 @@ public abstract class GeoServerOAuthAuthenticationFilter
         }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         /*
          * This cookie works only locally, when accessing the GeoServer GUI and on the same domain. For remote access you need to logout from the
          * GeoServer GUI.
          */
-        final String customSessionCookie = getCustomSessionCookieValue(httpRequest, httpResponse);
+        final String customSessionCookie = getCustomSessionCookieValue(httpRequest);
 
-        final Authentication authentication = SecurityContextHolder.getContext()
+        Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         final Collection<? extends GrantedAuthority> authorities = (authentication != null
                 ? authentication.getAuthorities()
@@ -148,6 +143,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 httpRequest.getSession(false).invalidate();
                 try {
                     httpRequest.logout();
+                    authentication = null;
                 } catch (ServletException e) {
                     LOGGER.fine(e.getLocalizedMessage());
                 }
@@ -155,85 +151,34 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
 
-        if ((authentication == null && accessToken != null) || authentication == null || (authentication != null
-                && authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
+        if ((authentication == null && accessToken != null) || authentication == null
+                || (authentication != null && authorities.size() == 1
+                        && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
 
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
 
             Authentication postAuthentication = authentication;
-            if (postAuthentication != null && cacheKey != null) {
+            if (postAuthentication != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,
-                            postAuthentication);
+                    getSecurityManager().getAuthenticationCache().put(getName(),
+                            getCacheKey((HttpServletRequest) request), postAuthentication);
                 }
             }
         }
-        
+
         chain.doFilter(request, response);
     }
 
-    protected String authenticateFromCache(AuthenticationCachingFilter filter,
-            HttpServletRequest request, HttpServletResponse response) {
-
-        Authentication authFromCache = null;
-        String cacheKey = null;
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            cacheKey = getCacheKey(request, response);
-            if (cacheKey != null) {
-                authFromCache = getSecurityManager().getAuthenticationCache().get(getName(),
-                        cacheKey);
-                if (authFromCache != null)
-                    SecurityContextHolder.getContext().setAuthentication(authFromCache);
-                else
-                    return cacheKey;
-            }
-
-        }
-        return null;
+    /**
+     * The cache key is the authentication key (global identifier)
+     */
+    @Override
+    public String getCacheKey(HttpServletRequest request) {
+        final String access_token = request.getParameter("access_token");
+        return access_token != null ? access_token : getCustomSessionCookieValue(request);
     }
 
-    protected String getCacheKey(HttpServletRequest request, HttpServletResponse response) {
-
-        if (request.getSession(false) != null) // no caching if there is an HTTP session
-            return null;
-
-        String retval;
-        try {
-            retval = getPreAuthenticatedPrincipal(request, response);
-        } catch (Exception e) {
-            return null;
-        }
-
-        if (GeoServerUser.ROOT_USERNAME.equals(retval))
-            return null;
-        return retval;
-    }
-
-    private String getCustomSessionCookieValue(HttpServletRequest request, HttpServletResponse response) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Inspecting the http request looking for the Custom Session ID.");
-        }
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Found " + cookies.length + " cookies!");
-            }
-            for (Cookie c : cookies) {
-                if (c.getName().toLowerCase().contains(CUSTOM_SESSION_COOKIE_NAME)) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Found Custom Session cookie: " + c.getValue());
-                    }
-                    return c.getValue();
-                }
-            }
-        } else {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Found no cookies!");
-            }
-        }
-
-        return null;
-    }
+    protected abstract String getCustomSessionCookieValue(HttpServletRequest request);
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
@@ -307,7 +252,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
         } else {
             if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
                 result = new PreAuthenticatedAuthenticationToken(principal, null,
-                        Arrays.asList(GeoServerRole.ADMIN_ROLE, GeoServerRole.GROUP_ADMIN_ROLE, GeoServerRole.AUTHENTICATED_ROLE));
+                        Arrays.asList(GeoServerRole.ADMIN_ROLE, GeoServerRole.GROUP_ADMIN_ROLE,
+                                GeoServerRole.AUTHENTICATED_ROLE));
             } else {
                 Collection<GeoServerRole> roles = null;
                 try {
@@ -317,8 +263,9 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
                 if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
                     roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-                
-                RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
+
+                RoleCalculator calc = new RoleCalculator(
+                        getSecurityManager().getActiveRoleService());
                 if (calc != null) {
                     try {
                         roles.addAll(calc.calculateRoles(principal));
@@ -328,7 +275,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                                 e.getCause());
                     }
                 }
-                
+
                 result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
 
             }

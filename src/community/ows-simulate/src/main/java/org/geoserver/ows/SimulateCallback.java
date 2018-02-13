@@ -22,7 +22,7 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.data.FeatureSource;
-import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
@@ -176,7 +176,7 @@ public class SimulateCallback implements DispatcherCallback {
       return;
     }
     if (obj instanceof Filter) {
-      out.value(CQL.toCQL((Filter)obj));
+      out.value(ECQL.toCQL((Filter)obj));
       return;
     }
     if (!Modifier.isPublic(obj.getClass().getModifiers())) {

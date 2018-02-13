@@ -41,6 +41,7 @@ import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -62,6 +63,12 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED= new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
     protected static QName IR_RGB= new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
+    
+    @Before
+    public void cleanupCatalog() {
+        // attempt to solve intermittend build failure
+        getGeoServer().reset();
+    }
 
     @BeforeClass
     public static void setupJaiExt() {
@@ -72,7 +79,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     public static void tearDownJaiExt() {
         JAIExt.initJAIEXT(false, false);
     }
-
+    
     static CoordinateReferenceSystem UTM32N;
     
     @Override

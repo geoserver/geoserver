@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -102,7 +103,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
             throws IOException, ServletException {
 
         // Search for an access_token on the request (simulating SSO)
-        final String accessToken = request.getParameter("access_token");
+        final String accessToken = getParameterValue("access_token", request);
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
@@ -169,16 +170,51 @@ public abstract class GeoServerOAuthAuthenticationFilter
         chain.doFilter(request, response);
     }
 
+    protected String getParameterValue(String paramName, ServletRequest request) {
+        for (Enumeration<String> iterator = request.getParameterNames(); iterator.hasMoreElements();) {
+            final String param = iterator.nextElement();
+            if(paramName.equalsIgnoreCase(param)) {
+                return request.getParameter(param);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * The cache key is the authentication key (global identifier)
      */
     @Override
     public String getCacheKey(HttpServletRequest request) {
-        final String access_token = request.getParameter("access_token");
+        final String access_token = getParameterValue("access_token", request);
         return access_token != null ? access_token : getCustomSessionCookieValue(request);
     }
 
-    protected abstract String getCustomSessionCookieValue(HttpServletRequest request);
+    protected String getCustomSessionCookieValue(HttpServletRequest request)  {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Inspecting the http request looking for the Custom Session ID.");
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Found " + cookies.length + " cookies!");
+            }
+            for (Cookie c : cookies) {
+                if (c.getName().equalsIgnoreCase(SESSION_COOKIE_NAME)) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("Found Custom Session cookie: " + c.getValue());
+                    }
+                    return c.getValue();
+                }
+            }
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Found no cookies!");
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
@@ -308,7 +344,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
          */
 
         // Search for an access_token on the request (simulating SSO)
-        String accessToken = req.getParameter("access_token");
+        final String accessToken = getParameterValue("access_token", req);
 
         if (accessToken != null) {
             restTemplate.getOAuth2ClientContext()

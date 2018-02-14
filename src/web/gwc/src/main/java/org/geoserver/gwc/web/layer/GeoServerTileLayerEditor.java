@@ -50,7 +50,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -357,7 +357,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
     private List<String> getBlobStoreIds() {
         List<String> blobStoreIds = new ArrayList<String>();
-        for (BlobStoreConfig blobStore : GWC.get().getBlobStores()) {
+        for (BlobStoreInfo blobStore : GWC.get().getBlobStores()) {
             blobStoreIds.add(blobStore.getId());
         }
         return blobStoreIds;
@@ -367,7 +367,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         if (blobStoreId == null) {
             return true;
         }
-        for (BlobStoreConfig blobStore : GWC.get().getBlobStores()) {
+        for (BlobStoreInfo blobStore : GWC.get().getBlobStores()) {
             if(blobStore.getId().equals(blobStoreId)) {
                 return blobStore.isEnabled();
             }
@@ -381,7 +381,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     }
     
     private String getDefaultBlobStoreId(){
-        BlobStoreConfig defaultBlobStore = GWC.get().getDefaultBlobStore();
+        BlobStoreInfo defaultBlobStore = GWC.get().getDefaultBlobStore();
         return defaultBlobStore == null? null : defaultBlobStore.getId();
     }
 

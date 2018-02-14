@@ -17,10 +17,10 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.s3.S3BlobStoreConfig;
+import org.geowebcache.s3.S3BlobStoreInfo;
 import org.junit.Test;
 
 /**
@@ -75,22 +75,22 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("blobSpecificPanel:awsSecretKey", "mysecretkey");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
-        List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
-        BlobStoreConfig config = blobStores.get(0);
-        assertTrue(config instanceof S3BlobStoreConfig);
+        List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
+        BlobStoreInfo config = blobStores.get(0);
+        assertTrue(config instanceof S3BlobStoreInfo);
         assertEquals("myblobstore", config.getId());
-        assertEquals("mybucket", ((S3BlobStoreConfig) config).getBucket());
-        assertEquals("myaccesskey", ((S3BlobStoreConfig) config).getAwsAccessKey());
-        assertEquals("mysecretkey", ((S3BlobStoreConfig) config).getAwsSecretKey());
-        assertEquals(50, ((S3BlobStoreConfig) config).getMaxConnections().intValue());
+        assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
+        assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
+        assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
+        assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
         
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
     }
     
     @Test
     public void testModify() throws Exception {
-        S3BlobStoreConfig sconfig = new S3BlobStoreConfig();
-        Field id = BlobStoreConfig.class.getDeclaredField("id");
+        S3BlobStoreInfo sconfig = new S3BlobStoreInfo();
+        Field id = BlobStoreInfo.class.getDeclaredField("id");
         id.setAccessible(true);
         id.set(sconfig, "myblobstore");
         sconfig.setMaxConnections(50);
@@ -114,10 +114,10 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
-        BlobStoreConfig config = GWC.get().getBlobStores().get(0);
-        assertTrue(config instanceof S3BlobStoreConfig);
+        BlobStoreInfo config = GWC.get().getBlobStores().get(0);
+        assertTrue(config instanceof S3BlobStoreInfo);
         assertEquals("yourblobstore", config.getId());
-        assertEquals("yourbucket", ((S3BlobStoreConfig) config).getBucket());    
+        assertEquals("yourbucket", ((S3BlobStoreInfo) config).getBucket());
                 
         //test updated id!
         layer = GWC.get().getTileLayerByName("cite:Lakes");

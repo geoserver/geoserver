@@ -694,7 +694,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             if (tl.getName().equals("sf:AggregateGeoFeature")) {
                 // tl.isInitialized();
                 foudAGF = true;
-                GridSubset epsg4326 = tl.getGridSubset(gridSetBroker.WORLD_EPSG4326.getName());
+                GridSubset epsg4326 = tl.getGridSubset(gridSetBroker.getWorldEpsg4326().getName());
                 assertTrue(epsg4326.getGridSetBounds().equals(
                         new BoundingBox(-180.0, -90.0, 180.0, 90.0)));
                 String mime = tl.getMimeTypes().get(1).getMimeType();
@@ -785,7 +785,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         CatalogConfiguration config = GeoServerExtensions.bean(CatalogConfiguration.class);
 
-        assertNull(config.getLayer(layerName));
+        assertFalse(config.getLayer(layerName).isPresent());
         try {
             mediator.getTileLayerByName(layerName);
             fail("Expected IAE");

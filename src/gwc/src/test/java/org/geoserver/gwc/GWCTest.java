@@ -472,9 +472,8 @@ public class GWCTest {
         assertNotNull(tileLayer.getGridSubset(newName));
         assertNotNull(tileLayerGroup.getGridSubset(newName));
 
-        verify(xmlConfig, times(1)).removeGridset(eq(oldName));
-        verify(xmlConfig, times(1)).addOrReplaceGridSet(eq(new XMLGridSet(newGridset)));
-        verify(xmlConfig, times(1)).save();
+        verify(xmlConfig, times(1)).removeGridSet(eq(oldName));
+        verify(xmlConfig, times(1)).addGridSet(eq(newGridset));
 
         assertNull(gridSetBroker.get(oldName));
         assertEquals(newGridset, gridSetBroker.get(newName));

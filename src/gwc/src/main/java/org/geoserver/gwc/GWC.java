@@ -1494,13 +1494,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 }
             }
 
-            // now no layer is referencing it
-
-            XMLConfiguration mainConfig = getXmlConfiguration();
-
-            mainConfig.removeGridset(oldGridSetName);
-            mainConfig.addOrReplaceGridSet(new XMLGridSet(newGridSet));
-            mainConfig.save();
+            //TODO: Verify we don't also need to remove from XMLConfiguration
             getGridSetBroker().remove(oldGridSetName);
             getGridSetBroker().put(newGridSet);
 
@@ -1844,7 +1838,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         if (is900913Compatible) {
-            BoundingBox prescribedBounds = gridSetBroker.WORLD_EPSG3857.getBounds();
+            BoundingBox prescribedBounds = gridSetBroker.getWorldEpsg3857().getBounds();
             return JTS.toGeometry(new Envelope(prescribedBounds.getMinX(), prescribedBounds
                     .getMaxX(), prescribedBounds.getMinY(), prescribedBounds.getMaxY()));
         }

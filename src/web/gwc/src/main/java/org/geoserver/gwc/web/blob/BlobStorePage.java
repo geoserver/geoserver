@@ -31,7 +31,7 @@ import org.geoserver.gwc.web.blob.BlobStoreType;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
 
@@ -51,7 +51,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
     private WebMarkupContainer blobConfigContainer;
 
-    private Form<BlobStoreConfig> blobStoreForm;
+    private Form<BlobStoreInfo> blobStoreForm;
 
     private TextField<String> tfId;
 
@@ -64,7 +64,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public BlobStorePage(final BlobStoreConfig originalStore) {
+	public BlobStorePage(final BlobStoreInfo originalStore) {
 
         final List<String> assignedLayers = new ArrayList<String>();
 
@@ -103,9 +103,9 @@ public class BlobStorePage extends GeoServerSecuredPage {
         blobConfigContainer.setOutputMarkupId(true);
         add(blobConfigContainer);
 
-        blobStoreForm = new Form<BlobStoreConfig>("blobStoreForm",
-                new CompoundPropertyModel<BlobStoreConfig>(originalStore == null ? null
-                        : (BlobStoreConfig) originalStore.clone()));
+        blobStoreForm = new Form<BlobStoreInfo>("blobStoreForm",
+                new CompoundPropertyModel<BlobStoreInfo>(originalStore == null ? null
+                        : (BlobStoreInfo) originalStore.clone()));
         blobConfigContainer.add(blobStoreForm);
         blobStoreForm.setVisible(originalStore != null);
 
@@ -140,7 +140,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
             @Override
             public void validate(Form<?> form) {
-                BlobStoreConfig blobStore = (BlobStoreConfig) form.getModelObject();
+                BlobStoreInfo blobStore = (BlobStoreInfo) form.getModelObject();
                 if (blobStore.isDefault() && !cbDefault.getConvertedInput()) {
                     form.error(new ParamResourceModel("defaultError", getPage()).getString());
                 } else if (cbDefault.getConvertedInput() && !cbEnabled.getConvertedInput()) {
@@ -159,7 +159,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
             @Override
             public void validate(Form<?> form) {
-                for (BlobStoreConfig otherBlobStore : GWC.get().getBlobStores()) {
+                for (BlobStoreInfo otherBlobStore : GWC.get().getBlobStores()) {
                     if (otherBlobStore != originalStore
                             && otherBlobStore.getId().equals(tfId.getConvertedInput())) {
                         form.error(new ParamResourceModel("duplicateIdError", getPage())
@@ -176,7 +176,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 
-                final BlobStoreConfig blobStore = (BlobStoreConfig) getForm().getModelObject();
+                final BlobStoreInfo blobStore = (BlobStoreInfo) getForm().getModelObject();
 
                 if (originalStore != null && originalStore.isEnabled() && !blobStore.isEnabled()
                         && assignedLayers.size() > 0) {
@@ -238,15 +238,15 @@ public class BlobStorePage extends GeoServerSecuredPage {
             }
         });
         blobStoreForm
-                .add(new BookmarkablePageLink<BlobStoreConfig>("cancel", BlobStoresPage.class));
+                .add(new BookmarkablePageLink<BlobStoreInfo>("cancel", BlobStoresPage.class));
 
     }
 
-    protected void save(BlobStoreConfig originalStore, BlobStoreConfig blobStore,
+    protected void save(BlobStoreInfo originalStore, BlobStoreInfo blobStore,
             List<String> assignedLayers) throws ConfigurationException {
 
         // remove default if necessary
-        BlobStoreConfig defaultStore = null;
+        BlobStoreInfo defaultStore = null;
         if (blobStore.isDefault() && (originalStore == null || !originalStore.isDefault())) {
             defaultStore = GWC.get().getDefaultBlobStore();
             if (defaultStore != null) {

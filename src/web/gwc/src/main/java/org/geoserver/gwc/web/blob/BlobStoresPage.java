@@ -27,7 +27,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
 
@@ -44,7 +44,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> remove;
 
-    private GeoServerTablePanel<BlobStoreConfig> blobStoresPanel;
+    private GeoServerTablePanel<BlobStoreInfo> blobStoresPanel;
 
     private GeoServerDialog dialog;
 
@@ -76,7 +76,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 final Set<String> ids = new HashSet<String>();
                 final List<String> assignedLayers = new ArrayList<String>();
 
-                for (BlobStoreConfig config : blobStoresPanel.getSelection()) {
+                for (BlobStoreInfo config : blobStoresPanel.getSelection()) {
                     if (config.isDefault()) {
                         error(new ParamResourceModel("deleteError", getPage()).getString());
                         target.add(feedbackPanel);
@@ -154,16 +154,16 @@ public class BlobStoresPage extends GeoServerSecuredPage {
         setHeaderPanel(header);
 
         // the panel
-        add(blobStoresPanel = new GeoServerTablePanel<BlobStoreConfig>("storesPanel",
+        add(blobStoresPanel = new GeoServerTablePanel<BlobStoreInfo>("storesPanel",
                 new BlobStoresProvider(), true) {
             private static final long serialVersionUID = -5380703588873422601L;
 
             @Override
-            protected Component getComponentForProperty(String id, IModel<BlobStoreConfig> itemModel,
-                    Property<BlobStoreConfig> property) {
-                final BlobStoreConfig blobStore = (BlobStoreConfig) itemModel.getObject();
+            protected Component getComponentForProperty(String id, IModel<BlobStoreInfo> itemModel,
+                    Property<BlobStoreInfo> property) {
+                final BlobStoreInfo blobStore = (BlobStoreInfo) itemModel.getObject();
                 if (property == BlobStoresProvider.ID) {
-                    return new SimpleAjaxLink<BlobStoreConfig>(id, itemModel, property.getModel(itemModel)) {
+                    return new SimpleAjaxLink<BlobStoreInfo>(id, itemModel, property.getModel(itemModel)) {
                         private static final long serialVersionUID = 1L;
 
                         @Override

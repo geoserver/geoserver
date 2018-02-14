@@ -222,8 +222,8 @@ public class GeoServerTileLayerTest {
         when(catalog.getLayerGroup(eq(layerGroupId))).thenReturn(layerGroup);
 
         gridSetBroker = new GridSetBroker(true, true);
-        gridSetBroker.put(gridSetBroker.WORLD_EPSG4326);
-        gridSetBroker.put(gridSetBroker.WORLD_EPSG3857);
+        gridSetBroker.put(gridSetBroker.getWorldEpsg4326());
+        gridSetBroker.put(gridSetBroker.getWorldEpsg3857());
     }
 
     @Test
@@ -453,7 +453,7 @@ public class GeoServerTileLayerTest {
                 .next();
 
         BoundingBox gridSubsetExtent = savedSubset.getExtent();
-        BoundingBox expected = gridSetBroker.WORLD_EPSG3857.getOriginalExtent();
+        BoundingBox expected = gridSetBroker.getWorldEpsg3857().getOriginalExtent();
         // don't use equals(), it uses an equality threshold we want to avoid here
         double threshold = 1E-16;
         assertTrue("Expected " + expected + ", got " + gridSubsetExtent,

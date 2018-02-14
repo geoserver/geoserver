@@ -10,7 +10,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.sqlite.MbtilesConfiguration;
@@ -118,7 +118,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         originalConfiguration.setRootDirectory("/tmp/gwc");
         String storeId = UUID.randomUUID().toString();
         // the setId method has package only visibility, so we set the value by reflection
-        Field id = BlobStoreConfig.class.getDeclaredField("id");
+        Field id = BlobStoreInfo.class.getDeclaredField("id");
         id.setAccessible(true);
         id.set(originalConfiguration, storeId);
         // associate the store with a layer (it will be used to test store id update)
@@ -160,8 +160,8 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
      * Helper method that finds a GWC store by is id.
      */
     private MbtilesConfiguration findStore(String storeId) {
-        List<BlobStoreConfig> configurations = GWC.get().getBlobStores();
-        for (BlobStoreConfig candidateConfiguration : configurations) {
+        List<BlobStoreInfo> configurations = GWC.get().getBlobStores();
+        for (BlobStoreInfo candidateConfiguration : configurations) {
             if (candidateConfiguration instanceof MbtilesConfiguration && candidateConfiguration.getId().equals(storeId)) {
                 return (MbtilesConfiguration) candidateConfiguration;
             }

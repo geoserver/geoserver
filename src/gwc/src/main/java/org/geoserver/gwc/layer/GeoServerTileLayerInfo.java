@@ -11,7 +11,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.layer.ExpirationRule;
@@ -20,46 +20,46 @@ import com.google.common.collect.ImmutableSet;
 
 public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
 
-    public abstract String getId();
+    String getId();
 
-    public abstract void setId(String id);
+    void setId(String id);
 
-    public abstract String getName();
+    String getName();
 
-    public abstract void setName(String name);
+    void setName(String name);
 
     /**
-     * @return The {@link BlobStoreConfig#getId() blob store id} for this layer's tiles, or
+     * @return The {@link BlobStoreInfo#getId() blob store id} for this layer's tiles, or
      *         {@code null} if whatever the default blob store is shall be used
      */
     @Nullable
-    public abstract String getBlobStoreId();
+    String getBlobStoreId();
 
     /**
-     * @param blobStoreId the {@link BlobStoreConfig#getId() blob store id} for this layer's tiles,
+     * @param blobStoreId the {@link BlobStoreInfo#getId() blob store id} for this layer's tiles,
      *        or {@code null} if whatever the default blob store is shall be used
      */
-    public abstract void setBlobStoreId(@Nullable String blobStoreId);
+    void setBlobStoreId(@Nullable String blobStoreId);
 
-    public abstract int getMetaTilingX();
+    int getMetaTilingX();
 
-    public abstract int getMetaTilingY();
+    int getMetaTilingY();
 
-    public abstract void setMetaTilingY(int metaTilingY);
+    void setMetaTilingY(int metaTilingY);
 
-    public abstract void setMetaTilingX(int metaTilingX);
+    void setMetaTilingX(int metaTilingX);
     
-    public abstract int getExpireCache();
+    int getExpireCache();
     
-    public abstract void setExpireCache(int expireCache);
+    void setExpireCache(int expireCache);
     
-    public abstract List<ExpirationRule> getExpireCacheList();
+    List<ExpirationRule> getExpireCacheList();
     
-    public abstract void setExpireCacheList(List<ExpirationRule> expireCacheList);
+    void setExpireCacheList(List<ExpirationRule> expireCacheList);
     
-    public abstract int getExpireClients();
+    int getExpireClients();
     
-    public abstract void setExpireClients(int seconds);
+    void setExpireClients(int seconds);
 
     /**
      * Derived property from {@link #getParameterFilters()}, returns the configured allowable values
@@ -71,62 +71,62 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
      * The returned set shall not return the default style for the layer
      * </p>
      */
-    public abstract ImmutableSet<String> cachedStyles();
+    ImmutableSet<String> cachedStyles();
 
-    public abstract Set<String> getMimeFormats();
+    Set<String> getMimeFormats();
 
-    public abstract Set<XMLGridSubset> getGridSubsets();
+    Set<XMLGridSubset> getGridSubsets();
 
-    public abstract void setGridSubsets(Set<XMLGridSubset> gridSubsets);
+    void setGridSubsets(Set<XMLGridSubset> gridSubsets);
 
-    public abstract void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled);
 
-    public abstract boolean isEnabled();
+    boolean isEnabled();
 
-    public abstract void setGutter(int gutter);
+    void setGutter(int gutter);
 
-    public abstract int getGutter();
+    int getGutter();
 
-    public abstract boolean isAutoCacheStyles();
+    boolean isAutoCacheStyles();
 
-    public abstract void setAutoCacheStyles(boolean autoCacheStyles);
+    void setAutoCacheStyles(boolean autoCacheStyles);
 
     /**
      * @return the parameterFilters
      */
-    public abstract Set<ParameterFilter> getParameterFilters();
+    Set<ParameterFilter> getParameterFilters();
 
     /**
      * Replace the set of parameter filters
      * @param parameterFilters
      */
-    public abstract void setParameterFilters(Set<ParameterFilter> parameterFilters);
+    void setParameterFilters(Set<ParameterFilter> parameterFilters);
     
     /**
      * Add a parameter filter, replacing any existing filter with the same key.
      * @param parameterFilter
      * @return true if an existing filter was replaced, false otherwise.
      */
-    public abstract boolean addParameterFilter(ParameterFilter parameterFilter);
+    boolean addParameterFilter(ParameterFilter parameterFilter);
     
     /**
      * Remove the filter with the specified key
      * @param key
      * @return true if the filter existed, false otherwise
      */
-    public abstract boolean removeParameterFilter(String key);
+    boolean removeParameterFilter(String key);
 
-    public abstract GeoServerTileLayerInfo clone();
+    GeoServerTileLayerInfo clone();
 
     /**
      * Get the ParameterFilter with the specified key
      * @param key
      *
      */
-    public abstract ParameterFilter getParameterFilter(String key);
+    ParameterFilter getParameterFilter(String key);
 
-    public abstract boolean isInMemoryCached();
+    boolean isInMemoryCached();
     
-    public abstract void setInMemoryCached(boolean inMemoryCached);
+    void setInMemoryCached(boolean inMemoryCached);
 
 }

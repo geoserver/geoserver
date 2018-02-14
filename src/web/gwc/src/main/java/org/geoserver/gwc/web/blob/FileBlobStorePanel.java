@@ -14,7 +14,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geowebcache.config.FileBlobStoreConfig;
+import org.geowebcache.config.FileBlobStoreInfo;
 
 /**
  *
@@ -26,7 +26,7 @@ public class FileBlobStorePanel extends Panel {
 
     private static final long serialVersionUID = -8237328668463257329L;
 
-    public FileBlobStorePanel(String id, final IModel<FileBlobStoreConfig> configModel) {
+    public FileBlobStorePanel(String id, final IModel<FileBlobStoreInfo> configModel) {
         super(id, configModel);
     }
     

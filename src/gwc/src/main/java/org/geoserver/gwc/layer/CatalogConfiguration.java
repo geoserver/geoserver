@@ -5,7 +5,6 @@
  */
 package org.geoserver.gwc.layer;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -29,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -159,8 +159,8 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      */
     @Deprecated
     @Override
-    public List<GeoServerTileLayer> getTileLayers() {
-        Iterable<GeoServerTileLayer> layers = getLayers();
+    public List<TileLayer> getTileLayers() {
+        Iterable<TileLayer> layers = getLayers();
         return Lists.newArrayList(layers);
     }
 
@@ -168,17 +168,16 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      * @see TileLayerConfiguration#getLayers()
      */
     @Override
-    public Collection<GeoServerTileLayer> getLayers() {
+    public Collection<TileLayer> getLayers() {
         lock.acquireReadLock();
         try {
             final Set<String> layerNames = tileLayerCatalog.getLayerNames();
 
-            Function<String, GeoServerTileLayer> lazyLayerFetch =
-                    layerName -> CatalogConfiguration.this.getLayer(layerName);
+            Function<String, Optional<TileLayer>> lazyLayerFetch = CatalogConfiguration.this::getLayer;
 
             // removing the NULL results
-            return Lists.newArrayList(layerNames.stream().map(lazyLayerFetch::apply).collect(Collectors.toList())
-                    .stream().filter(java.util.Objects::nonNull).collect(Collectors.toList()));
+            return Lists.newArrayList(layerNames.stream().map(lazyLayerFetch).collect(Collectors.toList())
+                    .stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
         } finally {
             lock.releaseReadLock();
         }
@@ -318,7 +317,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      * @see TileLayerConfiguration#getLayer(String)
      */
     @Override
-    public GeoServerTileLayer getLayer(final String layerName) {
+    public Optional<TileLayer> getLayer(final String layerName) {
         checkNotNull(layerName, "layer name is null");
 
         final String layerId;
@@ -327,12 +326,12 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         try {
             layerId = getLayerId(layerName);
             if (layerId == null) {
-                return null;
+                return Optional.ofNullable(null);
             }
         } finally {
             lock.releaseReadLock();
         }
-        return getTileLayerById(layerId);
+        return Optional.ofNullable(getTileLayerById(layerId));
     }
 
     /**
@@ -341,7 +340,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     @Deprecated
     @Override
     public GeoServerTileLayer getTileLayer(final String layerName) {
-        return getLayer(layerName);
+        return getTileLayerById(layerName);
     }
 
     private String getLayerId(final String layerName) {
@@ -536,8 +535,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      */
     @Override
     public synchronized void renameLayer(String oldName, String newName) throws NoSuchElementException {
-        TileLayer tl = getLayer(oldName);
-        checkNotNull(tl, "TileLayer " + oldName+ " not found");
+        TileLayer tl = getLayer(oldName).orElseThrow(()-> new NullPointerException("TileLayer " + oldName+ " not found"));
         checkArgument(canSave(tl), "Can't rename TileLayer of type ", tl.getClass());
 
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) tl;

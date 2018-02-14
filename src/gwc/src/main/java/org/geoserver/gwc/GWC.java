@@ -86,8 +86,8 @@ import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.BaseConfiguration;
-import org.geowebcache.config.BlobStoreConfig;
-import org.geowebcache.config.BlobStoreConfigurationCatalog;
+import org.geowebcache.config.BlobStoreConfiguration;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.TileLayerConfiguration;
 import org.geowebcache.config.XMLConfiguration;
@@ -2334,20 +2334,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * @return the list of configured blobstores
      */
-    public List<BlobStoreConfig> getBlobStores() {
-        BlobStoreConfigurationCatalog xmlConfig = getXmlConfiguration();
+    public List<BlobStoreInfo> getBlobStores() {
+        BlobStoreConfiguration xmlConfig = getXmlConfiguration();
 
-        return new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
+        return new ArrayList<BlobStoreInfo>(xmlConfig.getBlobStores());
     }
 
     /**
-     * @return the {@link BlobStoreConfig#isDefault() default} blobstore, or {@code null} if there's
+     * @return the {@link BlobStoreInfo#isDefault() default} blobstore, or {@code null} if there's
      *         no default
      */
-    public BlobStoreConfig getDefaultBlobStore() {
-        BlobStoreConfigurationCatalog xmlConfig = getXmlConfiguration();
+    public BlobStoreInfo getDefaultBlobStore() {
+        BlobStoreConfiguration xmlConfig = getXmlConfiguration();
 
-        for (BlobStoreConfig config : xmlConfig.getBlobStores()) {
+        for (BlobStoreInfo config : xmlConfig.getBlobStores()) {
             if (config.isDefault()) {
                 return config;
             }
@@ -2359,12 +2359,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Convenience method to add a new blob store, calling {@link #setBlobStores} the extra
      * {@code config}
      */
-    public void addBlobStore(BlobStoreConfig config) throws ConfigurationException {
+    public void addBlobStore(BlobStoreInfo config) throws ConfigurationException {
         checkNotNull(config);
 
-        List<BlobStoreConfig> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
+        List<BlobStoreInfo> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
         if (config.isDefault()) {
-            for (BlobStoreConfig c : stores) {
+            for (BlobStoreInfo c : stores) {
                 c.setDefault(false);
             }
         }
@@ -2377,14 +2377,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Convenience method to modify a blobstore; calling {@link #setBlobStores(List)} with the
      * config identified by {@code oldId} repplaced by {@code config}
      */
-    public void modifyBlobStore(String oldId, BlobStoreConfig config) throws ConfigurationException {
+    public void modifyBlobStore(String oldId, BlobStoreInfo config) throws ConfigurationException {
         checkNotNull(oldId);
         checkNotNull(config);
 
-        List<BlobStoreConfig> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
+        List<BlobStoreInfo> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
         int index = -1;
         for (int i = 0; i < stores.size(); i++) {
-            BlobStoreConfig c = stores.get(i);
+            BlobStoreInfo c = stores.get(i);
             if (oldId.equals(c.getId())) {
                 index = i;
                 break;
@@ -2408,14 +2408,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void removeBlobStores(Iterable<String> blobStoreIds) throws ConfigurationException {
         checkNotNull(blobStoreIds);
 
-        Map<String, BlobStoreConfig> stores = Maps.uniqueIndex(new ArrayList<>(
-                getXmlConfiguration().getBlobStores()), new Function<BlobStoreConfig, String>() {
+        Map<String, BlobStoreInfo> stores = Maps.uniqueIndex(new ArrayList<>(
+                getXmlConfiguration().getBlobStores()), new Function<BlobStoreInfo, String>() {
             @Override
-            public String apply(BlobStoreConfig c) {
+            public String apply(BlobStoreInfo c) {
                 return c.getId();
             }
         });
-        Map<String, BlobStoreConfig> filtered = Maps.filterKeys(stores,
+        Map<String, BlobStoreInfo> filtered = Maps.filterKeys(stores,
                 Predicates.not(Predicates.in(ImmutableList.copyOf(blobStoreIds))));
 
         if (!filtered.equals(stores)) {
@@ -2437,14 +2437,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         ones or the configuration can't be saved
      * @see {@link CompositeBlobStore#setBlobStores}
      */
-    void setBlobStores(List<BlobStoreConfig> stores) throws ConfigurationException {
+    void setBlobStores(List<BlobStoreInfo> stores) throws ConfigurationException {
         Preconditions.checkNotNull(stores, "stores is null");
         
         XMLConfiguration xmlConfig = getXmlConfiguration();
 
         CompositeBlobStore compositeBlobStore = getCompositeBlobStore();
         
-        List<BlobStoreConfig> oldStores = new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
+        List<BlobStoreInfo> oldStores = new ArrayList<BlobStoreInfo>(xmlConfig.getBlobStores());
 
         try {
             compositeBlobStore.setBlobStores(stores);

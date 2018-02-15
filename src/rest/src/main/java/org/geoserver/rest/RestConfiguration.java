@@ -111,6 +111,11 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
             converters.add(converter);
         }
 
+        //Add GWC REST converter
+        if (applicationContext.containsBean("gwcConverter")) {
+            converters.add((HttpMessageConverter<?>) applicationContext.getBean("gwcConverter"));
+        }
+
         //use the default ones as lowest priority
         super.addDefaultHttpMessageConverters(converters);
     }

@@ -170,6 +170,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      */
     private static final int KB = 1024;
 
+    private static final int MAX_TILE_SIZE = 1024;
+
     /**
      * The lookup table used for data type transformation (it's really the identity one)
      */
@@ -969,15 +971,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Tiling
         //
         // if there is a output tile size hint, use it, otherwise use the output size itself
-        final int tileSizeX;
-        final int tileSizeY;
+        int tileSizeX = -1;
+        int tileSizeY = -1;
         if (mapContent.getTileSize() != -1) {
             tileSizeX = tileSizeY = mapContent.getTileSize();
-        } else {
-            tileSizeX = mapContent.getMapWidth();
-            tileSizeY = mapContent.getMapHeight();
+        } else if (mapWidth < MAX_TILE_SIZE && mapHeight < MAX_TILE_SIZE) {
+            tileSizeX = mapWidth;
+            tileSizeY = mapHeight;
         }
-        
+
         // 
         // Band selection
         //
@@ -1158,10 +1160,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         layout.setMinY(0);
         layout.setWidth(mapWidth);
         layout.setHeight(mapHeight);
-        layout.setTileGridXOffset(0);
-        layout.setTileGridYOffset(0);
-        layout.setTileWidth(tileSizeX);
-        layout.setTileHeight(tileSizeY);
+        if (tileSizeX > 0 && tileSizeY > 0) {
+            layout.setTileGridXOffset(0);
+            layout.setTileGridYOffset(0);
+            layout.setTileWidth(tileSizeX);
+            layout.setTileHeight(tileSizeY);
+        }
         
         // We need to find the background color expressed in terms of image color components
         // (which depends on the color model nature, the input and output transparency)
@@ -1348,7 +1352,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 image = iw.getRenderedImage();
             }
         }
-        
         return image;
     }
 

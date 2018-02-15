@@ -15,10 +15,12 @@ import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +86,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ChannelSelectionImpl;
 import org.geotools.styling.RasterSymbolizer;
@@ -1133,6 +1136,48 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             reader.dispose();
             reader2.dispose();
         }
+    }
+
+    @Test
+    public void testGetMapUntiledBigSize() throws Exception {
+        final int mapWidth = 8192;
+        final int mapHeight = 8192;
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        ReferencedEnvelope bbox = new ReferencedEnvelope(new Envelope(145, 146, -43, -41), crs);
+        request.setBbox(bbox);
+        request.setHeight(mapHeight);
+        request.setWidth(mapWidth);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+        request.setTransparent(true);
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapHeight(mapHeight);
+        map.setMapWidth(mapWidth);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        map.getViewport().setBounds(bbox);
+        addRasterToMap(map, TAZ_BYTE);
+        map.getViewport().setBounds(bbox);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedOp op = (RenderedOp) imageMap.getImage();
+        Point[] tileIndices = op.getTileIndices(new Rectangle(0, 0, mapWidth, mapHeight));
+
+        // Assert we are getting more than a single huge tile.
+        assertTrue(tileIndices.length > 1);
+
+        Raster tile = op.getTile(0, 0);
+        assertNotNull(tile);
+
+        // check that inner tiling has not be set to mapWidth * mapHeight
+        assertTrue(tile.getWidth() < mapWidth);
+        assertTrue(tile.getHeight() < mapHeight);
+
+        ImageUtilities.disposePlanarImageChain(op);
+        imageMap.dispose();
+
     }
 
     /**

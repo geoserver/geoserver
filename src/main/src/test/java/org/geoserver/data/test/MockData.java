@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.data.CatalogWriter;
+import org.geoserver.data.test.TestData;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.util.IOUtils;
@@ -56,6 +57,8 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Justin Deoliveira, The Open Planning Project
  *
  */
+
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MockData implements TestData {
     // Extra configuration keys for vector data
     /**
@@ -943,5 +946,14 @@ public class MockData implements TestData {
         styles = null;
         featureTypes = null;
         data = null;
+    }
+    
+    public void addCustomType(QName name, Map params) throws IOException {
+        // write the info file
+        info(name, params);
+        // setup the meta information to be written in the catalog
+        namespaces.put(name.getPrefix(), name.getNamespaceURI());
+        dataStoreNamepaces.put(name.getPrefix(), name.getPrefix());
+        dataStores.put(name.getPrefix(), params);
     }
 }

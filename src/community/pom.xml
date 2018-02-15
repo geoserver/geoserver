@@ -230,7 +230,7 @@
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
-        <module>gwc-s3</module>
+        <!-- <module>gwc-s3</module> -->
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>web-resource</module>
@@ -253,6 +253,7 @@
         <module>nsg-profiles/nsg-wfs-profile</module>
         <module>nsg-profiles/nsg-wmts-profile</module>
         <module>netcdf-ghrsst</module>
+        <module>taskmanager</module>
       </modules>
     </profile>
     <profile>
@@ -571,6 +572,13 @@
       <modules>
         <module>netcdf-ghrsst</module>
       </modules>
+    </profile>    
+    <profile>
+      <id>taskmanager></id>
+      <modules>
+        <module>taskmanager</module>
+      </modules>
     </profile>
+
   </profiles>  
 </project>

@@ -128,4 +128,9 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
             }
         }
     }
+    
+    @Override
+    protected String convertPropertyValue(String property) {
+        return property.replace("${GEOSERVER_DATA_DIR}", data.root().getPath());
+    }
 }

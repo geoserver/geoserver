@@ -5,8 +5,6 @@
  */
 package org.geoserver.catalog.impl;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
 import java.util.LinkedHashSet;
@@ -31,30 +29,6 @@ import org.geotools.util.logging.Logging;
 public abstract class AbstractCatalogFacade implements CatalogFacade {
 
     private static final Logger LOGGER = Logging.getLogger(AbstractCatalogFacade.class);
-
-
-    public static final WorkspaceInfo _ANY_WORKSPACE = any(WorkspaceInfo.class);
-
-    public static final NamespaceInfo _ANY_NAMESPACE = any(NamespaceInfo.class);
-
-    public static final WorkspaceInfo _NO_WORKSPACE = any(WorkspaceInfo.class);
-
-    @SuppressWarnings("unchecked")
-    static <T extends CatalogInfo> T any(Class<T> clazz) {
-
-        Class proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz);
-        try {
-            return (T) proxyClass.getConstructor(new Class[] { InvocationHandler.class })
-                    .newInstance(new Object[] { new InvocationHandler() {
-                        public Object invoke(Object proxy, Method method, Object[] args)
-                                throws Throwable {
-                            return null;
-                        }
-                    } });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     //
     // Utilities
@@ -242,5 +216,4 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
             OwsUtils.set(o, "id", o.getClass().getSimpleName() + "-" + uid);
         }
     }
-
 }

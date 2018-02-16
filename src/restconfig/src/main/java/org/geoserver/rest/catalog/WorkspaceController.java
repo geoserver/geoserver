@@ -133,6 +133,7 @@ public class WorkspaceController extends AbstractCatalogController {
             namespace = catalog.getFactory().createNamespace();
             namespace.setPrefix( workspace.getName() );
             namespace.setURI( "http://" + workspace.getName() );
+            namespace.setIsolated(workspace.isIsolated());
             catalog.add( namespace );
         }
 

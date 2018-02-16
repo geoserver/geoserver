@@ -113,6 +113,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         wsModel = new WorkspaceDetachableModel(ws);
 
         NamespaceInfo ns = getCatalog().getNamespaceByPrefix( ws.getName() );
+
+        if (ns == null) {
+            // unfortunately this may happen if the namespace associated to the workspace was deleted or never created
+            throw new RuntimeException(String.format(
+                    "Workspace '%s' associated namespace doesn't exists.", ws.getName()));
+        }
+
         nsModel = new NamespaceDetachableModel(ns);
         
         Form<NamespaceInfo> form = new Form<NamespaceInfo>( "form", new CompoundPropertyModel<NamespaceInfo>( nsModel ) ) {
@@ -146,6 +153,10 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         form.add(defaultChk);
         defaultChk.setEnabled(isFullAdmin);
 
+        CheckBox isolatedChk = new CheckBox("isolated", new PropertyModel<>(wsModel, "isolated"));
+        form.add(isolatedChk);
+        defaultChk.setEnabled(isFullAdmin);
+
         //stores
 //        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws), false);
 //        form.add(storePanel);
@@ -171,10 +182,16 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
         NamespaceInfo namespaceInfo = (NamespaceInfo) nsModel.getObject();
         WorkspaceInfo workspaceInfo = (WorkspaceInfo) wsModel.getObject();
-        
+
+        namespaceInfo.setIsolated(workspaceInfo.isIsolated());
+
         // sync up workspace name with namespace prefix, temp measure until the two become separate
         namespaceInfo.setPrefix(workspaceInfo.getName());
-        
+
+        // validate workspace and namespace before updating them
+        catalog.validate(workspaceInfo, false).throwIfInvalid();
+        catalog.validate(namespaceInfo, false).throwIfInvalid();
+
         // this will ensure all datastore namespaces are updated when the workspace is modified
         catalog.save(workspaceInfo);
         catalog.save(namespaceInfo);

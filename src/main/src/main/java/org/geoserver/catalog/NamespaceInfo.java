@@ -88,4 +88,12 @@ public interface NamespaceInfo extends CatalogInfo {
     // * Removes a resource from the namespace.
     // */
     // void remove( ResourceInfo resource );
+
+    default boolean isIsolated() {
+        return false;
+    }
+
+    default void setIsolated(boolean isolated) {
+        // nothing is done
+    }
 }

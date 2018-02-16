@@ -5,21 +5,22 @@
  */
 package org.geoserver.catalog.util;
 
+import org.geoserver.ows.util.XmlCharsetDetector;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.util.logging.Logging;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.geoserver.ows.util.XmlCharsetDetector;
-import org.geoserver.platform.resource.Resource;
-import org.geotools.util.logging.Logging;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 
 /**
@@ -184,28 +185,63 @@ public class LegacyCatalogReader {
      * @throws Exception If error processing "namespaces" element.
      */
     public Map<String,String> namespaces() throws Exception {
+        return readNamespaces(false);
+    }
+
+    /**
+     * Reads "namespace" elements from the catalog.xml file that correspond to isolated workspaces.
+     * <p>
+     * For each namespace element read, an entry of <prefix,uri> is created
+     * in a map. The default uri is located under the empty string key.
+     * </p>
+     *
+     * @return A map containing <prefix,uri> tuples.
+     * @throws Exception If error processing "namespaces" element.
+     */
+    public Map<String, String> isolatedNamespaces() throws Exception {
+        return readNamespaces(true);
+    }
+
+    /**
+     * Helper method that retrieves namespaces from the catalog.xml file. If readIsolated
+     * parameter is TRUE isolated workspace will be read, otherwise only non isolated
+     * workspaces will be read.
+     */
+    private Map<String, String> readNamespaces(boolean readIsolated) throws Exception {
+        // get the namespaces XML root element
         Element namespacesElement = ReaderUtils.getChildElement(catalog, "namespaces", true);
-
+        if (namespacesElement == null) {
+            // no namespaces available, unlikely but possible
+            LOGGER.log(Level.INFO, "No namespaces available.");
+            return Collections.emptyMap();
+        }
+        // get all namespaces XML nodes
         NodeList namespaceElements = namespacesElement.getElementsByTagName("namespace");
-        Map namespaces = new HashMap();
-
+        // parse each namespace XML node and store it
+        Map<String, String> namespaces = new HashMap<>();
         for (int i = 0; i < namespaceElements.getLength(); i++) {
             Element namespaceElement = (Element) namespaceElements.item(i);
-
             try {
-                Map.Entry tuple = namespaceTuple(namespaceElement);
-                namespaces.put(tuple.getKey(), tuple.getValue());
-
-                //check for default
-                if ("true".equals(namespaceElement.getAttribute("default"))) {
-                    namespaces.put("", tuple.getValue());
+                // get namespace information from the XML node
+                String prefix = namespaceElement.getAttribute("prefix");
+                String uri = namespaceElement.getAttribute("uri");
+                boolean isDefault = namespaceElement.getAttribute("default").equalsIgnoreCase("true");
+                boolean isIsolated = namespaceElement.getAttribute("isolated").equalsIgnoreCase("true");
+                // let's see if we need to return this namespace
+                if ((!readIsolated && isIsolated) || (readIsolated && !isIsolated)) {
+                    // not interest in this namespace, move to the next one
+                    continue;
                 }
-            } catch (Exception e) {
-                //TODO: log this
-                continue;
+                namespaces.put(prefix, uri);
+                // let's see if this is the default namespace
+                if (isDefault) {
+                    namespaces.put("", uri);
+                }
+            } catch (Exception exception) {
+                // something bad happen when parsing the current element, log it and move to the next one
+                LOGGER.log(Level.WARNING, "Error parsing namespace XML element.", exception);
             }
         }
-
         return namespaces;
     }
 

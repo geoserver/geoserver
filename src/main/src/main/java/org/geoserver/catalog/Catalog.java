@@ -8,6 +8,7 @@ package org.geoserver.catalog;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -128,6 +129,15 @@ import org.opengis.filter.sort.SortBy;
  *  //save it
  *  catalog.save( featureType );
  * </pre>
+ * </p>
+ *
+ * <p>
+ *    <h2>Isolated Workspaces</h2>
+ *
+ *    Is possible to request a catalog object using its workspace prefix or
+ *    its namespace URI, the last method will not work to retrieve the content
+ *    of an isolated workspace unless in the context of a virtual service
+ *    belonging to that workspace.
  * </p>
  * 
  * @author Justin Deoliveira, The Open Planning project
@@ -591,6 +601,9 @@ public interface Catalog extends CatalogInfo {
      * <tt>clazz</td> is used to determine the implementation of ResourceInfo 
      * which should be returned.
      * </p>
+     *
+     * Isolated workspaces content will be ignored unless in the context of
+     * a matching virtual service.
      * 
      * @param <T>
      * @param name The qualified name.
@@ -708,6 +721,9 @@ public interface Catalog extends CatalogInfo {
      * return getResourcesByNamespace(ns,clazz);
      * </pre>
      * </p>
+     *
+     * Isolated workspaces content will be ignored unless in the context of
+     * a matching virtual service.
      * 
      * @param namespace
      *                The namespace.
@@ -806,6 +822,10 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName( name, FeatureTypeInfo.class );
      * </pre>
      * </p>
+     *
+     * Isolated workspaces content will be ignored unless in the context of
+     * a matching virtual service.
+     *
      * @param name The qualified name.
      */
     FeatureTypeInfo getFeatureTypeByName(Name name);
@@ -926,6 +946,9 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName(ns,name,CoverageInfo.class);
      * </pre>
      * </p>
+     *
+     * Isolated workspaces content will be ignored unless in the context of
+     * a matching virtual service.
      * 
      * @param ns
      *                The prefix or uri to which the coverage belongs, may be
@@ -966,6 +989,10 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName(name,CoverageInfo.class);
      * </pre>
      * </p>
+     *
+     * Isolated workspaces content will be ignored unless in the context of
+     * a matching virtual service.
+     *
      * @param name The qualified name.
      */
     CoverageInfo getCoverageByName(Name name);
@@ -1113,6 +1140,9 @@ public interface Catalog extends CatalogInfo {
     
     /**
      * Returns the layer matching a particular qualified name.
+     *
+     * Isolated workspaces content will be ignored unless in the context of
+     * a matching virtual service.
      */
     LayerInfo getLayerByName( Name name );
     
@@ -1769,4 +1799,14 @@ public interface Catalog extends CatalogInfo {
      */
     public void removeListeners(Class listenerClass);
 
+    /**
+     * Return the catalog capabilities supported by this catalog. Normally this will correspond
+     * to the capabilities supported by the used catalog facade.
+     *
+     * @return catalog supported capabilities
+     */
+    default CatalogCapabilities getCatalogCapabilities() {
+        // return catalog default capabilities
+        return new CatalogCapabilities();
+    }
 }

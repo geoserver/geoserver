@@ -16,6 +16,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogCapabilities;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CatalogInfo;
@@ -1570,5 +1571,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     public void removeListeners(Class listenerClass) {
         delegate.removeListeners(listenerClass);
+    }
+    
+    @Override
+    public CatalogCapabilities getCatalogCapabilities() {
+        return delegate.getCatalogCapabilities();
     }
 }

@@ -20,6 +20,8 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     protected boolean _default;
 
     protected MetadataMap metadata = new MetadataMap();
+
+    private boolean isolated;
     
     public String getId() {
         return id;
@@ -63,6 +65,14 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     
     public void setMetadata(MetadataMap metadata) {
         this.metadata = metadata;
+    }
+
+    public boolean isIsolated() {
+        return isolated;
+    }
+
+    public void setIsolated(boolean isolated) {
+        this.isolated = isolated;
     }
 
     public void accept(CatalogVisitor visitor) {

@@ -170,6 +170,8 @@ public class WorkspaceNamespaceConstencyTest {
 
         CatalogPostModifyEvent e = createNiceMock(CatalogPostModifyEvent.class);
         expect(e.getSource()).andReturn(ns).anyTimes();
+        expect(ns.getPrefix()).andReturn("foo");
+        expect(cat.getWorkspaceByName("foo")).andReturn(ws);
 
         replay(ds, ws, ns, e, cat);
 

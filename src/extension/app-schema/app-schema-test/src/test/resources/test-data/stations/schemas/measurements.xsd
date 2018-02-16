@@ -8,18 +8,22 @@
 
   <xs:complexType name="MeasurementPropertyType">
     <xs:sequence>
-      <xs:element ref="ms:Measurement"/>
+      <xs:element ref="ms:Measurement_${GML_PREFIX}"/>
     </xs:sequence>
     <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
   </xs:complexType>
 
   <xs:complexType name="MeasurementType">
-    <xs:sequence>
-      <xs:element name="name" type="xs:string"/>
-      <xs:element name="unit" type="xs:string"/>
-    </xs:sequence>
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="unit" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
-  <xs:element name="Measurement" type="ms:MeasurementType"/>
+  <xs:element name="Measurement_${GML_PREFIX}" type="ms:MeasurementType" substitutionGroup="gml:AbstractFeature"/>
 
 </xs:schema>

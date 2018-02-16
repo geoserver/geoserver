@@ -889,38 +889,4 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         }
         return getCatalog().getLayerGroupByName(workspace, layerGroupName);
     }
-
-    /**
-     * Helper method that clones vector layer into a certain workspace.
-     */
-    private LayerInfo cloneVectorLayerIntoWorkspace(WorkspaceInfoImpl workspace, NamespaceInfoImpl nameSpace, String layerName) {
-        Catalog catalog = getCatalog();
-        // get the original object from the catalog
-        LayerInfo originalLayerInfo = catalog.getLayerByName(layerName);
-        FeatureTypeInfo originalFeatureTypeInfo = (FeatureTypeInfo) originalLayerInfo.getResource();
-        DataStoreInfo originalStoreInfo = originalFeatureTypeInfo.getStore();
-        // copy the data store, changing is workspace, id and name
-        DataStoreInfoImpl copyDataStoreInfo = new DataStoreInfoImpl(catalog);
-        OwsUtils.copy(originalStoreInfo, copyDataStoreInfo, DataStoreInfo.class);
-        copyDataStoreInfo.setId(UUID.randomUUID().toString());
-        copyDataStoreInfo.setName(UUID.randomUUID().toString());
-        copyDataStoreInfo.setWorkspace(workspace);
-        // copy the feature type info, changing the data store and name space
-        FeatureTypeInfoImpl copyFeatureTypeInfo = new FeatureTypeInfoImpl(catalog);
-        OwsUtils.copy(originalFeatureTypeInfo, copyFeatureTypeInfo, FeatureTypeInfo.class);
-        copyFeatureTypeInfo.setNamespace(nameSpace);
-        copyFeatureTypeInfo.setStore(copyDataStoreInfo);
-        // copy the layer, changing the feature type
-        LayerInfoImpl copyLayerInfo = new LayerInfoImpl();
-        OwsUtils.copy(originalLayerInfo, copyLayerInfo, LayerInfo.class);
-        copyLayerInfo.setId(layerName);
-        copyLayerInfo.setName(layerName);
-        copyLayerInfo.setResource(copyFeatureTypeInfo);
-        // add everything to the catalog
-        catalog.add(copyDataStoreInfo);
-        catalog.add(copyFeatureTypeInfo);
-        catalog.add(copyLayerInfo);
-        // retrieve the cloned layer by name
-        return catalog.getLayerByName(new NameImpl(nameSpace.getPrefix(), layerName));
-    }
 }

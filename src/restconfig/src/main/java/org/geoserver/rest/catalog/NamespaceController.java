@@ -4,22 +4,12 @@
  */
 package org.geoserver.rest.catalog;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
+import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -37,26 +27,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-
-import freemarker.template.SimpleHash;
-import freemarker.template.TemplateModelException;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/namespaces", produces = {
@@ -102,7 +82,7 @@ public class NamespaceController extends AbstractCatalogController {
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> namespaceGet(@RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
+    public ResponseEntity<String> namespacePost(@RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
 
         catalog.add(namespace);
         String name = namespace.getName();
@@ -114,6 +94,7 @@ public class NamespaceController extends AbstractCatalogController {
         if ( catalog.getWorkspaceByName( namespace.getPrefix() ) == null ) {
             WorkspaceInfo ws = catalog.getFactory().createWorkspace();
             ws.setName( namespace.getPrefix() );
+            ws.setIsolated(namespace.isIsolated());
             catalog.add( ws );
         }
 

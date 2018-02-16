@@ -5,11 +5,15 @@
  */
 package org.geoserver.web.data.workspace;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.MockTestData;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,13 +109,69 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testDuplicateName()  {
+    public void testDuplicateName() {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", MockTestData.CITE_PREFIX);
         form.setValue("uri", "http://www.geoserver.org");
         form.submit();
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[] {"Workspace named '"+MockTestData.CITE_PREFIX+"' already exists."});
+        tester.assertErrorMessages(new String[]{"Workspace named '" + MockTestData.CITE_PREFIX + "' already exists."});
+    }
+
+    @Test
+    public void addIsolatedWorkspacesWithSameNameSpace() {
+        Catalog catalog = getCatalog();
+        // create the first workspace
+        createWorkspace("test_a", "http://www.test.org", false);
+        tester.assertRenderedPage(WorkspacePage.class);
+        tester.assertNoErrorMessage();
+        // check that the correct objects were created in the catalog
+        assertThat(catalog.getWorkspaceByName("test_a"), notNullValue());
+        assertThat(catalog.getWorkspaceByName("test_a").isIsolated(), is(false));
+        assertThat(catalog.getNamespaceByPrefix("test_a"), notNullValue());
+        assertThat(catalog.getNamespaceByPrefix("test_a").isIsolated(), is(false));
+        assertThat(catalog.getNamespaceByURI("http://www.test.org"), notNullValue());
+        // try to create non isolated workspace with the same namespace
+        createWorkspace("test_b", "http://www.test.org", false);
+        tester.assertRenderedPage(WorkspaceNewPage.class);
+        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test.org' already exists."});
+        // check that no objects were created in the catalog
+        assertThat(catalog.getWorkspaceByName("test_b"), nullValue());
+        assertThat(catalog.getNamespaceByPrefix("test_b"), nullValue());
+        assertThat(catalog.getNamespaceByURI("http://www.test.org"), notNullValue());
+        assertThat(catalog.getNamespaceByURI("http://www.test.org").getPrefix(), is("test_a"));
+        // create isolated workspace with the same namespace
+        createWorkspace("test_b", "http://www.test.org", true);
+        tester.assertRenderedPage(WorkspacePage.class);
+        tester.assertNoErrorMessage();
+        // check that no objects were created in the catalog
+        assertThat(catalog.getWorkspaceByName("test_b"), notNullValue());
+        assertThat(catalog.getWorkspaceByName("test_b").isIsolated(), is(true));
+        assertThat(catalog.getNamespaceByPrefix("test_b"), notNullValue());
+        assertThat(catalog.getNamespaceByPrefix("test_b").isIsolated(), is(true));
+        assertThat(catalog.getNamespaceByPrefix("test_b").getURI(), is("http://www.test.org"));
+        assertThat(catalog.getNamespaceByURI("http://www.test.org").getPrefix(), is("test_a"));
+        assertThat(catalog.getNamespaceByURI("http://www.test.org").isIsolated(), is(false));
+    }
+
+    /**
+     * Helper method that submits a new workspace using the provided parameters.
+     *
+     * @param name workspace name
+     * @param namespace workspace namespace URI
+     * @param isolated TRUE if the workspace should be isolated, otherwise false
+     */
+    private void createWorkspace(String name, String namespace, boolean isolated) {
+        // make sure the form is initiated
+        init();
+        // get the workspace creation form
+        FormTester form = tester.newFormTester("form");
+        // fill the form with the provided values
+        form.setValue("name", name);
+        form.setValue("uri", namespace);
+        form.setValue("isolated", isolated);
+        // submit the form
+        form.submit();
     }
 }

@@ -5,12 +5,14 @@
  */
 package org.geoserver.catalog;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.geoserver.catalog.event.CatalogModifyEvent;
-import org.geoserver.catalog.impl.AbstractCatalogFacade;
 import org.geoserver.catalog.impl.DefaultCatalogFacade;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.opengis.filter.Filter;
@@ -24,11 +26,12 @@ import org.opengis.filter.sort.SortBy;
  */
 public interface CatalogFacade {
 
-    static WorkspaceInfo ANY_WORKSPACE = AbstractCatalogFacade._ANY_WORKSPACE;
+    WorkspaceInfo ANY_WORKSPACE = any(WorkspaceInfo.class);
     
-    static NamespaceInfo ANY_NAMESPACE = AbstractCatalogFacade._ANY_NAMESPACE;
+    NamespaceInfo ANY_NAMESPACE = any(NamespaceInfo.class);
     
-    static WorkspaceInfo NO_WORKSPACE = AbstractCatalogFacade._NO_WORKSPACE;
+    WorkspaceInfo NO_WORKSPACE = any(WorkspaceInfo.class);
+
     /**
      * The containing catalog.
      */
@@ -572,13 +575,26 @@ public interface CatalogFacade {
     NamespaceInfo getNamespaceByPrefix(String prefix);
 
     /**
-     * Loads a namespace from persistent storage by specifying its uri.
+     * Loads the first namespace from persistent storage that matches the provided id.
      * 
      * @param uri The uri of the namespace.
      * 
      * @return The namespace, or <code>null</code> if no such namespace exists
      */
     NamespaceInfo getNamespaceByURI(String uri);
+
+    /**
+     * Loads all namespaces from persistent storage that match the provided uri.
+     *
+     * @param uri The uri of the namespace.
+     *
+     * @return The namespace, or <code>null</code> if no such namespace exists
+     */
+    default List<NamespaceInfo> getNamespacesByURI(String uri) {
+        return getNamespaces().stream()
+                .filter(namespace -> namespace.getURI().equals(uri))
+                .collect(Collectors.toList());
+    }
 
     /**
      * Loads all namespaces from persistent storage.
@@ -793,4 +809,31 @@ public interface CatalogFacade {
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
             @Nullable SortBy... sortOrder);
+
+    /**
+     * Return the catalog capabilities supported by this facade.
+     *
+     * @return catalog supported capabilities
+     */
+    default CatalogCapabilities getCatalogCapabilities() {
+        // return catalog default supported capabilities
+        return new CatalogCapabilities();
+    }
+
+    /**
+     * Creates a proxy instance of the provided class.
+     *
+     * @param clazz class to proxy
+     * @return the created class proxy
+     */
+    @SuppressWarnings("unchecked")
+    static <T extends CatalogInfo> T any(Class<T> clazz) {
+        Class proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz);
+        try {
+            return (T) proxyClass.getConstructor(new Class[] { InvocationHandler.class })
+                    .newInstance(new Object[] {(InvocationHandler) (proxy, method, args) -> null});
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

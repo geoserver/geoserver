@@ -346,28 +346,53 @@ public class SystemTestData extends CiteTestData {
 
     /**
      * Adds a workspace to the test setup.
-     * 
+     *
      * @param name The name of the workspace.
      * @param uri The namespace uri associated with the workspace.
      */
     public void addWorkspace(String name, String uri, Catalog catalog) {
-        
+        addWorkspace(name, uri, false, catalog);
+    }
+
+    /**
+     * Adds a workspace to the test setup. If the workspace and namespace already exists
+     * they will be updated, otherwise they will be created.
+     *
+     * @param name name of the workspace
+     * @param uri the namespace URI associated with the workspace
+     * @param isolated TRUE if the workspace and associated namespace are isolated
+     * @param catalog the catalog were to store \ update the workspace and associated namespace
+     */
+    public void addWorkspace(String name, String uri, boolean isolated, Catalog catalog) {
+
+        // let's see if the workspace already exists
         WorkspaceInfo ws = catalog.getWorkspaceByName(name);
         if (ws == null) {
+            // new workspace, we need to create a new one
             ws = catalog.getFactory().createWorkspace();
             ws.setName(name);
+            ws.setIsolated(isolated);
             catalog.add(ws);
+        } else {
+            // existing workspace, let's update the isolation state
+            ws.setIsolated(isolated);
+            catalog.save(ws);
         }
 
+        // let's see if the namespace associated with the workspace already exists
         NamespaceInfo ns =  catalog.getNamespaceByPrefix(name);
         if (ns == null) {
+            // new namespace, we need to create a new one
             ns = catalog.getFactory().createNamespace();
             ns.setPrefix(name);
             ns.setURI(uri);
+            ns.setIsolated(isolated);
             catalog.add(ns);
         }
         else {
+            // existing namespace, let's update the URI and isolation state
             ns.setURI(uri);
+            ns.setIsolated(isolated);
             catalog.save(ns);
         }
     }

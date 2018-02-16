@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogCapabilities;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CatalogInfo;
@@ -692,5 +693,10 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
 
     public void removeListeners(Class listenerClass) {
         delegate.removeListeners(listenerClass);
+    }
+
+    @Override
+    public CatalogCapabilities getCatalogCapabilities() {
+        return delegate.getCatalogCapabilities();
     }
 }

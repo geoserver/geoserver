@@ -8,8 +8,10 @@ package org.geoserver.data;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -180,6 +182,16 @@ public class CatalogWriter {
      *
      */
     public void namespaces(Map namespaces) {
+        namespaces(namespaces, Collections.emptyList());
+    }
+
+    /**
+     * Writes namespaces elements to the catalog.xml file.
+     *
+     * @param namespaces map containing namespaces prefix and URIs
+     * @param isolatedNamespaces list containing the prefix of isolated namespaces
+     */
+    public void namespaces(Map namespaces, List<String> isolatedNamespaces) {
         Element namespacesElement = document.createElement("namespaces");
         catalog.appendChild(namespacesElement);
 
@@ -202,6 +214,12 @@ public class CatalogWriter {
             // check for default
             if (uri.equals(namespaces.get(""))) {
                 namespaceElement.setAttribute("default", "true");
+            }
+
+            // check if is an isolated workspace
+            if (isolatedNamespaces.contains(prefix)) {
+                // mark this namespace as isolated
+                namespaceElement.setAttribute("isolated", "true");
             }
         }
     }

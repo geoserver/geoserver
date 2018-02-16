@@ -677,6 +677,13 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return wrapInModificationProxy(result, NamespaceInfo.class);
     }
 
+    @Override
+    public List<NamespaceInfo> getNamespacesByURI(String uri) {
+        List<NamespaceInfo> found = namespaces.list(
+                NamespaceInfo.class, namespaceInfo -> namespaceInfo.getURI().equals(uri));
+        return ModificationProxy.createList(found, NamespaceInfo.class);
+    }
+
     public List<NamespaceInfo> getNamespaces() {
         return ModificationProxy.createList(new ArrayList<>(namespaces.values()), NamespaceInfo.class );
     }

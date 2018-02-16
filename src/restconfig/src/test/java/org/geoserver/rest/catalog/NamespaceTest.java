@@ -6,10 +6,10 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
@@ -290,5 +290,47 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         
         def = getCatalog().getDefaultNamespace(); 
         assertEquals( "sf", def.getPrefix() );
+    }
+
+    @Test
+    public void testIsolatedNamespacesHandling() throws Exception {
+        // create an isolated namespace
+        String xmlPost =
+                "<namespace>" +
+                        "  <id>isolated_namespace</id>" +
+                        "  <prefix>isolated_prefix</prefix>" +
+                        "  <uri>http://www.isolated.org/1.0</uri>" +
+                        "  <isolated>true</isolated>" +
+                        "</namespace>";
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/namespaces.xml", xmlPost, "text/xml");
+        assertEquals(201, response.getStatus());
+        // check that the created namespace is isolated
+        NamespaceInfo namespace = getCatalog().getNamespaceByPrefix("isolated_prefix");
+        assertThat(namespace, notNullValue());
+        assertThat(namespace.isIsolated(), is(true));
+        // check hat the created workspace is isolated
+        WorkspaceInfo workspace = getCatalog().getWorkspaceByName("isolated_prefix");
+        assertThat(workspace, notNullValue());
+        assertThat(workspace.isIsolated(), is(true));
+        // make the namespace non isolated
+        String xmlPut =
+                "<namespace>" +
+                        "  <id>isolated_namespace</id>" +
+                        "  <prefix>isolated_prefix</prefix>" +
+                        "  <uri>http://www.isolated.org/1.0</uri>" +
+                        "  <isolated>false</isolated>" +
+                        "</namespace>";
+        response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/namespaces/isolated_prefix", xmlPut, "text/xml");
+        assertEquals(200, response.getStatus());
+        // check that the namespace was correctly updated
+        namespace = getCatalog().getNamespaceByPrefix("isolated_prefix");
+        assertThat(namespace, notNullValue());
+        assertThat(namespace.isIsolated(), is(false));
+        // check that the workspace was correctly updated
+        workspace = getCatalog().getWorkspaceByName("isolated_prefix");
+        assertThat(workspace, notNullValue());
+        assertThat(workspace.isIsolated(), is(false));
     }
 }

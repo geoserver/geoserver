@@ -17,9 +17,11 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -149,6 +151,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     private final Map<String, String> datastoreNamespacePrefixes = new LinkedHashMap<String, String>();
 
     private final Map<String, String> namespaces;
+
+    private final List<String> isolatedNamespaces = new ArrayList<>();
     
     private final Map<String, String> layerStyles = new LinkedHashMap<String,String>();
 
@@ -359,7 +363,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                 .<String> emptySet());
         writer.coverageStores(new HashMap<String, Map<String, String>>(),
                 new HashMap<String, String>(), Collections.<String> emptySet());
-        writer.namespaces(namespaces);
+        writer.namespaces(namespaces, isolatedNamespaces);
         writer.styles(layerStyles);
         try {
             writer.write(new File(data, "catalog.xml"));
@@ -626,13 +630,25 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     }
 
     /**
+     * Put an isolated namespace into the namespaces map.
+     *
+     * @param namespacePrefix namespace prefix
+     * @param namespaceUri namespace URI
+     */
+    protected void putIsolatedNamespace(String namespacePrefix, String namespaceUri) {
+        namespaces.put(namespacePrefix, namespaceUri);
+        isolatedNamespaces.add(namespacePrefix);
+    }
+
+    /**
      * Remove a namespace in a map.
      * 
-     * @param namspacePrefix
+     * @param namespacePrefix
      *            namespace prefix
      */
-    protected void removeNamespace(String namspacePrefix) {
-        namespaces.remove(namspacePrefix);
+    protected void removeNamespace(String namespacePrefix) {
+        namespaces.remove(namespacePrefix);
+        isolatedNamespaces.remove(namespacePrefix);
     }
     
     /**

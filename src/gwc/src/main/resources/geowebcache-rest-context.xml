@@ -9,7 +9,7 @@
 
   <!-- Used by org.geoserver.rest.RestConfiguration when setting up converters -->
   <bean id="gwcConverter" class="org.geowebcache.rest.converter.GWCConverter">
-    <constructor-arg ref="gwcXmlConfig" />
+    <constructor-arg ref="gwcAppCtx" />
   </bean>
 
   <context:component-scan base-package="org.geowebcache.rest, org.geowebcache.diskquota.rest.controller, org.geowebcache.service.wmts" />

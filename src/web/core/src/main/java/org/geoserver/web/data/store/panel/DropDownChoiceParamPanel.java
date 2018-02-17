@@ -40,14 +40,17 @@ public class DropDownChoiceParamPanel extends Panel implements ParamPanel {
             final IModel<String> paramLabelModel, final List<? extends Serializable> options,
             final boolean required) {
 
-        super(id);
+        super(id, paramValue);
 
         String requiredMark = required ? " *" : "";
         Label label = new Label("paramName", paramLabelModel.getObject() + requiredMark);
         add(label);
 
-        choice = new DropDownChoice<Serializable>("paramValue", paramValue, options);
+        choice = new DropDownChoice<>("paramValue", paramValue, options);
         choice.setRequired(required);
+        if (!required) {
+            choice.setNullValid(true);
+        }
         
         FormComponentFeedbackBorder feedback = new FormComponentFeedbackBorder("border");
         feedback.add(choice);

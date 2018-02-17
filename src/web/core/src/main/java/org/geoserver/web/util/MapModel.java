@@ -32,7 +32,11 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
         this.model = model;
         this.expression = expression;
     }
-    
+
+    public String getExpression() {
+        return expression;
+    }
+
     @SuppressWarnings("unchecked")
     public T getObject() {
         return (T) model.getObject().get(expression);

@@ -10,6 +10,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.config.ContextualConfigurationProvider;
+import org.geowebcache.config.Info;
 import org.geowebcache.config.XMLConfigurationProvider;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
@@ -154,5 +155,10 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
     @Override
     public boolean appliesTo(Context ctxt) {
         return Context.REST==ctxt;
+    }
+
+    @Override
+    public boolean canSave(Info i) {
+        return false; // Not relevant for REST
     }
 }

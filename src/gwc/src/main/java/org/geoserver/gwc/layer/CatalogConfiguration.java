@@ -23,6 +23,8 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -433,21 +435,16 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return getLayerCount();
     }
 
-    /**
-     * @see TileLayerConfiguration#initialize(GridSetBroker)
-     */
     @Override
-    public int initialize(GridSetBroker gridSetBroker) {
+    public void afterPropertiesSet() {
         lock.acquireWriteLock();
         try {
             LOGGER.info("Initializing GWC configuration based on GeoServer's Catalog");
-            this.gridSetBroker = gridSetBroker;
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.initialize();
         } finally {
             lock.releaseWriteLock();
         }
-        return getLayerCount();
     }
 
     /**
@@ -597,16 +594,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         save();
     }
 
-    /**
-     * @see GWC#layerAdded(String)
-     * @see GWC#layerRemoved(String)
-     * @see GWC#layerRenamed(String, String)
-     * @see GWC#truncateByLayerAndStyle(String, String)
-     * @see GWC#truncate(String, String, String, BoundingBox, String)
-     * @see TileLayerConfiguration#save()
-     */
-    @Override
-    public synchronized void save() {
+    private synchronized void save() {
 
         final GWC mediator = GWC.get();
 
@@ -767,5 +755,17 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     @Override
     public String getLocation() {
         return this.tileLayerCatalog.getPersistenceLocation();
+    }
+
+    @Override
+    public void deinitialize() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Autowired
+    @Override
+    public void setGridSetBroker(@Qualifier("gwcGridSetBroker") GridSetBroker broker) {
+        this.gridSetBroker=broker;
     }
 }

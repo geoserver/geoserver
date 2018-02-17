@@ -6,6 +6,7 @@
 package org.geoserver.gwc.layer;
 
 import org.geowebcache.config.ContextualConfigurationProvider;
+import org.geowebcache.config.Info;
 import org.geowebcache.config.XMLConfigurationProvider;
 
 import com.thoughtworks.xstream.XStream;
@@ -33,5 +34,10 @@ public class GWCGeoServerConfigurationProvider implements ContextualConfiguratio
     @Override
     public boolean appliesTo(Context ctxt) {
         return Context.PERSIST==ctxt;
+    }
+
+    @Override
+    public boolean canSave(Info i) {
+        return false; // Persistence is done by GeoServer's own Configuration not XMLConfiguration
     }
 }

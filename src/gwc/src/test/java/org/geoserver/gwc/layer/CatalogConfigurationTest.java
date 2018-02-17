@@ -180,7 +180,7 @@ public class CatalogConfigurationTest {
     }
 
     @Test public void testInitialize() {
-        assertEquals(4, config.initialize(gridSetBroker));
+        config.afterPropertiesSet();
     }
 
     @Test public void testGetTileLayerCount() {
@@ -445,7 +445,6 @@ public class CatalogConfigurationTest {
                 layerWithNoGeometry);
         
         config.addLayer(tl);
-        config.save();
         
         verify(this.tileLayerCatalog, never()).save(info);
     }
@@ -462,7 +461,8 @@ public class CatalogConfigurationTest {
             
             @Override
             public void run() {
-                config.initialize(gridSetBroker);
+                config.setGridSetBroker(gridSetBroker);
+                config.afterPropertiesSet();
             }
         };
         Runnable tileLayerFetcher = new Runnable() {

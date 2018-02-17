@@ -13,7 +13,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.sqlite.MbtilesConfiguration;
+import org.geowebcache.sqlite.MbtilesInfo;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -94,7 +94,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         // checking if a store with the correct options was instantiated
-        MbtilesConfiguration configuration = findStore(storeId);
+        MbtilesInfo configuration = findStore(storeId);
         assertThat(configuration, notNullValue());
         assertThat(configuration.getRootDirectory(), is("/tmp/gwc"));
         assertThat(configuration.getTemplatePath(), is("{grid}/{layer}/{params}/tiles-{z}.sqlite"));
@@ -114,7 +114,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
     public void testModifyingAnExistingStore() throws Exception {
 
         // creating an mbtiles store (with the default values)
-        MbtilesConfiguration originalConfiguration = new MbtilesConfiguration();
+        MbtilesInfo originalConfiguration = new MbtilesInfo();
         originalConfiguration.setRootDirectory("/tmp/gwc");
         String storeId = UUID.randomUUID().toString();
         // the setId method has package only visibility, so we set the value by reflection
@@ -144,7 +144,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
 
         // checking if the store was correctly updated
         assertThat(findStore(storeId), nullValue());
-        MbtilesConfiguration configuration = findStore(updatedStoreId);
+        MbtilesInfo configuration = findStore(updatedStoreId);
         assertThat(configuration, notNullValue());
         assertThat(configuration.getTemplatePath(), is("{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite"));
 
@@ -159,11 +159,11 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
     /**
      * Helper method that finds a GWC store by is id.
      */
-    private MbtilesConfiguration findStore(String storeId) {
+    private MbtilesInfo findStore(String storeId) {
         List<BlobStoreInfo> configurations = GWC.get().getBlobStores();
         for (BlobStoreInfo candidateConfiguration : configurations) {
-            if (candidateConfiguration instanceof MbtilesConfiguration && candidateConfiguration.getId().equals(storeId)) {
-                return (MbtilesConfiguration) candidateConfiguration;
+            if (candidateConfiguration instanceof MbtilesInfo && candidateConfiguration.getId().equals(storeId)) {
+                return (MbtilesInfo) candidateConfiguration;
             }
         }
         return null;

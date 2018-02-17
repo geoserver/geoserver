@@ -81,6 +81,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geowebcache.GeoWebCacheException;
+import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
@@ -221,9 +222,7 @@ public class GeoServerTileLayerTest {
         when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
         when(catalog.getLayerGroup(eq(layerGroupId))).thenReturn(layerGroup);
 
-        gridSetBroker = new GridSetBroker(true, true);
-        gridSetBroker.put(gridSetBroker.getWorldEpsg4326());
-        gridSetBroker.put(gridSetBroker.getWorldEpsg3857());
+        gridSetBroker = new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
     }
 
     @Test

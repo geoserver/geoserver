@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -124,6 +125,7 @@ import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.seed.TruncateBboxRequest;
 import org.geowebcache.service.Service;
 import org.geowebcache.storage.BlobStore;
+import org.geowebcache.storage.BlobStoreAggregator;
 import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
@@ -1541,9 +1543,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 saveConfigurations.add(config);
             }
 
-            for (BaseConfiguration config : saveConfigurations) {
-                config.save();
-            }
         } finally {
             if(lock != null) {
                 lock.release();
@@ -1554,6 +1553,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     XMLConfiguration getXmlConfiguration() {
         XMLConfiguration mainConfig = GeoWebCacheExtensions.bean(XMLConfiguration.class);
         return mainConfig;
+    }
+    
+    private BlobStoreAggregator getBlobStoreAggregator() {
+        // TODO set this during init instead.
+        return GeoWebCacheExtensions.bean(BlobStoreAggregator.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -2329,9 +2333,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @return the list of configured blobstores
      */
     public List<BlobStoreInfo> getBlobStores() {
-        BlobStoreConfiguration xmlConfig = getXmlConfiguration();
-
-        return new ArrayList<BlobStoreInfo>(xmlConfig.getBlobStores());
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        Iterable<BlobStoreInfo> blobStores = agg.getBlobStores();
+        if(blobStores instanceof List) {
+            return (List<BlobStoreInfo>) blobStores;
+        } else {
+            ArrayList<BlobStoreInfo> storeInfos = new ArrayList<BlobStoreInfo>(agg.getBlobStoreCount());
+            blobStores.forEach(storeInfos::add); 
+            return storeInfos;
+        }
     }
 
     /**
@@ -2339,9 +2349,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         no default
      */
     public BlobStoreInfo getDefaultBlobStore() {
-        BlobStoreConfiguration xmlConfig = getXmlConfiguration();
-
-        for (BlobStoreInfo config : xmlConfig.getBlobStores()) {
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        
+        // TODO We should be doing this on the aggregator upstream in GWC
+        
+        for (BlobStoreInfo config : agg.getBlobStores()) {
             if (config.isDefault()) {
                 return config;
             }
@@ -2353,18 +2365,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Convenience method to add a new blob store, calling {@link #setBlobStores} the extra
      * {@code config}
      */
-    public void addBlobStore(BlobStoreInfo config) throws ConfigurationException {
-        checkNotNull(config);
-
-        List<BlobStoreInfo> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
-        if (config.isDefault()) {
-            for (BlobStoreInfo c : stores) {
-                c.setDefault(false);
-            }
-        }
-        stores.add(config);
-
-        setBlobStores(stores);
+    public void addBlobStore(BlobStoreInfo info) throws ConfigurationException {
+        checkNotNull(info);
+        getBlobStoreAggregator().addBlobStore(info);
     }
 
     /**
@@ -2374,19 +2377,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void modifyBlobStore(String oldId, BlobStoreInfo config) throws ConfigurationException {
         checkNotNull(oldId);
         checkNotNull(config);
-
-        List<BlobStoreInfo> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
-        int index = -1;
-        for (int i = 0; i < stores.size(); i++) {
-            BlobStoreInfo c = stores.get(i);
-            if (oldId.equals(c.getId())) {
-                index = i;
-                break;
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        
+        if(config.getName().equals(oldId)) {
+            agg.modifyBlobStore(config);
+        } else {
+            synchronized (agg) {
+                agg.renameBlobStore(oldId, config.getName());
+                agg.modifyBlobStore(config);
             }
-        }
-        if (index > -1) {
-            stores.set(index, config);
-            setBlobStores(stores);
         }
     }
     
@@ -2401,19 +2400,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public void removeBlobStores(Iterable<String> blobStoreIds) throws ConfigurationException {
         checkNotNull(blobStoreIds);
-
-        Map<String, BlobStoreInfo> stores = Maps.uniqueIndex(new ArrayList<>(
-                getXmlConfiguration().getBlobStores()), new Function<BlobStoreInfo, String>() {
-            @Override
-            public String apply(BlobStoreInfo c) {
-                return c.getId();
+        
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        
+        LinkedList<Exception> exceptions = new LinkedList<>();
+        for(String bsName: blobStoreIds) {
+            try {
+                agg.removeBlobStore(bsName);
+            } catch (Exception ex) {
+                exceptions.add(ex);
             }
-        });
-        Map<String, BlobStoreInfo> filtered = Maps.filterKeys(stores,
-                Predicates.not(Predicates.in(ImmutableList.copyOf(blobStoreIds))));
-
-        if (!filtered.equals(stores)) {
-            setBlobStores(new ArrayList<>(filtered.values()));
+        }
+        if(!exceptions.isEmpty()) {
+            Exception ex = exceptions.pop();
+            exceptions.forEach(ex::addSuppressed);
         }
     }
 
@@ -2434,33 +2434,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     void setBlobStores(List<BlobStoreInfo> stores) throws ConfigurationException {
         Preconditions.checkNotNull(stores, "stores is null");
         
-        XMLConfiguration xmlConfig = getXmlConfiguration();
-
-        CompositeBlobStore compositeBlobStore = getCompositeBlobStore();
+        BlobStoreAggregator agg = getBlobStoreAggregator();
         
-        List<BlobStoreInfo> oldStores = new ArrayList<BlobStoreInfo>(xmlConfig.getBlobStores());
-
-        try {
-            compositeBlobStore.setBlobStores(stores);
-        } catch (ConfigurationException ce) {
-            throw ce;
-        } catch (StorageException se) {
-            throw new ConfigurationException("Error connecting to BlobStore: " + se.getMessage(),
-                    se);
+        Collection<String> existingStoreNames = agg.getBlobStoreNames();
+        Set<String> toDelete = new TreeSet<>(existingStoreNames);
+        for(BlobStoreInfo info : stores) {
+            toDelete.remove(info.getName());
+            if(existingStoreNames.contains(info.getName())) {
+                agg.modifyBlobStore(info);
+            } else {
+                agg.addBlobStore(info);
+            }
         }
-        xmlConfig.getBlobStores().clear();
-        xmlConfig.getBlobStores().addAll(stores);
-        try {
-            xmlConfig.save();
-        } catch (IOException e) {
-            //undo changes
-            xmlConfig.getBlobStores().clear();
-            xmlConfig.getBlobStores().addAll(oldStores);
-            try {
-                compositeBlobStore.setBlobStores(oldStores);
-            } catch (StorageException e1) {}
-            
-            throw new ConfigurationException("Error saving configuration", e);
+        for(String name: toDelete) {
+            agg.removeBlobStore(name);
         }
     }
 

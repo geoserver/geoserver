@@ -353,7 +353,6 @@ public class GWCTest {
         }
 
         mediator.add(tileLayerGroup);
-        verify(config, times(1)).save();
     }
 
     @Test
@@ -378,7 +377,7 @@ public class GWCTest {
         verify(tld, times(1)).modify(same(tileLayerGroup));
 
         doNothing().when(tld).modify(same(tileLayer));
-        doThrow(new IOException()).when(config).save();
+        doThrow(new IOException()).when(config).modifyLayer(tileLayer);
         try {
             mediator.save(tileLayer);
         } catch (RuntimeException e) {
@@ -477,8 +476,6 @@ public class GWCTest {
 
         assertNull(gridSetBroker.get(oldName));
         assertEquals(newGridset, gridSetBroker.get(newName));
-
-        verify(config, times(1)).save();
     }
 
     @Test
@@ -1412,7 +1409,7 @@ public class GWCTest {
         mediator.setBlobStores(newStores);
 
         verify(composite, times(1)).setBlobStores(same(newStores));
-        verify(xmlConfig, times(1)).save();
+        
         assertEquals(newStores, configList);
     }
 
@@ -1422,13 +1419,14 @@ public class GWCTest {
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
-        doThrow(new IOException("expected")).when(xmlConfig).save();
+        BlobStoreInfo config = new FileBlobStoreInfo();
+
+        doThrow(new IOException("expected")).when(xmlConfig).addBlobStore(config);
 
         List<BlobStoreInfo> oldStores = Lists.newArrayList(mock(BlobStoreInfo.class),
                 mock(BlobStoreInfo.class));
         when(xmlConfig.getBlobStores()).thenReturn(oldStores);
 
-        BlobStoreInfo config = new FileBlobStoreInfo();
         List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         try {
             mediator.setBlobStores(newStores);
@@ -1437,7 +1435,6 @@ public class GWCTest {
             assertTrue(e.getMessage().contains("Error saving config"));
         }
 
-        verify(xmlConfig, times(1)).save();
         verify(composite, times(1)).setBlobStores(same(newStores));
         verify(composite, times(1)).setBlobStores(eq(oldStores));
     }

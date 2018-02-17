@@ -528,6 +528,13 @@
    </dependency>
    <dependency>
     <groupId>org.geowebcache</groupId>
+    <artifactId>gwc-core</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+    <version>${gwc.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geowebcache</groupId>
     <artifactId>gwc-georss</artifactId>
     <version>${gwc.version}</version>
     <exclusions>

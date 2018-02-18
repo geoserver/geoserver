@@ -687,3 +687,20 @@ Example of adding 5 extra pixels of space between words on road names:
 .. figure:: img/wordSpacing.png
    :align: center
    
+displacementMode
+^^^^^^^^^^^^^^^^
+Comma separated list of label displacement directions for point/polygon labels (used along with maxDisplacement). 
+The indicated directions will be tried in turn. 
+Valid values are cardinal directions abbreviations, in particular, ``N, W, E, S, NW, NE, SW, SE``.
+
+The following example sets the typical "diagonal displacement" typically used for points: 
+
+.. code-block:: xml
+
+  <VendorOption name="displacementMode">NE, NW, SW, SE</VendorOption>
+
+While this one allows displacement only in the vertical direction:
+
+.. code-block:: xml
+
+  <VendorOption name="displacementMode">N, S</VendorOption>

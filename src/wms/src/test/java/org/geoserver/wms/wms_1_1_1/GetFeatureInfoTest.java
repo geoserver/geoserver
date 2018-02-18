@@ -842,6 +842,29 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        assertTrue(result.contains("2.0"));
    }
 
+   @Test
+   public void testRasterReprojectToDeclared() throws Exception {
+       // force it to "reproject to declared"
+       CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(CUSTOM));
+       ci.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+       ci.setSRS("EPSG:900913");
+       getCatalog().save(ci);
+
+       // make a first reprojected request on a pixel that's black (0)
+       String result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
+           "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS" +
+           "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom" +
+           "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.1.1&x=177&y=225");
+       assertTrue(result.contains("0.0"));
+
+       // and now one with actual data, 2
+       result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
+           "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS" +
+           "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom" +
+           "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.1.1&x=135&y=223");
+       assertTrue(result.contains("2.0"));
+   }
+
    @Test 
    public void testGMLWithPostFilter() throws Exception {
        //we need to create a situation where a post filter is setup, simple way is to change the 

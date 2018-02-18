@@ -56,7 +56,7 @@ paths:
       summary: add a new workspace to GeoServer
       description: Adds a new workspace to the server
       parameters:
-        - name: workspaceBody
+        - name: workspace
           description: The layer group body information to upload.
           in: body
           required: true          
@@ -84,7 +84,7 @@ paths:
             Location:
               description: URL where the newly created workspace can be found
               type: string
-        401:
+        500:
           description: Unable to add workspace as it already exists
      
     put:

@@ -50,7 +50,7 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
     
     public BlobStoreInfo dummyStore2() throws Exception {
         S3BlobStoreInfo config = new S3BlobStoreInfo();
-        Field id = BlobStoreInfo.class.getDeclaredField("id");
+        Field id = BlobStoreInfo.class.getDeclaredField("name");
         id.setAccessible(true);
         id.set(config, ID_DUMMY2);
         config.setBucket("bucket");

@@ -1449,18 +1449,19 @@ public class GWCTest {
 
     @Test
     public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
+        when(blobStoreAggregator.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
         BlobStoreInfo config = new FileBlobStoreInfo("TestStore");
 
 
-        doThrow(new ConfigurationPersistenceException(new IOException("expected"))).when(xmlConfig).addBlobStore(config);
+        doThrow(new ConfigurationPersistenceException(new IOException("expected"))).when(blobStoreAggregator).addBlobStore(config);
 
         List<BlobStoreInfo> oldStores = Lists.newArrayList(mock(BlobStoreInfo.class),
                 mock(BlobStoreInfo.class));
-        when(xmlConfig.getBlobStores()).thenReturn(oldStores);
+
+        when(blobStoreAggregator.getBlobStores()).thenReturn(oldStores);
 
         List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         try {

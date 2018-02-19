@@ -90,6 +90,7 @@ import org.geowebcache.config.BaseConfiguration;
 import org.geowebcache.config.BlobStoreConfiguration;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.ConfigurationPersistenceException;
 import org.geowebcache.config.TileLayerConfiguration;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.XMLGridSet;
@@ -2440,16 +2441,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         
         Collection<String> existingStoreNames = agg.getBlobStoreNames();
         Set<String> toDelete = new TreeSet<>(existingStoreNames);
-        for(BlobStoreInfo info : stores) {
-            toDelete.remove(info.getName());
-            if(existingStoreNames.contains(info.getName())) {
-                agg.modifyBlobStore(info);
-            } else {
-                agg.addBlobStore(info);
+        try {
+            for(BlobStoreInfo info : stores) {
+                toDelete.remove(info.getName());
+                if(existingStoreNames.contains(info.getName())) {
+                    agg.modifyBlobStore(info);
+                } else {
+                    agg.addBlobStore(info);
+                }
             }
-        }
-        for(String name: toDelete) {
-            agg.removeBlobStore(name);
+            for(String name: toDelete) {
+                agg.removeBlobStore(name);
+            }
+        } catch (ConfigurationPersistenceException ex) {
+            throw new ConfigurationException("Error saving config", ex);
         }
     }
 

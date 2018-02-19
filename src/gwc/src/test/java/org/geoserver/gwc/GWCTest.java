@@ -1415,20 +1415,6 @@ public class GWCTest {
     }
 
     @Test
-    public void testSetBlobStoresWrapsStorageException() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
-        CompositeBlobStore composite = mock(CompositeBlobStore.class);
-        doReturn(composite).when(mediator).getCompositeBlobStore();
-
-        StorageException se = new StorageException("expected");
-        doThrow(se).when(composite).setBlobStores(any(Iterable.class));
-
-        expected.expect(ConfigurationException.class);
-        expected.expectMessage("Error connecting to BlobStore");
-        mediator.setBlobStores(ImmutableList.<BlobStoreInfo> of());
-    }
-
-    @Test
     public void testSetBlobStoresSavesConfig() throws Exception {
         when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
@@ -1436,15 +1422,18 @@ public class GWCTest {
 
         List<BlobStoreInfo> configList = Lists.newArrayList(mock(BlobStoreInfo.class),
                 mock(BlobStoreInfo.class));
-        when(xmlConfig.getBlobStores()).thenReturn(configList);
+        when(configList.get(0).getName()).thenReturn("store0");
+        when(configList.get(1).getName()).thenReturn("store1");
+        when(blobStoreAggregator.getBlobStores()).thenReturn(configList);
+        when(blobStoreAggregator.getBlobStoreNames()).thenReturn(Arrays.asList("store0", "store1"));
 
         BlobStoreInfo config = new FileBlobStoreInfo("TestBlobStore");
         List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         mediator.setBlobStores(newStores);
-
-        verify(composite, times(1)).setBlobStores(same(newStores));
         
-        assertEquals(newStores, configList);
+        verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(0).getName()));
+        verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(1).getName()));
+        verify(blobStoreAggregator, times(1)).addBlobStore(eq(config));
     }
 
     @Test
@@ -1470,9 +1459,6 @@ public class GWCTest {
         } catch (ConfigurationException e) {
             assertTrue(e.getMessage().contains("Error saving config"));
         }
-
-        verify(composite, times(1)).setBlobStores(same(newStores));
-        verify(composite, times(1)).setBlobStores(eq(oldStores));
     }
 
     @Test

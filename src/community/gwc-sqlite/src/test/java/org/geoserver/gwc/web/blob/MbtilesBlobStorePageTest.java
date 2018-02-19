@@ -79,7 +79,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         // let's fill the blob store form with some custom values
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         String storeId = UUID.randomUUID().toString();
-        formTester.setValue("id", storeId);
+        formTester.setValue("name", storeId);
         formTester.setValue("enabled", false);
         formTester.setValue("blobSpecificPanel:rootDirectory:border:border_body:paramValue", "/tmp/gwc");
         formTester.setValue("blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/tiles-{z}.sqlite");
@@ -118,7 +118,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         originalConfiguration.setRootDirectory("/tmp/gwc");
         String storeId = UUID.randomUUID().toString();
         // the setId method has package only visibility, so we set the value by reflection
-        Field id = BlobStoreInfo.class.getDeclaredField("id");
+        Field id = BlobStoreInfo.class.getDeclaredField("name");
         id.setAccessible(true);
         id.set(originalConfiguration, storeId);
         // associate the store with a layer (it will be used to test store id update)
@@ -137,7 +137,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         assertThat(findStore(storeId), notNullValue());
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         String updatedStoreId = UUID.randomUUID().toString();
-        formTester.setValue("id", updatedStoreId);
+        formTester.setValue("name", updatedStoreId);
         formTester.setValue("blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite");
         // submit the changes
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");

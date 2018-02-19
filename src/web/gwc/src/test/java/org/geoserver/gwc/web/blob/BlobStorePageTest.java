@@ -63,7 +63,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
         
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
-        formTester.setValue("id", "myblobstore");       
+        formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);
         formTester.setValue("blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
@@ -71,7 +71,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
         BlobStoreInfo config = blobStores.get(0);
         assertTrue(config instanceof FileBlobStoreInfo);
-        assertEquals("myblobstore", config.getId());
+        assertEquals("myblobstore", config.getName());
         assertEquals("/mydir", ((FileBlobStoreInfo) config).getBaseDirectory());
         assertEquals(4096, ((FileBlobStoreInfo) config).getFileSystemBlockSize());
         
@@ -95,14 +95,14 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
         
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
-        formTester.setValue("id", "yourblobstore");
+        formTester.setValue("name", "yourblobstore");
         formTester.setValue("blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/yourdir");
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
         BlobStoreInfo config = GWC.get().getBlobStores().get(0);
         assertTrue(config instanceof FileBlobStoreInfo);
-        assertEquals("yourblobstore", config.getId());
+        assertEquals("yourblobstore", config.getName());
         assertEquals("/yourdir", ((FileBlobStoreInfo) config).getBaseDirectory());
                 
         //test updated id!

@@ -408,6 +408,9 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                 + "    <gridSubset>"//
                 + "     <gridSetName>EPSG:900913</gridSetName>"//
                 + "    </gridSubset>"//
+                + "    <gridSubset>"//
+                + "     <gridSetName>EPSG:4326</gridSetName>"//
+                + "    </gridSubset>"//
                 + "  </gridSubsets>"//
                 + "  <metaWidthHeight>"//
                 + "    <int>4</int>"//

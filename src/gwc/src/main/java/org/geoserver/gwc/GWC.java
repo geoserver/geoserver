@@ -234,12 +234,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     // list of GeoServer contributed grid sets that should not be editable by the user
     private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
     
+    private BlobStoreAggregator blobStoreAggregator;
+    
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
             final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
             final Dispatcher owsDispatcher, final Catalog catalog, final Catalog rawCatalog,
             final DefaultStorageFinder storageFinder,
-            final JDBCConfigurationStorage jdbcConfigurationStorage) {
+            final JDBCConfigurationStorage jdbcConfigurationStorage,
+            final BlobStoreAggregator blobStoreAggregator) {
         
         this.gwcConfigPersister = gwcConfigPersister;
         this.tld = tld;
@@ -261,6 +264,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         updateLockProvider(getConfig().getLockProviderName());
         
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
+        this.blobStoreAggregator = blobStoreAggregator;
     }
 
     /**
@@ -1496,7 +1500,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 }
             }
 
-            //TODO: Verify we don't also need to remove from XMLConfiguration
             getGridSetBroker().remove(oldGridSetName);
             getGridSetBroker().put(newGridSet);
 
@@ -1556,8 +1559,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
     
     private BlobStoreAggregator getBlobStoreAggregator() {
-        // TODO set this during init instead.
-        return GeoWebCacheExtensions.bean(BlobStoreAggregator.class);
+        return blobStoreAggregator;
     }
 
     @SuppressWarnings("unchecked")

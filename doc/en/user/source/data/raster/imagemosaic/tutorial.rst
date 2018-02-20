@@ -339,8 +339,8 @@ In this example, we will serve up overlapping granules that have varying resolut
       PropertyCollectors=CRSExtractorSPI(crs),ResolutionExtractorSPI(resolution)
       Schema=*the_geom:Polygon,location:String,crs:String,resolution:String
       
-   The MosaicCRS properyty is not mandatory, but it's a good idea to set a predictable target CRS that all granule footprints can be reprojected into,
-   otherwise the mosaic machinery will use the one of the first indexed granule.
+   The MosaicCRS property is not mandatory, but it's a good idea to set a predictable target CRS that all granule footprints can be reprojected into,
+   otherwise the mosaic machinery will use the CRS of the first indexed granule.
 
 #. Save this file in the root of the mosaic directory (along with the index files). The result is the following:
 
@@ -382,7 +382,7 @@ In case the index "table" already exists instead, then a **``indexer.properties`
    TypeName=nameOfTheFeatureTypeContainingTheIndex
    AbsolutePath=true
 
-The above assumes ``location`` attribute provides absolute paths to the mosaic granules, instead of ones relative to
+The above assumes ``location`` attribute provides absolute paths to the mosaic granules, instead of paths relative to
 the mosaic configuration files directory.
 
 

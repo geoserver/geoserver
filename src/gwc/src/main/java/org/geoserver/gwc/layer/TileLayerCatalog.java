@@ -31,4 +31,9 @@ public interface TileLayerCatalog {
     
     public void reset();
 
+    /**
+     * Used as a status/debugging aid.
+     */
+    public String getPersistenceLocation();
+
 }

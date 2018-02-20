@@ -10,10 +10,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -585,14 +582,7 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         final GeoServerTileLayer modifiedTileLayer;
 
-        if (oldTileLayer.getLayerInfo() != null) {
-            LayerInfo layerInfo = oldTileLayer.getLayerInfo();
-            modifiedTileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker, tileLayerInfo);
-        } else {
-            LayerGroupInfo layerGroup = oldTileLayer.getLayerGroupInfo();
-            modifiedTileLayer = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerInfo);
-        }
-        mediator.save(modifiedTileLayer);
+        mediator.rename(oldLayerName, newLayerName);
     }
 
     /**

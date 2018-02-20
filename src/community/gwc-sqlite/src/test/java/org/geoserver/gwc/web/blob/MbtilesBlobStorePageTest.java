@@ -10,10 +10,10 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.sqlite.MbtilesConfiguration;
+import org.geowebcache.sqlite.MbtilesInfo;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -79,7 +79,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         // let's fill the blob store form with some custom values
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         String storeId = UUID.randomUUID().toString();
-        formTester.setValue("id", storeId);
+        formTester.setValue("name", storeId);
         formTester.setValue("enabled", false);
         formTester.setValue("blobSpecificPanel:rootDirectory:border:border_body:paramValue", "/tmp/gwc");
         formTester.setValue("blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/tiles-{z}.sqlite");
@@ -94,7 +94,7 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         // checking if a store with the correct options was instantiated
-        MbtilesConfiguration configuration = findStore(storeId);
+        MbtilesInfo configuration = findStore(storeId);
         assertThat(configuration, notNullValue());
         assertThat(configuration.getRootDirectory(), is("/tmp/gwc"));
         assertThat(configuration.getTemplatePath(), is("{grid}/{layer}/{params}/tiles-{z}.sqlite"));
@@ -114,11 +114,11 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
     public void testModifyingAnExistingStore() throws Exception {
 
         // creating an mbtiles store (with the default values)
-        MbtilesConfiguration originalConfiguration = new MbtilesConfiguration();
+        MbtilesInfo originalConfiguration = new MbtilesInfo();
         originalConfiguration.setRootDirectory("/tmp/gwc");
         String storeId = UUID.randomUUID().toString();
         // the setId method has package only visibility, so we set the value by reflection
-        Field id = BlobStoreConfig.class.getDeclaredField("id");
+        Field id = BlobStoreInfo.class.getDeclaredField("name");
         id.setAccessible(true);
         id.set(originalConfiguration, storeId);
         // associate the store with a layer (it will be used to test store id update)
@@ -137,14 +137,14 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         assertThat(findStore(storeId), notNullValue());
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         String updatedStoreId = UUID.randomUUID().toString();
-        formTester.setValue("id", updatedStoreId);
+        formTester.setValue("name", updatedStoreId);
         formTester.setValue("blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite");
         // submit the changes
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         // checking if the store was correctly updated
         assertThat(findStore(storeId), nullValue());
-        MbtilesConfiguration configuration = findStore(updatedStoreId);
+        MbtilesInfo configuration = findStore(updatedStoreId);
         assertThat(configuration, notNullValue());
         assertThat(configuration.getTemplatePath(), is("{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite"));
 
@@ -159,11 +159,11 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
     /**
      * Helper method that finds a GWC store by is id.
      */
-    private MbtilesConfiguration findStore(String storeId) {
-        List<BlobStoreConfig> configurations = GWC.get().getBlobStores();
-        for (BlobStoreConfig candidateConfiguration : configurations) {
-            if (candidateConfiguration instanceof MbtilesConfiguration && candidateConfiguration.getId().equals(storeId)) {
-                return (MbtilesConfiguration) candidateConfiguration;
+    private MbtilesInfo findStore(String storeId) {
+        List<BlobStoreInfo> configurations = GWC.get().getBlobStores();
+        for (BlobStoreInfo candidateConfiguration : configurations) {
+            if (candidateConfiguration instanceof MbtilesInfo && candidateConfiguration.getId().equals(storeId)) {
+                return (MbtilesInfo) candidateConfiguration;
             }
         }
         return null;

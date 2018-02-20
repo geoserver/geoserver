@@ -31,6 +31,7 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
@@ -43,6 +44,7 @@ import org.geoserver.security.impl.AbstractUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.service.ve.VEConverter;
 
@@ -50,6 +52,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -70,6 +73,12 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     private static final String SECURITY_ERROR_TYPE = "text/plain";
     private static final String NOT_FOUND_ERROR_TYPE = "text/html";
 
+    @Before
+    public void cleanUpCrsHints() {
+        // Some other tests leave hints affecting axis order which disrupts this test
+        CRS.cleanupThreadLocals();
+    }
+    
     /**
      * Add the test resource access manager in the spring context
      */
@@ -159,6 +168,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         Filter filter = ff.contains(ff.property("geometry"), ff.literal(cropper));
         tam.putLimits("cite_filtermosaic", coverage, new CoverageAccessLimits(CatalogMode.HIDE, filter, null, null));
         
+        System.out.println(coverage.boundingBox());
     }
         
     @Test
@@ -380,6 +390,11 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     }
     @Test
     public void testPermissionCropTileWmts() throws Exception {
+  
+        System.out.println(Arrays.toString(GWC.get().getTileLayerByName("sf:mosaic").getGridSubset("EPSG:900913").getCoverage(13)));
+        System.out.println(GWC.get().getTileLayerByName("sf:mosaic").getGridSubset("EPSG:900913").getOriginalExtent());
+        System.out.println(((LayerInfo)((GeoServerTileLayer)(GWC.get().getTileLayerByName("sf:mosaic"))).getPublishedInfo()).getResource().getLatLonBoundingBox());
+        System.out.println(getCatalog().getLayerByName("sf:mosaic").getResource().getLatLonBoundingBox());
         doPermissionCropTileTest(
                 (layer, index)->String.format("gwc/service/wmts?LAYER=%s&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0" +
         "&REQUEST=GetTile&TILEMATRIXSET=EPSG:900913&TILEMATRIX=EPSG:900913:%d&TILECOL=%d&TILEROW=%d", layer, index[2], index[0], (1<<index[2])-index[1]-1), 

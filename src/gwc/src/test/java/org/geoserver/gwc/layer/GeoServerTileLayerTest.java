@@ -81,6 +81,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geowebcache.GeoWebCacheException;
+import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
@@ -221,9 +222,7 @@ public class GeoServerTileLayerTest {
         when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
         when(catalog.getLayerGroup(eq(layerGroupId))).thenReturn(layerGroup);
 
-        gridSetBroker = new GridSetBroker(true, true);
-        gridSetBroker.put(gridSetBroker.WORLD_EPSG4326);
-        gridSetBroker.put(gridSetBroker.WORLD_EPSG3857);
+        gridSetBroker = new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
     }
 
     @Test
@@ -453,7 +452,7 @@ public class GeoServerTileLayerTest {
                 .next();
 
         BoundingBox gridSubsetExtent = savedSubset.getExtent();
-        BoundingBox expected = gridSetBroker.WORLD_EPSG3857.getOriginalExtent();
+        BoundingBox expected = gridSetBroker.getWorldEpsg3857().getOriginalExtent();
         // don't use equals(), it uses an equality threshold we want to avoid here
         double threshold = 1E-16;
         assertTrue("Expected " + expected + ", got " + gridSubsetExtent,

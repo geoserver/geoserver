@@ -71,7 +71,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("application/xml"));
 
         Document dom = getAsDOM(url);
-        // print(dom);
+        print(dom);
 
         ArrayList<String> tileLayerNames = Lists.newArrayList(GWC.get().getTileLayerNames());
         Collections.sort(tileLayerNames);
@@ -83,8 +83,8 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
             String xpath = "//layers/layer/name[text() = '" + name + "']";
             assertXpathExists(xpath, dom);
 
-            xpath = "//layers/layer/atom:link[@href = 'http://localhost:8080/geoserver/gwc/layers/"
-                    + ServletUtils.URLEncode(name) + ".xml']";
+            xpath = "//layers/layer/atom:link[@href = 'http://localhost:8080/geoserver/gwc/rest/layers/"
+                    + name + ".xml']";
             assertXpathExists(xpath, dom);
         }
     }
@@ -203,7 +203,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testPutOverExistingTileLayerFails() throws Exception {
+    public void testPutOverExistingTileLayerSucceeds() throws Exception {
 
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String id = getCatalog().getLayerByName(layerName).getId();
@@ -212,12 +212,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, id, layerName);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        // See GWC's TileLayerRestlet
-        String expected = "Layer with name " + layerName
-                + " already exists, use POST if you want to replace it.";
-        assertEquals(expected, response.getContentAsString().substring(response.getContentAsString().indexOf(":") + 2));
-
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
     @Test
@@ -412,6 +407,9 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                 + "  <gridSubsets>"//
                 + "    <gridSubset>"//
                 + "     <gridSetName>EPSG:900913</gridSetName>"//
+                + "    </gridSubset>"//
+                + "    <gridSubset>"//
+                + "     <gridSetName>EPSG:4326</gridSetName>"//
                 + "    </gridSubset>"//
                 + "  </gridSubsets>"//
                 + "  <metaWidthHeight>"//

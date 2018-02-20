@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 
 /**
  *
@@ -26,14 +26,14 @@ public final class BlobStoreTypes {
     /**
      * Lazy loaded map of blob store types
      */
-    private static Map<Class<? extends BlobStoreConfig>, BlobStoreType<?>> TYPES;
+    private static Map<Class<? extends BlobStoreInfo>, BlobStoreType<?>> TYPES;
             
     
-    private static Map<Class<? extends BlobStoreConfig>, BlobStoreType<?>> getTypes() {
+    private static Map<Class<? extends BlobStoreInfo>, BlobStoreType<?>> getTypes() {
         if (TYPES == null) {
             //the treemap with comparator makes sure that the types are always displayed in the
             //same order, alphabetically sorted on name
-            TYPES = new TreeMap<Class<? extends BlobStoreConfig>, BlobStoreType<?>>(
+            TYPES = new TreeMap<Class<? extends BlobStoreInfo>, BlobStoreType<?>>(
                     new Comparator<Class<?>>() {
                         @Override
                         public int compare(Class<?> o1, Class<?> o2) {
@@ -49,12 +49,12 @@ public final class BlobStoreTypes {
 
     /**
      * 
-     * Get BlobStoreType from BlobStoreConfig class
+     * Get BlobStoreType from BlobStoreInfo class
      * 
      * @param clazz 
      *
      */
-    public static BlobStoreType<?> getFromClass(Class<? extends BlobStoreConfig> clazz) {
+    public static BlobStoreType<?> getFromClass(Class<? extends BlobStoreInfo> clazz) {
         return getTypes().get(clazz);
     }
 

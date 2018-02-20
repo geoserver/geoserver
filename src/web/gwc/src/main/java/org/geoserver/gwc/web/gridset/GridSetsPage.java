@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
         GridSetTableProvider provider = new GridSetTableProvider() {
             @Override
             public List<GridSet> getItems() {
-                return GWC.get().getGridSetBroker().getGridSets();
+                return new ArrayList<>(GWC.get().getGridSetBroker().getGridSets());
             }
         };
         // the table, and wire up selection change

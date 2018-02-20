@@ -324,5 +324,10 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         checkInitialized();
         return layersById.get(layerId).getName();
     }
+    
+    @Override
+    public String getPersistenceLocation() {
+        return resourceLoader.get(baseDirectory).path();
+    }
 
 }

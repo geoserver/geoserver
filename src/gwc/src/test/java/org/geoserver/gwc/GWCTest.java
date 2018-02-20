@@ -31,16 +31,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,13 +81,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.config.BlobStoreConfig;
-import org.geowebcache.config.Configuration;
-import org.geowebcache.config.ConfigurationException;
-import org.geowebcache.config.FileBlobStoreConfig;
-import org.geowebcache.config.XMLConfiguration;
-import org.geowebcache.config.XMLGridSet;
-import org.geowebcache.config.XMLGridSubset;
+import org.geowebcache.config.*;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
 import org.geowebcache.diskquota.QuotaStore;
@@ -104,7 +90,9 @@ import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.grid.GridSetFactory;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
@@ -113,6 +101,7 @@ import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.service.Service;
+import org.geowebcache.storage.BlobStoreAggregator;
 import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
@@ -169,7 +158,7 @@ public class GWCTest {
 
     private GridSetBroker gridSetBroker;
 
-    private Configuration config;
+    private TileLayerConfiguration config;
 
     private TileLayerDispatcher tld;
 
@@ -217,6 +206,8 @@ public class GWCTest {
     @Rule
     public ExpectedException expected = ExpectedException.none();
 
+    private BlobStoreAggregator blobStoreAggregator;
+
     @Before
     public void setUp() throws Exception {
 
@@ -234,18 +225,11 @@ public class GWCTest {
         when(gwcConfigPersister.getConfig()).thenReturn(defaults);
 
         storageBroker = mock(StorageBroker.class);
-        gridSetBroker = new GridSetBroker(true, true);
 
         tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         tileLayerGroupInfo = TileLayerInfoUtil.loadOrCreate(layerGroup, defaults);
 
-        tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
-        tileLayerGroup = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerGroupInfo);
-
-        tld = mock(TileLayerDispatcher.class);
-        mockTileLayerDispatcher();
-
-        config = mock(Configuration.class);
+        config = mock(TileLayerConfiguration.class);
         tileBreeder = mock(TileBreeder.class);
         quotaStore = mock(QuotaStore.class);
         diskQuotaMonitor = mock(DiskQuotaMonitor.class);
@@ -257,6 +241,20 @@ public class GWCTest {
         storageFinder = mock(DefaultStorageFinder.class);
         jdbcStorage = createMock(JDBCConfigurationStorage.class);
         xmlConfig = mock(XMLConfiguration.class);
+        blobStoreAggregator = mock(BlobStoreAggregator.class);
+
+        gridSetBroker = new GridSetBroker(Arrays.asList(new DefaultGridsets(true, true), xmlConfig));
+        tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
+        GridSet testGridSet = namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
+
+        GridSubset testGridSubset = GridSubsetFactory.createGridSubSet(testGridSet, new BoundingBox(-180,0,0,90),
+                0, testGridSet.getGridLevels().length - 1);
+        when(xmlConfig.getGridSet(eq("TEST"))).thenReturn(Optional.of(testGridSet));
+        tileLayer.addGridSubset(testGridSubset);
+        tileLayerGroup = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerGroupInfo);
+        tileLayerGroup.addGridSubset(testGridSubset);
+        tld = mock(TileLayerDispatcher.class);
+        mockTileLayerDispatcher();
 
         GeoWebCacheEnvironment genv = createMockBuilder(GeoWebCacheEnvironment.class)
                 .withConstructor()
@@ -281,6 +279,7 @@ public class GWCTest {
         expect(appContext.getBean("geoWebCacheXMLConfiguration")).andReturn(xmlConfig).anyTimes();
 
         replay(appContext);
+        
 
         GeoWebCacheExtensions gse = createMockBuilder(GeoWebCacheExtensions.class).createMock();
         gse.setApplicationContext(appContext);
@@ -311,7 +310,8 @@ public class GWCTest {
         replay(jdbcStorage);
         
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
-                diskQuotaMonitor, owsDispatcher, catalog, catalog, storageFinder, jdbcStorage);
+                diskQuotaMonitor, owsDispatcher, catalog, catalog, storageFinder, jdbcStorage,
+                blobStoreAggregator);
         mediator.setApplicationContext(appContext);
 
         mediator = spy(mediator);
@@ -357,8 +357,8 @@ public class GWCTest {
 
     public void testAddTileLayer() throws Exception {
 
-        when(tld.addLayer(same(tileLayer))).thenThrow(new IllegalArgumentException("fake"));
-        when(tld.addLayer(same(tileLayerGroup))).thenReturn(config);
+        doThrow(new IllegalArgumentException("fake")).when(tld).addLayer(same(tileLayer));
+        doNothing().when(tld).addLayer(same(tileLayerGroup));
 
         try {
             mediator.add(tileLayer);
@@ -368,7 +368,6 @@ public class GWCTest {
         }
 
         mediator.add(tileLayerGroup);
-        verify(config, times(1)).save();
     }
 
     @Test
@@ -380,7 +379,7 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        when(tld.modify(same(tileLayer))).thenThrow(new IllegalArgumentException());
+        doThrow(new IllegalArgumentException()).when(tld).modify(same(tileLayer));
         try {
             mediator.save(tileLayer);
             fail();
@@ -388,12 +387,12 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        when(tld.modify(same(tileLayerGroup))).thenReturn(config);
+        doNothing().when(tld).modify(same(tileLayerGroup));
         mediator.save(tileLayerGroup);
-        verify(config, times(1)).save();
+        verify(tld, times(1)).modify(same(tileLayerGroup));
 
-        when(tld.modify(same(tileLayer))).thenReturn(config);
-        doThrow(new IOException()).when(config).save();
+        doNothing().when(tld).modify(same(tileLayer));
+        doThrow(new ConfigurationPersistenceException(new IOException())).when(config).modifyLayer(tileLayer);
         try {
             mediator.save(tileLayer);
         } catch (RuntimeException e) {
@@ -409,14 +408,13 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        when(tld.removeLayer(eq(tileLayer.getName()))).thenReturn(config);
-        when(tld.removeLayer(eq(tileLayerGroup.getName()))).thenReturn(config);
+        doNothing().when(tld).removeLayer(eq(tileLayer.getName()));
+        doNothing().when(tld).removeLayer(eq(tileLayerGroup.getName()));
 
         List<String> layerNames = Arrays.asList(tileLayer.getName(), tileLayerGroup.getName());
         mediator.removeTileLayers(layerNames);
         verify(tld, times(1)).removeLayer(eq(tileLayer.getName()));
         verify(tld, times(1)).removeLayer(eq(tileLayerGroup.getName()));
-        verify(config, times(1)).save();
     }
 
     @Test
@@ -455,6 +453,7 @@ public class GWCTest {
         } catch (NullPointerException e) {
             assertTrue(true);
         }
+        when(xmlConfig.getGridSet(eq("wrongOldName"))).thenReturn(Optional.empty());
         try {
             mediator.modifyGridSet("wrongOldName", oldGridset);
             fail();
@@ -465,43 +464,52 @@ public class GWCTest {
 
     @Test
     public void testModifyGridsetNoNeedToTruncate() throws Exception {
-        final String oldName = "EPSG:4326";
-        final String newName = "MyEPSG:4326";
-
+        final String oldName = "TEST";
+        final String newName = "TEST_CHANGED";
+        
         final GridSet oldGridset = gridSetBroker.get(oldName);
+        final GridSet newGridset;
+        newGridset = namedGridsetCopy(newName, oldGridset);
+
+        assertNotNull(tileLayer.getGridSubset(oldName));
+        assertNotNull(tileLayerGroup.getGridSubset(oldName));
+        
+        when(xmlConfig.getGridSet(eq(newName))).thenReturn(Optional.empty());
+        when(xmlConfig.canSave(eq(newGridset))).thenReturn(true);
+
+        when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
+        when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
+        mediator.modifyGridSet(oldName, newGridset);
+        
+        when(xmlConfig.getGridSet(eq(oldName))).thenReturn(Optional.empty());
+        when(xmlConfig.getGridSet(eq(newName))).thenReturn(Optional.of(newGridset));
+        
+        assertNull(tileLayer.getGridSubset(oldName));
+        assertNull(tileLayerGroup.getGridSubset(oldName));
+        assertNotNull(tileLayer.getGridSubset(newName));
+        assertNotNull(tileLayerGroup.getGridSubset(newName));
+
+        verify(xmlConfig, times(1)).removeGridSet(eq(oldName));
+        verify(xmlConfig, times(1)).addGridSet(eq(newGridset));
+
+        assertNull(gridSetBroker.get(oldName));
+        assertEquals(newGridset, gridSetBroker.get(newName));
+    }
+
+    protected GridSet namedGridsetCopy(final String newName, final GridSet oldGridset) {
         final GridSet newGridset;
         {
             XMLGridSet xmlGridSet = new XMLGridSet(oldGridset);
             xmlGridSet.setName(newName);
             newGridset = xmlGridSet.makeGridSet();
         }
-
-        assertNotNull(tileLayer.getGridSubset(oldName));
-        assertNotNull(tileLayerGroup.getGridSubset(oldName));
-
-        when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
-        when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
-        mediator.modifyGridSet(oldName, newGridset);
-
-        assertNull(tileLayer.getGridSubset(oldName));
-        assertNull(tileLayerGroup.getGridSubset(oldName));
-        assertNotNull(tileLayer.getGridSubset(newName));
-        assertNotNull(tileLayerGroup.getGridSubset(newName));
-
-        verify(xmlConfig, times(1)).removeGridset(eq(oldName));
-        verify(xmlConfig, times(1)).addOrReplaceGridSet(eq(new XMLGridSet(newGridset)));
-        verify(xmlConfig, times(1)).save();
-
-        assertNull(gridSetBroker.get(oldName));
-        assertEquals(newGridset, gridSetBroker.get(newName));
-
-        verify(config, times(1)).save();
+        return newGridset;
     }
 
     @Test
     public void testModifyGridsetTruncates() throws Exception {
-        final String oldName = "EPSG:4326";
-        final String newName = "MyEPSG:4326";
+        final String oldName = "TEST";
+        final String newName = "TEST_CHANGED";
 
         final GridSet oldGridset = gridSetBroker.get(oldName);
         final GridSet newGridset;
@@ -513,11 +521,16 @@ public class GWCTest {
             xmlGridSet.setAlignTopLeft(!xmlGridSet.getAlignTopLeft());
             newGridset = xmlGridSet.makeGridSet();
         }
+        when(xmlConfig.getGridSet(eq(newName))).thenReturn(Optional.empty());
+        when(xmlConfig.canSave(eq(newGridset))).thenReturn(true);
 
         when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
         when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
 
         mediator.modifyGridSet(oldName, newGridset);
+        
+        when(xmlConfig.getGridSet(eq(oldName))).thenReturn(Optional.empty());
+        when(xmlConfig.getGridSet(eq(newName))).thenReturn(Optional.of(newGridset));
 
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq(oldName));
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()),
@@ -534,46 +547,43 @@ public class GWCTest {
         }
 
         {
-            final GridSet oldGridset = gridSetBroker.get("EPSG:4326");
-            final GridSet newGridset;
-            XMLGridSet xmlGridSet = new XMLGridSet(oldGridset);
-            xmlGridSet.setName("My4326");
-            // make it a bit different
-            xmlGridSet.setAlignTopLeft(!xmlGridSet.getAlignTopLeft());
-            newGridset = xmlGridSet.makeGridSet();
-            gridSetBroker.put(newGridset);
+            final GridSet oldGridset = gridSetBroker.get("TEST");
+            final GridSet newGridset = this.namedGridsetCopy("My4326", oldGridset);
+            when(xmlConfig.getGridSet(eq("My4326"))).thenReturn(Optional.of(newGridset));
         }
 
         when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
         when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
-        when(tld.modify(same(tileLayer))).thenReturn(config);
-        when(tld.modify(same(tileLayerGroup))).thenReturn(config);
-        when(tld.removeGridset(eq("EPSG:4326"))).thenReturn(config);
+        doNothing().when(tld).modify(same(tileLayer));
+        doNothing().when(tld).modify(same(tileLayerGroup));
+        when(tld.removeGridset(eq("TEST"))).thenReturn(config);
         when(tld.removeGridset(eq("My4326"))).thenReturn(config);
 
-        mediator.removeGridSets(ImmutableSet.of("My4326", "EPSG:4326"));
+        mediator.removeGridSets(ImmutableSet.of("My4326", "TEST"));
 
-        assertEquals(ImmutableSet.of("EPSG:900913"), tileLayer.getGridSubsets());
-        assertEquals(ImmutableSet.of("EPSG:900913"), tileLayerGroup.getGridSubsets());
+        assertEquals(ImmutableSet.of("EPSG:4326","EPSG:900913"), tileLayer.getGridSubsets());
+        assertEquals(ImmutableSet.of("EPSG:4326","EPSG:900913"), tileLayerGroup.getGridSubsets());
 
-        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:4326"));
+        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("TEST"));
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()),
-                eq("EPSG:4326"));
+                eq("TEST"));
 
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()),
                 eq("EPSG:900913"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()),
+                eq("EPSG:4326"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()), eq("My4326"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()),
                 eq("EPSG:900913"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()),
+                eq("EPSG:4326"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()),
                 eq("My4326"));
 
         verify(tld, times(1)).modify(same(tileLayer));
         verify(tld, times(1)).modify(same(tileLayerGroup));
-        verify(tld, times(1)).removeGridset(eq("EPSG:4326"));
+        verify(tld, times(1)).removeGridset(eq("TEST"));
         verify(tld, times(1)).removeGridset(eq("My4326"));
-        // all these modifications, and a single save()
-        verify(config, times(1)).save();
     }
 
     @Test
@@ -581,8 +591,8 @@ public class GWCTest {
 
         when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
         when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
-        when(tld.modify(same(tileLayer))).thenReturn(config);
-        when(tld.modify(same(tileLayerGroup))).thenReturn(config);
+        doNothing().when(tld).modify(same(tileLayer));
+        doNothing().when(tld).modify(same(tileLayerGroup));
         when(tld.removeGridset(eq("EPSG:4326"))).thenReturn(config);
         when(tld.removeGridset(eq("EPSG:900913"))).thenReturn(config);
 
@@ -590,15 +600,19 @@ public class GWCTest {
         assertTrue(tileLayer.getInfo().isEnabled());
         assertTrue(tileLayer.getInfo().isEnabled());
 
-        mediator.removeGridSets(ImmutableSet.of("EPSG:900913", "EPSG:4326"));
+        // Defaults can't be removed from the broker so remove them from the layers first
+        tileLayer.removeGridSubset("EPSG:900913");
+        tileLayer.removeGridSubset("EPSG:4326");
+        tileLayerGroup.removeGridSubset("EPSG:900913");
+        tileLayerGroup.removeGridSubset("EPSG:4326");
+        mediator.save(tileLayer);
+        mediator.save(tileLayerGroup);
+        mediator.removeGridSets(ImmutableSet.of("TEST"));
 
-        verify(config, times(1)).save();// all other checks are in testRemoveGridsets
-        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:4326"));
-        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()),
-                eq("EPSG:900913"));
-        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:4326"));
-        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()),
-                eq("EPSG:900913"));
+        verify(tld, times(2)).modify(same(tileLayer));// all other checks are in testRemoveGridsets
+        verify(tld, times(2)).modify(same(tileLayerGroup));
+        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("TEST"));
+        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("TEST"));
 
         assertTrue(tileLayer.getGridSubsets().isEmpty());
         assertTrue(tileLayerGroup.getGridSubsets().isEmpty());
@@ -636,7 +650,7 @@ public class GWCTest {
 
         List<String> layerNames = Arrays.asList(tileLayerName(layer2), tileLayerName(group2));
 
-        when(tld.addLayer(any(GeoServerTileLayer.class))).thenReturn(config);
+        doNothing().when(tld).addLayer(any(GeoServerTileLayer.class));
         mediator.autoConfigureLayers(layerNames, defaults);
 
         GeoServerTileLayerInfo expected1 = new GeoServerTileLayer(layer2, defaults, gridSetBroker)
@@ -648,7 +662,6 @@ public class GWCTest {
                 .forClass(GeoServerTileLayer.class);
 
         verify(tld, times(2)).addLayer(addCaptor.capture());
-        verify(config, times(2)).save();
 
         GeoServerTileLayerInfo actual1 = addCaptor.getAllValues().get(0).getInfo();
         GeoServerTileLayerInfo actual2 = addCaptor.getAllValues().get(1).getInfo();
@@ -745,8 +758,7 @@ public class GWCTest {
         ReferencedEnvelope bounds;
         // bounds outside layer bounds (which are -180,0,0,90)
         bounds = new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
-        BoundingBox layerBounds = tileLayer.getGridSubset("EPSG:4326").getGridSet()
-                .getOriginalExtent();
+        BoundingBox layerBounds = tileLayer.getGridSubset("EPSG:4326").getOriginalExtent();
 
         assertFalse(bounds.intersects(layerBounds.getMinX(), layerBounds.getMinY()));
         assertFalse(bounds.intersects(layerBounds.getMaxX(), layerBounds.getMaxY()));
@@ -1403,62 +1415,50 @@ public class GWCTest {
     }
 
     @Test
-    public void testSetBlobStoresWrapsStorageException() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
-        CompositeBlobStore composite = mock(CompositeBlobStore.class);
-        doReturn(composite).when(mediator).getCompositeBlobStore();
-
-        StorageException se = new StorageException("expected");
-        doThrow(se).when(composite).setBlobStores(any(Iterable.class));
-
-        expected.expect(ConfigurationException.class);
-        expected.expectMessage("Error connecting to BlobStore");
-        mediator.setBlobStores(ImmutableList.<BlobStoreConfig> of());
-    }
-
-    @Test
     public void testSetBlobStoresSavesConfig() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
-        List<BlobStoreConfig> configList = Lists.newArrayList(mock(BlobStoreConfig.class),
-                mock(BlobStoreConfig.class));
-        when(xmlConfig.getBlobStores()).thenReturn(configList);
+        List<BlobStoreInfo> configList = Lists.newArrayList(mock(BlobStoreInfo.class),
+                mock(BlobStoreInfo.class));
+        when(configList.get(0).getName()).thenReturn("store0");
+        when(configList.get(1).getName()).thenReturn("store1");
+        when(blobStoreAggregator.getBlobStores()).thenReturn(configList);
+        when(blobStoreAggregator.getBlobStoreNames()).thenReturn(Arrays.asList("store0", "store1"));
 
-        BlobStoreConfig config = new FileBlobStoreConfig();
-        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig> of(config);
+        BlobStoreInfo config = new FileBlobStoreInfo("TestBlobStore");
+        List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         mediator.setBlobStores(newStores);
-
-        verify(composite, times(1)).setBlobStores(same(newStores));
-        verify(xmlConfig, times(1)).save();
-        assertEquals(newStores, configList);
+        
+        verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(0).getName()));
+        verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(1).getName()));
+        verify(blobStoreAggregator, times(1)).addBlobStore(eq(config));
     }
 
     @Test
     public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception {
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
+        when(blobStoreAggregator.getBlobStores()).thenReturn(ImmutableList.<BlobStoreInfo> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
-        doThrow(new IOException("expected")).when(xmlConfig).save();
+        BlobStoreInfo config = new FileBlobStoreInfo("TestStore");
 
-        List<BlobStoreConfig> oldStores = Lists.newArrayList(mock(BlobStoreConfig.class),
-                mock(BlobStoreConfig.class));
-        when(xmlConfig.getBlobStores()).thenReturn(oldStores);
 
-        BlobStoreConfig config = new FileBlobStoreConfig();
-        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig> of(config);
+        doThrow(new ConfigurationPersistenceException(new IOException("expected"))).when(blobStoreAggregator).addBlobStore(config);
+
+        List<BlobStoreInfo> oldStores = Lists.newArrayList(mock(BlobStoreInfo.class),
+                mock(BlobStoreInfo.class));
+
+        when(blobStoreAggregator.getBlobStores()).thenReturn(oldStores);
+
+        List<BlobStoreInfo> newStores = ImmutableList.<BlobStoreInfo> of(config);
         try {
             mediator.setBlobStores(newStores);
             fail("Expected ConfigurationException");
         } catch (ConfigurationException e) {
             assertTrue(e.getMessage().contains("Error saving config"));
         }
-
-        verify(xmlConfig, times(1)).save();
-        verify(composite, times(1)).setBlobStores(same(newStores));
-        verify(composite, times(1)).setBlobStores(eq(oldStores));
     }
 
     @Test

@@ -104,12 +104,18 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                 gsConverters.add(new StyleWriterConverter(sh.mimeType(ver), ver, sh));
             }
         }
+        //Add GWC REST converter (add it first, since it has stricter constraints than the defalt GS XML converters)
+        if (applicationContext.containsBean("gwcConverter")) {
+            converters.add((HttpMessageConverter<?>) applicationContext.getBean("gwcConverter"));
+        }
 
         //Sort the converters based on ExtensionPriority
         gsConverters.sort(Comparator.comparingInt(BaseMessageConverter::getPriority));
         for (BaseMessageConverter converter : gsConverters) {
             converters.add(converter);
         }
+
+
 
         //use the default ones as lowest priority
         super.addDefaultHttpMessageConverters(converters);

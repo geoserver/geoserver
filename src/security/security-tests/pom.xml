@@ -12,12 +12,12 @@
   <parent>
     <groupId>org.geoserver</groupId>    
     <artifactId>gs-security</artifactId>
-    <version>2.13-SNAPSHOT</version>
+    <version>2.14-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.security</groupId>
   <artifactId>gs-security-tests</artifactId>
   <packaging>jar</packaging>
-  <version>2.13-SNAPSHOT</version>
+  <version>2.14-SNAPSHOT</version>
   <name>GeoServer Security Tests Module</name>
   
   <dependencies>

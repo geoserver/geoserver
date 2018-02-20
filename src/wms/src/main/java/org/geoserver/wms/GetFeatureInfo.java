@@ -89,7 +89,7 @@ public class GetFeatureInfo {
                     }
                 }
             } catch(Exception e) {
-                throw new ServiceException("Failed to run GetFeatureInfo on layer " + layer.getName());
+                throw new ServiceException("Failed to run GetFeatureInfo on layer " + layer.getName(), e);
             }
 
             requestParams.nextLayer();

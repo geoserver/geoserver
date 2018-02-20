@@ -170,11 +170,29 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
-        // check we have the extent        
+        // check we have the extent
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension/@nearestValue", dom);
         assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z", "//wms:Layer/wms:Dimension", dom);
+    }
+
+    @Test
+    public void testNearestMatch() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupNearestMatch(V_TIME_ELEVATION, ResourceInfo.TIME, true);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+        // print(dom);
+
+        // check dimension has been declared
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
+        // check we have the extent
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("1", "//wms:Layer/wms:Dimension/@nearestValue", dom);
     }
     
     @Test

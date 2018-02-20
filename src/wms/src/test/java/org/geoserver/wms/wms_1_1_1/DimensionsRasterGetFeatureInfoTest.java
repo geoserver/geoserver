@@ -17,6 +17,7 @@ import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.wms.NearestMatchFinder;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,7 +125,94 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(14.592, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
         assertEquals(19.371, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
     }
-    
+
+    @Test
+    public void testTimeNoNearestClose() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+
+        String url = BASE_URL + "&time=2008-10-31T08:00:00.000Z";
+
+        // no match without nearest match support
+        assertNull(getFeatureAt(url, 36, 31, "sf:watertemp"));
+        assertNull(getFeatureAt(url, 68, 72, "sf:watertemp"));
+    }
+
+    @Test
+    public void testTimeNearestClose() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        String url = BASE_URL + "&time=2008-10-31T08:00:00.000Z";
+
+        // same as testTime
+        assertEquals(14.592, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+        assertEquals(19.371, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeNearestBefore() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        String url = BASE_URL + "&time=1990-10-31";
+
+        // same as testTime
+        assertEquals(14.592, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+        assertEquals(19.371, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeNearestAfter() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        String url = BASE_URL + "&time=2018-10-31";
+
+        // same as testDefaultValues
+        assertEquals(14.51, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
+        assertEquals(19.15, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeNearestCloseNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestClose();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
+    @Test
+    public void testTimeNearestBeforeNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestBefore();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
+    @Test
+    public void testTimeNearestAfterNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestAfter();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
     @Test
     public void testTimeElevation() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
@@ -161,6 +249,64 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         url = baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z";
         assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
         assertEquals(20.027, getFeatureAt(url, 68, 72, layer), EPS);
+    }
+
+    @Test
+    public void testTimeRangeNearestMatch() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true);
+
+        String layer = getLayerId(TIMERANGES);
+        String baseUrl = "wms?LAYERS=" + layer + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG:4326" +
+                "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers=" + layer;
+
+        // after last range, as a range
+        String url = baseUrl + "&TIME=2018-11-05/2018-11-06";
+        assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        assertEquals(14.782, getFeatureAt(url, 68, 72, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        
+        // after last range, point in time
+        url = baseUrl + "&TIME=2018-11-05";
+        assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        assertEquals(14.782, getFeatureAt(url, 68, 72, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+
+        // in the middle hole, close to latest value
+        url = baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z";
+        assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-05T00:00:00.000Z");
+        assertEquals(14.782, getFeatureAt(url, 68, 72, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-05T00:00:00.000Z");
+
+        // before first range, as a range
+        url = baseUrl + "&TIME=2005-10-30/2005-10-31";
+        assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+        assertEquals(20.027, getFeatureAt(url, 68, 72, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+
+        // before first range, as a point
+        url = baseUrl + "&TIME=2005-10-30";
+        assertEquals(-30000, getFeatureAt(url, 36, 31, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+        assertEquals(20.027, getFeatureAt(url, 68, 72, layer), EPS);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeRangeNearestMatchNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeRangeNearestMatch();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
     }
     
     @Test 
@@ -216,5 +362,40 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(-30000, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
         // and this one should be medium
         assertEquals(14.134, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+    }
+
+    @Test
+    public void testNearestMatchTwoLayers() throws Exception {
+        // setup time ranges
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true);
+
+        // setup water temp
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        String layers = getLayerId(TIMERANGES) + "," + getLayerId(WATTEMP);
+        String baseUrl = "wms?LAYERS=" + layers +
+                "&STYLES=,&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo" +
+                "&SRS=EPSG:4326&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941" +
+                "&WIDTH=200&HEIGHT=80&query_layers=" + layers + "&FEATURE_COUNT=50";
+
+        // run time before both (don't care about results, just check the headers)
+        String url = baseUrl + "&TIME=2000-01-01";
+        getFeatureAt(url, 68, 72, getLayerId(TIMERANGES));
+        assertWarningCount(2);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+
+        // after both
+        url = baseUrl + "&TIME=2100-01-01";
+        getFeatureAt(url, 68, 72, getLayerId(TIMERANGES));
+        assertWarningCount(2);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
     }
 }

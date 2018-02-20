@@ -29,6 +29,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
+import org.geoserver.catalog.AcceptableRange;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
@@ -81,10 +82,18 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     private PeriodEditor resTime;
 
     private TextField<BigDecimal> resElevation;
+
+    private final CheckBox nearestMatch;
+
+    private final TextField<String> acceptableInterval;
     
     boolean time;
-    
+
     public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class<?> type) {
+        this(id, model, resource, type, false);   
+    }
+    
+    public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class<?> type, boolean editNearestMatch) {
         super(id, model);
 
         // double container dance to get stuff to show up and hide on demand (grrr)
@@ -256,7 +265,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         refValueValidationMessage.setVisible(false);
         
         IModel<String> refValueModel = new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");        
-        referenceValue = new TextField<String>("referenceValue", refValueModel);
+        referenceValue = new TextField<>("referenceValue", refValueModel);
         referenceValue.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             protected void onUpdate(AjaxRequestTarget target) {
@@ -284,6 +293,35 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         if ("time".equals(id) && refValueModel.getObject() == null && strategyModel.getObject() == Strategy.NEAREST) {
             refValueModel.setObject(DimensionDefaultValueSetting.TIME_CURRENT);            
         }
+
+        // add support for nearest match specification
+        final WebMarkupContainer nearestMatchContainer = new WebMarkupContainer("nearestMatchContainer");
+        configs.add(nearestMatchContainer);
+        nearestMatchContainer.setVisible(editNearestMatch);
+        nearestMatch = new CheckBox("nearestMatchEnabled", new PropertyModel<>(model, "nearestMatchEnabled"));
+        nearestMatchContainer.add(nearestMatch);
+        WebMarkupContainer acceptableIntervalEditor = new WebMarkupContainer("acceptableIntervalEditor");
+        acceptableIntervalEditor.setVisible(model.getObject().isNearestMatchEnabled());
+        nearestMatchContainer.add(acceptableIntervalEditor);
+        nearestMatch.add(new AjaxFormComponentUpdatingBehavior("click") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Boolean enabled = nearestMatch.getModelObject();
+                acceptableIntervalEditor.setVisible(Boolean.TRUE.equals(enabled));
+                target.add(configsContainer);
+            }
+        });
+        acceptableInterval = new TextField<>("acceptableInterval", new PropertyModel<>(model, "acceptableInterval"));
+        acceptableIntervalEditor.add(acceptableInterval);
+        acceptableInterval.add((IValidator<String>) validatable -> {
+            try {
+                AcceptableRange.getAcceptableRange(validatable.getValue(), type);
+            } catch (Exception e) {
+                    String messageKey = "invalidAcceptableInterval";
+                validatable.error(new ValidationError(messageKey).addKey(messageKey).setVariable("actual", validatable.getValue()));
+            }
+        });
     }
     
     /**
@@ -370,6 +408,19 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             else {
                 info.setDefaultValue(null);
             }
+            
+            // nearest match
+            nearestMatch.processInput();
+            acceptableInterval.processInput();
+            if (nearestMatch.isVisible() && nearestMatch.getModelObject()) {
+                info.setNearestMatchEnabled(true);
+                info.setAcceptableInterval(acceptableInterval.getModelObject());
+            } else {
+                info.setNearestMatchEnabled(false);
+                info.setAcceptableInterval(null);
+            }
+            
+            
             setConvertedInput(info);
         }
     };

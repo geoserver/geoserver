@@ -5,24 +5,8 @@
  */
 package org.geoserver.wms;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -68,7 +52,6 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
@@ -94,8 +77,26 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import static org.geoserver.wms.NearestMatchWarningAppender.WarningType.Nearest;
+import static org.geoserver.wms.NearestMatchWarningAppender.WarningType.NotFound;
 
 /**
  * A facade providing access to the WMS configuration details
@@ -1089,6 +1090,11 @@ public class WMS implements ApplicationContextAware {
                 if (fixedTimes.get(i) == null) {
                     fixedTimes.set(i, getDefaultTime(coverage));
                 }
+
+                // nearest time support
+                if (timeInfo.isNearestMatchEnabled()) {
+                    fixedTimes = getNearestMatches(coverage, timeInfo, fixedTimes, ResourceInfo.TIME);
+                }
             }
             // pass down the parameters
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
@@ -1520,7 +1526,7 @@ public class WMS implements ApplicationContextAware {
 
         // handle time support
         if (timeInfo != null && timeInfo.isEnabled() && times != null) {
-            List<Object> defaultedTimes = new ArrayList<Object>(times.size());
+            List<Object> defaultedTimes = new ArrayList<>(times.size());
             for (Object datetime : times) {
                 if (datetime == null) {
                     // this is "default"
@@ -1528,8 +1534,13 @@ public class WMS implements ApplicationContextAware {
                 }
                 defaultedTimes.add(datetime);
             }
-
-            builder.appendFilters(timeInfo.getAttribute(), timeInfo.getEndAttribute(), defaultedTimes);
+            
+            if(timeInfo.isNearestMatchEnabled()) {
+                List<Object> nearestMatchedTimes = getNearestMatches(typeInfo, timeInfo, defaultedTimes, ResourceInfo.TIME);
+                builder.appendFilters(timeInfo.getAttribute(), timeInfo.getEndAttribute(), nearestMatchedTimes);
+            } else {
+                builder.appendFilters(timeInfo.getAttribute(), timeInfo.getEndAttribute(), defaultedTimes);
+            }
         }
 
         // handle elevation support
@@ -1550,7 +1561,27 @@ public class WMS implements ApplicationContextAware {
         return result;
     }
 
-    
+    private List<Object> getNearestMatches(ResourceInfo resourceInfo, DimensionInfo dimension, List<Object> values, String dimensionName) throws IOException {
+        NearestMatchFinder finder = NearestMatchFinder.get(resourceInfo, dimension, dimensionName);
+        List<Object> result = new ArrayList<>();
+        for (Object value : values) {
+            Object nearest = finder.getNearest(value);
+            if (nearest == null) {
+                // no way to specify there is no match yet, so we'll use the original value, which will not match
+                NearestMatchWarningAppender.addWarning(resourceInfo.prefixedName(), dimensionName, null, dimension.getUnits(), NotFound);
+                result.add(value);
+            } else if (value.equals(nearest)) {
+                result.add(value);
+            } else {
+                NearestMatchWarningAppender.addWarning(resourceInfo.prefixedName(), dimensionName, nearest, dimension.getUnits(), Nearest);
+                result.add(nearest);
+            }
+        }
+
+        return result;
+    }
+
+
     /**
      * Returns the max rendering time taking into account the server limits and the request options
      * @param request

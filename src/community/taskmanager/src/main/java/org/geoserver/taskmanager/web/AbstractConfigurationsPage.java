@@ -167,7 +167,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                     public void onClose(AjaxRequestTarget target) {
                         if (error != null) {
                             error(error);
-                            target.add(feedbackPanel);
+                            addFeedbackPanels(target);
                         }
                         target.add(configurationsPanel);
                         target.add(remove);

@@ -184,12 +184,12 @@ public class BatchPage extends GeoServerSecuredPage {
                     Throwable rootCause = ExceptionUtils.getRootCause(e);
                     form.error(rootCause == null ? e.getLocalizedMessage() : 
                         rootCause.getLocalizedMessage());
-                    target.add(feedbackPanel);
+                    addFeedbackPanels(target);
                 }
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         };
     }

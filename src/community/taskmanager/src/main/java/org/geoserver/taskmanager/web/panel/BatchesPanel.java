@@ -165,7 +165,7 @@ public class BatchesPanel extends Panel {
                         if (error != null) {
                             error(error);
                             target.add(remove);
-                            target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
+                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                         } else {
                             target.add(batchesPanel);
                         }
@@ -253,8 +253,8 @@ public class BatchesPanel extends Panel {
                                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                                 }
                                 info(new StringResourceModel("batchStarted", BatchesPanel.this).getString());
-                                
-                                target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
+
+                                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                             }
                         };
                         link.getLink().add(new AttributeAppender("class", "play-link", ","));

@@ -46,6 +46,7 @@ import org.geoserver.taskmanager.web.panel.SimpleAjaxSubmitLink;
 import org.geoserver.taskmanager.web.panel.TaskParameterPanel;
 import org.geoserver.taskmanager.web.panel.TextFieldPanel;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -316,7 +317,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         target.add(tasksPanel);
                         target.add(attributesPanel);
                         target.add(remove);
-                        target.add(getFeedbackPanel());
+                        ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                         return true;
                     }
                 });
@@ -482,7 +483,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         //TODO: use localized resource based on error type instead of toString
                         form.error(error.toString());
                     }
-                    target.add(feedbackPanel);
+                    addFeedbackPanels(target);
                     return;
                 }
 
@@ -497,19 +498,19 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         form.success(new ParamResourceModel("success", getPage()).getString());
                         target.add(batchesPanel);
                         ((MarkupContainer) batchesPanel.get("form:batchesPanel:listContainer:items")).removeAll();
-                        target.add(feedbackPanel);
+                        addFeedbackPanels(target);
                     }
                 } catch (Exception e) { 
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                     Throwable rootCause = ExceptionUtils.getRootCause(e);
                     form.error(rootCause == null ? e.getLocalizedMessage() : 
                         rootCause.getLocalizedMessage());
-                    target.add(feedbackPanel);
+                    addFeedbackPanels(target);
                 }
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
+                addFeedbackPanels(target);
             }
         };
     }

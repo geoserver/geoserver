@@ -10,15 +10,15 @@
 
     <!--H2 setup -->
     <bean class="org.geoserver.taskmanager.external.H2DbSourceImpl">
-        <property name="name" value="mydb"/>
+        <property name="name" value="testsourcedb"/>
         <property name="path" value="mem"/>
-        <property name="db" value="mydb"/>
+        <property name="db" value="testsourcedb"/>
         <property name="createDBSqlResource" value="classpath:h2/dbsource/create-source.sql"/>
     </bean>
     <bean class="org.geoserver.taskmanager.external.H2DbSourceImpl">
-        <property name="name" value="myotherdb"/>
+        <property name="name" value="testtargetdb"/>
         <property name="path" value="mem"/>
-        <property name="db" value="myotherdb"/>
+        <property name="db" value="testtargetdb"/>
         <property name="createDBSqlResource" value="classpath:h2/dbtarget/create-target.sql"/>
         <property name="createDataSqlResource" value=""/>
     </bean>
@@ -26,7 +26,7 @@
     <bean class="org.geoserver.taskmanager.external.PostgisDbSourceImpl">
         <property name="name" value="mypostgresdb" />
         <property name="host" value="localhost" />
-        <property name="db" value="mydb" />
+        <property name="db" value="testsourcedb" />
         <property name="username" value="postgres" />
         <property name="password" value="postgres" />
     </bean>
@@ -34,17 +34,17 @@
     <!-- postgis databases for testing task on you local machine-->
 
    <!-- <bean class="org.geoserver.taskmanager.external.PostgisDbSourceImpl">
-		<property name="name" value="mydb" />
+		<property name="name" value="testsourcedb" />
 		<property name="host" value="localhost" />
-		<property name="db" value="mydb" />
+		<property name="db" value="testsourcedb" />
 		<property name="username" value="postgres" />
 		<property name="password" value="postgres" />
 	</bean>
 
     <bean class="org.geoserver.taskmanager.external.PostgisDbSourceImpl">
-        <property name="name" value="myotherdb" />
+        <property name="name" value="testtargetdb" />
         <property name="host" value="localhost" />
-        <property name="db" value="myotherdb" />
+        <property name="db" value="testtargetdb" />
         <property name="username" value="postgres" />
         <property name="password" value="postgres" />
     </bean>-->

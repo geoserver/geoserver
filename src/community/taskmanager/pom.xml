@@ -20,10 +20,10 @@
         GeoServer Task Manager
 
         Setup of the source DB . Usage:
-        mvn db:schema -Pmydb
+        mvn db:schema -Ptestsourcedb
 
         Setup of the target DB . Usage:
-        mvn db:schema -Pmyotherdb
+        mvn db:schema -Ptesttargetdb
     </description>
 
     <dependencies>
@@ -148,7 +148,7 @@
 	
     <profiles>
         <profile>
-            <id>mydb</id>
+            <id>testsourcedb</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -161,13 +161,13 @@
                         <configuration>
                             <adminDbConnectionSettings>
                                 <jdbcDriver>org.postgresql.Driver</jdbcDriver>
-                                <jdbcUrl>jdbc:postgresql://localhost:5432/mydb</jdbcUrl>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testsourcedb</jdbcUrl>
                                 <userName>postgres</userName>
                                 <password>postgres</password>
                             </adminDbConnectionSettings>
                             <appDbConnectionSettings>
                                 <jdbcDriver>org.postgresql.Driver</jdbcDriver>
-                                <jdbcUrl>jdbc:postgresql://localhost:5432/mydb</jdbcUrl>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testsourcedb</jdbcUrl>
                                 <userName>postgres</userName>
                                 <password>postgres</password>
                             </appDbConnectionSettings>
@@ -196,7 +196,7 @@
             </build>
         </profile>
         <profile>
-            <id>myotherdb</id>
+            <id>testtargetdb</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -209,13 +209,13 @@
                         <configuration>
                             <adminDbConnectionSettings>
                                 <jdbcDriver>org.postgresql.Driver</jdbcDriver>
-                                <jdbcUrl>jdbc:postgresql://localhost:5432/myotherdb</jdbcUrl>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testtargetdb</jdbcUrl>
                                 <userName>postgres</userName>
                                 <password>postgres</password>
                             </adminDbConnectionSettings>
                             <appDbConnectionSettings>
                                 <jdbcDriver>org.postgresql.Driver</jdbcDriver>
-                                <jdbcUrl>jdbc:postgresql://localhost:5432/myotherdb</jdbcUrl>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testtargetdb</jdbcUrl>
                                 <userName>postgres</userName>
                                 <password>postgres</password>
                             </appDbConnectionSettings>

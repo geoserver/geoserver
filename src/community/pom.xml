@@ -230,7 +230,7 @@
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
-        <!-- <module>gwc-s3</module> -->
+        <module>gwc-s3</module>
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>web-resource</module>

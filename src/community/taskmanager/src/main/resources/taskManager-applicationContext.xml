@@ -13,7 +13,7 @@
 
   <!-- TODO: configure your databases -->
   <!-- <bean class="org.geoserver.taskmanager.external.PostgisDbSourceImpl"> 
-  		<property name="name" value="mydb"/> 
+  		<property name="name" value="testsourcedb"/> 
 		<property name="host" value="hostname" /> 
 		<property name="db" value="dbname" /> 
 		<property name="username" value="username" />
@@ -65,7 +65,7 @@
 			<prop key="org.quartz.jobStore.clusterCheckinInterval">20000</prop>
 			<prop key="org.quartz.jobStore.dataSource">qDataSource</prop>
 			<prop key="org.quartz.dataSource.qDataSource.driver">org.postgresql.Driver</prop>
-			<prop key="org.quartz.dataSource.qDataSource.URL">jdbc:postgresql://localhost:5432/mydb?currentSchema=taskmanager</prop>
+			<prop key="org.quartz.dataSource.qDataSource.URL">jdbc:postgresql://localhost:5432/testsourcedb?currentSchema=taskmanager</prop>
 			<prop key="org.quartz.dataSource.qDataSource.user">postgres</prop>
 			<prop key="org.quartz.dataSource.qDataSource.password">postgres</prop> -->
 		</props>

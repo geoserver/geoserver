@@ -42,8 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CopyTableTaskTest extends AbstractTaskManagerTest {
 
     //configure these constants
-    private static final String SOURCEDB_NAME = "mydb";
-    private static final String TARGETDB_NAME = "myotherdb";
+    private static final String SOURCEDB_NAME = "testsourcedb";
+    private static final String TARGETDB_NAME = "testtargetdb";
     private static final String TABLE_NAME = "gw_beleid.grondwaterlichamen_new";
     private static final String TARGET_TABLE_NAME = "temp.grondwaterlichamen_copy";
 

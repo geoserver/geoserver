@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public class CreateViewTaskTest extends AbstractTaskManagerTest {
 
     //configure these constants
-    private static final String DB_NAME = "mydb";
+    private static final String DB_NAME = "testsourcedb";
     private static final String TABLE_NAME = "gw_beleid.grondwaterlichamen_new";
     private static final String VIEW_NAME = "gw_beleid.vw_grondwaterlichamen";
     private static final String SELECT = "dataengine_id";

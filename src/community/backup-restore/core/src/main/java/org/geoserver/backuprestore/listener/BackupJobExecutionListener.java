@@ -4,7 +4,6 @@
  */
 package org.geoserver.backuprestore.listener;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
-import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
@@ -115,7 +113,6 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                     JobParameters jobParameters = backupExecution.getJobParameters();
                     Resource sourceFolder = Resources
                             .fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
-                    BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
                     
                     // Cleanup Temporary Resources
                     String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);
@@ -132,7 +129,7 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                     }
                 }
             }
-        } catch (NoSuchJobExecutionException | IOException e) {
+        } catch (NoSuchJobExecutionException e) {
             if (!bestEffort) {
                 this.backupExecution.addFailureExceptions(Arrays.asList(e));
                 throw new RuntimeException(e);

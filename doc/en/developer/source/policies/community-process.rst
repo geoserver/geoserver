@@ -37,7 +37,7 @@ new feature:
    **if necessary**. Whether a feature requires a GSIP is decided by the 
    community when the feature is proposed.
 
-The determining factor for what release a feature should be included in is based on the estimate of the time to implement the feature, and the current :ref:`release_cycle`. The release cycle includes a "feature freeze" where new features are delayed while stabilize master and cut a new release candidate.
+The determining factor for what release a feature should be included in is based on the estimate of the time to implement the feature, and the current :ref:`release_cycle`.
 
 New features may be back-ported to the stable series (if technically feasible) after being tried out on master for a month.
 
@@ -67,15 +67,17 @@ The community maintains three active branches:
 
 For each GeoServer release we spend six month "prerelease" in a development cycle on the master branch, followed by six months as the stable release, followed by six months as the maintenance release.
 
+..note:: The former beta release has been replaced with an earlier release candidate. There is no longer a "feature freeze" on master after this release. Instead, the new branch is created at this time, freeing up master for new features.
+
 **Prerelease**
 
   * Month -6: master open for development
-  * Month -1: month:  beta release is made  (starting a feature freeze)
-  * Month 1: (start of month): release candidate is made on new branch (ending the feature freeze)
+  * Month -1: month:  release candidate is made on new branch
+  * Month 1: (start of month): second release candidate is made, if there are sufficient changes to warrant it.
 
 **Release**
    
-  * Month 1: initial stable release (aim for two weeks after the release candidate)
+  * Month 1: initial stable release (aim for one month after the first release candidate)
   * Month 3: stable release
   * Month 5: stable release
   * Month 7: maintenance release

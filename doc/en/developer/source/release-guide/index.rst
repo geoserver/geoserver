@@ -11,7 +11,7 @@ Before you start
 SNAPSHOT release
 ^^^^^^^^^^^^^^^^
 
-For any non-beta release (including release candidates) a GeoServer release requires an
+For any release (including release candidates) a GeoServer release requires an
 corresponding GeoTools and GeoWebCache release. Therefore before you start you should
 coordinate a release with these projects. Either performing the release yourself or
 asking a volunteer to perform the release.
@@ -57,7 +57,7 @@ Perform a search on the log for 'git revision' (this is the GeoServer revision) 
     geowebcache version = 1.11-SNAPSHOT
     geowebcache revision = 0f1cbe9466e424621fae9fefdab4ac5a7e26bd8b/0f1cb
 
-Since most GeoServer releases require an official GeoTools release, the GeoTools revision is usually not needed, but if performing a beta release, it is permitted to release directly from a specific GeoTools revision.
+Since most GeoServer releases require an official GeoTools release, the GeoTools revision is usually not needed.
 
 Release in JIRA
 ---------------
@@ -122,19 +122,20 @@ When creating the first release candidate of a series, there are some extra step
       git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
       git push geoserver master
       
-* Create the new beta version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-beta`` for the first release of the ``2.12.x`` series
+* Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
 
-* Update the main, nightly and live-docs jobs on build.geoserver.org:
+* Update the main, nightly, geogig-plugin and live-docs jobs on build.geoserver.org:
   
   * disable the maintenance jobs, and remove them from the geoserver view
-  * create new jobs, copying from the existing master jobs, editing the branch and the ver=master configuration.
+  * create new jobs, copying from the existing stable jobs, and edit the branch.
   * modify the last line of the live-docs builds, changing ``stable`` to ``maintain`` for the previous stable branch. The new job you created should publish to ``stable``, and master will continue to publish to ``latest``.
 
 * Update the cite tests on build.geoserver.org:
+
   * disable the maintenance jobs, and remove them from the geoserver view
   * create new jobs, copying from the existing master jobs, editing the branch in the build command.
 
-* Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
+* Announce on the developer mailing list that the new stable branch has been created.
 
 * Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.12.x`` (for example):
    
@@ -161,11 +162,11 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 **GT_VERSION**
 
-  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "master@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "master@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GWC_VERSION**
 
-  The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form ``<branch>@<revision>`` such as "master@1b3243jb...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+  The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively the version may be specified as a Git revision of the form ``<branch>@<revision>`` such as "master@1b3243jb...". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GIT_USER**
 
@@ -264,7 +265,7 @@ Announce the Release
 GeoServer Blog
 ^^^^^^^^^^^^^^
 
-.. note:: This announcement should be made for all releases, including betas and release candidates.
+.. note:: This announcement should be made for all releases, including release candidates.
 
 .. note::
 
@@ -341,7 +342,7 @@ GeoServer Blog
 Mailing lists
 ^^^^^^^^^^^^^
 
-.. note:: This announcement should be made for all releases, including betas and release candidates.
+.. note:: This announcement should be made for all releases, including release candidates.
 
 Send an email to both the developers list and users list announcing the
 release. The message should be relatively short. You can base it on the blog post.

@@ -79,7 +79,7 @@ public abstract class NearestMatchFinder {
                 }
             }
         } catch (ParseException e) {
-            throw new ServiceException("Failed to apply nearest match search", e);
+            throw new ServiceException("Failed to apply nearest match search on " + info.prefixedName(), e);
         }
 
         throw new IllegalArgumentException("No nearest match support for " + info);
@@ -100,16 +100,14 @@ public abstract class NearestMatchFinder {
             return Date.class;
         } else if (dimensionName.equalsIgnoreCase(ResourceInfo.ELEVATION)) {
             return Double.class;
-        } else {
-            // if it's a custome dimension do custom logic based on the resourceinfo, e.g. pick the attributes
-            // from featuretype/structured readers and use strings for anything else
-            throw new IllegalArgumentException("Dimension " + dimensionName + " not supported for nearest match yet");
-        }
+        } 
+
+        // if it's a custome dimension do custom logic based on the resourceinfo, e.g. pick the attributes
+        // from featuretype/structured readers and use strings for anything else
+        throw new IllegalArgumentException("Dimension " + dimensionName + " not supported for nearest match yet");
     }
 
-    enum FilterDirection {HIGHEST_AMONG_LOWERS, LOWEST_AMONG_HIGHER}
-
-    ;
+    enum FilterDirection {HIGHEST_AMONG_LOWERS, LOWEST_AMONG_HIGHER};
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 

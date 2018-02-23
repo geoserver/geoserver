@@ -18,8 +18,8 @@ public class AcceptableRangeTest {
     @Test
     public void testSymmetricTimeRange() throws Exception {
         AcceptableRange range = AcceptableRange.getAcceptableRange("P1D", Date.class);
-        assertEquals(DAY_IN_MS, range.before);
-        assertEquals(DAY_IN_MS, range.after);
+        assertEquals(DAY_IN_MS, range.getBefore());
+        assertEquals(DAY_IN_MS, range.getAfter());
 
         Date value = new Date();
         DateRange searchRange = (DateRange) range.getSearchRange(value);
@@ -30,8 +30,8 @@ public class AcceptableRangeTest {
     @Test
     public void testPastTimeRange() throws Exception {
         AcceptableRange range = AcceptableRange.getAcceptableRange("P1D/P0D", Date.class);
-        assertEquals(DAY_IN_MS, range.before);
-        assertEquals(0l, range.after);
+        assertEquals(DAY_IN_MS, range.getBefore());
+        assertEquals(0l, range.getAfter());
 
         Date value = new Date();
         DateRange searchRange = (DateRange) range.getSearchRange(value);
@@ -42,8 +42,8 @@ public class AcceptableRangeTest {
     @Test
     public void testFutureTimeRange() throws Exception {
         AcceptableRange range = AcceptableRange.getAcceptableRange("P0D/P1D", Date.class);
-        assertEquals(0l, range.before);
-        assertEquals(DAY_IN_MS, range.after);
+        assertEquals(0l, range.getBefore());
+        assertEquals(DAY_IN_MS, range.getAfter());
 
         Date value = new Date();
         DateRange searchRange = (DateRange) range.getSearchRange(value);

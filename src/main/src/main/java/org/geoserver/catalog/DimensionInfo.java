@@ -117,13 +117,13 @@ public interface DimensionInfo extends Serializable {
      * Returns a string specifying the search range. Can be empty, a single value (to be parsed in the data
      * type of the dimension, in particular, it will be a ISO period for times) or a {code}before/after{code} range
      * specifying how far to search from the requested value (e.g., {code}PT12H/PT1H{code} to allow searching 12 hours
-     * in the past but only 1 hour in the future.
+     * in the past but only 1 hour in the future).
      * @return
      */
     public String getAcceptableInterval();
 
     /**
-     * Allows setting the search range for nearest matches, see also {@link #getAcceptableInterval()}
+     * Allows setting the search range for nearest matches, see also {@link #getAcceptableInterval()}.
      * @param acceptableInterval
      */
     public void setAcceptableInterval(String acceptableInterval);

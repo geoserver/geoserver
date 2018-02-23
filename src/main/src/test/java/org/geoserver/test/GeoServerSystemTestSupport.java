@@ -1913,7 +1913,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Adds nearest match support to the specified layer
+     * Adds nearest match support to the specified layer.
+     * 
      * @param layer The layer name
      * @param dimensionName The dimension name (key in the resource metadata map)
      * @param nearestMatch Whether to enable or disable nearest match
@@ -1923,7 +1924,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Adds nearest match support to the specified layer
+     * Adds nearest match support to the specified layer.
+     * 
      * @param layer The layer name
      * @param dimensionName The dimension name (key in the resource metadata map)
      * @param nearestMatch Whether to enable or disable nearest match

@@ -13,19 +13,19 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Represents the parsed acceptable range. For elevation it's simple numbers, for dates it's a number of milliseconds
+ * Represents the parsed acceptable range. For elevation it's simple numbers, for dates it's a number of milliseconds.
  */
 public class AcceptableRange {
 
     /**
      * Parses the acceptable range
      *
-     * @param spec
-     * @param dataType
-     * @return
+     * @param spec The specification from the UI
+     * @param dataType The target data type (e.g. {@link Date}
+     * @return An {@link AcceptableRange} object, or null if the spec was null or empty
      */
     public static AcceptableRange getAcceptableRange(String spec, Class dataType) throws ParseException {
-        if (spec == null) {
+        if (spec == null || spec.trim().isEmpty()) {
             return null;
         }
 
@@ -48,17 +48,15 @@ public class AcceptableRange {
 
     private static Number parseValue(String s, Class dataType) throws ParseException {
         if (Date.class.isAssignableFrom(dataType)) {
-            long period = TimeParser.parsePeriod(s);
-            return period;
-        } else {
-            // TODO: add support for Number, e.g., elevation
-            throw new IllegalArgumentException("Unsupported value type " + dataType);
+            return TimeParser.parsePeriod(s);
         }
+        // TODO: add support for Number, e.g., elevation
+        throw new IllegalArgumentException("Unsupported value type " + dataType);
     }
 
-    Number before;
-    Number after;
-    Class dataType;
+    private Number before;
+    private Number after;
+    private Class dataType;
 
     public AcceptableRange(Number before, Number after, Class dataType) {
         this.before = before;
@@ -89,10 +87,9 @@ public class AcceptableRange {
             cal.setTimeInMillis(cal.getTimeInMillis() + after.longValue());
             Date max = cal.getTime();
             return new DateRange(min, max);
-        } else {
-            // TODO: add support for Number, e.g., elevation
-            throw new IllegalArgumentException("Unsupported value type " + dataType); 
-        }
+        } 
+        // TODO: add support for Number, e.g., elevation
+        throw new IllegalArgumentException("Unsupported value type " + dataType); 
     }
 
     /**

@@ -1562,6 +1562,10 @@ public class WMS implements ApplicationContextAware {
     }
 
     private List<Object> getNearestMatches(ResourceInfo resourceInfo, DimensionInfo dimension, List<Object> values, String dimensionName) throws IOException {
+        // if there is a max rendering time set, use it on this match, as the input request might make the
+        // code go through a lot of nearest match queries
+        int maxRenderingTime = getMaxRenderingTime();
+        long maxTime = maxRenderingTime > 0 ? System.currentTimeMillis() + maxRenderingTime * 1000 : -1;
         NearestMatchFinder finder = NearestMatchFinder.get(resourceInfo, dimension, dimensionName);
         List<Object> result = new ArrayList<>();
         for (Object value : values) {
@@ -1575,6 +1579,13 @@ public class WMS implements ApplicationContextAware {
             } else {
                 NearestMatchWarningAppender.addWarning(resourceInfo.prefixedName(), dimensionName, nearest, dimension.getUnits(), Nearest);
                 result.add(nearest);
+            }
+
+            // check timeout
+            if (maxTime > 0 && System.currentTimeMillis() > maxTime) {
+                throw new ServiceException(
+                        "Nearest matching dimension values required more time than allowed and has been forcefully stopped. "
+                                + "The max rendering time is " + (maxRenderingTime) + "s");
             }
         }
 

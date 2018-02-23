@@ -221,7 +221,92 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.1", getFeatureAt(base, 60, 10));
         assertNull(getFeatureAt(base, 20, 30));
         assertNull(getFeatureAt(base, 60, 30));
+    }
 
+    @Test
+    public void testTimeSingleNoNearestClose() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        String base = baseFeatureInfo + "&time=2011-05-02T012:00:00Z";
+
+        // we should get none, as there is no nearest treatment
+        assertNull(getFeatureAt(base, 20, 10));
+        assertNull(getFeatureAt(base, 60, 10));
+        assertNull(getFeatureAt(base, 20, 30));
+        assertNull(getFeatureAt(base, 60, 30));
+    }
+
+    @Test
+    public void testTimeSingleNearestClose() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(V_TIME_ELEVATION, ResourceInfo.TIME, true);
+        String base = baseFeatureInfo + "&time=2011-05-02T01:00:00Z";
+
+        // we should get the second, it's the nearest
+        assertNull(getFeatureAt(base, 20, 10));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-02T00:00:00.000Z");
+        assertEquals("TimeElevation.1", getFeatureAt(base, 60, 10));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-02T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 20, 30));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-02T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 60, 30));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-02T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeSingleNearestAfter() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(V_TIME_ELEVATION, ResourceInfo.TIME, true);
+        String base = baseFeatureInfo + "&time=2013-05-02";
+
+        // we should get the last, it's the nearest
+        assertNull(getFeatureAt(base, 20, 10));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-04T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 60, 10));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-04T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 20, 30));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-04T00:00:00.000Z");
+        assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-04T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeSingleNearestBefore() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(V_TIME_ELEVATION, ResourceInfo.TIME, true);
+        String base = baseFeatureInfo + "&time=1190-05-02";
+
+        // we should get the first, it's the nearest
+        assertEquals("TimeElevation.0", getFeatureAt(base, 20, 10));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-01T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 60, 10));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-01T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 20, 30));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-01T00:00:00.000Z");
+        assertNull(getFeatureAt(base, 60, 30));
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(V_TIME_ELEVATION), "2011-05-01T00:00:00.000Z");
+    }
+
+    @Test
+    public void testTimeSingleNearestBeforeBasicIdentifier() throws Exception {
+        // a test for the old identifier, which someone might still be using for performance purposes
+        VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
+        try {
+            testTimeSingleNearestBefore();
+        } finally {
+            VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
+        }
     }
 
     @Test

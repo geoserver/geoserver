@@ -185,17 +185,36 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
-        //print(dom);
+        print(dom);
         
         // check dimension has been declared
         assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Dimension/@name", dom);
         assertXpathEvaluatesTo("ISO8601", "//Layer/Dimension/@units", dom);
-        // check we have the extent        
+        // check we have the extent
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("0", "//Layer/Extent/@nearestValue", dom);
         assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testTimeNearestMatch() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupNearestMatch(V_TIME_ELEVATION, ResourceInfo.TIME, true);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+        //print(dom);
+
+        // check dimension has been declared
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo("ISO8601", "//Layer/Dimension/@units", dom);
+        // check we have the extent
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("1", "//Layer/Extent/@nearestValue", dom);
     }
     
     @Test

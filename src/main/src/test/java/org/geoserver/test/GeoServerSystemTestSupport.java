@@ -125,6 +125,7 @@ import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
+import org.junit.Before;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -184,6 +185,13 @@ import org.xml.sax.EntityResolver;
  */
 @TestSetup(run=TestSetupFrequency.ONCE)
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
+
+    private MockHttpServletResponse lastResponse;
+    
+    @Before
+    public void clearLastResponse() {
+        this.lastResponse = null;
+    }
 
     protected SystemTestData createTestData() throws Exception {
         return new SystemTestData();
@@ -1645,8 +1653,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         response.setCharacterEncoding(charset);
 
         dispatch(request, response);
+
+        this.lastResponse = response;
+
         return response;
-    } 
+    }
+
+    /**
+     * Returns the last MockHttpServletRequest response. Warning, not thread safe. Last response is cleared at
+     * before each test method run.
+     * 
+     * @return
+     */
+    protected MockHttpServletResponse getLastResponse() {
+        return lastResponse;
+    }
     
     protected DispatcherServlet getDispatcher() throws Exception {
         return dispatcher;
@@ -1888,6 +1909,32 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(dimensionName, di);
+        getCatalog().save(info);
+    }
+
+    /**
+     * Adds nearest match support to the specified layer.
+     * 
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param nearestMatch Whether to enable or disable nearest match
+     */
+    protected void setupNearestMatch(QName layer, String dimensionName, boolean nearestMatch) {
+        setupNearestMatch(layer, dimensionName, nearestMatch, null);
+    }
+
+    /**
+     * Adds nearest match support to the specified layer.
+     * 
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param nearestMatch Whether to enable or disable nearest match
+     */
+    protected void setupNearestMatch(QName layer, String dimensionName, boolean nearestMatch, String acceptableInterval) {
+        ResourceInfo info = getCatalog().getResourceByName(getLayerId(layer), ResourceInfo.class);
+        DimensionInfo di = info.getMetadata().get(dimensionName, DimensionInfo.class);
+        di.setNearestMatchEnabled(nearestMatch);
+        di.setAcceptableInterval(acceptableInterval);
         getCatalog().save(info);
     }
 

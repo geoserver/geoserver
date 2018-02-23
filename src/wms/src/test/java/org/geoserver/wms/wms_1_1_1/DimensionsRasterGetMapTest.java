@@ -5,28 +5,33 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.*;
-
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.List;
-
 import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapCallback;
 import org.geoserver.wms.GetMapCallbackAdapter;
+import org.geoserver.wms.NearestMatchFinder;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Timer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     
@@ -126,7 +131,122 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 36, 31, new Color(246, 246, 255));
         assertPixel(image, 68, 72, new Color(255, 181, 181));
     }
+
+    @Test
+    public void testTimeNoNearestClose() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+
+        // no match, so we're getting th default background color
+        assertPixel(image, 36, 31, Color.WHITE);
+        assertPixel(image, 68, 72, Color.WHITE);
+    }
     
+    @Test
+    public void testTimeNearestClose() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+
+        // same as testTime
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 181, 181));
+    }
+
+    @Test
+    public void testTimeNearestCloseNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestClose();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }    
+    }
+
+    @Test
+    public void testTimeNearestAcceptableRange() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        
+        // setup an acceptable range that's big enough
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true, "P1D");
+        getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+
+        // now one that's not big enough
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true, "PT4H/P0D");
+        getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+        assertNoNearestWarning(getLayerId(WATTEMP), "time");
+        
+        // now force a search in the future only
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true, "P0D/P10D");
+        getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
+    }
+    
+    @Test
+    public void testTimeNearestAcceptableRangeNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestAcceptableRange();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
+    @Test
+    public void testTimeNearestBefore() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=1990-10-31", "image/png");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+
+        // same as testTime, it was the first time
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 181, 181));
+    }
+
+    @Test
+    public void testTimeNearestBeforeNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestBefore();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
+    @Test
+    public void testTimeNearestAfter() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2009-10-31", "image/png");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
+
+        // same as testTimeAnimation, November
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 187, 187));
+    }
+
+    @Test
+    public void testTimeNearestAfterNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeNearestAfter();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
     @Test
     public void testTimeAnimation() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
@@ -261,7 +381,138 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 36, 31, Color.BLUE);
         assertPixel(image, 68, 72, new Color(255, 172, 172));
     }
-    
+
+    @Test
+    public void testTimeRangeNearestMatch() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true);
+
+        // Setting a BLUE Background Color
+        String baseUrl = "wms?LAYERS=" + getLayerId(TIMERANGES) + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326" +
+                "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+
+        // after last range, as a range
+        BufferedImage image = getAsImage(baseUrl + "&TIME=2018-11-8/2018-11-09", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        assertPixel(image, 36, 31, Color.BLUE);
+        assertPixel(image, 68, 72, new Color(249, 249, 255));
+        
+
+        // after last range, as an instant
+        image = getAsImage(baseUrl + "&TIME=20018-11-05", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        assertPixel(image, 36, 31, Color.BLUE);
+        assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+        // in the middle hole, but closer to the latest value, as a range
+        image = getAsImage(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-05T00:00:00.000Z");
+        assertPixel(image, 36, 31, Color.BLUE);
+        assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+        // in the middle hole, but closer to the latest value, as an instant
+        image = getAsImage(baseUrl + "&TIME=2008-11-04T16:00:00.000Z", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-05T00:00:00.000Z");
+        assertPixel(image, 36, 31, Color.BLUE);
+        assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+        // before first range, as a range
+        image = getAsImage(baseUrl + "&TIME=2000-10-31/2000-10-31", "image/png");
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+        assertPixel(image, 36, 31, Color.BLUE);
+        assertPixel(image, 68, 72, new Color(255, 172, 172));
+
+        // before first range, as an instant
+        image = getAsImage(baseUrl + "&TIME=2000-10-31", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+        assertPixel(image, 36, 31, Color.BLUE);
+        assertPixel(image, 68, 72, new Color(255, 172, 172));
+    }
+
+    @Test
+    public void testTimeRangeNearestMatchNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeRangeNearestMatch();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
+    @Test
+    public void testTimeRangeNearestMatchAcceptableRange() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+
+        // Setting a BLUE Background Color
+        String baseUrl = "wms?LAYERS=" + getLayerId(TIMERANGES) + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326" +
+                "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+
+        // after last range, as a range, large enough acceptable range to find it
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true, "P100Y");
+        getAsImage(baseUrl + "&TIME=2018-11-8/2018-11-09", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+
+        // same as above but with an instant
+        getAsImage(baseUrl + "&TIME=2018-11-05", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+
+        // after last range, as a range, small enough that it won't be found
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true, "P1D");
+        getAsImage(baseUrl + "&TIME=2018-11-8/2018-11-09", "image/png");
+        assertWarningCount(1);
+        assertNoNearestWarning(getLayerId(TIMERANGES), ResourceInfo.TIME);
+
+        // same as above, but with an instant
+        getAsImage(baseUrl + "&TIME=20018-11-05", "image/png");
+        assertWarningCount(1);
+        assertNoNearestWarning(getLayerId(TIMERANGES), ResourceInfo.TIME);
+
+        // in the middle hole, closer to the latest value, but with a search radius that will match the earlier one
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true, "P1D/P0D");
+        getAsImage(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-04T00:00:00.000Z");
+
+        // same as above, but with an instant
+        getAsImage(baseUrl + "&TIME=2008-11-04T16:00:00.000Z", "image/png");
+        assertWarningCount(1);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-04T00:00:00.000Z");
+
+        // before first range, as a range, with a range that won't allow match 
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true, "P1D");
+        getAsImage(baseUrl + "&TIME=2000-10-31/2000-10-31", "image/png");
+        assertWarningCount(1);
+        assertNoNearestWarning(getLayerId(TIMERANGES), ResourceInfo.TIME);
+
+        // same as above, as an instant
+        getAsImage(baseUrl + "&TIME=2000-10-31", "image/png");
+        assertWarningCount(1);
+        assertNoNearestWarning(getLayerId(TIMERANGES), ResourceInfo.TIME);
+    }
+
+    @Test
+    public void testTimeRangeNearestMatchAcceptableRangeNonStructured() throws Exception {
+        NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = false;
+        try {
+            testTimeRangeNearestMatchAcceptableRange();
+        } finally {
+            NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
+        }
+    }
+
     @Test 
     public void testTimeDefaultAsRange() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
@@ -319,6 +570,39 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 36, 31, new Color(255,255,255)); // nodata -> bgcolor
         // and this one a light blue, but slightly darker than before
         assertPixel(image, 68, 72, new Color(240, 240, 255));
+    }
+
+    @Test
+    public void testNearestMatchTwoLayers() throws Exception {
+        // setup time ranges
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true);
+        
+        // setup water temp
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+
+
+        // Setting a BLUE Background Color
+        String baseUrl = "wms?LAYERS=" + getLayerId(TIMERANGES) + "," + getLayerId(WATTEMP) + "&STYLES=,&FORMAT=image%2Fpng" +
+                "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326" +
+                "&BBOX=-180,-90,180,90&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+
+        // before both
+        getAsImage(baseUrl + "&TIME=2000-01-01", "image/png");
+        assertWarningCount(2);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+        
+        // after both
+        getAsImage(baseUrl + "&TIME=2100-01-01", "image/png");
+        assertWarningCount(2);
+        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
+        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
     }
     
 }

@@ -58,7 +58,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         if (time.getObject() == null) {
             time.setObject(new DimensionInfoImpl());
         }
-        add(new DimensionEditor("time", time, resource, Date.class));
+        add(new DimensionEditor("time", time, resource, Date.class, true));
 
         // elevation
         IModel elevation = new MetadataMapModel(metadata, ResourceInfo.ELEVATION,

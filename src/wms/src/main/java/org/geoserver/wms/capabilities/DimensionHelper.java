@@ -33,6 +33,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.wms.xml.Dimension;
+import org.geotools.data.wms.xml.Extent;
 import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
@@ -50,6 +51,13 @@ import org.xml.sax.helpers.AttributesImpl;
 abstract class DimensionHelper {
 
     static final Logger LOGGER = Logging.getLogger(DimensionHelper.class);
+    public static final String NEAREST_VALUE = "nearestValue";
+    public static final String NAME = "name";
+    public static final String DEFAULT = "default";
+    public static final String UNITS = "units";
+    public static final String TIME = "time";
+    public static final String ELEVATION = "elevation";
+    public static final String UNIT_SYMBOL = "unitSymbol";
 
     enum Mode {
         WMS11, WMS13
@@ -120,16 +128,15 @@ abstract class DimensionHelper {
             WMTSLayerInfo wli = (WMTSLayerInfo) layerInfo.getResource();
             WMTSLayer wl = (WMTSLayer)wli.getWMTSLayer(null);
             for (String dimName : wl.getDimensions().keySet()) {
-                if("time".equalsIgnoreCase(dimName)) {
+                if(TIME.equalsIgnoreCase(dimName)) {
                     Dimension timeDimension = wl.getDimension(dimName);
 
                     if (mode == Mode.WMS11) {
                         declareWMS11Dimensions(true, false, null, null, null);
                     }
 
-                    writeTimeDimension(
-                            timeDimension.getExtent().getValue(),
-                            timeDimension.getExtent().getDefaultValue());
+                    Extent extent = timeDimension.getExtent();
+                    writeTimeDimension(extent.getValue(), extent.getDefaultValue(), extent.getNearestValue());
                 } else {
                     //TODO: custom dimension handling
                     LOGGER.log(Level.WARNING, "Skipping custom dimension " + dimName + " in layer " + layerInfo.getName());
@@ -268,7 +275,7 @@ abstract class DimensionHelper {
         TreeSet<Object> temporalDomain = dimension.getTimeDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
         String defaultValue = getDefaultValueRepresentation(cvInfo, ResourceInfo.TIME, DimensionDefaultValueSetting.TIME_CURRENT);
-        writeTimeDimension(timeMetadata, defaultValue);
+        writeTimeDimension(timeMetadata, defaultValue, timeInfo.isNearestMatchEnabled());
     }
     
     private void handleCustomDimensionRaster(CoverageInfo cvInfo, String dimName, DimensionInfo dimension,
@@ -290,8 +297,8 @@ abstract class DimensionHelper {
         // we have to declare time and elevation before the extents
         if (hasTime) {
             AttributesImpl timeDim = new AttributesImpl();
-            timeDim.addAttribute("", "name", "name", "", "time");
-            timeDim.addAttribute("", "units", "units", "", "ISO8601");
+            timeDim.addAttribute("", NAME, NAME, "", TIME);
+            timeDim.addAttribute("", UNITS, UNITS, "", "ISO8601");
             element("Dimension", null, timeDim);
         }
         if (hasElevation) {
@@ -302,12 +309,12 @@ abstract class DimensionHelper {
             for (String dim : customDimensions.keySet()) {
                 DimensionInfo di = customDimensions.get(dim);
                 AttributesImpl custDim = new AttributesImpl();
-                custDim.addAttribute("", "name", "name", "", dim);
+                custDim.addAttribute("", NAME, NAME, "", dim);
                 String units = di.getUnits();
                 String unitSymbol = di.getUnitSymbol();
-                custDim.addAttribute("", "units", "units", "", units != null ? units : "");
+                custDim.addAttribute("", UNITS, UNITS, "", units != null ? units : "");
                 if(unitSymbol != null) {
-                    custDim.addAttribute("", "unitSymbol", "unitSymbol", "", unitSymbol);
+                    custDim.addAttribute("", UNIT_SYMBOL, UNIT_SYMBOL, "", unitSymbol);
                 }
                 element("Dimension", null, custDim);
             }
@@ -558,15 +565,17 @@ abstract class DimensionHelper {
         // build the time dim representation
         TreeSet<Date> values = wms.getFeatureTypeTimes(typeInfo);
         String timeMetadata;
+        boolean nearest = false;
         if (values != null && !values.isEmpty()) {
             DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME,
                 DimensionInfo.class);
             timeMetadata = getTemporalDomainRepresentation(timeInfo, values);
+            nearest = timeInfo.isNearestMatchEnabled();
         } else {
             timeMetadata = "";
         }
         String defaultValue = getDefaultValueRepresentation(typeInfo, ResourceInfo.TIME, DimensionDefaultValueSetting.TIME_CURRENT);
-        writeTimeDimension(timeMetadata, defaultValue);
+        writeTimeDimension(timeMetadata, defaultValue, nearest);
     }
     
     private void handleElevationDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
@@ -585,19 +594,25 @@ abstract class DimensionHelper {
         writeElevationDimension(elevations, elevationMetadata, units, unitSymbol, defaultValue);
     }
 
-    private void writeTimeDimension(String timeMetadata, String defaultTimeStr) {
+    private void writeTimeDimension(String timeMetadata, String defaultTimeStr, boolean nearestMatch) {
         AttributesImpl timeDim = new AttributesImpl();
         if(defaultTimeStr == null) {
             defaultTimeStr = DimensionDefaultValueSetting.TIME_CURRENT;
         }
         if (mode == Mode.WMS11) {
-            timeDim.addAttribute("", "name", "name", "", "time");
-            timeDim.addAttribute("", "default", "default", "", defaultTimeStr);
+            timeDim.addAttribute("", NAME, NAME, "", TIME);
+            timeDim.addAttribute("", DEFAULT, DEFAULT, "", defaultTimeStr);
+            if (nearestMatch) {
+                timeDim.addAttribute("", NEAREST_VALUE, NEAREST_VALUE, "", "1");
+            }
             element("Extent", timeMetadata, timeDim);
         } else {
-            timeDim.addAttribute("", "name", "name", "", "time");
-            timeDim.addAttribute("", "default", "default", "", defaultTimeStr);
-            timeDim.addAttribute("", "units", "units", "", DimensionInfo.TIME_UNITS);
+            timeDim.addAttribute("", NAME, NAME, "", TIME);
+            timeDim.addAttribute("", DEFAULT, DEFAULT, "", defaultTimeStr);
+            timeDim.addAttribute("", UNITS, UNITS, "", DimensionInfo.TIME_UNITS);
+            if (nearestMatch) {
+                timeDim.addAttribute("", NEAREST_VALUE, NEAREST_VALUE, "", "1");
+            }
             element("Dimension", timeMetadata, timeDim);
         }
     }
@@ -606,8 +621,8 @@ abstract class DimensionHelper {
             final String units, final String unitSymbol, String defaultValue) {      
         if (mode == Mode.WMS11) {
             AttributesImpl elevDim = new AttributesImpl();
-            elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", defaultValue);
+            elevDim.addAttribute("", NAME, NAME, "", ELEVATION);
+            elevDim.addAttribute("", DEFAULT, DEFAULT, "", defaultValue);
             element("Extent", elevationMetadata, elevDim);
         } else {
             writeElevationDimensionElement(elevationMetadata, defaultValue, 
@@ -624,32 +639,32 @@ abstract class DimensionHelper {
             unitsNotNull = DimensionInfo.ELEVATION_UNITS;
             unitSymNotNull = DimensionInfo.ELEVATION_UNIT_SYMBOL;
         }
-        elevDim.addAttribute("", "name", "name", "", "elevation");
+        elevDim.addAttribute("", NAME, NAME, "", ELEVATION);
         if (defaultValue != null) {
-            elevDim.addAttribute("", "default", "default", "", defaultValue);
+            elevDim.addAttribute("", DEFAULT, DEFAULT, "", defaultValue);
         }
-        elevDim.addAttribute("", "units", "units", "", unitsNotNull);
+        elevDim.addAttribute("", UNITS, UNITS, "", unitsNotNull);
         if (!"".equals(unitsNotNull) && !"".equals(unitSymNotNull)) {
-            elevDim.addAttribute("", "unitSymbol", "unitSymbol", "", unitSymNotNull);
+            elevDim.addAttribute("", UNIT_SYMBOL, UNIT_SYMBOL, "", unitSymNotNull);
         }
         element("Dimension", elevationMetadata, elevDim);
     }
     
     private void writeCustomDimension(String name, String metadata, String defaultValue, String unit, String unitSymbol) {
         AttributesImpl dim = new AttributesImpl();
-        dim.addAttribute("", "name", "name", "", name);
+        dim.addAttribute("", NAME, NAME, "", name);
         if (mode == Mode.WMS11) {
             if (defaultValue != null) {
-                dim.addAttribute("", "default", "default", "", defaultValue);
+                dim.addAttribute("", DEFAULT, DEFAULT, "", defaultValue);
             }
             element("Extent", metadata, dim);
         } else {
             if (defaultValue != null) {
-                dim.addAttribute("", "default", "default", "", defaultValue);
+                dim.addAttribute("", DEFAULT, DEFAULT, "", defaultValue);
             }
-            dim.addAttribute("", "units", "units", "", unit != null ? unit : "");
+            dim.addAttribute("", UNITS, UNITS, "", unit != null ? unit : "");
             if (unitSymbol != null && !"".equals(unitSymbol)) {
-                dim.addAttribute("", "unitSymbol", "unitSymbol", "", unitSymbol);
+                dim.addAttribute("", UNIT_SYMBOL, UNIT_SYMBOL, "", unitSymbol);
             }
             
             element("Dimension", metadata, dim);

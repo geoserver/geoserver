@@ -65,7 +65,7 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
 
     @Override
     public CoverageStoreInfo getStore() {
-        return new SecuredCoverageStoreInfo(super.getStore(), policy);
+        return (CoverageStoreInfo) SecuredObjects.secure(super.getStore(), policy);
     }
 
 }

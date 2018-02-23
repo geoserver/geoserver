@@ -53,6 +53,7 @@ import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.security.decorators.SecuredObjects;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geoserver.security.impl.DataAccessRuleDAO;
@@ -532,17 +533,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        if(info instanceof FeatureTypeInfo) { 
-            return (T) new SecuredFeatureTypeInfo((FeatureTypeInfo) info, policy);
-        } else if(info instanceof CoverageInfo) {
-            return (T) new SecuredCoverageInfo((CoverageInfo) info, policy);
-        } else if(info instanceof WMSLayerInfo) {
-            return (T) new SecuredWMSLayerInfo((WMSLayerInfo) info, policy);
-        } else if(info instanceof WMTSLayerInfo) {
-            return (T) new SecuredWMTSLayerInfo((WMTSLayerInfo) info, policy);
-        } else {
-            throw new RuntimeException("Unknown resource type " + info.getClass());
-        }
+        return (T) SecuredObjects.secure(info, policy);
    }
 
     /**
@@ -586,10 +577,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // write, or
         // cannot read but is allowed by the operation mode to access the
         // metadata
-        if (store instanceof DataStoreInfo) {
-            return (T) new SecuredDataStoreInfo((DataStoreInfo) store, policy);
-        } else if(store instanceof CoverageStoreInfo) {
-            return (T) new SecuredCoverageStoreInfo((CoverageStoreInfo) store, policy);
+        if (store instanceof DataStoreInfo || store instanceof CoverageStoreInfo) {
+            return (T) SecuredObjects.secure(store, policy); //new SecuredDataStoreInfo((DataStoreInfo) store, policy);
         } else if (store instanceof WMSStoreInfo) {
             // TODO: implement WMSStoreInfo wrappring if necessary
             return store;
@@ -621,7 +610,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        return new SecuredLayerInfo(layer, policy);
+        return (LayerInfo) SecuredObjects.secure(layer, policy);
     }
 
     /**

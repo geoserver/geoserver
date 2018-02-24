@@ -896,7 +896,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         if (getLayerInfo() != null) {
             // projection policy for these bounds are already taken care of by the geoserver
             // configuration
-            nativeBounds = getLayerInfo().getResource().getNativeBoundingBox();
+            try {
+                nativeBounds = getLayerInfo().getResource().boundingBox();
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
         } else {
             nativeBounds = getLayerGroupInfo().getBounds();
         }

@@ -6,17 +6,28 @@ package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -234,5 +245,44 @@ public class CoverageStoreController extends AbstractCatalogController {
                 }
             }
         });
+    }
+
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<CoverageStoreInfo>(CoverageStoreInfo.class) {
+
+            @Override
+            protected void wrapInternal(Map properties, SimpleHash model, CoverageStoreInfo dataStoreInfo) {
+                if (properties == null) {
+                    try {
+                        properties = model.toMap();
+                    } catch (TemplateModelException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                List<Map<String, Map<String, String>>> csProps = new ArrayList<>();
+
+                List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(dataStoreInfo);
+                for (CoverageInfo coverage : coverages) {
+                    Map<String, String> names = new HashMap<>();
+                    names.put("name", coverage.getName());
+                    csProps.add(Collections.singletonMap("properties", names));
+                }
+                if (!csProps.isEmpty()) {
+                    properties.putIfAbsent("coverages", csProps);
+                }
+
+            }
+
+            @Override
+            protected void wrapInternal(SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+                for (Object w : object) {
+                    CoverageStoreInfo wk = (CoverageStoreInfo) w;
+                    wrapInternal(null, model, wk);
+                }
+
+            }
+        };
     }
 }

@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -126,18 +127,31 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble.html");
+        // rename to test 
+        Catalog catalog = getCatalog();
+        CoverageInfo coverage = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_BM));
+        String oldName = coverage.getName();
+        coverage.setName("fooBar");
+        catalog.save(coverage);
         
-        CoverageStoreInfo cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble" );
-        List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore( cs );
-        
-        NodeList links = xp.getMatchingNodes("//html:a", dom );
-        assertEquals( coverages.size(), links.getLength() );
-        
-        for ( int i = 0; i < coverages.size(); i++ ){
-            CoverageInfo cov = coverages.get( i );
-            Element link = (Element) links.item( i );
-            assertTrue( link.getAttribute("href").endsWith("coverages/" + cov.getName() + ".html") );
+        try {
+            Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble.html");
+
+            CoverageStoreInfo cs = CatalogRESTTestSupport.catalog.getCoverageStoreByName("wcs", "BlueMarble");
+            List<CoverageInfo> coverages = CatalogRESTTestSupport.catalog.getCoveragesByCoverageStore(cs);
+
+            NodeList links = xp.getMatchingNodes("//html:a", dom);
+            assertEquals(coverages.size(), links.getLength());
+
+            for (int i = 0; i < coverages.size(); i++) {
+                CoverageInfo cov = coverages.get(i);
+                Element link = (Element) links.item(i);
+                assertTrue(link.getAttribute("href").endsWith("coverages/" + cov.getName() + ".html"));
+            }
+        } finally {
+            // revert change
+            coverage.setName(oldName);
+            catalog.save(coverage);
         }
     }
     

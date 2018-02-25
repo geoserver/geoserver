@@ -170,6 +170,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(synchronous);
         LazyInputMap inputs = request.getProcessInputs(WPSExecutionManager.this);
+        request.validateOutputs(inputs);
         ExecutionStatus status = new ExecutionStatus(processName, executionId,
                 request.isAsynchronous());
         status.setRequest(request.getRequest());

@@ -29,6 +29,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Base support class for wcs tests.
@@ -110,7 +111,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         return IS_WINDOWS;
     }
 
-    protected void checkOws11Exception(Document dom) throws Exception {
+    protected String checkOws11Exception(Document dom) throws Exception {
         assertEquals("ServiceExceptionReport", dom.getFirstChild().getNodeName());
 
         assertEquals("1.2.0", dom.getFirstChild().getAttributes().getNamedItem("version")
@@ -119,6 +120,12 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
 
         Node root = xpath.getMatchingNodes("/ServiceExceptionReport", dom).item(0);
         assertNotNull(root);
+
+        NodeList nodes = dom.getElementsByTagName("ows:ExceptionText");
+        if (nodes.getLength() > 0) {
+            return nodes.item(0).getNodeValue();
+        }
+        return null;
     }
     
     protected void setupRasterDimension(QName layer, String metadata, DimensionPresentation presentation, Double resolution) {

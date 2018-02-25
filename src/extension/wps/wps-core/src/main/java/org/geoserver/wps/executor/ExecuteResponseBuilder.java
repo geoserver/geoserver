@@ -193,11 +193,11 @@ public class ExecuteResponseBuilder {
             }
 
             // output definitions, if any was requested explicitly
-            List<DocumentOutputDefinitionType> outputList = helper.getRequestedOutputs();
+            List<OutputDefinitionType> outputList = helper.getRequestedOutputs();
             if (outputList != null) {
                 OutputDefinitionsType outputs = f.createOutputDefinitionsType();
                 response.setOutputDefinitions(outputs);
-                for (DocumentOutputDefinitionType output : outputList) {
+                for (OutputDefinitionType output : outputList) {
                     outputs.getOutput().add(EMFUtils.clone(output, f, true));
                 }
             }

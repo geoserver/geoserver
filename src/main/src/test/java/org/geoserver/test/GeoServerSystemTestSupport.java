@@ -113,6 +113,7 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -1819,23 +1820,35 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom) throws Exception {
-        checkOws11Exception(dom,null);
+    protected String checkOws11Exception(Document dom) throws Exception {
+        return checkOws11Exception(dom,null);
     }
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
      * and ensuring that a particular exceptionCode is used.
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom, String exceptionCode) throws Exception {
-        checkOws11Exception(dom, exceptionCode, null);
+    protected String checkOws11Exception(Document dom, String exceptionCode) throws Exception {
+        return checkOws11Exception(dom, exceptionCode, null);
     }
     
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
      * and ensuring that a particular exceptionCode is used.
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom, String exceptionCode, String locator) throws Exception {
+    protected String checkOws11Exception(Document dom, String exceptionCode, String locator) throws Exception {
+        return checkOws11Exception(dom, "1.1.0", exceptionCode, locator);
+    }
+
+    /**
+     * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
+     * and ensuring that a particular exceptionCode is used.
+     * @return The exception text contents, if found
+     */
+    protected String checkOws11Exception(Document dom, String version, String exceptionCode, String locator) throws Exception {
         Element root = dom.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName() );
         assertEquals( "1.1.0", root.getAttribute( "version") );
@@ -1852,6 +1865,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
             assertEquals( locator, ex.getAttribute( "locator") );
         }
+
+        NodeList nodes = dom.getElementsByTagName("ows:ExceptionText");
+        if (nodes.getLength() > 0) {
+            return nodes.item(0).getTextContent();
+        }
+        return null;
     }
 
     

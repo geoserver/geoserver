@@ -5,23 +5,15 @@
  */
 package org.geoserver.wps.executor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.opengis.wps10.DocumentOutputDefinitionType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.OutputDefinitionType;
 import net.opengis.wps10.ResponseDocumentType;
 import net.opengis.wps10.ResponseFormType;
-
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.AbstractRawData;
@@ -34,6 +26,15 @@ import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
 import org.springframework.validation.Validator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Centralizes some common request parsing activities
  * 
@@ -42,12 +43,20 @@ import org.springframework.validation.Validator;
  */
 public class ExecuteRequest {
 
-    ExecuteType request;
+    private final Name processName;
+    private final ProcessFactory pf;
+    private ExecuteType request;
 
-    LazyInputMap inputs;
+    private LazyInputMap inputs;
 
     public ExecuteRequest(ExecuteType request) {
         this.request = request;
+
+        processName = Ows11Util.name(request.getIdentifier());
+        pf = GeoServerProcessors.createProcessFactory(processName, true);
+        if(pf == null) {
+            throw new WPSException("Unknown process " + processName);
+        }
     }
 
     /**
@@ -96,19 +105,13 @@ public class ExecuteRequest {
      */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
         if (inputs == null) {
-            return getInputsInternal(manager);
+            inputs = getInputsInternal(manager);
         }
         return inputs;
     }
 
     LazyInputMap getInputsInternal(WPSExecutionManager manager) {
         // get the input descriptors
-        Name processName = Ows11Util.name(request.getIdentifier());
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
-        if(pf == null) {
-            throw new WPSException("Unknown process " + processName);
-        }
-        
         final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
         Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
 
@@ -233,20 +236,47 @@ public class ExecuteRequest {
      * Returns null if nothing specific was requested, the list otherwise
      *
      */
-    public List<DocumentOutputDefinitionType> getRequestedOutputs() {
+    public List<OutputDefinitionType> getRequestedOutputs() {
         // in case nothing specific was requested
-        if (request.getResponseForm() == null
-                || request.getResponseForm().getResponseDocument() == null
-                || request.getResponseForm().getResponseDocument().getOutput() == null) {
+        ResponseFormType responseForm = request.getResponseForm();
+        if (responseForm == null) {
             return null;
         }
-        
-        List<DocumentOutputDefinitionType> result = new ArrayList<DocumentOutputDefinitionType>();
-        EList outputs = request.getResponseForm().getResponseDocument().getOutput();
-        for (Object output : outputs) {
-            result.add((DocumentOutputDefinitionType) output);
+
+        if (responseForm.getRawDataOutput() != null) {
+            return Collections.singletonList(responseForm.getRawDataOutput());
+        } else if (responseForm.getResponseDocument() != null
+                && responseForm.getResponseDocument().getOutput() != null) {
+            List<OutputDefinitionType> result = new ArrayList<>();
+            EList outputs = responseForm.getResponseDocument().getOutput();
+            for (Object output : outputs) {
+                result.add((DocumentOutputDefinitionType) output);
+            }
+
+            return result;
         }
-        return result;
+
+        return null;
     }
 
+    /**
+     * Ensures the requested output are valid
+     * @param inputs
+     */
+    public void validateOutputs(Map inputs) {
+        Map<String, Parameter<?>> resultInfo = pf.getResultInfo(getProcessName(), inputs);
+
+        List<OutputDefinitionType> requestedOutputs = getRequestedOutputs();
+        if (requestedOutputs != null) {
+            for (OutputDefinitionType output : requestedOutputs) {
+                String outputIdentifier = output.getIdentifier().getValue();
+                if (!resultInfo.containsKey(outputIdentifier)) {
+                    String locator = output instanceof DocumentOutputDefinitionType ? 
+                            "ResponseDocument" : "RawDataOutput";
+                    throw new WPSException("Unknow output " + outputIdentifier, ServiceException
+                            .INVALID_PARAMETER_VALUE, locator);                    
+                }
+            }
+        }
+    }
 }

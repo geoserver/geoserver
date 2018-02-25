@@ -142,7 +142,7 @@ public class StoreCoverageTest extends WPSTestSupport {
                 + "</wps:DataInputs>"
                 + "<wps:ResponseForm>"
                 + "  <wps:RawDataOutput>"
-                + "    <ows:Identifier>result</ows:Identifier>"
+                + "    <ows:Identifier>coverageLocation</ows:Identifier>"
                 + "  </wps:RawDataOutput>" + "</wps:ResponseForm>" + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);

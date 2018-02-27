@@ -577,14 +577,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // write, or
         // cannot read but is allowed by the operation mode to access the
         // metadata
-        if (store instanceof DataStoreInfo || store instanceof CoverageStoreInfo) {
-            return (T) SecuredObjects.secure(store, policy); //new SecuredDataStoreInfo((DataStoreInfo) store, policy);
-        } else if (store instanceof WMSStoreInfo) {
-            // TODO: implement WMSStoreInfo wrappring if necessary
-            return store;
-        } else if (store instanceof WMTSStoreInfo) {
-            // TODO: implement WMTSStoreInfo wrappring if necessary
-            return store;
+        if (store instanceof DataStoreInfo || store instanceof CoverageStoreInfo || store instanceof WMSStoreInfo ||
+            store instanceof WMTSStoreInfo) {
+            return (T) SecuredObjects.secure(store, policy);
         } else {
             throw new RuntimeException("Unknown store type " + store.getClass());
         }

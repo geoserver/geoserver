@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.VectorAccessLimits;
@@ -97,6 +98,7 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     // WRAPPED METHODS TO ENFORCE SECURITY POLICY
     //--------------------------------------------------------------------------
 
+    @Override
     public FeatureSource getFeatureSource(ProgressListener listener, Hints hints)
             throws IOException {
         final FeatureSource fs = delegate.getFeatureSource(listener, hints);
@@ -108,8 +110,15 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
         }
     }
 
+    @Override
     public DataStoreInfo getStore() {
         return (DataStoreInfo) SecuredObjects.secure(delegate.getStore(), policy);
     }
-    
+
+    @Override
+    public void setStore(StoreInfo store) {
+        // need to make sure the store isn't secured
+        super.setStore((StoreInfo)SecureCatalogImpl.unwrap(store));
+    }
+
 }

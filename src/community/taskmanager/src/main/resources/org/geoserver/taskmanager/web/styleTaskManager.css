@@ -1,0 +1,13 @@
+.copy-link {
+	background: transparent url(img/copy.png) scroll no-repeat left center;
+	padding: 2px 0px 2px 20px;
+}
+
+.play-link {
+	background: transparent url(img/play.png) scroll no-repeat left center;
+	padding: 2px 0px 2px 20px;
+}
+
+h4 {
+    margin-top: 1.25em;
+}

@@ -253,6 +253,7 @@
         <module>nsg-profiles/nsg-wfs-profile</module>
         <module>nsg-profiles/nsg-wmts-profile</module>
         <module>netcdf-ghrsst</module>
+        <module>taskmanager</module>
       </modules>
     </profile>
     <profile>
@@ -571,6 +572,13 @@
       <modules>
         <module>netcdf-ghrsst</module>
       </modules>
+    </profile>    
+    <profile>
+      <id>taskmanager></id>
+      <modules>
+        <module>taskmanager</module>
+      </modules>
     </profile>
+
   </profiles>  
 </project>

@@ -1590,6 +1590,17 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
+    </profile>    
+    <profile>
+      <id>taskmanager</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-taskmanager</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
     </profile>
+
  </profiles>
 </project>

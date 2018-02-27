@@ -4,7 +4,12 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
@@ -14,6 +19,7 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.Aggregate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.opengis.filter.Filter;
@@ -21,7 +27,12 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -35,16 +46,16 @@ import java.util.*;
  */
 public abstract class Dimension {
 
-    private final WMS wms;
-    private final String dimensionName;
-    private final LayerInfo layerInfo;
-    private final DimensionInfo dimensionInfo;
+    protected final WMS wms;
+    protected final String dimensionName;
+    protected final LayerInfo layerInfo;
+    protected final DimensionInfo dimensionInfo;
 
-    private final ResourceInfo resourceInfo;
-    private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
+    protected final ResourceInfo resourceInfo;
+    protected final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
 
-    private ReferencedEnvelope boundingBox;
-    private final List<Object> domainRestrictions = new ArrayList<>();
+    protected  ReferencedEnvelope boundingBox;
+    protected  final List<Object> domainRestrictions = new ArrayList<>();
 
     public Dimension(WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
         this.wms = wms;
@@ -61,6 +72,20 @@ public abstract class Dimension {
      */
     public abstract Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates);
 
+
+    protected DomainSummary getDomainSummary(FeatureCollection features, String attribute, boolean includeCount) {
+        ReferencedEnvelope bounds = features.getBounds();
+        if (includeCount) {
+            Map<Aggregate, Object> aggregates = DimensionsUtils.getAggregates(attribute, features,
+                    Aggregate.MIN, Aggregate.MAX, Aggregate.COUNT);
+            return new DomainSummary(bounds, aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX), (Long)
+                    aggregates.get(Aggregate.COUNT));
+        } else {
+            Map<Aggregate, Object> aggregates = DimensionsUtils.getAggregates(attribute, features,
+                    Aggregate.MIN, Aggregate.MAX);
+            return new DomainSummary(bounds, aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX));
+        }
+    }
 
     /**
      * Returns a filter that will contain all the restrictions applied to this dimension.
@@ -125,11 +150,27 @@ public abstract class Dimension {
      * can be NULL.
      */
     public Tuple<ReferencedEnvelope, Tuple<Integer, List<String>>> getDomainValuesAsStrings(Filter filter) {
-        Tuple<ReferencedEnvelope, List<Object>> domainValues = getDomainValues(filter, true);
-        return Tuple.tuple(domainValues.first,
-                Tuple.tuple(domainValues.second.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, domainValues.second)));
+        if (dimensionInfo.getPresentation() == DimensionPresentation.LIST) {
+            Tuple<ReferencedEnvelope, List<Object>> domainValues = getDomainValues(filter, true);
+            return Tuple.tuple(domainValues.first,
+                    Tuple.tuple(domainValues.second.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, 
+                            domainValues.second)));
+        } else {
+            // optimize out and get just the min and max values
+            DomainSummary summary = getDomainSummary(filter, false);
+            List<Object> aggregates = new ArrayList<>();
+            if (summary.getMin() != null) {
+                aggregates.add(summary.getMin());
+            }
+            if (summary.getMax() != null && !aggregates.contains(summary.getMax())) {
+                aggregates.add(summary.getMax());
+            }
+            return Tuple.tuple(summary.getEnvelope(), Tuple.tuple(aggregates.size(), DimensionsUtils
+                    .getDomainValuesAsStrings(dimensionInfo, new ArrayList<>(aggregates))));
+        }
     }
 
+    protected abstract DomainSummary getDomainSummary(Filter filter, boolean includeCount);
 
     /**
      * Return this dimension default value as a string taking in account this dimension default strategy.
@@ -141,64 +182,10 @@ public abstract class Dimension {
     }
 
     /**
-     * Helper method that can be used by vectors types to create a filter with the current restrictions.
-     */
-    Filter buildVectorFilter() {
-        FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
-        Filter filter = Filter.INCLUDE;
-        if (boundingBox != null) {
-            // we have a bounding box so lets build a filter for it
-            String geometryAttributeName;
-            try {
-                // let's find out the geometry attribute
-                geometryAttributeName = typeInfo.getFeatureSource(null, null).getSchema().getGeometryDescriptor().getLocalName();
-            } catch (IOException exception) {
-                throw new RuntimeException(String.format("Exception accessing feature source of vector type '%s'.",
-                        typeInfo.getName()), exception);
-            }
-            // creating the bounding box filter and append it to our filter
-            filter = appendBoundingBoxFilter(filter, geometryAttributeName);
-        }
-        if (domainRestrictions != null) {
-            // we have a domain filter
-            filter = appendDomainRestrictionsFilter(filter, dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
-        }
-        return filter;
-    }
-
-    /**
-     * Helper method that can be used by raster types to create a filter with the current restrictions.
-     */
-    Filter buildRasterFilter() {
-        CoverageInfo typeInfo = (CoverageInfo) getResourceInfo();
-        Filter filter = Filter.INCLUDE;
-        if (boundingBox != null) {
-            // we have a bounding box so lets build a filter for it
-            try {
-                filter = appendBoundingBoxFilter(filter, typeInfo);
-            } catch (IOException exception) {
-                throw new RuntimeException(String.format("Exception accessing feature source of raster type '%s'.",
-                        typeInfo.getName()), exception);
-            }
-        }
-        if (domainRestrictions != null) {
-            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom(typeInfo);
-            Tuple<String, String> attributes = reader.getDimensionAttributesNames(getDimensionName());
-            if (attributes.first == null) {
-                throw new RuntimeException(String.format(
-                        "Could not found start attribute name for dimension '%s' in raster '%s'.", getDimensionName(), typeInfo.getName()));
-            }
-            // ok time to build the domain values filter
-            filter = appendDomainRestrictionsFilter(filter, attributes.first, attributes.second);
-        }
-        return filter;
-    }
-
-    /**
      * Helper method that extract the geomtry attribute name from the current type info and invoke
      * the method that will actually build the spatial filter.
      */
-    private Filter appendBoundingBoxFilter(Filter filter, CoverageInfo typeInfo) throws IOException {
+    protected Filter appendBoundingBoxFilter(Filter filter, CoverageInfo typeInfo) throws IOException {
         // getting the geometry attribute name
         CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom(typeInfo);
         String geometryAttributeName = reader.getGeometryAttributeName();
@@ -215,7 +202,7 @@ public abstract class Dimension {
      * Helper method that will build a bounding box filter using the provided geometry attribute name and
      * the current bounding box restriction. The bounding box filter will be merged with the provided filter.
      */
-    private Filter appendBoundingBoxFilter(Filter filter, String geometryAttributeName) {
+    protected Filter appendBoundingBoxFilter(Filter filter, String geometryAttributeName) {
         CoordinateReferenceSystem coordinateReferenceSystem = boundingBox.getCoordinateReferenceSystem();
         String epsgCode = coordinateReferenceSystem == null ? null : GML2EncodingUtils.toURI(coordinateReferenceSystem);
         Filter spatialFilter = filterFactory.bbox(geometryAttributeName, boundingBox.getMinX(), boundingBox.getMinY(),
@@ -227,67 +214,10 @@ public abstract class Dimension {
      * Helper method that will build a dimension domain values filter based on this dimension start and end
      * attributes. The created filter will be merged with the provided filter.
      */
-    private Filter appendDomainRestrictionsFilter(Filter filter, String startAttributeName, String endAttributeName) {
+    protected Filter appendDomainRestrictionsFilter(Filter filter, String startAttributeName, String endAttributeName) {
         DimensionFilterBuilder dimensionFilterBuilder = new DimensionFilterBuilder(filterFactory);
         dimensionFilterBuilder.appendFilters(startAttributeName, endAttributeName, domainRestrictions);
         return filterFactory.and(filter, dimensionFilterBuilder.getFilter());
-    }
-
-    /**
-     * Helper method used to get domain values from a raster type.
-     */
-    Tuple<ReferencedEnvelope, List<Object>> getRasterDomainValues(Filter filter, boolean noDuplicates,
-                                       CoverageDimensionsReader.DataType dataType, Comparator<Object> comparator) {
-        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
-        if (noDuplicates) {
-            // no duplicate values should be included
-            Tuple<ReferencedEnvelope, Set<Object>> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType, comparator);
-            List<Object> list = new ArrayList<>(values.second.size());
-            list.addAll(values.second);
-            return Tuple.tuple(values.first, list);
-        }
-        // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return reader.readWithDuplicates(getDimensionName(), filter, dataType, comparator);
-    }
-
-    /**
-     * Helper method used to get domain values from a vector type.
-     */
-    Tuple<ReferencedEnvelope, List<Object>> getVectorDomainValues(Filter filter, boolean noDuplicates, Comparator<Object> comparator) {
-        FeatureCollection featureCollection = getVectorDomainValues(filter);
-        if (noDuplicates) {
-            // no duplicate values should be included
-            Set<Object> values = DimensionsUtils.
-                    getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
-            List<Object> list = new ArrayList<>(values.size());
-            list.addAll(values);
-            return Tuple.tuple(featureCollection.getBounds(), list);
-        }
-        // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return Tuple.tuple(featureCollection.getBounds(),
-                DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator));
-    }
-
-    /**
-     * Helper method used to get domain values from a vector type in the form of a feature collection.
-     */
-    private FeatureCollection getVectorDomainValues(Filter filter) {
-        FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
-        FeatureSource source;
-        try {
-            source = typeInfo.getFeatureSource(null, GeoTools.getDefaultHints());
-        } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error getting feature source of vector '%s'.", resourceInfo.getName()), exception);
-        }
-        Query query = new Query(source.getSchema().getName().getLocalPart(), filter == null ? Filter.INCLUDE : filter);
-        try {
-            return source.getFeatures(query);
-        } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error reading feature from layer '%s' for dimension '%s'.",
-                    resourceInfo.getName(), getDimensionName()), exception);
-        }
     }
 
     /**
@@ -309,4 +239,5 @@ public abstract class Dimension {
     public String toString() {
         return "Dimension{" + ", name='" + dimensionName + '\'' + ", layer=" + layerInfo.getName() + '}';
     }
+
 }

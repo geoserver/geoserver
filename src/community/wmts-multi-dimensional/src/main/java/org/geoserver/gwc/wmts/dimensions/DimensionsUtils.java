@@ -8,20 +8,30 @@ import org.geoserver.catalog.*;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.visitor.Aggregate;
+import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.PropertyName;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Some utils methods useful to interact with dimensions.
  */
 public final class DimensionsUtils {
+    
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     /**
      * Comparator for time domain values, ranges are taken in consideration.
@@ -224,6 +234,25 @@ public final class DimensionsUtils {
         Set<Object> values = new TreeSet<>(comparator);
         values.addAll(uniqueVisitor.getUnique());
         return values;
+    }
+
+    /**
+     * Helper method that extracts a set of aggregates on the given collection and attribute and returns the results
+     */
+    static Map<Aggregate, Object> getAggregates(String attributeName, FeatureCollection featureCollection, Aggregate... aggregates) {
+        Map<Aggregate, Object> result = new HashMap<>();
+        PropertyName property = FF.property(attributeName);
+        for (Aggregate aggregate : aggregates) {
+            FeatureCalc featureCalc = aggregate.create(property);
+            try {
+                featureCollection.accepts(featureCalc, null);
+                Object value = featureCalc.getResult().getValue();
+                result.put(aggregate, value);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to collect summary aggregates on attribute " + attributeName, e);
+            }
+        }
+        return result;
     }
 
     /**

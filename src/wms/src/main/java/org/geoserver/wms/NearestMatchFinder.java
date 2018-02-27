@@ -9,6 +9,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StructuredCoverageViewReader;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -18,9 +19,11 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.feature.visitor.NearestVisitor;
 import org.geotools.util.Range;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.filter.Filter;
@@ -130,35 +133,47 @@ public abstract class NearestMatchFinder {
      * to be used for the used time in warning
      *
      * @param value The reference value
-     * @return The nearest value, or null if the domain was empty
+     * @return The nearest value, or null if the domain was empty. If the nearest value matches/overlaps the original value,
+     *         then the original one is returned instead (this allows to tell apart no match vs exact match vs nearest match 
+     *         and eventually set the WMS HTTP warning head)
      * @throws IOException
      */
     public Object getNearest(Object value) throws IOException {
-        // test for overlap, in this case we'll return the original value as is, since
-        // it may be hitting multiple source values, instead of just one
-        Filter overlapFilter = buildOverlapFilter(value);
-        if (!Filter.EXCLUDE.equals(overlapFilter)) {
-            FeatureCollection values = getMatches(overlapFilter);
-            if (values.size() > 0) {
-                return value;
+        // simple point vs point comparison?
+        if (endAttribute == null && 
+                (!(value instanceof Range) || ((Range) value).getMinValue().equals(((Range) 
+                value).getMaxValue()))) {
+            Date date = (Date) (value instanceof Range ? ((Range) value).getMinValue() : value);
+            NearestVisitor visitor = new NearestVisitor(attribute, date);
+            Filter filter = Filter.INCLUDE;
+            if (acceptableRange != null) {
+                Range searchRange = acceptableRange.getSearchRange(date);
+                filter = FF.between(attribute, FF.literal(searchRange.getMinValue()), FF.literal(searchRange.getMaxValue()));
             }
+            FeatureCollection features = getMatches(filter);
+            features.accepts(visitor, null);
+            Object result = visitor.getResult().getValue();
+            if (date.equals(result)) {
+                return value;
+            } else {
+                return result;
+            }
+        } else {
+            // find the highest among the lower values
+            Filter lowerFilter = buildComparisonFilter(value, HIGHEST_AMONG_LOWERS);
+            FeatureCollection lowers = getMatches(lowerFilter);
+            MaxVisitor lowersVisitor = new MaxVisitor(endAttribute == null ? attribute : endAttribute);
+            lowers.accepts(lowersVisitor, null);
+            Comparable maxOfSmallers = (Comparable) lowersVisitor.getResult().getValue();
+
+            // find the lowest among the higher values
+            Filter higherFilter = buildComparisonFilter(value, LOWEST_AMONG_HIGHER);
+            FeatureCollection highers = getMatches(higherFilter);
+            MinVisitor highersVisitor = new MinVisitor(attribute);
+            highers.accepts(highersVisitor, null);
+            Comparable minOfGreater = (Comparable) highersVisitor.getResult().getValue();
+            return closest(value, maxOfSmallers, minOfGreater);
         }
-
-        // find the highest among the lower values
-        Filter lowerFilter = buildComparisonFilter(value, HIGHEST_AMONG_LOWERS);
-        FeatureCollection lowers = getMatches(lowerFilter);
-        MaxVisitor lowersVisitor = new MaxVisitor(endAttribute == null ? attribute : endAttribute);
-        lowers.accepts(lowersVisitor, null);
-        Comparable maxOfSmallers = (Comparable) lowersVisitor.getResult().getValue();
-
-        // find the lowest among the higher values
-        Filter higherFilter = buildComparisonFilter(value, LOWEST_AMONG_HIGHER);
-        FeatureCollection highers = getMatches(higherFilter);
-        MinVisitor highersVisitor = new MinVisitor(attribute);
-        highers.accepts(highersVisitor, null);
-        Comparable minOfGreater = (Comparable) highersVisitor.getResult().getValue();
-        return closest(value, maxOfSmallers, minOfGreater);
-
 
     }
 
@@ -272,37 +287,6 @@ public abstract class NearestMatchFinder {
     protected abstract FeatureCollection getMatches(Filter filter) throws IOException;
 
     /**
-     * Builds a filter that returns any value overlapping with the specified value
-     *
-     * @param value
-     * @return
-     */
-    protected Filter buildOverlapFilter(Object value) {
-        // 4 possible cases, range and point values on both request and data side
-        if (value instanceof Range) {
-            Range range = (Range) value;
-            Literal qlower = FF.literal(range.getMinValue());
-            Literal qupper = FF.literal(range.getMaxValue());
-            if (endAttribute != null) {
-                // range vs range case
-                Filter lower = FF.lessOrEqual(attribute, qupper);
-                Filter upper = FF.greaterOrEqual(endAttribute, qlower);
-                return FF.and(lower, upper);
-            } else {
-                // range vs point
-                return FF.between(attribute, qlower, qupper);
-            }
-        } else {
-            if (endAttribute != null) {
-                return FF.between(FF.literal(value), attribute, endAttribute);
-            } else {
-                // point vs point, the other queries finding the closest will do, no need to run this one
-                return Filter.EXCLUDE;
-            }
-        }
-    }
-
-    /**
      * Nearest matcher for vector data
      */
     private static class Vector extends NearestMatchFinder {
@@ -336,6 +320,8 @@ public abstract class NearestMatchFinder {
         @Override
         protected FeatureCollection getMatches(Filter filter) throws IOException {
             GranuleSource granules = reader.getGranules(null, true);
+            Query q = new Query(null, filter);
+            q.setHints(new Hints(StructuredCoverageViewReader.QUERY_FIRST_BAND, true));
             return granules.getGranules(new Query(null, filter));
         }
     }

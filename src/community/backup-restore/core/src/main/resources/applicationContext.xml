@@ -59,9 +59,9 @@
 	<!-- ********************** -->
 	
 	<!-- The main Job Listener: This is responsible of both pre/post-processing before/afer the Job execution and managing configuration locks -->
-		<bean id="backupJobExecutionListener" class="org.geoserver.backuprestore.listener.BackupJobExecutionListener">
-			<constructor-arg ref="backupFacade"/>
-		</bean>
+	<bean id="backupJobExecutionListener" class="org.geoserver.backuprestore.listener.BackupJobExecutionListener">
+		<constructor-arg ref="backupFacade"/>
+	</bean>
 
 	<!-- Extension point for backup jobs listeners -->
 	<bean id="genericBackupJobExecutionListener" class="org.geoserver.backuprestore.listener.GenericListenersExecutor">
@@ -69,9 +69,13 @@
 	</bean>
 
 	<!-- CatalogAdditionalResourcesWriter extensions: those can be triggered by the CatalogWriter -->
-		<bean id="styleInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.StyleInfoAdditionalResourceWriter" />
-	
-		<bean id="resourceInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.ResourceInfoAdditionalResourceWriter" />
+	<bean id="styleInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.StyleInfoAdditionalResourceWriter" />
+	<bean id="resourceInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.ResourceInfoAdditionalResourceWriter" />
+	<bean id="finalizeBackupTasklet" class="org.geoserver.backuprestore.tasklet.FinalizeBackupTasklet">
+		<constructor-arg ref="backupFacade" />
+		<constructor-arg ref="xstreamPersisterFactory" />
+		<property name="timeout" value="600000"/>
+	</bean>
 	
 	<!-- The BACKUP Job definition START here -->
 	<batch:job id="backupJob" restartable="true">
@@ -420,6 +424,13 @@
 					</batch:writer>
 				</batch:chunk>
 			</batch:tasklet>
+			<batch:fail on="FAILED"/>
+			<batch:stop on="STOPPED" restart="finalizeBackup"/>
+			<batch:next on="*" to="finalizeBackup"/>
+		</batch:step>
+
+		<batch:step id="finalizeBackup">
+			<batch:tasklet ref="finalizeBackupTasklet"/>
 		</batch:step>
 
 	</batch:job>
@@ -431,9 +442,9 @@
 	<!-- *********************** -->
 	
 	<!-- The main Job Listener: This is responsible of both pre/post-processing before/afer the Job execution and managing configuration locks -->
-		<bean id="restoreJobExecutionListener" class="org.geoserver.backuprestore.listener.RestoreJobExecutionListener">
-			<constructor-arg ref="backupFacade"/>
-		</bean>
+	<bean id="restoreJobExecutionListener" class="org.geoserver.backuprestore.listener.RestoreJobExecutionListener">
+		<constructor-arg ref="backupFacade"/>
+	</bean>
 
 	<!-- Extensions point for restore jobs listeners -->
 	<bean id="genericRestoreJobExecutionListener" class="org.geoserver.backuprestore.listener.GenericListenersExecutor">
@@ -441,10 +452,10 @@
 	</bean>
 
 		<!-- This specific Listener allows to promote properties setted on Steps to Job Context Scope -->
-		<bean id="restoreExecutionPromotionListener" 
-				class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
-	    	<property name="keys" value="restore.catalog"/>
-		</bean>
+	<bean id="restoreExecutionPromotionListener"
+			class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
+		<property name="keys" value="restore.catalog"/>
+	</bean>
 
 	<!-- CatalogAdditionalResourcesReader extensions: those can be triggered by the CatalogReader -->
 		

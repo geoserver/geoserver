@@ -1,6 +1,7 @@
 <img src="/doc/en/themes/geoserver/static/GeoServer_500.png" width="353">
 
 [![Gitter](https://badges.gitter.im/geoserver/geoserver.svg)](https://gitter.im/geoserver/geoserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Open Source Helpers](https://www.codetriage.com/geoserver/geoserver/badges/users.svg)](https://www.codetriage.com/geoserver/geoserver)
 
 [GeoServer](http://geoserver.org) is an open source software server written in Java that 
 allows users to share and edit geospatial data. Designed for interoperability, it publishes data from 

@@ -473,8 +473,11 @@
     <artifactId>gt-geopkg</artifactId>
     <version>${gt.version}</version>
    </dependency>
-
-
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-mongodb</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
    <dependency>
      <groupId>com.google.code.gson</groupId>
      <artifactId>gson</artifactId>

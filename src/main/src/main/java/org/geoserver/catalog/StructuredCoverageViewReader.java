@@ -5,13 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.feature.CompositeFeatureCollection;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -19,24 +12,19 @@ import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
-import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.Hints;
-import org.geotools.feature.SchemaException;
-import org.geotools.feature.collection.AbstractFeatureVisitor;
-import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.util.DefaultProgressListener;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A coverageView reader using a structured coverage readers implementation
@@ -48,6 +36,12 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
 
     private final static Logger LOGGER = org.geotools.util.logging.Logging
             .getLogger(StructuredCoverageViewReader.class);
+
+    /**
+     * Pass this hint to {@link #getGranules(String, boolean)} in order to get back information from
+     * a single band of the coverage view
+     */
+    public static Hints.Key QUERY_FIRST_BAND = new Hints.Key(Boolean.class);
 
     static class GranuleStoreView implements GranuleStore {
 
@@ -73,11 +67,16 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
             List<CoverageBand> bands = coverageView.getCoverageBands();
             Query renamedQuery = q != null ? new Query(q) : new Query();
             List<SimpleFeatureCollection> collections = new ArrayList<>();
+            boolean returnOnlyFirst = Boolean.TRUE.equals(renamedQuery.getHints().getOrDefault(QUERY_FIRST_BAND, false));
             for (CoverageBand band : bands) {
                 String coverageName = band.getInputCoverageBands().get(0).getCoverageName();
                 renamedQuery.setTypeName(coverageName);
                 SimpleFeatureCollection collection = reader.getGranules(coverageName, readOnly).getGranules(renamedQuery);
                 collections.add(collection);
+
+                if (returnOnlyFirst) {
+                    break;
+                }
             }
             // aggregate and return
             if (collections.size() == 0) {

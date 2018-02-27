@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.StructuredCoverageViewReader;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -35,6 +36,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.Converters;
@@ -400,6 +402,8 @@ public class ReaderDimensionsAccessor {
                         FF.literal(range.getMinValue()), FF.literal(range.getMaxValue()));
                 query.setFilter(rangeFilter);
                 query.setMaxFeatures(maxEntries);
+                query.setPropertyNames(new String [] {descriptor.getStartAttribute()});
+                query.setHints(new Hints(StructuredCoverageViewReader.QUERY_FIRST_BAND, true));
 
                 FeatureCollection collection = gs.getGranules(query);
 

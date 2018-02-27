@@ -5,13 +5,8 @@
 
 package org.geoserver.wms.ncwms;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
-
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -20,7 +15,6 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.LayerIdentifier;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -34,8 +28,12 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Implements the methods of the NcWMS service which are not included on the WMS standard. For the moment, only GetTimeSeries method is supported.
@@ -129,6 +127,13 @@ public class NcWmsService {
         } catch (Exception cex) {
             throw new ServiceException(
                     "The GetTimeSeries operation is only defined for coverage layers");
+        }
+
+        // we'll just pick the first band anyways, no need to read them all
+        if (request.getPropertyNames() == null || request.getPropertyNames().size() == 0 || request.getPropertyNames
+                ().get(0).isEmpty()) {
+            String firstBand = coverage.getDimensions().get(0).getName();
+            request.setPropertyNames(Arrays.asList(Arrays.asList(firstBand)));
         }
 
         // control how much time we spend doing queries to gather times and values

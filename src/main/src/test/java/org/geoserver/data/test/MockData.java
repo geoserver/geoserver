@@ -57,7 +57,6 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Justin Deoliveira, The Open Planning Project
  *
  */
-
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MockData implements TestData {
     // Extra configuration keys for vector data

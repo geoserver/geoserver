@@ -57,24 +57,6 @@ public abstract class VectorDimension extends Dimension {
         }
     }
 
-    /**
-     * Helper method used to get domain values from a vector type.
-     */
-    Tuple<ReferencedEnvelope, List<Object>> getVectorDomainValues(Filter filter, boolean noDuplicates, Comparator<Object> comparator) {
-        FeatureCollection featureCollection = getDomain(filter);
-        if (noDuplicates) {
-            // no duplicate values should be included
-            Set<Object> values = DimensionsUtils.
-                    getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
-            List<Object> list = new ArrayList<>(values.size());
-            list.addAll(values);
-            return Tuple.tuple(featureCollection.getBounds(), list);
-        }
-        // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return Tuple.tuple(featureCollection.getBounds(),
-                DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator));
-    }
-
     @Override
     public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
         FeatureCollection featureCollection = getDomain(filter);

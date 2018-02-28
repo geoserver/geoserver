@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -31,6 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.easymock.Capture;
 import org.easymock.classextension.EasyMock;
 import org.geoserver.catalog.util.ReaderUtils;
@@ -52,12 +54,16 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.collection.DecoratingFeatureCollection;
+import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
@@ -78,6 +84,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -683,5 +690,22 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         String absolutePath = dataDir.get("data/test.gpkg").dir().getAbsolutePath();
         assertNotEquals(newParams.get("database"), "file:data/test.gpkg");
         assertTrue(((String)newParams.get("database")).contains(absolutePath));
+    }
+    
+    @Test
+    public void testEmptySort() throws IOException, IllegalAccessException {
+        SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
+        Query q = new Query();
+        q.setSortBy(SortBy.UNSORTED);
+        SimpleFeatureCollection fc = fsp.getFeatures(q);
+        
+        // the above call used to add a SortedSimpleFeatureCollection wrapper that in turn killed some visit optimizations
+        while (fc instanceof DecoratingFeatureCollection) {
+            assertThat(fc, not(instanceOf(SortedSimpleFeatureCollection.class)));
+            Field field = FieldUtils.getDeclaredField(SortedSimpleFeatureCollection.class, "delegate");
+            field.setAccessible(true);
+            Object delegate = field.get(fc);
+            fc = (SimpleFeatureCollection) delegate;
+        }
     }
 }

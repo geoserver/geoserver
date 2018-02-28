@@ -322,7 +322,7 @@ public abstract class NearestMatchFinder {
             GranuleSource granules = reader.getGranules(null, true);
             Query q = new Query(null, filter);
             q.setHints(new Hints(StructuredCoverageViewReader.QUERY_FIRST_BAND, true));
-            return granules.getGranules(new Query(null, filter));
+            return granules.getGranules(q);
         }
     }
 

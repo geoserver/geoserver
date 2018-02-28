@@ -16,6 +16,7 @@ paths:
       description: Displays a list of all cached layers on the server.
       produces:
         - application/xml
+        - application/json
       responses:
         200:
           description: OK
@@ -41,6 +42,7 @@ paths:
       description: Retrieves a single cached layer definition.
       produces:
         - application/xml
+        - application/json
       parameters:
         - name: layerName
           in: path
@@ -90,8 +92,8 @@ paths:
 
     put:
       operationId: layersNamePut
-      summary: Create a new cached layer.
-      description: Creates a new cached layer on the server.
+      summary: Create or update a cached layer.
+      description: Creates a new cached layer on the server, or modifies an existing cached layer.
       parameters:
         - name: layerName
           in: path
@@ -106,16 +108,17 @@ paths:
             $ref: "#/definitions/Layer"
       consumes:
         - application/xml
+        - application/json
       responses:
+        200:
+          description: The layer was successfully updated.
         201:
           description: The layer was successfully created.
-        400:
-          description: Layer with requested name already exists, use POST if you want to replace it.
 
     post:
       operationId: layersNamePost
-      summary: Modify a cached layer.
-      description: Modifies an existing cached layer on the server.
+      summary: Modify a cached layer (Deprecated).
+      description: Modifies an existing cached layer on the server. Deprecated - use PUT instead.
       parameters:
         - name: layerName
           in: path
@@ -130,6 +133,7 @@ paths:
             $ref: "#/definitions/Layer"
       consumes:
         - application/xml
+        - application/json
       responses:
         200:
           description: The layer was successfully updated.
@@ -151,13 +155,12 @@ paths:
 definitions:
   Layers:
     title: layers
-    type: object
-    properties:
-      layers:
-        $ref: "#/definitions/LayerReference"
+    type: array
+    items:
+      $ref: "#/definitions/LayerReference"
 
   LayerReference:
-    title: layers
+    title: layer
     type: object
     properties:
       name:

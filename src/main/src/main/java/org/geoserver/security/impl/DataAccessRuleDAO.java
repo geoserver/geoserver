@@ -164,9 +164,9 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         if(layerName != null) {
             if (!ANY.equals(root) && rawCatalog.getWorkspaceByName(root) == null)
                 LOGGER.warning("Namespace/Workspace " + root + " is unknown in rule " + rule);
-            if (!ANY.equals(layerName) &&
-                    !(   rawCatalog.getLayerByName(new NameImpl(root, layerName)) != null
-                    || rawCatalog.getLayerGroupByName(root, layerName) != null ))
+            if (!ANY.equals(layerName)
+                    && rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null
+                    && rawCatalog.getLayerGroupByName(root, layerName) == null)
                 LOGGER.warning("Layer " + root + " is unknown in rule + " + rule);
         } else {
             if (!ANY.equals(root) && rawCatalog.getLayerGroupByName(root) == null)

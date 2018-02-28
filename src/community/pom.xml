@@ -255,7 +255,7 @@
         <module>nsg-profiles/nsg-wmts-profile</module>
         <module>netcdf-ghrsst</module>
         <module>mongodb</module>
-        <!--module>taskmanager</module-->
+        <module>taskmanager</module>
       </modules>
     </profile>
     <profile>

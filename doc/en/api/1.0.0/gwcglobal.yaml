@@ -1,0 +1,205 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Global
+  description: Global configuration for the GeoWebCache server
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /global:
+    get:
+      operationId: globalGet
+      summary: Retrieve the global server configuration
+      description: Retrieves configuration details about the GeoWebCache server as a whole.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Global"
+          examples:
+            application/xml: |
+                <global>
+                  <serviceInformation>
+                    <title>GeoWebCache</title>
+                    <description>GeoWebCache is an advanced tile cache for WMS servers. It supports a large variety of protocols and
+                      formats, including WMS-C, WMTS, KML, Google Maps and Virtual Earth.</description>
+                    <keywords>
+                      <string>WFS</string>
+                      <string>WMS</string>
+                      <string>WMTS</string>
+                      <string>GEOWEBCACHE</string>
+                    </keywords>
+                    <serviceProvider>
+                      <providerName>John Smith inc.</providerName>
+                      <providerSite>http://www.example.com/</providerSite>
+                      <serviceContact>
+                        <individualName>John Smith</individualName>
+                        <positionName>Geospatial Expert</positionName>
+                        <addressType>Work</addressType>
+                        <addressStreet>1 Bumpy St.</addressStreet>
+                        <addressCity>Hobart</addressCity>
+                        <addressAdministrativeArea>TAS</addressAdministrativeArea>
+                        <addressPostalCode>7005</addressPostalCode>
+                        <addressCountry>Australia</addressCountry>
+                        <phoneNumber>+61 3 0000 0000</phoneNumber>
+                        <faxNumber>+61 3 0000 0001</faxNumber>
+                        <addressEmail>john.smith@example.com</addressEmail>
+                      </serviceContact>
+                    </serviceProvider>
+                    <fees>NONE</fees>
+                    <accessConstraints>NONE</accessConstraints>
+                  </serviceInformation>
+                  <runtimeStatsEnabled>true</runtimeStatsEnabled>
+                  <wmtsCiteCompliant>false</wmtsCiteCompliant>
+                  <backendTimeout>120</backendTimeout>
+                  <version>1.13.0</version>
+                  <identifier>/var/opt/gwc/config</identifier>
+                  <location>/var/opt/gwc/config/geowebcache.xml</location>
+                </global>
+    put:
+      operationId: globalPut
+      summary: Modifies the global configuration.
+      description: Update one or more global configuration values
+      parameters:
+        - name: body
+          in: body
+          description: The modified global configuration.
+          required: true
+          schema:
+            $ref: "#/definitions/Global"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The configuration was successfully updated.
+        400:
+          description: Cannot modify a read-only value.
+
+definitions:
+  Global:
+    title: global
+    description: The global configuration
+    type: object
+    properties:
+      serviceInformation:
+        title: serviceInformation
+        description: Service information such as you or your company's details that you want provided in capabilities documents.
+        type: object
+        properties:
+          title:
+            title: title
+            description: The title of the server.
+            type: string
+          description:
+            title: description
+            description: The description of the server.
+            type: string 
+          keywords:
+            title: keywords
+            description: List of keywords for the server
+            type: array
+            items:
+              title: string
+              description: A keyword
+              type: string
+          serviceProvider:
+            title: serviceProvider
+            description: Information about the entity which provides this GeoWebCache service.
+            type: object
+            properties:
+              providerName: 
+                title: providerName
+                description: The name of the entity providing the service.
+                type: string
+              providerSite:
+                title: providerSite
+                description: The website of the entity providing the service.
+                type: string
+              serviceContact:
+                title: serviceContact
+                description: Contact information for the entity providing the service.
+                type: object
+                properties:
+                  individualName:
+                    title: individualName
+                    description: The name of the contact.
+                    type: string
+                  positionName:
+                    title: positionName
+                    description: The position of the contact.
+                    type: string
+                  addressType:
+                    title: addressType
+                    description: The type of address, e.g. "Work" or "Home".
+                    type: string
+                  addressStreet:
+                    title: addressStreet
+                    description: The street portion of the address.
+                    type: string
+                  addressCity:
+                    title: addressCity
+                    description: The city portion of the address.
+                    type: string
+                  addressAdministrativeArea:
+                    title: addressAdministrativeArea
+                    description: The administrative area portion of the address.
+                    type: string
+                  addressPostalCode:
+                    title: addressPostalCode
+                    description: The postal code portion of the address.
+                    type: string
+                  addressCountry:
+                    title: addressCountry
+                    description: The country portion of the address.
+                    type: string
+                  phoneNumber:
+                    title: phoneNumber
+                    description: The phone number of the contact.
+                    type: string
+                  faxNumber:
+                    title: faxNumber
+                    description: The fax number of the contact.
+                    type: string
+                  addressEmail:
+                    title: addressEmail
+                    description: The email of the contact.
+                    type: string
+          fees:
+            title: fees
+            description: Any fees associated with the server.
+            type: string
+          accessConstraints:
+            title: accessConstraints
+            description: Any access constraints associated with the server.
+            type: string
+      runtimeStatsEnabled:
+        title: runtimeStatsEnabled
+        description: Whether runtime statistics are being gathered. Runtime statistics run, by default, every three second and provide data about how many requests the system has been serving in the past 3, 15 and 60 seconds, as well as aggregate numbers.
+        type: boolean
+      wmtsCiteCompliant:
+        title: wmtsCiteCompliant
+        description: Whether the server is running in WMTS strict compliance mode.
+        type: boolean
+      backendTimeout:
+        title: backendTimeout
+        description: The number of seconds GWC will wait for a backend server to return something before closing the connection.
+        type: integer
+      version:
+        title: version
+        description: The GeoWebCache version. Read-only.
+        type: string
+      identifier: 
+        title: identifier
+        description: The unique identifier for this global server configuration. Read-only.
+        type: string
+      location:
+        title: location
+        description: The location of this configuration. Read-only.
+        type: string

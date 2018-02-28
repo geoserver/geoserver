@@ -5,16 +5,6 @@
  */
 package org.vfny.geoserver.global;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.data.DataSourceException;
@@ -55,6 +45,15 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.OperationNotFoundException;
 import org.opengis.referencing.operation.TransformException;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Logger;
 
 
 /**
@@ -459,7 +458,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             SimpleFeatureCollection fc = source.getFeatures(newQuery);
             
             // apply sorting if necessary
-            if(sortBy != null) {
+            if (sortBy != null && sortBy != SortBy.UNSORTED) {
                 fc = new SortedSimpleFeatureCollection(fc, sortBy);
             }
             

@@ -1,0 +1,132 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Blobstores
+  description: BlobStores configure the persistance of tile data.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /blobstores:
+    get:
+      operationId: blobstoresGet
+      summary: Get a list of configured blobstores
+      description: Displays a list of all configured blobstores on the server.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/BlobStores"
+          examples:
+            application/xml: |
+              <blobStores>
+                <blobStore>
+                  <name>defaultCache</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/blobstores/defaultCache.xml" type="text/xml"/>
+                </blobStore>
+              </blobStores>
+
+  /blobstores/{blobstoreName}:
+    get:
+      operationId: blobstoreGet
+      summary: Retrieve a configured blobstore
+      description: Retrieves a single configured blobstore definition.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: blobstoreName
+          in: path
+          required: true
+          description: The name of the blobstore to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/BlobStore"
+          examples:
+            application/xml: |
+              <FileBlobStore default="false">
+                <id>defaultCache</id>
+                <enabled>false</enabled>
+                <baseDirectory>/tmp/defaultCache</baseDirectory>
+                <fileSystemBlockSize>4096</fileSystemBlockSize>
+              </FileBlobStore>
+        404:
+          description: Unknown blobstore
+
+    put:
+      operationId: blobstorePut
+      summary: Create or update a configured blobstore.
+      description: Creates a new configured blobstore on the server, or modifies an existing blobstore.
+      parameters:
+        - name: blobstoreName
+          in: path
+          required: true
+          description: The name of the blobstore to add or update.
+          type: string
+        - name: blobstoreBody
+          in: body
+          description: The new blobstore definition.
+          required: true
+          schema:
+            $ref: "#/definitions/BlobStore"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The blobstore was successfully updated.
+        201:
+          description: The blobstore was successfully created.
+    delete:
+      operationId: blobstoreDelete
+      summary: Delete configured blobstore
+      description: Deletes a configured blobstore from the server.
+      parameters:
+        - name: blobstoreName
+          in: path
+          required: true
+          description: The name of the blobstore to delete.
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Unknown blobstore
+
+definitions:
+  BlobStores:
+    title: blobStores
+    type: array
+    items:
+      $ref: "#/definitions/BlobStoreReference"
+
+  BlobStoreReference:
+    title: blobStore
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the blobstore
+      link:
+        type: string
+        description: URL to blobstore definition
+
+  BlobStore:
+    title: blobStore
+    type: object
+    properties:
+      id:
+        type: string
+        description: Name of the blobstore. Should be unique.
+      enabled:
+        type: boolean
+        description: Whether or not the blobstore is enabled.
+

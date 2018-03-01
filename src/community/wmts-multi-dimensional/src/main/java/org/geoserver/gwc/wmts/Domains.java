@@ -27,7 +27,7 @@ import java.util.List;
 public class Domains {
 
     private final List<Dimension> dimensions;
-    private final ReferencedEnvelope boundingBox;
+    private final ReferencedEnvelope spatialDomain;
     private final Filter filter;
 
     private final LayerInfo layerInfo;
@@ -38,7 +38,7 @@ public class Domains {
     public Domains(List<Dimension> dimensions, LayerInfo layerInfo, ReferencedEnvelope boundingBox, Filter filter) {
         this.dimensions = dimensions;
         this.layerInfo = layerInfo;
-        this.boundingBox = boundingBox;
+        this.spatialDomain = boundingBox;
         this.filter = filter;
     }
 
@@ -46,8 +46,8 @@ public class Domains {
         return dimensions;
     }
 
-    ReferencedEnvelope getBoundingBox() {
-        return boundingBox;
+    ReferencedEnvelope getSpatialDomain() {
+        return spatialDomain;
     }
 
     public Filter getFilter() {

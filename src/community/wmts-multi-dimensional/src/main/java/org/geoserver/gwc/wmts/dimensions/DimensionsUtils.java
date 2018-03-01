@@ -4,27 +4,54 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.visitor.Aggregate;
 import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.bindings.GML2EncodingUtils;
+import org.geotools.ows.ServiceException;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
+import org.geowebcache.service.OWSException;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 
 /**
  * Some utils methods useful to interact with dimensions.
@@ -74,15 +101,29 @@ public final class DimensionsUtils {
     /**
      * Helper method that will extract a layer dimensions.
      */
-    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo) {
+    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, Set<String> requestedDimensions) throws OWSException {
         ResourceInfo resourceInfo = layerInfo.getResource();
+        List<Dimension> result = new ArrayList<>();
         if (resourceInfo instanceof FeatureTypeInfo) {
-            return extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo);
+            result = extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo);
         }
         if (resourceInfo instanceof CoverageInfo) {
-            return extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
+            result = extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
         }
-        return Collections.emptyList();
+        if (requestedDimensions != MultiDimensionalExtension.ALL_DOMAINS) {
+            Set<String> availableDimensions = result.stream().map(d -> d.getDimensionName()).collect(Collectors.toSet());
+            HashSet<String> unknownDimensions = new HashSet<>(requestedDimensions);
+            unknownDimensions.removeAll(availableDimensions);
+            unknownDimensions.remove(MultiDimensionalExtension.SPACE_DIMENSION);
+            if (!unknownDimensions.isEmpty()) {
+                String dimensionList = unknownDimensions.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", "));
+                throw new OWSException(400, "InvalidParameterValue", "Domains", "Unknown dimensions requested " + dimensionList);
+            } else {
+                result = result.stream().filter(d -> requestedDimensions.contains(d.getDimensionName())).collect(Collectors.toList());
+            }
+        }
+        
+        return result;
     }
 
     /**
@@ -271,5 +312,79 @@ public final class DimensionsUtils {
         }
         Collections.sort(values, comparator);
         return values;
+    }
+
+    /**
+     * Compute the resource bounds based on the provided filter
+     * @param resource
+     * @param filter
+     * @return
+     */
+    public static ReferencedEnvelope getBounds(ResourceInfo resource, Filter filter) {
+        try {
+            if (resource instanceof FeatureTypeInfo) {
+                FeatureSource featureSource = ((FeatureTypeInfo) resource).getFeatureSource(null, null);
+                FeatureCollection features = featureSource.getFeatures(filter);
+                return features.getBounds();
+            } else if (resource instanceof CoverageInfo) {
+                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+                return reader.getBounds(filter);
+            } else {
+                // for all other resource types (WMS/WMTS cascading) we cannot do anything intelligent
+                return resource.getNativeBoundingBox();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to compute bounds for " + resource, e);
+        }
+    }
+
+    /**
+     * Builds a bounding box filter, or returns {@link Filter#INCLUDE} if the bounding box is null 
+     */
+    public static Filter getBoundingBoxFilter(ResourceInfo resource, ReferencedEnvelope boundingBox, FilterFactory 
+            filterFactory) {
+        String geometryName = getGeometryPropertyName(resource);
+        if (boundingBox == null || geometryName == null) {
+            return Filter.INCLUDE;
+        }
+        CoordinateReferenceSystem coordinateReferenceSystem = boundingBox.getCoordinateReferenceSystem();
+        String epsgCode = coordinateReferenceSystem == null ? null : GML2EncodingUtils.toURI(coordinateReferenceSystem);
+        Filter spatialFilter = filterFactory.bbox(geometryName, boundingBox.getMinX(), boundingBox.getMinY(),
+                boundingBox.getMaxX(), boundingBox.getMaxY(), epsgCode);
+        return spatialFilter;
+    }
+
+    private static String getGeometryPropertyName(ResourceInfo resource) {
+        try {
+            String geometryName = ""; // the default geometry, unfortunately does not work in some cases
+            if (resource instanceof FeatureTypeInfo) {
+                geometryName = ((FeatureTypeInfo) resource).getFeatureType().getGeometryDescriptor().getLocalName();
+            } else if (resource instanceof CoverageInfo) {
+                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+                return reader.getGeometryAttributeName();
+            }
+            return geometryName;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to gather feature type information for " + resource, e);
+        }
+    }
+
+    public static Tuple<String,String> getAttributes(ResourceInfo resource, Dimension dimension) {
+        if (resource instanceof FeatureTypeInfo) {
+            DimensionInfo di = dimension.getDimensionInfo();
+            return Tuple.tuple(di.getAttribute(), di.getEndAttribute());
+        } else if (resource instanceof CoverageInfo) {
+            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+            String dimensionName = dimension.getDimensionName();
+            Tuple<String, String> attributes = reader.getDimensionAttributesNames(dimensionName);
+            if (attributes.first == null) {
+                throw new RuntimeException(String.format(
+                        "Could not found start attribute name for dimension '%s' in raster '%s'.", dimensionName,
+                        resource.prefixedName()));
+            }
+            return attributes;
+        } else {
+            throw new RuntimeException("Cannot get restriction attributes on this resource: " + resource);
+        }
     }
 }

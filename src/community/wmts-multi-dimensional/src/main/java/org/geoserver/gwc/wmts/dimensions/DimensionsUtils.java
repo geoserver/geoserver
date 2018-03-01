@@ -10,6 +10,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
@@ -23,8 +24,10 @@ import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
+import org.geotools.ows.ServiceException;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
+import org.geowebcache.service.OWSException;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
@@ -41,10 +44,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 
@@ -96,34 +101,43 @@ public final class DimensionsUtils {
     /**
      * Helper method that will extract a layer dimensions.
      */
-    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, Set<String> requestedDimensions) {
+    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, Set<String> requestedDimensions) throws OWSException {
         ResourceInfo resourceInfo = layerInfo.getResource();
+        List<Dimension> result = new ArrayList<>();
         if (resourceInfo instanceof FeatureTypeInfo) {
-            return extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo, requestedDimensions);
+            result = extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo);
         }
         if (resourceInfo instanceof CoverageInfo) {
-            return extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo, requestedDimensions);
+            result = extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
         }
-        return Collections.emptyList();
+        if (requestedDimensions != MultiDimensionalExtension.ALL_DOMAINS) {
+            Set<String> availableDimensions = result.stream().map(d -> d.getDimensionName()).collect(Collectors.toSet());
+            HashSet<String> unknownDimensions = new HashSet<>(requestedDimensions);
+            unknownDimensions.removeAll(availableDimensions);
+            unknownDimensions.remove(MultiDimensionalExtension.SPACE_DIMENSION);
+            if (!unknownDimensions.isEmpty()) {
+                String dimensionList = unknownDimensions.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", "));
+                throw new OWSException(400, "InvalidParameterValue", "Domains", "Unknown dimensions requested " + dimensionList);
+            } else {
+                result = result.stream().filter(d -> requestedDimensions.contains(d.getDimensionName())).collect(Collectors.toList());
+            }
+        }
+        
+        return result;
     }
 
     /**
      * Helper method that will extract the dimensions from a feature type info.
      */
-    private static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, FeatureTypeInfo typeInfo, 
-                                                     Set<String> requestedDimensions) {
+    private static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, FeatureTypeInfo typeInfo) {
         List<Dimension> dimensions = new ArrayList<>();
-        if (requestedDimensions == ALL_DOMAINS || requestedDimensions.contains(ResourceInfo.TIME)) {
-            DimensionInfo timeDimension = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-            if (timeDimension != null) {
-                checkAndAddDimension(dimensions, new VectorTimeDimension(wms, layerInfo, timeDimension));
-            }
+        DimensionInfo timeDimension = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (timeDimension != null) {
+            checkAndAddDimension(dimensions, new VectorTimeDimension(wms, layerInfo, timeDimension));
         }
-        if (requestedDimensions == ALL_DOMAINS || requestedDimensions.contains(ResourceInfo.ELEVATION)) {
-            DimensionInfo elevationDimension = typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
-            if (elevationDimension != null) {
-                checkAndAddDimension(dimensions, new VectorElevationDimension(wms, layerInfo, elevationDimension));
-            }
+        DimensionInfo elevationDimension = typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        if (elevationDimension != null) {
+            checkAndAddDimension(dimensions, new VectorElevationDimension(wms, layerInfo, elevationDimension));
         }
         return dimensions;
     }
@@ -131,14 +145,10 @@ public final class DimensionsUtils {
     /**
      * Helper method that will extract the dimensions from a coverage type info.
      */
-    private static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, CoverageInfo typeInfo, Set<String> requestedDimensions) {
+    private static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, CoverageInfo typeInfo) {
         List<Dimension> dimensions = new ArrayList<>();
         for (Map.Entry<String, Serializable> entry : typeInfo.getMetadata().entrySet()) {
             String key = entry.getKey();
-            // skip dimensions that were not requested
-            if (requestedDimensions != ALL_DOMAINS && !requestedDimensions.contains(key)) {
-                continue;
-            }
             Serializable value = entry.getValue();
             if (key.equals(ResourceInfo.TIME)) {
                 DimensionInfo dimensionInfo = Converters.convert(value, DimensionInfo.class);

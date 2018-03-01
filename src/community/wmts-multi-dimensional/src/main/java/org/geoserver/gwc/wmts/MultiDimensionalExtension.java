@@ -61,7 +61,7 @@ import java.util.logging.Logger;
 public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     private final static Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
-    private static final String SPACE_DIMENSION = "bbox";
+    public static final String SPACE_DIMENSION = "bbox";
     public static final Set<String> ALL_DOMAINS = Collections.emptySet();
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
@@ -113,8 +113,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                     executeDescribeDomainsOperation(conveyor);
                 } catch (Exception exception) {
                     LOGGER.log(Level.SEVERE, "Error executing describe domains operation.", exception);
-                    throw new OWSException(500, "NoApplicableCode", "",
-                            "Error executing describe domains operation:" + exception.getMessage());
+                    return rethrowException(exception, "Error executing describe domains operation:");
                 }
                 break;
             case GET_HISTOGRAM:
@@ -122,8 +121,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                     executeGetHistogramOperation(conveyor);
                 } catch (Exception exception) {
                     LOGGER.log(Level.SEVERE, "Error executing get histogram operation.", exception);
-                    throw new OWSException(500, "NoApplicableCode", "",
-                            "Error executing get histogram operation:" + exception.getMessage());
+                    rethrowException(exception, "Error executing get histogram operation:");
                 }
                 break;
             case GET_FEATURE:
@@ -131,14 +129,20 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                     executeGetFeatureOperation(conveyor);
                 } catch (Exception exception) {
                     LOGGER.log(Level.SEVERE, "Error executing get feature operation.", exception);
-                    throw new OWSException(500, "NoApplicableCode", "",
-                            "Error executing get feature operation:" + exception.getMessage());
+                    rethrowException(exception, "Error executing get feature operation:");
                 }
                 break;
             default:
                 return false;
         }
         return true;
+    }
+
+    public boolean rethrowException(Exception exception, String s) throws OWSException {
+        if (exception instanceof OWSException) {
+            throw (OWSException) exception;
+        }
+        throw new OWSException(500, "NoApplicableCode", "", s + exception.getMessage());
     }
 
     @Override
@@ -148,8 +152,13 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             // dimension are not supported for this layer (maybe is a layer group)
             return;
         }
-        List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo, ALL_DOMAINS);
-        encodeLayerDimensions(xmlBuilder, dimensions);
+        try {
+            List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo, ALL_DOMAINS);
+            encodeLayerDimensions(xmlBuilder, dimensions);
+        } catch (OWSException e) {
+            // should not happen
+            throw new RuntimeException(e);
+        }
     }
 
     private Domains getDomains(SimpleConveyor conveyor) throws Exception {
@@ -192,8 +201,6 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // encode the domains
         return new Domains(dimensions, layerInfo, spatialDomain, SimplifyingFilterVisitor.simplify(filter));
     }
-
-    
 
     /**
      * Helper method that will build a dimension domain values filter based on this dimension start and end

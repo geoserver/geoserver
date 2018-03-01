@@ -7,12 +7,17 @@ package org.geoserver.gwc.wmts;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
-import org.hsqldb.result.Result;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -21,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -146,6 +152,20 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testRasterDescribeDomainsOperationInvalidDimension() throws Exception {
+        // perform the get describe domains operation request
+        String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&domains=abcd");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST);
+        print(result);
+        // check that we have two domains
+        assertEquals("InvalidParameterValue", xpath.evaluate("//ows:Exception/@exceptionCode", result));
+        assertEquals("Domains", xpath.evaluate("//ows:Exception/@locator", result));
+        assertThat(xpath.evaluate("//ows:ExceptionText", result), containsString("'abcd'"));
+    }
+
+    @Test
     public void testVectorDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
         String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
@@ -217,14 +237,11 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
-        // check the space domain
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='0.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='-1.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='-1.0']", "1");
+        // check the space domain is not included
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain", "0");
         // the domain should not contain any values
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='0']", "2");
     }
@@ -394,8 +411,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
      * Also checks the content type of the response.
      */
     private Document getResultAsDocument(MockHttpServletResponse response, String contentType) throws Exception {
+       return getResultAsDocument(response, contentType, HttpStatus.OK);
+    }
+
+    private Document getResultAsDocument(MockHttpServletResponse response, String contentType, HttpStatus expectedStatus) throws Exception {
         String result = response.getContentAsString();
-        assertThat(response.getStatus(), is(200));
+        assertThat(response.getStatus(), is(expectedStatus.value()));
         assertThat(response.getContentType(), is(contentType));
         return XMLUnit.buildTestDocument(result);
     }

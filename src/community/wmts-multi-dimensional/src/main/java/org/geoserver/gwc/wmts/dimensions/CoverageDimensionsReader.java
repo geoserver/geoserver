@@ -167,7 +167,7 @@ abstract class CoverageDimensionsReader {
         public ReferencedEnvelope getBounds(Filter filter) {
             try {
                 GranuleSource source = reader.getGranules(reader.getGridCoverageNames()[0], true);
-                Query query = new Query(null, filter);
+                Query query = new Query();
                 if (filter != null) {
                     query.setFilter(filter);
                 }

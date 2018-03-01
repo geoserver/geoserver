@@ -120,14 +120,16 @@ In case of geometry parameters, such as filter, ROI, the parameter's ``<wps:Inpu
     <wps:Input>
       <ows:Identifier>ROI</ows:Identifier>
       <wps:Data>
-        <wps:ComplexData mimeType="application/wkt"><![CDATA["POLYGON (( 500116.08576537756 499994.25579707103, 500116.08576537756 500110.1012210889, 500286.2657688021 500110.1012210889, 500286.2657688021 499994.25579707103, 500116.08576537756 499994.25579707103 ))]]></wps:ComplexData>
+        <wps:ComplexData mimeType="application/wkt"><![CDATA[POLYGON (( 500116.08576537756 499994.25579707103, 500116.08576537756 500110.1012210889, 500286.2657688021 500110.1012210889, 500286.2657688021 499994.25579707103, 500116.08576537756 499994.25579707103 ))]]></wps:ComplexData>
       </wps:Data>
     </wps:Input>
 
   
-Note the ``<wps:ComplexData>`` tag, the ``mimeType="application/wkt"`` parameter, and the ``![CDATA[]`` wrapping of the actual geometry data (in textual representation, according to the selected MIME type.
+Note the ``<wps:ComplexData>`` tag, the ``mimeType="application/wkt"`` parameter, and the ``![CDATA[]`` wrapping of the actual geometry data (in textual representation), according to the selected MIME type.
 
-In case the ROI is defined using a REFENENCE source, the input block is slightly different:
+Note that if the ROI parameter is defined as WKT, you will need to specify a RoiCRS input parameter as well.
+
+In case the ROI is defined using a REFERENCE source, the input block is slightly different:
 
  .. code-block:: xml
 

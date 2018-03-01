@@ -53,7 +53,13 @@ public class RawDataEncoderDelegate implements EncoderDelegate {
     }
 
     public void encode(OutputStream os) throws IOException {
-        IOUtils.copy(rawData.getInputStream(), os);
+        InputStream stream = null;
+        try {
+            stream = rawData.getInputStream();
+            IOUtils.copy(stream, os);
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
     }
 
     public RawData getRawData() {

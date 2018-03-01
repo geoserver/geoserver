@@ -11,6 +11,7 @@ import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
+import org.hsqldb.result.Result;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -107,6 +108,44 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testRasterDescribeDomainsOperationNoSpace() throws Exception {
+        // perform the get describe domains operation request
+        String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&domains=elevation,time");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // both domains contain two elements
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
+        // check the elevation domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='0,100']", "1");
+        // check the time domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
+        // check the space domain is gone
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox", "0");
+    }
+
+    @Test
+    public void testRasterDescribeDomainsOperationOnlySpace() throws Exception {
+        // perform the get describe domains operation request
+        String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&domains=bbox");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "0");
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']", "1");
+    }
+
+    @Test
     public void testVectorDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
         String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
@@ -167,12 +206,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // the domain should not contain any values
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='0']", "2");
-        // check the space domain
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='0.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='-1.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='-1.0']", "1");
+        // no space domain either
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox", "0");
     }
 
     @Test

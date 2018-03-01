@@ -5,8 +5,12 @@
 package org.geoserver.gwc.wmts;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -17,16 +21,16 @@ import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.dimension.DimensionFilterBuilder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
-import org.geotools.resources.CRSUtilities;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.Conveyor;
 import org.geowebcache.grid.GridSubset;
-import org.geowebcache.grid.SRS;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
@@ -35,12 +39,18 @@ import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,6 +61,8 @@ import java.util.logging.Logger;
 public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     private final static Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
+    private static final String SPACE_DIMENSION = "bbox";
+    public static final Set<String> ALL_DOMAINS = Collections.emptySet();
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
 
@@ -136,7 +148,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             // dimension are not supported for this layer (maybe is a layer group)
             return;
         }
-        List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo);
+        List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo, ALL_DOMAINS);
         encodeLayerDimensions(xmlBuilder, dimensions);
     }
 
@@ -145,8 +157,9 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         String layerName = (String) conveyor.getParameter("layer", true);
         TileLayer tileLayer = tileLayerDispatcher.getTileLayer(layerName);
         LayerInfo layerInfo = getLayerInfo(tileLayer, layerName);
+        Set<String> requestedDomains = getRequestedDomains(conveyor.getParameter("domains", false));
         // getting this layer dimensions along with its values
-        List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo);
+        List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo, requestedDomains);
         // let's see if we have a spatial limitation
         ReferencedEnvelope boundingBox = (ReferencedEnvelope) conveyor.getParameter("bbox", false);
         // if we have a bounding box we need to set the crs based on the tile matrix set
@@ -162,15 +175,44 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             boundingBox = new ReferencedEnvelope(boundingBox, CRS.decode(gridSubset.getSRS().toString()));
         }
         // add any domain provided restriction and set the bounding box
-        Filter filter = Filter.INCLUDE;
+        ResourceInfo resource = layerInfo.getResource();
+        Filter filter = DimensionsUtils.getBoundingBoxFilter(resource, boundingBox, filterFactory);
         for (Dimension dimension : dimensions) {
             Object restriction = conveyor.getParameter(dimension.getDimensionName(), false);
-            dimension.setBoundingBox(boundingBox);
-            dimension.addDomainRestriction(restriction);
-            filter = filterFactory.and(filter, dimension.getFilter());
+            if (restriction != null) {
+                Tuple<String, String> attributes = DimensionsUtils.getAttributes(resource, dimension);
+                filter = appendDomainRestrictionsFilter(filter, attributes.first, attributes.second, restriction);
+            }
         }
+        // compute the bounding box
+        ReferencedEnvelope spatialDomain = null;
+        if (requestedDomains == ALL_DOMAINS || requestedDomains.contains(SPACE_DIMENSION)) {
+            spatialDomain = DimensionsUtils.getBounds(resource, filter);  
+        } 
         // encode the domains
-        return new Domains(dimensions, layerInfo, boundingBox, SimplifyingFilterVisitor.simplify(filter));
+        return new Domains(dimensions, layerInfo, spatialDomain, SimplifyingFilterVisitor.simplify(filter));
+    }
+
+    
+
+    /**
+     * Helper method that will build a dimension domain values filter based on this dimension start and end
+     * attributes. The created filter will be merged with the provided filter.
+     */
+    protected Filter appendDomainRestrictionsFilter(Filter filter, String startAttribute, String endAttribute, Object domainRestrictions) {
+        DimensionFilterBuilder dimensionFilterBuilder = new DimensionFilterBuilder(filterFactory);
+        List<Object> restrictionList = domainRestrictions instanceof Collection ? new ArrayList<>((Collection) domainRestrictions) : Arrays.asList(domainRestrictions);
+        dimensionFilterBuilder.appendFilters(startAttribute, endAttribute, restrictionList);
+        return filterFactory.and(filter, dimensionFilterBuilder.getFilter());
+    }
+
+    private Set<String> getRequestedDomains(Object domains) {
+        if (domains == null) {
+            return ALL_DOMAINS;
+        }
+
+        String[] domainNames = domains.toString().trim().split("\\s*,\\s*");
+        return new LinkedHashSet<>(Arrays.asList(domainNames));
     }
 
     private void executeDescribeDomainsOperation(SimpleConveyor conveyor) throws Exception {
@@ -242,7 +284,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         xml.simpleElement("ows:Identifier", dimension.getDimensionName(), true);
         // default value is mandatory
         xml.simpleElement("Default", dimension.getDefaultValueAsString(), true);
-        for (String value : dimension.getDomainValuesAsStrings(Filter.INCLUDE).second.second) {
+        for (String value : dimension.getDomainValuesAsStrings(Filter.INCLUDE).second) {
             xml.simpleElement("Value", value, true);
         }
         xml.endElement("Dimension");

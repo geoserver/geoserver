@@ -15,6 +15,7 @@ import org.opengis.filter.Filter;
 
 import java.util.List;
 
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -32,13 +33,13 @@ public class VectorElevationDimensionTest extends TestsSupport {
         vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(vectorInfo);
         // check that we correctly retrieve the elevation dimension
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(1));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
         // disable the elevation dimension
         dimensionInfo.setEnabled(false);
         vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(vectorInfo);
         // no dimensions should be available
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(0));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
     }
 
     @Test

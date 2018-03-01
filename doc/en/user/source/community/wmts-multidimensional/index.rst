@@ -154,14 +154,17 @@ This operation is useful to understand which domains are available in our layer 
    * - TileMatrixSet
      - Yes
      - Tile matrix set identifier
-   * - BBOX=minx,miny,maxx,maxy
+   * - bbox=minx,miny,maxx,maxy
      - No
      - Bounding box corners (lower left, upper right) in CRS units
    * - DimensionIdentifier
      - No
      - At most one per dimension, a range described as min/max, restricting the domain of this dimension
+   * - Domains
+     - No
+     - A comma separated list of domain names to be returned, in case only a subset is required. The space domain is identified by "bbox".
 
-The ``BBOX`` parameter allows the client to restrict the ``DescribeDomains`` operation to a certain spatial area, by default the layer extent will be used.
+The ``bbox`` parameter allows the client to restrict the ``DescribeDomains`` operation to a certain spatial area, by default the layer extent will be used.
 
 The ``DimensionIdentifier`` parameter can be used to restrict the domain values of a certain dimension, this is useful to answer questions like which elevations values are available in a specific day.
 
@@ -232,6 +235,23 @@ the result will be similar to this:
   </Domains>
 
 So for time 2016-02-23T03:00:00.000Z there is only values measured at 200.0 meters.
+
+In case only the space domain is of interest, the following request will do:
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326&elevation=0/500&time=2016-02-23T03:00:00.000Z&domains=bbox
+
+and the result will be similar to this:
+
+.. code-block:: xml
+
+  <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <SpaceDomain>
+      <BoundingBox CRS="EPSG:4326" 
+       maxx="179.875" maxy="89.9375" minx="-180.125" miny="-90.125"/>
+    </SpaceDomain>
+  </Domains>
 
 GetHistogram
 ^^^^^^^^^^^^

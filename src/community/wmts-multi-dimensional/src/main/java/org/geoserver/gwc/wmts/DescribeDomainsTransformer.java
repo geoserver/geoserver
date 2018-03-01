@@ -54,13 +54,13 @@ class DescribeDomainsTransformer extends TransformerBase {
             });
             start("Domains", nameSpaces);
             Map<String, Tuple<Integer, List<String>>> domainsValues = new HashMap<>();
-            ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope();
             domains.getDimensions().forEach(dimension -> {
-                Tuple<ReferencedEnvelope, Tuple<Integer, List<String>>> dimensionValues = dimension.getDomainValuesAsStrings(domains.getFilter());
-                referencedEnvelope.expandToInclude(dimensionValues.first);
-                domainsValues.put(dimension.getDimensionName(), dimensionValues.second);
+                Tuple<Integer, List<String>> dimensionValues = dimension.getDomainValuesAsStrings(domains.getFilter());
+                domainsValues.put(dimension.getDimensionName(), dimensionValues);
             });
-            handleBoundingBox(referencedEnvelope);
+            if (domains.getSpatialDomain() != null && !domains.getSpatialDomain().isEmpty()) {
+                handleBoundingBox(domains.getSpatialDomain());
+            }
             domainsValues.entrySet().forEach(dimensionValues -> handleDimension(dimensionValues.getKey(), dimensionValues.getValue()));
             end("Domains");
         }

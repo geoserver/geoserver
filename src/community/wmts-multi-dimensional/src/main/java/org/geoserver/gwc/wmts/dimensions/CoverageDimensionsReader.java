@@ -22,7 +22,9 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
+import java.io.EOFException;
 import java.io.IOException;
+import java.lang.ref.Reference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -43,26 +45,24 @@ abstract class CoverageDimensionsReader {
 
     abstract Tuple<String, FeatureCollection> getValues(String dimensionName, Filter filter, DataType dataType);
 
-    Tuple<ReferencedEnvelope, List<Object>> readWithDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
+    List<Object> readWithDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
         // getting the feature collection with the values and the attribute name
         Tuple<String, FeatureCollection> values = getValues(dimensionName, filter, dataType);
         if (values == null) {
-            return Tuple.tuple(new ReferencedEnvelope(), Collections.emptyList());
+            return Collections.emptyList();
         }
         // extracting the values removing the duplicates
-        return Tuple.tuple(values.second.getBounds(),
-                DimensionsUtils.getValuesWithDuplicates(values.first, values.second, comparator));
+        return DimensionsUtils.getValuesWithDuplicates(values.first, values.second, comparator);
     }
 
-    Tuple<ReferencedEnvelope, Set<Object>> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
+    Set<Object> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
         // getting the feature collection with the values and the attribute name
         Tuple<String, FeatureCollection> values = getValues(dimensionName, filter, dataType);
         if (values == null) {
-            return Tuple.tuple(new ReferencedEnvelope(), new TreeSet<>());
+            return new TreeSet<>();
         }
         // extracting the values keeping the duplicates
-        return Tuple.tuple(values.second.getBounds(),
-                DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second, comparator));
+        return DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second, comparator);
     }
 
     /**
@@ -79,19 +79,19 @@ abstract class CoverageDimensionsReader {
         }
         if (reader instanceof StructuredGridCoverage2DReader) {
             // good we have a structured coverage reader
-            return new WrapStructuredGridCoverageDimensions2DReader(typeInfo, (StructuredGridCoverage2DReader) reader);
+            return new WrapStructuredGridCoverageDimensions2DReader((StructuredGridCoverage2DReader) reader);
         }
         // non structured reader let's do our best
         return new WrapNonStructuredReader(typeInfo, reader);
     }
 
+    public abstract ReferencedEnvelope getBounds(Filter filter);
+
     private static final class WrapStructuredGridCoverageDimensions2DReader extends CoverageDimensionsReader {
 
-        private final CoverageInfo typeInfo;
         private final StructuredGridCoverage2DReader reader;
 
-        private WrapStructuredGridCoverageDimensions2DReader(CoverageInfo typeInfo, StructuredGridCoverage2DReader reader) {
-            this.typeInfo = typeInfo;
+        private WrapStructuredGridCoverageDimensions2DReader(StructuredGridCoverage2DReader reader) {
             this.reader = reader;
         }
 
@@ -162,6 +162,22 @@ abstract class CoverageDimensionsReader {
                 throw new RuntimeException("Error reading domain values.", exception);
             }
         }
+
+        @Override
+        public ReferencedEnvelope getBounds(Filter filter) {
+            try {
+                GranuleSource source = reader.getGranules(reader.getGridCoverageNames()[0], true);
+                Query query = new Query(null, filter);
+                if (filter != null) {
+                    query.setFilter(filter);
+                }
+                // reading the features using the build query
+                FeatureCollection featureCollection = source.getGranules(query);
+                return featureCollection.getBounds();
+            } catch (Exception exception) {
+                throw new RuntimeException("Failed to collect bounds", exception);
+            }
+        }
     }
 
     private static final class WrapNonStructuredReader extends CoverageDimensionsReader {
@@ -174,15 +190,11 @@ abstract class CoverageDimensionsReader {
             this.reader = reader;
         }
 
-        private static final ThreadLocal<DateFormat> DATE_FORMATTER = new ThreadLocal<DateFormat>() {
-
-            @Override
-            protected DateFormat initialValue() {
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-                return dateFormatter;
-            }
-        };
+        private static final ThreadLocal<DateFormat> DATE_FORMATTER = ThreadLocal.withInitial(() -> {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return dateFormatter;
+        });
 
         private static Date formatDate(String rawValue) {
             try {
@@ -254,6 +266,11 @@ abstract class CoverageDimensionsReader {
                 }
             }
             return Tuple.tuple(getDimensionAttributesNames(dimensionName).first, featureCollection);
+        }
+
+        @Override
+        public ReferencedEnvelope getBounds(Filter filter) {
+            return ReferencedEnvelope.reference(reader.getOriginalEnvelope());
         }
 
         private DataType normalizeDataType(String rawValue, DataType dataType) {

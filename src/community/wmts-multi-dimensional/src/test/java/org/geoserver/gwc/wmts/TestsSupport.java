@@ -84,10 +84,10 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     protected abstract Dimension buildDimension(DimensionInfo dimensionInfo);
 
-    protected void testDomainsValuesRepresentation(DimensionPresentation dimensionPresentation, String... expectedDomainValues) throws IOException {
+    protected void testDomainsValuesRepresentation(DimensionPresentation dimensionPresentation, String... expectedDomainValues) {
         DimensionInfo dimensionInfo = createDimension(true, dimensionPresentation, null);
         Dimension dimension = buildDimension(dimensionInfo);
-        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE).second.second;
+        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE).second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }

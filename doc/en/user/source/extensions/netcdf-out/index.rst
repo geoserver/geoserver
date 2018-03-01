@@ -44,9 +44,12 @@ NetCDF output settings can be configured for each raster layer. The similar sect
     * Level is an integer from 0 (no compression, fastest) to 9 (most compression, slowest).
 * NetCDF-4 Chunk Shuffling
     * Lossless byte reordering to improve compression.
-* Copy Attributes from NetCDF/GRIB Source
+* Copy Variable Attributes from NetCDF/GRIB Source
     * Most attributes are copied from the source NetCDF/GRIB variable.
     * Some attributes such as ``coordinates`` and ``missing_value`` are skipped as these may no longer be valid.
+    * For an ImageMosaic, one granule is chosen as the source.
+* Copy Global Attributes from NetCDF/GRIB Source
+    * Attributes are copied from the source NetCDF/GRIB global attributes.
     * For an ImageMosaic, one granule is chosen as the source.
 * Variable Attributes
     * Values are encoded as integers or doubles if possible, otherwise strings.

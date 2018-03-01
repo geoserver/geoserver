@@ -28,6 +28,8 @@ public class NetCDFSettingsContainer implements Serializable {
     public static final boolean DEFAULT_SHUFFLE = true;
 
     public static final boolean DEFAULT_COPY_ATTRIBUTES = false;
+    
+    public static final boolean DEFAULT_COPY_GLOBAL_ATTRIBUTES = false;
 
     public static final Version DEFAULT_VERSION = Version.NETCDF_3;
 
@@ -42,6 +44,8 @@ public class NetCDFSettingsContainer implements Serializable {
     private boolean shuffle = DEFAULT_SHUFFLE;
 
     private boolean copyAttributes = DEFAULT_COPY_ATTRIBUTES;
+
+    private boolean copyGlobalAttributes = DEFAULT_COPY_GLOBAL_ATTRIBUTES;
 
     private DataPacking dataPacking = DataPacking.getDefault();
 
@@ -83,10 +87,24 @@ public class NetCDFSettingsContainer implements Serializable {
     }
 
     /**
+     * Whether to copy global attributes from the NetCDF/GRIB source to the main output.
+     */
+    public boolean isCopyGlobalAttributes() {
+        return copyGlobalAttributes;
+    }
+
+    /**
      * Whether to copy attributes from the NetCDF/GRIB source to the main output variable.
      */
     public void setCopyAttributes(boolean copyAttributes) {
         this.copyAttributes = copyAttributes;
+    }
+
+    /**
+     * Whether to copy global attributes from the NetCDF/GRIB source to the main output.
+     */
+    public void setCopyGlobalAttributes(boolean copyGlobalAttributes) {
+        this.copyGlobalAttributes = copyGlobalAttributes;
     }
 
     public List<GlobalAttribute> getGlobalAttributes() {

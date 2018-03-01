@@ -58,19 +58,16 @@ public abstract class VectorDimension extends Dimension {
     }
 
     @Override
-    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
+    public List<Object> getDomainValues(Filter filter, boolean noDuplicates) {
         FeatureCollection featureCollection = getDomain(filter);
         if (noDuplicates) {
             // no duplicate values should be included
             Set<Object> values = DimensionsUtils.
                     getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
-            List<Object> list = new ArrayList<>(values.size());
-            list.addAll(values);
-            return Tuple.tuple(featureCollection.getBounds(), list);
+            return new ArrayList<>(values);
         }
         // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return Tuple.tuple(featureCollection.getBounds(),
-                DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator));
+        return DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
     }
 
     protected DomainSummary getDomainSummary(Filter filter, boolean includeCount) {
@@ -80,27 +77,4 @@ public abstract class VectorDimension extends Dimension {
         return getDomainSummary(features, attribute, includeCount);
     }
 
-    @Override
-    public Filter getFilter() {
-        FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
-        Filter filter = Filter.INCLUDE;
-        if (boundingBox != null) {
-            // we have a bounding box so lets build a filter for it
-            String geometryAttributeName;
-            try {
-                // let's find out the geometry attribute
-                geometryAttributeName = typeInfo.getFeatureSource(null, null).getSchema().getGeometryDescriptor().getLocalName();
-            } catch (IOException exception) {
-                throw new RuntimeException(String.format("Exception accessing feature source of vector type '%s'.",
-                        typeInfo.getName()), exception);
-            }
-            // creating the bounding box filter and append it to our filter
-            filter = appendBoundingBoxFilter(filter, geometryAttributeName);
-        }
-        if (domainRestrictions != null) {
-            // we have a domain filter
-            filter = appendDomainRestrictionsFilter(filter, dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
-        }
-        return filter;
-    }
 }

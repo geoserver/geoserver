@@ -58,16 +58,15 @@ public abstract class Dimension {
 
 
     protected DomainSummary getDomainSummary(FeatureCollection features, String attribute, boolean includeCount) {
-        ReferencedEnvelope bounds = features.getBounds();
         if (includeCount) {
             Map<Aggregate, Object> aggregates = DimensionsUtils.getAggregates(attribute, features,
                     Aggregate.MIN, Aggregate.MAX, Aggregate.COUNT);
-            return new DomainSummary(bounds, aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX), (Long)
+            return new DomainSummary(aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX), (Long)
                     aggregates.get(Aggregate.COUNT));
         } else {
             Map<Aggregate, Object> aggregates = DimensionsUtils.getAggregates(attribute, features,
                     Aggregate.MIN, Aggregate.MAX);
-            return new DomainSummary(bounds, aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX));
+            return new DomainSummary(aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX));
         }
     }
 

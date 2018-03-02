@@ -126,7 +126,7 @@ public class StyleParameterFilter extends ParameterFilter {
     }
     
     /**
-     * @see StyleParameterFilter#setDefaultValue()
+     * @see StyleParameterFilter#setDefaultValue(String)
      * @param s
      */
     public void setRealDefault(String s) {

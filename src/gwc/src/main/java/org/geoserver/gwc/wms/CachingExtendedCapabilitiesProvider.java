@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
@@ -49,7 +50,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     /**
-     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getSchemaLocations()
+     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getSchemaLocations(String)
      */
     public String[] getSchemaLocations(String schemaBaseURL) {
         return new String[0];
@@ -71,7 +72,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     /**
-     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)
      */
     public List<String> getVendorSpecificCapabilitiesChildDecls(final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
@@ -98,8 +99,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     /**
-     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#encode(org.geoserver.wms.ExtendedCapabilitiesProvider.Translator,
-     *      org.geoserver.wms.WMSInfo, org.geotools.util.Version)
+     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#encode(Translator, ServiceInfo, Object)
      */
     public void encode(final Translator tx, final WMSInfo wms, final GetCapabilitiesRequest request)
             throws IOException {

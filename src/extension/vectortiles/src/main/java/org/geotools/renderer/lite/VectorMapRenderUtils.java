@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -106,13 +107,13 @@ public class VectorMapRenderUtils {
         } catch (IllegalFilterException | FactoryException e1) {
             throw Throwables.propagate(e1);
         }
-        Query query = styleQuery;
+        // take into account the origin query (coming from cql_filter or featureid)
+        Query query = DataUtilities.mixQueries(styleQuery, layer.getQuery(), null);
         query.setProperties(Query.ALL_PROPERTIES);
 
         Hints hints = query.getHints();
         hints.put(Hints.FEATURE_2D, Boolean.TRUE);
 
-        
         return query;
     }
 

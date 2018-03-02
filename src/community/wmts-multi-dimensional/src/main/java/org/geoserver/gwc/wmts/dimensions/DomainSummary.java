@@ -12,26 +12,19 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  */
 class DomainSummary {
     
-    private ReferencedEnvelope envelope;
     private Object min;
     private Object max;
     private long count = -1;
 
-    public DomainSummary(ReferencedEnvelope envelope, Object min, Object max) {
-        this.envelope = envelope;
+    public DomainSummary(Object min, Object max) {
         this.min = min;
         this.max = max;
     }
 
-    public DomainSummary(ReferencedEnvelope envelope, Object min, Object max, long count) {
-        this.envelope = envelope;
+    public DomainSummary(Object min, Object max, long count) {
         this.min = min;
         this.max = max;
         this.count = count;
-    }
-
-    public ReferencedEnvelope getEnvelope() {
-        return envelope;
     }
 
     public Object getMin() {

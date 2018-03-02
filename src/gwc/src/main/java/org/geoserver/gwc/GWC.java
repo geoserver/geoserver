@@ -74,6 +74,7 @@ import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
@@ -236,7 +237,23 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
     
     private BlobStoreAggregator blobStoreAggregator;
-    
+
+    /**
+     * Constructor for the GWC mediator
+     *
+     * @param gwcConfigPersister
+     * @param sb The GeoWebCache StorageBroker
+     * @param tld The GeoWebCache TileLayer Aggregator
+     * @param gridSetBroker The GeoWebCache GridSet Aggregator
+     * @param tileBreeder The GeoWebCache TileBreeder (Used for seeding)
+     * @param monitor The GeoWebCache DiskQuota Monitor
+     * @param owsDispatcher The GeoServer OWS Service Dispatcher
+     * @param catalog The GeoServer catalog, secured and filtered
+     * @param rawCatalog The raw GeoServer catalog, not secured. Use with extreme caution!
+     * @param storageFinder GeoWebcache system variable and configuration source
+     * @param jdbcConfigurationStorage GeoServer integrator for GeoWebCache DiskQuota {@link JDBCConfiguration}
+     * @param blobStoreAggregator GeoWebCache BlobStore Aggregator
+     */
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
             final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
@@ -293,6 +310,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         lockProvider.setDelegate(delegate);
     }
 
+
+    /**
+     * Retrieves the GWC mediator bean, if registered in the spring context or set via {@link #set(GWC)}.
+     *
+     * @return The {@link GWC} mediator bean
+     * @throws IllegalStateException if no {@link GWC} instance was found.
+     */
     public synchronized static GWC get() {
         if (GWC.INSTANCE == null) {
             GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
@@ -1554,6 +1578,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
     }
 
+    /**
+     * Looks up the {@link XMLConfiguration} from the spring context.
+     * @deprecated Only to be used for testing
+     * @return The {@link XMLConfiguration}
+     */
+    @Deprecated
     XMLConfiguration getXmlConfiguration() {
         XMLConfiguration mainConfig = GeoWebCacheExtensions.bean(XMLConfiguration.class);
         return mainConfig;
@@ -1563,6 +1593,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return blobStoreAggregator;
     }
 
+    /**
+     * Retrieves a {@link Response} that can encode metatile requests
+     * @param responseFormat The format of the tile response
+     * @param metaTileMap The metatile map
+     * @return A Response object that can encode the request (typically a {@link RenderedImageMapResponse})
+     */
     @SuppressWarnings("unchecked")
     public Response getResponseEncoder(MimeType responseFormat, RenderedImageMap metaTileMap) {
         final String format = responseFormat.getFormat();
@@ -1603,6 +1639,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return response;
     }
 
+    /**
+     * Determines if the {@link PublishedInfo} associated with a {@link GeoServerTileLayer} is queryable via WMS
+     * @param geoServerTileLayer The tile layer to query
+     * @return <code>true</code> if the layer is queryable
+     */
     public boolean isQueryable(final GeoServerTileLayer geoServerTileLayer) {
         WMS wmsMediator = WMS.get();
         LayerInfo layerInfo = geoServerTileLayer.getLayerInfo();
@@ -1626,12 +1667,25 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return filtered;
     }
 
+    /**
+     * Modifies a {@link TileLayer} via the {@link TileLayerDispatcher}, and logs the change.
+     * Only affects the GeoWebCache configuration.
+     *
+     * @param layer The layer to save.
+     */
     public void save(final TileLayer layer) {
         checkNotNull(layer);
         log.info("Saving GeoSeverTileLayer " + layer.getName());
         tld.modify(layer);
     }
 
+    /**
+     * Renames a {@link TileLayer} via the {@link TileLayerDispatcher}, and logs the change.
+     * Only affects the GeoWebCache configuration.
+     *
+     * @param oldTileLayerName The old layer name.
+     * @param newTileLayerName The new layer name.
+     */
     public void rename(String oldTileLayerName, String newTileLayerName) {
         checkNotNull(oldTileLayerName);
         checkNotNull(newTileLayerName);
@@ -1913,8 +1967,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * layer doesn't need to have a gridSubset associated for the given gridset at runtime (in order
      * to handle the deletion of a layer's gridsubset)
      * 
-     * @param layerName
-     * @param gridSetId
+     * @param layerName The layer name
+     * @param gridSetId The gridset name
      * @TODO: make async?, it may take a while to the metastore to delete all tiles (sigh)
      */
     public void deleteCacheByGridSetId(final String layerName, final String gridSetId) {
@@ -2232,8 +2286,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * Checks the JDBC quota store can be instantiated 
      * 
-     * @param jdbcConfiguration
-     * @throws ConfigurationException
+     * @param jdbcConfiguration The JDBC Quota Store configuration
+     * @throws ConfigurationException if the quota store cannot be instantiated
      */
     public void testQuotaConfiguration(JDBCConfiguration jdbcConfiguration) throws ConfigurationException, IOException {
         jdbcConfigurationStorage.testQuotaConfiguration(jdbcConfiguration);
@@ -2249,6 +2303,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /**
+     * Synchronizes environment properties between the {@link GeoServerEnvironment} and the
+     * {@link GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
+     *
      * @throws IllegalArgumentException
      */
     public void syncEnv() throws IllegalArgumentException {
@@ -2393,7 +2450,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
     
     /**
-     * Convenience method to remove blobstres by id; a filtered view of the blobstores configuration
+     * Convenience method to remove blobstores by id; a filtered view of the blobstores configuration
      * objects is passed to {@link #setBlobStores(List)}
      * 
      * @param blobStoreIds the unique identifiers for the blobstores that will be removed from the
@@ -2432,7 +2489,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param stores the new set of blob stores
      * @throws ConfigurationException if the running blobstores can't be replaced by the provided
      *         ones or the configuration can't be saved
-     * @see {@link CompositeBlobStore#setBlobStores}
+     * @see CompositeBlobStore#setBlobStores(Iterable)
      */
     void setBlobStores(List<BlobStoreInfo> stores) throws ConfigurationException {
         Preconditions.checkNotNull(stores, "stores is null");

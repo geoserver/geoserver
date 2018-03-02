@@ -17,6 +17,7 @@ import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.wms.WMS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.ReinitializingBean;
 import org.geowebcache.config.TileLayerConfiguration;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.grid.BoundingBox;
@@ -535,7 +536,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     /**
-     * @see TileLayerConfiguration#modifyLayer(TileLayer)
+     * @see TileLayerConfiguration#renameLayer(String, String)
      */
     @Override
     public synchronized void renameLayer(String oldName, String newName) throws NoSuchElementException {
@@ -730,6 +731,9 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return names;
     }
 
+    /**
+     * Invalidates the later cache and resets the tile layer catalog.
+     */
     public void reset() {
         lock.acquireWriteLock();
         try {
@@ -759,17 +763,28 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return layerName;
     }
 
+    /**
+     * @see TileLayerConfiguration#getLocation()
+     */
     @Override
     public String getLocation() {
         return this.tileLayerCatalog.getPersistenceLocation();
     }
 
+    /**
+     * @see ReinitializingBean#deinitialize()
+     */
     @Override
     public void deinitialize() throws Exception {
-        // TODO Auto-generated method stub
         
     }
 
+    /**
+     * Sets the {@link GridSetBroker} for use by this configuration.
+     * Automatically called by spring on context initialization.
+     *
+     * @param broker The GridSet broker
+     */
     @Autowired
     @Override
     public void setGridSetBroker(@Qualifier("gwcGridSetBroker") GridSetBroker broker) {

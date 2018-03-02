@@ -51,7 +51,7 @@ public class TileLayerInfoUtil {
 
     /**
      * Creates a cached tile layer from the given Layer Group
-     * @param info the layer group to cache
+     * @param groupInfo the layer group to cache
      * @param defaults default configuration
      *
      */
@@ -70,7 +70,7 @@ public class TileLayerInfoUtil {
 
     /**
      * Creates a cached tile layer from the given Layer
-     * @param info the layer to cache
+     * @param layerInfo the layer to cache
      * @param defaults default configuration
      *
      */
@@ -132,7 +132,7 @@ public class TileLayerInfoUtil {
     
     /**
      * If the layer is configured for automatic style updates of its Style parameter filter, do so.
-     * @param layer The GeoServer layer
+     * @param published The GeoServer layer
      * @param layerInfo The GeoWebCache layer
      */
     public static void checkAutomaticStyles(final PublishedInfo published,
@@ -275,7 +275,7 @@ public class TileLayerInfoUtil {
     }
 
     /**
-     * Add a {@link RegexpParameterFilter} set accept anything, replacing any existing filter for the same parameter. 
+     * Add a {@link RegexParameterFilter} set accept anything, replacing any existing filter for the same parameter.
      * @param tileLayerInfo layer to update the filter on
      * @param paramKey key for the parameter
      * @param createParam create a new filter if there is none to replace for the specified key

@@ -1,3 +1,7 @@
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.gwc.layer;
 
 
@@ -37,6 +41,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+/**
+ * GeoServer integration test for {@link TileLayerConfiguration}
+ */
 public class CatalogConfigurationLayerConformanceTest extends LayerConfigurationTest {
     
     @Rule 

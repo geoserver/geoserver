@@ -157,8 +157,16 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
         return Context.REST==ctxt;
     }
 
+    /**
+     * @see ContextualConfigurationProvider#canSave(Info)
+     *
+     * Always returns false, as persistence is not relevant for REST.
+     *
+     * @param i Info to save
+     * @return <code>false</code>
+     */
     @Override
     public boolean canSave(Info i) {
-        return false; // Not relevant for REST
+        return false;
     }
 }

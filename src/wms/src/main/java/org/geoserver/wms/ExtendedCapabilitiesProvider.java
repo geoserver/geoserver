@@ -27,7 +27,7 @@ public interface ExtendedCapabilitiesProvider extends org.geoserver.ExtendedCapa
      * This method returns only the element names that are direct children of
      * VendorSpecificCapabilities so that they can be aggregated in a single declaration like
      * {@code <!ELEMENT VendorSpecificCapabilities (ContributedElementOne*, ContributedElementTwo*) >}
-     * . Implement {@link #getVendorSpecificCapabilitiesChildDecls()} to contribute the child
+     * . Implement {@link #getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)} to contribute the child
      * elements of these root ones.
      * </p>
      * 

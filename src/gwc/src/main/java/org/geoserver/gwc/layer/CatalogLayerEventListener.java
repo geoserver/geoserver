@@ -56,7 +56,7 @@ import com.google.common.collect.Sets;
  * Handles the following cases:
  * <ul>
  * <li><b>Layer added</b>: a {@link LayerInfo} or {@link LayerGroupInfo} has been added. A
- * {@link GeoServerTileLayer} is {@link CatalogConfiguration#createLayer is created} with the
+ * {@link GeoServerTileLayer} is {@link #createTileLayer is created} with the
  * {@link GWCConfig default settings} only if the integrated GWC configuration is set to
  * {@link GWCConfig#isCacheLayersByDefault() cache layers by default}.</li>
  * <li><b>Layer removed</b>: a {@code LayerInfo} or {@code LayerGroupInfo} has been removed. GWC is
@@ -124,8 +124,8 @@ public class CatalogLayerEventListener implements CatalogListener {
      * {@link GWCConfig#isCacheLayersByDefault()}.
      * 
      * @see org.geoserver.catalog.event.CatalogListener#handleAddEvent
-     * @see GWC#createLayer(LayerInfo)
-     * @see GWC#createLayer(LayerGroupInfo)
+     * @see #createTileLayer(LayerInfo)
+     * @see #createTileLayer(LayerGroupInfo)
      */
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         GWCConfig config = mediator.getConfig();
@@ -205,7 +205,7 @@ public class CatalogLayerEventListener implements CatalogListener {
     /**
      * In case the event refers to the addition or removal of a {@link LayerInfo} or
      * {@link LayerGroupInfo} adds or removes the corresponding {@link GeoServerTileLayer} through
-     * {@link GWC#createLayer}.
+     * {@link #createTileLayer}.
      * <p>
      * Note this method does not discriminate whether the change in the layer or layergroup deserves
      * a change in its matching TileLayer, it just re-creates the TileLayer

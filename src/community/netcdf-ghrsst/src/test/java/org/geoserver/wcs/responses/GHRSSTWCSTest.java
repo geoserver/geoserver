@@ -18,6 +18,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.kvp.WCSKVPTestSupport;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
+import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import ucar.ma2.DataType;
@@ -214,5 +216,22 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
         }
     }
 
+    /**
+     * Test NetCDF output from a coverage view having the required GHRSST bands/variables
+     */
+    @Test
+    public void testGHRSSTSubset() throws Exception {
+        // test requires NetCDF-4 native libs to be available
+        Assume.assumeTrue(NetCDFUtilities.isNC4CAvailable());
+        
+        // this used to crash
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageid=" + getLayerId(SST).replace(":", "__")
+                        + "&subset=Long(-10,10)&subset=Lat(-10,10)"
+                        + "&format=application/x-netcdf4");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/x-netcdf4", response.getContentType());
+    }
 
 }

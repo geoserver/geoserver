@@ -146,21 +146,6 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /**
-     * Attributes that are never copied to the main output variable from a NetCDF/GRIB source because they require 
-     * special handling.
-     */
-    @SuppressWarnings("serial")
-    private static final Set<String> COPY_ATTRIBUTES_BLACKLIST = new HashSet<String>() {
-        {
-            // coordinate variable names are usually changed
-            add("coordinates");
-            // these do not survive type change or packing and should be set from nodata value
-            add("_FillValue");
-            add("missing_value");
-        }
-    };
-
-    /**
      * In case of data packing best to remove these as well
      */
     private static final Set<String> DATA_PACKING_ATTRIBUTES_BLACKLIST = new HashSet<String>() {

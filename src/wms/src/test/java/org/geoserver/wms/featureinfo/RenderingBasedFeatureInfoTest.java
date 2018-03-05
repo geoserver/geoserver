@@ -128,43 +128,26 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
      */
     @Test
     public void  testHitAreaSize()  throws Exception {
-        int mapWidth = 100;
-        int mapHeight = 100;
-        
-        
-        Envelope mapbbox = new Envelope(0.0001955, 0.0002035, 0.000696, 0.000704);
-        
-        VectorRenderingLayerIdentifier vrli = new VectorRenderingLayerIdentifier(getWMS(), null) {
-
-            @Override
-            protected int getBuffer(int userBuffer) {
-                return 3;
-            }
-            
-
-        };
-        
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
         GetMapRequest getMapRequest = new GetMapRequest();
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> layers = new ArrayList<>();
         
         layers.add(new MapLayerInfo(getCatalog().getLayerByName(
                 MockData.BRIDGES.getLocalPart())));
         getMapRequest.setLayers(layers);
         getMapRequest.setSRS("EPSG:4326");
-        getMapRequest.setBbox(mapbbox);
-        getMapRequest.setWidth(mapWidth);
+        getMapRequest.setBbox(new Envelope(0.0001955, 0.0002035, 0.000696, 0.000704));
+        getMapRequest.setWidth(100);
+        getMapRequest.setHeight(100);
         getMapRequest.setFormat("image/png");
-        
-        getMapRequest.setHeight(mapHeight);
         request.setGetMapRequest(getMapRequest);
         request.setQueryLayers(layers);
-        request.setXPixel(50);
-        request.setYPixel(50);
-        
+        // point is almost centered, but on the other side of the middle point
+        request.setXPixel(45);
+        request.setYPixel(45);
 
         FeatureInfoRequestParameters params = new FeatureInfoRequestParameters(request);
-        
+        VectorRenderingLayerIdentifier vrli = new VectorRenderingLayerIdentifier(getWMS(), null);
         assertEquals(0, vrli.identify(params, 10).size());
     }
 
@@ -211,11 +194,13 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     public void testDynamicSize() throws Exception {
         // use a style that has a rule with a attribute dependent size, the old code 
         // will fallback on the default size since the actual one is not known
-        String url = "wms?REQUEST=GetFeatureInfo"
+        String baseUrl = "wms?REQUEST=GetFeatureInfo"
                 + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
                 + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
                 + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
-                + "&styles=dynamic&srs=EPSG%3A4326&version=1.1.1&x=49&y=60&feature_count=50";
+                + "&styles=dynamic&srs=EPSG%3A4326&version=1.1.1&feature_count=50";
+        
+        String url = baseUrl + "&x=49&y=60";
         
         // the default buffer is not large enough to realize we clicked on the mark
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
@@ -228,6 +213,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         JSONObject result2 = (JSONObject) getAsJSON(url);
         // print(result2);
         assertEquals(1, result2.getJSONArray("features").size());
+        
+        // go more out of the feature to test search radius
+        url = baseUrl + "&x=54&y=50&buffer=10";
+        JSONObject result3 = (JSONObject) getAsJSON(url);
+        // print(result3);
+        assertEquals(1, result3.getJSONArray("features").size());
     }
     
     @Test
@@ -341,8 +332,9 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 + layer
                 + "&Layers="
                 + layer
-                + "&WIDTH=90&HEIGHT=90&format=image%2Fpng&styles=doublepoly&srs=EPSG%3A4326&version=1.1.1&x=34&y=34";
+                + "&WIDTH=90&HEIGHT=90&format=image%2Fpng&styles=doublepoly&srs=EPSG%3A4326&version=1.1.1&x=36&y=36";
         JSONObject result = (JSONObject) getAsJSON(request);
+        print(result);
         // we used to get two results
         assertEquals(1, result.getJSONArray("features").size());
     }

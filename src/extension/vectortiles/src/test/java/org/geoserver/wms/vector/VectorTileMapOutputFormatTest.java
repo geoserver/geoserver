@@ -31,14 +31,17 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -68,6 +71,7 @@ public class VectorTileMapOutputFormatTest {
     private VectorTileBuilder tileBuilderMock;
 
     private FeatureLayer pointLayer, lineLayer, polygonLayer,scaleDependentPolygonLayer;
+    private List<MapContent> mapContents = new ArrayList<>();
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -132,6 +136,12 @@ public class VectorTileMapOutputFormatTest {
         lineLayer = new FeatureLayer(ds.getFeatureSource("lines"), defaultLineStyle);
         polygonLayer = new FeatureLayer(ds.getFeatureSource("polygons"), defaultPolygonStyle);
         scaleDependentPolygonLayer = new FeatureLayer(ds.getFeatureSource("polygons"), scaleDependentPolygonStyle);
+    }
+    
+    @After
+    public void disposeMapContents() {
+        // just to avoid nagging logs
+        mapContents.forEach(mc -> mc.dispose());
     }
 
 
@@ -240,6 +250,32 @@ public class VectorTileMapOutputFormatTest {
                 any(Geometry.class), any(Map.class));
     }
 
+    @Test
+    public void testCQLfilter() throws Exception {
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(-90, 90, 0, 180, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, null, pointLayer);
+        FeatureLayer layer = (FeatureLayer) mapContent.layers().get(0);
+        layer.setQuery(new Query(null, ECQL.toFilter("sp = 'StringProp1_2'")));
+
+        WebMap mockMap = mock(WebMap.class);
+        when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
+
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
+
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("point1"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, times(1)).addFeature(eq("points"), eq("point2"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("point3"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("pointFar"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+        verify(tileBuilderMock, never()).addFeature(eq("points"), eq("pointNear"), eq("geom"),
+                any(Geometry.class), any(Map.class));
+    }
+
     private WMSMapContent createMapContent(ReferencedEnvelope mapBounds, Rectangle renderingArea, 
             Integer buffer, Layer... layers) throws Exception {
 
@@ -254,9 +290,11 @@ public class VectorTileMapOutputFormatTest {
         }
         map.setMapWidth(renderingArea.width);
         map.setMapHeight(renderingArea.height);
-        if(Objects.nonNull(buffer)) {
+        if (Objects.nonNull(buffer)) {
             map.setBuffer(buffer);
         }
+        
+        mapContents.add(map);
 
         return map;
     }

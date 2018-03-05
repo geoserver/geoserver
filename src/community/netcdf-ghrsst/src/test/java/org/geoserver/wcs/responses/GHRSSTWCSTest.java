@@ -187,8 +187,8 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
             // enable ehancing to check values
             dataset.enhance(NetcdfDataset.getEnhanceAll());
             assertValues(dataset, "sea_surface_temperature", new double[]{301, 302, 303, 304, 305, 306, 307, 308, 
-                    309}, 2e-4);
-            assertValues(dataset, "wind_speed", new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 1e-1);
+                    309}, 2e-3);
+            assertValues(dataset, "wind_speed", new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 0.2);
         } finally {
             // FileUtils.deleteQuietly(file);
         }

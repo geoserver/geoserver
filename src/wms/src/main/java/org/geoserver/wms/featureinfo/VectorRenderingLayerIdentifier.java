@@ -95,7 +95,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
     static final Logger LOGGER = Logging.getLogger(VectorRenderingLayerIdentifier.class);
     private static final String FEATURE_INFO_RENDERING_ENABLED_KEY = "org.geoserver.wms.featureinfo.render.enabled";
-    protected static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.render.minBuffer", 3);
+    // smaller by default than VectorBasicLayerIdentifier because this mode accounts for symbol sizes, 
+    // not just for info point to geometry distance
+    protected static final int MIN_BUFFER_SIZE = Integer.getInteger(VectorBasicLayerIdentifier.FEATUREINFO_DEFAULT_BUFFER, 3);
     public static boolean RENDERING_FEATUREINFO_ENABLED;
     
     private WMS wms;
@@ -212,7 +214,11 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
 
     protected int getBuffer(final int userBuffer) {
-        return Math.min(userBuffer, wms.getMaxBuffer());
+        if (wms.getMaxBuffer() <= 0) {
+            return userBuffer;
+        } else {
+            return Math.min(userBuffer, wms.getMaxBuffer());
+        }
     }
 
     protected GetMapOutputFormat createMapOutputFormat(final BufferedImage image,
@@ -384,7 +390,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         // is it part of the request params?
         int requestBuffer = params.getBuffer();
         if(requestBuffer > 0) {
-            return (int) Math.ceil(requestBuffer / 2.0);
+            return requestBuffer;
         }
         
         // was it manually configured?
@@ -395,7 +401,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             layerBuffer = layerInfo.getMetadata().get(LayerInfo.BUFFER, Integer.class);
         }
         if (layerBuffer != null && layerBuffer > 0) {
-            return (int) Math.round(layerBuffer / 2.0);
+            return layerBuffer;
         }
         
         // estimate the radius given the currently active rules

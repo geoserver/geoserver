@@ -251,8 +251,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                             for (Attribute att : sourceVar.getAttributes()) {
                                 // do not allow overwrite or attributes in blacklist
                                 if (var.findAttribute(att.getFullName()) == null
-                                        && !COPY_ATTRIBUTES_BLACKLIST
-                                                .contains(att.getShortName())) {
+                                        && !COPY_ATTRIBUTES_BLACKLIST.contains(att.getShortName())) {
                                     writer.addVariableAttribute(var, att);
                                 }
                             }

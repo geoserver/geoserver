@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -601,6 +603,38 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return ProxyUtils.handler(object, ModificationProxy.class);
     }
 
+    /**
+     * If the given object is a modification proxy, unwraps it, passes it to innerWrap, then wraps
+     * the result with a proxy that has the same modifications as the original. If the object is not
+     * a modification proxy, then it simply returns the result of applying innerWrap.
+     * <p/>
+     * This will not recursively re-wrap properties that hold other ModificationProxies.  If that is
+     * needed, it is up to innerWrap do this itself.
+     * @param object
+     * @param innerWrap
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T rewrap(T object, UnaryOperator<T> innerWrap, Class<T> clazz) {
+        ModificationProxy oldHandler = handler(object);
+        if(Objects.isNull(oldHandler)) {
+            return innerWrap.apply(object);
+        } else {
+            T newProxyObject = innerWrap.apply((T) oldHandler.getProxyObject());
+            T newProxy = create(newProxyObject, clazz);
+            
+            // Copy the old state onto the new proxy
+            ModificationProxy newHandler = handler(newProxy);
+            if(Objects.nonNull(oldHandler.oldCollectionValues)) {
+                newHandler.oldCollectionValues = new HashMap<String,Object> (oldHandler.oldCollectionValues);
+            }
+            if(Objects.nonNull(oldHandler.properties)) {
+                newHandler.properties = new HashMap<String,Object> (oldHandler.properties);
+            }
+            
+            return newProxy;
+        }
+    }
+    
     static class list<T> extends ProxyList {
 
         list( List<T> list, Class<T> clazz ) {

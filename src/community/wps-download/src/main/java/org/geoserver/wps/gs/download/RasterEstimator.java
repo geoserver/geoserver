@@ -98,6 +98,9 @@ class RasterEstimator {
             roiManager = new ROIManager(roi, roiCRS);
             // set use nativeCRS
             roiManager.useNativeCRS(nativeCRS);
+            if (targetCRS != null) {
+                roiManager.useTargetCRS(targetCRS);
+            }
         }
 
         // get a reader for this CoverageInfo
@@ -139,7 +142,16 @@ class RasterEstimator {
             scaling = new ScaleToTarget(reader);
         }
         scaling.setTargetSize(targetSizeX, targetSizeY);
-        GridGeometry2D gg = scaling.getGridGeometry();
+        
+        GridGeometry2D gg = null;
+
+        if (targetSizeX == null && targetSizeY == null) {
+            // Ask to the GridGeometryProvider
+            GridGeometryProvider provider = new GridGeometryProvider(reader, roiManager, filter);
+            gg = provider.getGridGeometry();
+        } else {
+            gg = scaling.getGridGeometry();    
+        }
 
         areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
 

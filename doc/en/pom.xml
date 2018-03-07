@@ -406,6 +406,12 @@
       </properties>
     </profile>
     <profile>
+      <id>user-pdf</id>
+      <properties>
+        <target>user-pdf</target>
+      </properties>
+    </profile>
+    <profile>
       <id>developer</id>
       <properties>
         <target>developer</target>

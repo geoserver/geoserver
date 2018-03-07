@@ -1617,5 +1617,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>wfs3</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wfs3</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 </project>

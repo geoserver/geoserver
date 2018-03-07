@@ -588,5 +588,11 @@
         <module>mongodb</module>
       </modules>
     </profile>
+    <profile>
+      <id>wfs3</id>
+      <modules>
+        <module>wfs3</module>
+      </modules>
+    </profile>
   </profiles>  
 </project>

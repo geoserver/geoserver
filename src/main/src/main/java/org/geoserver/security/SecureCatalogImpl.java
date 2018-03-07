@@ -35,9 +35,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
-import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
@@ -48,7 +46,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.decorators.DecoratingCatalogFactory;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
-import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
@@ -69,6 +66,10 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+
+import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
+import org.geoserver.security.decorators.SecuredWMSStoreInfo;
+import org.geoserver.security.decorators.SecuredWMTSStoreInfo;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
@@ -1106,6 +1107,12 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     static StoreInfo unwrap(StoreInfo info) {
         if(info instanceof SecuredDataStoreInfo)
             return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo)
+            return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSStoreInfo)
+            return ((SecuredWMSStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSStoreInfo)
+            return ((SecuredWMTSStoreInfo) info).unwrap(StoreInfo.class);
         return info;
     }
 

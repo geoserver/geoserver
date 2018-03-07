@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,12 +31,14 @@ import java.util.stream.Stream;
  * The class contains a makeshift object model for Swagger, based on observation, not actual spec reading and probably
  * not formally correct, but good enough for the moment (looks like Java libs are more concentrated on code generation,
  * but somewhere in there, if it does not have too many dependencies, there is probably a proper object model for this).
- * 
- * Actually, found this after implementing the class, https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-models.
- * It might  be used for re-implementing this class in a cleaner, less error prone and more general way (although, think about
+ * <p>
+ * Actually, found this after implementing the class, https://github
+ * .com/swagger-api/swagger-core/tree/master/modules/swagger-models.
+ * It might  be used for re-implementing this class in a cleaner, less error prone and more general way (although, 
+ * think about
  * streaming support for large API documents too)
  */
-@JsonPropertyOrder({ "openapi", "info", "paths", "parameters" })
+@JsonPropertyOrder({"openapi", "info", "paths", "parameters"})
 public class APIDocument {
 
     private static final String TYPE_STRING = "string";
@@ -55,14 +58,13 @@ public class APIDocument {
     private static final Reference REF_EXCEPTION = new Reference("#/components/schemas/exception");
     private static final String TAG_CAPABILITIES = "Capabilities";
     private static final Response ERROR_RESPONSE;
-    
+
     static {
         ERROR_RESPONSE = new Response("An error occurred");
         ERROR_RESPONSE.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference(REF_EXCEPTION));
         ERROR_RESPONSE.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
     }
-    
-    
+
 
     public class Info {
         public String getTitle() {
@@ -120,7 +122,7 @@ public class APIDocument {
     }
 
     public static class Type {
-        
+
         String type;
 
         public Type(String type) {
@@ -193,7 +195,7 @@ public class APIDocument {
     public static class Response {
         String description;
         Map<String, FormatDescription> content;
-        
+
 
         public Response(String description) {
             this.description = description;
@@ -214,7 +216,7 @@ public class APIDocument {
         public void setContent(Map<String, FormatDescription> content) {
             this.content = content;
         }
-        
+
         public void addFormat(String name, FormatDescription format) {
             if (content == null) {
                 content = new HashMap<>();
@@ -222,10 +224,10 @@ public class APIDocument {
             content.put(name, format);
         }
     }
-    
+
     public static class FormatDescription {
         Object schema;
-        
+
         public FormatDescription withReference(String reference) {
             this.schema = new Reference(reference);
             return this;
@@ -235,7 +237,7 @@ public class APIDocument {
             this.schema = reference;
             return this;
         }
-        
+
         public FormatDescription withType(String type) {
             this.schema = new Type(type);
             return this;
@@ -250,7 +252,7 @@ public class APIDocument {
         }
 
     }
-    
+
     public static class Items {
         String type;
         Object minimum;
@@ -280,14 +282,14 @@ public class APIDocument {
             this.maximum = maximum;
         }
     }
-    
+
     public static class Parameter {
         String name;
         String in;
         Boolean required;
         String description;
         Schema schema;
-        String style; 
+        String style;
         String type;
         Items items;
 
@@ -346,7 +348,7 @@ public class APIDocument {
         public void setType(String type) {
             this.type = type;
         }
-        
+
         public Parameter withType(String type) {
             this.type = type;
             return this;
@@ -417,7 +419,7 @@ public class APIDocument {
         public Map<String, Parameter> getProperties() {
             return properties;
         }
-        
+
         public void setProperties(Map<String, Parameter> properties) {
             this.properties = properties;
         }
@@ -491,9 +493,9 @@ public class APIDocument {
         public void setMaxItems(Integer maxItems) {
             this.maxItems = maxItems;
         }
-        
+
     }
-    
+
     private final WFSInfo wfs;
     private final Catalog catalog;
     private String openapi = "3.0.0";
@@ -524,7 +526,8 @@ public class APIDocument {
         caps.setOperationId("describeCollections");
         caps.addParameter(REF_FORMAT);
         Response contents = new Response("The feature collections shared by this API");
-        contents.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference("'#/components/schemas/content"));
+        contents.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference
+                ("'#/components/schemas/content"));
         contents.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
         caps.addResponse("200", contents);
         caps.addResponse("default", ERROR_RESPONSE);
@@ -549,7 +552,8 @@ public class APIDocument {
                 " conforms to");
         conformance.addTag(TAG_CAPABILITIES);
         Response conformanceResponse = new Response("the URIs of all requirements classes supported by the server");
-        conformanceResponse.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference("#/components/schemas/req-classes"));
+        conformanceResponse.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference
+                ("#/components/schemas/req-classes"));
         conformance.addResponse("200", conformanceResponse);
         conformance.addResponse("default", ERROR_RESPONSE);
         result.put("/api/conformance", Collections.singletonMap("get", conformance));
@@ -585,17 +589,17 @@ public class APIDocument {
 
         return result;
     }
-    
+
     public Map<String, Object> getComponents() {
         Map<String, Object> components = new LinkedHashMap<>();
         components.put("parameters", getParameters());
         components.put("schemas", getSchemas());
         return components;
     }
-    
+
     protected Map<String, Parameter> getParameters() {
         Map<String, Parameter> parameters = new LinkedHashMap<>();
-        
+
         Parameter count = new Parameter();
         count.setName("count");
         count.setIn(IN_QUERY);
@@ -657,13 +661,13 @@ public class APIDocument {
         idSchema.setType(TYPE_STRING);
         id.setSchema(idSchema);
         parameters.put("id", id);
-        
+
         return parameters;
     }
 
     protected Map<String, Schema> getSchemas() {
         Map<String, Schema> schemas = new LinkedHashMap<>();
-        
+
         Schema exception = new Schema();
         exception.setType(TYPE_OBJECT);
         exception.addRequired("code");
@@ -685,17 +689,21 @@ public class APIDocument {
         reqClasses.addExample("http://www.opengis.net/spec/wfs-1/3.0/req/html");
         reqClasses.addExample("http://www.opengis.net/spec/wfs-1/3.0/req/geojson");
         schemas.put("exception", exception);
-        
+
         return schemas;
     }
-    
+
     protected Map<String, FormatDescription> getAvailableFormats() {
         Map<String, FormatDescription> descriptions = new TreeMap<>();
         Collection featureProducers = GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
         for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
             WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
             // TODO: get better collaboration from content
-            String formatName = format.getOutputFormats().iterator().next();
+            Set<String> formats = format.getOutputFormats();
+            if (formats.isEmpty()) {
+                continue;
+            }
+            String formatName = formats.iterator().next();
             if (formatName.contains("text") || formatName.contains("csv")) {
                 descriptions.put(formatName, new FormatDescription().withType(TYPE_STRING));
             } else {

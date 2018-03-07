@@ -32,13 +32,15 @@ public abstract class BaseKvpRequestReader extends KvpRequestReader {
             Object format = kvp.get("f");
             setFormat(kvp, rawKvp, format);
         } else if (request != null) {
-            String header = dispatcherRequest.getHttpRequest().getHeader(HttpHeaders.ACCEPT);
-            if (header != null) {
-                String[] formats = header.split("\\s*,\\s");
-                // TODO: check supported formats and pick the first that's actually supported
-                String format = formats[0];
-                setFormat(kvp, rawKvp, format);
-            }
+            // ignoring for the moment, until the HTML output formats are ready, otherwise
+            // it won't show up in the browser
+//            String header = dispatcherRequest.getHttpRequest().getHeader(HttpHeaders.ACCEPT);
+//            if (header != null) {
+//                String[] formats = header.split("\\s*,\\s*");
+//                // TODO: check supported formats and pick the first that's actually supported
+//                String format = formats[0];
+//                setFormat(kvp, rawKvp, format);
+//            }
         }
         
         return super.read(request, kvp, rawKvp);                            

@@ -67,4 +67,9 @@ public class APIDocumentResponse extends WFSResponse {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.writeValue(output, value);
     }
+
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        return "api" + (isJsonFormat(operation) ? ".json" : ".yaml");
+    }
 }

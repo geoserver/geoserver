@@ -89,6 +89,7 @@
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-mongodb.xml</descriptor>
+          <descriptor>release/ext-wfs3.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -257,6 +258,7 @@
         <module>netcdf-ghrsst</module>
         <module>mongodb</module>
         <module>taskmanager</module>
+        <module>wfs3</module>
       </modules>
     </profile>
     <profile>

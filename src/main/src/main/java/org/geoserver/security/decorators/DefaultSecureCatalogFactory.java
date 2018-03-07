@@ -45,20 +45,22 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
             return null;
 
         Class clazz = object.getClass();
+        // for each supported Info type, log a warning if the object to be secured is already secured. If this happens,
+        // it could lead to a StackOverflowError if the object is re-wrapped, over time, over and over agian.
         if (CoverageInfo.class.isAssignableFrom(clazz))
-            return new SecuredCoverageInfo(unwrap((CoverageInfo) object), policy);
+            return new SecuredCoverageInfo(logIfSecured((CoverageInfo) object), policy);
         else if (CoverageStoreInfo.class.isAssignableFrom(clazz))
-            return new SecuredCoverageStoreInfo(unwrap((CoverageStoreInfo) object), policy);
+            return new SecuredCoverageStoreInfo(logIfSecured((CoverageStoreInfo) object), policy);
         else if (DataStoreInfo.class.isAssignableFrom(clazz))
-            return new SecuredDataStoreInfo(unwrap((DataStoreInfo) object), policy);
+            return new SecuredDataStoreInfo(logIfSecured((DataStoreInfo) object), policy);
         else if (FeatureTypeInfo.class.isAssignableFrom(clazz))
-            return new SecuredFeatureTypeInfo(unwrap((FeatureTypeInfo) object), policy);
+            return new SecuredFeatureTypeInfo(logIfSecured((FeatureTypeInfo) object), policy);
         else if (LayerInfo.class.isAssignableFrom(clazz))
-            return new SecuredLayerInfo(unwrap((LayerInfo) object), policy);
+            return new SecuredLayerInfo(logIfSecured((LayerInfo) object), policy);
         else if (WMSLayerInfo.class.isAssignableFrom(clazz))
-            return new SecuredWMSLayerInfo(unwrap((WMSLayerInfo) object), policy);
+            return new SecuredWMSLayerInfo(logIfSecured((WMSLayerInfo) object), policy);
         else if (WMTSLayerInfo.class.isAssignableFrom(clazz))
-            return new SecuredWMTSLayerInfo(unwrap((WMTSLayerInfo) object), policy);
+            return new SecuredWMTSLayerInfo(logIfSecured((WMTSLayerInfo) object), policy);
         else
             throw new IllegalArgumentException("Don't know how to wrap " + object);
     }
@@ -77,33 +79,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         LOGGER.warning(msg);
     }
 
-    private void logDoubleWrap(final DataStoreInfo store) {
-        int proxies = 0;
-        int secured = 0;
-        DataStoreInfo object = store;
-        while (true) {
-            DataStoreInfo unwrapped;
-            if (object instanceof SecuredDataStoreInfo) {
-                secured++;
-                unwrapped = ((SecuredDataStoreInfo) object).unwrap(DataStoreInfo.class);
-            } else {
-                unwrapped = ModificationProxy.unwrap(object);
-                boolean isProxy = object != unwrapped;
-                if (isProxy) {
-                    proxies++;
-                } else {
-                    break;
-                }
-            }
-            object = unwrapped;
-        }
-
-        String msg = String.format("Double securing %s: proxies: %,d, SecuredDataStoreInfos: %,d",
-                store.getName(), proxies, secured);
-        LOGGER.warning(msg);
-    }
-
-    private WMTSLayerInfo unwrap(WMTSLayerInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link WMTSLayerInfo} to check.
+     * @return The original object to be checked.
+     */
+    private WMTSLayerInfo logIfSecured(WMTSLayerInfo object) {
         WMTSLayerInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredWMTSLayerInfo) {
             logDoubleWrap(unwrapped, object);
@@ -111,7 +95,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         return object;
     }
 
-    private WMSLayerInfo unwrap(WMSLayerInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link WMSLayerInfo} to check.
+     * @return The original object to be checked.
+     */
+    private WMSLayerInfo logIfSecured(WMSLayerInfo object) {
         WMSLayerInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredWMSLayerInfo) {
             logDoubleWrap(unwrapped, object);
@@ -119,7 +111,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         return object;
     }
 
-    private LayerInfo unwrap(LayerInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link LayerInfo} to check.
+     * @return The original object to be checked.
+     */
+    private LayerInfo logIfSecured(LayerInfo object) {
         LayerInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredLayerInfo) {
             logDoubleWrap(unwrapped, object);
@@ -127,7 +127,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         return object;
     }
 
-    private FeatureTypeInfo unwrap(FeatureTypeInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link FeatureTypeInfo} to check.
+     * @return The original object to be checked.
+     */
+    private FeatureTypeInfo logIfSecured(FeatureTypeInfo object) {
         FeatureTypeInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredFeatureTypeInfo) {
             logDoubleWrap(unwrapped, object);
@@ -135,7 +143,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         return object;
     }
 
-    private CoverageStoreInfo unwrap(CoverageStoreInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link CoverageStoreInfo} to check.
+     * @return The original object to be checked.
+     */
+    private CoverageStoreInfo logIfSecured(CoverageStoreInfo object) {
         CoverageStoreInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredCoverageStoreInfo) {
             logDoubleWrap(unwrapped, object);
@@ -143,7 +159,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         return object;
     }
 
-    private CoverageInfo unwrap(CoverageInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link CoverageInfo} to check.
+     * @return The original object to be checked.
+     */
+    private CoverageInfo logIfSecured(CoverageInfo object) {
         CoverageInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredDataStoreInfo) {
             logDoubleWrap(unwrapped, object);
@@ -151,10 +175,18 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         return object;
     }
 
-    private DataStoreInfo unwrap(DataStoreInfo object) {
+    /**
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
+     * @param object {@link DataStoreInfo} to check.
+     * @return The original object to be checked.
+     */
+    private DataStoreInfo logIfSecured(DataStoreInfo object) {
         DataStoreInfo unwrapped = ModificationProxy.unwrap(object);
         if(unwrapped instanceof SecuredDataStoreInfo) {
-            logDoubleWrap(object);
+            logDoubleWrap(unwrapped, object);
         }
         return object;
     }

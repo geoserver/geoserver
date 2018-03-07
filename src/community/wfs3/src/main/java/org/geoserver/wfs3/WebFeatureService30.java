@@ -4,7 +4,12 @@
  */
 package org.geoserver.wfs3;
 
+import net.opengis.wfs20.GetFeatureType;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+
 public interface WebFeatureService30 {
     
-    public APIDocument api(APIRequest request);
+    APIDocument api(APIRequest request);
+    
+    FeatureCollectionResponse getFeature(GetFeatureType request);
 }

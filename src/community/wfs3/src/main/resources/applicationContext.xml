@@ -16,13 +16,14 @@
     <constructor-arg index="4">
       <list>
         <value>api</value>
-        <value>features</value>
+        <value>GetFeature</value>
       </list>
     </constructor-arg>
     <property name="customCapabilitiesLink" value="../wfs3/api"/>
   </bean>
   <bean id="wfs30ServiceTarget" class="org.geoserver.wfs3.DefaultWebFeatureService30">
     <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="wfsService20"/>
     <property name="filterFactory" ref="filterFactory"/>
   </bean>
   <bean id="wfsService30" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -46,7 +47,9 @@
   </bean>
 
   <!-- Hack to handle kvp-less requests -->
-  <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter"/>
+  <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">
+    <constructor-arg ref="catalog"/>
+  </bean>
 
   <!-- http url mapping -->
   <bean id="wfs3URLMapping" class="org.geoserver.ows.OWSHandlerMapping">

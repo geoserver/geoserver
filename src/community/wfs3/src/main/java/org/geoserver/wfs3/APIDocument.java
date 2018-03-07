@@ -606,10 +606,11 @@ public class APIDocument {
         Schema countSchema = new Schema();
         countSchema.setType(TYPE_INTEGER);
         countSchema.setMinimum(1);
-        if (wfs.getMaxFeatures() > 0) {
-            countSchema.setMaximum(wfs.getMaxFeatures());
+        int maxFeatures = wfs.getMaxFeatures();
+        if (maxFeatures > 0) {
+            countSchema.setMaximum(maxFeatures);
+            countSchema.setDefault(maxFeatures);
         }
-        countSchema.setDefault(10);
         count.setSchema(countSchema);
         count.setDescription("The optional count parameter limits the number of items that are presented " +
                 "in the response document.\n\n" +

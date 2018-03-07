@@ -4,8 +4,12 @@
  */
 package org.geoserver.wfs3;
 
+import net.opengis.wfs20.GetFeatureType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.WebFeatureService20;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.opengis.filter.FilterFactory2;
 
 /**
@@ -15,9 +19,11 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     private FilterFactory2 filterFactory;
     private final GeoServer geoServer;
+    private WebFeatureService20 wfs20;
 
-    public DefaultWebFeatureService30(GeoServer geoServer) {
+    public DefaultWebFeatureService30(GeoServer geoServer, WebFeatureService20 wfs20) {
         this.geoServer = geoServer;
+        this.wfs20 = wfs20;
     }
 
     public FilterFactory2 getFilterFactory() {
@@ -31,5 +37,13 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     @Override
     public APIDocument api(APIRequest request) {
         return new APIDocument(geoServer.getService(WFSInfo.class), geoServer.getCatalog());
+    }
+
+    @Override
+    public FeatureCollectionResponse getFeature(GetFeatureType request) {
+        
+        
+        
+        return wfs20.getFeature(request);
     }
 }

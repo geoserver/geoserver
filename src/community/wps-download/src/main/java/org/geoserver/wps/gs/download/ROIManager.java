@@ -214,6 +214,10 @@ final class ROIManager {
         return targetCRS;
     }
 
+    public CoordinateReferenceSystem getNativeCRS() {
+        return nativeCRS;
+    }
+
     public boolean isRoiCrsEqualsTargetCrs() {
         return roiCrsEqualsTargetCrs;
     }

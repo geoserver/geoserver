@@ -51,9 +51,19 @@
     <constructor-arg ref="geoServer"/>
   </bean>
 
-  <!-- Hack to handle kvp-less requests -->
+  <!-- Hack to map WFS3 requests parameters to OGC KVP lookalikes -->
   <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">
     <constructor-arg ref="catalog"/>
+  </bean>
+  
+  <!-- Exception handler -->
+  <bean id="wfs3ExceptionHandler" class="org.geoserver.wfs3.WFS3ExceptionHandler">
+    <constructor-arg>
+      <list>
+        <ref bean="wfsService-3.0" />
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="geoServer" />
   </bean>
 
   <!-- http url mapping -->

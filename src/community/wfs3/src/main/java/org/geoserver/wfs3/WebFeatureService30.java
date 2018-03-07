@@ -13,5 +13,5 @@ public interface WebFeatureService30 {
     
     APIDocument api(APIRequest request);
     
-    FeatureCollectionResponse getFeature(GetFeatureType request);
+    Object getFeature(GetFeatureType request);
 }

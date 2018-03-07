@@ -17,4 +17,11 @@ public class FeatureTest extends WFS3TestSupport {
         print(json);
     }
 
+    @Test
+    public void testGetSingleFeature() throws Exception {
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        JSON json = getAsJSON("wfs3/"  + roadSegments + "/RoadSegments.1107532045088");
+        print(json);
+    }
+
 }

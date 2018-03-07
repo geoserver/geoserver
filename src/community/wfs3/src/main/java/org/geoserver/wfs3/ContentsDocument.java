@@ -142,10 +142,11 @@ public class ContentsDocument {
         String contentsUrl = ResponseUtils.buildURL(baseUrl, "wfs3/", null, URLMangler.URLType.SERVICE);
         addLink(new ContentsDocument.Link(contentsUrl, ContentsDocument.REL_SELF, BaseRequest.JSON_MIME, "This" +
                 " document"));
-        String contentsHtmlUrl = ResponseUtils.buildURL(baseUrl, "wfs3/", Collections.singletonMap("f", "html"),
-                URLMangler.URLType.SERVICE);
-        addLink(new ContentsDocument.Link(contentsHtmlUrl, ContentsDocument.REL_ALTERNATE, BaseRequest
-                .HTML_MIME, "This document as HTML"));
+        // uncomment when HTML format is supported
+//        String contentsHtmlUrl = ResponseUtils.buildURL(baseUrl, "wfs3/", Collections.singletonMap("f", "html"),
+//                URLMangler.URLType.SERVICE);
+//        addLink(new ContentsDocument.Link(contentsHtmlUrl, ContentsDocument.REL_ALTERNATE, BaseRequest
+//                .HTML_MIME, "This document as HTML"));
         String contentsYamlUrl = ResponseUtils.buildURL(baseUrl, "wfs3/", Collections.singletonMap("f", "yaml"),
                 URLMangler.URLType.SERVICE);
         addLink(new ContentsDocument.Link(contentsYamlUrl, ContentsDocument.REL_ALTERNATE, BaseRequest
@@ -155,10 +156,10 @@ public class ContentsDocument {
         String apiUrl = ResponseUtils.buildURL(baseUrl, "wfs3/api", null, URLMangler.URLType.SERVICE);
         addLink(new ContentsDocument.Link(apiUrl, ContentsDocument.REL_SERVICE, BaseRequest.JSON_MIME, "The " +
                 "OpenAPI definition as JSON"));
-        String apiHtmlUrl = ResponseUtils.buildURL(baseUrl, "wfs3/api", Collections.singletonMap("f", "html"),
-                URLMangler.URLType.SERVICE);
-        addLink(new ContentsDocument.Link(apiHtmlUrl, ContentsDocument.REL_SERVICE, BaseRequest.HTML_MIME,
-                "The OpenAPI definition as HTML"));
+//        String apiHtmlUrl = ResponseUtils.buildURL(baseUrl, "wfs3/api", Collections.singletonMap("f", "html"),
+//                URLMangler.URLType.SERVICE);
+//        addLink(new ContentsDocument.Link(apiHtmlUrl, ContentsDocument.REL_SERVICE, BaseRequest.HTML_MIME,
+//                "The OpenAPI definition as HTML"));
         String apiYamlUrl = ResponseUtils.buildURL(baseUrl, "wfs3/api", Collections.singletonMap("f", "yaml"),
                 URLMangler.URLType.SERVICE);
         addLink(new ContentsDocument.Link(apiYamlUrl, ContentsDocument.REL_SERVICE, BaseRequest.YAML_MIME,

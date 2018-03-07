@@ -60,6 +60,7 @@ public class WFS3Filter implements GeoServerFilter {
                     request = new RequestWrapper(requestHTTP);
                 } catch(HttpErrorCodeException exception) {
                     ((HttpServletResponse) response).sendError(exception.getErrorCode(), exception.getMessage());
+                    return;
                 }
             }
         }
@@ -81,6 +82,8 @@ public class WFS3Filter implements GeoServerFilter {
         private String request;
         private String typeName;
         private String outputFormat;
+        private String featureId;
+        private boolean mapped;
 
         private RequestWrapper(HttpServletRequest wrapped) {
             super(wrapped);
@@ -95,6 +98,15 @@ public class WFS3Filter implements GeoServerFilter {
                 if (pathInfo.startsWith("/")) {
                     pathInfo = pathInfo.substring(1);
                 }
+                // selection by feature id?
+                if (pathInfo.contains("/")) {
+                    String[] split = pathInfo.split("/");
+                    if (split.length > 2) {
+                        throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Invalid path " + pathInfo);
+                    }
+                    pathInfo = split[0];
+                    featureId = split[1];
+                }
                 List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, pathInfo);
                 if (!layers.isEmpty()) {
                     request = "getFeature";
@@ -105,6 +117,8 @@ public class WFS3Filter implements GeoServerFilter {
             } else {
                 throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);
             }
+            
+            mapped = request != null;
 
             // everythign defaults to JSON in WFS3
             String f = wrapped.getParameter("f");
@@ -121,6 +135,11 @@ public class WFS3Filter implements GeoServerFilter {
             } else {
                 this.outputFormat = BaseRequest.JSON_MIME;
             }
+        }
+
+        @Override
+        public String getRequestURI() {
+            return super.getContextPath() + "/wfs3";
         }
 
         @Override
@@ -155,6 +174,9 @@ public class WFS3Filter implements GeoServerFilter {
             }
             if (outputFormat != null) {
                 filtered.put("outputFormat", outputFormat);
+            }
+            if (featureId != null && !featureId.isEmpty()) {
+                filtered.put("featureId", featureId);
             }
             return filtered;
         }

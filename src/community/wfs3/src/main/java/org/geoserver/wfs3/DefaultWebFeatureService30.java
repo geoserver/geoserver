@@ -6,11 +6,16 @@ package org.geoserver.wfs3;
 
 import net.opengis.wfs20.GetFeatureType;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.Feature;
 import org.opengis.filter.FilterFactory2;
 
 import java.util.ArrayList;
@@ -55,8 +60,23 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     }
 
     @Override
-    public FeatureCollectionResponse getFeature(GetFeatureType request) {
-        return wfs20.getFeature(request);
+    public Object getFeature(GetFeatureType request) {
+        FeatureCollectionResponse response = wfs20.getFeature(request);
+        // was it a single feature request? Getting at the dispatcher thread local, as delving into the
+        // request model is hard, the feature id is buried as a filter in one query object
+//        Request dr = Dispatcher.REQUEST.get();
+//        if (dr != null && dr.getKvp().get("featureId") != null && dr.getKvp().get("format").equals(BaseRequest
+//                .HTML_MIME)) {
+//            List<FeatureCollection> features = response.getFeature();
+//            try (FeatureIterator fi = features.get(0).features()) {
+//                // there should be one, WFS 2.0 should have already thrown a 404 otherwise
+//                Feature next = fi.next();
+//                return next;
+//            }
+//        } else {
+            // normal encoding
+            return response;
+//        }
     }
 
     /**

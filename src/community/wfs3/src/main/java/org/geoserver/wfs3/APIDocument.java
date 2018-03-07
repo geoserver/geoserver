@@ -62,7 +62,8 @@ public class APIDocument {
     static {
         ERROR_RESPONSE = new Response("An error occurred");
         ERROR_RESPONSE.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference(REF_EXCEPTION));
-        ERROR_RESPONSE.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
+        // uncomment when HTML format is supported
+        // ERROR_RESPONSE.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
     }
 
 
@@ -528,7 +529,8 @@ public class APIDocument {
         Response contents = new Response("The feature collections shared by this API");
         contents.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference
                 ("'#/components/schemas/content"));
-        contents.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
+        // uncomment when HTML format is supported
+        // contents.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
         caps.addResponse("200", contents);
         caps.addResponse("default", ERROR_RESPONSE);
         result.put("/", Collections.singletonMap("get", caps));
@@ -540,7 +542,8 @@ public class APIDocument {
         api.addParameter(REF_FORMAT);
         Response apiResponse = new Response("This API");
         apiResponse.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withType(TYPE_OBJECT));
-        apiResponse.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
+        // uncomment when HTML format is supported
+        // apiResponse.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
         apiResponse.addFormat(BaseRequest.YAML_MIME, new FormatDescription().withType(TYPE_OBJECT));
         api.addResponse("200", apiResponse);
         api.addResponse("default", ERROR_RESPONSE);

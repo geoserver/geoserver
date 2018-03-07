@@ -318,11 +318,11 @@ if [ -z $SKIP_BUILD ]; then
     cd ../../../developer
     make clean html
 
-  # 2.12 and newer uses mvn to do everything
+  # 2.12 and newer uses ant to do everything
   else
-    mvn clean compile -Puser
-    mvn compile -Puser-pdf
-    mvn compile -Pdeveloper
+    ant clean user -Pproject.version=$tag
+    ant user-pdf -Pproject.version=$tag
+    ant developer -Pproject.version=$tag
   fi
 
   popd > /dev/null

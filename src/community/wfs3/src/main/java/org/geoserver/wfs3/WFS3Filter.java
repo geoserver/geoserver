@@ -85,7 +85,9 @@ public class WFS3Filter implements GeoServerFilter {
         private RequestWrapper(HttpServletRequest wrapped) {
             super(wrapped);
             String pathInfo = wrapped.getPathInfo();
-            if (pathInfo.endsWith("api")) {
+            if (pathInfo.equals("/")) {
+                request = "contents";
+            } else if (pathInfo.endsWith("api")) {
                 request = "api";
             } else if (pathInfo.endsWith("api/conformance")) {
                 request = "conformance";

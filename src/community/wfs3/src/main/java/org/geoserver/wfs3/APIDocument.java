@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  * <p>
  * Actually, found this after implementing the class, https://github
  * .com/swagger-api/swagger-core/tree/master/modules/swagger-models.
- * It might  be used for re-implementing this class in a cleaner, less error prone and more general way (although, 
+ * It might  be used for re-implementing this class in a cleaner, less error prone and more general way (although,
  * think about
  * streaming support for large API documents too)
  */
@@ -695,21 +695,16 @@ public class APIDocument {
     }
 
     protected Map<String, FormatDescription> getAvailableFormats() {
-        Map<String, FormatDescription> descriptions = new TreeMap<>();
-        Collection featureProducers = GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
-        for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
-            WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
-            // TODO: get better collaboration from content
-            Set<String> formats = format.getOutputFormats();
-            if (formats.isEmpty()) {
-                continue;
-            }
-            String formatName = formats.iterator().next();
-            if (formatName.contains("text") || formatName.contains("csv")) {
+        Map<String, FormatDescription> descriptions = new LinkedHashMap<>();
+        List<String> formatNames = DefaultWebFeatureService30.getAvailableFormats();
+        for (String formatName: formatNames) {
+            if ((formatName.contains("text") && !formatName.contains("xml") && !formatName.contains("gml")) ||
+                    formatName.contains("csv")) {
                 descriptions.put(formatName, new FormatDescription().withType(TYPE_STRING));
             } else {
                 descriptions.put(formatName, new FormatDescription().withType(TYPE_OBJECT));
             }
+
         }
         return descriptions;
     }

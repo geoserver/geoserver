@@ -15,8 +15,9 @@
     <constructor-arg index="3" value="3.0.0"/>
     <constructor-arg index="4">
       <list>
+        <value>contents</value>
         <value>api</value>
-        <value>GetFeature</value>
+        <value>GetFeature</value> <!-- this allows to re-use the WFS 2.0 machinery for getting features -->
       </list>
     </constructor-arg>
     <property name="customCapabilitiesLink" value="../wfs3/api"/>
@@ -40,9 +41,13 @@
   
   <!-- KVP parsing -->
   <bean id="apiKvpRequestReader" class="org.geoserver.wfs3.kvp.APIRequestKVPReader"/>
+  <bean id="contentKvpRequestReader" class="org.geoserver.wfs3.kvp.ContentRequestKVPReader"/>
   
   <!-- response generation -->
   <bean id="apiResponse" class="org.geoserver.wfs3.response.APIDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="contentsResponse" class="org.geoserver.wfs3.response.ContentsDocumentResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
 

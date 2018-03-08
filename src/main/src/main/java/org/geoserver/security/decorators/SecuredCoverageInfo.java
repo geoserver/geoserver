@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLevel;
@@ -65,7 +66,12 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
 
     @Override
     public CoverageStoreInfo getStore() {
-        return new SecuredCoverageStoreInfo(super.getStore(), policy);
+        return (CoverageStoreInfo) SecuredObjects.secure(super.getStore(), policy);
     }
 
+    @Override
+    public void setStore(StoreInfo store) {
+        // need to make sure the store isn't secured
+        super.setStore((StoreInfo)SecureCatalogImpl.unwrap(store));
+    }
 }

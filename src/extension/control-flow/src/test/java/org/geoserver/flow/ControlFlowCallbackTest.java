@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.flow.controller.BasicOWSController;
+import org.geoserver.flow.controller.SimpleThreadBlocker;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.junit.Test;
@@ -116,7 +117,7 @@ public class ControlFlowCallbackTest {
         // setup a controller hitting on GWC
         ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
-        BasicOWSController controller = new BasicOWSController("GWC", 1);
+        BasicOWSController controller = new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
         
@@ -152,7 +153,7 @@ public class ControlFlowCallbackTest {
         // setup a controller hitting on GWC
         final ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
-        final BasicOWSController controller = new BasicOWSController("GWC", 1);
+        final BasicOWSController controller = new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
         
@@ -194,7 +195,7 @@ public class ControlFlowCallbackTest {
         // setup a controller hitting on GWC
         final ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
-        final BasicOWSController controller = new BasicOWSController("GWC", 1);
+        final BasicOWSController controller = new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
         

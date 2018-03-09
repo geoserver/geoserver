@@ -29,24 +29,24 @@ public class SingleQueueFlowController implements FlowController {
 
     Predicate<Request> matcher;
 
-    BlockingQueue<Request> queue;
+    ThreadBlocker blocker;
 
-    int queueSize;
+    int controllerPriority;
 
-    public SingleQueueFlowController(int queueSize, Predicate<Request> matcher) {
-        this.queueSize = queueSize;
+    public SingleQueueFlowController(Predicate<Request> matcher, int controllerPriority, ThreadBlocker blocker) {
+        this.controllerPriority = controllerPriority;
         this.matcher = matcher;
-        queue = new ArrayBlockingQueue<Request>(queueSize, true);
+        this.blocker = blocker;
 
     }
 
     public int getPriority() {
-        return queueSize;
+        return controllerPriority;
     }
 
     public void requestComplete(Request request) {
         if (matcher.apply(request)) {
-            queue.remove(request);
+            blocker.requestComplete(request);
         }
     }
 
@@ -54,19 +54,11 @@ public class SingleQueueFlowController implements FlowController {
         boolean retval = true;
         if (matcher.apply(request)) {
             try {
-                if(timeout > 0) {
-                    retval = queue.offer(request, timeout, TimeUnit.MILLISECONDS);
-                } else {
-                    queue.put(request);
-                }
+                retval = blocker.requestIncoming(request, timeout);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING,
-                        "Unexpected interruption while blocking on the request queue");
+                        "Unexpected interruption while waiting for execution");
             }
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(this + " queue size " + queue.size());
-            }
-
         }
         return retval;
     }
@@ -76,11 +68,18 @@ public class SingleQueueFlowController implements FlowController {
     }
     
     /**
-     * Returns the current queue size
+     * Returns the current queue size (used for testing only)
      * @return
      */
     public int getRequestsInQueue() {
-        return queue.size();
+        return blocker.getRunningRequestsCount();
     }
 
+    /**
+     * Returns the thread blocking mechanisms for this queue
+     * @return a {@link ThreadBlocker} instance
+     */
+    public ThreadBlocker getBlocker() {
+         return blocker;
+    }
 }

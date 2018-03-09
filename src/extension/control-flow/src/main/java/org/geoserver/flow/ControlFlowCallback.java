@@ -27,12 +27,7 @@ import org.geoserver.platform.Operation;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -172,7 +167,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements A
             runningRequests.incrementAndGet();
             if(REQUEST_CONTROLLERS.get() != null) {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info("Request started, running requests: " + getRunningRequests() + ", blocked requests: "
+                    LOGGER.info("Request control-flow performed, running requests: " + getRunningRequests() + ", blocked requests: "
                             + getBlockedRequests());
                 }
             }

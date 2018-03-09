@@ -8,6 +8,8 @@ package org.geoserver.test;
 
 import static org.junit.Assert.*;
 
+import org.geotools.gml.producer.CoordinateFormatter;
+import org.geotools.measure.CoordinateFormat;
 import org.junit.Test;
 
 import org.geoserver.data.test.SystemTestData;
@@ -241,15 +243,16 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
                                 new Coordinate(-1.2, 52.5) })), null);
         Polygon targetPolygon = (Polygon) JTS.transform(srcPolygon, transform);
         StringBuffer polygonBuffer = new StringBuffer();
+        CoordinateFormatter formatter = new CoordinateFormatter(8);
         for (Coordinate coord : targetPolygon.getCoordinates()) {
-            polygonBuffer.append(coord.x).append(" ");
-            polygonBuffer.append(coord.y).append(" ");
+            formatter.format(coord.x, polygonBuffer).append(" ");
+            formatter.format(coord.y, polygonBuffer).append(" ");
         }
         String targetPolygonCoords = polygonBuffer.toString().trim();
         Point targetPoint = (Point) JTS.transform(
                 factory.createPoint(new Coordinate(42.58, 31.29)), transform);
-        String targetPointCoord = targetPoint.getCoordinate().x + " "
-                + targetPoint.getCoordinate().y;
+        String targetPointCoord = formatter.format(targetPoint.getCoordinate().x) + " "
+                + formatter.format(targetPoint.getCoordinate().y);
 
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer" +
             "&srsname=urn:x-ogc:def:crs:EPSG::4326");

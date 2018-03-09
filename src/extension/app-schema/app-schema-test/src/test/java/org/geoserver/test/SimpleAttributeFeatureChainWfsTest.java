@@ -166,7 +166,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         checkMf3(doc);
         // chaining geometry
         assertXpathEvaluatesTo(
-                "-1.2 53.50000003577337 -1.2000000000000002 53.60000003565695 -1.1 53.60000003565695 -1.1 53.50000003577337 -1.2 53.50000003577337",
+                "-1.2 53.50000004 -1.2 53.60000004 -1.1 53.60000004 -1.1 53.50000004 -1.2 53.50000004",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gsml:shape/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                 doc);
         assertXpathEvaluatesTo(
@@ -182,7 +182,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         checkMf4(doc);
         // chaining geometry
         assertXpathEvaluatesTo(
-                "-1.2999999999999998 53.50000003577337 -1.3 53.60000003565695 -1.2000000000000002 53.60000003565695 -1.2 52.50000003687648 -1.2999999999999998 53.50000003577337",
+                "-1.3 53.50000004 -1.3 53.60000004 -1.2 53.60000004 -1.2 52.50000004 -1.3 53.50000004",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gsml:shape/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                 doc);
         assertXpathEvaluatesTo(

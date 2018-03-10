@@ -67,8 +67,8 @@ in which the launch configuration runs. Naming factory system properties must al
 configured for Jetty. For example, ``VM arguments`` could include::
 
     -Djetty.config.file=../../../../../settings/jetty.xml
-    -Djava.naming.factory.url.pkgs=org.mortbay.naming
-    -Djava.naming.factory.initial=org.mortbay.naming.InitialContextFactory
+    -Djava.naming.factory.url.pkgs=org.eclipse.jetty.jndi
+    -Djava.naming.factory.initial=org.eclipse.jetty.jndi.InitialContextFactory
 
 The following Jetty server configuration file
 configures a JNDI data source ``java:comp/env/jdbc/demo`` that is a
@@ -76,12 +76,12 @@ connection pool for an Oracle database::
 
     <?xml version="1.0"?>
     <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
-    <Configure class="org.mortbay.jetty.Server">
-        <New class="org.mortbay.jetty.plus.naming.Resource">
+    <Configure class="org.eclipse.jetty.server.Server">
+        <New class="org.eclipse.jetty.plus.jndi.Resource">
             <Arg>java:comp/env/jdbc/demo</Arg>
             <Arg>
                 <New class="org.apache.commons.dbcp.BasicDataSource">
-                    <Set name="driverClassName">oracle.jdbc.driver.OracleDriver</Set>
+                    <Set name="driverClassName">oracle.jdbc.OracleDriver</Set>
                     <Set name="url">jdbc:oracle:thin:@oracle.example.com:1521:demodb</Set>
                     <Set name="username">claudius</Set>
                     <Set name="password">s3cr3t</Set>
@@ -96,6 +96,7 @@ connection pool for an Oracle database::
                     <Set name="maxOpenPreparedStatements">100</Set>
                     <Set name="testOnBorrow">true</Set>
                     <Set name="validationQuery">SELECT SYSDATE FROM DUAL</Set>
+                    <Set name="accessToUnderlyingConnectionAllowed">true</Set>
                 </New>
             </Arg>
         </New>

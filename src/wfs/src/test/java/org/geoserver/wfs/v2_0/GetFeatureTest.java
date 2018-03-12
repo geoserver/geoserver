@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -1160,6 +1161,33 @@ public class GetFeatureTest extends WFS20TestSupport {
     @Test
     public void testPropertyIsLikeMatchCaseFalse() throws Exception {
         checkPropertyIsLikeMatchCase(false, 2);
+    }
+    
+    @Test
+    public void testNumberOfDecimals() throws Exception {
+        int oldDecimals = setDecimals(MockData.NAMED_PLACES, 3);
+        try {
+            Document doc = getAsDOM("wfs?request=GetFeature&typeName=cite:NamedPlaces&version=2.0.0&service=wfs&featureId=NamedPlaces.1107531895891");
+            // print(doc);
+            XMLAssert.assertXpathEvaluatesTo("-0.001 0.002 -0.001 0.002 -0.001 0.003 -0.001 0.003 -0.001 0.002", "//gml:posList", doc);
+
+            setDecimals(MockData.NAMED_PLACES, 4);
+            doc = getAsDOM("wfs?request=GetFeature&typeName=cite:NamedPlaces&version=2.0.0&service=wfs&featureId=NamedPlaces.1107531895891");
+            // print(doc);
+            XMLAssert.assertXpathEvaluatesTo("-0.0011 0.0017 -6.0E-4 0.0017 -6.0E-4 0.0025 -0.0011 0.0025 -0.0011 0.0017", "//gml:posList", doc);
+        } finally {
+            setDecimals(MockData.NAMED_PLACES, oldDecimals);
+        }
+    }
+
+    private int setDecimals(QName name, int numDecimals) {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName(getLayerId(name));
+        int decimals = ft.getNumDecimals();
+        ft.setNumDecimals(numDecimals);
+        catalog.save(ft);
+        
+        return decimals;
     }
 
 }

@@ -213,12 +213,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             configuration.getProperties().remove(GMLConfiguration.ENCODE_FEATURE_MEMBER);
         }
         
-        setNumDecimals(numDecimals);
-
         //declare wfs schema location
         Object gft = getFeature.getParameters()[0];
-        
+
+        Configuration configuration = customizeConfiguration(this.configuration, ns2metas, gft);
+        setNumDecimals(configuration, numDecimals);
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
+
         encoder.setEncoding(Charset.forName( geoServer.getSettings().getCharset() ));
 
         if (wfs.isCanonicalSchemaLocation()) {
@@ -273,7 +274,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         }
 
         setAdditionalSchemaLocations(encoder, request, wfs);
-        if (this.isComplexFeature(results)) {
+        if (isComplexFeature(results)) {
             complexFeatureStreamIntercept(results, output, encoder);
         } else {
             encode(results, output, encoder);
@@ -281,11 +282,15 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         
     }
     
-    protected void setNumDecimals(int numDecimals) {
+    protected void setNumDecimals(Configuration configuration, int numDecimals) {
         GMLConfiguration gml = configuration.getDependency(GMLConfiguration.class);
         if (gml != null) {
             gml.setNumDecimals(numDecimals);
         }
+    }
+
+    protected Configuration customizeConfiguration(Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
+        return configuration;
     }
 
     protected Encoder createEncoder(Configuration configuration,

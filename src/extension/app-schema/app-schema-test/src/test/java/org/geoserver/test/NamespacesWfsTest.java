@@ -369,7 +369,7 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/gml:featureMember/" +
                 "st_gml31:Station_gml31[@gml:id='st.1']/st_gml31:measurements/ms_gml31:Measurement[ms_gml31:name='temperature']");
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/gml:featureMember/" +
-                "st_gml31:Station_gml31[@gml:id='st.1']/st_gml31:location/gml:Point[gml:pos='1.0 -1.0']");
+                "st_gml31:Station_gml31[@gml:id='st.1']/st_gml31:location/gml:Point[gml:pos='1 -1']");
     }
 
     /**
@@ -379,7 +379,7 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
                 "st_gml32:Station_gml32[@gml:id='st.1']/st_gml32:measurements/ms_gml32:Measurement[ms_gml32:name='temperature']");
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
-                "st_gml32:Station_gml32[@gml:id='st.1']/st_gml32:location/gml:Point[gml:pos='1.0 -1.0']");
+                "st_gml32:Station_gml32[@gml:id='st.1']/st_gml32:location/gml:Point[gml:pos='1 -1']");
     }
 
     /**

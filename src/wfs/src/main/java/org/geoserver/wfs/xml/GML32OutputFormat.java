@@ -76,25 +76,31 @@ public class GML32OutputFormat extends GML3OutputFormat {
     public String getMimeType(Object value, Operation operation) {
         return MIME_TYPES[0];
     }
-
+    
     @Override
-    protected Encoder createEncoder(Configuration configuration, 
-        Map<String, Set<ResourceInfo>> resources, Object request) {
-        
+    protected Configuration customizeConfiguration(Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
+
         FeatureTypeSchemaBuilder schemaBuilder = new FeatureTypeSchemaBuilder.GML32(geoServer);
-        
+
         ApplicationSchemaXSD2 xsd = new ApplicationSchemaXSD2(schemaBuilder);
         xsd.setBaseURL(GetFeatureRequest.adapt(request).getBaseURL());
         xsd.setResources(resources);
 
         org.geotools.wfs.v2_0.WFSConfiguration wfs = new org.geotools.wfs.v2_0.WFSConfiguration();
         wfs.getDependency(GMLConfiguration.class).setSrsSyntax(
-            getInfo().getGML().get(WFSInfo.Version.V_20).getSrsNameStyle().toSrsSyntax());
+                getInfo().getGML().get(WFSInfo.Version.V_20).getSrsNameStyle().toSrsSyntax());
         ApplicationSchemaConfiguration2 config = new ApplicationSchemaConfiguration2(xsd, wfs);
         // adding properties from original configuration to allow
         // hints handling
         config.getProperties().addAll(configuration.getProperties());
-        return new Encoder(config);
+        
+        return config;
+    }
+
+    @Override
+    protected Encoder createEncoder(Configuration configuration,
+                                    Map<String, Set<ResourceInfo>> resources, Object request) {
+        return new Encoder(configuration);
     }
 
     @Override
@@ -131,7 +137,7 @@ public class GML32OutputFormat extends GML3OutputFormat {
         return GML32OutputFormat.xslt;
     }
 
-    protected void setNumDecimals(int numDecimals) {
+    protected void setNumDecimals(Configuration configuration, int numDecimals) {
         GMLConfiguration gml = configuration.getDependency(GMLConfiguration.class);
         if (gml != null) {
             gml.setNumDecimals(numDecimals);

@@ -36,7 +36,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
         assertXpathCount( 1,"//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']", doc);
         assertXpathCount( 0,"//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']", doc);
         
-        assertXpathEvaluatesTo("167.9388 -29.0434 7.0", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos", doc);
+        assertXpathEvaluatesTo("167.9388 -29.0434 7", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos", doc);
         assertXpathEvaluatesTo("3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo("http://www.opengis.net/gml/srs/epsg.xml#4979", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsName", doc);
     }
@@ -56,7 +56,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
         assertXpathCount( 0,"//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']", doc);
         assertXpathCount( 1,"//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']", doc);
         
-        assertXpathEvaluatesTo("133.8855 -23.6701 112.0", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos", doc);
+        assertXpathEvaluatesTo("133.8855 -23.6701 112", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos", doc);
         assertXpathEvaluatesTo("3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo("http://www.opengis.net/gml/srs/epsg.xml#4979", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName", doc);
 

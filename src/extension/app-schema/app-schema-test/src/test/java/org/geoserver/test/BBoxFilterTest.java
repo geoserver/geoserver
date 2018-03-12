@@ -7,6 +7,8 @@
 package org.geoserver.test;
 
 import org.geotools.geometry.jts.JTS;
+import org.geotools.gml.producer.CoordinateFormatter;
+import org.geotools.measure.CoordinateFormat;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -181,12 +183,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
         GeometryFactory factory = new GeometryFactory();
         Point targetPoint = (Point) JTS.transform(factory
                 .createPoint(new Coordinate(132.61, -26.98)), transform);
-        String targetPointCoord1 = targetPoint.getCoordinate().x + " "
-                + targetPoint.getCoordinate().y;
+        CoordinateFormatter format = new CoordinateFormatter(8);
+        String targetPointCoord1 = format.format(targetPoint.getCoordinate().x) + " "
+                + format.format(targetPoint.getCoordinate().y);
         targetPoint = (Point) JTS.transform(factory.createPoint(new Coordinate(132.71, -26.46)),
                 transform);
-        String targetPointCoord2 = targetPoint.getCoordinate().x + " "
-                + targetPoint.getCoordinate().y;
+        String targetPointCoord2 = format.format(targetPoint.getCoordinate().x) + " "
+                + format.format(targetPoint.getCoordinate().y);
 
         assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4283",
                 "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsName", doc);

@@ -140,7 +140,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/gml:featureMember/" +
                 "st_1_gml31:Station_gml31[@gml:id='st.1']/st_1_gml31:measurements/ms_1_gml31:Measurement_gml31[ms_1_gml31:name='isolated_1_wind']");
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/gml:featureMember/" +
-                "st_1_gml31:Station_gml31[@gml:id='st.1']/st_1_gml31:location/gml:Point[gml:pos='1.0 -1.0']");
+                "st_1_gml31:Station_gml31[@gml:id='st.1']/st_1_gml31:location/gml:Point[gml:pos='1 -1']");
         // request isolated feature type using global service should fail with feature type unknown
         document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st_1_gml31:Station_gml31");
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/ows:ExceptionReport/ows:Exception[@exceptionCode='InvalidParameterValue']");
@@ -156,7 +156,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
                 "st_1_gml32:Station_gml32[@gml:id='st.1']/st_1_gml32:measurements/ms_1_gml32:Measurement_gml32[ms_1_gml32:name='isolated_1_wind']");
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
-                "st_1_gml32:Station_gml32[@gml:id='st.1']/st_1_gml32:location/gml:Point[gml:pos='1.0 -1.0']");
+                "st_1_gml32:Station_gml32[@gml:id='st.1']/st_1_gml32:location/gml:Point[gml:pos='1 -1']");
         // request isolated feature type using global service should fail with feature type unknown
         document = getAsDOM("wfs?request=GetFeature&version=2.0&typename=st_1_gml32:Station_gml32");
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/ows:ExceptionReport/ows:Exception[@exceptionCode='InvalidParameterValue']");
@@ -172,7 +172,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/gml:featureMember/" +
                 "st_2_gml31:Station_gml31[@gml:id='st.1']/st_2_gml31:measurements/ms_2_gml31:Measurement_gml31[ms_2_gml31:name='isolated_2_wind']");
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/gml:featureMember/" +
-                "st_2_gml31:Station_gml31[@gml:id='st.1']/st_2_gml31:location/gml:Point[gml:pos='1.0 -1.0']");
+                "st_2_gml31:Station_gml31[@gml:id='st.1']/st_2_gml31:location/gml:Point[gml:pos='1 -1']");
         // request isolated feature type using global service should fail with feature type unknown
         document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st_2_gml31:Station_gml31");
         checkCount(WFS11_XPATH_ENGINE, document, 1, "/ows:ExceptionReport/ows:Exception[@exceptionCode='InvalidParameterValue']");
@@ -188,7 +188,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
                 "st_2_gml32:Station_gml32[@gml:id='st.1']/st_2_gml32:measurements/ms_2_gml32:Measurement_gml32[ms_2_gml32:name='isolated_2_wind']");
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/wfs:FeatureCollection/wfs:member/" +
-                "st_2_gml32:Station_gml32[@gml:id='st.1']/st_2_gml32:location/gml:Point[gml:pos='1.0 -1.0']");
+                "st_2_gml32:Station_gml32[@gml:id='st.1']/st_2_gml32:location/gml:Point[gml:pos='1 -1']");
         // request isolated feature type using global service should fail with feature type unknown
         document = getAsDOM("wfs?request=GetFeature&version=2.0&typename=st_2_gml32:Station_gml32");
         checkCount(WFS20_XPATH_ENGINE, document, 1, "/ows:ExceptionReport/ows:Exception[@exceptionCode='InvalidParameterValue']");

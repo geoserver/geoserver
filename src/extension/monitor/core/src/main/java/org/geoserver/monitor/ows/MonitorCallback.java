@@ -5,11 +5,6 @@
  */
 package org.geoserver.monitor.ows;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
@@ -32,13 +27,19 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class MonitorCallback implements DispatcherCallback {
 
     List<RequestObjectHandler> handlers = new ArrayList<RequestObjectHandler>();
     
     Monitor monitor;
-    
+    private final org.geoserver.monitor.ows.wcs20.GetCoverageHandler wcs2Handler;
+
     public MonitorCallback(Monitor monitor, Catalog catalog) {
         this.monitor = monitor;
         
@@ -59,6 +60,10 @@ public class MonitorCallback implements DispatcherCallback {
         
         handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler(monitor.getConfig()));
         handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler(monitor.getConfig()));
+
+
+        wcs2Handler = new org.geoserver.monitor.ows.wcs20.GetCoverageHandler(monitor.getConfig(), catalog);
+        handlers.add(wcs2Handler);
     }
     
     public Request init(Request request) {
@@ -103,7 +108,15 @@ public class MonitorCallback implements DispatcherCallback {
     }
     
     public Object operationExecuted(Request request, Operation operation, Object result) {
-        return null;
+        RequestData data = monitor.current();
+        if (data == null) {
+            //will happen in cases where the filter is not active
+            return operation;
+        }
+        wcs2Handler.operationExecuted(request, operation, result,data);
+        monitor.update();
+
+        return operation;
     }
     
     public void finished(Request request) {

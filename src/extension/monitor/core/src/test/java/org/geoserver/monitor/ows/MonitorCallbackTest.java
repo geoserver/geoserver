@@ -5,35 +5,20 @@
  */
 package org.geoserver.monitor.ows;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.xml.namespace.QName;
-
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.PublishedType;
-import org.geoserver.catalog.ResourceInfo;
+import com.vividsolutions.jts.geom.Envelope;
+import net.opengis.ows11.CodeType;
+import net.opengis.ows11.Ows11Factory;
+import net.opengis.wcs10.DescribeCoverageType;
+import net.opengis.wcs10.GetCoverageType;
+import net.opengis.wcs10.Wcs10Factory;
+import net.opengis.wcs11.Wcs11Factory;
+import net.opengis.wcs20.DimensionTrimType;
+import net.opengis.wcs20.Wcs20Factory;
+import net.opengis.wfs.*;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
-import org.geoserver.monitor.BBoxAsserts;
-import org.geoserver.monitor.MemoryMonitorDAO;
-import org.geoserver.monitor.Monitor;
-import org.geoserver.monitor.MonitorConfig;
-import org.geoserver.monitor.MonitorDAO;
-import org.geoserver.monitor.MonitorTestData;
-import org.geoserver.monitor.RequestData;
+import org.geoserver.monitor.*;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
@@ -42,11 +27,8 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
-import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.GetLegendGraphicRequest;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMS;
+import org.geoserver.wms.*;
+import org.geotools.coverage.AbstractCoverage;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
@@ -57,32 +39,25 @@ import org.geotools.util.Version;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.coverage.CannotEvaluateException;
+import org.opengis.coverage.PointOutsideCoverageException;
+import org.opengis.coverage.SampleDimension;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
+import javax.xml.namespace.QName;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
-import net.opengis.ows11.CodeType;
-import net.opengis.ows11.Ows11Factory;
-import net.opengis.wcs10.DescribeCoverageType;
-import net.opengis.wcs10.GetCoverageType;
-import net.opengis.wcs10.Wcs10Factory;
-import net.opengis.wcs11.Wcs11Factory;
-import net.opengis.wfs.DeleteElementType;
-import net.opengis.wfs.DescribeFeatureTypeType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.LockFeatureType;
-import net.opengis.wfs.LockType;
-import net.opengis.wfs.QueryType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.UpdateElementType;
-import net.opengis.wfs.WfsFactory;
-
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class MonitorCallbackTest {
@@ -499,7 +474,67 @@ public class MonitorCallbackTest {
         assertEquals("acme:bar", data.getResources().get(0));
         BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
-    
+
+    @Test
+    public void testWCS20GetCoverage() throws Exception {
+        net.opengis.wcs20.GetCoverageType gc = Wcs20Factory.eINSTANCE.createGetCoverageType();
+
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        GeneralEnvelope env = new GeneralEnvelope(new double[]{48.2, -123.4}, new double[]{50.1, -120.9});
+        env.setCoordinateReferenceSystem(crs);
+        BoundingBox bbox = new ReferencedEnvelope(env);
+        net.opengis.ows20.BoundingBoxType wcsBbox = net.opengis.ows20.Ows20Factory.eINSTANCE.createBoundingBoxType();
+        wcsBbox.setLowerCorner(Arrays.asList(48.2d, -123.4d));
+        wcsBbox.setUpperCorner(Arrays.asList(50.1d, -120.9d));
+        //wcsBbox.setCrs("urn:ogc:def:crs:OGC:1.3:CRS84");
+        wcsBbox.setCrs("urn:ogc:def:crs:EPSG:4326");
+
+        DimensionTrimType yTrim = createDimTrim("Lat", bbox.getMinY(), bbox.getMaxY());
+        gc.getDimensionSubset().add(yTrim);
+        DimensionTrimType xTrim = createDimTrim("Lon", bbox.getMinX(), bbox.getMaxX());
+        gc.getDimensionSubset().add(xTrim);
+
+
+        String name = "acme:bar";
+        gc.setCoverageId(name);
+
+        Request request = new Request();
+        Operation operation = op("GetCoverage", "WCS", "2.0.1", gc);
+        callback.operationDispatched(request, operation);
+        callback.operationExecuted(request, operation, new AbstractCoverage(name,crs,null,null) {
+            @Override
+            public org.opengis.geometry.Envelope getEnvelope() {
+                return bbox;
+            }
+
+            @Override
+            public Object evaluate(DirectPosition directPosition) throws PointOutsideCoverageException, CannotEvaluateException {
+                return null;
+            }
+
+            @Override
+            public int getNumSampleDimensions() {
+                return 1;
+            }
+
+            @Override
+            public SampleDimension getSampleDimension(int i) throws IndexOutOfBoundsException {
+                return null;
+            }
+        });
+        assertEquals("acme:bar", data.getResources().get(0));
+        BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
+    }
+
+    private DimensionTrimType createDimTrim(String axisLabel, double minLat, double maxLat) {
+        DimensionTrimType domainSubset = Wcs20Factory.eINSTANCE.createDimensionTrimType();
+        domainSubset.setDimension(axisLabel);
+        domainSubset.setTrimLow(Double.toString(minLat));
+        domainSubset.setTrimHigh(Double.toString(maxLat));
+        return domainSubset;
+    }
+
+
     @Test
     public void testWMSGetMapDifferentCrs() throws Exception {
         //xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01

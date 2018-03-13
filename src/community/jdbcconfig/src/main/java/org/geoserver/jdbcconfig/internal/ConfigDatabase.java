@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -466,8 +467,7 @@ public class ConfigDatabase {
         final String id = info.getId();
 
         byte[] value = binding.objectToEntry(info);
-
-        final String blob = new String(value);
+        final String blob = new String(value, StandardCharsets.UTF_8);
         final Class<T> interf = ClassMappings.fromImpl(info.getClass()).getInterface();
         final Integer typeId = dbMappings.getTypeId(interf);
 
@@ -755,13 +755,8 @@ public class ConfigDatabase {
 
         // get the object's internal id
         final Integer objectId = findObjectId(info);
-        final String blob;
-        try {
-            byte[] value = binding.objectToEntry(info);
-            blob = new String(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw Throwables.propagate(e);
-        }
+        byte[] value = binding.objectToEntry(info);
+        final String blob = new String(value, StandardCharsets.UTF_8);
         String updateStatement = "update object set blob = :blob where oid = :oid";
         params = params("blob", blob, "oid", objectId);
         logStatement(updateStatement, params);

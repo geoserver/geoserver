@@ -44,7 +44,7 @@ The following links provide direct access to the GeoServer REST API documentatio
 
 * GeoWebCache:
 
-  * :api:`/blobstores <gwcblobstores.ysml>`
+  * :api:`/blobstores <gwcblobstores.yaml>`
   * :api:`/bounds <gwcbounds.yaml>`
   * :api:`/diskquota <gwcdiskquota.yaml>`
   * :api:`/filterupdate <gwcfilterupdate.yaml>`

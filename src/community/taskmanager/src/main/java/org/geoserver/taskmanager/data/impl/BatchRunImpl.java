@@ -47,6 +47,12 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @OrderBy("start")
     @Fetch(FetchMode.SUBSELECT)
     List<Run> runs = new ArrayList<Run>();
+    
+    @Column(nullable = false)
+    private Boolean interruptMe = false; 
+    
+    @Column
+    private String schedulerReference;
 
     @Override
     public Long getId() {
@@ -87,4 +93,27 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     public String getMessage() {
         return BatchRun.super.getMessage();
     }
+
+    @Override
+    public boolean isInterruptMe() {
+        return interruptMe;
+    }
+
+    @Override
+    public void setInterruptMe(boolean interruptMe) {
+        this.interruptMe = interruptMe;
+    }
+    
+    @Override
+    public String getSchedulerReference() {
+        return schedulerReference;
+    }
+
+    @Override
+    public void setSchedulerReference(String qReference) {
+        this.schedulerReference = qReference;
+    }
+    
+
+    
 }

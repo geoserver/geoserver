@@ -45,7 +45,10 @@ public class TaskManagerBeans {
 
     @Autowired 
     private TaskManagerSecurityUtil secUtil;
-    
+
+    @Autowired 
+    private InitConfigUtil initConfigUtil;
+        
     public LookupService<TaskType> getTaskTypes() {
         return taskTypes;
     }
@@ -81,7 +84,11 @@ public class TaskManagerBeans {
     public TaskManagerSecurityUtil getSecUtil() {
         return secUtil;
     }
-    
+
+    public InitConfigUtil getInitConfigUtil() {
+        return initConfigUtil;
+    }
+        
     public static TaskManagerBeans get() {
         return GeoServerApplication.get().getApplicationContext().getBean(TaskManagerBeans.class);
     }

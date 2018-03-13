@@ -74,4 +74,9 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
 
         return spatialColumns;
     }
+
+    @Override
+    public boolean autoUpdateView() {
+        return true;
+    }
 }

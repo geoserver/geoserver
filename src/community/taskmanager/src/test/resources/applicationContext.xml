@@ -6,7 +6,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <context:component-scan base-package="org.geoserver.taskmanager.schedule"/>
+    <context:component-scan base-package="org.geoserver.taskmanager.beans"/>
 
     <!--H2 setup -->
     <bean class="org.geoserver.taskmanager.external.H2DbSourceImpl">
@@ -26,7 +26,7 @@
     <bean class="org.geoserver.taskmanager.external.PostgisDbSourceImpl">
         <property name="name" value="mypostgresdb" />
         <property name="host" value="localhost" />
-        <property name="db" value="testsourcedb" />
+        <property name="db" value="mydb" />
         <property name="username" value="postgres" />
         <property name="password" value="postgres" />
     </bean>

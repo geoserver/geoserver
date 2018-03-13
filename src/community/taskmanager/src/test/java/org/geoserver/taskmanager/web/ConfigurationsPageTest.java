@@ -1,3 +1,7 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager.web;
 
 import static org.junit.Assert.assertEquals;
@@ -12,27 +16,26 @@ import java.util.List;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.geoserver.taskmanager.AbstractWicketTaskManagerTest;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.web.panel.DropDownPanel;
-import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ConfigurationsPageTest extends GeoServerWicketTestSupport {
+public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
     
     private TaskManagerFactory fac;
     private TaskManagerDao dao;
     private Configuration config;
-    
-    
+        
     @Before
-    public void init() {
+    public void before() {
         fac = TaskManagerBeans.get().getFac();
         dao = TaskManagerBeans.get().getDao();
 

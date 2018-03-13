@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.web.panel;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -37,6 +38,8 @@ public class PositionPanel extends Panel {
                 int index = batch.getElements().indexOf(be);
                 batch.getElements().remove(index);
                 batch.getElements().add(index - 1, be);
+                tablePanel.clearSelection();
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                 target.add(tablePanel);
             }
             
@@ -60,6 +63,8 @@ public class PositionPanel extends Panel {
                 int index = batch.getElements().indexOf(be);
                 batch.getElements().remove(index);
                 batch.getElements().add(index + 1, be);
+                tablePanel.clearSelection();
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                 target.add(tablePanel);
             }
             

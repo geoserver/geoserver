@@ -2,6 +2,11 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+   <wicket:link>
+      <link rel="stylesheet" href="styleTaskManager.css" type="text/css">
+   </wicket:link>
+</wicket:head> 
 <body>
 	<wicket:extend>
 	
@@ -15,6 +20,10 @@
 			<span wicket:id="startLabel"></span>
 		</div>		
 		<br />		
+		
+		<ul class="links-above-table">
+			<li><a class="refresh-link" href="#" wicket:id="refresh"><wicket:message key="refresh" /></a></li>
+		</ul>
 		
 		<div wicket:id="runPanel"></div>
 					 

@@ -1,3 +1,7 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager.web;
 
 import static org.junit.Assert.assertEquals;
@@ -12,18 +16,18 @@ import java.util.List;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.geoserver.taskmanager.AbstractWicketTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
-import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BatchesPageTest extends GeoServerWicketTestSupport {
+public class BatchesPageTest extends AbstractWicketTaskManagerTest {
     
     private TaskManagerFactory fac;
     private TaskManagerDao dao;
@@ -31,7 +35,7 @@ public class BatchesPageTest extends GeoServerWicketTestSupport {
     private Batch batch;
     
     @Before
-    public void init() {
+    public void before() {
         fac = TaskManagerBeans.get().getFac();
         dao = TaskManagerBeans.get().getDao();
         
@@ -78,7 +82,7 @@ public class BatchesPageTest extends GeoServerWicketTestSupport {
         
         Batch dummy1 = dao.save(dummyBatch1());
                         
-        List<Batch> Batches = dao.getBatches();
+        List<Batch> Batches = dao.getBatches(false);
         
         tester.startPage(page);        
 
@@ -123,8 +127,8 @@ public class BatchesPageTest extends GeoServerWicketTestSupport {
         Batch dummy1 = dao.save(dummyBatch1());
         Batch dummy2 = dao.save(dummyBatch2());
                                 
-        assertTrue(containsConfig(dao.getBatches(), dummy1));  
-        assertTrue(containsConfig(dao.getBatches(), dummy2));
+        assertTrue(containsConfig(dao.getBatches(false), dummy1));  
+        assertTrue(containsConfig(dao.getBatches(false), dummy2));
         
         //sort descending on name
         tester.clickLink("batchesPanel:form:batchesPanel:listContainer:sortableLinks:1:header:link", true);
@@ -147,8 +151,8 @@ public class BatchesPageTest extends GeoServerWicketTestSupport {
         //confirm      
         tester.executeAjaxEvent("batchesPanel:dialog:dialog:content:form:submit", "click");    
 
-        assertFalse(containsConfig(dao.getBatches(), dummy1));
-        assertTrue(containsConfig(dao.getBatches(), dummy2));
+        assertFalse(containsConfig(dao.getBatches(false), dummy1));
+        assertTrue(containsConfig(dao.getBatches(false), dummy2));
         
         assertFalse(containsConfig(getBatchesFromTable(table), dummy1));
         assertTrue(containsConfig(getBatchesFromTable(table), dummy2));

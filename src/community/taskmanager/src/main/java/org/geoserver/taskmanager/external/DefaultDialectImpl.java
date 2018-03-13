@@ -56,4 +56,17 @@ public class DefaultDialectImpl implements Dialect {
     public int isNullable(int nullable) {
         return nullable;
     }
+
+    @Override
+    public String createSchema(Connection connection, String schema) {
+        StringBuilder sb = new StringBuilder("CREATE SCHEMA IF NOT EXISTS ")
+                .append(schema)
+                .append(" ;");
+        return sb.toString();
+    }
+
+    @Override
+    public boolean autoUpdateView() {
+        return false;
+    }
 }

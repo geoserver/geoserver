@@ -1,3 +1,7 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager.tasks;
 
 import static org.junit.Assert.assertEquals;
@@ -9,6 +13,7 @@ import java.sql.SQLException;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
+import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Task;
@@ -16,13 +21,12 @@ import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.BatchJobService;
-import org.geoserver.taskmanager.schedule.TestTaskTypeImpl;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -39,7 +43,6 @@ import it.geosolutions.geoserver.rest.decoder.RESTCoverage;
  * 
  * @author Niels Charlier
  */
-@Ignore
 public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     private static final String ATT_LAYER = "layer";
@@ -76,9 +79,11 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         DATA_DIRECTORY.addWcs11Coverages();
         return true;
     }
-                        
+    
     @Before
-    public void setupBatch() throws Exception {                
+    public void setupBatch() throws Exception { 
+        Assume.assumeTrue(extGeoservers.get("mygs").getRESTManager().getReader().existGeoserver());
+        
         config = fac.createConfiguration();  
         config.setName("my_config");
         config.setWorkspace("some_ws");
@@ -103,8 +108,12 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     @After
     public void clearDataFromDatabase() {
-        dao.delete(batch);
-        dao.delete(config);
+        if (batch != null) {
+            dao.delete(batch);
+        }
+        if (config != null) {
+            dao.delete(config);
+        }
     }
     
     @Test
@@ -113,6 +122,7 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         CoverageInfo ci = geoServer.getCatalog().getCoverageByName("DEM");
         ci.setTitle("my title ë");
         ci.setAbstract("my abstract ë");
+        ci.getDimensions().get(0).setName("CUSTOM_DIMENSION");
         geoServer.getCatalog().save(ci);
         
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
@@ -137,6 +147,8 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         RESTCoverage cov = restManager.getReader().getCoverage("wcs", "DEM", "DEM");
         assertEquals(ci.getTitle(), cov.getTitle());
         assertEquals(ci.getAbstract(), cov.getAbstract());
+        assertEquals(ci.getDimensions().get(0).getName(), 
+                cov.getEncodedDimensionsInfoList().get(0).getName());
         
         assertTrue(taskUtil.cleanup(config));      
         

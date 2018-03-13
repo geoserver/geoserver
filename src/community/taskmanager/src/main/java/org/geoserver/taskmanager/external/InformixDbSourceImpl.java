@@ -9,6 +9,8 @@ import org.geoserver.taskmanager.util.NamedImpl;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -87,7 +89,7 @@ public class InformixDbSourceImpl extends NamedImpl implements DbSource {
     }
 
     @Override
-    public Map<String, Object> getParameters() {
+    public Map<String, Serializable> getParameters() {
       throw new UnsupportedOperationException("Informix datasource cannot be used as a store.");
     }
 

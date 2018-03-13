@@ -38,4 +38,8 @@ public interface Configuration extends SoftRemove, Serializable, Identifiable {
 
     void setDescription(String name);
 
+    boolean isValidated();
+
+    void setValidated(boolean initMode);
+
 }

@@ -1,4 +1,11 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
@@ -6,6 +13,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -28,11 +40,12 @@ public abstract class AbstractTaskManagerTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        //set data directory
-        DATA_DIRECTORY = new MockData();
-        System.setProperty("GEOSERVER_DATA_DIR", 
-                DATA_DIRECTORY.getDataDirectoryRoot().toString());
-
+        if (DATA_DIRECTORY == null) {
+            //set data directory
+            DATA_DIRECTORY = new MockData();
+            System.setProperty("GEOSERVER_DATA_DIR", 
+                    DATA_DIRECTORY.getDataDirectoryRoot().toString());
+        }
     }
     
     protected boolean setupDataDirectory() throws Exception {
@@ -47,4 +60,23 @@ public abstract class AbstractTaskManagerTest {
         }
     }
     
+    /**
+     * Sets up the authentication context for the test.
+     * <p>
+     * This context lasts only for a single test case, it is cleared after every test has completed. 
+     * </p>
+     * @param username The username.
+     * @param password The password.
+     * @param roles Roles to assign.
+     */
+    protected void login(String username, String password, String... roles) {
+        SecurityContextHolder.setContext(new SecurityContextImpl());
+        List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
+        for (String role : roles) {
+            l.add(new SimpleGrantedAuthority(role));
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(username,password,l));
+    }
 }

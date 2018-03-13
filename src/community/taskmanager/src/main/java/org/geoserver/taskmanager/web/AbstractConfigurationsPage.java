@@ -4,11 +4,16 @@
  */
 package org.geoserver.taskmanager.web;
 
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.Configuration;
+import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.web.model.ConfigurationsModel;
 import org.geoserver.taskmanager.web.panel.DropDownPanel;
+import org.geoserver.taskmanager.web.panel.MultiLabelCheckBoxPanel;
 import org.geoserver.web.ComponentAuthorizer;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -23,7 +28,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -60,7 +64,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         super.onInitialize();
         
         add(dialog = new GeoServerDialog("dialog"));
-        dialog.setInitialHeight(100); 
+        dialog.setInitialHeight(150); 
         ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false); 
 
         add(new AjaxLink<Object>("addNew") {
@@ -72,7 +76,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                     Configuration configuration = TaskManagerBeans.get().getFac().createConfiguration();
                     configuration.setTemplate(templates);
 
-                    setResponsePage(new ConfigurationPage(new Model<Configuration>(configuration)));
+                    setResponsePage(new ConfigurationPage(configuration));
 
                 } else {
                     dialog.setTitle(new ParamResourceModel("addNewDialog.title", getPage()));
@@ -110,7 +114,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                             }
 
                             setResponsePage(
-                                    new ConfigurationPage(new Model<Configuration>(configuration)));
+                                    new ConfigurationPage(configuration));
 
                             return true;
                         }
@@ -126,60 +130,100 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
-                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
-
-                    private static final long serialVersionUID = -5552087037163833563L;
-                    
-                    private String error = null;
-
-                    @Override
-                    protected Component getContents(String id) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(new ParamResourceModel("confirmDeleteDialog.content",
-                                getPage()).getString());
-                        for (Configuration config : configurationsPanel.getSelection()) {
-                            sb.append("\n&nbsp;&nbsp;");
-                            sb.append(escapeHtml(config.getName()));
-                        }
-                        return new MultiLineLabel(id, sb.toString())
-                                .setEscapeModelStrings(false);
+                boolean someCant = false;
+                for (Configuration config : configurationsPanel.getSelection()) {
+                    BatchElement be = taskInUseByExternalBatch(config);
+                    if (be != null) {
+                        error(new ParamResourceModel("taskInUse",
+                                AbstractConfigurationsPage.this, config.getName(),
+                                be.getTask().getName(), be.getBatch().getName()).getString());
+                        someCant = true;
+                    } else if (!TaskManagerBeans.get().getDataUtil().isDeletable(config)) {
+                        error(new ParamResourceModel("stillRunning",
+                                AbstractConfigurationsPage.this, config.getName()).getString());
+                        someCant = true;
+                    } else if (!TaskManagerBeans.get().getSecUtil().isAdminable(
+                        AbstractConfigurationsPage.this.getSession().getAuthentication(), config)) {
+                        error(new ParamResourceModel("noDeleteRights",
+                                AbstractConfigurationsPage.this, config.getName()).getString());
+                        someCant = true;
                     }
-
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        try {
+                }
+                if (someCant) {
+                    addFeedbackPanels(target);
+                } else {                
+                    dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+    
+                        private static final long serialVersionUID = -5552087037163833563L;
+                        
+                        private String error = null;
+                        
+                        private IModel<Boolean> shouldCleanupModel = new Model<Boolean>();
+    
+                        @Override
+                        protected Component getContents(String id) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(new ParamResourceModel("confirmDeleteDialog.content",
+                                    getPage()).getString());
                             for (Configuration config : configurationsPanel.getSelection()) {
-                                TaskManagerBeans.get().getDao().remove(config);
+                                sb.append("\n&nbsp;&nbsp;");
+                                sb.append(escapeHtml(config.getName()));
                             }
-                            configurationsPanel.clearSelection();
-                            remove.setEnabled(false);
-                        } catch (Exception e) {
-                            LOGGER.log(Level.WARNING, e.getMessage(), e);
-                            Throwable rootCause = ExceptionUtils.getRootCause(e);
-                            error = rootCause == null ? e.getLocalizedMessage() : 
-                                rootCause.getLocalizedMessage();
+                            return new MultiLabelCheckBoxPanel(id, sb.toString(),
+                                new ParamResourceModel("cleanUp", getPage()).getString(),
+                                shouldCleanupModel);
                         }
-                        return true;
-                    }
-                    
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        if (error != null) {
-                            error(error);
+    
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            try {
+                                for (Configuration config : configurationsPanel.getSelection()) {
+                                    if (shouldCleanupModel.getObject()) {
+                                        if (TaskManagerBeans.get().getTaskUtil().canCleanup(config)) {
+                                            if (TaskManagerBeans.get().getTaskUtil().cleanup(config)) {
+                                                info(new ParamResourceModel("cleanUp.success",
+                                                        getPage(), config.getName()).getString());                                                   
+                                            } else {
+                                                error(new ParamResourceModel("cleanUp.error",
+                                                        getPage(), config.getName()).getString());    
+                                            }
+                                        } else {
+                                            info(new ParamResourceModel("cleanUp.ignore",
+                                                    getPage(), config.getName()).getString());   
+                                        }
+                                    }
+                                    TaskManagerBeans.get().getDao().remove(config);
+                                }
+                                configurationsPanel.clearSelection();
+                                remove.setEnabled(false);
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING, e.getMessage(), e);
+                                Throwable rootCause = ExceptionUtils.getRootCause(e);
+                                error = rootCause == null ? e.getLocalizedMessage() : 
+                                    rootCause.getLocalizedMessage();
+                            }
+                            return true;
+                        }
+                        
+                        @Override
+                        public void onClose(AjaxRequestTarget target) {
+                            if (error != null) {
+                                error(error);
+                                addFeedbackPanels(target);
+                            } 
                             addFeedbackPanels(target);
+                            target.add(configurationsPanel);
+                            target.add(remove);
                         }
-                        target.add(configurationsPanel);
-                        target.add(remove);
-                    }
-                });
-                
+                    });
+                }
             }  
         });
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
         
-        // the removal button
+        // the copy button
         add(copy = new AjaxLink<Object>("copySelected") {
             private static final long serialVersionUID = 3581476968062788921L;
 
@@ -187,8 +231,14 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
             public void onClick(AjaxRequestTarget target) {
                 Configuration copy = TaskManagerBeans.get().getDao().copyConfiguration(
                         configurationsPanel.getSelection().get(0).getName());
-                
-                setResponsePage(new ConfigurationPage(new Model<Configuration>(copy)));
+                //make sure we can't copy with workspace we don't have access to
+                WorkspaceInfo wi = GeoServerApplication.get().getCatalog().getWorkspaceByName(copy.getWorkspace());
+                if (wi == null ||
+                    !TaskManagerBeans.get().getSecUtil().isAdminable(
+                            AbstractConfigurationsPage.this.getSession().getAuthentication(), wi)) {
+                    copy.setWorkspace(null);
+                }
+                setResponsePage(new ConfigurationPage(copy));
             }
         });
         copy.setOutputMarkupId(true);
@@ -226,6 +276,19 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
             }
         });
         configurationsPanel.setOutputMarkupId(true);
+    }
+    
+    private BatchElement taskInUseByExternalBatch(Configuration config) {
+        for (Task task : config.getTasks().values()) {
+            task = TaskManagerBeans.get().getDataUtil().init(task);
+            for (BatchElement element : task.getBatchElements()) {
+                if (element.getBatch().getConfiguration() == null
+                        && element.getBatch().isActive()) {
+                    return element;
+                }
+            }
+        } 
+        return null;
     }
 
 }

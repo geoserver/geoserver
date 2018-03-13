@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.util.stream.Collectors;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -43,7 +45,10 @@ public class TaskParameterPanel extends Panel {
             protected Component getComponentForProperty(String id, IModel<Parameter> itemModel,
                     Property<Parameter> property) {
                 if (property.equals(ParametersModel.VALUE)) {
-                    return new TextFieldPanel(id, (IModel<String>) property.getModel(itemModel));
+                    return new AutoCompleteTextFieldPanel(id, 
+                            (IModel<String>) property.getModel(itemModel),
+                            taskModel.getObject().getConfiguration().getAttributes().keySet()
+                            .stream().map(s -> "${" + s + "}").collect(Collectors.toList()));
                 }
                 return null;
             }

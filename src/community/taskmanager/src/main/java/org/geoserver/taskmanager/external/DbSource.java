@@ -9,6 +9,8 @@ import org.geoserver.taskmanager.util.Named;
 
 
 import javax.sql.DataSource;
+
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -40,7 +42,7 @@ public interface DbSource extends Named {
      * 
      * @return the parameters for GeoServer datastore
      */
-    Map<String, Object> getParameters();
+    Map<String, Serializable> getParameters();
 
     /**
      * schema 

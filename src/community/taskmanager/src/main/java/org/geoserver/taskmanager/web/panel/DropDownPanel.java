@@ -33,8 +33,7 @@ public class DropDownPanel extends Panel {
         boolean custom = choiceModel.getObject().contains("");
         boolean useDropDown = !custom || choiceModel.getObject().contains(model.getObject());
         add(new Label("message", labelModel));
-        add(new DropDownChoice<String>("dropdown", useDropDown ? model : new Model<String>(""), choiceModel)
-                .setNullValid(!custom));
+        add(new DropDownChoice<String>("dropdown", useDropDown ? model : new Model<String>(""), choiceModel));
         add(new TextField<String>("custom", model).setVisible(!useDropDown)); 
         
         if(custom) {

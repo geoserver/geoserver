@@ -1,12 +1,13 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager.web;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.Model;
-import org.geoserver.data.test.SystemTestData;
+import org.geoserver.taskmanager.AbstractWicketTaskManagerTest;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
@@ -17,24 +18,23 @@ import org.geoserver.taskmanager.tasks.DbRemotePublicationTaskTypeImpl;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
-import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ConfigurationPageTest extends GeoServerWicketTestSupport {
+public class ConfigurationPageTest extends AbstractWicketTaskManagerTest {
     
     private TaskManagerFactory fac;
     private TaskManagerDao dao;
     private TaskManagerDataUtil util;
     private TaskManagerTaskUtil tutil;
     
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
+    @Before
+    public void before() {
         fac = TaskManagerBeans.get().getFac();
         dao = TaskManagerBeans.get().getDao();
         util = TaskManagerBeans.get().getDataUtil();
         tutil = TaskManagerBeans.get().getTaskUtil();
+        login();
     }
     
     public Configuration createConfiguration() {
@@ -53,16 +53,11 @@ public class ConfigurationPageTest extends GeoServerWicketTestSupport {
         
         return dao.save(config);
     }
-    
-    @Before
-    public void init() throws IOException {
-        login();
-    }
-    
+        
     @SuppressWarnings("unchecked")
     @Test
     public void testCreate() {        
-        ConfigurationPage page = new ConfigurationPage(new Model<>(createConfiguration()));
+        ConfigurationPage page = new ConfigurationPage(createConfiguration());
         
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);

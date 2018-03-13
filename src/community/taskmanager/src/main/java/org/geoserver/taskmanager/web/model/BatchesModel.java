@@ -94,7 +94,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
     @Override
     protected List<Batch> getItems() {
         List<Batch> list = new ArrayList<Batch>(
-                configurationModel == null ? TaskManagerBeans.get().getDao().getBatches() : 
+                configurationModel == null ? TaskManagerBeans.get().getDao().getBatches(true) : 
                     configurationModel.getObject().getBatches().values());
         list.removeIf(b -> !TaskManagerBeans.get().getSecUtil().isReadable(
             SecurityContextHolder.getContext().getAuthentication(), b));

@@ -10,7 +10,9 @@
 <body>
 	<wicket:extend>
 		<div wicket:id="dialog"></div>
-	
+
+		<div wicket:id="init"><wicket:message key="init"></wicket:message></div>
+
 		<form wicket:id="configurationForm">	  		  	  
 		  	 <fieldset>		
 		  	 	<ul>
@@ -32,7 +34,7 @@
 				 <li>
 					 <h4><wicket:message key="tasks"/></h4>
 					 
-					 <ul>
+					 <ul class="links-above-table">
 						<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
 						<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
 					</ul>
@@ -50,7 +52,7 @@
                      </div>
 				</li>
 			</ul>     
-			</fieldset>			
+			</fieldset>
 		</form>
 
 	</wicket:extend>

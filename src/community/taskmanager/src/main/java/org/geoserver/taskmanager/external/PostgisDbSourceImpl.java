@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.external;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,8 +127,8 @@ public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
     }
     
     @Override
-    public Map<String, Object> getParameters() {
-        Map<String, Object> params = new HashMap<String, Object>();
+    public Map<String, Serializable> getParameters() {
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
         params.put(PostgisNGDataStoreFactory.DBTYPE.key, "postgis");
         params.put(PostgisNGDataStoreFactory.HOST.key, host);
         params.put(PostgisNGDataStoreFactory.PORT.key, port);

@@ -71,7 +71,9 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements A
 
     }
 
-    static ThreadLocal<CallbackContext> REQUEST_CONTROLLERS = new ThreadLocal<CallbackContext>();
+    static ThreadLocal<CallbackContext> REQUEST_CONTROLLERS = new ThreadLocal<>();
+
+    static ThreadLocal<Boolean> FAILED_ON_FLOW_CONTROLLERS = new ThreadLocal<>();
 
     FlowControllerProvider provider;
 
@@ -115,6 +117,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements A
         
         blockedRequests.incrementAndGet();
         long start = System.currentTimeMillis();
+        boolean failedOnFlowControllers = true;
         try {
             // the operation has not been set in the Request yet by the dispatcher, do so now in
             // a clone of the Request
@@ -162,9 +165,14 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements A
                     }
                 }
             }
+            failedOnFlowControllers = false;
         } finally {
             blockedRequests.decrementAndGet();
-            runningRequests.incrementAndGet();
+            if (!failedOnFlowControllers) {
+                runningRequests.incrementAndGet();
+            }
+            FAILED_ON_FLOW_CONTROLLERS.set(failedOnFlowControllers);
+            
             if(REQUEST_CONTROLLERS.get() != null) {
                 if (LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.info("Request control-flow performed, running requests: " + getRunningRequests() + ", blocked requests: "
@@ -253,7 +261,9 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements A
             if (context != null) {
                 context.nestingLevel--;
                 if(context.nestingLevel <= 0 || forceRelease) {
-                    runningRequests.decrementAndGet();
+                    if (Boolean.FALSE.equals(FAILED_ON_FLOW_CONTROLLERS.get())) {
+                        runningRequests.decrementAndGet();
+                    }
                     // call back the same controllers we used when the operation started, releasing
                     // them in inverse order
                     LOGGER.info("releasing flow controllers for [" + context.request + "]");

@@ -22,13 +22,12 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
-import org.geoserver.taskmanager.data.Batch;
-import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.DbTableImpl;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
+import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.schedule.TaskResult;
 import org.geoserver.taskmanager.schedule.TaskType;
@@ -83,21 +82,20 @@ public class CopyTableTaskTypeImpl implements TaskType {
     }
 
     @Override
-    public TaskResult run(Batch batch, Task task, Map<String, Object> parameterValues,
-                          Map<Object, Object> tempValues) throws TaskException {
-        final DbSource sourcedb = (DbSource) parameterValues.get(PARAM_SOURCE_DB_NAME);
-        final DbSource targetdb = (DbSource) parameterValues.get(PARAM_TARGET_DB_NAME);
-        final DbTable table = tempValues.containsKey(parameterValues.get(PARAM_TABLE_NAME)) ?
-                (DbTable) tempValues.get(parameterValues.get(PARAM_TABLE_NAME)) :
-                (DbTable) parameterValues.get(PARAM_TABLE_NAME);
+    public TaskResult run(TaskContext ctx) throws TaskException {
+        //TODO: check for ctx.isInterruptMe() in loops and cancel task
+        
+        final DbSource sourcedb = (DbSource) ctx.getParameterValues().get(PARAM_SOURCE_DB_NAME);
+        final DbSource targetdb = (DbSource) ctx.getParameterValues().get(PARAM_TARGET_DB_NAME);
+        final DbTable table = (DbTable) ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_TABLE_NAME));
 
-        final DbTable targetTable = parameterValues.containsKey(PARAM_TARGET_TABLE_NAME) ?
-                (DbTable) parameterValues.get(PARAM_TARGET_TABLE_NAME) :
+        final DbTable targetTable = ctx.getParameterValues().containsKey(PARAM_TARGET_TABLE_NAME) ?
+                (DbTable) ctx.getParameterValues().get(PARAM_TARGET_TABLE_NAME) :
                 new DbTableImpl(targetdb, table.getTableName());
         final String tempTableName = SqlUtil.qualified(
                 SqlUtil.schema(targetTable.getTableName()),
                 "_temp_" + UUID.randomUUID().toString().replace('-', '_'));
-        tempValues.put(targetTable, new DbTableImpl(targetdb, tempTableName));
+        ctx.getBatchContext().put(targetTable, new DbTableImpl(targetdb, tempTableName));
 
         try (Connection sourceConn = sourcedb.getDataSource().getConnection()) {
             sourceConn.setAutoCommit(false);
@@ -109,8 +107,13 @@ public class CopyTableTaskTypeImpl implements TaskType {
 
                         ResultSetMetaData rsmd = rs.getMetaData();
 
+                        String sqlCreateSchemaIfNotExists = targetdb.getDialect().createSchema(
+                                destConn,
+                                SqlUtil.schema(tempTableName));
+
                         // create the temp table structure
-                        StringBuilder sb = new StringBuilder("CREATE TABLE ").append(tempTableName)
+                        StringBuilder sb = new StringBuilder(sqlCreateSchemaIfNotExists);
+                        sb.append("CREATE TABLE ").append(tempTableName)
                                 .append(" ( ");
                         int columnCount = rsmd.getColumnCount();
 
@@ -239,6 +242,8 @@ public class CopyTableTaskTypeImpl implements TaskType {
                         stmt.executeUpdate("ALTER TABLE " + tempTableName + " RENAME TO " +
                                 targetdb.getDialect().quote(SqlUtil.notQualified(targetTable.getTableName())));
                     }
+                    
+                    ctx.getBatchContext().delete(targetTable);
                 } catch (SQLException e) {
                     throw new TaskException(e);
                 }
@@ -259,11 +264,11 @@ public class CopyTableTaskTypeImpl implements TaskType {
     }
 
     @Override
-    public void cleanup(Task task, Map<String, Object> parameterValues) throws TaskException {
-        final DbTable table = (DbTable) parameterValues.get(PARAM_TABLE_NAME);
-        final DbSource targetDb = (DbSource) parameterValues.get(PARAM_TARGET_DB_NAME);
-        final DbTable targetTable = parameterValues.containsKey(PARAM_TARGET_TABLE_NAME) ?
-                (DbTable) parameterValues.get(PARAM_TARGET_TABLE_NAME) :
+    public void cleanup(TaskContext ctx) throws TaskException {
+        final DbTable table = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
+        final DbSource targetDb = (DbSource) ctx.getParameterValues().get(PARAM_TARGET_DB_NAME);
+        final DbTable targetTable = ctx.getParameterValues().containsKey(PARAM_TARGET_TABLE_NAME) ?
+                (DbTable) ctx.getParameterValues().get(PARAM_TARGET_TABLE_NAME) :
                 new DbTableImpl(targetDb, table.getTableName());
 
         try (Connection conn = targetDb.getDataSource().getConnection()) {

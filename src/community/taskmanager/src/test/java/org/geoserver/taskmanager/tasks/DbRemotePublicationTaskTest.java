@@ -1,13 +1,20 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager.tasks;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.xml.namespace.QName;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
+import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Task;
@@ -16,13 +23,12 @@ import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.BatchJobService;
-import org.geoserver.taskmanager.schedule.TestTaskTypeImpl;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -34,11 +40,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 
 /**
- * To run this test you should have a geoserver running on http://localhost:9090/geoserver.
+ * To run this test you should have a geoserver running on http://localhost:9090/geoserver
+ * + postgres running on localhost with database 'mydb' (or configure in application context), 
+ * initiated with create-source.sql.
  * 
  * @author Niels Charlier
  */
-@Ignore
 public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
     
     //configure these constants
@@ -85,9 +92,18 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
         DATA_DIRECTORY.addCustomType(MY_TYPE, dbSources.get(DB_NAME).getParameters());
         return true;
     }
-
+    
     @Before
-    public void setupBatch() {
+    public void setupBatch() throws MalformedURLException {
+        Assume.assumeTrue(extGeoservers.get("mygs").getRESTManager().getReader().existGeoserver());
+        try (Connection conn = dbSources.get(DB_NAME).getDataSource().getConnection()) {
+            try (ResultSet res = conn.getMetaData().getTables(null, null, TABLE_NAME, null)) {
+                Assume.assumeTrue(res.next());
+            }
+        } catch (SQLException e) {
+            Assume.assumeTrue(false);
+        }
+        
         config = fac.createConfiguration();  
         config.setName("my_config");
         config.setWorkspace("some_ws");
@@ -113,8 +129,12 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     @After
     public void clearDataFromDatabase() {
-        dao.delete(batch);
-        dao.delete(config);
+        if (batch != null) {
+            dao.delete(batch);
+        }
+        if (config != null) {
+            dao.delete(config);
+        }
     }
     
     @Test

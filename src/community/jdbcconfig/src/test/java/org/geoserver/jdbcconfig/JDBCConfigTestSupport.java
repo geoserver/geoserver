@@ -361,7 +361,7 @@ public class JDBCConfigTestSupport {
         };
 
         @Bean
-        public PlatformTransactionManager transactionManager() {
+        public PlatformTransactionManager jdbcConfigTransactionManager() {
             return new DataSourceTransactionManager(dataSource());
         }
 

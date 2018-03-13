@@ -16,7 +16,14 @@ import java.util.Date;
 public interface Run extends Serializable, Identifiable {    
 
     public enum Status { RUNNING, FAILED, ROLLED_BACK, READY_TO_COMMIT, COMMITTING, 
-        COMMITTED, NOT_ROLLED_BACK, NOT_COMMITTED}
+        COMMITTED, NOT_ROLLED_BACK, NOT_COMMITTED;
+        
+        public boolean isClosed() {
+            return this != Status.RUNNING 
+            && this != Status.READY_TO_COMMIT
+            && this != Status.COMMITTING;
+        }
+    }
 
     Date getStart();
 

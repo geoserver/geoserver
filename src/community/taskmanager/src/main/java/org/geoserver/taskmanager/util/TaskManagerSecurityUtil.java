@@ -6,6 +6,7 @@ package org.geoserver.taskmanager.util;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.taskmanager.data.Batch;
@@ -29,6 +30,9 @@ public class TaskManagerSecurityUtil {
    
     @Autowired
     private SecureCatalogImpl secureCatalog;
+    
+    @Autowired
+    GeoServerSecurityManager secManager;
 
     private WorkspaceInfo getWorkspace(String workspaceName) {
         if (workspaceName == null) {
@@ -37,11 +41,11 @@ public class TaskManagerSecurityUtil {
             return catalog.getWorkspaceByName(workspaceName);
         }
     }
-        
+    
     public boolean isReadable(Authentication user, Configuration config) {
         WorkspaceInfo wi = getWorkspace(config.getWorkspace());
-        if (wi == null) {
-            return config.getWorkspace() == null;
+        if (wi == null) { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            return config.getWorkspace() == null || secManager.checkAuthenticationForAdminRole(user);
         } else {
             WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
             return limits == null || limits.isReadable();
@@ -58,26 +62,17 @@ public class TaskManagerSecurityUtil {
         if (wi != null) {
             WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
             check1 = limits == null || limits.isReadable();
-        } else {
-            check1 = batch.getWorkspace() == null;
+        } else { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            check1 = batch.getWorkspace() == null || secManager.checkAuthenticationForAdminRole(user);
         }
         if (wif != null) {
             WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wif);
             check2 = limits == null || limits.isReadable();
-        } else {
-            check2 = batch.getConfiguration() == null || batch.getConfiguration().getWorkspace() == null;
+        } else { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            check2 = batch.getConfiguration() == null || batch.getConfiguration().getWorkspace() == null
+                    || secManager.checkAuthenticationForAdminRole(user);;
         }
         return check1 && check2;
-    }
-
-    public boolean isWritable(Authentication user, Configuration config) {
-        WorkspaceInfo wi = getWorkspace(config.getWorkspace());
-        if (wi == null) {
-            return config.getWorkspace() == null;
-        } else {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
-            return limits == null || limits.isWritable();
-        }
     }
 
     public boolean isWritable(Authentication user, Batch batch) {
@@ -90,16 +85,55 @@ public class TaskManagerSecurityUtil {
         if (wi != null) {
             WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
             check1 = limits == null || limits.isWritable();
-        } else {
-            check1 = batch.getWorkspace() == null;
+        } else { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            check1 = batch.getWorkspace() == null  || secManager.checkAuthenticationForAdminRole(user); 
         }
         if (wif != null) {
             WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wif);
             check2 = limits == null || limits.isWritable();
-        } else {
-            check2 = batch.getConfiguration() == null || batch.getConfiguration().getWorkspace() == null;
+        } else { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            check2 = batch.getConfiguration() == null || batch.getConfiguration().getWorkspace() == null
+                    || secManager.checkAuthenticationForAdminRole(user);
         }
         return check1 && check2;
+    }
+    
+    public boolean isAdminable(Authentication user, Configuration config) {
+        WorkspaceInfo wi = getWorkspace(config.getWorkspace());
+        if (wi == null) { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            return config.getWorkspace() == null || secManager.checkAuthenticationForAdminRole(user);
+        } else {
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
+            return limits == null || limits.isAdminable();
+        }
+    }
+
+    public boolean isAdminable(Authentication user, Batch batch) {
+        WorkspaceInfo wi = getWorkspace(batch.getWorkspace());
+        WorkspaceInfo wif = null;
+        if (batch.getConfiguration() != null) {
+            wif = getWorkspace(batch.getConfiguration().getWorkspace());
+        }
+        boolean check1, check2;
+        if (wi != null) {
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
+            check1 = limits == null || limits.isAdminable();
+        } else { //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            check1 = batch.getWorkspace() == null || secManager.checkAuthenticationForAdminRole(user); 
+        }
+        if (wif != null) {
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wif);
+            check2 = limits == null || limits.isAdminable();
+        } else {  //lack of default workspace (allow) versus incorrect workspace (deny unless admin)
+            check2 = batch.getConfiguration() == null || batch.getConfiguration().getWorkspace() == null
+                    || secManager.checkAuthenticationForAdminRole(user);
+        }
+        return check1 && check2;
+    }
+    
+    public boolean isAdminable(Authentication user, WorkspaceInfo ws) {
+        WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, ws);
+        return limits == null || limits.isAdminable();
     }
 
 }

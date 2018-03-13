@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.web.action;
 
 import org.geoserver.taskmanager.web.ConfigurationPage;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class LayerEditAction implements Action {
     
+    private static final long serialVersionUID = 6978608806982184868L;
+    
     private final static String NAME = "LayerEdit";
 
     @Override
@@ -24,10 +27,21 @@ public class LayerEditAction implements Action {
     }
 
     @Override
-    public void execute(ConfigurationPage onPage, String value) {
+    public String execute(ConfigurationPage onPage, String value) {
         String[] prefixname = value.split(":", 2);
-        onPage.setResponsePage(new ResourceConfigurationPage(prefixname[0], prefixname[1])
-            .setReturnPage(onPage));
+        onPage.setResponsePage(
+                new ResourceConfigurationPage(prefixname.length > 1 ? prefixname[0] : null,
+                        prefixname[prefixname.length - 1]).setReturnPage(onPage));
+        return value;
+    }
+
+    @Override
+    public boolean accept(String value) {
+        if (value == null || "".equals(value)) {
+            return false;
+        } else {
+            return GeoServerApplication.get().getCatalog().getLayerByName(value) != null;
+        }
     }
 
 }

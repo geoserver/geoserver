@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class H2DbSourceImpl extends NamedImpl implements DbSource {
     }
 
     @Override
-    public Map<String, Object> getParameters() {
+    public Map<String, Serializable> getParameters() {
         throw new UnsupportedOperationException("Generic datasource cannot be used as a store.");
     }
 

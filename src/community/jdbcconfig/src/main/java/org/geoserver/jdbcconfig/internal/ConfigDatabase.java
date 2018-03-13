@@ -196,7 +196,7 @@ public class ConfigDatabase {
         return dialect;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void initDb(@Nullable Resource resource) throws IOException {
         this.dbMappings = new DbMappings(dialect());
         if (resource != null) {
@@ -457,7 +457,7 @@ public class ConfigDatabase {
         return getById(defaultObjectId, type);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public <T extends Info> T add(final T info) {
         checkNotNull(info);
         checkNotNull(info.getId(), "Object has no id");
@@ -685,7 +685,7 @@ public class ConfigDatabase {
     /**
      * @param info
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void remove(Info info) {
         Integer oid;
         try {
@@ -718,7 +718,7 @@ public class ConfigDatabase {
      * @param info
      *
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public <T extends Info> T save(T info) {
         checkNotNull(info);
 
@@ -1111,7 +1111,7 @@ public class ConfigDatabase {
         return inValues;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void setDefault(final String key, @Nullable final String id) {
         String sql = "DELETE FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
         Map<String, ?> params = params("key", key);

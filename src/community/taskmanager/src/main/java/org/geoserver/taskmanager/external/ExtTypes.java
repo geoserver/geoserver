@@ -17,10 +17,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.util.LookupService;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -141,4 +144,46 @@ public class ExtTypes {
         }
         
     };
+    
+    public final ParameterType layerName = new ParameterType() {
+        
+        @Override
+        public List<String> getDomain(List<String> dependsOnRawValues) {
+            /*List<String> layers = new ArrayList<>();
+            layers.add(""); //custom value is possible here
+            for (LayerInfo layer : geoServer.getCatalog().getLayers()) {
+                layers.add(layer.prefixedName());
+            }
+            return layers;*/
+            return null;
+        }
+
+        @Override
+        public Name parse(String value, List<String> dependsOnRawValues) {
+            int colon = value.indexOf(':') ;
+            NamespaceInfo ni;
+            if (colon >= 0) {
+                ni = geoServer.getCatalog().getNamespaceByPrefix(value.substring(0, colon));
+            } else {
+                ni = geoServer.getCatalog().getDefaultNamespace();
+            }
+            return new NameImpl(ni == null ? null : ni.getURI(), value.substring(colon + 1));
+        }
+        
+        @Override
+        public boolean validate(String value, List<String> dependsOnRawValues) {
+            int colon = value.indexOf(':');
+            if (colon >= 0) {
+                return geoServer.getCatalog().getNamespaceByPrefix(value.substring(0, colon)) != null;
+            }
+            return true; 
+        }
+
+        @Override
+        public List<String> getActions() {
+            return Collections.singletonList("LayerEdit");
+        }
+
+    };
 }
+

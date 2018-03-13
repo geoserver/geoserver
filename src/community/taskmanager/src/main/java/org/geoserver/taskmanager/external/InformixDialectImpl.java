@@ -4,8 +4,10 @@
  */
 package org.geoserver.taskmanager.external;
 
+import java.sql.Connection;
+
 /**
- * Informix implementation.
+ * Informix 11 implementation.
  *
  * 
  * @author Timothy De Bock
@@ -27,5 +29,16 @@ public class InformixDialectImpl extends DefaultDialectImpl {
     @Override
     public int isNullable(int nullable) {
         return -1;
+    }
+
+    /**
+     * No schemas in informix 11.
+     * @param connection
+     * @param schema
+     * @return
+     */
+    @Override
+    public String createSchema(Connection connection, String schema) {
+        return "";
     }
 }

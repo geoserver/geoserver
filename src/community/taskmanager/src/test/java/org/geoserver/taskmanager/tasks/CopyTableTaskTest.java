@@ -1,3 +1,7 @@
+/* (c) 2017-2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.taskmanager.tasks;
 
 import static org.junit.Assert.assertEquals;
@@ -11,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
+import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Task;
@@ -18,7 +23,6 @@ import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.schedule.BatchJobService;
-import org.geoserver.taskmanager.schedule.TestTaskTypeImpl;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
@@ -55,6 +59,8 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
     private static final String TARGET_TABLE_CAMELCASE_NAME = "temp.Grondwaterlichamen_Copy";
 
     private static final String TARGET_TABLE_FROM_VIEW_NAME = "temp.grondwaterlichamen_vw_copy";
+
+    private static final String TARGET_TABLE_NAME_NEW_SCHEMA = "foobar.grondwaterlichamen_copy";
 
     //attributes
     private static final String ATT_TABLE_NAME = "table_name";
@@ -342,6 +348,48 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         assertFalse(tableExists(TARGETDB_NAME, SqlUtil.schema(TARGET_TABLE_NAME), "_temp%"));
         assertFalse(tableExists(TARGETDB_NAME, SqlUtil.schema(TARGET_TABLE_NAME),
                 SqlUtil.notQualified(TARGET_TABLE_NAME)));
+    }
+
+
+    /**
+     * the copy task should create the schema if it doesn't exist.
+     * @throws SchedulerException
+     * @throws SQLException
+     */
+    @Test
+    public void testTableInNewSchema() throws SchedulerException, SQLException {
+        dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME_NEW_SCHEMA);
+        config = dao.save(config);
+
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getFullName())
+                .startNow()
+                .build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+        }
+
+        String[] splitTargetTableName = TARGET_TABLE_NAME_NEW_SCHEMA.split("\\.", 2);
+        if (splitTargetTableName.length == 2) {
+            assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], "_temp%"));
+            assertTrue(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_NAME, null, "_temp%"));
+            assertTrue(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME_NEW_SCHEMA));
+        }
+
+        assertTrue(taskUtil.cleanup(config));
+
+        if (splitTargetTableName.length == 2) {
+            assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME_NEW_SCHEMA));
+        }
     }
 
     private int getNumberOfRecords(String db, String tableName) throws SQLException {

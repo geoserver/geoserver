@@ -19,7 +19,7 @@ public interface Dialect {
     /**
      * Put quotes arround the schema name and the table name.
      *
-     * @return the quote table name.
+     * @return the quoted table name
      */
     String quote(String tableName);
 
@@ -27,7 +27,8 @@ public interface Dialect {
      * 
      * @param currentViewName
      * @param newViewName
-     * @return
+     * 
+     * @return statement to rename view
      */
     String sqlRenameView(String currentViewName, String newViewName);
 
@@ -37,7 +38,8 @@ public interface Dialect {
      * @param columnNames
      * @param isSpatialIndex
      * @param isUniqueIndex
-     * @return
+     * 
+     * @return statement to create index
      */
     String createIndex(String tableName, Set<String> columnNames, boolean isSpatialIndex, boolean isUniqueIndex);
 
@@ -45,9 +47,32 @@ public interface Dialect {
      * 
      * @param sourceConn
      * @param tableName
-     * @return
+     * @return set of spatial columns
      */
     Set<String> getSpatialColumns(Connection sourceConn, String tableName);
 
+    /**
+     * translate nullable code 
+     * 
+     * @param nullable
+     * @return
+     */
     int isNullable(int nullable);
+
+    /**
+     * Create the schema if it does not exist.
+     *
+     * @param connection
+     * @param schema
+     * @return statement to create schema if it doesn't exist
+     */
+    String createSchema(Connection connection, String schema);
+
+    /**
+     * Are views automatically updated when dependent object is renamed?
+     * 
+     * @return true or false
+     */
+    boolean autoUpdateView();
+
 }

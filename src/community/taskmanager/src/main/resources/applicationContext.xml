@@ -29,10 +29,10 @@
         </property>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <bean id="tmTransactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
         <property name="sessionFactory" ref="tmSessionFactory"/>
     </bean>
-    <tx:annotation-driven transaction-manager="transactionManager" />
+    <tx:annotation-driven />
     
     <bean name="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     	<property name="applicationContextSchedulerContextKey">
@@ -52,6 +52,8 @@
     <context:component-scan base-package="org.geoserver.taskmanager.report.impl" />
     
     <context:component-scan base-package="org.geoserver.taskmanager.tasks" />
+        
+    <context:component-scan base-package="org.geoserver.taskmanager.web.action" />
     
     <bean class="org.geoserver.taskmanager.util.ConfigurationBeansLoader">
        <constructor-arg ref="resourceStore"></constructor-arg>
@@ -62,7 +64,7 @@
        <property name="order" value="1000" />
     </bean>
     
-    <bean id="taskManagerMenuAuthorizer" class="org.geoserver.web.AuthenticatedComponentAuthorizer" />
+    <bean id="taskManagerMenuAuthorizer" class="org.geoserver.web.WorkspaceAdminComponentAuthorizer" />
     
     <bean id="templatesPage" class="org.geoserver.web.MenuPageInfo">
        <property name="id" value="templatesPage"/>

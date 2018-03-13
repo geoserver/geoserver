@@ -70,7 +70,7 @@ public interface ParameterType {
 
         @Override
         public Boolean parse(String value, List<String> dependsOnRawValues) {
-            return Boolean.parseBoolean(value);        
+            return Boolean.parseBoolean(value);
         }
 
     };
@@ -109,6 +109,11 @@ public interface ParameterType {
         @Override
         public java.io.File parse(String value, List<String> dependsOnRawValues) {
             return new java.io.File(value);
+        }
+        
+        @Override
+        public List<String> getActions() {
+            return Collections.singletonList("FileUpload");
         }
 
     };

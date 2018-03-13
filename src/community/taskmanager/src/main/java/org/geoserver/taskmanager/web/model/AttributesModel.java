@@ -17,6 +17,7 @@ import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
+import org.geoserver.taskmanager.util.InitConfigUtil;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
@@ -74,7 +75,7 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
             Attribute att = attributes.get(attName);
             if (att == null) {
                 att = TaskManagerBeans.get().getFac().createAttribute();
-                att.setConfiguration(configurationModel.getObject());
+                att.setConfiguration(InitConfigUtil.unwrap(configurationModel.getObject()));
                 att.setName(attName);
                 attributes.put(attName, att);
             }

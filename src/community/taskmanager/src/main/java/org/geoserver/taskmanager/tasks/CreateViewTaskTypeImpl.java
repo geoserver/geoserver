@@ -4,14 +4,14 @@
  */
 package org.geoserver.taskmanager.tasks;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.external.DbTable;
+import org.geoserver.taskmanager.schedule.BatchContext;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.ParameterType;
+import org.geoserver.taskmanager.schedule.TaskContext;
+import org.geoserver.taskmanager.schedule.TaskException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,13 +35,12 @@ public class CreateViewTaskTypeImpl extends AbstractCreateViewTaskTypeImpl {
         paramInfo.put(PARAM_WHERE, new ParameterInfo(PARAM_WHERE, ParameterType.SQL, false));
     }
     
-    public String buildQueryDefinition(Map<String, Object> parameterValues,
-            Map<Object, Object> tempValues, Map<String, Attribute> attributes) {
-        final DbTable table = tempValues.containsKey(parameterValues.get(PARAM_TABLE_NAME)) ?
-                (DbTable) tempValues.get(parameterValues.get(PARAM_TABLE_NAME)) :
-                (DbTable) parameterValues.get(PARAM_TABLE_NAME);
-        final String select = (String) parameterValues.get(PARAM_SELECT);
-        final String where = (String) parameterValues.get(PARAM_WHERE);
+    public String buildQueryDefinition(TaskContext ctx,            
+            BatchContext.Dependency dependency) throws TaskException {
+        final DbTable table = (DbTable) ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_TABLE_NAME),
+                dependency);
+        final String select = (String) ctx.getParameterValues().get(PARAM_SELECT);
+        final String where = (String) ctx.getParameterValues().get(PARAM_WHERE);
         StringBuilder sb = new StringBuilder("SELECT ").
             append(select).append(" FROM ").append(table.getTableName());
         if (where != null) {

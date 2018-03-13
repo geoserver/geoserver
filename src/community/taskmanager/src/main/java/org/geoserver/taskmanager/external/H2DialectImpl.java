@@ -4,10 +4,6 @@
  */
 package org.geoserver.taskmanager.external;
 
-import java.sql.Connection;
-import java.util.Collections;
-import java.util.Set;
-
 /**
  * H2 Dialect.
  * 
@@ -29,11 +25,5 @@ public class H2DialectImpl extends DefaultDialectImpl {
     @Override
     public String sqlRenameView(String currentViewName, String newViewName) {
         return "ALTER TABLE " + currentViewName + " RENAME TO " + newViewName;
-    }
-
-
-    @Override
-    public Set<String> getSpatialColumns(Connection sourceConn, String tableName) {
-        return Collections.emptySet();
     }
 }

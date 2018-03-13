@@ -48,6 +48,9 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     
     @Column(nullable = false)
     private Boolean template = false;
+
+    @Column(nullable = false)
+    private Boolean validated = false;
     
     @Column
     private String workspace;
@@ -148,6 +151,16 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @Override
     public long getRemoveStamp() {
         return removeStamp;
+    }
+
+    @Override
+    public boolean isValidated() {
+        return validated;
+    }
+
+    @Override
+    public void setValidated(boolean initMode) {
+        this.validated = initMode;
     }
     
 }

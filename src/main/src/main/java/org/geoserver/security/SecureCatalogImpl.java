@@ -35,9 +35,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
-import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
@@ -48,11 +46,11 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.decorators.DecoratingCatalogFactory;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
-import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.security.decorators.SecuredObjects;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geoserver.security.impl.DataAccessRuleDAO;
@@ -68,6 +66,10 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+
+import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
+import org.geoserver.security.decorators.SecuredWMSStoreInfo;
+import org.geoserver.security.decorators.SecuredWMTSStoreInfo;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
@@ -532,17 +534,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        if(info instanceof FeatureTypeInfo) { 
-            return (T) new SecuredFeatureTypeInfo((FeatureTypeInfo) info, policy);
-        } else if(info instanceof CoverageInfo) {
-            return (T) new SecuredCoverageInfo((CoverageInfo) info, policy);
-        } else if(info instanceof WMSLayerInfo) {
-            return (T) new SecuredWMSLayerInfo((WMSLayerInfo) info, policy);
-        } else if(info instanceof WMTSLayerInfo) {
-            return (T) new SecuredWMTSLayerInfo((WMTSLayerInfo) info, policy);
-        } else {
-            throw new RuntimeException("Unknown resource type " + info.getClass());
-        }
+        return (T) SecuredObjects.secure(info, policy);
    }
 
     /**
@@ -586,16 +578,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // write, or
         // cannot read but is allowed by the operation mode to access the
         // metadata
-        if (store instanceof DataStoreInfo) {
-            return (T) new SecuredDataStoreInfo((DataStoreInfo) store, policy);
-        } else if(store instanceof CoverageStoreInfo) {
-            return (T) new SecuredCoverageStoreInfo((CoverageStoreInfo) store, policy);
-        } else if (store instanceof WMSStoreInfo) {
-            // TODO: implement WMSStoreInfo wrappring if necessary
-            return store;
-        } else if (store instanceof WMTSStoreInfo) {
-            // TODO: implement WMTSStoreInfo wrappring if necessary
-            return store;
+        if (store instanceof DataStoreInfo || store instanceof CoverageStoreInfo || store instanceof WMSStoreInfo ||
+            store instanceof WMTSStoreInfo) {
+            return (T) SecuredObjects.secure(store, policy);
         } else {
             throw new RuntimeException("Unknown store type " + store.getClass());
         }
@@ -621,7 +606,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        return new SecuredLayerInfo(layer, policy);
+        return (LayerInfo) SecuredObjects.secure(layer, policy);
     }
 
     /**
@@ -1122,6 +1107,12 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     static StoreInfo unwrap(StoreInfo info) {
         if(info instanceof SecuredDataStoreInfo)
             return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo)
+            return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSStoreInfo)
+            return ((SecuredWMSStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSStoreInfo)
+            return ((SecuredWMTSStoreInfo) info).unwrap(StoreInfo.class);
         return info;
     }
 

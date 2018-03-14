@@ -12,6 +12,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.geoserver.GeoServerConfigurationLock;
+import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -20,6 +22,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
+import org.geoserver.platform.GeoServerExtensions;
 import org.junit.After;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -162,18 +165,15 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         }
     }
 
-    
-//    @Override
-//    public void testGetLayerGroupByNameWithWorkspace() {
-//        try {
-//            super.testGetLayerGroupByNameWithWorkspace();
-//        } catch (AssertionFailedError e) {
-//            // ignoring failure, we need to fix this as we did for styles by workspace. Check the
-//            // comment in the original test case:
-//            // "//will randomly return one... we should probably return null with multiple matches"
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    public void testUpgradeLock() {
+        GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        configurationLock.lock(LockType.READ);
+        catalog.getNamespaces();
+        assertEquals(LockType.READ, configurationLock.getCurrentLock());
+        addNamespace();
+        assertEquals(LockType.WRITE, configurationLock.getCurrentLock());
+    }
 
     /**
      * Allow execution of a single test method with a hard-coded DBConfig. Due

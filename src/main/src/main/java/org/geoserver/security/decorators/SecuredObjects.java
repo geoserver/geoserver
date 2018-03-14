@@ -47,7 +47,7 @@ public class SecuredObjects {
 
         // if we already know what can handle the wrapping, just do it, don't
         // scan the extension points once more
-        Class clazz = object.getClass();
+        Class<?> clazz = object.getClass();
         SecuredObjectFactory candidate = FACTORY_CACHE.get(clazz);
 
         // otherwise scan and store (or complain)

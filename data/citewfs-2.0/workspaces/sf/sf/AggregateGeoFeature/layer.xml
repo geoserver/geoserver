@@ -1,0 +1,14 @@
+<layer>
+  <name>AggregateGeoFeature</name>
+  <id>LayerInfoImpl--27105a88:1247622085b:-7ffa</id>
+  <path>/</path>
+  <type>VECTOR</type>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--27105a88:1247622085b:-7ffb</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

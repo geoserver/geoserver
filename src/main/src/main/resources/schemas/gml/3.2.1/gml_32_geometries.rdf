@@ -109,12 +109,12 @@
     <rdfs:isDefinedBy rdf:resource=""/>
     <rdfs:label xml:lang="en">Multi-Geometry</rdfs:label>
   </owl:Class>
-  <owl:Class rdf:ID="Bezler">
+  <owl:Class rdf:ID="Bezier">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="BSpline"/>
     </rdfs:subClassOf>
     <rdfs:isDefinedBy rdf:resource=""/>
-    <rdfs:label xml:lang="en">Bezler</rdfs:label>
+    <rdfs:label xml:lang="en">Bezier</rdfs:label>
   </owl:Class>
   <owl:Class rdf:ID="Curve">
     <rdfs:subClassOf>

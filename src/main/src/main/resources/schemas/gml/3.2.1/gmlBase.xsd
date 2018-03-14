@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:gmlBase:3.2.1">gmlBase.xsd</appinfo>
 		<documentation>See ISO/DIS 19136 7.2.
@@ -8,11 +8,16 @@ The gmlBase schema components establish the GML model and syntax, in particular
 -	a pattern and components for GML properties,
 -	patterns for collections and arrays, and components for generic collections and arrays,
 -	components for associating metadata with GML objects,
--	components for constructing definitions and dictionaries.</documentation>
+-	components for constructing definitions and dictionaries.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
+	<include schemaLocation="gml.xsd"/>
 	<include schemaLocation="basicTypes.xsd"/>
-	<include schemaLocation="deprecatedTypes.xsd"/>
-	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlinks.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
 	<element name="AbstractObject" abstract="true">
 		<annotation>
 			<documentation>This element has no type defined, and is therefore implicitly (according to the rules of W3C XML Schema) an XML Schema anyType. It is used as the head of an XML Schema substitution group which unifies complex content and certain simple content elements used for datatypes in GML, including the gml:AbstractGML substitution group.</documentation>
@@ -42,7 +47,7 @@ The gmlBase schema components establish the GML model and syntax, in particular
 		<annotation>
 			<documentation>XLink components are the standard method to support hypertext referencing in XML. An XML Schema attribute group, gml:AssociationAttributeGroup, is provided to support the use of Xlinks as the method for indicating the value of a property by reference in a uniform manner in GML.</documentation>
 		</annotation>
-		<attributeGroup ref="xlink:simpleLink"/>
+		<attributeGroup ref="xlink:simpleAttrs"/>
 		<attribute name="nilReason" type="gml:NilReasonType"/>
 		<attribute ref="gml:remoteSchema">
 			<annotation>

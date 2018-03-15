@@ -45,14 +45,14 @@ public class VectorElevationDimensionTest extends TestsSupport {
     @Test
     public void testGetDefaultValue() {
         testDefaultValueStrategy(Strategy.MINIMUM, "1.0");
-        testDefaultValueStrategy(Strategy.MAXIMUM, "2.0");
+        testDefaultValueStrategy(Strategy.MAXIMUM, "5.0");
     }
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "1.0", "2.0");
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, "1.0--2.0");
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, "1.0--2.0");
+        testDomainsValuesRepresentation(2, "1.0--5.0");
+        testDomainsValuesRepresentation(4, "1.0","2.0","3.0","5.0");
+        testDomainsValuesRepresentation(7, "1.0","2.0","3.0","5.0");
     }
 
     @Override
@@ -67,11 +67,11 @@ public class VectorElevationDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
-        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.1");
-        assertThat(histogram.first, is("1.0/2.0/0.1"));
-        assertThat(histogram.second, containsInAnyOrder(2, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "1");
+        assertThat(histogram.first, is("1.0/5.0/1.0"));
+        assertThat(histogram.second, containsInAnyOrder(2, 1, 0, 1));
     }
 
     /**

@@ -52,9 +52,8 @@ public class RasterElevationDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "0", "100");
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, "0--100");
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, "0--100");
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, "0", "100");
+        testDomainsValuesRepresentation(1, "0--100");
     }
 
     @Override
@@ -64,7 +63,7 @@ public class RasterElevationDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "50");
         assertThat(histogram.first, is("0.0/100.0/50.0"));

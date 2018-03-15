@@ -10,12 +10,12 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.wmts.Domains;
 import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -24,18 +24,16 @@ import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
-import org.geotools.ows.ServiceException;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
 import org.geowebcache.service.OWSException;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.comparator.ComparableComparator;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -51,8 +49,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
-
 /**
  * Some utils methods useful to interact with dimensions.
  */
@@ -61,42 +57,9 @@ public final class DimensionsUtils {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     /**
-     * Comparator for time domain values, ranges are taken in consideration.
+     * No expansion limit provided
      */
-    static final Comparator<Object> TEMPORAL_COMPARATOR = (objectA, objectB) -> {
-        Date dateA = Converters.convert(objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA, Date.class);
-        Date dateB = Converters.convert(objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB, Date.class);
-        return dateA.compareTo(dateB);
-    };
-
-    /**
-     * Comparator for numerical domain values, ranges are taken in consideration.
-     */
-    static final Comparator<Object> NUMERICAL_COMPARATOR = (objectA, objectB) -> {
-        Double numberA = Converters.convert(objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA, Double.class);
-        Double numberB = Converters.convert(objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB, Double.class);
-        return numberA.compareTo(numberB);
-    };
-
-    /**
-     * Comparator for custom domain values, time values and numerical values are specially handled.
-     */
-    static final Comparator<Object> CUSTOM_COMPARATOR = (objectA, objectB) -> {
-        // make sure we are using single values
-        Object valueA = objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA;
-        Object valueB = objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB;
-        // check if we have times or numerical values
-        if (valueA instanceof Date && valueB instanceof Date) {
-            return TEMPORAL_COMPARATOR.compare(objectA, objectB);
-        }
-        if (valueA instanceof Number && valueB instanceof Number) {
-            return NUMERICAL_COMPARATOR.compare(objectA, objectB);
-        }
-        // well it seems we have custom values so let's use strings
-        String stringA = Converters.convert(valueA, String.class);
-        String stringB = Converters.convert(valueB, String.class);
-        return stringA.compareTo(stringB);
-    };
+    public static final int NO_LIMIT = Integer.MIN_VALUE;
 
     /**
      * Helper method that will extract a layer dimensions.
@@ -180,21 +143,22 @@ public final class DimensionsUtils {
      * Dates and ranges will have a special handling. This method will take in account the
      * dimension required presentation.
      */
-    static List<String> getDomainValuesAsStrings(DimensionInfo dimension, List<Object> values) {
-        if (values == null || values.isEmpty()) {
+    static List<String> getDomainValuesAsStrings(DomainSummary summary) {
+        if (summary.getMin() == null && (summary.getUniqueValues() == null || summary.getUniqueValues().isEmpty())) {
             // no domain values so he just return an empty collection
             return Collections.emptyList();
         }
         List<String> stringValues = new ArrayList<>();
-        if (DimensionPresentation.LIST == dimension.getPresentation()) {
+        // did we get a list of unique values?
+        if (summary.getUniqueValues() != null) {
             // the dimension representation for this values requires that all the values are listed
-            for (Object value : values) {
+            for (Object value : summary.getUniqueValues()) {
                 stringValues.add(formatDomainValue(value));
             }
         } else {
             // the dimension representation for this values require a compact representation
-            Object minValue = getMinValue(values);
-            Object maxValue = getMaxValue(values);
+            Object minValue = summary.getMin();
+            Object maxValue = summary.getMax();
             stringValues.add(formatDomainSimpleValue(minValue) + "--" + formatDomainSimpleValue(maxValue));
         }
         return stringValues;
@@ -262,19 +226,27 @@ public final class DimensionsUtils {
      * Helper method that simply extract from a feature collection the values of a
      * specific attribute removing duplicate values.
      */
-    static Set<Object> getValuesWithoutDuplicates(String attributeName, FeatureCollection featureCollection,
-                                                  Comparator<Object> comparator) {
+    static Set<Object> getValuesWithoutDuplicates(String attributeName, FeatureCollection featureCollection) {
+        Set uniques = getUniqueValues(featureCollection, attributeName, NO_LIMIT);
+
+        // dimension values are dates/numbers/strings, all comparable, native sorting is fine
+        Set<Object> values = new TreeSet<>(uniques);
+        return values;
+    }
+
+    static TreeSet getUniqueValues(FeatureCollection featureCollection, String attributeName, int limit) {
         // using the unique visitor to remove duplicate values
         UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
+        if (limit > 0 && limit < Integer.MAX_VALUE) {
+            uniqueVisitor.setMaxFeatures(limit);
+        }
         try {
             featureCollection.accepts(uniqueVisitor, null);
         } catch (Exception exception) {
             throw new RuntimeException("Error visiting collection with unique visitor.");
         }
-        // make sure the values are sorted using the provided comparator
-        Set<Object> values = new TreeSet<>(comparator);
-        values.addAll(uniqueVisitor.getUnique());
-        return values;
+        // all dimension values are comparable
+        return new TreeSet(uniqueVisitor.getUnique());
     }
 
     /**
@@ -300,8 +272,7 @@ public final class DimensionsUtils {
      * Helper method that simply extract from a feature collection the values of a
      * specific attribute keeping duplicate values.
      */
-    static List<Object> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection,
-                                                Comparator<Object> comparator) {
+    static List<Object> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
         List<Object> values = new ArrayList<>();
         FeatureIterator featuresIterator = featureCollection.features();
@@ -310,7 +281,7 @@ public final class DimensionsUtils {
             SimpleFeature feature = (SimpleFeature) featuresIterator.next();
             values.add(feature.getAttribute(attributeName));
         }
-        Collections.sort(values, comparator);
+        Collections.sort(values, new ComparableComparator());
         return values;
     }
 

@@ -5,13 +5,13 @@
 package org.geoserver.gwc.wmts;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
@@ -25,8 +25,8 @@ import org.geoserver.wms.dimension.DimensionFilterBuilder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.Conveyor;
@@ -39,7 +39,6 @@ import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,15 +63,34 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     private final static Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
     public static final String SPACE_DIMENSION = "bbox";
     public static final Set<String> ALL_DOMAINS = Collections.emptySet();
+    /**
+     * Configuration key for the maximum allowed value of expand_limit
+     */
+    public static final String EXPAND_LIMIT_MAX_KEY = "MD_DOMAIN_EXPAND_LIMIT_MAX";
+    /**
+     * Default value for the maximum allowed value of expand_limit, if not configured
+     */
+    private static final int EXPAND_LIMIT_MAX_DEFAULT = Integer.getInteger(EXPAND_LIMIT_MAX_KEY, 100000);
+    /**
+     * Configuration key for expand_limit, if none is provided  
+     */
+    public static final String EXPAND_LIMIT_KEY = "MD_DOMAIN_EXPAND_LIMIT";
+    /**
+     * Default value for the maximum allowed value of expand_limit, if not configured
+     */
+    private static final int EXPAND_LIMIT_DEFAULT = Integer.getInteger(EXPAND_LIMIT_KEY, 1000);
+    public static final String EXPAND_LIMIT = "expandLimit";
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
+    private final GeoServer geoServer;
 
     private TileLayerDispatcher tileLayerDispatcher;
 
     private final WMS wms;
     private final Catalog catalog;
 
-    public MultiDimensionalExtension(WMS wms, Catalog catalog, TileLayerDispatcher tileLayerDispatcher) {
+    public MultiDimensionalExtension(GeoServer geoServer, WMS wms, Catalog catalog, TileLayerDispatcher tileLayerDispatcher) {
+        this.geoServer = geoServer;
         this.wms = wms;
         this.catalog = catalog;
         this.tileLayerDispatcher = tileLayerDispatcher;
@@ -198,8 +217,48 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         if (requestedDomains == ALL_DOMAINS || requestedDomains.contains(SPACE_DIMENSION)) {
             spatialDomain = DimensionsUtils.getBounds(resource, filter);  
         } 
+        // get the threshold
+        int expandLimit = getExpandlimit(resource, conveyor.getParameter(EXPAND_LIMIT, false));
         // encode the domains
-        return new Domains(dimensions, layerInfo, spatialDomain, SimplifyingFilterVisitor.simplify(filter));
+        return new Domains(dimensions, layerInfo, spatialDomain, SimplifyingFilterVisitor.simplify(filter), expandLimit);
+    }
+
+    private int getExpandlimit(ResourceInfo resource, Object clientExpandLimit) throws OWSException {
+        WMTSInfo wmts = geoServer.getService(WMTSInfo.class);
+        int expandLimitMax = getConfigredExpansionLimit(resource, wmts, EXPAND_LIMIT_MAX_KEY, EXPAND_LIMIT_MAX_DEFAULT);
+        int expandLimitDefault = getConfigredExpansionLimit(resource, wmts, EXPAND_LIMIT_KEY, EXPAND_LIMIT_DEFAULT);
+
+        if (clientExpandLimit != null) {
+            Integer value = Converters.convert(clientExpandLimit, Integer.class);
+            if (value == null) {
+                throw new OWSException(400, "InvalidParameterValue", EXPAND_LIMIT, "Invalid " + EXPAND_LIMIT + " " +
+                        "value " + clientExpandLimit + ", expected an integer value");
+            }
+            if (value < expandLimitMax) {
+                return value;
+            } else {
+                LOGGER.log(Level.INFO, "Client provided a expand value higher than the configured max, using the " +
+                        "internal value (provided/max): " + value + "/" + expandLimitMax);
+                return expandLimitMax;
+            }
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Client did not provide a expansion limit, using the internal default value: "
+                        + expandLimitDefault);
+            }
+            return expandLimitDefault;
+        }
+    }
+
+    private Integer getConfigredExpansionLimit(ResourceInfo resource, WMTSInfo wmts, String limitKey, int defaultValue) {
+        MetadataMap resourceMetadata = resource.getMetadata();
+        Integer expandLimitMax = resourceMetadata.get(limitKey, Integer.class);
+        if (expandLimitMax == null) {
+            MetadataMap serviceMetadata = wmts.getMetadata();
+            expandLimitMax = Optional.ofNullable(serviceMetadata.get(limitKey, Integer.class))
+                    .orElse(defaultValue);
+        }
+        return expandLimitMax;
     }
 
     /**
@@ -291,7 +350,13 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         xml.simpleElement("ows:Identifier", dimension.getDimensionName(), true);
         // default value is mandatory
         xml.simpleElement("Default", dimension.getDefaultValueAsString(), true);
-        for (String value : dimension.getDomainValuesAsStrings(Filter.INCLUDE).second) {
+        int limit = DimensionsUtils.NO_LIMIT; 
+        if (dimension.getDimensionInfo().getPresentation() != DimensionPresentation.LIST) {
+            // force it to return a min/max representation
+            limit = 0;
+        }
+        List<String> values = dimension.getDomainValuesAsStrings(Filter.INCLUDE, limit).second;
+        for (String value : values) {
             xml.simpleElement("Value", value, true);
         }
         xml.endElement("Dimension");

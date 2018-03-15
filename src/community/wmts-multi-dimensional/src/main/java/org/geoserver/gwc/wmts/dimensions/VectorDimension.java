@@ -27,12 +27,8 @@ import java.util.Set;
  */
 public abstract class VectorDimension extends Dimension {
 
-    private final Comparator comparator;
-
-    public VectorDimension(WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo, 
-                           Comparator comparator) {
+    public VectorDimension(WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
         super(wms, dimensionName, layerInfo, dimensionInfo);
-        this.comparator = comparator;
     }
 
     /**
@@ -63,18 +59,19 @@ public abstract class VectorDimension extends Dimension {
         if (noDuplicates) {
             // no duplicate values should be included
             Set<Object> values = DimensionsUtils.
-                    getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
+                    getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection);
             return new ArrayList<>(values);
         }
         // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
+        return DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection);
     }
 
-    protected DomainSummary getDomainSummary(Filter filter, boolean includeCount) {
+    @Override
+    protected DomainSummary getDomainSummary(Filter filter, int expandLimit) {
         FeatureCollection features = getDomain(filter);
         String attribute = dimensionInfo.getAttribute();
 
-        return getDomainSummary(features, attribute, includeCount);
+        return getDomainSummary(features, attribute, expandLimit);
     }
 
 }

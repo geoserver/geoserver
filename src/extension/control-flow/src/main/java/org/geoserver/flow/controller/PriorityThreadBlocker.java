@@ -108,8 +108,8 @@ public class PriorityThreadBlocker implements ThreadBlocker {
     public void requestComplete(Request request) {
         // protect shared data structures from MT
         synchronized (this) {
-            boolean removed = runningQueue.remove(request);
-            if (removed && runningQueue.size() < maxRunningRequests) {
+            runningQueue.remove(request);
+            if (runningQueue.size() < maxRunningRequests) {
                 releaseNext();
             }
         }

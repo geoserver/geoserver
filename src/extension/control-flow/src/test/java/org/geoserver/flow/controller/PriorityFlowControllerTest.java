@@ -10,6 +10,8 @@ import org.geoserver.ows.Request;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.util.concurrent.CountDownLatch;
+
 import static org.junit.Assert.assertEquals;
 
 public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
@@ -79,18 +81,24 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
         GlobalFlowController controller = new GlobalFlowController(1, new PriorityThreadBlocker
                 (1, priorityProvider));
 
-        // make two testing threads that will "process" for 400ms, but with a timeout of 200 on the
+        // make two testing threads that will "process" for 400ms, but with a timeout of 100 on the
         // flow controller
+        // t2 may start "late" on a slow/noisy/otherwise loaded machine, make extra sture
+        // t1 won't start counting until t2 has had an occasion to start
+        CountDownLatch latch = new CountDownLatch(1);
         FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(1), 100,
                 400, controller);
+        t1.setWaitLatch(latch);
         FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(2), 100,
                 400, controller);
 
         // start t1 first, let go t2 after
         try {
             t1.start();
-            waitBlocked(t1, MAX_WAIT);
+            waitBlocked(t1, MAX_WAIT); // wait until it blocks on latch
             t2.start();
+            waitBlocked(t2, MAX_WAIT); // wait until it blocks on control-flow
+            latch.countDown(); // release t1 and make it do it's 400ms wait
 
             // wait until both terminate
             waitTerminated(t1, MAX_WAIT);
@@ -101,8 +109,9 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
-        }
 
+            System.out.println("Done -----------------------\n\n");
+        }
     }
 
     private Request buildRequest(Integer priority) {

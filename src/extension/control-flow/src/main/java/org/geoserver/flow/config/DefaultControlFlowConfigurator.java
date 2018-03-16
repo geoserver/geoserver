@@ -193,9 +193,9 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
             }
             
             if (controller == null) {
-                LOGGER.severe("Could not parse rule '" + okey + "=" + value);
+                LOGGER.severe("Could not parse control-flow rule: '" + okey + "=" + value);
             } else {
-                LOGGER.info("Loaded flow controller configuration: " + key + "=" + value);
+                LOGGER.info("Loaded control-flow rule: " + key + "=" + value);
                 newControllers.add(controller);
             }
         }

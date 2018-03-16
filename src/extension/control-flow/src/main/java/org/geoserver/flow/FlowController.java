@@ -25,21 +25,21 @@ public interface FlowController {
      * @return True if the request was processed successfully, false if the request timed out during
      *         the wait
      */
-    public boolean requestIncoming(Request request, long timeout);
+    boolean requestIncoming(Request request, long timeout);
 
     /**
-     * Called when the request is done its processing
+     * Called when the request is done its processing (will be called both for executing and timeout out requests
+     * to ensure eventually required clean ups)
      * 
      * @param request the request
      */
-    public void requestComplete(Request request);
+    void requestComplete(Request request);
 
     /**
-     * Returns the flow controller priority. Lower numbers mean higher priority. For flow
-     * controllers that limit the number of incoming requests by using a blocing queue it is advised
+     * Returns the flow controller "priority", determines the order in which the controllers are being called,
+     * from lower to higher (not to be confused with the request priority).
+     * For controllers that limit the number of incoming requests by using a blocking queue it is advised
      * to use the queue size itself as the controller priority.
-     * 
-     *
      */
-    public int getPriority();
+    int getPriority();
 }

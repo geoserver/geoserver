@@ -13,13 +13,13 @@ package org.geoserver.flow.controller;
  */
 public class GlobalFlowController extends SingleQueueFlowController {
 
-    public GlobalFlowController(int queueSize) {
-        super(queueSize, new OWSRequestMatcher());
+    public GlobalFlowController(int controllerPriority, ThreadBlocker blocker) {
+        super(new OWSRequestMatcher(), controllerPriority, blocker);
     }
 
     @Override
     public String toString() {
-        return "GlobalFlowController(" + queueSize + ")";
+        return "GlobalFlowController(" + blocker + ")";
     }
 
 }

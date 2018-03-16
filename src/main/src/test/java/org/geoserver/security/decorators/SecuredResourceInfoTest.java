@@ -10,6 +10,7 @@ import static org.junit.Assert.fail;
 
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.junit.Test;
 
 import org.geoserver.security.AccessLimits;
@@ -90,6 +91,26 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
         // this may not fail on all platforms if set/get is broken however, as some platforms may
         // ignore the stack size in the Thread constructor.
         return new Thread(Thread.currentThread().getThreadGroup(), runnable, "RoundTripThread", 5);
+    }
+
+    @Test
+    public void testCanSecure() throws Exception {
+        // get a delegate
+        final D delegate = createDelegate();
+        // secure it
+        Object secure = SecuredObjects.secure(delegate, policy);
+        assertTrue("Unable to secure ResourceInfo", getSecuredDecoratorClass().isAssignableFrom(secure.getClass()));
+    }
+
+    @Test
+    public void testCanSecureProxied() throws Exception {
+        // get a delegate
+        final D delegate = createDelegate();
+        // wrap the delegate in a ModificationProxy
+        ResourceInfo proxy = ModificationProxy.create(delegate, getDelegateClass());
+        // secure it
+        Object secure = SecuredObjects.secure(proxy, policy);
+        assertTrue("Unable to secure proxied Resourceinfo", getSecuredDecoratorClass().isAssignableFrom(secure.getClass()));
     }
 
     @Test

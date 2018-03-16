@@ -35,7 +35,9 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
                 || CoverageStoreInfo.class.isAssignableFrom(clazz)
                 || DataStoreInfo.class.isAssignableFrom(clazz)
                 || FeatureTypeInfo.class.isAssignableFrom(clazz)
-                || LayerInfo.class.isAssignableFrom(clazz);
+                || LayerInfo.class.isAssignableFrom(clazz)
+                || WMSLayerInfo.class.isAssignableFrom(clazz)
+                || WMTSLayerInfo.class.isAssignableFrom(clazz);
     }
 
     @Override

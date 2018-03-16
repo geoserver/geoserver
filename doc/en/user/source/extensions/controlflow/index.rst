@@ -57,7 +57,7 @@ the request will block and wait, and will we awoken in priority order (highest t
 
 Currently the only way to specific a priority for a request is to add it to a request HTTP header::
 
-  ows.priority.header=<headerName>,<defaultPriority>
+  ows.priority.http=<headerName>,<defaultPriority>
   
 The header "headerName" will contain a number defining the priority for the request, the default priority is used
 as a fallback if/when the header is not found.

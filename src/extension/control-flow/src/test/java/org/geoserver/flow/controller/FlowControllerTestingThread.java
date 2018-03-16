@@ -5,8 +5,11 @@
  */
 package org.geoserver.flow.controller;
 
+import net.sf.ehcache.search.aggregator.Count;
 import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
+
+import java.util.concurrent.CountDownLatch;
 
 public class FlowControllerTestingThread extends Thread {
     enum ThreadState {STARTED, TIMED_OUT, PROCESSING, COMPLETE}; 
@@ -18,6 +21,8 @@ public class FlowControllerTestingThread extends Thread {
     long processingDelay;
     ThreadState state;
     Throwable error;
+    CountDownLatch waitLatch;
+            
     
     
     public FlowControllerTestingThread(Request request, long timeout, long processingDelay, FlowController... controllers) {
@@ -27,6 +32,10 @@ public class FlowControllerTestingThread extends Thread {
         this.processingDelay = processingDelay;
     }
     
+    public void setWaitLatch(CountDownLatch waitLatch) {
+        this.waitLatch = waitLatch;
+    }
+
     @Override
     public void run() {
         state = ThreadState.STARTED;
@@ -44,9 +53,15 @@ public class FlowControllerTestingThread extends Thread {
         state = ThreadState.PROCESSING;
         
         try {
+            // wait on wait latch if available
+            if (waitLatch != null) {
+                System.out.println(this + " waiting on wait latch");
+                waitLatch.await();
+            }
             System.out.println(this + " waiting");
-            if(processingDelay > 0)
+            if (processingDelay > 0) {
                 sleep(processingDelay);
+            }
         } catch(InterruptedException e) {
             System.out.println(e.getLocalizedMessage());
             Thread.currentThread().interrupt();

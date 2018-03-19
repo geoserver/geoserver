@@ -39,6 +39,7 @@ import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -218,12 +219,12 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             spatialDomain = DimensionsUtils.getBounds(resource, filter);  
         } 
         // get the threshold
-        int expandLimit = getExpandlimit(resource, conveyor.getParameter(EXPAND_LIMIT, false));
+        int expandLimit = getExpandlimit(resource, conveyor.getParameter(EXPAND_LIMIT, false), conveyor.getResponse());
         // encode the domains
         return new Domains(dimensions, layerInfo, spatialDomain, SimplifyingFilterVisitor.simplify(filter), expandLimit);
     }
 
-    private int getExpandlimit(ResourceInfo resource, Object clientExpandLimit) throws OWSException {
+    private int getExpandlimit(ResourceInfo resource, Object clientExpandLimit, HttpServletResponse response) throws OWSException {
         WMTSInfo wmts = geoServer.getService(WMTSInfo.class);
         int expandLimitMax = getConfigredExpansionLimit(resource, wmts, EXPAND_LIMIT_MAX_KEY, EXPAND_LIMIT_MAX_DEFAULT);
         int expandLimitDefault = getConfigredExpansionLimit(resource, wmts, EXPAND_LIMIT_KEY, EXPAND_LIMIT_DEFAULT);
@@ -237,8 +238,10 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             if (value < expandLimitMax) {
                 return value;
             } else {
-                LOGGER.log(Level.INFO, "Client provided a expand value higher than the configured max, using the " +
-                        "internal value (provided/max): " + value + "/" + expandLimitMax);
+                String message = "Client provided a expand value higher than the configured max, using the " +
+                        "internal value (provided/max): " + value + "/" + expandLimitMax;
+                LOGGER.log(Level.INFO, message);
+                response.addHeader(HttpHeaders.WARNING, "299 "  + message);
                 return expandLimitMax;
             }
         } else {

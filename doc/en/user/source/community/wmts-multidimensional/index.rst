@@ -163,6 +163,19 @@ This operation is useful to understand which domains are available in our layer 
    * - Domains
      - No
      - A comma separated list of domain names to be returned, in case only a subset is required. The space domain is identified by "bbox".
+   * - ExpandLimit
+     - No
+     - A numerical value, greater or equal to zero. If the number of unique domain values is below ``ExpandLimit`` then the domain with be represented in full, as 
+       a comma separated list of values, otherwise in compact form, as ``start--end``. The server assumes a built-in limit of 200 in case not specified,
+       and allows client to specify a value up to 10000, values can be tuned via the user interface, in the WMTS panel (server defaults) and on a layer
+       by layer basis.
+
+.. figure:: images/expandLimitConfig.png
+:align: center
+
+   *Configuration domain expansion limits.*
+
+
 
 The ``bbox`` parameter allows the client to restrict the ``DescribeDomains`` operation to a certain spatial area, by default the layer extent will be used.
 

@@ -45,24 +45,24 @@ abstract class CoverageDimensionsReader {
 
     abstract Tuple<String, FeatureCollection> getValues(String dimensionName, Filter filter, DataType dataType);
 
-    List<Object> readWithDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
+    List<Object> readWithDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Tuple<String, FeatureCollection> values = getValues(dimensionName, filter, dataType);
         if (values == null) {
             return Collections.emptyList();
         }
         // extracting the values removing the duplicates
-        return DimensionsUtils.getValuesWithDuplicates(values.first, values.second, comparator);
+        return DimensionsUtils.getValuesWithDuplicates(values.first, values.second);
     }
 
-    Set<Object> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
+    Set<Object> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Tuple<String, FeatureCollection> values = getValues(dimensionName, filter, dataType);
         if (values == null) {
             return new TreeSet<>();
         }
         // extracting the values keeping the duplicates
-        return DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second, comparator);
+        return DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second);
     }
 
     /**

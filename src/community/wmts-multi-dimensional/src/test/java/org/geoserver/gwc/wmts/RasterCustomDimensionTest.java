@@ -52,7 +52,8 @@ public class RasterCustomDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "CustomDimValueA", "CustomDimValueB", "CustomDimValueC");
+        testDomainsValuesRepresentation(0, "CustomDimValueA--CustomDimValueC");
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, "CustomDimValueA", "CustomDimValueB", "CustomDimValueC");
     }
 
     @Override
@@ -66,7 +67,7 @@ public class RasterCustomDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, null);
         assertThat(histogram.first, is("CustomDimValueA,CustomDimValueB,CustomDimValueC"));

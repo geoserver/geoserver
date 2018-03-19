@@ -82,9 +82,8 @@ public class RasterTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, STRING_VALUES);
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, STRING_VALUES[0] + "--" + STRING_VALUES[4]);
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, STRING_VALUES[0] + "--" + STRING_VALUES[4]);
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, STRING_VALUES);
+        testDomainsValuesRepresentation(2, STRING_VALUES[0] + "--" + STRING_VALUES[4]);
     }
 
     @Override
@@ -146,7 +145,7 @@ public class RasterTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1Y");
         assertThat(histogram.first, is("2008-10-31T00:00:00.000Z/" + STRING_VALUES[4] + "/P1Y"));

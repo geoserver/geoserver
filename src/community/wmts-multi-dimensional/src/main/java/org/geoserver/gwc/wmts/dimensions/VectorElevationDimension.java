@@ -15,7 +15,7 @@ import org.geoserver.wms.WMS;
 public class VectorElevationDimension extends VectorDimension {
 
     public VectorElevationDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.ELEVATION, layerInfo, dimensionInfo, DimensionsUtils.NUMERICAL_COMPARATOR);
+        super(wms, ResourceInfo.ELEVATION, layerInfo, dimensionInfo);
     }
 
     @Override

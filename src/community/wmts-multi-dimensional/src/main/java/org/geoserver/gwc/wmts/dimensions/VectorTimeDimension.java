@@ -16,7 +16,7 @@ import org.geoserver.wms.WMS;
 public class VectorTimeDimension extends VectorDimension {
 
     public VectorTimeDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, DimensionsUtils.TEMPORAL_COMPARATOR);
+        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo);
     }
 
     @Override

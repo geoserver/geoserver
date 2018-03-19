@@ -18,11 +18,9 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.dimension.RasterTimeDimensionDefaultValueTest;
 import org.geoserver.wms.dimension.VectorElevationDimensionDefaultValueTest;
 import org.junit.Before;
-import org.junit.Test;
 import org.opengis.filter.Filter;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -45,6 +43,11 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     protected WMS wms;
     protected Catalog catalog;
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // do no setup common layers
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -84,10 +87,10 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     protected abstract Dimension buildDimension(DimensionInfo dimensionInfo);
 
-    protected void testDomainsValuesRepresentation(DimensionPresentation dimensionPresentation, String... expectedDomainValues) {
-        DimensionInfo dimensionInfo = createDimension(true, dimensionPresentation, null);
+    protected void testDomainsValuesRepresentation(int expandLimit, String... expectedDomainValues) {
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
-        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE).second;
+        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE, expandLimit).second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }
@@ -99,17 +102,16 @@ public abstract class TestsSupport extends WMSTestSupport {
     }
 
     protected void testDefaultValueStrategy(DimensionDefaultValueSetting defaultValueStrategy, String expectedDefaultValue) {
-        DimensionInfo dimensionInfo = createDimension(true, null, defaultValueStrategy);
+        DimensionInfo dimensionInfo = createDimension(true, defaultValueStrategy);
         Dimension dimension = buildDimension(dimensionInfo);
         String defaultValue = dimension.getDefaultValueAsString();
         assertThat(defaultValue, is(expectedDefaultValue));
     }
 
-    protected static DimensionInfo createDimension(boolean enable, DimensionPresentation presentation,
-                                                   DimensionDefaultValueSetting defaultValueStrategy) {
+    protected static DimensionInfo createDimension(boolean enable, DimensionDefaultValueSetting defaultValueStrategy) {
         DimensionInfo dimension = new DimensionInfoImpl();
         dimension.setEnabled(enable);
-        dimension.setPresentation(presentation);
+        dimension.setPresentation(DimensionPresentation.LIST);
         dimension.setDefaultValue(defaultValueStrategy);
         return dimension;
     }

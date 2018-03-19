@@ -6,6 +6,10 @@ package org.geoserver.gwc.wmts.dimensions;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 /**
  * Simple containers of statistics about a domain
@@ -14,17 +18,18 @@ class DomainSummary {
     
     private Object min;
     private Object max;
-    private long count = -1;
+    private TreeSet<Object> uniqueValues;
+    private int count = -1;
 
-    public DomainSummary(Object min, Object max) {
-        this.min = min;
-        this.max = max;
+    public DomainSummary(TreeSet<Object> uniqueValues) {
+        this.count = uniqueValues.size();
+        this.uniqueValues = uniqueValues;
     }
 
-    public DomainSummary(Object min, Object max, long count) {
+    public DomainSummary(Object min, Object max, Number count) {
         this.min = min;
         this.max = max;
-        this.count = count;
+        this.count = count == null ? 0 : count.intValue();
     }
 
     public Object getMin() {
@@ -35,7 +40,12 @@ class DomainSummary {
         return max;
     }
 
-    public long getCount() {
+    public int getCount() {
         return count;
     }
+
+    public TreeSet<Object> getUniqueValues() {
+        return uniqueValues;
+    }
+
 }

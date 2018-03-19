@@ -25,12 +25,10 @@ import java.util.Set;
 public abstract class RasterDimension extends Dimension {
 
     private final CoverageDimensionsReader.DataType dataType;
-    private final Comparator comparator;
 
-    public RasterDimension(WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo, CoverageDimensionsReader.DataType dataType, Comparator comparator) {
+    public RasterDimension(WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo, CoverageDimensionsReader.DataType dataType) {
         super(wms, dimensionName, layerInfo, dimensionInfo);
         this.dataType = dataType;
-        this.comparator = comparator;
     }
 
     @Override
@@ -38,18 +36,19 @@ public abstract class RasterDimension extends Dimension {
         CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         if (noDuplicates) {
             // no duplicate values should be included
-            Set<Object> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType, comparator);
+            Set<Object> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType);
             return new ArrayList<>(values);
         }
         // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return reader.readWithDuplicates(getDimensionName(), filter, dataType, comparator);
+        return reader.readWithDuplicates(getDimensionName(), filter, dataType);
     }
 
-    protected DomainSummary getDomainSummary(Filter filter, boolean includeCount) {
+    @Override
+    protected DomainSummary getDomainSummary(Filter filter, int expandLimit) {
         CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
 
         Tuple<String, FeatureCollection> values = reader.getValues(getDimensionName(), filter, dataType);
-        return getDomainSummary(values.second, values.first, includeCount);
+        return getDomainSummary(values.second, values.first, expandLimit);
     }
 
 }

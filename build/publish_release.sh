@@ -79,15 +79,15 @@ pushd $DIST_PATH/$tag > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
   rsync -ave "ssh -i $SF_PK" *-bin.zip *-war.zip *doc.zip *.pdf $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
   
-  # don't fail if exe or dmg is not around
+  # don't fail if exe is not around
   set +e
-  rsync -ave "ssh -i $SF_PK" *.exe *.dmg $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
+  rsync -ave "ssh -i $SF_PK" *.exe  $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
   set -e
   pushd plugins > /dev/null
   rsync -ave "ssh -i $SF_PK" *.zip $SF_USER@$SF_HOST:"/home/pfs/project/g/ge/geoserver/GeoServer/$tag/extensions"
   popd > /dev/null
 else
-  echo "Skipping rsync -ave "ssh -i $SF_PK" *.zip *.exe *.dmg $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/"
+  echo "Skipping rsync -ave "ssh -i $SF_PK" *.zip *.exe $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/"
   echo "Skipping rsync -ave "ssh -i $SF_PK" *.zip $SF_USER@$SF_HOST:"/home/pfs/project/g/ge/geoserver/GeoServer/$tag/extensions""
 fi
 

@@ -16,8 +16,7 @@ import org.geoserver.wms.WMS;
 public class RasterElevationDimension extends RasterDimension {
 
     public RasterElevationDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.ELEVATION, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.NUMERIC, 
-                DimensionsUtils.NUMERICAL_COMPARATOR);
+        super(wms, ResourceInfo.ELEVATION, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.NUMERIC);
     }
 
     @Override

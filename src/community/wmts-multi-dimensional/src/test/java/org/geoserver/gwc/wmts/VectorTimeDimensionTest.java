@@ -50,9 +50,8 @@ public class VectorTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "2012-02-11T00:00:00.000Z", "2012-02-12T00:00:00.000Z");
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, "2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z");
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, "2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z");
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, "2012-02-11T00:00:00.000Z", "2012-02-12T00:00:00.000Z");
+        testDomainsValuesRepresentation(0, "2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z");
     }
 
     @Override
@@ -67,11 +66,11 @@ public class VectorTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1D");
         assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1D"));
-        assertThat(histogram.second, containsInAnyOrder(3));
+        assertThat(histogram.second, containsInAnyOrder(4));
     }
 
     /**

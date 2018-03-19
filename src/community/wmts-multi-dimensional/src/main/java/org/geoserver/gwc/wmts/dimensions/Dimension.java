@@ -6,7 +6,6 @@ package org.geoserver.gwc.wmts.dimensions;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -15,12 +14,14 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.Aggregate;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * <p>
@@ -56,18 +57,28 @@ public abstract class Dimension {
      */
     public abstract List<Object> getDomainValues(Filter filter, boolean noDuplicates);
 
-
-    protected DomainSummary getDomainSummary(FeatureCollection features, String attribute, boolean includeCount) {
-        if (includeCount) {
-            Map<Aggregate, Object> aggregates = DimensionsUtils.getAggregates(attribute, features,
-                    Aggregate.MIN, Aggregate.MAX, Aggregate.COUNT);
-            return new DomainSummary(aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX), (Long)
-                    aggregates.get(Aggregate.COUNT));
-        } else {
-            Map<Aggregate, Object> aggregates = DimensionsUtils.getAggregates(attribute, features,
-                    Aggregate.MIN, Aggregate.MAX);
-            return new DomainSummary(aggregates.get(Aggregate.MIN), aggregates.get(Aggregate.MAX));
+    /**
+     * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
+     * count will be returned, otherwise min and max will also be returned
+     * @param features
+     * @param attribute
+     * @param expandLimit
+     * @return
+     */
+    protected DomainSummary getDomainSummary(FeatureCollection features, String attribute, int expandLimit) {
+        // grab domain, but at most expandLimit + 1, to know if there are too many
+        if (expandLimit != 0) {
+            TreeSet uniqueValues = DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
+            if (uniqueValues.size() <= expandLimit || expandLimit < 0) {
+                return new DomainSummary(uniqueValues);
+            }
         }
+        Map<Aggregate, Object> minMax = DimensionsUtils.getAggregates(attribute, features,
+                Aggregate.MIN, Aggregate.MAX);
+        // size fixed to 2 as doing a full count might require a lot of time on vector data,
+        // e.g. we have a time enabled wind layer that takes tens of seconds as it has tens 
+        // of millions of points
+        return new DomainSummary(minMax.get(Aggregate.MIN), minMax.get(Aggregate.MAX), 2);
     }
 
     /**
@@ -115,27 +126,12 @@ public abstract class Dimension {
      * provided filter will be used to filter the domain values. The provided filter
      * can be NULL.
      */
-    public Tuple<Integer, List<String>> getDomainValuesAsStrings(Filter filter) {
-        if (dimensionInfo.getPresentation() == DimensionPresentation.LIST) {
-            List<Object> domainValues = getDomainValues(filter, true);
-            return Tuple.tuple(domainValues.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, 
-                            domainValues));
-        } else {
-            // optimize out and get just the min and max values
-            DomainSummary summary = getDomainSummary(filter, false);
-            List<Object> aggregates = new ArrayList<>();
-            if (summary.getMin() != null) {
-                aggregates.add(summary.getMin());
-            }
-            if (summary.getMax() != null && !aggregates.contains(summary.getMax())) {
-                aggregates.add(summary.getMax());
-            }
-            return Tuple.tuple(aggregates.size(), DimensionsUtils
-                    .getDomainValuesAsStrings(dimensionInfo, new ArrayList<>(aggregates)));
-        }
+    public Tuple<Integer, List<String>> getDomainValuesAsStrings(Filter filter, int expandLimit) {
+        DomainSummary summary = getDomainSummary(filter, expandLimit);
+        return Tuple.tuple(summary.getCount(), DimensionsUtils.getDomainValuesAsStrings(summary));
     }
 
-    protected abstract DomainSummary getDomainSummary(Filter filter, boolean includeCount);
+    protected abstract DomainSummary getDomainSummary(Filter filter, int expandLimit);
 
     /**
      * Return this dimension default value as a string taking in account this dimension default strategy.

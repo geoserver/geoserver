@@ -15,7 +15,7 @@ import org.geoserver.wms.WMS;
 public class RasterCustomDimension extends RasterDimension {
 
     public RasterCustomDimension(WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
-        super(wms, name, layerInfo, dimensionInfo, DataType.CUSTOM, DimensionsUtils.CUSTOM_COMPARATOR);
+        super(wms, name, layerInfo, dimensionInfo, DataType.CUSTOM);
     }
 
     @Override

@@ -16,8 +16,7 @@ import org.geoserver.wms.WMS;
 public class RasterTimeDimension extends RasterDimension {
 
     public RasterTimeDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.TEMPORAL, 
-                DimensionsUtils.TEMPORAL_COMPARATOR);
+        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.TEMPORAL);
     }
 
     @Override

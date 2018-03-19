@@ -55,7 +55,7 @@ class DescribeDomainsTransformer extends TransformerBase {
             start("Domains", nameSpaces);
             Map<String, Tuple<Integer, List<String>>> domainsValues = new HashMap<>();
             domains.getDimensions().forEach(dimension -> {
-                Tuple<Integer, List<String>> dimensionValues = dimension.getDomainValuesAsStrings(domains.getFilter());
+                Tuple<Integer, List<String>> dimensionValues = dimension.getDomainValuesAsStrings(domains.getFilter(), domains.getExpandLimit());
                 domainsValues.put(dimension.getDimensionName(), dimensionValues);
             });
             if (domains.getSpatialDomain() != null && !domains.getSpatialDomain().isEmpty()) {

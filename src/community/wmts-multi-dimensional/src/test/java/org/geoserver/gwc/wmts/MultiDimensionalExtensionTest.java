@@ -68,24 +68,23 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // perform the get capabilities request
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?request=GetCapabilities");
         Document result = getResultAsDocument(response, "text/xml");
-        // check raster layer dimensions
+        // four total dimensions that we are going to check one by one
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension", "4");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[ows:Identifier='elevation']", "2");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[ows:Identifier='time']", "2");
+        // note, the capabilities output follows the same config as WMS, it's not dynamic like DescribeDomains
         // check raster elevation dimension
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Default='0.0']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='0']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='100']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='100']", "1");
         // check raster time dimension
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Default='0.0']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
         // check vector elevation dimension
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Default='1.0']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='1.0--2.0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='ElevationWithStartEnd']/wmts:Dimension[wmts:Default='1.0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='ElevationWithStartEnd']/wmts:Dimension[wmts:Value='1.0--5.0']", "1");
         // check vector time dimension
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Default='2012-02-11T00:00:00Z']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='2012-02-11T00:00:00.000Z']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='2012-02-12T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='ElevationWithStartEnd']/wmts:Dimension[wmts:Default='2012-02-11T00:00:00Z']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='ElevationWithStartEnd']/wmts:Dimension[wmts:Value='2012-02-11T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='ElevationWithStartEnd']/wmts:Dimension[wmts:Value='2012-02-12T00:00:00.000Z']", "1");
     }
 
     @Test
@@ -104,7 +103,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='0,100']", "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z']", "1");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
@@ -129,7 +128,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='0,100']", "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z']", "1");
         // check the space domain is gone
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox", "0");
     }
@@ -157,9 +156,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&domains=abcd");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST);
-        print(result);
-        // check that we have two domains
+        Document result = getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST);// check that we have two domains
         assertEquals("InvalidParameterValue", xpath.evaluate("//ows:Exception/@exceptionCode", result));
         assertEquals("Domains", xpath.evaluate("//ows:Exception/@locator", result));
         assertThat(xpath.evaluate("//ows:ExceptionText", result), containsString("'abcd'"));
@@ -174,13 +171,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         Document result = getResultAsDocument(response);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
-        // both domains contain two elements
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
+        
         // check the elevation domain
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='1.0--2.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='1.0,2.0,3.0,5.0']", "1");
         // check the time domain
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']", "1");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
@@ -205,7 +201,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='1']", "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "1");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
@@ -237,7 +233,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
-        print(result);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // check the space domain is not included
@@ -272,14 +267,44 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
-        // both domains contain two elements
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
         // check the elevation domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='1.0--2.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0,2.0,3.0,5.0']", "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']", "1");
+    }
+
+    /**
+     * Same as {@link #testVectorDescribeDomainsOperationWithBoundingBoxFilter()} but with a limit of zero, so all domain
+     * descriptions should contract to a min max value 
+     * @throws Exception
+     */
+    @Test
+    public void testVectorDescribeDomainsOperationWithLimitZero() throws Exception {
+        // perform the get describe domains operation with a spatial restriction
+        String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                VECTOR_ELEVATION_TIME.getPrefix() + ":" + VECTOR_ELEVATION_TIME.getLocalPart() + "&bbox=-180,-90,180,90&expandLimit=0");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the elevation domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='2']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0--5.0']", "1");
+        // check the time domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Domain='2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z']", "1");
     }
 
     @Test
@@ -305,7 +330,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
         checkXpathCount(result, "/md:Histogram[md:Domain='2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']", "1");
-        checkXpathCount(result, "/md:Histogram[md:Values='3']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
     }
 
     @Test
@@ -343,11 +368,13 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
-        checkXpathCount(result, "/wmts:feature", "3");
-        checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "3");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='1.0']", "2");
+        checkXpathCount(result, "/wmts:feature", "4");
+        checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "4");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='1.0']", "1");
         checkXpathCount(result, "/wmts:feature[wmts:dimension='2.0']", "1");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-11T00:00:00.000Z']", "2");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='3.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='5.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-11T00:00:00.000Z']", "3");
         checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-12T00:00:00.000Z']", "1");
     }
 
@@ -360,10 +387,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the filtered returned features
-        checkXpathCount(result, "/wmts:feature", "2");
-        checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "2");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='1.0']", "2");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-11T00:00:00.000Z']", "2");
+        checkXpathCount(result, "/wmts:feature", "3");
+        checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "3");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='1.0']", "1");
+        checkXpathCount(result, "/wmts:feature[wmts:dimension='2012-02-11T00:00:00.000Z']", "3");
     }
 
     @Test

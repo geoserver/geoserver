@@ -13,6 +13,7 @@ import org.geoserver.gwc.wmts.dimensions.VectorTimeDimension;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
@@ -69,8 +70,8 @@ public class VectorTimeDimensionTest extends TestsSupport {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1D");
-        assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1D"));
-        assertThat(histogram.second, containsInAnyOrder(4));
+        assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z/P1D"));
+        assertThat(histogram.second, equalTo(Arrays.asList(3, 1)));
     }
 
     /**

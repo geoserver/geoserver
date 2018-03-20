@@ -120,24 +120,33 @@ final class HistogramUtils {
         resolution = resolution != null ? resolution : NUMERICAL_DEFAULT_RESOLUTION;
         double finalResolution = Double.parseDouble(resolution);
         double min = minMax.first;
-        double max = Math.max(minMax.second, finalResolution);
+        double max = minMax.second;
         int i = 0;
         while ((max - min) / finalResolution >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
             finalResolution += 10;
             i++;
         }
+        // if the max value is at the very edge of the last interval, then add one more (we are going to
+        // use intervals that contain first but not last to avoid overlaps
+        if ((max - min) % finalResolution == 0) {
+            max += finalResolution;
+        }
         String domainString = min + "/" + max + "/" + finalResolution;
         if ((max - min) / finalResolution == 1) {
-            return Tuple.tuple(domainString, Collections.singletonList(NumberRange.create(min, max)));
+            // one bucket catches all
+            boolean includeLast = (max - min) < finalResolution;
+            return Tuple.tuple(domainString, Collections.singletonList(NumberRange.create(min, 
+                    true, max, includeLast)));
         }
         List<Range> buckets = new ArrayList<>();
         for (double step = min; step < max; step += finalResolution) {
+            // single buckets in a list don't include last to avoid overlap
             double limit = step + finalResolution;
             if (limit > max) {
-                buckets.add(NumberRange.create(step, max));
+                buckets.add(NumberRange.create(step, true, max, false));
                 break;
             }
-            buckets.add(NumberRange.create(step, limit));
+            buckets.add(NumberRange.create(step, true, limit, false));
         }
         return Tuple.tuple(domainString, buckets);
     }
@@ -148,24 +157,44 @@ final class HistogramUtils {
      */
     private static Tuple<String, List<Range>> getTimeBuckets(List<Object> domainValues, String resolution) {
         Tuple<Date, Date> minMax = DimensionsUtils.getMinMax(domainValues, Date.class);
+        Tuple<Date, Date> originalMinMax = Tuple.tuple(minMax.first, minMax.second);
+        // if the max value is at the very edge of the last interval, then add one more (we are going to
+        // use intervals that contain first but not last to avoid overlaps
+        long difference = minMax.second.getTime() - minMax.first.getTime();
+        long resolutionInMs;
+        try {
+            resolutionInMs = org.geoserver.ows.kvp.TimeParser.parsePeriod(resolution);
+            // if the max value is at the very edge of the last interval, then add one more (we are going to
+            // use intervals that contain first but not last to avoid overlaps
+            if (difference % resolutionInMs == 0) {
+                Date newMax = new Date(minMax.second.getTime() + resolutionInMs);
+                minMax = Tuple.tuple(minMax.first, newMax);
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(String.format("Error parsing time resolution '%s'.", resolution), e);
+        }
         resolution = resolution != null ? resolution : TIME_DEFAULT_RESOLUTION;
-        Tuple<String, List<Date>> intervals = getDateIntervals(minMax, resolution);
+        Tuple<String, List<Date>> intervalsAndSpec = getDateIntervals(minMax, resolution);
         int i = 0;
-        while (intervals.second.size() >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
+        while (intervalsAndSpec.second.size() >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
             i++;
             resolution = "PT" + i + "M";
-            intervals = getDateIntervals(minMax, resolution);
+            resolutionInMs = i * 30L * 24 * 60 * 60 * 1000;
+            intervalsAndSpec = getDateIntervals(minMax, resolution);
         }
-        if (intervals.second.size() == 1) {
-            return Tuple.tuple(intervals.first, Collections.singletonList(new DateRange(minMax.first, minMax.second)));
+        List<Date> intervals = intervalsAndSpec.second;
+        if (intervals.size() == 1) {
+            boolean includeLast = difference < resolutionInMs;
+            return Tuple.tuple(intervalsAndSpec.first, Collections.singletonList(new DateRange
+                    (minMax.first, true, minMax.second, includeLast)));
         }
         List<Range> buckets = new ArrayList<>();
-        Date previous = intervals.second.get(0);
-        for (int step = 1; step < intervals.second.size(); step++) {
-            buckets.add(new DateRange(previous, intervals.second.get(step)));
-            previous = intervals.second.get(step);
+        Date previous = intervals.get(0);
+        for (int step = 1; step < intervals.size(); step++) {
+            buckets.add(new DateRange(previous, true, intervals.get(step), false));
+            previous = intervals.get(step);
         }
-        return Tuple.tuple(intervals.first, buckets);
+        return Tuple.tuple(intervalsAndSpec.first, buckets);
     }
 
     /**

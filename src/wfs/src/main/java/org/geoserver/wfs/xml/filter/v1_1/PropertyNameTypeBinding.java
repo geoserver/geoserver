@@ -9,6 +9,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.WFSException;
 import org.geotools.filter.v1_0.OGCPropertyNameTypeBinding;
 import org.geotools.gml3.GML;
+import org.geotools.gml3.bindings.GML3EncodingUtils;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 import org.opengis.filter.FilterFactory;
@@ -58,7 +59,8 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
         }
         
         if (factory instanceof FilterFactory2) {
-            return ((FilterFactory2) factory).property(propertyName.getPropertyName(), namespaceSupport);
+            return ((FilterFactory2) factory).property(propertyName.getPropertyName(), 
+                    GML3EncodingUtils.copyNamespaceSupport(namespaceSupport));
         }
 
         return propertyName;

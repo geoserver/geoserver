@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.data.Join;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.FilterAttributeExtractor;
@@ -37,6 +38,8 @@ import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.BinarySpatialOperator;
 import org.opengis.filter.temporal.BinaryTemporalOperator;
 
+import javax.xml.namespace.QName;
+
 public class JoinExtractingVisitor extends FilterVisitorSupport {
 
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
@@ -50,6 +53,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
 
     List<Filter> joinFilters = new ArrayList<Filter>();
     List<Filter> filters = new ArrayList<Filter>();
+    private List<QName> queriedTypes;
 
     public JoinExtractingVisitor(List<FeatureTypeInfo> featureTypes, List<String> aliases) {
         this.primaryFeatureType = null;
@@ -410,9 +414,33 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             FeatureTypeInfo ft = featureTypes.get(i);
             typeMap.put(ft.getName(), ft);
             typeMap.put(ft.prefixedName(), ft);
+            String localTypeName = getLocalTypeName(ft);
+            if (localTypeName != null) {
+                typeMap.put(localTypeName, ft);
+            }
             typeMap.put(alias, ft);
         }
+        
         return typeMap;
+    }
+
+    private String getLocalTypeName(FeatureTypeInfo ft) {
+        if (ft.getNamespace() != null && ft.getNamespace().getURI() != null) {
+            String uri = ft.getNamespace().getURI();
+            String name = ft.getName();
+            if (queriedTypes != null) {
+                for (QName type : queriedTypes) {
+                    String namespaceURI = type.getNamespaceURI();
+                    String prefix = type.getPrefix();
+                    if (prefix != null && namespaceURI != null && namespaceURI.equals(uri)
+                            && type.getLocalPart().equals(name)) {
+                        return prefix + ":" + type.getLocalPart();
+                    }
+                }
+            }
+        }
+        
+        return null;
     }
 
     /**
@@ -429,6 +457,10 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             FeatureTypeInfo ft = featureTypes.get(i);
             nameToAlias.put(ft.getName(), alias);
             nameToAlias.put(ft.prefixedName(), alias);
+            String localTypeName = getLocalTypeName(ft);
+            if (localTypeName != null) {
+                nameToAlias.put(localTypeName, alias);
+            }
         }
         return nameToAlias;
     }
@@ -492,7 +524,11 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             filters[i] = ff.and(filters[i], filter);
         }
     }
-    
+
+    public void setQueriedTypes(List<QName> queriedTypes) {
+        this.queriedTypes = queriedTypes;
+    }
+
     /**
      * Rewrites property names to either remove the join prefixes (for local filters) or replace the
      * <code>alias/attribute</code> or <code>typename/attribute</code> syntax with a
@@ -538,10 +574,16 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             }
 
             if (n != null) {
+                // remove the eventual namespace prefix, join are only supported for simple features
+                // right now anyways, underlying stores do not understand the prefixes
+                int colonIdx = n.indexOf(':');
+                if (colonIdx > 0) {
+                    n = n.substring(colonIdx + 1);
+                }
                 if (addPrefix) {
                     n = (prefix != null ? prefix : "") + "." + n;
                 }
-                return ff.property(n);
+                return ff.property(n, expression.getNamespaceContext());
             }
             return null;
         }

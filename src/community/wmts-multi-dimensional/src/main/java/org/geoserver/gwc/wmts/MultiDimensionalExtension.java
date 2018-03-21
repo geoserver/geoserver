@@ -226,8 +226,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     private int getExpandlimit(ResourceInfo resource, Object clientExpandLimit, HttpServletResponse response) throws OWSException {
         WMTSInfo wmts = geoServer.getService(WMTSInfo.class);
-        int expandLimitMax = getConfigredExpansionLimit(resource, wmts, EXPAND_LIMIT_MAX_KEY, EXPAND_LIMIT_MAX_DEFAULT);
-        int expandLimitDefault = getConfigredExpansionLimit(resource, wmts, EXPAND_LIMIT_KEY, EXPAND_LIMIT_DEFAULT);
+        int expandLimitMax = getConfiguredExpansionLimit(resource, wmts, EXPAND_LIMIT_MAX_KEY, EXPAND_LIMIT_MAX_DEFAULT);
+        int expandLimitDefault = getConfiguredExpansionLimit(resource, wmts, EXPAND_LIMIT_KEY, EXPAND_LIMIT_DEFAULT);
 
         if (clientExpandLimit != null) {
             Integer value = Converters.convert(clientExpandLimit, Integer.class);
@@ -253,15 +253,15 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         }
     }
 
-    private Integer getConfigredExpansionLimit(ResourceInfo resource, WMTSInfo wmts, String limitKey, int defaultValue) {
+    private Integer getConfiguredExpansionLimit(ResourceInfo resource, WMTSInfo wmts, String limitKey, int defaultValue) {
         MetadataMap resourceMetadata = resource.getMetadata();
-        Integer expandLimitMax = resourceMetadata.get(limitKey, Integer.class);
-        if (expandLimitMax == null) {
+        Integer limit = resourceMetadata.get(limitKey, Integer.class);
+        if (limit == null) {
             MetadataMap serviceMetadata = wmts.getMetadata();
-            expandLimitMax = Optional.ofNullable(serviceMetadata.get(limitKey, Integer.class))
+            limit = Optional.ofNullable(serviceMetadata.get(limitKey, Integer.class))
                     .orElse(defaultValue);
         }
-        return expandLimitMax;
+        return limit;
     }
 
     /**

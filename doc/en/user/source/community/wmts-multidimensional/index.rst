@@ -331,6 +331,30 @@ and the result will be similar to this:
 
 Looking at the result we can conclude that measurements between 500.0 and 1000.0 meters are typically done during the night. 
 
+The bucket matching is setup so that each one contains its first value, but not its last value (which is contained in the next bucket instead).
+This is important to understand the results. Say we have a dataset with regular elevations, from 0 to 100 with a step of 10, and the
+request calls for elevations between 0 and 20. Then the results will look something like follows:
+
+.. code-block:: xml
+
+  <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <ows:Identifier>elevation</ows:Identifier>
+    <Domain>0/30/10</Domain>
+    <Values>5,3,8</Values>
+  </Histogram>
+
+That is, there values catch the intervals [0,10[, [10, 20[, and [20, 30[ (to have a bucket for the images/features
+having elevation exactly matching 20). This will happen only if an extreme value if found, the same request
+filtering on elevations between 0 and 15 will return this instead:
+
+.. code-block:: xml
+
+  <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <ows:Identifier>elevation</ows:Identifier>
+    <Domain>0/20/10</Domain>
+    <Values>5,3</Values>
+  </Histogram>
+
 GetFeature
 ^^^^^^^^^^
 

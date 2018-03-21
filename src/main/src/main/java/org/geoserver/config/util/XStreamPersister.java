@@ -25,8 +25,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
-import com.thoughtworks.xstream.io.xml.StaxWriter;
 import org.apache.commons.collections.MultiHashMap;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
@@ -158,6 +156,8 @@ import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
+import com.thoughtworks.xstream.io.xml.StaxWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
 import com.thoughtworks.xstream.mapper.DynamicProxyMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
@@ -771,7 +771,7 @@ public class XStreamPersister {
     /**
      * Map converter which encodes a map more breifly than the standard map converter.
      */
-    protected class BreifMapConverter extends MapConverter {
+    public class BreifMapConverter extends MapConverter {
         
         static final String ENCRYPTED_FIELDS_KEY = "org.geoserver.config.encryptedFields";
 
@@ -904,7 +904,7 @@ public class XStreamPersister {
             return forwardBreifMap.get(typeId);
         }
         
-        private String getComplexTypeId(Class clazz) {
+        protected String getComplexTypeId(Class clazz) {
              String typeId = backwardBreifMap.get(clazz);
              if(typeId == null) {
                  List<Class> matches = new ArrayList<Class>();
@@ -1454,7 +1454,7 @@ public class XStreamPersister {
         }
     }
     class NumberRangeConverter extends AbstractReflectionConverter {
-     
+
         @Override
         public boolean canConvert(Class clazz) {
             return NumberRange.class.isAssignableFrom( clazz );
@@ -1546,7 +1546,7 @@ public class XStreamPersister {
     /**
      * Converter for workspaces and namespaces.
      */
-    class SpaceInfoConverter extends AbstractReflectionConverter {
+    public class SpaceInfoConverter extends AbstractReflectionConverter {
         @Override
         public boolean canConvert(Class type) {
             return WorkspaceInfo.class.isAssignableFrom(type) || 
@@ -1602,7 +1602,7 @@ public class XStreamPersister {
     /**
      * Converter for {@link DataStoreInfo}, {@link CoverageStoreInfo}, and {@link WMSStoreInfo}
      */
-    class StoreInfoConverter extends AbstractCatalogInfoConverter {
+    public class StoreInfoConverter extends AbstractCatalogInfoConverter {
 
         public StoreInfoConverter() {
             super(StoreInfo.class);
@@ -1615,17 +1615,17 @@ public class XStreamPersister {
             if (secMgr != null && secMgr.isInitialized()) {
                 //set the hint for the map converter as to which fields to encode in the connection
                 // parameter of this store
-                context.put(BreifMapConverter.ENCRYPTED_FIELDS_KEY, 
+                context.put(BreifMapConverter.ENCRYPTED_FIELDS_KEY,
                     secMgr.getConfigPasswordEncryptionHelper().getEncryptedFields((StoreInfo)source));
             }
 
             super.doMarshal(source, writer, context);
         }
-        
+
         @Override
         protected void postDoMarshal(Object result,
                 HierarchicalStreamWriter writer, MarshallingContext context) {
-            
+
             StoreInfo store = (StoreInfo) result;
             if ( store instanceof DataStoreInfo ) {
                 callback.postEncodeDataStore( (DataStoreInfo) store, writer, context );
@@ -1644,7 +1644,7 @@ public class XStreamPersister {
         public Object doUnmarshal(Object result,
                 HierarchicalStreamReader reader, UnmarshallingContext context) {
             StoreInfo store = (StoreInfo) super.doUnmarshal(result, reader, context);
-            
+
             // 2.1.3+ backwards compatibility check
             if (store instanceof WMSStoreInfo) {
                 WMSStoreInfo wmsStore = (WMSStoreInfo) store;
@@ -1704,7 +1704,7 @@ public class XStreamPersister {
                 }
             }
 
-            //process any parameters that require decryption 
+            //process any parameters that require decryption
             GeoServerSecurityManager secMgr = encryptPasswordFields ? getSecurityManager() : null;
             if (secMgr != null) {
                 secMgr.getConfigPasswordEncryptionHelper().decode(store);

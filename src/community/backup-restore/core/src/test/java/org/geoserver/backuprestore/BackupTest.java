@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -17,6 +18,7 @@ import java.util.logging.Level;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -175,7 +177,7 @@ public class BackupTest extends BackupRestoreTestSupport {
 
         if (restoreCatalog.getWorkspaces().size() > 0) {
             assertTrue(restoreCatalog.getWorkspaces().size() == restoreCatalog.getNamespaces().size());
-    
+
             assertTrue(restoreCatalog.getDataStores().size() == 4);
             assertTrue(restoreCatalog.getResources(FeatureTypeInfo.class).size() == 14);
             assertTrue(restoreCatalog.getResources(CoverageInfo.class).size() == 4);
@@ -191,6 +193,75 @@ public class BackupTest extends BackupRestoreTestSupport {
         assertThat(GenericListener.getBackupBeforeInvocations(), is(0));
         assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
         assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
+    }
+
+    @Test
+    public void testParameterizedRestore() throws Exception {
+        Hints hints = new Hints(new HashMap(2));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
+
+
+        hints.add(new Hints(
+            new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"),
+            "${sf:sf.passwd.encryptedValue}=foo"
+        ));
+
+        RestoreExecutionAdapter restoreExecution = backupFacade
+            .runRestoreAsync(file("parameterized-restore.zip"), null, hints);
+
+        // Wait a bit
+        Thread.sleep(100);
+
+        assertNotNull(backupFacade.getRestoreExecutions());
+        assertTrue(!backupFacade.getRestoreExecutions().isEmpty());
+
+        assertNotNull(restoreExecution);
+
+        Thread.sleep(100);
+
+        final Catalog restoreCatalog = restoreExecution.getRestoreCatalog();
+        assertNotNull(restoreCatalog);
+
+        while (restoreExecution.getStatus() != BatchStatus.COMPLETED) {
+            Thread.sleep(100);
+
+            if (restoreExecution.getStatus() == BatchStatus.ABANDONED
+                || restoreExecution.getStatus() == BatchStatus.FAILED
+                || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
+
+                for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
+                    LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
+                    exception.printStackTrace();
+                }
+                break;
+            }
+        }
+
+        assertTrue(restoreExecution.getStatus() == BatchStatus.COMPLETED);
+
+        if (restoreCatalog.getWorkspaces().size() > 0) {
+            assertTrue(restoreCatalog.getWorkspaces().size() == restoreCatalog.getNamespaces().size());
+
+            assertTrue(restoreCatalog.getDataStores().size() == 4);
+            assertTrue(restoreCatalog.getResources(FeatureTypeInfo.class).size() == 14);
+            assertTrue(restoreCatalog.getResources(CoverageInfo.class).size() == 4);
+            assertTrue(restoreCatalog.getStyles().size() == 21);
+            assertTrue(restoreCatalog.getLayers().size() == 4);
+            assertTrue(restoreCatalog.getLayerGroups().size() == 1);
+        }
+
+        checkExtraPropertiesExists();
+        assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
+        // check that generic listener was invoked for the backup job
+        assertThat(GenericListener.getBackupAfterInvocations(), is(0));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(0));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
+
+        DataStoreInfo restoredDataStore = restoreCatalog.getStoreByName("sf", "sf", DataStoreInfo.class);
+        Serializable passwd = restoredDataStore.getConnectionParameters().get("passwd");
+        assertEquals("foo", passwd);
     }
 
     @Test

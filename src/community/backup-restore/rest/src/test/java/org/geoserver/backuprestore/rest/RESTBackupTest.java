@@ -4,9 +4,12 @@
  */
 package org.geoserver.backuprestore.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.geoserver.backuprestore.BackupRestoreTestSupport;
 import org.geoserver.backuprestore.utils.BackupUtils;
@@ -53,6 +56,45 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         }
 
         assertTrue("COMPLETED".equals(execution.getString("status")));
+    }
+
+    @Test
+    public void testParameterizedBackup() throws Exception {
+        Resource tmpDir = BackupUtils.tmpDir();
+        String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
+
+        String json = "{\"backup\": {" + "   \"archiveFile\": \"" + archiveFilePath + "\", "
+            + "   \"overwrite\": true,"
+            + "   \"options\": { \"option\": [\"BK_PARAM_PASSWORDS=true\"] }" + "  }" + "}";
+
+        JSONObject backup = postNewBackup(json);
+
+        Assert.notNull(backup);
+
+        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+
+        assertTrue("STARTED".equals(execution.getString("status"))
+            || "STARTING".equals(execution.getString("status")));
+
+        while ("STARTED".equals(execution.getString("status"))
+            || "STARTING".equals(execution.getString("status"))) {
+            execution = readExecutionStatus(execution.getLong("id"));
+
+            Thread.sleep(100);
+        }
+
+        assertTrue("COMPLETED".equals(execution.getString("status")));
+
+        ZipFile backupZip = new ZipFile(new File(archiveFilePath));
+        ZipEntry entry = backupZip.getEntry("store.dat.1");
+
+        Scanner scanner = new Scanner(backupZip.getInputStream(entry), "UTF-8");
+        boolean hasExpectedValue = false;
+        while (scanner.hasNextLine() && !hasExpectedValue) {
+            String line = scanner.next();
+            hasExpectedValue = line.contains("encryptedValue");
+        }
+        assertTrue("Expected the store output to contain tokenized password", hasExpectedValue);
     }
 
     @Test

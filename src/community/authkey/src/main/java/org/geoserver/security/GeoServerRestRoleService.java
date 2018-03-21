@@ -234,7 +234,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                         }
                     });
         } catch (Exception ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
         }
 
         return Collections.unmodifiableSortedSet(roles);

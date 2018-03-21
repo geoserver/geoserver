@@ -439,6 +439,7 @@ public class GetFeature {
                             // join, need to separate the joining filter from other filters
                             JoinExtractingVisitor extractor = 
                                     new JoinExtractingVisitor(metas, query.getAliases());
+                            extractor.setQueriedTypes(query.getTypeNames());
                             filter.accept(extractor, null);
 
                             primaryAlias = extractor.getPrimaryAlias();

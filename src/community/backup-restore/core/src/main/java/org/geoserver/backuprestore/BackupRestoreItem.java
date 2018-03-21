@@ -5,16 +5,24 @@
 package org.geoserver.backuprestore;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.JobExecution;
@@ -24,6 +32,13 @@ import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.util.Assert;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.MapConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
  * @author Alessio Fabiani, GeoSolutions S.A.S.
@@ -55,6 +70,8 @@ public abstract class BackupRestoreItem<T> {
     private XStreamPersisterFactory xStreamPersisterFactory;
 
     private Filter filter;
+
+    public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
 
     public BackupRestoreItem(Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         this.backupFacade = backupFacade;
@@ -164,6 +181,28 @@ public abstract class BackupRestoreItem<T> {
 
         JobParameters jobParameters = this.currentJobExecution.getJobParameters();
 
+        boolean parameterizePasswords = Boolean.parseBoolean(
+            jobParameters.getString(Backup.PARAM_PARAMETERIZE_PASSWDS, "false"));
+
+
+        if (parameterizePasswords) {
+
+            //here we set some customized XML handling code. For backups, we add a converter that tokenizes
+            //outgoing passwords. for restores, a handler for those tokenized backups.
+            if (!isNew) {
+                this.xp.registerLocalConverter(
+                    StoreInfoImpl.class, "connectionParameters", this.createParameterizingMapConverter(xstream));
+                this.xp.registerConverter(this.createStoreConverter(xstream));
+            } else {
+                String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
+                Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
+                this.xp.registerConverter(new TokenizedFieldConverter(passwordTokens));
+                xstream.registerBreifMapComplexType("tokenizedPassword", BackupRestoreItem.class);
+            }
+
+
+        }
+
         this.dryRun = Boolean
                 .parseBoolean(jobParameters.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
         this.bestEffort = Boolean
@@ -181,6 +220,19 @@ public abstract class BackupRestoreItem<T> {
         }
         
         initialize(stepExecution);
+    }
+
+    private Map<String, String> parseConcatenatedPasswordTokens(String concatenatedPasswordTokens) {
+        Map<String, String> tokenMap = new HashMap<>();
+        if (concatenatedPasswordTokens != null) {
+            Arrays.stream(concatenatedPasswordTokens.split(",")).forEach(tokenPair -> {
+                String[] tokenPairSplit = tokenPair.split("=");
+                if (tokenPairSplit.length == 2) {
+                    tokenMap.put(tokenPairSplit[0], tokenPairSplit[1]);
+                }
+            });
+        }
+        return tokenMap;
     }
 
     /**
@@ -240,5 +292,163 @@ public abstract class BackupRestoreItem<T> {
         }
 
         return false;
+    }
+
+    private MapConverter createParameterizingMapConverter(XStreamPersister xstream) {
+        return xstream.new BreifMapConverter() {
+            @Override
+            public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+                ParameterizedFieldsHolder fieldsToParametrize = (ParameterizedFieldsHolder) context
+                    .get(ENCRYPTED_FIELDS_KEY);
+
+                Map map = (Map) source;
+                for (Iterator iterator = map.entrySet().iterator(); iterator.hasNext();) {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+
+                    if (entry.getValue() == null) {
+                        continue;
+                    }
+
+                    writer.startNode("entry");
+                    writer.addAttribute( "key", entry.getKey().toString());
+                    Object value = entry.getValue();
+                    String complexTypeId = getComplexTypeId(value.getClass());
+                    if(complexTypeId == null) {
+                        String str = Converters.convert(value, String.class);
+                        if(str == null) {
+                            str = value.toString();
+                        }
+                        if (fieldsToParametrize != null && fieldsToParametrize.getFields().contains(entry.getKey())) {
+
+                            writer.startNode("tokenizedPassword");
+                            str = "${" + fieldsToParametrize.getStoreInfo().getWorkspace().getName() + ":" + fieldsToParametrize
+                                .getStoreInfo().getName() + "." + entry.getKey().toString() + ".encryptedValue}";
+                            writer.setValue(str);
+                            writer.endNode();
+                        } else {
+                            writer.setValue(str);
+                        }
+                    } else {
+                        writer.startNode(complexTypeId);
+                        context.convertAnother(value);
+                        writer.endNode();
+                    }
+
+                    writer.endNode();
+                }
+            }
+        };
+    }
+
+    private ReflectionConverter createStoreConverter(XStreamPersister xstream) {
+        return xstream.new StoreInfoConverter() {
+            @Override
+            protected void doMarshal(Object source, HierarchicalStreamWriter writer,
+                MarshallingContext context) {
+                GeoServerSecurityManager secMgr = xstream.isEncryptPasswordFields()
+                    ? xstream.getSecurityManager() : null;
+                if (secMgr != null && secMgr.isInitialized()) {
+                    //set the hint for the map converter as to which fields to encode in the connection
+                    // parameter of this store
+                    Set<String> encryptedFields = secMgr.getConfigPasswordEncryptionHelper()
+                        .getEncryptedFields((StoreInfo) source);
+
+                    if (!encryptedFields.isEmpty()) {
+                        context.put(ENCRYPTED_FIELDS_KEY, new ParameterizedFieldsHolder(
+                            (StoreInfo)source, encryptedFields));
+                    }
+                }
+
+                super.doMarshal(source, writer, context);
+            }
+        };
+    }
+
+    public Converter getTokenizedPasswordConverter() {
+        return new Converter() {
+            @Override
+            public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            }
+
+            @Override
+            public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+                String tokenizedValue = reader.getValue();
+                String replacedValue = this.replaceTokenizedValue(tokenizedValue);
+                return replacedValue;
+            }
+
+            private String replaceTokenizedValue(String tokenizedValue) {
+                return "foo";
+            }
+
+            @Override
+            public boolean canConvert(Class type) {
+                if (BackupRestoreItem.class.equals(type)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        };
+    }
+
+    private static class TokenizedFieldConverter implements Converter {
+
+        Map<String, String> properties = new HashMap<>();
+
+        public TokenizedFieldConverter(Map<String, String> passwordTokens) {
+            this.properties = passwordTokens;
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            String tokenizedValue = reader.getValue();
+            String replacedValue = this.replaceTokenizedValue(tokenizedValue);
+            //encrypt the value now?
+            return replacedValue;
+        }
+
+        private String replaceTokenizedValue(String tokenizedValue) {
+            return properties.getOrDefault(tokenizedValue, tokenizedValue);
+        }
+
+        @Override
+        public boolean canConvert(Class type) {
+            if (BackupRestoreItem.class.equals(type)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public static class ParameterizedFieldsHolder {
+        private StoreInfo storeInfo;
+        private Set<String> fields;
+
+        public ParameterizedFieldsHolder(StoreInfo storeInfo, Set<String> fields) {
+            this.storeInfo = storeInfo;
+            this.fields = fields;
+        }
+
+        public StoreInfo getStoreInfo() {
+            return storeInfo;
+        }
+
+        public void setStoreInfo(StoreInfo storeInfo) {
+            this.storeInfo = storeInfo;
+        }
+
+        public Set<String> getFields() {
+            return fields;
+        }
+
+        public void setFields(Set<String> fields) {
+            this.fields = fields;
+        }
     }
 }

@@ -10,9 +10,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Test;
@@ -79,36 +81,47 @@ public class LockFeatureTest extends WFS20TestSupport {
 
     @Test
     public void testRenewLockFail() throws Exception {
-        String xml =
-                "<wfs:LockFeature xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" " +
-                        "   xmlns:wfs='" + WFS.NAMESPACE + "' expiry=\"1\" handle=\"LockFeature-tc1\" "
-                        + " lockAction=\"ALL\" "
-                        + " service=\"WFS\" "
-                        + " version=\"2.0.0\">"
-                        + "<wfs:Query handle=\"lock-1\" typeNames=\"sf:PrimitiveGeoFeature\"/>"
-                        + "</wfs:LockFeature>";
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
 
-        Document dom = postAsDOM("wfs", xml);
-        print(dom);
-        assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
-        assertEquals(5, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
-        String lockId = XMLUnit.newXpathEngine().evaluate("//wfs:LockFeatureResponse/@lockId", dom);
-        
-        // wait a couple of seconds, the lock was acquired only for one
-        Thread.sleep(2 * 1000);
-        
-        // try to reset the expired lock, it should fail
-        xml =
-                "<wfs:LockFeature xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" " +
-                        "   xmlns:wfs='" + WFS.NAMESPACE + "' expiry=\"1\" handle=\"LockFeature-tc1\" "
-                        + " lockAction=\"ALL\" "
-                        + " service=\"WFS\" "
-                        + " version=\"2.0.0\"" 
-                        + " lockId=\"" + lockId + "\"/>";
-        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
-        assertEquals(403, response.getStatus());
-        dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        checkOws11Exception(dom, "2.0.0", WFSException.LOCK_HAS_EXPIRED, "lockId");
+        try {
+            String xml =
+                    "<wfs:LockFeature xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" " +
+                            "   xmlns:wfs='" + WFS.NAMESPACE + "' expiry=\"1\" handle=\"LockFeature-tc1\" "
+                            + " lockAction=\"ALL\" "
+                            + " service=\"WFS\" "
+                            + " version=\"2.0.0\">"
+                            + "<wfs:Query handle=\"lock-1\" typeNames=\"sf:PrimitiveGeoFeature\"/>"
+                            + "</wfs:LockFeature>";
+
+            Document dom = postAsDOM("wfs", xml);
+            print(dom);
+            assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
+            assertEquals(5, dom.getElementsByTagNameNS(FES.NAMESPACE, "ResourceId").getLength());
+            String lockId = XMLUnit.newXpathEngine().evaluate("//wfs:LockFeatureResponse/@lockId", dom);
+            
+
+            // wait a couple of seconds, the lock was acquired only for one
+            Thread.sleep(2 * 1000);
+
+            // try to reset the expired lock, it should fail
+            xml =
+                    "<wfs:LockFeature xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" " +
+                            "   xmlns:wfs='" + WFS.NAMESPACE + "' expiry=\"1\" handle=\"LockFeature-tc1\" "
+                            + " lockAction=\"ALL\" "
+                            + " service=\"WFS\" "
+                            + " version=\"2.0.0\""
+                            + " lockId=\"" + lockId + "\"/>";
+            MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+            assertEquals(403, response.getStatus());
+            dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+            checkOws11Exception(dom, "2.0.0", WFSException.LOCK_HAS_EXPIRED, "lockId");
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+        }
     }
 
     @Test
@@ -220,6 +233,5 @@ public class LockFeatureTest extends WFS20TestSupport {
 
         get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
     }
-
 
 }

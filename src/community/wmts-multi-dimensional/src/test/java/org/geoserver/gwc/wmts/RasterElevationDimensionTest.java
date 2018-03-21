@@ -66,8 +66,8 @@ public class RasterElevationDimensionTest extends TestsSupport {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "50");
-        assertThat(histogram.first, is("0.0/100.0/50.0"));
-        assertThat(histogram.second, containsInAnyOrder(2, 2));
+        assertThat(histogram.first, is("0.0/150.0/50.0"));
+        assertThat(histogram.second, containsInAnyOrder(2, 0, 2));
     }
 
     /**

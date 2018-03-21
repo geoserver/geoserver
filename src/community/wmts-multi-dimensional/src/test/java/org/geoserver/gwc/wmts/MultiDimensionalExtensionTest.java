@@ -7,20 +7,31 @@ package org.geoserver.gwc.wmts;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.junit.Test;
+import org.opengis.coverage.Coverage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -314,10 +325,93 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='elevation']", "1");
-        checkXpathCount(result, "/md:Histogram[md:Domain='0.0/100.0/25.0']", "1");
-        checkXpathCount(result, "/md:Histogram[md:Values='2,0,0,2']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Domain='0.0/125.0/25.0']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='2,0,0,0,2']", "1");
+    }
+
+    @Test
+    public void testGetTimeHistogramOnCoverageView() throws Exception {
+        CoverageInfo coverageInfo = setupWaterTempTwoBandsView();
+
+        // enable dimensions
+        registerLayerDimension(coverageInfo, ResourceInfo.TIME, null, DimensionPresentation
+                .CONTINUOUS_INTERVAL, minimumValue());
+
+        // test histogram
+        String layerName = RASTER_ELEVATION_TIME.getPrefix() + ":waterView";
+        String queryRequest = String.format
+                ("request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326" +
+                                "&histogram=time&resolution=P1D",
+                layerName);
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check the returned histogram, it's two days, not just one
+        checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Domain='2008-10-31T00:00:00.000Z/2008-11-02T00" +
+                ":00:00.000Z/P1D']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='2,2']", "1");
+    }
+
+    @Test
+    public void testGetElevationHistogramOnCoverageView() throws Exception {
+        CoverageInfo coverageInfo = setupWaterTempTwoBandsView();
+
+        // enable dimensions
+        registerLayerDimension(coverageInfo, ResourceInfo.ELEVATION, null, DimensionPresentation
+                .CONTINUOUS_INTERVAL, minimumValue());
+
+        // test histogram
+        String layerName = RASTER_ELEVATION_TIME.getPrefix() + ":waterView";
+        String queryRequest = String.format
+                ("request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326" +
+                                "&histogram=elevation&resolution=100",
+                        layerName);
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check the returned histogram, it's two days, not just one
+        checkXpathCount(result, "/md:Histogram[ows:Identifier='elevation']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Domain='0.0/200.0/100.0']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='2,2']", "1");
+    }
+
+
+    public CoverageInfo setupWaterTempTwoBandsView() throws Exception {
+        // setting up a 2 bands coverage view on watertemp
+        final Catalog cat = getCatalog();
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("watertemp");
+        
+        // clear up in case already existing
+        CoverageInfo previous = cat.getCoverageByName("waterView");
+        if (previous != null) {
+            cat.remove(cat.getLayerByName("waterView"));
+            cat.remove(previous);
+        }
+
+        final InputCoverageBand band = new InputCoverageBand("watertemp", "0");
+        final CoverageBand outputBand1 = new CoverageBand(Collections.singletonList(band), 
+                "watertemp@0",
+                0, CompositionType.BAND_SELECT);
+        final CoverageBand outputBand2 = new CoverageBand(Collections.singletonList(band), 
+                "watertemp@0",
+                1, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView("waterView",
+                Arrays.asList(outputBand1, outputBand2));
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        CoverageInfo coverageInfo = coverageView.createCoverageInfo("waterView", storeInfo, 
+                builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        cat.add(coverageInfo);
+        coverageInfo = cat.getCoverage(coverageInfo.getId());
+        LayerInfo layer = builder.buildLayer(coverageInfo);
+        cat.add(layer);
+        return coverageInfo;
     }
 
     @Test
@@ -327,9 +421,11 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 VECTOR_ELEVATION_TIME.getPrefix() + ":" + VECTOR_ELEVATION_TIME.getLocalPart());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
-        checkXpathCount(result, "/md:Histogram[md:Domain='2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Domain=" +
+                "'2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']", "1");
         checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
     }
 

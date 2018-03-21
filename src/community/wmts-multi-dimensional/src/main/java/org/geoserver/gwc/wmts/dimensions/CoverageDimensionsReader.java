@@ -5,6 +5,7 @@
 package org.geoserver.gwc.wmts.dimensions;
 
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.StructuredCoverageViewReader;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -22,9 +23,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
-import java.io.EOFException;
+
 import java.io.IOException;
-import java.lang.ref.Reference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -149,6 +149,7 @@ abstract class CoverageDimensionsReader {
                         if (filter != null) {
                             query.setFilter(filter);
                         }
+                        query.getHints().put(StructuredCoverageViewReader.QUERY_FIRST_BAND, true);
                         // reading the features using the build query
                         FeatureCollection featureCollection = source.getGranules(query);
                         // get the features attribute that contain our dimension values
@@ -171,6 +172,7 @@ abstract class CoverageDimensionsReader {
                 if (filter != null) {
                     query.setFilter(filter);
                 }
+                query.getHints().put(StructuredCoverageViewReader.QUERY_FIRST_BAND, true);
                 // reading the features using the build query
                 FeatureCollection featureCollection = source.getGranules(query);
                 return featureCollection.getBounds();

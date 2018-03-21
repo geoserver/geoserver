@@ -13,6 +13,7 @@ import org.geoserver.gwc.wmts.dimensions.VectorElevationDimension;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
@@ -70,8 +71,8 @@ public class VectorElevationDimensionTest extends TestsSupport {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "1");
-        assertThat(histogram.first, is("1.0/5.0/1.0"));
-        assertThat(histogram.second, containsInAnyOrder(2, 1, 0, 1));
+        assertThat(histogram.first, is("1.0/6.0/1.0"));
+        assertThat(histogram.second, equalTo(Arrays.asList(1, 1, 1, 0, 1)));
     }
 
     /**

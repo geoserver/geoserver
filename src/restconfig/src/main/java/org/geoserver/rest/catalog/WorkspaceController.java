@@ -122,7 +122,7 @@ public class WorkspaceController extends AbstractCatalogController {
             catalog.setDefaultWorkspace(workspace);
             LOGGER.info("made workspace " + name + " default");
         }
-        LOGGER.info("POST Style " + name);
+        LOGGER.info("POST workspace " + name);
         
         //create a namespace corresponding to the workspace if one does not 
         // already exist

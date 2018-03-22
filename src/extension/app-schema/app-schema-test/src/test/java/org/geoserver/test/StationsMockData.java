@@ -47,7 +47,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
     protected static final String MEASUREMENTS_URI_GML32 = "http://www.measurements_gml32.org/1.0";
 
     // directory that should contain all the new files created during the setup of this data set
-    private static final File TEST_ROOT_DIRECTORY;
+    protected static final File TEST_ROOT_DIRECTORY;
 
     static {
         try {

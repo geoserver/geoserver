@@ -149,7 +149,8 @@ public class RasterTimeDimensionTest extends TestsSupport {
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1Y");
         assertThat(histogram.first, is("2008-10-31T00:00:00.000Z/" + STRING_VALUES[4] + "/P1Y"));
-        assertThat(histogram.second.stream().reduce(0, (total, value) -> total + value), is(6));
+        // watertemp has 4 files, the test setup adds 3 to them, to a total o f 7 is expected
+        assertThat(histogram.second.stream().reduce(0, (total, value) -> total + value), is(7));
     }
 
     /**

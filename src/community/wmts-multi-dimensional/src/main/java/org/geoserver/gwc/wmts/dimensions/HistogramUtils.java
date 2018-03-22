@@ -10,18 +10,23 @@ import org.geotools.gce.imagemosaic.properties.time.TimeParser;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
+import org.geotools.util.logging.Logging;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utilities method to produce histogram from dimension domains values. Two types of
  * histograms are supported numerical, times and enumerated values.
  */
 final class HistogramUtils {
+    
+    private static final Logger LOGGER = Logging.getLogger(HistogramUtils.class);
 
     private final static String HISTOGRAM_MAX_THRESHOLD_VARIABLE = "HISTORGRAM_MAX_THRESHOLD";
     private final static long HISTOGRAM_MAX_THRESHOLD_DEFAULT = 10000L;
@@ -71,6 +76,8 @@ final class HistogramUtils {
             int index = getBucketIndex(buckets.second, (Comparable) value);
             if (index >= 0) {
                 histogramValues.set(index, histogramValues.get(index) + 1);
+            } else if (LOGGER.isLoggable(Level.FINE)){
+                LOGGER.log(Level.FINE, "Bucket not found for value: " + value);
             }
         }
 
@@ -143,7 +150,7 @@ final class HistogramUtils {
             // single buckets in a list don't include last to avoid overlap
             double limit = step + finalResolution;
             if (limit > max) {
-                buckets.add(NumberRange.create(step, true, max, false));
+                buckets.add(NumberRange.create(step, true, max, true));
                 break;
             }
             buckets.add(NumberRange.create(step, true, limit, false));
@@ -157,23 +164,22 @@ final class HistogramUtils {
      */
     private static Tuple<String, List<Range>> getTimeBuckets(List<Object> domainValues, String resolution) {
         Tuple<Date, Date> minMax = DimensionsUtils.getMinMax(domainValues, Date.class);
-        Tuple<Date, Date> originalMinMax = Tuple.tuple(minMax.first, minMax.second);
         // if the max value is at the very edge of the last interval, then add one more (we are going to
         // use intervals that contain first but not last to avoid overlaps
+        resolution = resolution != null ? resolution : TIME_DEFAULT_RESOLUTION;
         long difference = minMax.second.getTime() - minMax.first.getTime();
         long resolutionInMs;
         try {
             resolutionInMs = org.geoserver.ows.kvp.TimeParser.parsePeriod(resolution);
-            // if the max value is at the very edge of the last interval, then add one more (we are going to
-            // use intervals that contain first but not last to avoid overlaps
             if (difference % resolutionInMs == 0) {
+                // if the max value is at the very edge of the last interval, then add one more (we are going to
+                // use intervals that contain first but not last to avoid overlaps
                 Date newMax = new Date(minMax.second.getTime() + resolutionInMs);
                 minMax = Tuple.tuple(minMax.first, newMax);
-            }
+            } 
         } catch (ParseException e) {
             throw new RuntimeException(String.format("Error parsing time resolution '%s'.", resolution), e);
         }
-        resolution = resolution != null ? resolution : TIME_DEFAULT_RESOLUTION;
         Tuple<String, List<Date>> intervalsAndSpec = getDateIntervals(minMax, resolution);
         int i = 0;
         while (intervalsAndSpec.second.size() >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
@@ -206,7 +212,13 @@ final class HistogramUtils {
         domainString += "/" + dateFormatter.format(minMax.second) + "/" + resolution;
         TimeParser timeParser = new TimeParser();
         try {
-            return Tuple.tuple(domainString, timeParser.parse(domainString));
+            List<Date> intervals = timeParser.parse(domainString);
+            Date last = intervals.get(intervals.size() - 1);
+            long resolutionInMs = org.geoserver.ows.kvp.TimeParser.parsePeriod(resolution);
+            if (last.getTime() < minMax.second.getTime()) {
+                intervals.add(new Date(last.getTime() + resolutionInMs));
+            }
+            return Tuple.tuple(domainString, intervals);
         } catch (ParseException exception) {
             throw new RuntimeException(String.format("Error parsing time resolution '%s'.", resolution), exception);
         }

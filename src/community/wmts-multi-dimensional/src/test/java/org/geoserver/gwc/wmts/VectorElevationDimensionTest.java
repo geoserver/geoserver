@@ -75,6 +75,15 @@ public class VectorElevationDimensionTest extends TestsSupport {
         assertThat(histogram.second, equalTo(Arrays.asList(1, 1, 1, 0, 1)));
     }
 
+    @Test
+    public void testGetHistogramMisaligned() {
+        DimensionInfo dimensionInfo = createDimension(true, null);
+        Dimension dimension = buildDimension(dimensionInfo);
+        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.75");
+        assertThat(histogram.first, is("1.0/5.0/0.75"));
+        assertThat(histogram.second, equalTo(Arrays.asList(1, 1, 1, 0, 0, 1)));
+    }
+
     /**
      * Helper method that just returns the current layer info.
      */

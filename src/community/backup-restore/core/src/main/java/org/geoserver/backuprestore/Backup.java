@@ -65,6 +65,8 @@ import com.thoughtworks.xstream.XStream;
 public class Backup extends JobExecutionListenerSupport
         implements DisposableBean, ApplicationContextAware, ApplicationListener {
 
+    public static final String PARAM_PASSWORD_TOKENS = "BK_PASSWORD_TOKENS";
+
     static Logger LOGGER = Logging.getLogger(Backup.class);
 
     /* Job Parameters Keys **/
@@ -86,6 +88,8 @@ public class Backup extends JobExecutionListenerSupport
     public static final String BACKUP_JOB_NAME = "backupJob";
 
     public static final String RESTORE_JOB_NAME = "restoreJob";
+
+    public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
 
     public static final String RESTORE_CATALOG_KEY = "restore.catalog";
 
@@ -603,6 +607,10 @@ public class Backup extends JobExecutionListenerSupport
                     final Set<String> key = ((Hints.OptionKey) param.getKey()).getOptions();
                     for (String k : key) {
                         switch (k) {
+                        case PARAM_PASSWORD_TOKENS:
+                            paramsBuilder.addString(k, (String)param.getValue());
+                            break;
+                        case PARAM_PARAMETERIZE_PASSWDS:
                         case PARAM_CLEANUP_TEMP:                            
                         case PARAM_DRY_RUN_MODE:
                         case PARAM_BEST_EFFORT_MODE:

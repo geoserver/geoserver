@@ -4,8 +4,19 @@
  */
 package org.geoserver.platform;
 
+import org.geotools.util.logging.Logging;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Bean used to register module installation in applicationContext.xml.
@@ -19,6 +30,8 @@ import java.util.Optional;
  * @author Morgan Thompson - Boundless
  */
 public class ModuleStatusImpl implements ModuleStatus, Serializable {
+
+    private static final Logger LOGGER = Logging.getLogger(ModuleStatusImpl.class);
 
     /** serialVersionUID */
     private static final long serialVersionUID = -5759469520194940051L;
@@ -42,17 +55,28 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     public ModuleStatusImpl() {
     }
 
+    /**
+     * Copy-constructor, used to construct model objects from beans
+     *
+     * @param status The {@link ModuleStatus} to copy
+     */
     public ModuleStatusImpl(ModuleStatus status) {
         this.module = status.getModule();
         this.name = status.getName();
         this.component = status.getComponent().orElse(null);
-        this.version = status.getVersion().orElse(null);
+        this.version = status.getVersion().orElse(getVersionInternal());
         this.documentation = status.getDocumentation().orElse(null);
         this.message = status.getMessage().orElse(null);
         this.isEnabled = status.isEnabled();
         this.isAvailable = status.isAvailable();
     }
 
+    /**
+     * Bean constructor used in applicationContext.xml
+     *
+     * @param module The module identifier, e.g. "gs-main"
+     * @param name The module name.
+     */
     public ModuleStatusImpl(String module, String name) {
         this.module = module;
         this.name = name;
@@ -153,5 +177,40 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     public String toString() {
         return "ModuleStatusImpl [module=" + module + ", component=" + component + ", version="
                 + version + "]";
+    }
+
+    /**
+     * Reads the version for the module from the pom.properties.
+     *
+     * WARNING: This method reads every pom.properties on the classpath. It should only be used if absolutely necessary
+     */
+    protected String getVersionInternal() {
+        List<Properties> matches = new ArrayList<>();
+        try {
+            Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath*:META-INF/maven/*/*/pom.properties");
+            for (Resource resource : resources) {
+                try (InputStream in = resource.getInputStream()) {
+                    Properties properties = new Properties();
+                    properties.load(in);
+                    if (module != null) {
+                        if (module.equals(properties.getProperty("artifactId"))) {
+                            matches.add(properties);
+                        }
+                    }
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Error reading pom.properties: " + resource.getFilename(), e);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error listing pom.properties", e);
+        }
+        if (matches.size() >= 1) {
+            if (matches.size() > 1) {
+                LOGGER.log(Level.WARNING, "Found " + matches.size() + " matching pom.properties for module \"" + name
+                        + "\", using the first one. This may mean you have duplicate jars on your classpath");
+            }
+            return matches.get(0).getProperty("version");
+        }
+        return null;
     }
 }

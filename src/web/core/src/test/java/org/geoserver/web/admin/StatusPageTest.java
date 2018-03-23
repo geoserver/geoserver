@@ -10,16 +10,18 @@ import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class StatusPageTest extends GeoServerWicketTestSupport {
     @Override
@@ -97,6 +99,20 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:tabs-container:tabs:1:link", true);
         tester.assertContains("gs-main");
+    }
+
+    @Test
+    public void testModuleStatusPanelVersion() {
+        //Skip this test if we are excecuting from an IDE; the version is extracted from the compiled jar
+        Assume.assumeFalse(ModuleStatusImpl.class.getResource("ModuleStatusImpl.class").getProtocol().equals("file"));
+
+        tester.assertRenderedPage(StatusPage.class);
+        tester.clickLink("tabs:tabs-container:tabs:1:link", true);
+        tester.assertContains("gs-main");
+        Component component = tester.getComponentFromLastRenderedPage("tabs:panel:listViewContainer:modules:1:version");
+        assertTrue(component instanceof Label);
+        assertNotNull(component.getDefaultModelObjectAsString());
+        assertNotEquals("", component.getDefaultModelObjectAsString().trim());
     }
 
     @Test

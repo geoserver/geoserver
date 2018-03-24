@@ -145,9 +145,10 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
             final Resource r = resources.get(0);
             try {
                 mapped = mapper.apply(r);
-                completed = true;
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Failed to load resource '" + r.name() + "'", e);
+            } finally {
+                completed = true;
             }
         } else {
             // nothing found

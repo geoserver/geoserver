@@ -190,8 +190,8 @@
   </build>
 
   <properties>
-    <gs.version>2.12-SNAPSHOT</gs.version>
-    <gt.version>18-SNAPSHOT</gt.version>
+    <gs.version>2.13-SNAPSHOT</gs.version>
+    <gt.version>19-SNAPSHOT</gt.version>
     <spring.version>4.3.7.RELEASE</spring.version>
   </properties>
 

@@ -1,0 +1,13 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <div wicket:id="feedback"></div>
+  <select wicket:id="image"/>
+  <img wicket:id="display"  style="display: block; float:right; max-width: 35px; max-height: 35px;" />
+  <label for="upload" ><wicket:message key="uploadImage">Upload new image</wicket:message></label>
+  <input id="upload" wicket:id="upload" type="file" accept=".png, .jpg, .jpeg, .svg, .gif" />
+</wicket:panel>
+</body>
+</html>

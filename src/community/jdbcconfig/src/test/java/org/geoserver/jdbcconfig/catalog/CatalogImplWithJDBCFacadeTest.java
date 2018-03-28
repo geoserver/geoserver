@@ -73,6 +73,29 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     }
 
     @Test
+    public void testCharacterEncoding() {
+        addDataStore();
+        addNamespace();
+        String name = "testFT";
+        FeatureTypeInfo ft = newFeatureType(name, ds);
+
+        String degC = "Air Temperature in \u00b0C";
+        ft.setAbstract(degC);
+        catalog.add(ft);
+        // clear cache to force retrieval from database.
+        facade.getConfigDatabase().dispose();
+        FeatureTypeInfo added = catalog.getFeatureTypeByName(name);
+        assertEquals(degC, added.getAbstract());
+
+        String degF = "Air Temperature in \u00b0F";
+        added.setAbstract(degF);
+        catalog.save(added);
+        facade.getConfigDatabase().dispose();
+        FeatureTypeInfo saved = catalog.getFeatureTypeByName(name);
+        assertEquals(degF, saved.getAbstract());
+    }
+
+    @Test
     public void testOrderByMultiple() {
         addDataStore();
         addNamespace();

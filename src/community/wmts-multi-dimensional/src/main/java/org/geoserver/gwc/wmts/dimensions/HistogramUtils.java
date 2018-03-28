@@ -124,10 +124,16 @@ final class HistogramUtils {
      */
     private static Tuple<String, List<Range>> getNumericBuckets(List<Object> domainValues, String resolution) {
         Tuple<Double, Double> minMax = DimensionsUtils.getMinMax(domainValues, Double.class);
+        return getNumericBuckets(minMax.first, minMax.second, resolution);
+    }
+
+    /**
+     * Helper method that creates buckets for a numeric domain based on the provided resolution. The returned tuple
+     * will contain the domain representation and the domain buckets.
+     */
+    public static Tuple<String, List<Range>> getNumericBuckets(double min, double max, String resolution) {
         resolution = resolution != null ? resolution : NUMERICAL_DEFAULT_RESOLUTION;
         double finalResolution = Double.parseDouble(resolution);
-        double min = minMax.first;
-        double max = minMax.second;
         int i = 0;
         while ((max - min) / finalResolution >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
             finalResolution += 10;
@@ -164,22 +170,30 @@ final class HistogramUtils {
      */
     private static Tuple<String, List<Range>> getTimeBuckets(List<Object> domainValues, String resolution) {
         Tuple<Date, Date> minMax = DimensionsUtils.getMinMax(domainValues, Date.class);
+        return getTimeBuckets(minMax.first, minMax.second, resolution);
+    }
+
+    /**
+     * Helper method that creates buckets for a time domain based on the provided resolution. The returned tuple
+     * will contain the domain representation and the domain buckets.
+     */
+    public static Tuple<String, List<Range>> getTimeBuckets(Date min, Date max, String resolution) {
         // if the max value is at the very edge of the last interval, then add one more (we are going to
         // use intervals that contain first but not last to avoid overlaps
         resolution = resolution != null ? resolution : TIME_DEFAULT_RESOLUTION;
-        long difference = minMax.second.getTime() - minMax.first.getTime();
+        long difference = max.getTime() - min.getTime();
         long resolutionInMs;
         try {
             resolutionInMs = org.geoserver.ows.kvp.TimeParser.parsePeriod(resolution);
             if (difference % resolutionInMs == 0) {
                 // if the max value is at the very edge of the last interval, then add one more (we are going to
                 // use intervals that contain first but not last to avoid overlaps
-                Date newMax = new Date(minMax.second.getTime() + resolutionInMs);
-                minMax = Tuple.tuple(minMax.first, newMax);
+                max  = new Date(max.getTime() + resolutionInMs);
             } 
         } catch (ParseException e) {
             throw new RuntimeException(String.format("Error parsing time resolution '%s'.", resolution), e);
         }
+        Tuple<Date, Date> minMax = Tuple.tuple(min, max);
         Tuple<String, List<Date>> intervalsAndSpec = getDateIntervals(minMax, resolution);
         int i = 0;
         while (intervalsAndSpec.second.size() >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
@@ -192,7 +206,7 @@ final class HistogramUtils {
         if (intervals.size() == 1) {
             boolean includeLast = difference < resolutionInMs;
             return Tuple.tuple(intervalsAndSpec.first, Collections.singletonList(new DateRange
-                    (minMax.first, true, minMax.second, includeLast)));
+                    (min, true, max, includeLast)));
         }
         List<Range> buckets = new ArrayList<>();
         Date previous = intervals.get(0);

@@ -10,18 +10,31 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.Aggregate;
+import org.geotools.feature.visitor.GroupByVisitor;
+import org.geotools.feature.visitor.GroupByVisitorBuilder;
+import org.geotools.util.Converters;
+import org.geotools.util.Range;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
+import org.opengis.filter.expression.PropertyName;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -82,25 +95,161 @@ public abstract class Dimension {
     }
 
     /**
+     * Returns the data type of the dimension
+     * @return
+     */
+    protected abstract Class getDimensionType();
+    
+    /**
      * <p>
-     * Computes an histogram of this dimension domain values. The provided resolution value can be NULL
-     * or AUTO to let the server decide the proper resolution. If a resolution is provided it needs
+     * Computes an histogram of this dimension domain values. The provided resolutionSpec value can be NULL
+     * or AUTO to let the server decide the proper resolutionSpec. If a resolutionSpec is provided it needs
      * to be a number for numerical domains or a period syntax for time domains. For enumerated domains
-     * (i.e. string values) the resolution will be ignored.
+     * (i.e. string values) the resolutionSpec will be ignored.
      * </p>
      * <p>
      * A filter can be provided to filter the domain values. The provided filter can be NULL.
      * </p>
      * <p>
      * The first element of the returned tuple will contain the description of the histogram domain as
-     * start, end and resolution. The second element of the returned tuple will contain a list of the
+     * start, end and resolutionSpec. The second element of the returned tuple will contain a list of the
      * histogram values represented as strings. If no description of the domain can be provided (for
      * example enumerated values) NULL will be returned and the same allies the histogram values.
      * </p>
      */
-    public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolution) {
-        return HistogramUtils.buildHistogram(getDomainValues(filter, false), resolution);
+    public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolutionSpec) {
+        if (loadDataInMemory()) {
+            return HistogramUtils.buildHistogram(getDomainValues(filter, false), resolutionSpec);
+        }
+
+        FilterFactory2 ff = DimensionsUtils.FF;
+        String dimensionAttributeName = getDimensionAttributeName();
+        PropertyName dimensionProperty = ff.property(dimensionAttributeName);
+        if (Number.class.isAssignableFrom(getDimensionType())) {
+            DomainSummary summary = getDomainSummary(filter, 0);
+            double min = ((Number) summary.getMin()).doubleValue();
+            double max = ((Number) summary.getMax()).doubleValue();
+            Tuple<String, List<Range>> specAndBuckets = HistogramUtils.getNumericBuckets
+                    (min, max, resolutionSpec);
+            List<Range> buckets = specAndBuckets.second;
+            Range<Double> referenceBucket = buckets.get(0);
+            double resolution = referenceBucket.getMaxValue() - referenceBucket.getMinValue();
+
+            // the aggregation expression classifies results in buckets numbered from 1 on
+            Function classifier = ff.function("floor", 
+                    ff.divide(
+                            ff.subtract(dimensionProperty, ff.literal(min)), 
+                            ff.literal(resolution)));
+            TreeMap<Object, Object> results = groupByDomainOnExpression(filter, classifier,
+                    dimensionAttributeName,
+                    Integer.class);
+
+            // map out domain representation
+            List<Integer> counts = new ArrayList<>(buckets.size());
+            for (int i = 0; i < buckets.size(); i++) {
+                Number count = Optional.ofNullable((Number) results.get(i)).orElse(0);
+                counts.add(count.intValue());
+            }
+            return Tuple.tuple(specAndBuckets.first, counts);
+        } else if (Date.class.isAssignableFrom(getDimensionType())) {
+            DomainSummary summary = getDomainSummary(filter, 0);
+            Date min = (Date) summary.getMin();
+            Date max = (Date) summary.getMax();
+            Tuple<String, List<Range>> specAndBuckets = HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
+            List<Range> buckets = specAndBuckets.second;
+            Range<Date> referenceBucket = buckets.get(0);
+            double resolution = referenceBucket.getMaxValue().getTime() - referenceBucket.getMinValue().getTime();
+
+            // the aggregation expression classifies results in buckets numbered from 1 on
+            Function classifier = ff.function("floor",
+                    ff.divide(
+                            ff.function("dateDifference", dimensionProperty, ff.literal(min)),
+                            ff.literal(resolution)));
+            TreeMap<Object, Object> results = groupByDomainOnExpression(filter, classifier, dimensionAttributeName,
+                    Integer.class);
+
+            // map out domain representation
+            List<Integer> counts = new ArrayList<>(buckets.size());
+            for (int i = 0; i < buckets.size(); i++) {
+                Number count = Optional.ofNullable((Number) results.get(i)).orElse(0);
+                counts.add(count.intValue());
+            }
+            return Tuple.tuple(specAndBuckets.first, counts);
+        } else {
+            // assuming custom dimension, will handle as strings, once there is support
+            // for custom dimensions of different type (for structured readers) this will
+            // have to be modified
+            TreeMap<Object, Object> results = groupByDomainOnExpression(filter, dimensionProperty, dimensionAttributeName, String.class);
+            
+            // map out domain representation and histogram value representation
+            List<Integer> counts = results.values().stream()
+                    .map(v -> ((Number) v).intValue())
+                    .collect(Collectors.toList());
+            String domainRepresentation = results.keySet().stream()
+                    .map(v -> v.toString())
+                    .collect(Collectors.joining(","));
+                    
+            return Tuple.tuple(domainRepresentation, counts);
+        }
     }
+
+    /**
+     * Should we load data in memory to compute histograms (fast for small datasets not having
+     * indexes) or do we try to use visitor and perform one or more data scans instead?
+     * Small easter egg to allow testing, we might want to extend it to a per layer configuration
+     * in case there are large shapefile layers involved in this (computing min/max/groupby is
+     * three full data scans in that case). Or have a way to figure out if a collection can optimize
+     * out a visit (completely missing right now, that would be a significant API change).
+     * @return
+     */
+    private boolean loadDataInMemory() {
+        String value = GeoServerExtensions.getProperty("WMTS_HISTOGRAM_IN_MEMORY");
+        return Boolean.getBoolean(value);
+    }
+
+    public TreeMap<Object, Object> groupByDomainOnExpression(Filter filter, Expression classifier, String dimensionAttribute, Class classifierType) {
+        Query query = new Query();
+        query.setFilter(filter);
+        query.setPropertyNames(new String[] {dimensionAttribute});
+        FeatureCollection domain = getDomain(query);
+        GroupByVisitorBuilder builder = new GroupByVisitorBuilder();
+        builder.withAggregateVisitor(Aggregate.COUNT);
+        builder.withGroupByAttribute(classifier);
+        builder.withAggregateAttribute(classifier);
+        GroupByVisitor visitor = builder.build();
+
+        try {
+            domain.accepts(visitor, null);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format(
+                    "Error fetching histogram in formation from database for '%s'.", 
+                    resourceInfo.getName()), e);
+        }
+
+        // turn the group result into the expected histogram result
+        Map<List<Object>, Object> groupResult = visitor.getResult().toMap();
+        TreeMap<Object, Object> sortedResults = new TreeMap<>();
+        groupResult.forEach((k, v) -> {
+            Object classifierValue = Converters.convert(k.get(0), classifierType);
+            sortedResults.put(classifierValue, v);
+        });
+        return sortedResults;
+    }
+
+    /**
+     * Returns the attribute name representing the dimension
+     * @return
+     */
+    protected String getDimensionAttributeName() {
+        return dimensionInfo.getAttribute();
+    }
+
+    /**
+     * Returns the domain given a filter
+     * @param filter
+     * @return
+     */
+    protected abstract FeatureCollection getDomain(Query filter);
 
     protected abstract String getDefaultValueFallbackAsString();
 

@@ -19,6 +19,11 @@ public class VectorElevationDimension extends VectorDimension {
     }
 
     @Override
+    protected Class getDimensionType() {
+        return Number.class;
+    }
+
+    @Override
     protected String getDefaultValueFallbackAsString() {
         return "0";
     }

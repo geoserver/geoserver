@@ -9,13 +9,11 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -47,8 +45,14 @@ public abstract class RasterDimension extends Dimension {
     protected DomainSummary getDomainSummary(Filter filter, int expandLimit) {
         CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
 
-        Tuple<String, FeatureCollection> values = reader.getValues(getDimensionName(), filter, dataType);
+        Tuple<String, FeatureCollection> values = reader.getValues(getDimensionName(), new Query(null, filter), dataType);
         return getDomainSummary(values.second, values.first, expandLimit);
+    }
+
+    @Override
+    protected String getDimensionAttributeName() {
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        return reader.getDimensionAttributesNames(getDimensionName()).first;
     }
 
 }

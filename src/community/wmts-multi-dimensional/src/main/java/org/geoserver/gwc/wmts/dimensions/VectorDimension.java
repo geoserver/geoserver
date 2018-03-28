@@ -7,18 +7,14 @@ package org.geoserver.gwc.wmts.dimensions;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +30,7 @@ public abstract class VectorDimension extends Dimension {
     /**
      * Helper method used to get domain values from a vector type in the form of a feature collection.
      */
-    protected FeatureCollection getDomain(Filter filter) {
+    protected FeatureCollection getDomain(Query query) {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
         FeatureSource source;
         try {
@@ -43,7 +39,9 @@ public abstract class VectorDimension extends Dimension {
             throw new RuntimeException(String.format(
                     "Error getting feature source of vector '%s'.", resourceInfo.getName()), exception);
         }
-        Query query = new Query(source.getSchema().getName().getLocalPart(), filter == null ? Filter.INCLUDE : filter);
+        // fix type name
+        query = new Query(query);
+        query.setTypeName(source.getSchema().getName().getLocalPart());
         try {
             return source.getFeatures(query);
         } catch (Exception exception) {
@@ -55,7 +53,7 @@ public abstract class VectorDimension extends Dimension {
 
     @Override
     public List<Object> getDomainValues(Filter filter, boolean noDuplicates) {
-        FeatureCollection featureCollection = getDomain(filter);
+        FeatureCollection featureCollection = getDomain(new Query(null, filter));
         if (noDuplicates) {
             // no duplicate values should be included
             Set<Object> values = DimensionsUtils.
@@ -68,7 +66,7 @@ public abstract class VectorDimension extends Dimension {
 
     @Override
     protected DomainSummary getDomainSummary(Filter filter, int expandLimit) {
-        FeatureCollection features = getDomain(filter);
+        FeatureCollection features = getDomain(new Query(null, filter));
         String attribute = dimensionInfo.getAttribute();
 
         return getDomainSummary(features, attribute, expandLimit);

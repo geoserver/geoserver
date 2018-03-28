@@ -10,6 +10,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMS;
 
+import java.util.Date;
+
 /**
  * Represents a time dimension of a vector (feature type).
  */
@@ -22,6 +24,11 @@ public class VectorTimeDimension extends VectorDimension {
     @Override
     protected String getDefaultValueFallbackAsString() {
         return DimensionDefaultValueSetting.TIME_CURRENT;
+    }
+
+    @Override
+    protected Class getDimensionType() {
+        return Date.class;
     }
 
 }

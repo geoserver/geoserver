@@ -12,19 +12,15 @@ import java.util.Collection;
 
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerImplTest;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
-import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
-import org.geoserver.jdbcconfig.internal.JDBCConfigXStreamPersisterInitializer;
-import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,6 +91,7 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         assertEquals( global, geoServer.getGlobal() );
     }
     
+    @Override
     @Test
     public void testModifyService() throws Exception {
         ServiceInfo service = geoServer.getFactory().createService();
@@ -111,9 +108,22 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         ServiceInfo s2 = geoServer.getServiceByName( "foo", ServiceInfo.class );
         assertEquals( "quux", s2.getMaintainer() );
         
+        ServiceInfo s3 = geoServer.getService(ServiceInfo.class);
+        assertEquals( "quux", s3.getMaintainer() );
+        
         geoServer.save( s1 );
         s2 = geoServer.getServiceByName( "foo", ServiceInfo.class );
         assertEquals( "quam", s2.getMaintainer() );
+        
+        s3 = geoServer.getService(ServiceInfo.class);
+        assertEquals( "quam", s3.getMaintainer() );
+        
+        geoServer.remove( s1 );
+        s2 = geoServer.getServiceByName( "foo", ServiceInfo.class );
+        assertNull(s2);
+        
+        s3 = geoServer.getService(ServiceInfo.class);
+        assertNull(s3);
     }
     
     // Would have put this on GeoServerImplTest, but it depends on WMS and WFS InfoImpl classes

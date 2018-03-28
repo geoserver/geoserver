@@ -37,7 +37,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
@@ -694,6 +693,9 @@ public class ConfigDatabase {
             return;
         }
         
+        if (info instanceof ServiceInfo) {
+            disposeServiceCache();
+        }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
 
@@ -731,6 +733,9 @@ public class ConfigDatabase {
 
         final Info oldObject = (Info) modificationProxy.getProxyObject();
 
+        if (info instanceof ServiceInfo) {
+            disposeServiceCache();
+        }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(oldObject));
         cache.invalidate(id);
 
@@ -1130,6 +1135,12 @@ public class ConfigDatabase {
         cache.cleanUp();
         identityCache.invalidateAll();
         identityCache.cleanUp();
+        disposeServiceCache();
+    }
+
+    private void disposeServiceCache() {
+        serviceCache.invalidateAll();
+        serviceCache.cleanUp();
     }
 
     private final class CatalogLoader implements Callable<CatalogInfo> {
@@ -1340,6 +1351,12 @@ public class ConfigDatabase {
     }
 
     void clear(Info info) {
+        if (info instanceof ServiceInfo) {
+            // need to figure out how to remove only the relevant cache
+            // entries for the service info, like with InfoIdenties below,
+            // that will be able to handle new service types.
+            disposeServiceCache();
+        }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
     }

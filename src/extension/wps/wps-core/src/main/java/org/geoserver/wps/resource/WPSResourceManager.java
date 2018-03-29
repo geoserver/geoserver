@@ -430,6 +430,10 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
             for (Resource child : resource.list()) {
                 result &= cleanupResource(child, expirationThreshold);
             }
+            // Cleanup the directory too if all the children have been cleanup
+            if (result) {
+                result &= resource.delete();
+            }
         }
 
         return result;

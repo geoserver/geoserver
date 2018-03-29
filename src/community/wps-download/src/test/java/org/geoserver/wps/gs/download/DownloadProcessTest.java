@@ -5,6 +5,10 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -15,6 +19,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +28,10 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.FileImageInputStream;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
@@ -76,6 +84,7 @@ import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
+import org.springframework.util.MimeType;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -96,7 +105,34 @@ public class DownloadProcessTest extends WPSTestSupport {
     private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
 
     private static QName MIXED_RES = new QName(WCS_URI, "mixedres", WCS_PREFIX);
+
+    private static Set<String> GTIFF_EXTENSIONS = new HashSet<String>();
+    private static Set<String> PNG_EXTENSIONS = new HashSet<String>();
+    private static Set<String> JPEG_EXTENSIONS = new HashSet<String>();
+    private static Set<String> XML_EXTENSIONS = new HashSet<String>();
+    private static Set<String> JSON_EXTENSIONS = new HashSet<String>();
+    private static Map<String, Set<String>> FORMAT_TO_EXTENSIONS = new HashMap<>();
     
+    static {
+        GTIFF_EXTENSIONS.add("tif");
+        GTIFF_EXTENSIONS.add("tiff");
+        GTIFF_EXTENSIONS.add("geotiff");
+        FORMAT_TO_EXTENSIONS.put("GTIFF", GTIFF_EXTENSIONS);
+
+        PNG_EXTENSIONS.add("png");
+        FORMAT_TO_EXTENSIONS.put("PNG", PNG_EXTENSIONS);
+
+        JPEG_EXTENSIONS.add("jpg");
+        JPEG_EXTENSIONS.add("jpeg");
+        FORMAT_TO_EXTENSIONS.put("JPEG", JPEG_EXTENSIONS);
+
+        XML_EXTENSIONS.add("xml");
+        FORMAT_TO_EXTENSIONS.put("XML", XML_EXTENSIONS);
+
+        JSON_EXTENSIONS.add("json");
+        FORMAT_TO_EXTENSIONS.put("JSON", JSON_EXTENSIONS);
+    }
+
     /**
      * This method is used for decoding an input file.
      * 
@@ -351,7 +387,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Final checks on the result
         Assert.assertNotNull(gml2Zip);
 
-        File[] files = exctractGMLFile(gml2Zip);
+        File[] files = extractFiles(gml2Zip, "XML");
 
         SimpleFeatureCollection rawTarget = (SimpleFeatureCollection) new WFSPPIO.WFS10()
                 .decode(new FileInputStream(files[0]));
@@ -380,7 +416,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Final checks on the result
         Assert.assertNotNull(gml3Zip);
 
-        files = exctractGMLFile(gml2Zip);
+        files = extractFiles(gml2Zip, "XML");
 
         rawTarget = (SimpleFeatureCollection) new WFSPPIO.WFS11().decode(new FileInputStream(
                 files[0]));
@@ -391,61 +427,25 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     /**
-     * This method is used for extracting only the xml file from a GML output file
-     * 
-     * @param gml2Zip
-     *
-     * @throws IOException
-     */
-    private File[] exctractGMLFile(File gml2Zip) throws IOException {
-        IOUtils.decompress(gml2Zip, gml2Zip.getParentFile());
-
-        File[] files = gml2Zip.getParentFile().listFiles(new FilenameFilter() {
-
-            public boolean accept(File dir, String name) {
-                return FilenameUtils.getExtension(name).equalsIgnoreCase("xml");
-            }
-        });
-        return files;
-    }
-
-    /**
-     * This method is used for extracting only the json file from a JSON output file
-     * 
-     * @param jsonZip
-     *
-     * @throws IOException
-     */
-    private File[] exctractJSONFile(File jsonZip) throws IOException {
-        IOUtils.decompress(jsonZip, jsonZip.getParentFile());
-
-        File[] files = jsonZip.getParentFile().listFiles(new FilenameFilter() {
-
-            public boolean accept(File dir, String name) {
-                return FilenameUtils.getExtension(name).equalsIgnoreCase("json");
-            }
-        });
-        return files;
-    }
-
-    /**
      * This method is used for extracting only the tiff file from a Tiff/GeoTiff output file
      * 
      * @param gtiffZip
      *
      * @throws IOException
      */
-    private File[] extractTIFFFile(final File gtiffZip) throws IOException {
-        IOUtils.decompress(gtiffZip, gtiffZip.getParentFile());
+    private File[] extractFiles(final File zipFile, String format) throws IOException {
+        IOUtils.decompress(zipFile, zipFile.getParentFile());
+        Set<String> extensions = FORMAT_TO_EXTENSIONS.get(format);
 
-        File[] files = gtiffZip.getParentFile().listFiles(new FilenameFilter() {
-
+        File[] files = zipFile.getParentFile().listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return
-
-                (FilenameUtils.getExtension(name).equalsIgnoreCase("tif")
-                        || FilenameUtils.getExtension(name).equalsIgnoreCase("tiff") || FilenameUtils
-                        .getExtension(name).equalsIgnoreCase("geotiff"));
+                String ext = FilenameUtils.getExtension(name);
+                for (String extension: extensions) {
+                    if (ext.equalsIgnoreCase(extension)) {
+                        return true;
+                    }
+                }
+                return false;
             }
         });
         return files;
@@ -488,7 +488,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Final checks on the result
         Assert.assertNotNull(jsonZip);
 
-        File[] files = exctractJSONFile(jsonZip);
+        File[] files = extractFiles(jsonZip, "JSON");
 
         SimpleFeatureCollection rawTarget = (SimpleFeatureCollection) new FeatureJSON()
                 .readFeatureCollection(new FileInputStream(files[0]));
@@ -546,7 +546,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null, gcResampled = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -606,7 +606,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Final checks on the result
         Assert.assertNotNull(rasterZip);
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -666,7 +666,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         Assert.assertNotNull(resampledZip);
 
         try {
-            File[] files = extractTIFFFile(resampledZip);
+            File[] files = extractFiles(resampledZip, "GTIFF");
             reader = new GeoTiffReader(files[files.length - 1]);
             gcResampled = reader.read(null);
 
@@ -758,7 +758,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         int matchingStillRequired = 3;
         
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -811,7 +811,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             resourceManager.finished(resourceManager.getExecutionId(true));
         }
     }
-    
+
     /**
      * Test download of selected bands of raster data. Result contains only bands 0 and 2.
      * 
@@ -853,7 +853,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -945,7 +945,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1024,7 +1024,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1082,7 +1082,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Final checks on the result
         Assert.assertNotNull(largerZip);
         try {
-            final File[] tiffFiles = extractTIFFFile(largerZip);
+            final File[] tiffFiles = extractFiles(largerZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1134,7 +1134,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Final checks on the result
         Assert.assertNotNull(resampledZip);
         try {
-            final File[] tiffFiles = extractTIFFFile(resampledZip);
+            final File[] tiffFiles = extractFiles(resampledZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1362,7 +1362,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(nonScaled);
+            final File[] tiffFiles = extractFiles(nonScaled, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1761,7 +1761,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1807,7 +1807,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         GeoTiffReader reader = null;
         GridCoverage2D gc = null;
         try {
-            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
             Assert.assertNotNull(tiffFiles);
             Assert.assertTrue(tiffFiles.length > 0);
             reader = new GeoTiffReader(tiffFiles[0]);
@@ -1839,6 +1839,74 @@ public class DownloadProcessTest extends WPSTestSupport {
         
     }
 
+    /**
+     * Test PNG outputFormat
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadPNG() throws Exception {
+        testDownloadByOutputFormat("image/png");
+    }
+
+    /**
+     * Test JPEG outputFormat
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadJPEG() throws Exception {
+        testDownloadByOutputFormat("image/jpeg");
+    }
+
+    private void testDownloadByOutputFormat(String outputFormat) throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(), getGeoServer());
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+
+        Polygon roi = (Polygon) new WKTReader2()
+                .read("POLYGON ((-128 54, -128 50, -130 50, -130 54, -128 54))");
+        roi.setSRID(4326);
+
+        final int requestedSizeX = 128;
+        final int requestedSizeY = 128;
+
+        // Download the coverage
+        File rasterZip = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                outputFormat, // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                roi, // roi
+                true, // cropToGeometry
+                null, // interpolation
+                requestedSizeX, // targetSizeX
+                requestedSizeY, // targetSizeY
+                null, // bandSelectIndices
+                null, // Writing params
+                new NullProgressListener() // progressListener
+                );
+
+        // Final checks on the result
+        Assert.assertNotNull(rasterZip);
+
+        try {
+            String formatName = MimeType.valueOf(outputFormat).getSubtype().toUpperCase();
+            final File[] files = extractFiles(rasterZip, formatName);
+            Assert.assertNotNull(files);
+            Assert.assertTrue(files.length > 0);
+            testDownloadedImage(files[0], formatName, requestedSizeX, requestedSizeY);
+        } finally {
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+    
     /**
      * The listener interface for receiving process events. The class that is interested in processing a process event implements this interface, and
      * the object created with that class is registered with a component using the component's <code>addProcessListener<code> method. When
@@ -2066,6 +2134,25 @@ public class DownloadProcessTest extends WPSTestSupport {
         } else {
             ShapefileDataStore store = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
             return store.getFeatureSource().getFeatures();
+        }
+    }
+
+    private void testDownloadedImage(File inputFile, String formatName, int sizeX, int sizeY) throws Exception {
+        try (FileImageInputStream fis = new FileImageInputStream(inputFile)) {
+            ImageReader imageReader = null;
+            try {
+                imageReader = ImageIO.getImageReaders(fis).next();
+                imageReader.setInput(fis);
+                assertTrue(formatName.equalsIgnoreCase(imageReader.getFormatName()));
+                RenderedImage ri = imageReader.read(0);
+                assertNotNull(ri);
+                assertEquals(sizeX, ri.getWidth());
+                assertEquals(sizeY, ri.getHeight());
+            } finally {
+                if (imageReader != null) {
+                    imageReader.dispose();
+                }
+            }
         }
     }
 }

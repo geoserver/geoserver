@@ -6,7 +6,6 @@
 package org.geoserver.importer;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,18 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.io.FileUtils;
-import org.geotools.referencing.CRS;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.util.IOUtils;
+import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-
-import javax.annotation.Nullable;
 
 public class SpatialFile extends FileData {
     
@@ -218,5 +218,17 @@ public class SpatialFile extends FileData {
     
     public void setStyleFile(File styleFile) {
         this.styleFile = styleFile;
+    }
+
+    @Override
+    public void cleanup() throws IOException {
+        File parentFolder = (file.isFile() ? file.getParentFile() : null);
+        for (File file : allFiles()) {
+            cleanupFile(file);
+        }
+        
+        if (parentFolder != null && parentFolder.exists() && parentFolder.isDirectory()) {
+            IOUtils.delete(parentFolder);
+        }
     }
 }

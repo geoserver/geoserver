@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.job.ProgressMonitor;
@@ -278,12 +279,48 @@ public class ImportContext implements Serializable {
         updateState();
     }
 
-    public void delete() throws IOException {
-        if (data != null) {
-            data.cleanup();
+    public boolean delete() throws IOException {
+        if (canBeRemoved(this)) {
+            for(ImportTask task : this.getTasks()) {
+                if(task.getData() != null) {
+                    if (canBePruned(task)) {
+                        task.getData().cleanup();
+                        return true;
+                    }
+                }
+            }
         }
+        
+        return false;
     }
 
+    protected boolean canBeRemoved(ImportContext context) {
+        if (context.getState() == ImportContext.State.COMPLETE || 
+                context.getState() == ImportContext.State.INIT_ERROR)
+            return true;
+        else if (context.getState() == ImportContext.State.PENDING) {
+            for(ImportTask task : context.getTasks()) {
+                if (task.getState() == ImportTask.State.ERROR || task.getError() != null)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean canBePruned(ImportTask task) {
+        if (!task.isDirect() ||
+                task.getState() == ImportTask.State.ERROR || task.getError() != null)
+            return true;
+
+        final StoreInfo store = task.getStore();
+        final Catalog catalog = store.getCatalog();
+        final LayerInfo layer = catalog.getLayer(task.getLayer().getId());
+        if(layer == null)
+            return true;
+        
+        return false;
+    }
+    
     public void reattach(Catalog catalog) {
         reattach(catalog, false);
     }

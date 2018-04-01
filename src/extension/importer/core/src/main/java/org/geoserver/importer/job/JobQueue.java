@@ -5,23 +5,34 @@
  */
 package org.geoserver.importer.job;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportTask;
+import org.geotools.util.logging.Logging;
 
 public class JobQueue {
+    
+    static Logger LOGGER = Logging.getLogger(JobQueue.class);
 
     /** job id counter */
     AtomicLong counter = new AtomicLong();
@@ -60,8 +71,19 @@ public class JobQueue {
             public void run() {
                 List<Long> toremove = new ArrayList<Long>();
                 for (Map.Entry<Long, Task<?>> e : jobs.entrySet()) {
-                    if (e.getValue().isCancelled() || (e.getValue().isDone() && e.getValue().isRecieved())) {
-                        toremove.add(e.getKey());
+                    if (e.getValue().isCancelled() || (e.getValue().isDone())) {
+                        try {
+                            ImportContext context = (ImportContext) e.getValue().get();
+                            if(context.delete()) {
+                                toremove.add(e.getKey());
+                            }
+                        } catch (InterruptedException ex) {
+                            LOGGER.log(Level.FINEST, ex.getMessage(), ex);
+                        } catch (ExecutionException ex) {
+                            LOGGER.log(Level.FINEST, ex.getMessage(), ex);
+                        } catch (IOException ex) {
+                            LOGGER.log(Level.FINEST, ex.getMessage(), ex);
+                        }
                     }
                 }
                 for (Long l : toremove) {
@@ -79,7 +101,7 @@ public class JobQueue {
         jobs.put(jobid, t);
         return jobid;
     }
-
+    
     public Task<?> getTask(Long jobid) {
         Task<?> t = jobs.get(jobid);
         t.recieve();

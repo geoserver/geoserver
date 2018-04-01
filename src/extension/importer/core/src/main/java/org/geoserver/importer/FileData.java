@@ -6,14 +6,11 @@
 package org.geoserver.importer;
 
 import java.io.File;
-
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.util.logging.Logging;
 
 public class FileData extends ImportData {
@@ -57,6 +54,10 @@ public class FileData extends ImportData {
 
     @Override
     public void cleanup() throws IOException {
+        cleanupFile(file);
+    }
+
+    protected void cleanupFile(File file) throws IOException {
         if (file.exists()) {
             if (LOGGER.isLoggable(Level.FINE)){
                 LOGGER.fine("Deleting file "  + file.getAbsolutePath());

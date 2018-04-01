@@ -116,10 +116,7 @@ public class CatalogImpl implements Catalog {
         facade = new DefaultCatalogFacade(this);
         // wrap the default catalog facade with the facade capable of handling isolated workspaces behavior
         facade = new IsolatedCatalogFacade(facade);
-        final GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
-        if(configurationLock != null) {
-            facade =  LockingCatalogFacade.create(facade, configurationLock);
-        }
+        setFacade(facade);
         resourcePool = ResourcePool.create(this);
     }
     
@@ -147,6 +144,10 @@ public class CatalogImpl implements Catalog {
     }
     
     public void setFacade(CatalogFacade facade) {
+        final GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        if (configurationLock != null) {
+            facade = LockingCatalogFacade.create(facade, configurationLock);
+        }
         this.facade = facade;
         facade.setCatalog(this);
     }

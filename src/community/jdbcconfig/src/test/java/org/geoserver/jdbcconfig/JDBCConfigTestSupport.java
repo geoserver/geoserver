@@ -23,6 +23,7 @@ import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamPersisterInitializer;
@@ -220,6 +221,7 @@ public class JDBCConfigTestSupport {
         replay(appContext);
 
         GeoServerExtensionsHelper.init(appContext);
+        GeoServerExtensionsHelper.singleton("configurationLock", new GeoServerConfigurationLock(), GeoServerConfigurationLock.class);
         GeoServerExtensionsHelper.singleton("JDBCConfigXStreamPersisterInitializer", new JDBCConfigXStreamPersisterInitializer(), XStreamPersisterInitializer.class);
         
 //        final File testDbDir = new File("target", "jdbcconfig");

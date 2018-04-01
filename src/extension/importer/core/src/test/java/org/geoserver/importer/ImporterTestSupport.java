@@ -74,6 +74,11 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wms", "http://www.opengis.net/wms");
         
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        
+        // add limits properties file
+        testData.copyTo(
+                ImporterTestSupport.class.getClassLoader().getResourceAsStream(
+                        "geoserver-importer.properties"), "geoserver-importer.properties");
     }
     
     @Override

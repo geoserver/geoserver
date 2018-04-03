@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -45,6 +46,7 @@ import org.geoserver.importer.transform.GdalTranslateTransform;
 import org.geoserver.importer.transform.GdalWarpTransform;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.IntegerFieldToDateTransform;
+import org.geoserver.importer.transform.PostScriptTransform;
 import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
@@ -354,6 +356,10 @@ public class ImportJSONReader {
                 levels.add(level);
             }
             transform = new GdalAddoTransform(options, levels);
+        } else if ("PostScriptTransform".equalsIgnoreCase(type)) {
+            String name = json.getString("name");
+            List<String> options = getOptions(json);
+            transform = new PostScriptTransform(name, options);
         } else {
             throw new ValidationException("Invalid transform type '" + type + "'");
         }
@@ -361,6 +367,9 @@ public class ImportJSONReader {
     }
 
     List<String> getOptions(JSONObject json) {
+        if (!json.containsKey("options")) {
+            return new ArrayList<>();
+        }
         JSONArray array = json.getJSONArray("options");
         List<String> options = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {

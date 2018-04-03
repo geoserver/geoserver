@@ -1069,4 +1069,23 @@ Applies ``gdaladdo`` to a single file raster input. Requires ``gdaladdo`` to be 
    * - levels
      - N
      - Array of integers with the overview levels that will be passed to ``gdaladdo``
-     
+
+PostScriptTransform
+"""""""""""""""""""
+
+Runs the specified script after the data is imported. The script must be located in ``$GEOSERVER_DATA_DIR/importer/scripts``.
+The script can be any executable file.
+At the time of writing, there is no way to pass information about the data just imported to the script (TBD).
+
+.. list-table::
+:header-rows: 1
+
+   * - Parameter
+     - Optional
+     - Description
+   * - name
+     - N
+     - Name of the script to be invoked
+   * - options
+     - Y
+     - Array of options that will be passed to the script

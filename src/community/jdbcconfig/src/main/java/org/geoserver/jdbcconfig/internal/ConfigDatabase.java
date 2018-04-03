@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
@@ -196,7 +196,7 @@ public class ConfigDatabase {
         return dialect;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void initDb(@Nullable Resource resource) throws IOException {
         this.dbMappings = new DbMappings(dialect());
         if (resource != null) {
@@ -457,7 +457,7 @@ public class ConfigDatabase {
         return getById(defaultObjectId, type);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public <T extends Info> T add(final T info) {
         checkNotNull(info);
         checkNotNull(info.getId(), "Object has no id");
@@ -466,8 +466,7 @@ public class ConfigDatabase {
         final String id = info.getId();
 
         byte[] value = binding.objectToEntry(info);
-
-        final String blob = new String(value);
+        final String blob = new String(value, StandardCharsets.UTF_8);
         final Class<T> interf = ClassMappings.fromImpl(info.getClass()).getInterface();
         final Integer typeId = dbMappings.getTypeId(interf);
 
@@ -685,7 +684,7 @@ public class ConfigDatabase {
     /**
      * @param info
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void remove(Info info) {
         Integer oid;
         try {
@@ -694,6 +693,9 @@ public class ConfigDatabase {
             return;
         }
         
+        if (info instanceof ServiceInfo) {
+            disposeServiceCache();
+        }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
 
@@ -718,7 +720,7 @@ public class ConfigDatabase {
      * @param info
      *
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public <T extends Info> T save(T info) {
         checkNotNull(info);
 
@@ -731,6 +733,9 @@ public class ConfigDatabase {
 
         final Info oldObject = (Info) modificationProxy.getProxyObject();
 
+        if (info instanceof ServiceInfo) {
+            disposeServiceCache();
+        }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(oldObject));
         cache.invalidate(id);
 
@@ -755,13 +760,8 @@ public class ConfigDatabase {
 
         // get the object's internal id
         final Integer objectId = findObjectId(info);
-        final String blob;
-        try {
-            byte[] value = binding.objectToEntry(info);
-            blob = new String(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw Throwables.propagate(e);
-        }
+        byte[] value = binding.objectToEntry(info);
+        final String blob = new String(value, StandardCharsets.UTF_8);
         String updateStatement = "update object set blob = :blob where oid = :oid";
         params = params("blob", blob, "oid", objectId);
         logStatement(updateStatement, params);
@@ -1111,7 +1111,7 @@ public class ConfigDatabase {
         return inValues;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(transactionManager = "jdbcConfigTransactionManager", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void setDefault(final String key, @Nullable final String id) {
         String sql = "DELETE FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
         Map<String, ?> params = params("key", key);
@@ -1130,6 +1130,12 @@ public class ConfigDatabase {
         cache.cleanUp();
         identityCache.invalidateAll();
         identityCache.cleanUp();
+        disposeServiceCache();
+    }
+
+    private void disposeServiceCache() {
+        serviceCache.invalidateAll();
+        serviceCache.cleanUp();
     }
 
     private final class CatalogLoader implements Callable<CatalogInfo> {
@@ -1340,6 +1346,12 @@ public class ConfigDatabase {
     }
 
     void clear(Info info) {
+        if (info instanceof ServiceInfo) {
+            // need to figure out how to remove only the relevant cache
+            // entries for the service info, like with InfoIdenties below,
+            // that will be able to handle new service types.
+            disposeServiceCache();
+        }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
     }

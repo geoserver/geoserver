@@ -5,6 +5,35 @@
  */
 package org.geoserver.wfs;
 
+import net.opengis.gml311.LocationPropertyType;
+import net.opengis.wfs20.ParameterExpressionType;
+import net.opengis.wfs20.ParameterType;
+import net.opengis.wfs20.QueryExpressionTextType;
+import net.opengis.wfs20.QueryType;
+import net.opengis.wfs20.StoredQueryDescriptionType;
+import net.opengis.wfs20.StoredQueryType;
+import net.opengis.wfs20.TitleType;
+import net.opengis.wfs20.Wfs20Factory;
+import org.eclipse.emf.common.util.EList;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.wfs.kvp.QNameKvpParser;
+import org.geotools.filter.v2_0.FES;
+import org.geotools.gml3.v3_2.GML;
+import org.geotools.wfs.v2_0.WFS;
+import org.geotools.wfs.v2_0.WFSConfiguration;
+import org.geotools.xml.Parser;
+import org.geotools.xs.XS;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,34 +43,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import net.opengis.wfs20.ParameterExpressionType;
-import net.opengis.wfs20.ParameterType;
-import net.opengis.wfs20.QueryExpressionTextType;
-import net.opengis.wfs20.QueryType;
-import net.opengis.wfs20.StoredQueryDescriptionType;
-import net.opengis.wfs20.StoredQueryType;
-import net.opengis.wfs20.TitleType;
-import net.opengis.wfs20.Wfs20Factory;
-
-import org.eclipse.emf.common.util.EList;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.wfs.kvp.QNameKvpParser;
-import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
-import org.geotools.filter.v2_0.FES;
-import org.geotools.gml3.v3_2.GML;
-import org.geotools.wfs.v2_0.WFS;
-import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Parser;
-import org.geotools.xs.XS;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class StoredQuery {
 
@@ -157,6 +158,7 @@ public class StoredQuery {
                     Element query = (Element) queries.item(i);
                     String[] typeNames = query.getAttribute("typeNames").split(" ");
                     for (String typeName : typeNames) {
+                        typeName = unmapLocalPrefixes(typeName, query, catalog);
                         queryTypes.addAll((List)new QNameKvpParser(null, catalog).parse(typeName));
                     }
                 }
@@ -183,6 +185,34 @@ public class StoredQuery {
                         "not referenced in query definition: %s", toString(returnTypes)));
             }
         }
+    }
+
+    private String unmapLocalPrefixes(String typeName, Element element, Catalog catalog) {
+        String[] split = typeName.trim().split(":");
+        if(split.length != 2) {
+            return typeName;
+        }
+        String prefix = split[0];
+        String localName = split[1];
+
+        NamedNodeMap attributes = element.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node attribute = attributes.item(i);
+            String nodeName = attribute.getNodeName();
+            String xmlnsPrefix = null;
+            if (nodeName.startsWith("xmlns:")) {
+                xmlnsPrefix = nodeName.substring(6);
+            } else if (nodeName.equalsIgnoreCase("xmlns")) {
+                xmlnsPrefix = "";
+            }
+            if (prefix.equalsIgnoreCase(xmlnsPrefix)) {
+                String uri = attribute.getNodeValue();
+                NamespaceInfo ns = catalog.getNamespaceByURI(uri);
+                prefix = ns.getName();
+            }
+        }
+        
+        return prefix + ":" + localName;
     }
 
     private boolean isParameter(String parameterCandidate, EList<ParameterExpressionType> parameter) {

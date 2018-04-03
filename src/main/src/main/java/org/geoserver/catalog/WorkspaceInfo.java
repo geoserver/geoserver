@@ -33,4 +33,12 @@ public interface WorkspaceInfo extends CatalogInfo {
      * 
      */
     MetadataMap getMetadata();
+
+    default boolean isIsolated() {
+        return false;
+    }
+
+    default void setIsolated(boolean isolated) {
+        // nothing is done
+    }
 }

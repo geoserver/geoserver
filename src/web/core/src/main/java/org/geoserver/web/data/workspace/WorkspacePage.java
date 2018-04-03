@@ -6,6 +6,7 @@
 package org.geoserver.web.data.workspace;
 
 import static org.geoserver.web.data.workspace.WorkspaceProvider.DEFAULT;
+import static org.geoserver.web.data.workspace.WorkspaceProvider.ISOLATED;
 import static org.geoserver.web.data.workspace.WorkspaceProvider.NAME;
 
 import org.apache.wicket.Component;
@@ -47,6 +48,11 @@ public class WorkspacePage extends GeoServerSecuredPage {
                     return workspaceLink(id, itemModel);
                 } else if (property == DEFAULT) {
                     if(getCatalog().getDefaultWorkspace().equals(itemModel.getObject()))
+                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                    else
+                        return new Label(id, "");
+                } else if (property == ISOLATED) {
+                    if(itemModel.getObject().isIsolated())
                         return new Icon(id, CatalogIconFactory.ENABLED_ICON);
                     else
                         return new Label(id, "");

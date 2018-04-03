@@ -5,22 +5,8 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.StringWriter;
-import java.util.List;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -35,8 +21,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+import java.util.List;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.*;
 
 public class WorkspaceTest extends CatalogRESTTestSupport {
 
@@ -375,5 +371,43 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));
+	}
+
+	@Test
+	public void testIsolatedWorkspaceHandling() throws Exception {
+		// create an isolated workspace
+		String xmlPost =
+				"<workspace>" +
+				"  <name>isolated_workspace</name>" +
+				"  <isolated>true</isolated>" +
+				"</workspace>";
+		MockHttpServletResponse response = postAsServletResponse(
+				RestBaseController.ROOT_PATH + "/workspaces.xml", xmlPost, "text/xml");
+		assertEquals(201, response.getStatus());
+		// check hat the created workspace is isolated
+		WorkspaceInfo workspace = getCatalog().getWorkspaceByName("isolated_workspace");
+		assertThat(workspace, notNullValue());
+		assertThat(workspace.isIsolated(), is(true));
+		// check that the created namespace is isolated
+		NamespaceInfo namespace = getCatalog().getNamespaceByPrefix("isolated_workspace");
+		assertThat(namespace, notNullValue());
+		assertThat(namespace.isIsolated(), is(true));
+		// make the workspace non isolated
+		String xmlPut =
+				"<workspace>" +
+				"  <name>isolated_workspace</name>" +
+				"  <isolated>false</isolated>" +
+				"</workspace>";
+		response = putAsServletResponse(
+				RestBaseController.ROOT_PATH + "/workspaces/isolated_workspace", xmlPut, "text/xml");
+		assertEquals(200, response.getStatus());
+		// check that the workspace was correctly updated
+		workspace = getCatalog().getWorkspaceByName("isolated_workspace");
+		assertThat(workspace, notNullValue());
+		assertThat(workspace.isIsolated(), is(false));
+		// check that the namespace was correctly updated
+		namespace = getCatalog().getNamespaceByPrefix("isolated_workspace");
+		assertThat(namespace, notNullValue());
+		assertThat(namespace.isIsolated(), is(false));
 	}
 }

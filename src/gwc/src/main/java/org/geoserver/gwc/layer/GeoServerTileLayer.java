@@ -76,6 +76,9 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
+/**
+ * GeoServer {@link TileLayer} implementation. Delegates to {@link GeoServerTileLayerInfo} for layer configuration.
+ */
 public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayer.class);
@@ -413,7 +416,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      * </p>
      * 
      * @see org.geowebcache.layer.TileLayer#getStyles()
-     * @see GeoServerTileLayerInfo#getDefaultStyle()
      */
     @Override
     public String getStyles() {
@@ -570,7 +572,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         final GeoServerMetaTile metaTile = createMetaTile(tile, metaX, metaY);
         Lock lock = null;
         try {
-            /** ****************** Acquire lock ******************* */
+            /* ****************** Acquire lock ******************* */
             lock = GWC.get().getLockProvider().getLock(buildLockKey(tile, metaTile));
             // got the lock on the meta tile, try again
             if (tryCache && tryCacheFetch(tile)) {
@@ -592,7 +594,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 } 
             }
-            /** ****************** Return lock and response ****** */
+            /* ****************** Return lock and response ****** */
         } finally {
             if(lock != null) {
                 lock.release();
@@ -903,7 +905,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         if (getLayerInfo() != null) {
             // projection policy for these bounds are already taken care of by the geoserver
             // configuration
-            nativeBounds = getLayerInfo().getResource().getNativeBoundingBox();
+            try {
+                nativeBounds = getLayerInfo().getResource().boundingBox();
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
         } else {
             nativeBounds = getLayerGroupInfo().getBounds();
         }
@@ -1050,7 +1056,14 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     /**
+     * Gets the expiration time to be declared to clients, calculated based on the metadata of the underlying
+     * {@link LayerInfo} or {@link LayerGroupInfo}
+     * This calculation can be overridden by setting {@link GeoServerTileLayerInfo#setExpireClients(int)}
+     *
      * @see org.geowebcache.layer.TileLayer#getExpireClients(int)
+     *
+     * @param zoomLevel ignored
+     * @return the expiration time
      */
     @Override
     public int getExpireClients(int zoomLevel) {
@@ -1121,7 +1134,14 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     /**
+     * Gets the expiration time for tiles in the cache, based on the expiration rules from
+     * {@link GeoServerTileLayerInfo#getExpireCacheList()}.
+     * If no matching rules are found, defaults to {@link GeoServerTileLayerInfo#getExpireCache()}
+     *
      * @see org.geowebcache.layer.TileLayer#getExpireCache(int)
+     *
+     * @param zoomLevel the zoom level used to filter expiration rules
+     * @return the expiration time for tiles at the given zoom level
      */
     @Override
     public int getExpireCache(int zoomLevel) {

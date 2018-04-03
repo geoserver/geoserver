@@ -16,9 +16,9 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
-import org.geowebcache.config.FileBlobStoreConfig;
+import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Test;
 
@@ -63,24 +63,24 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
         
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
-        formTester.setValue("id", "myblobstore");       
+        formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);
         formTester.setValue("blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
-        List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
-        BlobStoreConfig config = blobStores.get(0);
-        assertTrue(config instanceof FileBlobStoreConfig);
-        assertEquals("myblobstore", config.getId());
-        assertEquals("/mydir", ((FileBlobStoreConfig) config).getBaseDirectory());
-        assertEquals(4096, ((FileBlobStoreConfig) config).getFileSystemBlockSize());
+        List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
+        BlobStoreInfo config = blobStores.get(0);
+        assertTrue(config instanceof FileBlobStoreInfo);
+        assertEquals("myblobstore", config.getName());
+        assertEquals("/mydir", ((FileBlobStoreInfo) config).getBaseDirectory());
+        assertEquals(4096, ((FileBlobStoreInfo) config).getFileSystemBlockSize());
         
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
     }
     
     @Test
     public void testModify() throws ConfigurationException {
-        FileBlobStoreConfig fconfig = new FileBlobStoreConfig("myblobstore");
+        FileBlobStoreInfo fconfig = new FileBlobStoreInfo("myblobstore");
         fconfig.setFileSystemBlockSize(1024);
         fconfig.setBaseDirectory("/mydir");
         GWC.get().addBlobStore(fconfig);
@@ -95,15 +95,15 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
         
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
-        formTester.setValue("id", "yourblobstore");
+        formTester.setValue("name", "yourblobstore");
         formTester.setValue("blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/yourdir");
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
-        BlobStoreConfig config = GWC.get().getBlobStores().get(0);
-        assertTrue(config instanceof FileBlobStoreConfig);
-        assertEquals("yourblobstore", config.getId());
-        assertEquals("/yourdir", ((FileBlobStoreConfig) config).getBaseDirectory());    
+        BlobStoreInfo config = GWC.get().getBlobStores().get(0);
+        assertTrue(config instanceof FileBlobStoreInfo);
+        assertEquals("yourblobstore", config.getName());
+        assertEquals("/yourdir", ((FileBlobStoreInfo) config).getBaseDirectory());
                 
         //test updated id!
         layer = GWC.get().getTileLayerByName("cite:Lakes");

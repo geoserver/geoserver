@@ -51,6 +51,11 @@ public final class Service {
     final List<String> operations;
 
     /**
+     * Optional capabilities backlink in case the service is not a traditional OWS service
+     */
+    String customCapabilitiesLink;
+
+    /**
      * Creates a new service descriptor.
      *
      * @param id A string identifing the service.
@@ -99,6 +104,14 @@ public final class Service {
 
     public List<String> getOperations() {
         return operations;
+    }
+
+    public String getCustomCapabilitiesLink() {
+        return customCapabilitiesLink;
+    }
+
+    public void setCustomCapabilitiesLink(String customCapabilitiesLink) {
+        this.customCapabilitiesLink = customCapabilitiesLink;
     }
 
     public boolean equals(Object obj) {

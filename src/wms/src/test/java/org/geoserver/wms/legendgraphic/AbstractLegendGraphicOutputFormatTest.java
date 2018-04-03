@@ -1192,6 +1192,37 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
      * Tests that symbols relative sizes are proportional.
      */
     @org.junit.Test
+    public void testThickPolygonAsymmetricSymbol() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setWidth(40);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ThickBorder.sld"));
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testThickPolygonBorder", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // thick symbol, there is padding, black thick border, and center
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 9, 6, new Color(0, 0, 0));
+        assertPixel(image, 20, 10, new Color(255, 0, 0));
+
+        // second symbol, padding, border, green center
+        assertPixel(image, 1, 23, new Color(255, 255, 255));
+        // assertPixel(image, 4, 25, new Color(0, 0, 0)); // unsafe, the border is thin here
+        assertPixel(image, 20, 30, new Color(0, 255, 0));
+    }
+
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
     public void testLargeCirclePlacement() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setWidth(48);

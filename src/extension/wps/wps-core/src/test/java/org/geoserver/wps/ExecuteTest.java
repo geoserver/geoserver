@@ -5,33 +5,11 @@
  */
 package org.geoserver.wps;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
+import net.opengis.ows11.BoundingBoxType;
 import org.apache.commons.codec.binary.Base64;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -41,6 +19,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
@@ -59,8 +38,8 @@ import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.xml.PreventLocalEntityResolver;
 import org.geotools.xml.Parser;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,12 +47,32 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.WKTReader;
+import javax.xml.namespace.QName;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import net.opengis.ows11.BoundingBoxType;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ExecuteTest extends WPSTestSupport {
 
@@ -1800,7 +1799,86 @@ public class ExecuteTest extends WPSTestSupport {
                 "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Data/wps:LiteralData",
                 d);
     }
-    
+
+    /**
+     * Tests a process execution an invalid output identifier fails immediately with an appropriate error message
+     */
+    @Test
+    public void testWrongOutputIdentifierRawOutput() throws Exception {
+        String responseFormContents = 
+                "    <wps:RawDataOutput>\n" +
+                "      <ows:Identifier>fooBar</ows:Identifier>\n" +
+                "    </wps:RawDataOutput>\n";
+        String request = buildGetBoundsRequest(responseFormContents);
+
+        Document dom = postAsDOM(root(), request);
+
+        String message = checkOws11Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "RawDataOutput");
+        assertThat(message, containsString("fooBar"));
+    }
+
+    /**
+     * Tests a process execution an invalid output identifier fails immediately with an appropriate error message
+     */
+    @Test
+    public void testWrongOutputIdentifierDocumentOutputAsynch() throws Exception {
+        String responseFormContents =
+                "<wps:ResponseDocument storeExecuteResponse='true' status='true'>"
+                        + "<wps:Output>"
+                        + "<ows:Identifier>fooBar</ows:Identifier>"
+                        + "</wps:Output>"
+                        + "</wps:ResponseDocument>";
+        String request = buildGetBoundsRequest(responseFormContents);
+
+        Document dom = postAsDOM(root(), request);
+
+        String message = checkOws11Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "ResponseDocument");
+        assertThat(message, containsString("fooBar"));
+    }
+
+    /**
+     * Tests a process execution an invalid output identifier fails immediately with an appropriate error message
+     */
+    @Test
+    public void testWrongOutputIdentifierDocumentOutputSynch() throws Exception {
+        String responseFormContents =
+                "<wps:ResponseDocument>"
+                        + "<wps:Output>"
+                        + "<ows:Identifier>fooBar</ows:Identifier>"
+                        + "</wps:Output>"
+                        + "</wps:ResponseDocument>";
+        String request = buildGetBoundsRequest(responseFormContents);
+
+        Document dom = postAsDOM(root(), request);
+
+        String message = checkOws11Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "ResponseDocument");
+        assertThat(message, containsString("fooBar"));
+    }
+
+    public String buildGetBoundsRequest(String responseFormContents) {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www" +
+                ".w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www" +
+                ".opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis" +
+                ".net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" " +
+                "xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
+                "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll" +
+                ".xsd\">\n" +
+                "  <ows:Identifier>gs:Bounds</ows:Identifier>\n" +
+                "  <wps:DataInputs>\n" +
+                "    <wps:Input>\n" +
+                "      <ows:Identifier>features</ows:Identifier>\n" +
+                "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" " +
+                "xlink:href=\"http://geoserver/wfs?service=WFS&amp;request=GetFeature&amp;typename=cite:Streams\" " +
+                "method=\"GET\"/>\n" +
+                "    </wps:Input>\n" +
+                "  </wps:DataInputs>\n" +
+                "  <wps:ResponseForm>\n" +
+                responseFormContents +
+                "  </wps:ResponseForm>\n" +
+                "</wps:Execute>";
+    }
+
 
     private void assertProgress(String statusLocation, String progress) throws Exception {
         Document dom = getAsDOM(statusLocation);

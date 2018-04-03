@@ -12,11 +12,14 @@ import static org.geoserver.catalog.Predicates.contains;
 import static org.geoserver.catalog.Predicates.desc;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.or;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -336,6 +339,48 @@ public class CatalogImplTest {
         
         catalog.add( ns2 );
     }
+
+    @Test
+    public void testAddIsolatedNamespace() {
+        // create non isolated namespace
+        NamespaceInfoImpl namespace1 = new NamespaceInfoImpl();
+        namespace1.setPrefix("isolated_namespace_1");
+        namespace1.setURI("http://www.isolated_namespace.com");
+        // create isolated namespace with the same URI
+        NamespaceInfoImpl namespace2 = new NamespaceInfoImpl();
+        namespace2.setPrefix("isolated_namespace_2");
+        namespace2.setURI("http://www.isolated_namespace.com");
+        namespace2.setIsolated(true);
+        try {
+            // add the namespaces to the catalog
+            catalog.add(namespace1);
+            catalog.add(namespace2);
+            // retrieve the non isolated namespace by prefix
+            NamespaceInfo foundNamespace1 = catalog.getNamespaceByPrefix("isolated_namespace_1");
+            assertThat(foundNamespace1.getPrefix(), is("isolated_namespace_1"));
+            assertThat(foundNamespace1.getURI(), is("http://www.isolated_namespace.com"));
+            assertThat(foundNamespace1.isIsolated(), is(false));
+            // retrieve the isolated namespace by prefix
+            NamespaceInfo foundNamespace2 = catalog.getNamespaceByPrefix("isolated_namespace_2");
+            assertThat(foundNamespace2.getPrefix(), is("isolated_namespace_2"));
+            assertThat(foundNamespace2.getURI(), is("http://www.isolated_namespace.com"));
+            assertThat(foundNamespace2.isIsolated(), is(true));
+            // retrieve the namespace by URI, the non isolated one should be returned
+            NamespaceInfo foundNamespace3 = catalog.getNamespaceByURI("http://www.isolated_namespace.com");
+            assertThat(foundNamespace3.getPrefix(), is("isolated_namespace_1"));
+            assertThat(foundNamespace3.getURI(), is("http://www.isolated_namespace.com"));
+            assertThat(foundNamespace3.isIsolated(), is(false));
+            // remove the non isolated namespace
+            catalog.remove(foundNamespace1);
+            // retrieve the namespace by URI, NULL should be returned
+            NamespaceInfo foundNamespace4 = catalog.getNamespaceByURI("http://www.isolated_namespace.com");
+            assertThat(foundNamespace4, nullValue());
+        } finally {
+            // remove the namespaces
+            catalog.remove(namespace1);
+            catalog.remove(namespace2);
+        }
+    }
     
     @Test
     public void testRemoveNamespace() {
@@ -522,6 +567,24 @@ public class CatalogImplTest {
         
         catalog.remove( ws );
         assertTrue( catalog.getWorkspaces().isEmpty() );
+    }
+
+    @Test
+    public void testAddIsolatedWorkspace() {
+        // create isolated workspace
+        WorkspaceInfoImpl workspace = new WorkspaceInfoImpl();
+        workspace.setName("isolated_workspace");
+        workspace.setIsolated(true);
+        try {
+            // add it to the catalog
+            catalog.add(workspace);
+            // retrieve the isolated workspace
+            WorkspaceInfo foundWorkspace = catalog.getWorkspaceByName("isolated_workspace");
+            assertThat(foundWorkspace.isIsolated(), is(true));
+        } finally {
+            // remove the isolated workspace
+            catalog.remove(workspace);
+        }
     }
 
     @Test

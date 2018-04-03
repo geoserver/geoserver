@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Open Source Geospatial Foundation. All rights reserved. This code is licensed under 
+  the GPL 2.0 license, available at the root application directory. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+>
+
+  <!-- service declaration -->
+  <bean id="wfsService-3.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="wfs"/>
+    <constructor-arg index="1" value="http://www.opengis.net/wfs/3.0"/>
+    <constructor-arg index="2" ref="wfsService30"/>
+    <constructor-arg index="3" value="3.0.0"/>
+    <constructor-arg index="4">
+      <list>
+        <value>contents</value>
+        <value>api</value>
+        <value>GetFeature</value> <!-- this allows to re-use the WFS 2.0 machinery for getting features -->
+      </list>
+    </constructor-arg>
+    <property name="customCapabilitiesLink" value="../wfs3/api"/>
+  </bean>
+  <bean id="wfs30ServiceTarget" class="org.geoserver.wfs3.DefaultWebFeatureService30">
+    <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="wfsService20"/>
+    <property name="filterFactory" ref="filterFactory"/>
+  </bean>
+  <bean id="wfsService30" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.wfs3.WebFeatureService30</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>wfs3ServiceInterceptor*</value>
+        <value>wfs30ServiceTarget</value>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- KVP parsing -->
+  <bean id="apiKvpRequestReader" class="org.geoserver.wfs3.kvp.APIRequestKVPReader"/>
+  <bean id="contentKvpRequestReader" class="org.geoserver.wfs3.kvp.ContentRequestKVPReader"/>
+  
+  <!-- response generation -->
+  <bean id="apiResponse" class="org.geoserver.wfs3.response.APIDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="contentsResponse" class="org.geoserver.wfs3.response.ContentsDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
+  <!-- Hack to map WFS3 requests parameters to OGC KVP lookalikes -->
+  <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">
+    <constructor-arg ref="catalog"/>
+  </bean>
+  
+  <!-- Exception handler -->
+  <bean id="wfs3ExceptionHandler" class="org.geoserver.wfs3.WFS3ExceptionHandler">
+    <constructor-arg>
+      <list>
+        <ref bean="wfsService-3.0" />
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="geoServer" />
+  </bean>
+
+  <!-- http url mapping -->
+  <bean id="wfs3URLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+    <constructor-arg ref="catalog"/>
+    <property name="alwaysUseFullPath" value="true"/>
+
+    <property name="mappings">
+      <props>
+        <prop key="/wfs3">dispatcher</prop>
+        <prop key="/wfs3/*">dispatcher</prop>
+      </props>
+    </property>
+  </bean>
+
+</beans>

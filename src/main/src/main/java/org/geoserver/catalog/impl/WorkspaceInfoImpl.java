@@ -18,6 +18,8 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
     protected boolean _default;
     
     protected MetadataMap metadata = new MetadataMap();
+
+    private boolean isolated = false;
     
     public String getId() {
         return id;
@@ -89,5 +91,14 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')
                 .toString();
+    }
+
+    @Override
+    public boolean isIsolated() {
+        return isolated;
+    }
+
+    public void setIsolated(boolean isolated) {
+        this.isolated = isolated;
     }
 }

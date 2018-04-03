@@ -54,8 +54,9 @@ import com.vividsolutions.jts.geom.Polygon;
 public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
     
     static final Logger LOGGER = Logging.getLogger(VectorBasicLayerIdentifier.class);
-    
-    protected static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.minBuffer", 5);
+
+    public static final String FEATUREINFO_DEFAULT_BUFFER = "org.geoserver.wms.featureinfo.minBuffer";
+    protected static final int MIN_BUFFER_SIZE = Integer.getInteger(FEATUREINFO_DEFAULT_BUFFER, 5);
 
     private WMS wms;
 
@@ -176,7 +177,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
                 layerBuffer = layerInfo.getMetadata().get(LayerInfo.BUFFER, Integer.class);
             }
             if (layerBuffer != null && layerBuffer > 0) {
-                radius = layerBuffer / 2.0;
+                radius = layerBuffer;
             } else {
                 // estimate the radius given the currently active rules
                 MetaBufferEstimator estimator = new MetaBufferEstimator();

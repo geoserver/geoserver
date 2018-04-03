@@ -51,6 +51,13 @@
               &nbsp;&nbsp;<em><span class="error" wicket:id="refValueValidationMsg"></span></em>
 			</div>
           </li>
+          <li wicket:id="nearestMatchContainer">
+            <input type="checkbox" id="nearestMatchEnabled" wicket:id="nearestMatchEnabled"/><wicket:message key="nearestMatch">nearestMatch</wicket:message>
+            <div wicket:id="acceptableIntervalEditor">
+              <label><wicket:message key="acceptableInterval">acceptableInterval</wicket:message></label>
+              <input type="text" wicket:id="acceptableInterval" class="field text" />
+            </div>
+          </li>
         </ul>
       </li>
     </ul>

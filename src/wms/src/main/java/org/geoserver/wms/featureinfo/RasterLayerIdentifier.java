@@ -5,18 +5,8 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.RenderedImage;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.media.jai.PlanarImage;
-
+import com.sun.org.apache.xml.internal.utils.XMLChar;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wms.FeatureInfoRequestParameters;
@@ -39,6 +29,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
+import org.geotools.ows.ServiceException;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.resources.geometry.XRectangle2D;
@@ -54,16 +45,25 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-import com.sun.org.apache.xml.internal.utils.XMLChar;
-import com.vividsolutions.jts.geom.Coordinate;
-
-
+import javax.media.jai.PlanarImage;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 /**
@@ -103,7 +103,8 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
 
         CoordinateReferenceSystem targetCRS;
-        if (cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) {
+        if ((cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) ||
+                (cinfo.getProjectionPolicy() == ProjectionPolicy.REPROJECT_TO_DECLARED)) {
             targetCRS = cinfo.getNativeCRS();
         } else {
             targetCRS = cinfo.getCRS();
@@ -187,7 +188,7 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         // original range
         final Rectangle2D.Double rasterArea = new Rectangle2D.Double();
         rasterArea.setFrameFromCenter(rasterMid.getOrdinate(0), rasterMid.getOrdinate(1),
-                rasterMid.getOrdinate(0) + 10, rasterMid.getOrdinate(1) + 10);
+                rasterMid.getOrdinate(0) + 2, rasterMid.getOrdinate(1) + 2);
         final Rectangle integerRasterArea = rasterArea.getBounds();
         final GridEnvelope gridEnvelope = reader.getOriginalGridRange();
         final Rectangle originalArea = (gridEnvelope instanceof GridEnvelope2D) ? (GridEnvelope2D) gridEnvelope
@@ -198,25 +199,45 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         if (integerRasterArea.isEmpty()) {
             return null;
         }
-        // now set the grid geometry for this request
+
+        // now set the extra request parameters for this request
+        String[] propertyNames = params.getPropertyNames();
         for (int k = 0; k < parameters.length; k++) {
-            if (!(parameters[k] instanceof Parameter<?>))
+            if (!(parameters[k] instanceof Parameter<?>)) {
                 continue;
+            }
 
             final Parameter<?> parameter = (Parameter<?>) parameters[k];
-            if (parameter.getDescriptor().getName()
-                    .equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
+            ReferenceIdentifier name = parameter.getDescriptor().getName();
+            if (name.equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
                 //
                 // create a suitable geometry for this request reusing the getmap (we
                 // could probably optimize)
                 //
                 parameter.setValue(new GridGeometry2D(new GridEnvelope2D(integerRasterArea), reader
                         .getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCoordinateReferenceSystem()));
+            } else if (propertyNames != null && propertyNames.length > 0 && name.equals(AbstractGridFormat.BANDS.getName())) {
+                int[] bands = new int[propertyNames.length];
+                Set<String> requestedNames = new HashSet<>(Arrays.asList(propertyNames));
+                List<String> dimensionNames = cinfo.getDimensions().stream().map(d -> d.getName()).collect(Collectors.toList());
+                for (int i = 0, j = 0; i < dimensionNames.size() && !requestedNames.isEmpty(); i++) {
+                    String dimensionName = dimensionNames.get(i);
+                    if (requestedNames.remove(dimensionName)) {
+                        bands[j++] = i;
+                    }
+                }
+                if (!requestedNames.isEmpty()) {
+                    String availableNames = dimensionNames.stream().collect(Collectors.joining(", "));
+                    throw new ServiceException("Could not find the following requested properties " + requestedNames
+                            + ", available property names are " + availableNames,
+                            org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE, "PropertyName");
+                }
+                parameter.setValue(bands);
             }
 
         }
 
-        final GridCoverage2D coverage = (GridCoverage2D) reader.read(parameters);
+        final GridCoverage2D coverage = reader.read(parameters);
         if (coverage == null) {
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine("Unable to load raster data for this request.");

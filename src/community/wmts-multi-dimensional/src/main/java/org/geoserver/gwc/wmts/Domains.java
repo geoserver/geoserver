@@ -27,27 +27,30 @@ import java.util.List;
 public class Domains {
 
     private final List<Dimension> dimensions;
-    private final ReferencedEnvelope boundingBox;
+    private final ReferencedEnvelope spatialDomain;
     private final Filter filter;
 
     private final LayerInfo layerInfo;
+    private final int expandLimit;
 
     private String histogram;
     private String resolution;
 
-    public Domains(List<Dimension> dimensions, LayerInfo layerInfo, ReferencedEnvelope boundingBox, Filter filter) {
+    public Domains(List<Dimension> dimensions, LayerInfo layerInfo, 
+                   ReferencedEnvelope boundingBox, Filter filter, int expandLimit) {
         this.dimensions = dimensions;
         this.layerInfo = layerInfo;
-        this.boundingBox = boundingBox;
+        this.spatialDomain = boundingBox;
         this.filter = filter;
+        this.expandLimit = expandLimit;
     }
 
     public List<Dimension> getDimensions() {
         return dimensions;
     }
 
-    ReferencedEnvelope getBoundingBox() {
-        return boundingBox;
+    ReferencedEnvelope getSpatialDomain() {
+        return spatialDomain;
     }
 
     public Filter getFilter() {
@@ -64,6 +67,10 @@ public class Domains {
 
     String getHistogramName() {
         return histogram;
+    }
+
+    public int getExpandLimit() {
+        return expandLimit;
     }
 
     Tuple<String, List<Integer>> getHistogramValues() {

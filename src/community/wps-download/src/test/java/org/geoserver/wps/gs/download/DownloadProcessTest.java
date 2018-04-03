@@ -7,6 +7,7 @@ package org.geoserver.wps.gs.download;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,6 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -30,8 +32,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSTestSupport;
@@ -55,7 +57,9 @@ import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.URLs;
@@ -64,6 +68,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
 import org.w3c.dom.NamedNodeMap;
@@ -83,6 +93,10 @@ import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
  */
 public class DownloadProcessTest extends WPSTestSupport {
 
+    private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
+
+    private static QName MIXED_RES = new QName(WCS_URI, "mixedres", WCS_PREFIX);
+    
     /**
      * This method is used for decoding an input file.
      * 
@@ -134,11 +148,20 @@ public class DownloadProcessTest extends WPSTestSupport {
 
     /** Test ROI used */
     final static Polygon roi;
+    
+    final static Polygon ROI2;
+
+    final static Polygon ROI3;
 
     static {
         try {
             roi = (Polygon) new WKTReader2()
                     .read("POLYGON (( 500116.08576537756 499994.25579707103, 500116.08576537756 500110.1012210889, 500286.2657688021 500110.1012210889, 500286.2657688021 499994.25579707103, 500116.08576537756 499994.25579707103 ))");
+
+            ROI2 = (Polygon) new WKTReader2()
+                    .read("POLYGON (( -125 30, -116 30, -116 45, -125 45, -125 30))");
+
+            ROI3 = (Polygon) new WKTReader2().read("POLYGON (( 356050 5520000, 791716 5520000, 791716 5655096, 356050 5655096, 356050 5520000))");
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -148,6 +171,8 @@ public class DownloadProcessTest extends WPSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MockData.USA_WORLDIMG, "usa.zip", MockData.PNG, getCatalog());
+        testData.addRasterLayer(MIXED_RES, "mixedres.zip", null, getCatalog());
+
     }
 
     @Override
@@ -939,11 +964,11 @@ public class DownloadProcessTest extends WPSTestSupport {
             // check envelope
             Assert.assertEquals(-130.88669845369998,
                     gc.getEnvelope().getLowerCorner().getOrdinate(0), 1E-6);
-            Assert.assertEquals(48.611129008700004, gc.getEnvelope().getLowerCorner()
+            Assert.assertEquals(48.5552612829, gc.getEnvelope().getLowerCorner()
                     .getOrdinate(1), 1E-6);
-            Assert.assertEquals(-123.95304462109999,
+            Assert.assertEquals(-124.05382943906582,
                     gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
-            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1),
+            Assert.assertEquals(54.00577111704634, gc.getEnvelope().getUpperCorner().getOrdinate(1),
                     1E-6);
             
         } finally {
@@ -1125,7 +1150,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             // check envelope
             Assert.assertEquals(-130.88669845369998,
                     gc.getEnvelope().getLowerCorner().getOrdinate(0), 1E-6);
-            Assert.assertEquals(48.611129008700004, gc.getEnvelope().getLowerCorner()
+            Assert.assertEquals(48.623544058877776, gc.getEnvelope().getLowerCorner()
                     .getOrdinate(1), 1E-6);
             Assert.assertEquals(-123.95304462109999,
                     gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
@@ -1672,6 +1697,146 @@ public class DownloadProcessTest extends WPSTestSupport {
         } catch (Exception e) {
             Assert.assertTrue("Everything as expected", true);
         }
+    }
+
+    /**
+     * Test download of raster data using underlying granules resolution.
+     * The sample mosaic is composed of:
+     * 
+     * 18km_32610.tif with resolution = 17550.948453185396000 meters
+     * 9km_32610.tif with resolution = 8712.564801039759900 meters
+     * 
+     */
+    @Test
+    public void testDownloadGranuleHeterogeneousResolution() throws Exception {
+
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(), getGeoServer());
+        final WPSResourceManager resourceManager = getResourceManager();
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+
+        
+        // Setting filter to get the granule with resolution
+        final PropertyName property = FF.property("resolution");
+        Filter filter = (Filter) FF.greaterOrEqual(property, FF.literal(16000));
+        
+        testExpectedResolution(downloadProcess, filter, CRS.decode("EPSG:4326", true), 
+                ROI2, resourceManager, 17550.94845318, -17550.94845318);
+
+        // Download native resolution 2
+        filter = FF.and(FF.lessOrEqual(property, FF.literal(10000)),
+                FF.greaterOrEqual(property, FF.literal(1000)));
+
+        testExpectedResolution(downloadProcess, filter, null, null, resourceManager, 
+                8712.564801039759900, -8712.564801039759900);
+        
+        // Download native resolution 3
+        filter = (Filter) FF.lessOrEqual(property, FF.literal(1000));
+        
+        // Final checks on the result
+        testExpectedResolution(downloadProcess, filter, null, null, resourceManager, 
+                7818.453242658203, -10139.712928934865);
+        
+
+        filter = FF.and(FF.lessOrEqual(property, FF.literal(10000)),
+                FF.greaterOrEqual(property, FF.literal(1000)));
+
+        File rasterZip = downloadProcess.execute(getLayerId(MIXED_RES), // layerName
+                filter, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:32610", true), 
+                ROI3, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                512, // targetSizeX
+                128, // targetSizeY
+                null, // bandSelectIndices
+                null, // Writing params
+                new NullProgressListener() // progressListener
+        );
+
+        Assert.assertNotNull(rasterZip);
+        GeoTiffReader reader = null;
+        GridCoverage2D gc = null;
+        try {
+            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+            // check coverage size
+            RenderedImage ri = gc.getRenderedImage();
+            Assert.assertEquals(512, ri.getWidth());
+            Assert.assertEquals(128, ri.getHeight());
+
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    private void testExpectedResolution(DownloadProcess downloadProcess, Filter filter,
+            CoordinateReferenceSystem roiCrs, Polygon roi, WPSResourceManager resourceManager, 
+            double expectedX, double expectedY) throws IOException {
+
+        File rasterZip = downloadProcess.execute(getLayerId(MIXED_RES), // layerName
+                filter, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                roiCrs, // roiCRS
+                roi, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                null, // Writing params
+                new NullProgressListener() // progressListener
+        );
+       
+        Assert.assertNotNull(rasterZip);
+        GeoTiffReader reader = null;
+        GridCoverage2D gc = null;
+        try {
+            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+
+            Assert.assertNotNull(gc);
+            Assert.assertEquals("32610", gc.getCoordinateReferenceSystem().getIdentifiers().iterator().next().getCode());
+
+            // check coverage size
+            MathTransform mt = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
+            AffineTransform2D transform2D = (AffineTransform2D) mt;
+            double resX = transform2D.getScaleX();
+            double resY = transform2D.getScaleY();
+
+            Assert.assertEquals(expectedX, resX, 1E-6);
+            Assert.assertEquals(expectedY, resY, 1E-6);
+            
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+        
     }
 
     /**

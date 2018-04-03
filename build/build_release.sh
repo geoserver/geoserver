@@ -320,9 +320,9 @@ if [ -z $SKIP_BUILD ]; then
 
   # 2.12 and newer uses ant to do everything
   else
-    ant clean user
-    ant user-pdf
-    ant developer
+    ant clean user -Dproject.version=$tag
+    ant user-pdf -Dproject.version=$tag
+    ant developer -Dproject.version=$tag
   fi
 
   popd > /dev/null

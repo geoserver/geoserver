@@ -4,75 +4,89 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.wmts.Domains;
+import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.visitor.Aggregate;
+import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
+import org.geowebcache.service.OWSException;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.comparator.ComparableComparator;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Some utils methods useful to interact with dimensions.
  */
 public final class DimensionsUtils {
+    
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     /**
-     * Comparator for time domain values, ranges are taken in consideration.
+     * No expansion limit provided
      */
-    static final Comparator<Object> TEMPORAL_COMPARATOR = (objectA, objectB) -> {
-        Date dateA = Converters.convert(objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA, Date.class);
-        Date dateB = Converters.convert(objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB, Date.class);
-        return dateA.compareTo(dateB);
-    };
-
-    /**
-     * Comparator for numerical domain values, ranges are taken in consideration.
-     */
-    static final Comparator<Object> NUMERICAL_COMPARATOR = (objectA, objectB) -> {
-        Double numberA = Converters.convert(objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA, Double.class);
-        Double numberB = Converters.convert(objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB, Double.class);
-        return numberA.compareTo(numberB);
-    };
-
-    /**
-     * Comparator for custom domain values, time values and numerical values are specially handled.
-     */
-    static final Comparator<Object> CUSTOM_COMPARATOR = (objectA, objectB) -> {
-        // make sure we are using single values
-        Object valueA = objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA;
-        Object valueB = objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB;
-        // check if we have times or numerical values
-        if (valueA instanceof Date && valueB instanceof Date) {
-            return TEMPORAL_COMPARATOR.compare(objectA, objectB);
-        }
-        if (valueA instanceof Number && valueB instanceof Number) {
-            return NUMERICAL_COMPARATOR.compare(objectA, objectB);
-        }
-        // well it seems we have custom values so let's use strings
-        String stringA = Converters.convert(valueA, String.class);
-        String stringB = Converters.convert(valueB, String.class);
-        return stringA.compareTo(stringB);
-    };
+    public static final int NO_LIMIT = Integer.MIN_VALUE;
 
     /**
      * Helper method that will extract a layer dimensions.
      */
-    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo) {
+    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, Set<String> requestedDimensions) throws OWSException {
         ResourceInfo resourceInfo = layerInfo.getResource();
+        List<Dimension> result = new ArrayList<>();
         if (resourceInfo instanceof FeatureTypeInfo) {
-            return extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo);
+            result = extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo);
         }
         if (resourceInfo instanceof CoverageInfo) {
-            return extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
+            result = extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
         }
-        return Collections.emptyList();
+        if (requestedDimensions != MultiDimensionalExtension.ALL_DOMAINS) {
+            Set<String> availableDimensions = result.stream().map(d -> d.getDimensionName()).collect(Collectors.toSet());
+            HashSet<String> unknownDimensions = new HashSet<>(requestedDimensions);
+            unknownDimensions.removeAll(availableDimensions);
+            unknownDimensions.remove(MultiDimensionalExtension.SPACE_DIMENSION);
+            if (!unknownDimensions.isEmpty()) {
+                String dimensionList = unknownDimensions.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", "));
+                throw new OWSException(400, "InvalidParameterValue", "Domains", "Unknown dimensions requested " + dimensionList);
+            } else {
+                result = result.stream().filter(d -> requestedDimensions.contains(d.getDimensionName())).collect(Collectors.toList());
+            }
+        }
+        
+        return result;
     }
 
     /**
@@ -129,21 +143,22 @@ public final class DimensionsUtils {
      * Dates and ranges will have a special handling. This method will take in account the
      * dimension required presentation.
      */
-    static List<String> getDomainValuesAsStrings(DimensionInfo dimension, List<Object> values) {
-        if (values == null || values.isEmpty()) {
+    static List<String> getDomainValuesAsStrings(DomainSummary summary) {
+        if (summary.getMin() == null && (summary.getUniqueValues() == null || summary.getUniqueValues().isEmpty())) {
             // no domain values so he just return an empty collection
             return Collections.emptyList();
         }
         List<String> stringValues = new ArrayList<>();
-        if (DimensionPresentation.LIST == dimension.getPresentation()) {
+        // did we get a list of unique values?
+        if (summary.getUniqueValues() != null) {
             // the dimension representation for this values requires that all the values are listed
-            for (Object value : values) {
+            for (Object value : summary.getUniqueValues()) {
                 stringValues.add(formatDomainValue(value));
             }
         } else {
             // the dimension representation for this values require a compact representation
-            Object minValue = getMinValue(values);
-            Object maxValue = getMaxValue(values);
+            Object minValue = summary.getMin();
+            Object maxValue = summary.getMax();
             stringValues.add(formatDomainSimpleValue(minValue) + "--" + formatDomainSimpleValue(maxValue));
         }
         return stringValues;
@@ -211,27 +226,53 @@ public final class DimensionsUtils {
      * Helper method that simply extract from a feature collection the values of a
      * specific attribute removing duplicate values.
      */
-    static Set<Object> getValuesWithoutDuplicates(String attributeName, FeatureCollection featureCollection,
-                                                  Comparator<Object> comparator) {
+    static Set<Object> getValuesWithoutDuplicates(String attributeName, FeatureCollection featureCollection) {
+        Set uniques = getUniqueValues(featureCollection, attributeName, NO_LIMIT);
+
+        // dimension values are dates/numbers/strings, all comparable, native sorting is fine
+        Set<Object> values = new TreeSet<>(uniques);
+        return values;
+    }
+
+    static TreeSet getUniqueValues(FeatureCollection featureCollection, String attributeName, int limit) {
         // using the unique visitor to remove duplicate values
         UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
+        if (limit > 0 && limit < Integer.MAX_VALUE) {
+            uniqueVisitor.setMaxFeatures(limit);
+        }
         try {
             featureCollection.accepts(uniqueVisitor, null);
         } catch (Exception exception) {
             throw new RuntimeException("Error visiting collection with unique visitor.");
         }
-        // make sure the values are sorted using the provided comparator
-        Set<Object> values = new TreeSet<>(comparator);
-        values.addAll(uniqueVisitor.getUnique());
-        return values;
+        // all dimension values are comparable
+        return new TreeSet(uniqueVisitor.getUnique());
+    }
+
+    /**
+     * Helper method that extracts a set of aggregates on the given collection and attribute and returns the results
+     */
+    static Map<Aggregate, Object> getAggregates(String attributeName, FeatureCollection featureCollection, Aggregate... aggregates) {
+        Map<Aggregate, Object> result = new HashMap<>();
+        PropertyName property = FF.property(attributeName);
+        for (Aggregate aggregate : aggregates) {
+            FeatureCalc featureCalc = aggregate.create(property);
+            try {
+                featureCollection.accepts(featureCalc, null);
+                Object value = featureCalc.getResult().getValue();
+                result.put(aggregate, value);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to collect summary aggregates on attribute " + attributeName, e);
+            }
+        }
+        return result;
     }
 
     /**
      * Helper method that simply extract from a feature collection the values of a
      * specific attribute keeping duplicate values.
      */
-    static List<Object> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection,
-                                                Comparator<Object> comparator) {
+    static List<Object> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
         List<Object> values = new ArrayList<>();
         FeatureIterator featuresIterator = featureCollection.features();
@@ -240,7 +281,81 @@ public final class DimensionsUtils {
             SimpleFeature feature = (SimpleFeature) featuresIterator.next();
             values.add(feature.getAttribute(attributeName));
         }
-        Collections.sort(values, comparator);
+        Collections.sort(values, new ComparableComparator());
         return values;
+    }
+
+    /**
+     * Compute the resource bounds based on the provided filter
+     * @param resource
+     * @param filter
+     * @return
+     */
+    public static ReferencedEnvelope getBounds(ResourceInfo resource, Filter filter) {
+        try {
+            if (resource instanceof FeatureTypeInfo) {
+                FeatureSource featureSource = ((FeatureTypeInfo) resource).getFeatureSource(null, null);
+                FeatureCollection features = featureSource.getFeatures(filter);
+                return features.getBounds();
+            } else if (resource instanceof CoverageInfo) {
+                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+                return reader.getBounds(filter);
+            } else {
+                // for all other resource types (WMS/WMTS cascading) we cannot do anything intelligent
+                return resource.getNativeBoundingBox();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to compute bounds for " + resource, e);
+        }
+    }
+
+    /**
+     * Builds a bounding box filter, or returns {@link Filter#INCLUDE} if the bounding box is null 
+     */
+    public static Filter getBoundingBoxFilter(ResourceInfo resource, ReferencedEnvelope boundingBox, FilterFactory 
+            filterFactory) {
+        String geometryName = getGeometryPropertyName(resource);
+        if (boundingBox == null || geometryName == null) {
+            return Filter.INCLUDE;
+        }
+        CoordinateReferenceSystem coordinateReferenceSystem = boundingBox.getCoordinateReferenceSystem();
+        String epsgCode = coordinateReferenceSystem == null ? null : GML2EncodingUtils.toURI(coordinateReferenceSystem);
+        Filter spatialFilter = filterFactory.bbox(geometryName, boundingBox.getMinX(), boundingBox.getMinY(),
+                boundingBox.getMaxX(), boundingBox.getMaxY(), epsgCode);
+        return spatialFilter;
+    }
+
+    private static String getGeometryPropertyName(ResourceInfo resource) {
+        try {
+            String geometryName = ""; // the default geometry, unfortunately does not work in some cases
+            if (resource instanceof FeatureTypeInfo) {
+                geometryName = ((FeatureTypeInfo) resource).getFeatureType().getGeometryDescriptor().getLocalName();
+            } else if (resource instanceof CoverageInfo) {
+                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+                return reader.getGeometryAttributeName();
+            }
+            return geometryName;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to gather feature type information for " + resource, e);
+        }
+    }
+
+    public static Tuple<String,String> getAttributes(ResourceInfo resource, Dimension dimension) {
+        if (resource instanceof FeatureTypeInfo) {
+            DimensionInfo di = dimension.getDimensionInfo();
+            return Tuple.tuple(di.getAttribute(), di.getEndAttribute());
+        } else if (resource instanceof CoverageInfo) {
+            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+            String dimensionName = dimension.getDimensionName();
+            Tuple<String, String> attributes = reader.getDimensionAttributesNames(dimensionName);
+            if (attributes.first == null) {
+                throw new RuntimeException(String.format(
+                        "Could not found start attribute name for dimension '%s' in raster '%s'.", dimensionName,
+                        resource.prefixedName()));
+            }
+            return attributes;
+        } else {
+            throw new RuntimeException("Cannot get restriction attributes on this resource: " + resource);
+        }
     }
 }

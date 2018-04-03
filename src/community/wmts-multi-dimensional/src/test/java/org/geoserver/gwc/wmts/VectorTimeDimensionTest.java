@@ -13,8 +13,10 @@ import org.geoserver.gwc.wmts.dimensions.VectorTimeDimension;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
+import java.util.Arrays;
 import java.util.List;
 
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -32,13 +34,13 @@ public class VectorTimeDimensionTest extends TestsSupport {
         vectorInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
         getCatalog().save(vectorInfo);
         // check that we correctly retrieve the time dimension
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(1));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
         // disable the time dimension
         dimensionInfo.setEnabled(false);
         vectorInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
         getCatalog().save(vectorInfo);
         // no dimensions should be available
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(0));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
     }
 
     @Test
@@ -49,9 +51,8 @@ public class VectorTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "2012-02-11T00:00:00.000Z", "2012-02-12T00:00:00.000Z");
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, "2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z");
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, "2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z");
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, "2012-02-11T00:00:00.000Z", "2012-02-12T00:00:00.000Z");
+        testDomainsValuesRepresentation(0, "2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z");
     }
 
     @Override
@@ -66,11 +67,11 @@ public class VectorTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1D");
-        assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1D"));
-        assertThat(histogram.second, containsInAnyOrder(3));
+        assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z/P1D"));
+        assertThat(histogram.second, equalTo(Arrays.asList(3, 1)));
     }
 
     /**

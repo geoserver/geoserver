@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -73,6 +74,7 @@ import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
@@ -82,13 +84,15 @@ import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.config.BlobStoreConfig;
-import org.geowebcache.config.Configuration;
+import org.geowebcache.config.BaseConfiguration;
+import org.geowebcache.config.BlobStoreConfiguration;
+import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.ConfigurationPersistenceException;
+import org.geowebcache.config.TileLayerConfiguration;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.XMLGridSet;
 import org.geowebcache.conveyor.ConveyorTile;
@@ -123,6 +127,7 @@ import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.seed.TruncateBboxRequest;
 import org.geowebcache.service.Service;
 import org.geowebcache.storage.BlobStore;
+import org.geowebcache.storage.BlobStoreAggregator;
 import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
@@ -231,12 +236,31 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     // list of GeoServer contributed grid sets that should not be editable by the user
     private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
     
+    private BlobStoreAggregator blobStoreAggregator;
+
+    /**
+     * Constructor for the GWC mediator
+     *
+     * @param gwcConfigPersister
+     * @param sb The GeoWebCache StorageBroker
+     * @param tld The GeoWebCache TileLayer Aggregator
+     * @param gridSetBroker The GeoWebCache GridSet Aggregator
+     * @param tileBreeder The GeoWebCache TileBreeder (Used for seeding)
+     * @param monitor The GeoWebCache DiskQuota Monitor
+     * @param owsDispatcher The GeoServer OWS Service Dispatcher
+     * @param catalog The GeoServer catalog, secured and filtered
+     * @param rawCatalog The raw GeoServer catalog, not secured. Use with extreme caution!
+     * @param storageFinder GeoWebcache system variable and configuration source
+     * @param jdbcConfigurationStorage GeoServer integrator for GeoWebCache DiskQuota {@link JDBCConfiguration}
+     * @param blobStoreAggregator GeoWebCache BlobStore Aggregator
+     */
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
             final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
             final Dispatcher owsDispatcher, final Catalog catalog, final Catalog rawCatalog,
             final DefaultStorageFinder storageFinder,
-            final JDBCConfigurationStorage jdbcConfigurationStorage) {
+            final JDBCConfigurationStorage jdbcConfigurationStorage,
+            final BlobStoreAggregator blobStoreAggregator) {
         
         this.gwcConfigPersister = gwcConfigPersister;
         this.tld = tld;
@@ -258,6 +282,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         updateLockProvider(getConfig().getLockProviderName());
         
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
+        this.blobStoreAggregator = blobStoreAggregator;
     }
 
     /**
@@ -285,6 +310,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         lockProvider.setDelegate(delegate);
     }
 
+
+    /**
+     * Retrieves the GWC mediator bean, if registered in the spring context or set via {@link #set(GWC)}.
+     *
+     * @return The {@link GWC} mediator bean
+     * @throws IllegalStateException if no {@link GWC} instance was found.
+     */
     public synchronized static GWC get() {
         if (GWC.INSTANCE == null) {
             GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
@@ -308,7 +340,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     /**
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     * @see #initialize()
      */
     public void afterPropertiesSet() throws Exception {
         GWC.set(this);
@@ -1343,12 +1374,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Adds a layer to the {@link CatalogConfiguration} and saves it.
      */
     public void add(GeoServerTileLayer tileLayer) {
-        Configuration config = tld.addLayer(tileLayer);
-        try {
-            config.save();
-        } catch (IOException e) {
-            propagate(getRootCause(e));
-        }
+        tld.addLayer(tileLayer);
     }
 
     /**
@@ -1499,13 +1525,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 }
             }
 
-            // now no layer is referencing it
-
-            XMLConfiguration mainConfig = getXmlConfiguration();
-
-            mainConfig.removeGridset(oldGridSetName);
-            mainConfig.addOrReplaceGridSet(new XMLGridSet(newGridSet));
-            mainConfig.save();
             getGridSetBroker().remove(oldGridSetName);
             getGridSetBroker().put(newGridSet);
 
@@ -1519,7 +1538,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
             final int maxZoomLevel = newGridSet.getNumLevels() - 1;
 
-            Set<Configuration> saveConfigurations = new HashSet<Configuration>();
+            Set<TileLayerConfiguration> saveConfigurations = new HashSet<>();
 
             // now restore the gridsubset for each layer
             for (Map.Entry<TileLayer, GridSubset> entry : affectedLayers.entrySet()) {
@@ -1547,14 +1566,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 layer.removeGridSubset(oldGridSetName);
                 layer.addGridSubset(newGridSubset);
 
-                Configuration config = tld.getConfiguration(layer);
+                TileLayerConfiguration config = tld.getConfiguration(layer);
                 config.modifyLayer(layer);
                 saveConfigurations.add(config);
             }
 
-            for (Configuration config : saveConfigurations) {
-                config.save();
-            }
         } finally {
             if(lock != null) {
                 lock.release();
@@ -1562,11 +1578,27 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
     }
 
+    /**
+     * Looks up the {@link XMLConfiguration} from the spring context.
+     * @deprecated Only to be used for testing
+     * @return The {@link XMLConfiguration}
+     */
+    @Deprecated
     XMLConfiguration getXmlConfiguration() {
         XMLConfiguration mainConfig = GeoWebCacheExtensions.bean(XMLConfiguration.class);
         return mainConfig;
     }
+    
+    private BlobStoreAggregator getBlobStoreAggregator() {
+        return blobStoreAggregator;
+    }
 
+    /**
+     * Retrieves a {@link Response} that can encode metatile requests
+     * @param responseFormat The format of the tile response
+     * @param metaTileMap The metatile map
+     * @return A Response object that can encode the request (typically a {@link RenderedImageMapResponse})
+     */
     @SuppressWarnings("unchecked")
     public Response getResponseEncoder(MimeType responseFormat, RenderedImageMap metaTileMap) {
         final String format = responseFormat.getFormat();
@@ -1607,6 +1639,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return response;
     }
 
+    /**
+     * Determines if the {@link PublishedInfo} associated with a {@link GeoServerTileLayer} is queryable via WMS
+     * @param geoServerTileLayer The tile layer to query
+     * @return <code>true</code> if the layer is queryable
+     */
     public boolean isQueryable(final GeoServerTileLayer geoServerTileLayer) {
         WMS wmsMediator = WMS.get();
         LayerInfo layerInfo = geoServerTileLayer.getLayerInfo();
@@ -1630,17 +1667,30 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return filtered;
     }
 
+    /**
+     * Modifies a {@link TileLayer} via the {@link TileLayerDispatcher}, and logs the change.
+     * Only affects the GeoWebCache configuration.
+     *
+     * @param layer The layer to save.
+     */
     public void save(final TileLayer layer) {
         checkNotNull(layer);
         log.info("Saving GeoSeverTileLayer " + layer.getName());
+        tld.modify(layer);
+    }
 
-        Configuration modifiedConfig = tld.modify(layer);
-        try {
-            modifiedConfig.save();
-        } catch (IOException e) {
-            Throwable rootCause = Throwables.getRootCause(e);
-            throw Throwables.propagate(rootCause);
-        }
+    /**
+     * Renames a {@link TileLayer} via the {@link TileLayerDispatcher}, and logs the change.
+     * Only affects the GeoWebCache configuration.
+     *
+     * @param oldTileLayerName The old layer name.
+     * @param newTileLayerName The new layer name.
+     */
+    public void rename(String oldTileLayerName, String newTileLayerName) {
+        checkNotNull(oldTileLayerName);
+        checkNotNull(newTileLayerName);
+        log.info("Renaming GeoSeverTileLayer " + oldTileLayerName + " to " + newTileLayerName);
+        tld.rename(oldTileLayerName, newTileLayerName);
     }
 
     /**
@@ -1849,7 +1899,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         if (is900913Compatible) {
-            BoundingBox prescribedBounds = gridSetBroker.WORLD_EPSG3857.getBounds();
+            BoundingBox prescribedBounds = gridSetBroker.getWorldEpsg3857().getBounds();
             return JTS.toGeometry(new Envelope(prescribedBounds.getMinX(), prescribedBounds
                     .getMaxX(), prescribedBounds.getMinY(), prescribedBounds.getMaxY()));
         }
@@ -1917,8 +1967,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * layer doesn't need to have a gridSubset associated for the given gridset at runtime (in order
      * to handle the deletion of a layer's gridsubset)
      * 
-     * @param layerName
-     * @param removedGridset
+     * @param layerName The layer name
+     * @param gridSetId The gridset name
      * @TODO: make async?, it may take a while to the metastore to delete all tiles (sigh)
      */
     public void deleteCacheByGridSetId(final String layerName, final String gridSetId) {
@@ -1937,20 +1987,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void removeTileLayers(final List<String> tileLayerNames) {
         checkNotNull(tileLayerNames);
 
-        Set<Configuration> confsToSave = new HashSet<Configuration>();
-
         for (String tileLayerName : tileLayerNames) {
-            Configuration configuration = tld.removeLayer(tileLayerName);
-            if (configuration != null) {
-                confsToSave.add(configuration);
-            }
-        }
-
-        for (Configuration conf : confsToSave) {
             try {
-                conf.save();
-            } catch (IOException e) {
-                log.log(Level.WARNING, "Error saving GWC Configuration " + conf.getIdentifier(), e);
+                tld.removeLayer(tileLayerName);
+            } catch (IllegalArgumentException e) {
+                log.log(Level.WARNING, "Error saving GWC Configuration " + tld.getConfiguration(tileLayerName).getIdentifier(), e);
             }
         }
     }
@@ -1960,7 +2001,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         final Set<String> affectedLayers = getLayerNamesForGridSets(gridsetIds);
 
-        final Set<Configuration> changedConfigs = new HashSet<Configuration>();
+        final Set<TileLayerConfiguration> changedConfigs = new HashSet<>();
 
         for (String layerName : affectedLayers) {
             TileLayer tileLayer = getTileLayerByName(layerName);
@@ -1978,8 +2019,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                     tileLayer.setEnabled(false);
                 }
                 try {
-                    Configuration configuration = tld.modify(tileLayer);
-                    changedConfigs.add(configuration);
+                    tld.modify(tileLayer);
                 } catch (IllegalArgumentException ignore) {
                     // layer removed? don't care
                 }
@@ -1990,15 +2030,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
         }
 
-        // All referencing layers updated, now can remove the gridsets
         for (String gridSetId : gridsetIds) {
-            Configuration configuration = tld.removeGridset(gridSetId);
-            changedConfigs.add(configuration);
-        }
-
-        // now make it all persistent
-        for (Configuration config : changedConfigs) {
-            config.save();
+            tld.removeGridset(gridSetId);
         }
     }
 
@@ -2045,24 +2078,24 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         is not an instance of {@link LayerInfo} or {@link LayerGroupInfo}
      */
     public boolean hasTileLayer(CatalogInfo source) {
-        final String tileLayerId;
+        final String tileLayerName;
         if (source instanceof ResourceInfo) {
             LayerInfo layerInfo = getCatalog().getLayerByName(
                     ((ResourceInfo) source).prefixedName());
             if (layerInfo == null) {
                 return false;
             }
-            tileLayerId = layerInfo.getId();
+            tileLayerName = tileLayerName(layerInfo);
         } else if (source instanceof LayerInfo) {
-            tileLayerId = ((LayerInfo) source).getId();
+            tileLayerName = tileLayerName((LayerInfo) source);
         } else if (source instanceof LayerGroupInfo) {
-            tileLayerId = ((LayerGroupInfo) source).getId();
+            tileLayerName = tileLayerName((LayerGroupInfo) source);
         } else {
             return false;
         }
-        Configuration configuration;
+        BaseConfiguration configuration;
         try {
-            configuration = tld.getConfiguration(tileLayerId);
+            configuration = tld.getConfiguration(tileLayerName);
         } catch (IllegalArgumentException notFound) {
             return false;
         }
@@ -2253,9 +2286,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * Checks the JDBC quota store can be instantiated 
      * 
-     * @param config
-     * @param jdbcConfiguration
-     * @throws ConfigurationException
+     * @param jdbcConfiguration The JDBC Quota Store configuration
+     * @throws ConfigurationException if the quota store cannot be instantiated
      */
     public void testQuotaConfiguration(JDBCConfiguration jdbcConfiguration) throws ConfigurationException, IOException {
         jdbcConfigurationStorage.testQuotaConfiguration(jdbcConfiguration);
@@ -2271,6 +2303,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /**
+     * Synchronizes environment properties between the {@link GeoServerEnvironment} and the
+     * {@link GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
+     *
      * @throws IllegalArgumentException
      */
     public void syncEnv() throws IllegalArgumentException {
@@ -2357,20 +2392,28 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * @return the list of configured blobstores
      */
-    public List<BlobStoreConfig> getBlobStores() {
-        XMLConfiguration xmlConfig = getXmlConfiguration();
-
-        return new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
+    public List<BlobStoreInfo> getBlobStores() {
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        Iterable<BlobStoreInfo> blobStores = agg.getBlobStores();
+        if(blobStores instanceof List) {
+            return (List<BlobStoreInfo>) blobStores;
+        } else {
+            ArrayList<BlobStoreInfo> storeInfos = new ArrayList<BlobStoreInfo>(agg.getBlobStoreCount());
+            blobStores.forEach(storeInfos::add); 
+            return storeInfos;
+        }
     }
 
     /**
-     * @return the {@link BlobStoreConfig#isDefault() default} blobstore, or {@code null} if there's
+     * @return the {@link BlobStoreInfo#isDefault() default} blobstore, or {@code null} if there's
      *         no default
      */
-    public BlobStoreConfig getDefaultBlobStore() {
-        XMLConfiguration xmlConfig = getXmlConfiguration();
-
-        for (BlobStoreConfig config : xmlConfig.getBlobStores()) {
+    public BlobStoreInfo getDefaultBlobStore() {
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        
+        // TODO We should be doing this on the aggregator upstream in GWC
+        
+        for (BlobStoreInfo config : agg.getBlobStores()) {
             if (config.isDefault()) {
                 return config;
             }
@@ -2382,45 +2425,32 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Convenience method to add a new blob store, calling {@link #setBlobStores} the extra
      * {@code config}
      */
-    public void addBlobStore(BlobStoreConfig config) throws ConfigurationException {
-        checkNotNull(config);
-
-        List<BlobStoreConfig> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
-        if (config.isDefault()) {
-            for (BlobStoreConfig c : stores) {
-                c.setDefault(false);
-            }
-        }
-        stores.add(config);
-
-        setBlobStores(stores);
+    public void addBlobStore(BlobStoreInfo info) throws ConfigurationException {
+        checkNotNull(info);
+        getBlobStoreAggregator().addBlobStore(info);
     }
 
     /**
      * Convenience method to modify a blobstore; calling {@link #setBlobStores(List)} with the
      * config identified by {@code oldId} repplaced by {@code config}
      */
-    public void modifyBlobStore(String oldId, BlobStoreConfig config) throws ConfigurationException {
+    public void modifyBlobStore(String oldId, BlobStoreInfo config) throws ConfigurationException {
         checkNotNull(oldId);
         checkNotNull(config);
-
-        List<BlobStoreConfig> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
-        int index = -1;
-        for (int i = 0; i < stores.size(); i++) {
-            BlobStoreConfig c = stores.get(i);
-            if (oldId.equals(c.getId())) {
-                index = i;
-                break;
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        
+        if(config.getName().equals(oldId)) {
+            agg.modifyBlobStore(config);
+        } else {
+            synchronized (agg) {
+                agg.renameBlobStore(oldId, config.getName());
+                agg.modifyBlobStore(config);
             }
-        }
-        if (index > -1) {
-            stores.set(index, config);
-            setBlobStores(stores);
         }
     }
     
     /**
-     * Convenience method to remove blobstres by id; a filtered view of the blobstores configuration
+     * Convenience method to remove blobstores by id; a filtered view of the blobstores configuration
      * objects is passed to {@link #setBlobStores(List)}
      * 
      * @param blobStoreIds the unique identifiers for the blobstores that will be removed from the
@@ -2430,19 +2460,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public void removeBlobStores(Iterable<String> blobStoreIds) throws ConfigurationException {
         checkNotNull(blobStoreIds);
-
-        Map<String, BlobStoreConfig> stores = Maps.uniqueIndex(new ArrayList<>(
-                getXmlConfiguration().getBlobStores()), new Function<BlobStoreConfig, String>() {
-            @Override
-            public String apply(BlobStoreConfig c) {
-                return c.getId();
+        
+        BlobStoreAggregator agg = getBlobStoreAggregator();
+        
+        LinkedList<Exception> exceptions = new LinkedList<>();
+        for(String bsName: blobStoreIds) {
+            try {
+                agg.removeBlobStore(bsName);
+            } catch (Exception ex) {
+                exceptions.add(ex);
             }
-        });
-        Map<String, BlobStoreConfig> filtered = Maps.filterKeys(stores,
-                Predicates.not(Predicates.in(ImmutableList.copyOf(blobStoreIds))));
-
-        if (!filtered.equals(stores)) {
-            setBlobStores(new ArrayList<>(filtered.values()));
+        }
+        if(!exceptions.isEmpty()) {
+            Exception ex = exceptions.pop();
+            exceptions.forEach(ex::addSuppressed);
         }
     }
 
@@ -2458,38 +2489,29 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param stores the new set of blob stores
      * @throws ConfigurationException if the running blobstores can't be replaced by the provided
      *         ones or the configuration can't be saved
-     * @see {@link CompositeBlobStore#setBlobStores}
+     * @see CompositeBlobStore#setBlobStores(Iterable)
      */
-    void setBlobStores(List<BlobStoreConfig> stores) throws ConfigurationException {
+    void setBlobStores(List<BlobStoreInfo> stores) throws ConfigurationException {
         Preconditions.checkNotNull(stores, "stores is null");
         
-        XMLConfiguration xmlConfig = getXmlConfiguration();
-
-        CompositeBlobStore compositeBlobStore = getCompositeBlobStore();
+        BlobStoreAggregator agg = getBlobStoreAggregator();
         
-        List<BlobStoreConfig> oldStores = new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
-
+        Collection<String> existingStoreNames = agg.getBlobStoreNames();
+        Set<String> toDelete = new TreeSet<>(existingStoreNames);
         try {
-            compositeBlobStore.setBlobStores(stores);
-        } catch (ConfigurationException ce) {
-            throw ce;
-        } catch (StorageException se) {
-            throw new ConfigurationException("Error connecting to BlobStore: " + se.getMessage(),
-                    se);
-        }
-        xmlConfig.getBlobStores().clear();
-        xmlConfig.getBlobStores().addAll(stores);
-        try {
-            xmlConfig.save();
-        } catch (IOException e) {
-            //undo changes
-            xmlConfig.getBlobStores().clear();
-            xmlConfig.getBlobStores().addAll(oldStores);
-            try {
-                compositeBlobStore.setBlobStores(oldStores);
-            } catch (StorageException e1) {}
-            
-            throw new ConfigurationException("Error saving configuration", e);
+            for(BlobStoreInfo info : stores) {
+                toDelete.remove(info.getName());
+                if(existingStoreNames.contains(info.getName())) {
+                    agg.modifyBlobStore(info);
+                } else {
+                    agg.addBlobStore(info);
+                }
+            }
+            for(String name: toDelete) {
+                agg.removeBlobStore(name);
+            }
+        } catch (ConfigurationPersistenceException ex) {
+            throw new ConfigurationException("Error saving config", ex);
         }
     }
 

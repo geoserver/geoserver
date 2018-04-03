@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -69,6 +70,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
@@ -81,6 +83,11 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoaderProxy;
@@ -89,6 +96,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
@@ -112,10 +120,12 @@ import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
+import org.junit.Before;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -175,6 +185,13 @@ import org.xml.sax.EntityResolver;
  */
 @TestSetup(run=TestSetupFrequency.ONCE)
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
+
+    private MockHttpServletResponse lastResponse;
+    
+    @Before
+    public void clearLastResponse() {
+        this.lastResponse = null;
+    }
 
     protected SystemTestData createTestData() throws Exception {
         return new SystemTestData();
@@ -1636,8 +1653,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         response.setCharacterEncoding(charset);
 
         dispatch(request, response);
+
+        this.lastResponse = response;
+
         return response;
-    } 
+    }
+
+    /**
+     * Returns the last MockHttpServletRequest response. Warning, not thread safe. Last response is cleared at
+     * before each test method run.
+     * 
+     * @return
+     */
+    protected MockHttpServletResponse getLastResponse() {
+        return lastResponse;
+    }
     
     protected DispatcherServlet getDispatcher() throws Exception {
         return dispatcher;
@@ -1882,6 +1912,32 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         getCatalog().save(info);
     }
 
+    /**
+     * Adds nearest match support to the specified layer.
+     * 
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param nearestMatch Whether to enable or disable nearest match
+     */
+    protected void setupNearestMatch(QName layer, String dimensionName, boolean nearestMatch) {
+        setupNearestMatch(layer, dimensionName, nearestMatch, null);
+    }
+
+    /**
+     * Adds nearest match support to the specified layer.
+     * 
+     * @param layer The layer name
+     * @param dimensionName The dimension name (key in the resource metadata map)
+     * @param nearestMatch Whether to enable or disable nearest match
+     */
+    protected void setupNearestMatch(QName layer, String dimensionName, boolean nearestMatch, String acceptableInterval) {
+        ResourceInfo info = getCatalog().getResourceByName(getLayerId(layer), ResourceInfo.class);
+        DimensionInfo di = info.getMetadata().get(dimensionName, DimensionInfo.class);
+        di.setNearestMatchEnabled(nearestMatch);
+        di.setAcceptableInterval(acceptableInterval);
+        getCatalog().save(info);
+    }
+
     //
     // xml validation helpers
     //
@@ -1980,31 +2036,35 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom) throws Exception {
-        checkOws11Exception(dom,null);
+    protected String checkOws11Exception(Document dom) throws Exception {
+        return checkOws11Exception(dom,null);
     }
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
      * and ensuring that a particular exceptionCode is used.
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom, String exceptionCode) throws Exception {
-        checkOws11Exception(dom, exceptionCode, null);
+    protected String checkOws11Exception(Document dom, String exceptionCode) throws Exception {
+        return checkOws11Exception(dom, exceptionCode, null);
     }
     
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
      * and ensuring that a particular exceptionCode is used.
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom, String exceptionCode, String locator) throws Exception {
-        checkOws11Exception(dom, "1.1.0", exceptionCode, locator);
+    protected String checkOws11Exception(Document dom, String exceptionCode, String locator) throws Exception {
+        return checkOws11Exception(dom, "1.1.0", exceptionCode, locator);
     }
 
     /**
      * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
      * and ensuring that a particular exceptionCode is used.
+     * @return The exception text contents, if found
      */
-    protected void checkOws11Exception(Document dom, String version, String exceptionCode, String locator) throws Exception {
+    protected String checkOws11Exception(Document dom, String version, String exceptionCode, String locator) throws Exception {
         Element root = dom.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName() );
         assertEquals( version, root.getAttribute( "version") );
@@ -2021,6 +2081,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
             assertEquals( locator, ex.getAttribute( "locator") );
         }
+
+        NodeList nodes = dom.getElementsByTagName("ows:ExceptionText");
+        if (nodes.getLength() > 0) {
+            return nodes.item(0).getTextContent();
+        }
+        return null;
     }
 
 
@@ -2357,5 +2423,57 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
         layerGroup.getKeywords().addAll(keywords);
         getCatalog().save(layerGroup);
+    }
+
+    /**
+     * Helper method that clones a vector layer and adds it to a certain workspace. The provided
+     * layer name should correspond to an existing layer otherwise an exception will be throw.
+     * The provided target workspace and namespace should also exist.
+     */
+    protected LayerInfo cloneVectorLayerIntoWorkspace(WorkspaceInfo targetWorkspace, NamespaceInfo targetNameSpace, String layerName) {
+        return cloneVectorLayerIntoWorkspace(targetWorkspace, targetNameSpace, layerName, layerName);
+    }
+
+    /**
+     * Helper method that clones a vector layer and adds it to a certain workspace updating the layer name
+     * with the provided one. The provided layer name should correspond to an existing layer otherwise an
+     * exception will be throw. The provided target workspace and namespace should also exist.
+     */
+    protected LayerInfo cloneVectorLayerIntoWorkspace(WorkspaceInfo targetWorkspace,
+                                                      NamespaceInfo targetNameSpace, String layerName, String targetLayerName) {
+        Catalog catalog = getCatalog();
+        // get the original object from the catalog
+        LayerInfo originalLayerInfo = catalog.getLayerByName(layerName);
+        if (originalLayerInfo == null) {
+            // layer don't exists
+            throw new RuntimeException(String.format(
+                    "Could not retrieve a layer for name '%s'.", layerName));
+        }
+        FeatureTypeInfo originalFeatureTypeInfo = (FeatureTypeInfo) originalLayerInfo.getResource();
+        DataStoreInfo originalStoreInfo = originalFeatureTypeInfo.getStore();
+        // copy the data store, changing is workspace, id and name
+        DataStoreInfoImpl copyDataStoreInfo = new DataStoreInfoImpl(catalog);
+        OwsUtils.copy(originalStoreInfo, copyDataStoreInfo, DataStoreInfo.class);
+        copyDataStoreInfo.setId(UUID.randomUUID().toString());
+        copyDataStoreInfo.setName(UUID.randomUUID().toString());
+        copyDataStoreInfo.setWorkspace(targetWorkspace);
+        // copy the feature type info, changing the data store and name space
+        FeatureTypeInfoImpl copyFeatureTypeInfo = new FeatureTypeInfoImpl(catalog);
+        OwsUtils.copy(originalFeatureTypeInfo, copyFeatureTypeInfo, FeatureTypeInfo.class);
+        copyFeatureTypeInfo.setNamespace(targetNameSpace);
+        copyFeatureTypeInfo.setStore(copyDataStoreInfo);
+        copyFeatureTypeInfo.setName(targetLayerName);
+        // copy the layer, changing the feature type
+        LayerInfoImpl copyLayerInfo = new LayerInfoImpl();
+        OwsUtils.copy(originalLayerInfo, copyLayerInfo, LayerInfo.class);
+        copyLayerInfo.setId(layerName);
+        copyLayerInfo.setName(targetLayerName);
+        copyLayerInfo.setResource(copyFeatureTypeInfo);
+        // add everything to the catalog
+        catalog.add(copyDataStoreInfo);
+        catalog.add(copyFeatureTypeInfo);
+        catalog.add(copyLayerInfo);
+        // retrieve the cloned layer by name
+        return catalog.getLayerByName(new NameImpl(targetNameSpace.getPrefix(), targetLayerName));
     }
 }

@@ -10,10 +10,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,7 +56,7 @@ import com.google.common.collect.Sets;
  * Handles the following cases:
  * <ul>
  * <li><b>Layer added</b>: a {@link LayerInfo} or {@link LayerGroupInfo} has been added. A
- * {@link GeoServerTileLayer} is {@link CatalogConfiguration#createLayer is created} with the
+ * {@link GeoServerTileLayer} is {@link #createTileLayer is created} with the
  * {@link GWCConfig default settings} only if the integrated GWC configuration is set to
  * {@link GWCConfig#isCacheLayersByDefault() cache layers by default}.</li>
  * <li><b>Layer removed</b>: a {@code LayerInfo} or {@code LayerGroupInfo} has been removed. GWC is
@@ -127,8 +124,8 @@ public class CatalogLayerEventListener implements CatalogListener {
      * {@link GWCConfig#isCacheLayersByDefault()}.
      * 
      * @see org.geoserver.catalog.event.CatalogListener#handleAddEvent
-     * @see GWC#createLayer(LayerInfo)
-     * @see GWC#createLayer(LayerGroupInfo)
+     * @see #createTileLayer(LayerInfo)
+     * @see #createTileLayer(LayerGroupInfo)
      */
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         GWCConfig config = mediator.getConfig();
@@ -208,7 +205,7 @@ public class CatalogLayerEventListener implements CatalogListener {
     /**
      * In case the event refers to the addition or removal of a {@link LayerInfo} or
      * {@link LayerGroupInfo} adds or removes the corresponding {@link GeoServerTileLayer} through
-     * {@link GWC#createLayer}.
+     * {@link #createTileLayer}.
      * <p>
      * Note this method does not discriminate whether the change in the layer or layergroup deserves
      * a change in its matching TileLayer, it just re-creates the TileLayer
@@ -585,14 +582,7 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         final GeoServerTileLayer modifiedTileLayer;
 
-        if (oldTileLayer.getLayerInfo() != null) {
-            LayerInfo layerInfo = oldTileLayer.getLayerInfo();
-            modifiedTileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker, tileLayerInfo);
-        } else {
-            LayerGroupInfo layerGroup = oldTileLayer.getLayerGroupInfo();
-            modifiedTileLayer = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerInfo);
-        }
-        mediator.save(modifiedTileLayer);
+        mediator.rename(oldLayerName, newLayerName);
     }
 
     /**

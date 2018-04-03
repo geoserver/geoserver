@@ -121,7 +121,7 @@ public class StoredQueryTest extends WFS20TestSupport {
     public String getCreatePrimitiveWithinQuery() {
         return "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
         "   xmlns:wfs='http://www.opengis.net/wfs/2.0' " + 
-        "   xmlns:fes='http://www.opengis.org/fes/2.0' " + 
+        "   xmlns:fes='http://www.opengis.net/fes/2.0' " + 
         "   xmlns:gml='http://www.opengis.net/gml/3.2' " + 
         "   xmlns:myns='http://www.someserver.com/myns' " + 
         "   xmlns:sf='" + MockData.SF_URI + "'>" + 
@@ -156,7 +156,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         xml = 
         "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
         "   xmlns:wfs='http://www.opengis.net/wfs/2.0' " + 
-        "   xmlns:fes='http://www.opengis.org/fes/2.0' " + 
+        "   xmlns:fes='http://www.opengis.net/fes/2.0' " + 
         "   xmlns:gml='http://www.opengis.net/gml/3.2' " + 
         "   xmlns:sf='" + MockData.SF_URI + "'>" + 
         "   <wfs:StoredQueryDefinition id='myStoredQuery'> " + 
@@ -265,7 +265,7 @@ public class StoredQueryTest extends WFS20TestSupport {
                 " <soap:Body>" + 
                 "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
                 "   xmlns:wfs='http://www.opengis.net/wfs/2.0' " + 
-                "   xmlns:fes='http://www.opengis.org/fes/2.0' " + 
+                "   xmlns:fes='http://www.opengis.net/fes/2.0' " + 
                 "   xmlns:gml='http://www.opengis.net/gml/3.2' " + 
                 "   xmlns:myns='http://www.someserver.com/myns' " + 
                 "   xmlns:sf='" + MockData.SF_URI + "'>" + 
@@ -406,4 +406,45 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
     }
 
+    
+    @Test
+    public void testCreateWithLocalNamespaceDeclaration() throws Exception {
+        String xml = "<CreateStoredQuery xmlns=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" " +
+                "version=\"2.0.0\">\n" +
+                "  <StoredQueryDefinition xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                "                          id=\"urn:example:wfs2-query:GetFeatureByName\">\n" +
+                "      <Title>GetFeatureByName</Title>\n" +
+                "      <Abstract>Returns feature representations by name. The name value must occur in a gml:name " +
+                "property.</Abstract>\n" +
+                "      <Parameter name=\"name\" type=\"xsd:string\">\n" +
+                "         <Abstract>Name of feature instance (required)</Abstract>\n" +
+                "      </Parameter>\n" +
+                "      <QueryExpressionText xmlns:fes=\"http://www.opengis.net/fes/2.0\"\n" +
+                "                           xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" +
+                "                           xmlns:ns42=\"http://cite.opengeospatial.org/gmlsf\"\n" +
+                "                           isPrivate=\"false\"\n" +
+                "                           language=\"urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression\"\n" +
+                "                           returnFeatureTypes=\"ns42:EntitéGénérique\">\n" +
+                "         <Query typeNames=\"ns42:EntitéGénérique\">\n" +
+                "            <fes:Filter>\n" +
+                "               <fes:PropertyIsLike escapeChar=\"\\\" singleChar=\"?\" wildCard=\"*\">\n" +
+                "                  <fes:ValueReference>gml:name</fes:ValueReference>\n" +
+                "                  <fes:Literal>*${name}*</fes:Literal>\n" +
+                "               </fes:PropertyIsLike>\n" +
+                "            </fes:Filter>\n" +
+                "         </Query>\n" +
+                "      </QueryExpressionText>\n" +
+                "  </StoredQueryDefinition>\n" +
+                "</CreateStoredQuery>";
+
+        // create
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        // verify exists
+        dom = getAsDOM("wfs?request=ListStoredQueries");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'urn:example:wfs2-query:GetFeatureByName']", dom);
+    }
 }

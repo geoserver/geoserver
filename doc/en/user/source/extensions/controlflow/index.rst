@@ -48,6 +48,24 @@ A few examples::
   ows.wms.getmap=8
   # don't allow more than 2 WFS GetFeature requests with Excel output format
   ows.wfs.getfeature.application/msexcel=2
+  
+Request priority support
+........................
+
+Requests controlled by "ows.*" controllers above can be also executed in priority order, in case there are too many
+the request will block and wait, and will we awoken in priority order (highest to lowest).
+
+Currently the only way to specific a priority for a request is to add it to a request HTTP header::
+
+  ows.priority.http=<headerName>,<defaultPriority>
+  
+The header "headerName" will contain a number defining the priority for the request, the default priority is used
+as a fallback if/when the header is not found.
+
+Using a header implies some other system is involved in the priority management. This is particulary good when using
+a load balancer, as the requests priorities need to be evenly split across cluster elements, control-flow only
+has visibility of a single instance. As an example, the priority will be de-facto ignored at the cluster level
+if there are two nodes, and for whatever chance or design, the high priority requests end up converging on the same cluster node.
 
 Per user concurrency control
 ............................

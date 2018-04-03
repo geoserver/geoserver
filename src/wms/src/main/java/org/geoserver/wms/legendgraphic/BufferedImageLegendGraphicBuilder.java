@@ -694,7 +694,7 @@ public class BufferedImageLegendGraphicBuilder {
     private LiteShape2 getSampleShape(Symbolizer symbolizer, int legendWidth, int legendHeight, int areaWidth, int areaHeight) {
         LiteShape2 sampleShape;
         final float hpad = (areaWidth * LegendUtils.hpaddingFactor) + (areaWidth - legendWidth) / 2f;
-        final float vpad = (areaWidth * LegendUtils.vpaddingFactor) + (areaHeight - legendWidth) / 2f;;
+        final float vpad = (areaHeight * LegendUtils.vpaddingFactor) + (areaHeight - legendHeight) / 2f;;
 
         if (symbolizer instanceof LineSymbolizer) {
             if (this.sampleLine == null) {

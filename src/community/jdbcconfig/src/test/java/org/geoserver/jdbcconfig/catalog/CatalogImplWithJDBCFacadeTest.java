@@ -12,6 +12,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.geoserver.GeoServerConfigurationLock;
+import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -20,6 +22,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
+import org.geoserver.platform.GeoServerExtensions;
 import org.junit.After;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -70,6 +73,29 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         CatalogImpl catalogImpl = new CatalogImpl();
         catalogImpl.setFacade(facade);
         return catalogImpl;
+    }
+
+    @Test
+    public void testCharacterEncoding() {
+        addDataStore();
+        addNamespace();
+        String name = "testFT";
+        FeatureTypeInfo ft = newFeatureType(name, ds);
+
+        String degC = "Air Temperature in \u00b0C";
+        ft.setAbstract(degC);
+        catalog.add(ft);
+        // clear cache to force retrieval from database.
+        facade.getConfigDatabase().dispose();
+        FeatureTypeInfo added = catalog.getFeatureTypeByName(name);
+        assertEquals(degC, added.getAbstract());
+
+        String degF = "Air Temperature in \u00b0F";
+        added.setAbstract(degF);
+        catalog.save(added);
+        facade.getConfigDatabase().dispose();
+        FeatureTypeInfo saved = catalog.getFeatureTypeByName(name);
+        assertEquals(degF, saved.getAbstract());
     }
 
     @Test
@@ -162,18 +188,15 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         }
     }
 
-    
-//    @Override
-//    public void testGetLayerGroupByNameWithWorkspace() {
-//        try {
-//            super.testGetLayerGroupByNameWithWorkspace();
-//        } catch (AssertionFailedError e) {
-//            // ignoring failure, we need to fix this as we did for styles by workspace. Check the
-//            // comment in the original test case:
-//            // "//will randomly return one... we should probably return null with multiple matches"
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    public void testUpgradeLock() {
+        GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        configurationLock.lock(LockType.READ);
+        catalog.getNamespaces();
+        assertEquals(LockType.READ, configurationLock.getCurrentLock());
+        addNamespace();
+        assertEquals(LockType.WRITE, configurationLock.getCurrentLock());
+    }
 
     /**
      * Allow execution of a single test method with a hard-coded DBConfig. Due

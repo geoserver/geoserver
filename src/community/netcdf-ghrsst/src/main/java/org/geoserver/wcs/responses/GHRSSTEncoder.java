@@ -146,21 +146,6 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /**
-     * Attributes that are never copied to the main output variable from a NetCDF/GRIB source because they require 
-     * special handling.
-     */
-    @SuppressWarnings("serial")
-    private static final Set<String> COPY_ATTRIBUTES_BLACKLIST = new HashSet<String>() {
-        {
-            // coordinate variable names are usually changed
-            add("coordinates");
-            // these do not survive type change or packing and should be set from nodata value
-            add("_FillValue");
-            add("missing_value");
-        }
-    };
-
-    /**
      * In case of data packing best to remove these as well
      */
     private static final Set<String> DATA_PACKING_ATTRIBUTES_BLACKLIST = new HashSet<String>() {
@@ -338,7 +323,6 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                     }
                 }
                 stats = bandStatistics.get(i);
-
             }
             bandVariable.stats = stats;
 
@@ -362,6 +346,25 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             // handle data packing
             DataPacking.DataPacker dataPacker = null;
             if (dataPacking != DataPacking.NONE) {
+                // if copying attributes, we might copy over valid min and max, which might be out
+                // of range vs the collected stats
+                if (copyAttributes) {
+                    try (NetcdfDataset source = getSourceNetcdfDataset(sampleGranule)) {
+                        if (source != null) {
+                            Variable sourceVar = source.findVariable(bandName);
+                            Double min = getDoubleAttribute(sourceVar, NetCDFUtilities.VALID_MIN);
+                            Double max = getDoubleAttribute(sourceVar, NetCDFUtilities.VALID_MAX);
+                            if (min != null && max != null) {
+                                stats.update(min, max);
+                            }
+                        }
+                    } catch (Exception e) {
+                        if (LOGGER.isLoggable(Level.SEVERE)) {
+                            LOGGER.severe("Failed to copy from source NetCDF: " + e.getMessage());
+                        }
+                    }
+                }
+
                 dataPacker = dataPacking.getDataPacker(stats);
                 writer.addVariableAttribute(var, new Attribute(DataPacking.ADD_OFFSET, dataPacker.getOffset()));
                 writer.addVariableAttribute(var, new Attribute(DataPacking.SCALE_FACTOR, dataPacker.getScale()));
@@ -453,6 +456,15 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                     writer.addVariableAttribute(var, buildAttribute(att.getKey(), att.getValue()));
                 }
             }
+        }
+    }
+    
+    private Double getDoubleAttribute(Variable sourceVar, String attributeName) {
+        Attribute attribute = sourceVar.findAttribute(attributeName);
+        if (attribute != null) {
+            return attribute.getNumericValue().doubleValue();
+        } else {
+            return null;
         }
     }
 

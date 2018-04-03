@@ -23,6 +23,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
+import sun.applet.Main;
 
 /**
  * Generic file translator getting a set of options, an input file, and an output file
@@ -340,6 +341,11 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
             return delegate.toString();
         }
 
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Math.log(-0.3201613498354639));
+        
     }
 
 }

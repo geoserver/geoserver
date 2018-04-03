@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogCapabilities;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogFactory;
@@ -113,10 +114,9 @@ public class CatalogImpl implements Catalog {
 
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
-        final GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
-        if(configurationLock != null) {
-            facade =  LockingCatalogFacade.create(facade, configurationLock);
-        }
+        // wrap the default catalog facade with the facade capable of handling isolated workspaces behavior
+        facade = new IsolatedCatalogFacade(facade);
+        setFacade(facade);
         resourcePool = ResourcePool.create(this);
     }
     
@@ -144,6 +144,10 @@ public class CatalogImpl implements Catalog {
     }
     
     public void setFacade(CatalogFacade facade) {
+        final GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        if (configurationLock != null) {
+            facade = LockingCatalogFacade.create(facade, configurationLock);
+        }
         this.facade = facade;
         facade.setCatalog(this);
     }
@@ -1106,6 +1110,14 @@ public class CatalogImpl implements Catalog {
     }
 
     public ValidationResult validate(NamespaceInfo namespace, boolean isNew) {
+
+        if (namespace.isIsolated() && !getCatalogCapabilities().supportsIsolatedWorkspaces()) {
+            // isolated namespaces \ workspaces are not supported by this catalog
+            throw new IllegalArgumentException(String.format(
+                    "Namespace '%s:%s' is isolated but isolated workspaces are not supported by this catalog.",
+                    namespace.getPrefix(), namespace.getURI()));
+        }
+
         if ( isNull(namespace.getPrefix()) ) {
             throw new NullPointerException( "Namespace prefix must not be null");
         }
@@ -1118,10 +1130,13 @@ public class CatalogImpl implements Catalog {
         if ( existing != null && !existing.getId().equals( namespace.getId() ) ) {
             throw new IllegalArgumentException( "Namespace with prefix '" + namespace.getPrefix() + "' already exists.");
         }
-        
-        existing = getNamespaceByURI( namespace.getURI() );
-        if ( existing != null && !existing.getId().equals( namespace.getId() ) ) {
-            throw new IllegalArgumentException( "Namespace with URI '" + namespace.getURI() + "' already exists.");
+
+        if (!namespace.isIsolated()) {
+            // not an isolated namespace \ workplace so we need to check for duplicates
+            existing = getNamespaceByURI(namespace.getURI());
+            if (existing != null && !existing.getId().equals(namespace.getId())) {
+                throw new IllegalArgumentException("Namespace with URI '" + namespace.getURI() + "' already exists.");
+            }
         }
     
         if ( isNull(namespace.getURI()) ) {
@@ -1216,6 +1231,14 @@ public class CatalogImpl implements Catalog {
     }
     
     public ValidationResult validate(WorkspaceInfo workspace, boolean isNew) {
+
+        if (workspace.isIsolated() && !getCatalogCapabilities().supportsIsolatedWorkspaces()) {
+            // isolated namespaces \ workspaces are not supported by this catalog
+            throw new IllegalArgumentException(String.format(
+                    "Workspace '%s' is isolated but isolated workspaces are not supported by this catalog.",
+                    workspace.getName()));
+        }
+
         if ( isNull(workspace.getName()) ) {
             throw new NullPointerException( "workspace name must not be null");
         }
@@ -1896,5 +1919,10 @@ public class CatalogImpl implements Catalog {
             it.close();
         }
         return result;
+    }
+
+    @Override
+    public CatalogCapabilities getCatalogCapabilities() {
+        return facade.getCatalogCapabilities();
     }
 }

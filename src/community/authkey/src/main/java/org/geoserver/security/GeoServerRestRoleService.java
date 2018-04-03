@@ -209,7 +209,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                     }
                                 }
                             } catch (PathNotFoundException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                                 roles.clear();
                                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
                             }
@@ -234,7 +234,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                         }
                     });
         } catch (Exception ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
         }
 
         return Collections.unmodifiableSortedSet(roles);
@@ -294,14 +294,14 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                     roles.add(createRoleObject(role));
                                 }
                             } catch (PathNotFoundException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                             }
 
                             return Collections.unmodifiableSortedSet(roles);
                         }
                     });
         } catch (Exception ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
         }
 
         return Collections.unmodifiableSortedSet(roles);
@@ -354,14 +354,14 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                     }
                                 }
                             } catch (PathNotFoundException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                             }
 
                             return null;
                         }
                     });
         } catch (Exception ex) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
         }
 
         return null;
@@ -401,14 +401,14 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
                                     return createRoleObject(targetRole);
                                 } catch (PathNotFoundException ex) {
-                                    Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                                    Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                                 }
 
                                 return null;
                             }
                         });
             } catch (Exception ex) {
-                Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
             }
         }
 
@@ -519,11 +519,11 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                             return json;
                         }
                     } catch (MalformedURLException ex) {
-                        Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                        Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                     } catch (IOException ex) {
-                        Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                        Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                     } catch (URISyntaxException ex) {
-                        Logger.getLogger(getClass().getName()).log(Level.WARNING, null, ex);
+                        Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                     } finally {
                         if (clientResponse != null) {
                             try {
@@ -540,7 +540,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
             return callback.executeWithContext(cachedResponse);
         } catch (ExecutionException e) {
-            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            LOGGER.log(Level.FINEST, e.getMessage(), e);
             return null;
         }
     }

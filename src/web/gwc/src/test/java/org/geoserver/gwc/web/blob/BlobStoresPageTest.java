@@ -22,8 +22,8 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geowebcache.config.BlobStoreConfig;
-import org.geowebcache.config.FileBlobStoreConfig;
+import org.geowebcache.config.BlobStoreInfo;
+import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Test;
 
@@ -39,15 +39,15 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
     private static final String ID_DUMMY1 = "zzz";
     private static final String ID_DUMMY2 = "yyy";
     
-    public BlobStoreConfig dummyStore1() {
-        FileBlobStoreConfig config = new FileBlobStoreConfig(ID_DUMMY1);
+    public BlobStoreInfo dummyStore1() {
+        FileBlobStoreInfo config = new FileBlobStoreInfo(ID_DUMMY1);
         config.setFileSystemBlockSize(1024);
         config.setBaseDirectory("/tmp");
         return config;
     }
     
-    public BlobStoreConfig dummyStore2() throws Exception {
-        FileBlobStoreConfig config = new FileBlobStoreConfig(ID_DUMMY2);
+    public BlobStoreInfo dummyStore2() throws Exception {
+        FileBlobStoreInfo config = new FileBlobStoreInfo(ID_DUMMY2);
         config.setFileSystemBlockSize(1024);
         config.setBaseDirectory("/tmp");
         return config;
@@ -71,20 +71,20 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
     public void testBlobStores() throws Exception {        
         BlobStoresPage page = new BlobStoresPage();
         
-        BlobStoreConfig dummy1 = dummyStore1();
+        BlobStoreInfo dummy1 = dummyStore1();
         GWC.get().addBlobStore(dummy1);
                         
-        List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
+        List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
         
         tester.startPage(page);        
 
         @SuppressWarnings("unchecked")
-		GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
+		GeoServerTablePanel<BlobStoreInfo> table = (GeoServerTablePanel<BlobStoreInfo>) tester.getComponentFromLastRenderedPage("storesPanel");
         
         assertEquals(blobStores.size(), table.getDataProvider().size());
         assertTrue(getStoresFromTable(table).contains(dummy1));  
          
-        BlobStoreConfig dummy2 = dummyStore2();
+        BlobStoreInfo dummy2 = dummyStore2();
         GWC.get().addBlobStore(dummy2);
         
         assertEquals(blobStores.size() + 1, table.getDataProvider().size());        
@@ -111,9 +111,9 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         tester.startPage(page);   
         
         @SuppressWarnings("unchecked")
-		GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
+		GeoServerTablePanel<BlobStoreInfo> table = (GeoServerTablePanel<BlobStoreInfo>) tester.getComponentFromLastRenderedPage("storesPanel");
                 
-        BlobStoreConfig dummy1 = dummyStore1();
+        BlobStoreInfo dummy1 = dummyStore1();
         GWC.get().addBlobStore(dummy1);
                                 
         assertTrue(GWC.get().getBlobStores().contains(dummy1));  
@@ -173,9 +173,9 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         
     }
     
-    public List<BlobStoreConfig> getStoresFromTable(GeoServerTablePanel<BlobStoreConfig> table) {
-        List<BlobStoreConfig> result = new ArrayList<BlobStoreConfig>();
-        Iterator<BlobStoreConfig> it = table.getDataProvider().iterator(0, table.size());
+    public List<BlobStoreInfo> getStoresFromTable(GeoServerTablePanel<BlobStoreInfo> table) {
+        List<BlobStoreInfo> result = new ArrayList<BlobStoreInfo>();
+        Iterator<BlobStoreInfo> it = table.getDataProvider().iterator(0, table.size());
         while (it.hasNext()) {
             result.add(it.next());
         }

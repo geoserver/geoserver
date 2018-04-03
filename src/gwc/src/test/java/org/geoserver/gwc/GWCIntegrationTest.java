@@ -16,6 +16,7 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
@@ -41,6 +42,7 @@ import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.XMLGridSet;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
@@ -48,8 +50,10 @@ import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfigurat
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.service.wmts.WMTSService;
@@ -58,6 +62,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.TestPropertySource;
 import org.w3c.dom.Document;
 
 import javax.servlet.http.HttpServletResponse;
@@ -73,6 +78,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
@@ -92,6 +98,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -128,6 +135,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static final String WORKSPACED_LAYER = "workspacedLayer";
     static final QName WORKSPACED_LAYER_QNAME = new QName(TEST_WORKSPACE_URI, WORKSPACED_LAYER, TEST_WORKSPACE_NAME);
 
+    static QName BASIC_POLYGONS_NO_CRS = new QName(MockData.CITE_URI, "BasicPolygonsNoCrs", MockData.CITE_PREFIX);
+
     @Value("${gwc.context.suffix}")
     private String suffix;
     
@@ -159,6 +168,22 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         createLayerGroup(SIMPLE_LAYER_GROUP, MockData.BUILDINGS, MockData.BRIDGES);
         
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
+        
+        // add a layer with no native CRS
+        props = new HashMap<>();
+        props.put(LayerProperty.SRS, "4326");
+        props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.FORCE_DECLARED);
+        testData.addVectorLayer(BASIC_POLYGONS_NO_CRS, null, "BasicPolygonsNoCrs.properties", this.getClass(), catalog);
+    }
+
+    protected GridSet namedGridsetCopy(final String newName, final GridSet oldGridset) {
+        final GridSet newGridset;
+        {
+            XMLGridSet xmlGridSet = new XMLGridSet(oldGridset);
+            xmlGridSet.setName(newName);
+            newGridset = xmlGridSet.makeGridSet();
+        }
+        return newGridset;
     }
 
     @Test 
@@ -694,7 +719,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             if (tl.getName().equals("sf:AggregateGeoFeature")) {
                 // tl.isInitialized();
                 foudAGF = true;
-                GridSubset epsg4326 = tl.getGridSubset(gridSetBroker.WORLD_EPSG4326.getName());
+                GridSubset epsg4326 = tl.getGridSubset(gridSetBroker.getWorldEpsg4326().getName());
                 assertTrue(epsg4326.getGridSetBounds().equals(
                         new BoundingBox(-180.0, -90.0, 180.0, 90.0)));
                 String mime = tl.getMimeTypes().get(1).getMimeType();
@@ -785,7 +810,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         CatalogConfiguration config = GeoServerExtensions.bean(CatalogConfiguration.class);
 
-        assertNull(config.getTileLayer(layerName));
+        assertFalse(config.getLayer(layerName).isPresent());
         try {
             mediator.getTileLayerByName(layerName);
             fail("Expected IAE");
@@ -869,7 +894,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         try {
             fis = new FileInputStream(jdbcConfigFile);
             Document dom = dom(fis);
-            print(dom);
+            // print(dom);
             String storedPassword = XMLUnit.newXpathEngine().evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
             // check the password has been encoded properly
             assertTrue(storedPassword.startsWith("crypt1:"));
@@ -1009,6 +1034,36 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(Integer.parseInt(WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)), lessThanOrEqualTo(citeLayers.size()));
         assertThat(WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
                 MockData.BUILDINGS.getLocalPart() + "'])", document), is("1"));
+    }
+    
+    @Test
+    public void testComputeGridsetBounds() throws Exception {
+        // set native bounds whose CRS is null (which happens when going through the UI)
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName(getLayerId(BASIC_POLYGONS_NO_CRS));
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        ft.setNativeCRS(null);
+        cb.setupBounds(ft);
+        catalog.save(ft);
+
+        // force recomputing the grid subsets by adding one (at runtime this happens while editing a layer)
+        GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
+        GridSet testGridSet = namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
+        GridSubset testGridSubset = GridSubsetFactory.createGridSubSet(testGridSet, new BoundingBox(-180,0,0,90),
+                0, testGridSet.getGridLevels().length - 1);
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS_NO_CRS));
+        tileLayer.addGridSubset(testGridSubset);
+        
+        // get the capabilities and check the gridset bounds (not the whole world)
+        Document document = getAsDOM(MockData.CITE_PREFIX + "/" + BASIC_POLYGONS_NO_CRS.getLocalPart() + "/gwc/service/wmts?request=GetCapabilities");
+        // print(document);
+        String basePath = "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygonsNoCrs']" +
+                "/wmts:TileMatrixSetLink[wmts:TileMatrixSet='EPSG:4326']/wmts:TileMatrixSetLimits" +
+                "/wmts:TileMatrixLimits[wmts:TileMatrix='EPSG:4326:1']";
+        assertEquals("0", WMTS_XPATH_10.evaluate(basePath + "/wmts:MinTileRow", document));
+        assertEquals("1", WMTS_XPATH_10.evaluate(basePath + "/wmts:MaxTileRow", document));
+        assertEquals("1", WMTS_XPATH_10.evaluate(basePath + "/wmts:MinTileCol", document));
+        assertEquals("2", WMTS_XPATH_10.evaluate(basePath + "/wmts:MaxTileCol", document));
     }
     
     @Test

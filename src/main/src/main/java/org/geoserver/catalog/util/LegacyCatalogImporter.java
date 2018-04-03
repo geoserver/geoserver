@@ -282,7 +282,8 @@ public class LegacyCatalogImporter {
         reader.read(Files.asResource(catalogFile));
 
         // build all the catalog objects that can be read from the catalog.xml file
-        importNamespaces(factory, reader.namespaces());
+        importNamespaces(factory, reader.namespaces(), false);
+        importNamespaces(factory, reader.isolatedNamespaces(), true);
         importStyles(factory, reader.styles());
         importDataStores(factory, reader.dataStores());
         importFormats(factory, reader.formats());
@@ -375,10 +376,22 @@ public class LegacyCatalogImporter {
 
     /**
      * Imports namespaces and create symmetric workspaces for them
+     *
      * @param factory
      * @param namespaces
      */
     void importNamespaces(CatalogFactory factory, Map namespaces) {
+        importNamespaces(factory, namespaces, false);
+    }
+
+    /**
+     * Imports namespaces and create symmetric workspaces for them setting isolation
+     * using the provided value.
+     *
+     * @param factory
+     * @param namespaces
+     */
+    void importNamespaces(CatalogFactory factory, Map namespaces, boolean isolated) {
         for (Iterator n = namespaces.entrySet().iterator(); n.hasNext();) {
             Map.Entry entry = (Map.Entry) n.next();
             if (entry.getKey() == null || "".equals(entry.getKey())) {
@@ -388,21 +401,23 @@ public class LegacyCatalogImporter {
             NamespaceInfo namespace = factory.createNamespace();
             namespace.setPrefix((String) entry.getKey());
             namespace.setURI((String) entry.getValue());
+            namespace.setIsolated(isolated);
             catalog.add(namespace);
-            
+
             WorkspaceInfo workspace = factory.createWorkspace();
             workspace.setName( (String) entry.getKey() );
+            workspace.setIsolated(isolated);
             catalog.add(workspace);
-            
+
             if ( namespace.getURI().equals( namespaces.get( "" ) )) {
                 catalog.setDefaultNamespace(namespace);
                 catalog.setDefaultWorkspace(workspace);
             }
-            
-            LOGGER.info( "Loaded namespace '" + namespace.getPrefix() + 
-                "' (" + namespace.getURI() + ")");
+
+            LOGGER.info( "Loaded namespace '" + namespace.getPrefix() +
+                    "' (" + namespace.getURI() + ")");
         }
-        
+
         if ( catalog.getDefaultNamespace() != null ) {
             LOGGER.info( "Default namespace: '" + catalog.getDefaultNamespace().getPrefix() + "'" );
         } else {

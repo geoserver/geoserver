@@ -226,7 +226,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 //
                 CoverageInfo cInfo = (CoverageInfo) resourceInfo;
                 // convert/reproject/crop if needed the coverage
-                internalOutput = new RasterDownload(limits, resourceManager, context).execute(
+                internalOutput = new RasterDownload(limits, resourceManager, context, catalog).execute(
                         mimeType, progressListener, cInfo, roi, targetCRS, clip, filter,
                         interpolation, targetSizeX, targetSizeY, bandIndices, writeParameters);
             } else {

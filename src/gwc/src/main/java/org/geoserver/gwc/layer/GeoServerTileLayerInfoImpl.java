@@ -23,8 +23,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.geoserver.gwc.config.GWCConfig;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.request.RequestFilter;
@@ -38,8 +38,9 @@ import com.google.common.collect.ImmutableSet;
 
 
 /**
+ * {@link GeoServerTileLayerInfo} implementation.
+ *
  * @author groldan
- * 
  */
 public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLayerInfo {
 
@@ -267,28 +268,50 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         checkArgument(metaTilingX > 0);
         metaWidthHeight[0] = metaTilingX;
     }
-    
+
+    /**
+     * @see GeoServerTileLayerInfo#getExpireCache()
+     */
+    @Override
     public int getExpireCache() {
         return expireCache;
     }
-    
+
+    /**
+     * @see GeoServerTileLayerInfo#setExpireCache(int)
+     */
+    @Override
     public void setExpireCache(int expireCache) {
         this.expireCache = expireCache;
     }
-    
+
+    /**
+     * @see GeoServerTileLayerInfo#getExpireCacheList()
+     */
+    @Override
     public List<ExpirationRule> getExpireCacheList() {
         return expireCacheList;
     }
-    
+
+    /**
+     * @see GeoServerTileLayerInfo#setExpireCacheList(List)
+     */
+    @Override
     public void setExpireCacheList(List<ExpirationRule> expireCacheList) {
         this.expireCacheList = expireCacheList;
     }
-    
+
+    /**
+     * @see GeoServerTileLayerInfo#getExpireClients()
+     */
     @Override
     public int getExpireClients() {
     	return expireClients;
     }
-    
+
+    /**
+     * @see GeoServerTileLayerInfo#setExpireClients(int)
+     */
     @Override
     public void setExpireClients(int seconds) {
     	expireClients = seconds;
@@ -402,6 +425,9 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         return new HashSet<ParameterFilter>(parameterFiltersMap.values());
     }
 
+    /**
+     * @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#setParameterFilters(Set)
+     */
     @Override
     public void setParameterFilters(Set<ParameterFilter> parameterFilters) {
         parameterFiltersMap = new HashMap<String, ParameterFilter>();

@@ -239,7 +239,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         }
 
         FeatureTypeInfo info = catalog.getFeatureTypeByName(
-                layerName.getNamespaceURI(), layerName.getLocalPart());
+                layerName.getPrefix(), layerName.getLocalPart());
         Layer layer = null;
         if (info != null) {
             FeatureSource<? extends FeatureType, ? extends Feature> featureSource;

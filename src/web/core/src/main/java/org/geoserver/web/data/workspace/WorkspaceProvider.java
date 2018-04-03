@@ -37,7 +37,9 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         }
     };
 
-    static List<Property<WorkspaceInfo>> PROPERTIES = Arrays.asList(NAME, DEFAULT);
+    public static Property<WorkspaceInfo> ISOLATED = new BeanProperty<>( "isolated", "isolated" );
+
+    static List<Property<WorkspaceInfo>> PROPERTIES = Arrays.asList(NAME, DEFAULT, ISOLATED);
     
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);

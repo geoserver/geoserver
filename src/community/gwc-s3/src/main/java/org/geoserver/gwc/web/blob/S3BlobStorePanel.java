@@ -10,7 +10,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.geowebcache.s3.S3BlobStoreConfig;
+import org.geowebcache.s3.S3BlobStoreInfo;
 
 /**
  *
@@ -22,7 +22,7 @@ public class S3BlobStorePanel extends Panel {
 
     private static final long serialVersionUID = -8237328668463257329L;
 
-    public S3BlobStorePanel(String id, final IModel<S3BlobStoreConfig> configModel) {
+    public S3BlobStorePanel(String id, final IModel<S3BlobStoreInfo> configModel) {
         super(id, configModel);
 
         add(new TextField<String>("bucket").setRequired(true).add(

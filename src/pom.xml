@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.13-SNAPSHOT</version>
+ <version>2.14-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -474,6 +474,11 @@
     <version>${gt.version}</version>
    </dependency>
    <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-mongodb</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
      <groupId>org.jdom</groupId>
      <artifactId>jdom2</artifactId>
      <version>2.0.6</version>
@@ -525,6 +530,13 @@
        <artifactId>jai_imageio</artifactId>
      </exclusion>
     </exclusions>
+   </dependency>
+   <dependency>
+    <groupId>org.geowebcache</groupId>
+    <artifactId>gwc-core</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+    <version>${gwc.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geowebcache</groupId>
@@ -1500,7 +1512,7 @@
       <descriptor>release/ext-vectortiles.xml</descriptor>
       <descriptor>release/ext-ysld.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.13-SNAPSHOT</finalName>
+     <finalName>geoserver-2.14-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1841,9 +1853,9 @@
  </modules>
 
  <properties>
-  <gs.version>2.13-SNAPSHOT</gs.version>
-  <gt.version>19-SNAPSHOT</gt.version>
-  <gwc.version>1.13-SNAPSHOT</gwc.version>
+  <gs.version>2.14-SNAPSHOT</gs.version>
+  <gt.version>20-SNAPSHOT</gt.version>
+  <gwc.version>1.14-SNAPSHOT</gwc.version>
   <spring.version>4.3.7.RELEASE</spring.version>
   <spring.security.version>4.0.4.RELEASE</spring.security.version> 
   <servlet-api.version>3.0.1</servlet-api.version>
@@ -1852,7 +1864,7 @@
   <poi.version>3.14</poi.version>
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.19</imageio-ext.version>
+  <imageio-ext.version>1.1.20</imageio-ext.version>
   <jaiext.version>1.0.20</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>

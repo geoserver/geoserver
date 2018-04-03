@@ -5,13 +5,6 @@
  */
 package org.geoserver.web.data.resource;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.Link;
@@ -19,14 +12,33 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.layer.CoverageViewEditPage;
+import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.ColorPickerPanel;
+import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.parameter.DefaultParameterDescriptor;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterValueGroup;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * A configuration panel for CoverageInfo properties that related to WCS publication
@@ -35,12 +47,15 @@ import org.geoserver.web.util.MapModel;
  */
 @SuppressWarnings("serial")
 public class CoverageResourceConfigurationPanel extends ResourceConfigurationPanel {
+    
+    Map<String, DefaultParameterDescriptor> parameterDescriptorMap;
 
     public CoverageResourceConfigurationPanel(final String panelId, final IModel model){
         super(panelId, model);
+        initParameterDescriptors();
 
         final CoverageInfo coverage = (CoverageInfo) getResourceInfo();
-        
+
         final Map<String, Serializable> parameters = coverage.getParameters();
         List<String> keys = new ArrayList<String>(parameters.keySet());
         Collections.sort(keys);
@@ -86,14 +101,76 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         if(keys.size() == 0)
             setVisible(false);
    }
-    
+
+    private void initParameterDescriptors() {
+        try {
+            final CoverageInfo coverage = (CoverageInfo) getResourceInfo();
+            AbstractGridFormat format = coverage.getStore().getFormat();
+            ParameterValueGroup readParameters = format.getReadParameters();
+            List<GeneralParameterValue> parameterValues = readParameters.values();
+            parameterDescriptorMap = parameterValues.stream()
+                    .map(p -> p.getDescriptor())
+                    .filter(p -> p instanceof DefaultParameterDescriptor)
+                    .map(p -> (DefaultParameterDescriptor) p)
+                    .collect(Collectors.toMap(p -> p.getName().getCode(), Function.identity()));
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Failed to initialize parameter descriptors, the UI will use generic text " +
+                    "editors", e);
+        }
+    }
+
     private Component getInputComponent(String id, IModel paramsModel,
             String keyName) {
-        if (keyName.contains("Color"))
-            return new ColorPickerPanel(id, new MapModel(paramsModel, keyName),
-                    new org.apache.wicket.model.ResourceModel(keyName, keyName), false);
-        else
-            return new TextParamPanel(id, new MapModel(paramsModel, keyName),
-                    new org.apache.wicket.model.ResourceModel(keyName, keyName), false);
+        MapModel valueModel = new MapModel(paramsModel, keyName);
+        ResourceModel labelModel = new ResourceModel(keyName, keyName);
+        if (keyName.contains("Color")) {
+            return new ColorPickerPanel(id, valueModel, labelModel, false);
+        }
+
+        DefaultParameterDescriptor descriptor = parameterDescriptorMap.get(keyName);
+        if (descriptor != null) {
+            Class valueClass = descriptor.getValueClass();
+            
+            // checkbox for booleans
+            if (valueClass.equals(Boolean.class)) {
+                return new CheckBoxParamPanel(id, valueModel, labelModel);
+            }
+
+            // dropdown for enumerations
+            if (descriptor.getValueClass().isEnum()) {
+                List<? extends Serializable> values = Arrays.stream(descriptor.getValueClass().getEnumConstants())
+                        .map(v -> (Serializable) v)
+                        .collect(Collectors.toList());
+                return new DropDownChoiceParamPanel(id, valueModel, labelModel, values, false);
+            }
+            
+            // dropdown for cases in which there is a set of valid values
+            Set validValues = descriptor.getValidValues();
+            if (Serializable.class.isAssignableFrom(descriptor.getValueClass()) && validValues != null && !validValues.isEmpty()) {
+                List<? extends Serializable> values = new ArrayList<>(validValues);
+                return new DropDownChoiceParamPanel(id, valueModel, labelModel, values, false);
+            }
+
+            // anything else is a text, with some target type and eventual validation
+            TextParamPanel panel = new TextParamPanel(id, valueModel, labelModel, false);
+            if (Number.class.isAssignableFrom(valueClass)) {
+                panel.getFormComponent().setType(valueClass);
+                
+                Number minimum = (Number) descriptor.getMinimumValue();
+                if (minimum != null) {
+                    panel.getFormComponent().add(RangeValidator.minimum(minimum.doubleValue()));
+                }
+                Number maximum = (Number) descriptor.getMaximumValue();
+                if (maximum != null && maximum instanceof Serializable) {
+                    panel.getFormComponent().add(RangeValidator.maximum(maximum.doubleValue()));
+                }
+            }
+            
+            return panel;
+            
+        }
+
+        return new TextParamPanel(id, valueModel,
+                labelModel, false);
     }
 }

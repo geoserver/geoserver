@@ -38,16 +38,16 @@ import com.vividsolutions.jts.geom.Envelope;
  * Integration test for GeoServer cached layers using the GWC REST API
  * 
  */
-@TestSetup(run = TestSetupFrequency.REPEAT)
+@TestSetup(run = TestSetupFrequency.ONCE)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
-    private GWC mediator;
+    private static GWC mediator;
 
-    private GeoServerTileLayer pointsLayer;
+    private static GeoServerTileLayer pointsLayer;
 
-    private GeoServerTileLayer linesLayer;
+    private static GeoServerTileLayer linesLayer;
 
-    private StorageBroker storageBroker;
+    private static StorageBroker storageBroker;
 
     @Rule
     public GeoGigTestData geogigData = new GeoGigTestData();
@@ -149,7 +149,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         cacheResult = result.getCacheResult();
         assertEquals(CacheResult.HIT, cacheResult);
 
-        geogigData.update("points/p1", "geom", "POINT(-1 -1)")//
+        geogigData.update("points/p1", "geom", "POINT(-1 -1)")//9570
                 .add()//
                 .commit("moved POINT(1 1) to POINT(-1 -1)")//
                 .update("lines/l1", "geom", "LINESTRING(0 10, 0 -10)")//

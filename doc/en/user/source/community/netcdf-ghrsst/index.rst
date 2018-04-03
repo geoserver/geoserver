@@ -68,6 +68,7 @@ Notes about the configuration UI:
 
 * Various normal configurations such as variable name, unit of measure, and data packing will be ignored (each
   variable in GHRSST has its own assigned data type and packing, as from specification)
+* For the output to be compliant, enable copy of both global and per variable attributes
 * The RDAC, Processing Level, SST Type and Product String have to be filled in order to generate a valid GHRSST 
   file name in output. The user interface provides auto-complete with names picked from the specification, but others
   can be inputed as well.

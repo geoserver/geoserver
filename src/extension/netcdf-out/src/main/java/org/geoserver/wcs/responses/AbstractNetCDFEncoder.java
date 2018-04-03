@@ -77,6 +77,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             // these do not survive type change or packing and should be set from nodata value
             add("_FillValue");
             add("missing_value");
+            // this one is better not copied over in case of subsetting instead
+            add("_ChunkSizes");
         }
     };
 

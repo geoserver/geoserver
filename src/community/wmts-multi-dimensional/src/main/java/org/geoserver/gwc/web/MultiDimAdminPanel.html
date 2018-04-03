@@ -1,0 +1,32 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form name="theForm">
+    <wicket:panel>
+        <ul>
+            <li>
+                <fieldset>
+                    <legend>
+                        <span><wicket:message key="MultiDimAdminPanel.title">multidim</wicket:message></span>
+                    </legend>
+                    <ul>
+                        <li>
+                            <label for="defaultExpandLimit">
+                                <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
+                            </label>
+                            <input id="defaultExpandLimit" class="text" type="text" wicket:id="defaultExpandLimit"/>
+                        </li>
+                        <li>
+                            <label for="maxExpandLimit">
+                                <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
+                            </label>
+                            <input id="maxExpandLimit" class="text" type="text" wicket:id="maxExpandLimit"/>
+                        </li>
+                    </ul>
+                </fieldset>
+            </li>
+        </ul>
+    </wicket:panel>
+</form>
+</body>
+</html>

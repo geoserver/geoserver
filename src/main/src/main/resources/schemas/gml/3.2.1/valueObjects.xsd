@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:valueObjects:3.2.1">valueObjects.xsd</appinfo>
 		<documentation>See ISO/DIS 19136 17.5.
@@ -11,8 +11,14 @@ The value objects are defined in a hierarchy. The following relationships are de
 -	Concrete element gml:ValueArray is substitutable for the concrete element gml:CompositeValue.  
 -	Abstract elements gml:AbstractScalarValue and gml:AbstractScalarValueList, and concrete elements gml:CompositeValue, gml:ValueExtent, gml:CategoryExtent, gml:CountExtent and gml:QuantityExtent are substitutable for abstract element gml:AbstractValue.  
 -	Abstract elements gml:AbstractValue, gml:AbstractTimeObject and gml:AbstractGeometry are all in a choice group named gml:Value, which is used for compositing in gml:CompositeValue and gml:ValueExtent.  
--	Schemas which need values may use the abstract element gml:AbstractValue in a content model in order to permit any of the gml:AbstractScalarValues, gml:AbstractScalarValueLists, gml:CompositeValue or gml:ValueExtent to occur in an instance, or the named group gml:Value to also permit gml:AbstractTimeObjects, gml:AbstractGeometrys.  </documentation>
+-	Schemas which need values may use the abstract element gml:AbstractValue in a content model in order to permit any of the gml:AbstractScalarValues, gml:AbstractScalarValueLists, gml:CompositeValue or gml:ValueExtent to occur in an instance, or the named group gml:Value to also permit gml:AbstractTimeObjects, gml:AbstractGeometrys.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
+	<include schemaLocation="gml.xsd"/>
 	<include schemaLocation="geometryBasic0d1d.xsd"/>
 	<include schemaLocation="temporal.xsd"/>
 	<element name="Boolean" substitutionGroup="gml:AbstractScalarValue" nillable="true">
@@ -125,8 +131,8 @@ These elements may be used in an application schema as variables, so that in an 
 		<complexContent>
 			<extension base="gml:AbstractGMLType">
 				<sequence>
-					<!--element ref="gml:valueComponent" minOccurs="0" maxOccurs="unbounded"/>
-					<element ref="gml:valueComponents" minOccurs="0"/-->
+					<element ref="gml:valueComponent" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:valueComponents" minOccurs="0"/>
 				</sequence>
 				<attributeGroup ref="gml:AggregationAttributeGroup"/>
 			</extension>

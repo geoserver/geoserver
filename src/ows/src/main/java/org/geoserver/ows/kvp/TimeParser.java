@@ -394,7 +394,7 @@ public class TimeParser {
      * @return The increment value converted in milliseconds.
      * @throws ParseException if the string can not be parsed.
      */
-    static long parsePeriod(final String period) throws ParseException {
+    public static long parsePeriod(final String period) throws ParseException {
         final int length = period.length();
         if (length!=0 && Character.toUpperCase(period.charAt(0)) != 'P') {
             throw new ParseException("Invalid period increment given: " + period, 0);

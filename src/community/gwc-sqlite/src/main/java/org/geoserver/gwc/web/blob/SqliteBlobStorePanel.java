@@ -15,12 +15,12 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geowebcache.sqlite.SqliteConfiguration;
+import org.geowebcache.sqlite.SqliteInfo;
 
 /**
  * Properties that will be common to all SQLite based blob stores.
  */
-abstract class SqliteBlobStorePanel<T extends SqliteConfiguration> extends Panel {
+abstract class SqliteBlobStorePanel<T extends SqliteInfo> extends Panel {
 
     public SqliteBlobStorePanel(String id, final IModel<T> configurationModel) {
         super(id, configurationModel);

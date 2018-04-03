@@ -257,7 +257,7 @@ public class PreviewLayer {
                             } else {
                                 // use global OWS service to make sure all secondary namespaces
                                 // are accessible
-                                gmlParams.baseUrl = getBaseUrl("ows", true);
+                                gmlParams.baseUrl = getBaseUrl("ows", false);
                                 // always use WFS 1.1.0 for app-schema layers
                                 gmlParams.wfsVersion = org.geotools.wfs.v1_1.WFS.getInstance()
                                         .getVersion();

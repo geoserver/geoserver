@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -64,13 +65,13 @@ public class RasterTimeDimensionTest extends TestsSupport {
         rasterInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
         getCatalog().save(rasterInfo);
         // check that we correctly retrieve the time dimension
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(1));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
         // disable the time dimension
         dimensionInfo.setEnabled(false);
         rasterInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
         getCatalog().save(rasterInfo);
         // no dimensions should be available
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(0));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
     }
 
     @Test
@@ -81,9 +82,8 @@ public class RasterTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, STRING_VALUES);
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, STRING_VALUES[0] + "--" + STRING_VALUES[4]);
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, STRING_VALUES[0] + "--" + STRING_VALUES[4]);
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, STRING_VALUES);
+        testDomainsValuesRepresentation(2, STRING_VALUES[0] + "--" + STRING_VALUES[4]);
     }
 
     @Override
@@ -145,11 +145,12 @@ public class RasterTimeDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1Y");
         assertThat(histogram.first, is("2008-10-31T00:00:00.000Z/" + STRING_VALUES[4] + "/P1Y"));
-        assertThat(histogram.second.stream().reduce(0, (total, value) -> total + value), is(6));
+        // watertemp has 4 files, the test setup adds 3 to them, to a total o f 7 is expected
+        assertThat(histogram.second.stream().reduce(0, (total, value) -> total + value), is(7));
     }
 
     /**

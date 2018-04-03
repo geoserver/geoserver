@@ -7,7 +7,6 @@ package org.geoserver.gwc.wmts;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
-import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.gwc.wmts.dimensions.RasterElevationDimension;
@@ -16,6 +15,7 @@ import org.opengis.filter.Filter;
 
 import java.util.List;
 
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -35,13 +35,13 @@ public class RasterElevationDimensionTest extends TestsSupport {
         rasterInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(rasterInfo);
         // check that we correctly retrieve the elevation dimension
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(1));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
         // disable the elevation dimension
         dimensionInfo.setEnabled(false);
         rasterInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(rasterInfo);
         // no dimensions should be available
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(0));
+        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
     }
 
     @Test
@@ -52,9 +52,8 @@ public class RasterElevationDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "0", "100");
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, "0--100");
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, "0--100");
+        testDomainsValuesRepresentation(DimensionsUtils.NO_LIMIT, "0", "100");
+        testDomainsValuesRepresentation(1, "0--100");
     }
 
     @Override
@@ -64,11 +63,11 @@ public class RasterElevationDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "50");
-        assertThat(histogram.first, is("0.0/100.0/50.0"));
-        assertThat(histogram.second, containsInAnyOrder(2, 2));
+        assertThat(histogram.first, is("0.0/150.0/50.0"));
+        assertThat(histogram.second, containsInAnyOrder(2, 0, 2));
     }
 
     /**

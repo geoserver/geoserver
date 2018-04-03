@@ -169,6 +169,29 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                     }
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
                 }
+
+                if (option.startsWith(Backup.PARAM_PARAMETERIZE_PASSWDS)) {
+                    if (option.indexOf("=") > 0) {
+                        if (!option.toLowerCase().endsWith("true")) {
+                            continue;
+                        }
+                    }
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS),
+                        Backup.PARAM_PARAMETERIZE_PASSWDS));
+                }
+
+                if (option.startsWith(Backup.PARAM_PASSWORD_TOKENS)) {
+                    String[] tokensOption = option.split("=", 2);
+                    if (tokensOption.length != 2) {
+                        continue;
+                    }
+                    else {
+                        hints.add(new Hints(
+                            new Hints(new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"),
+                                tokensOption[1])
+                        ));
+                    }
+                }
             }
         }
         

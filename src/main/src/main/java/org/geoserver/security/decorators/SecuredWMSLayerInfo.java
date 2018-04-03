@@ -5,10 +5,13 @@
  */
 package org.geoserver.security.decorators;
 
+import org.geoserver.catalog.StoreInfo;
+
 import java.io.IOException;
 
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.ows.Layer;
 import org.opengis.util.ProgressListener;
@@ -40,5 +43,11 @@ public class SecuredWMSLayerInfo extends DecoratingWMSLayerInfo {
     @Override
     public WMSStoreInfo getStore() {
         return new SecuredWMSStoreInfo(delegate.getStore(), policy);
+    }
+
+    @Override
+    public void setStore(StoreInfo store) {
+        // need to make sure the store isn't secured
+        super.setStore((StoreInfo)SecureCatalogImpl.unwrap(store));
     }
 }

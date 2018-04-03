@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/">
+<body>
+	<wicket:panel>
+		<div wicket:id="dialog"></div>
+		
+		<wicket:fragment wicket:id="iconFragment">
+	        <img wicket:id="enabledIcon" />
+	    </wicket:fragment>
+
+		<ul class="links-above-table">
+			<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+			<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+			<li><a class="refresh-link" href="#" wicket:id="refresh"><wicket:message key="refresh" /></a></li>
+		</ul>
+
+		<form wicket:id="form">
+			<div wicket:id="batchesPanel"></div>
+		</form>
+	</wicket:panel>
+</body>
+</html>

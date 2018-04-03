@@ -43,6 +43,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -54,6 +55,7 @@ import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
 
+@Ignore
 public class AbstractLogStoreTest {
 
     @Rule

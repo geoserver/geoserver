@@ -1956,11 +1956,11 @@ line
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - Not yet supported
+     - >= 2.10.0
    * - data-driven styling
      - Not yet supported
      - >= 17.1
-     - Not yet supported
+     - >= 2.10.0
 
 
 symbol-spacing
@@ -2727,11 +2727,11 @@ Maximum angle change between adjacent characters.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - Not yet supported
+     - >= 2.10.0
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - Not yet supported
+     - >= 2.10.0
 
 text-rotate
 """""""""""
@@ -2754,11 +2754,11 @@ Rotates the text clockwise.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - Not yet supported
+     - >= 2.10.0
    * - data-driven styling
      - >= 0.35.0
      - Not yet supported
-     - Not yet supported
+     - >= 2.10.0
 
 text-padding
 """"""""""""
@@ -3049,11 +3049,11 @@ The color of the icon. This can only be used with sdf icons.
    * - basic functionality
      - >= 0.10.0
      - Not yet supported
-     - Not yet supported
+     - >= 2.10.0
    * - data-driven styling
      - >= 0.33.0
      - Not yet supported
-     - Not yet supported
+     - >= 2.10.0
 
 icon-halo-color
 """""""""""""""
@@ -3778,11 +3778,11 @@ The opacity at which the circle will be drawn.
    * - basic functionality
      - >= 0.10.0
      - >= 17.1
-     - Not yet supported
+     - >= 2.10.0
    * - data-driven styling
      - >= 0.20.0
      - >= 17.1
-     - Not yet supported
+     - >= 2.10.0
 
 circle-translate
 """"""""""""""""
@@ -3904,11 +3904,11 @@ The width of the circle's stroke. Strokes are placed outside of the
    * - basic functionality
      - >= 0.29.0
      - >= 17.1
-     - Not yet supported
+     - >= 2.10.0
    * - data-driven styling
      - >= 0.29.0
      - >= 17.1
-     - Not yet supported
+     - >= 2.10.0
 
 circle-stroke-color
 """""""""""""""""""

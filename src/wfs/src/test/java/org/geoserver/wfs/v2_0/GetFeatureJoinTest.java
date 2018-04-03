@@ -566,6 +566,26 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            
            XMLAssert.assertXpathEvaluatesTo("6", "count(//wfs:Tuple)", dom);
     }
+
+    @Test
+    public void testSelfJoinLocalNamespaces() throws Exception {
+        String xml =
+                "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+                        " xmlns:ns42='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" +
+                        "<wfs:Query typeNames='ns42:Forests ns42:Forests' aliases='a b'>" +
+                        "<fes:Filter> " +
+                        "<Disjoint>" +
+                        "<ValueReference>a/ns42:the_geom</ValueReference>" +
+                        "<ValueReference>b/ns42:the_geom</ValueReference>" +
+                        "</Disjoint>" +
+                        "</fes:Filter> " +
+                        "</wfs:Query>" +
+                        "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+
+        XMLAssert.assertXpathEvaluatesTo("6", "count(//wfs:Tuple)", dom);
+    }
     
     @Test
     public void testTemporalJoin() throws Exception {
@@ -958,4 +978,5 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         }
         return result;
     }
+    
 }

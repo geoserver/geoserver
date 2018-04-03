@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.decorators;
 
+import org.geoserver.catalog.impl.ModificationProxy;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,9 +17,9 @@ import org.geoserver.security.WrapperPolicy;
 /**
  * Utility class that provides easy and fast access to the registered
  * {@link SecuredObjectFactory} implementations
- * 
+ *
  * @author Andrea Aime - TOPP
- * 
+ *
  */
 public class SecuredObjects {
     /**
@@ -30,8 +32,7 @@ public class SecuredObjects {
      * points for a factory that can do the proper wrapping and invokes it, or
      * simply gives up and throws an {@link IllegalArgumentException} if no
      * factory can deal with securing the specified object.
-     * 
-     * @param <T>
+     *
      * @param object
      *            the raw object to be secured
      * @param policy
@@ -45,9 +46,13 @@ public class SecuredObjects {
         if (object == null)
             return null;
 
+        // In case the object to be secured is wrapped in a ModificationProxy, get the proxied Object class
+        // if the object is not wrapped, ModificationProxy.unwrap() will just return the object reference.
+        final Object unwrappedObject = ModificationProxy.unwrap(object);
+
         // if we already know what can handle the wrapping, just do it, don't
         // scan the extension points once more
-        Class clazz = object.getClass();
+        Class<?> clazz = unwrappedObject.getClass();
         SecuredObjectFactory candidate = FACTORY_CACHE.get(clazz);
 
         // otherwise scan and store (or complain)

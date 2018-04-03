@@ -4,6 +4,8 @@
  */
 package org.geogig.geoserver.functional;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
 import cucumber.api.CucumberOptions;
@@ -21,4 +23,13 @@ import cucumber.api.junit.Cucumber;
         plugin = {"pretty", "html:cucumber-report","json:cucumber-report/cucumber.json"})
 public class WebAPIResolverTest {
 
+    public static @BeforeClass void setUpGeoServer() throws Exception {
+        GeoServerTestSupport helper = new GeoServerTestSupport();
+        helper.setUpGeoServer();
+        GeoServerFunctionalTestContext.helper = helper;
+    }
+
+    public static @AfterClass void shutDownUpGeoServer() throws Exception {
+        GeoServerFunctionalTestContext.helper.shutDownUpGeoServer();
+    }
 }

@@ -12,6 +12,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 
+import org.geotools.gml.producer.CoordinateFormatter;
 import org.junit.Test;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
@@ -141,15 +142,16 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
                                 new Coordinate(-1.2, 52.5) })), null);
         Polygon targetPolygon = (Polygon) JTS.transform(srcPolygon, transform);
         StringBuffer polygonBuffer = new StringBuffer();
+        CoordinateFormatter formatter = new CoordinateFormatter(8);
         for (Coordinate coord : targetPolygon.getCoordinates()) {
-            polygonBuffer.append(coord.x).append(" ");
-            polygonBuffer.append(coord.y).append(" ");
+            formatter.format(coord.x, polygonBuffer).append(" ");
+            formatter.format(coord.y, polygonBuffer).append(" ");
         }
         String targetPolygonCoords = polygonBuffer.toString().trim();
         Point targetPoint = (Point) JTS.transform(
                 factory.createPoint(new Coordinate(42.58, 31.29)), transform);
-        String targetPointCoord = targetPoint.getCoordinate().x + " "
-                + targetPoint.getCoordinate().y;
+        String targetPointCoord = formatter.format(targetPoint.getCoordinate().x) + " "
+                + formatter.format(targetPoint.getCoordinate().y);
 
         assertXpathEvaluatesTo(
                 "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",

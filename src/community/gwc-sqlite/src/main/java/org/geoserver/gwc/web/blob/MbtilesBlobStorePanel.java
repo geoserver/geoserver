@@ -14,14 +14,14 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geowebcache.sqlite.MbtilesConfiguration;
+import org.geowebcache.sqlite.MbtilesInfo;
 
 /**
  * Panel that contains the properties required to configure a MBTiles blob store.
  */
-public class MbtilesBlobStorePanel extends SqliteBlobStorePanel<MbtilesConfiguration> {
+public class MbtilesBlobStorePanel extends SqliteBlobStorePanel<MbtilesInfo> {
 
-    public MbtilesBlobStorePanel(String id, IModel<MbtilesConfiguration> configurationModel) {
+    public MbtilesBlobStorePanel(String id, IModel<MbtilesInfo> configurationModel) {
         super(id, configurationModel);
     }
 

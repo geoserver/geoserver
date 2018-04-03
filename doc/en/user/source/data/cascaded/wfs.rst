@@ -48,6 +48,18 @@ To connect to an external WFS, it is necessary to load it as a new datastore.  T
      - When checked, will try to render features that don't match the appropriate schema.  Errors will be logged. 
    * - :guilabel:`MAXFEATURES`
      - Maximum amount of features to retrieve for each featuretype.  Default is no limit.
+   * - :guilabel:`AXIS_ORDER`
+     - Axis order used in result coordinates (It applies only to WFS 1.x.0 servers). Default is Compliant.
+   * - :guilabel:`AXIS_ORDER_FILTER`
+     - Axis order used in filter (It applies only to WFS 1.x.0 servers). Default is Compliant.
+   * - :guilabel:`OUTPUTFORMAT`
+     - Output format to request (instead of the default remote service one).
+   * - :guilabel:`GML_COMPLIANCE_LEVEL`
+     - OCG GML compliance level. i.e. (simple feature) 0, 1 or 2. Default is 0.
+   * - :guilabel:`GML_COMPATIBLE_TYPENAMES`
+     - Use Gml Compatible TypeNames (replace : by _).  Default is no false.
+   * - :guilabel:`USE_HTTP_CONNECTION_POOLING`
+     - Use connection pooling to connect to the remote WFS service. Also enables digest authentcation.
 
 When finished, click :guilabel:`Save`.
 

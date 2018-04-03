@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.13-SNAPSHOT</version>
+    <version>2.14-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -88,6 +88,8 @@
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
+          <descriptor>release/ext-mongodb.xml</descriptor>
+          <descriptor>release/ext-wfs3.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -235,6 +237,7 @@
         <module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
+        <module>security</module>
         <module>security/oauth2</module>
         <module>security/oauth2-google</module>
         <module>security/oauth2-github</module>
@@ -253,6 +256,9 @@
         <module>nsg-profiles/nsg-wfs-profile</module>
         <module>nsg-profiles/nsg-wmts-profile</module>
         <module>netcdf-ghrsst</module>
+        <module>mongodb</module>
+        <module>taskmanager</module>
+        <module>wfs3</module>
       </modules>
     </profile>
     <profile>
@@ -570,6 +576,24 @@
       <id>ghrsst</id>
       <modules>
         <module>netcdf-ghrsst</module>
+      </modules>
+    </profile>    
+    <profile>
+      <id>taskmanager></id>
+      <modules>
+        <module>taskmanager</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>mongodb</id>
+      <modules>
+        <module>mongodb</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wfs3</id>
+      <modules>
+        <module>wfs3</module>
       </modules>
     </profile>
   </profiles>  

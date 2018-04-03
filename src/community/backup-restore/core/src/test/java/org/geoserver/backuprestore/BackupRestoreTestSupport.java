@@ -243,6 +243,16 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         addFeature(fs, "POINT(3 3)", Integer.valueOf(1), "Third");
         ft = cb.buildFeatureType(fs);
         cat.add(ft);
+
+        DataStoreInfo peDatastore = cat.getFactory().createDataStore();
+        peDatastore.setName("foo_pe");
+        peDatastore.setWorkspace(cat.getDefaultWorkspace());
+
+        Map pedsParams = peDatastore.getConnectionParameters();
+        pedsParams.put("dbtype", "h2");
+        pedsParams.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe");
+        pedsParams.put("passwd", "foo");
+        cat.add(peDatastore);
     }
 
     void addFeature(FeatureStore store, String wkt, Object... atts) throws Exception {

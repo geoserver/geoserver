@@ -115,7 +115,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     static Logger LOGGER = Logging.getLogger(Importer.class);
     
-    public static final String PROPERTYFILENAME = "geoserver-importer.properties";
+    public static final String PROPERTYFILENAME = "importer.properties";
     
     public static final String UPLOAD_ROOT_KEY = "importer.upload_root";
     
@@ -147,7 +147,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         try {
             GeoServerResourceLoader loader = GeoServerExtensions
                     .bean(GeoServerResourceLoader.class);
-            configFile = new FileWatcher<Properties>(loader.get(PROPERTYFILENAME)) {
+            configFile = new FileWatcher<Properties>(loader.get("importer/" + PROPERTYFILENAME)) {
 
                 @Override
                 protected Properties parseFileContents(InputStream in) throws IOException {

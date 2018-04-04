@@ -53,6 +53,7 @@ import org.geoserver.importer.transform.GdalTranslateTransform;
 import org.geoserver.importer.transform.GdalWarpTransform;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.IntegerFieldToDateTransform;
+import org.geoserver.importer.transform.PostScriptTransform;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
@@ -459,6 +460,11 @@ public class ImportJSONWriter {
                     arrayBuilder.value(level);
                 }
                 arrayBuilder.endArray();
+            } else if (transform.getClass().equals(PostScriptTransform.class)) {
+                PostScriptTransform pst = (PostScriptTransform) transform;
+                List<String> options = pst.getOptions();
+                json.key("name").value(pst.getName());
+                buildJsonOptions(json, "options", options);
             } else {
                 throw new IOException(
                         "Serializaiton of " + transform.getClass() + " not implemented");
@@ -469,12 +475,13 @@ public class ImportJSONWriter {
     }
 
     private void buildJsonOptions(FlushableJSONBuilder json, String key, List<String> options) {
-        JSONBuilder arrayBuilder = json.key(key).array();
-        for (String option : options) {
-            arrayBuilder.value(option);
+        if (options != null) {
+            JSONBuilder arrayBuilder = json.key(key).array();
+            for (String option : options) {
+                arrayBuilder.value(option);
+            }
+            arrayBuilder.endArray();
         }
-        arrayBuilder.endArray();
-
     }
 
     void bbox(JSONBuilder json, ReferencedEnvelope bbox) {

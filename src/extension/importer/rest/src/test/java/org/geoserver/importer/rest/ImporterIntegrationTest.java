@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.ImporterDataTest;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -29,6 +30,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.hamcrest.CoreMatchers;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -587,5 +589,90 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 System.clearProperty(Importer.UPLOAD_ROOT_KEY);
             }
         }
+    }
+
+    @Test
+    public void testRunPostScript() throws Exception {
+        // check if bash is there
+        Assume.assumeTrue("Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
+        
+        // the target layer is not there
+        assertNull(getCatalog().getLayerByName("archsites"));
+
+        // write out a simple shell script in the data dir and make it executable
+        File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
+        File script = new File(scripts, "test.sh");
+        FileUtils.writeStringToFile(script, "touch test.properties\n");
+        script.setExecutable(true, true);
+
+        // create context with default name
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+        ImportContext context = importer.createContext(0l);
+        importer.changed(context);
+        importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
+
+        // add a transformation to run post script
+        String json = "{\n" +
+                "  \"type\": \"PostScriptTransform\",\n" +
+                "  \"name\": \"test.sh\"\n" +
+                "}";
+
+        MockHttpServletResponse resp = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
+
+        // run it
+        context = importer.getContext(0);
+        importer.run(context);
+
+        // check the layer has been created
+        assertNotNull(getCatalog().getLayerByName("archsites"));
+
+        // verify the script also run
+        File testFile = new File(scripts, "test.properties");
+        assertTrue(testFile.exists());
+    }
+
+    @Test
+    public void testRunPostScriptWithOptions() throws Exception {
+        // check if bash is there
+        Assume.assumeTrue("Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
+
+        // the target layer is not there
+        assertNull(getCatalog().getLayerByName("archsites"));
+
+        // write out a simple shell script in the data dir and make it executable
+        File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
+        File script = new File(scripts, "test.sh");
+        FileUtils.writeStringToFile(script, "touch $1\n");
+        script.setExecutable(true, true);
+
+        // create context with default name
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+        ImportContext context = importer.createContext(0l);
+        importer.changed(context);
+        importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
+
+        // add a transformation to run post script
+        String json = "{\n" +
+                "  \"type\": \"PostScriptTransform\",\n" +
+                "  \"name\": \"test.sh\",\n" +
+                "  \"options\": [\"test.abc\"]" +
+                "}";
+
+        MockHttpServletResponse resp = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
+
+        // run it
+        context = importer.getContext(0);
+        importer.run(context);
+
+        // check the layer has been created
+        assertNotNull(getCatalog().getLayerByName("archsites"));
+
+        // verify the script also run
+        File testFile = new File(scripts, "test.abc");
+        assertTrue(testFile.exists());
     }
 }

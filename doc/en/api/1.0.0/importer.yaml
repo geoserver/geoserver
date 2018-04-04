@@ -477,6 +477,7 @@ definitions:
 #      - $ref: "#/definitions/GdalTranslateTransform"
 #      - $ref: "#/definitions/GdalWarpTransform"
 #      - $ref: "#/definitions/GdalAddoTransform"
+#      - $ref: "#/definitions/PostScriptTransform"
   DataFormatTransform:
     title: DataFormatTransform
     type: object
@@ -630,6 +631,26 @@ definitions:
         items:
           type: integer
           description: A level
+  PostScriptTransform:
+    title: PostScriptTransform
+    type: object
+    description: Invokes a script found in $GEOSERVER_DATA_DIR/importer/scripts 
+    properties:
+      type:
+        type: string
+        description: '"PostScriptTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      name:
+        type: string
+        description: The name of the script to be invoked
+      options:
+        type: array
+        description: Array of options that are passed to the script when running the transform
+        items:
+          type: string
+          description: An option passed to the script
   Bbox:
     title: Bbox
     type: object

@@ -26,7 +26,7 @@ import org.geotools.gce.image.WorldImageFormat;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class GdalWarpTransform extends AbstractCommandLineTransform implements RasterTransform {
+public class GdalWarpTransform extends AbstractCommandLinePreTransform implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
     /**

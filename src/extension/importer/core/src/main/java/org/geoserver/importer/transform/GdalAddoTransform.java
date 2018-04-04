@@ -22,7 +22,7 @@ import org.geoserver.importer.ValidationException;
  * @author Andrea Aime - GeoSolutions
  */
 
-public class GdalAddoTransform extends AbstractCommandLineTransform implements RasterTransform {
+public class GdalAddoTransform extends AbstractCommandLinePreTransform implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
     /**

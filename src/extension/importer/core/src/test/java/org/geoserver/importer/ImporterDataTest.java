@@ -5,15 +5,16 @@
  */
 package org.geoserver.importer;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
+import org.geoserver.importer.transform.PostScriptTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -47,6 +49,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleAttributeExtractor;
+import org.junit.Assume;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,13 +57,27 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.logging.Level;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class ImporterDataTest extends ImporterTestSupport {
@@ -1127,5 +1144,112 @@ public class ImporterDataTest extends ImporterTestSupport {
         SimpleFeature sf = DataUtilities.first(fs.getFeatures());
         assertNotNull(sf.getAttribute("WIND_SPEED"));
         assertNotNull(sf.getAttribute("WIND_DIREC"));
+    }
+    
+    @Test
+    public void testRunPostScript() throws Exception {
+        // check if bash is there
+        Assume.assumeTrue("Could not find sh in path, skipping", checkShellAvailable());
+        
+        // write out a simple shell script in the data dir and make it executable
+        File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
+        File script = new File(scripts, "test.sh");
+        FileUtils.writeStringToFile(script, "touch test.properties\n");
+        script.setExecutable(true, true);
+
+        // create a simple import and place the script in the transform chain
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+
+        ImportContext context =
+                importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("archsites", task.getLayer().getResource().getName());
+        TransformChain transformChain = task.getTransform();
+        transformChain.add(new PostScriptTransform("test.sh", Collections.emptyList()));
+        importer.run(context);
+        
+        // check the import run normally
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("archsites"));
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+        runChecks("archsites");
+
+        // verify the script also run
+        File testFile = new File(scripts, "test.properties");
+        assertTrue(testFile.exists());
+    }
+
+    @Test
+    public void testRunNonExistingScript() throws Exception {
+        // prepare the scripts folder, but leave it empty
+        File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
+        FileUtils.deleteQuietly(scripts);
+        assertTrue(scripts.mkdirs());
+
+        try {
+            new PostScriptTransform("i_am_not_there.sh", Collections.emptyList());
+            fail("Should have thrown an exception");
+        } catch(Exception e) {
+            assertThat(e.getMessage(), containsString("i_am_not_there.sh"));
+        }
+    }
+
+    @Test
+    public void testPostScriptDisableTraversal() throws Exception {
+        // prepare the scripts folder, but leave it empty
+        File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
+        FileUtils.deleteQuietly(scripts);
+        assertTrue(scripts.mkdirs());
+
+        try {
+            new PostScriptTransform("../wfs.xml", Collections.emptyList());
+            fail("Should have thrown an exception");
+        } catch(Exception e) {
+            assertThat(e.getMessage(), containsString("invalid .."));    
+        }
+    }
+
+    @Test
+    public void testPostScriptDisableAbsolutePath() {
+        // check if sh is there
+        Assume.assumeTrue(new File("/bin/sh").exists());
+
+        try {
+            new PostScriptTransform("/bin/sh", Collections.emptyList());
+            fail("Should have failed disallowing usage of absoute path");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), allOf(containsString("/bin/sh"), containsString("not " +
+                    "found")));
+        }
+    }
+    
+
+
+    public static boolean checkShellAvailable() {
+        try {
+            CommandLine cmd = new CommandLine("bash");
+            cmd.addArgument("--version");
+            DefaultExecutor executor = new DefaultExecutor();
+            OutputStream os = new ByteArrayOutputStream();
+            OutputStream es = new ByteArrayOutputStream();
+            try {
+                PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
+                executor.setStreamHandler(streamHandler);
+                executor.execute(cmd);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failure to execute command " + cmd.toString() + ", " +
+                        "\noutput is\n" + os.toString() + "\nerror is\n" + es.toString(), e);
+                return false;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failure to run shell test command.", e);
+            return false;
+        }
+
+        return true;
     }
 }

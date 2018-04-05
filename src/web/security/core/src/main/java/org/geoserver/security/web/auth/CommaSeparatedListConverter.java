@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.apache.wicket.util.convert.UnconvertibleException;
+import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 
 /**
@@ -21,7 +21,7 @@ public class CommaSeparatedListConverter implements IConverter<List<String>> {
     private static final long serialVersionUID = -2772030358671687777L;
 
     @Override
-    public List<String> convertToObject(String value, Locale locale) throws UnconvertibleException {
+    public List<String> convertToObject(String value, Locale locale) throws ConversionException {
         String[] split = value.split("\\s*,\\s*");
         final ArrayList list = new ArrayList<>();
         // Need to return an implementation of List<String> that isn't private.

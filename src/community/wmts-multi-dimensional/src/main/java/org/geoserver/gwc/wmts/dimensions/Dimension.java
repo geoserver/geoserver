@@ -28,6 +28,8 @@ import org.opengis.filter.expression.PropertyName;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,11 @@ import java.util.stream.Collectors;
  */
 public abstract class Dimension {
 
+    /**
+     * Empty histogram representation
+     */
+    public static final Tuple<String, List<Integer>> EMPTY_HISTOGRAM = Tuple.tuple("", Collections.emptyList());
+    
     protected final WMS wms;
     protected final String dimensionName;
     protected final LayerInfo layerInfo;
@@ -127,8 +134,13 @@ public abstract class Dimension {
         PropertyName dimensionProperty = ff.property(dimensionAttributeName);
         if (Number.class.isAssignableFrom(getDimensionType())) {
             DomainSummary summary = getDomainSummary(filter, 0);
+            // empty domain case?
+            if (summary.getMin() == null || summary.getMax() == null) {
+                return EMPTY_HISTOGRAM;
+            }
             double min = ((Number) summary.getMin()).doubleValue();
             double max = ((Number) summary.getMax()).doubleValue();
+
             Tuple<String, List<Range>> specAndBuckets = HistogramUtils.getNumericBuckets
                     (min, max, resolutionSpec);
             List<Range> buckets = specAndBuckets.second;
@@ -155,6 +167,11 @@ public abstract class Dimension {
             DomainSummary summary = getDomainSummary(filter, 0);
             Date min = (Date) summary.getMin();
             Date max = (Date) summary.getMax();
+            // empty domain case?
+            if (min == null || max == null) {
+                return EMPTY_HISTOGRAM;
+            }
+            
             Tuple<String, List<Range>> specAndBuckets = HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
             List<Range> buckets = specAndBuckets.second;
             Range<Date> referenceBucket = buckets.get(0);

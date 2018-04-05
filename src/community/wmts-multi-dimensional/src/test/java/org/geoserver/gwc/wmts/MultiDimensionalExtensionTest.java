@@ -22,10 +22,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.junit.Test;
-import org.opengis.coverage.Coverage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -72,6 +72,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         FeatureTypeInfo vectorInfo = getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
         registerLayerDimension(vectorInfo, ResourceInfo.ELEVATION, "startElevation", DimensionPresentation.CONTINUOUS_INTERVAL, minimumValue());
         registerLayerDimension(vectorInfo, ResourceInfo.TIME, "startTime", DimensionPresentation.LIST, minimumValue());
+        // register dimension for raster custom
+        CoverageInfo rasterCustom = getCatalog().getCoverageByName(RASTER_CUSTOM.getLocalPart());
+        registerLayerDimension(rasterCustom, ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, null, DimensionPresentation.LIST, null);
     }
 
     @Test
@@ -80,7 +83,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?request=GetCapabilities");
         Document result = getResultAsDocument(response, "text/xml");
         // four total dimensions that we are going to check one by one
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension", "4");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension", "5");
         // note, the capabilities output follows the same config as WMS, it's not dynamic like DescribeDomains
         // check raster elevation dimension
         checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']", "1");
@@ -333,6 +336,46 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testRasterEmptyElevationHistogram() throws Exception {
+        // perform the get histogram operation request
+        String queryRequest = String.format("request=GetHistogram&Version=1.0.0&Layer=%s" +
+                        "&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25&elevation=-100",
+                getLayerId(RASTER_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // print(result);
+        // check the returned histogram
+        assertEmptyHistogram(result, "elevation");
+    }
+
+    @Test
+    public void testRasterEmptyTimeHistogram() throws Exception {
+        // perform the get histogram operation request
+        String queryRequest = String.format("request=GetHistogram&Version=1.0.0&Layer=%s" +
+                        "&TileMatrixSet=EPSG:4326&histogram=time&elevation=-100",
+                getLayerId(RASTER_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // print(result);
+        // check the returned histogram
+        assertEmptyHistogram(result, "time");
+    }
+
+    @Test
+    public void testRasterEmptyCustomHistogram() throws Exception {
+        // perform the get histogram operation request (empty domain via dimension filter)
+        String queryRequest = String.format("request=GetHistogram&Version=1.0.0&Layer=%s" +
+                        "&TileMatrixSet=EPSG:4326&histogram=%s&%s=FOOBAR",
+                getLayerId(RASTER_CUSTOM), CustomFormat.CUSTOM_DIMENSION_NAME, CustomFormat
+                        .CUSTOM_DIMENSION_NAME);
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        assertEmptyHistogram(result, CustomFormat.CUSTOM_DIMENSION_NAME);
+    }
+
+
+    @Test
     public void testGetTimeHistogramOnCoverageView() throws Exception {
         CoverageInfo coverageInfo = setupWaterTempTwoBandsView();
 
@@ -427,6 +470,40 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Histogram[md:Domain=" +
                 "'2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']", "1");
         checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
+    }
+
+    @Test
+    public void testVectorEmptyTimeHistogram() throws Exception {
+        // perform the get histogram operation request, using a non existing elevation value
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s" +
+                        "&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M&elevation=-10",
+                getLayerId(VECTOR_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // print(result);
+        assertEmptyHistogram(result, "time");
+    }
+
+    public void assertEmptyHistogram(Document result, String dimension) throws Exception {
+        checkXpathCount(result, "/md:Histogram[ows:Identifier='" + dimension + "']", "1");
+        assertEquals("1", xpath.evaluate("count(/md:Histogram/md:Domain)", result));
+        assertEquals("", xpath.evaluate("/md:Histogram/md:Domain", result));
+        assertEquals("1", xpath.evaluate("count(/md:Histogram/md:Values)", result));
+        assertEquals("", xpath.evaluate("/md:Histogram/md:Values", result));
+    }
+
+    @Test
+    public void testVectorEmptyElevationHistogram() throws Exception {
+        // perform the get histogram operation request, using a non existing elevation value
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s" +
+                        "&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=P1M&elevation=-10",
+                getLayerId(VECTOR_ELEVATION_TIME));
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        // print(result);
+        assertEmptyHistogram(result, "elevation");
     }
 
     @Test

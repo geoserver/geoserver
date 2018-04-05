@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.lowagie.text.Paragraph;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -59,6 +58,7 @@ import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
@@ -72,7 +72,11 @@ import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.wms.*;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
@@ -105,7 +109,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * @author Andrea Aime - GeoSolutions
  * @author Emanuele Tajariol- GeoSolutions
  */
-public class GeofenceAccessManager implements ResourceAccessManager, DispatcherCallback {
+public class GeofenceAccessManager implements ResourceAccessManager, DispatcherCallback, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceAccessManager.class);
 
@@ -864,5 +868,10 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                 throw new ServiceException("Error parsing requested layers.", exception);
             }
         }
+    }
+
+    @Override
+    public int getPriority() {
+        return ExtensionPriority.LOWEST;
     }
 }

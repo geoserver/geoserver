@@ -44,6 +44,22 @@ import static org.junit.Assert.assertTrue;
 
 public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
+    static class TiffTagTest {
+        String tagString;
+        String tagValue;
+
+        public TiffTagTest(String tagString, String tagValue) {
+            this.tagString = tagString;
+            this.tagValue = tagValue;
+        }
+    }
+
+    final static TiffTagTest JPEG_TAG = new TiffTagTest("JPEG",
+            Integer.toString(BaselineTIFFTagSet.COMPRESSION_JPEG));
+
+    final static TiffTagTest DEFLATE_TAG = new TiffTagTest("Deflate",
+            Integer.toString(BaselineTIFFTagSet.COMPRESSION_DEFLATE));
+
     @Test
     public void extensionGeotiff() throws Exception {
         // complete
@@ -60,6 +76,27 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         assertEquals("true", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tiling"));
         assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tileheight"));
         assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tilewidth"));
+    }
+
+    @Test
+    public void extensionGeotiff2() throws Exception {
+        String request = "wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__BlueMarble&compression=Deflate" +
+                "&interleave=Pixel&tiling=true&tileheight=256&tilewidth=256";
+        GetCoverageType gc = parse(request);
+
+        Map<String, Object> extensions = getExtensionsMap(gc);
+
+        assertEquals("Deflate", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:compression"));
+        assertEquals("Pixel", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:interleave"));
+        assertEquals("true", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tiling"));
+        assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tileheight"));
+        assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tilewidth"));
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        checkTiff(tiffContents, DEFLATE_TAG);
     }
 
     @Test
@@ -125,7 +162,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
-        checkJpegTiff(tiffContents);
+        checkTiff(tiffContents, JPEG_TAG);
     }
     
     @Test
@@ -157,10 +194,10 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
         // make sure we can read the coverage back and perform checks on it
         byte[] tiffContents = IOUtils.toByteArray(coveragePart.getInputStream());
-        checkJpegTiff(tiffContents);
+        checkTiff(tiffContents, JPEG_TAG);
     }
 
-    private void checkJpegTiff(byte[] tiffContents) throws IOException,
+    private void checkTiff(byte[] tiffContents, TiffTagTest tiffTagTest) throws IOException,
             FileNotFoundException, IIOException {
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);
@@ -175,8 +212,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
-        assertEquals("JPEG", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
-        assertEquals("7", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+        assertEquals(tiffTagTest.tagString, field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
+        assertEquals(tiffTagTest.tagValue, field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
         
         IIOMetadataNode node = metadata.getStandardDataNode();
         assertNotNull(node);

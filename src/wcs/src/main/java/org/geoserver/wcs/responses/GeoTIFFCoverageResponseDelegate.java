@@ -124,10 +124,10 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         if(encondingParameters.containsKey("interleave")){
             // ok, the interleaving has been specified, let's see what we got
             final String interleavingS= encondingParameters.get("interleave");
-            if(interleavingS.equals("pixel")){
+            if (interleavingS.equals("pixel") || interleavingS.equals("Pixel")) {
                 // ok we want pixel interleaving, TIFF ImageWriter always writes
                 // with pixel interleaving hence, we are good!
-            } else if(interleavingS.equals("band")){
+            } else if (interleavingS.equals("band") || interleavingS.equals("Band")) {
                 // TODO implement this in TIFF Writer, as it is not supported right now
                 throw new OWS20Exception("Banded Interleaving not supported", ows20Code(WcsExceptionCode.InterleavingNotSupported), interleavingS);
             } else {
@@ -330,7 +330,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                 } else if(compressionS.equals("PackBits")){
                     wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
                     wp.setCompressionType("PackBits");      
-                } else if(compressionS.equals("DEFLATE")){
+                } else if (compressionS.equals("DEFLATE") || compressionS.equals("Deflate")) {
                     wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
                     wp.setCompressionType("Deflate");      
                 } else if(compressionS.equals("Huffman")){

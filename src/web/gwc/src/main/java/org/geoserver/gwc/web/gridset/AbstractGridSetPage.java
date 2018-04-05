@@ -7,7 +7,7 @@ package org.geoserver.gwc.web.gridset;
 
 import java.util.logging.Logger;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;

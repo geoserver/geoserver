@@ -44,7 +44,7 @@ import ucar.units.UnitDBException;
 import ucar.units.UnitParseException;
 import ucar.units.UnitSystemException;
 
-import javax.measure.converter.UnitConverter;
+import javax.measure.UnitConverter;
 import javax.media.jai.iterator.RandomIter;
 import java.io.File;
 import java.io.IOException;

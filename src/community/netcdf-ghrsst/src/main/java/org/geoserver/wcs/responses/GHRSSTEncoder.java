@@ -47,9 +47,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 
-import javax.measure.converter.UnitConverter;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.Unit;
+import javax.measure.UnitConverter;
+import si.uom.NonSI;
+import javax.measure.Unit;
 import javax.media.jai.iterator.RandomIter;
 import javax.media.jai.iterator.RandomIterFactory;
 import java.awt.image.RenderedImage;

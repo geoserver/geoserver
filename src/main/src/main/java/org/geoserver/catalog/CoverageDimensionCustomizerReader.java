@@ -5,9 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import it.geosolutions.imageio.maskband.DatasetLayout;
-import it.geosolutions.jaiext.range.NoDataContainer;
-
 import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.io.IOException;
@@ -20,7 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PropertySource;
 import javax.media.jai.PropertySourceImpl;
@@ -41,7 +38,7 @@ import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.resources.Classes;
+import org.geotools.measure.Units;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
@@ -61,6 +58,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
+
+import it.geosolutions.imageio.maskband.DatasetLayout;
+import it.geosolutions.jaiext.range.NoDataContainer;
+import tec.uom.se.AbstractUnit;
+import tec.uom.se.format.SimpleUnitFormat;
+
 
 /**
  * A {@link GridCoverage2DReader} wrapper to customize the {@link CoverageDimensionInfo} associated
@@ -566,7 +569,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             Unit unit = defaultUnit;
             try {
                 if (uom != null) {
-                    unit = Unit.valueOf(uom);
+                    unit = SimpleUnitFormat.getInstance().parse(uom);
                 }
             } catch (IllegalArgumentException iae) {
                 if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {

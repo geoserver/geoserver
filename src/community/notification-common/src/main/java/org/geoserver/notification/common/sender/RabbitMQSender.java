@@ -57,7 +57,7 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
 
     protected Channel channel;
 
-    public void initialize() {
+    public void initialize() throws Exception {
         if (uri == null) {
             if (this.username != null && !this.username.isEmpty() && this.password != null
                     && !this.password.isEmpty()) {
@@ -86,7 +86,6 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
     }
 
     public void close() throws Exception {
-
         if (this.channel != null) {
             this.channel.close();
         }
@@ -103,7 +102,7 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
             this.initialize();
             this.sendMessage(payload);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.log(Level.FINEST, e.getMessage(), e);
         } finally {
             this.close();
         }

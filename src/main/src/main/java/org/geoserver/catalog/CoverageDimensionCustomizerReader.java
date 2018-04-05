@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.measure.Unit;
+import javax.measure.format.ParserException;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PropertySource;
 import javax.media.jai.PropertySourceImpl;
@@ -571,7 +572,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 if (uom != null) {
                     unit = SimpleUnitFormat.getInstance().parse(uom);
                 }
-            } catch (IllegalArgumentException iae) {
+            } catch (ParserException | IllegalArgumentException iae) {
                 if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
                     LOGGER.warning("Unable to parse the specified unit (" + uom
                             + "). Using the previous one: " + defaultUnit.toString());

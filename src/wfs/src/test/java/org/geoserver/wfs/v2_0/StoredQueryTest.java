@@ -13,6 +13,8 @@ import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geotools.filter.v2_0.FES;
+import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Parser;
 import org.junit.Before;
@@ -92,7 +94,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals("wfs:ListStoredQueriesResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
         
-        xml = getCreatePrimitiveWithinQuery(); 
+        xml = getCreatePrimitiveWithinQuery(false); 
         
         dom = postAsDOM("wfs", xml);
         assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
@@ -106,7 +108,7 @@ public class StoredQueryTest extends WFS20TestSupport {
 
     @Test
     public void testDuplicateStoredQuery() throws Exception {
-        String xml = getCreatePrimitiveWithinQuery();
+        String xml = getCreatePrimitiveWithinQuery(false);
         Document dom = postAsDOM("wfs", xml);
         assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
         assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
@@ -118,7 +120,9 @@ public class StoredQueryTest extends WFS20TestSupport {
         checkOws11Exception(dom, "2.0.0", WFSException.DUPLICATE_STORED_QUERY_ID_VALUE, "myStoredQuery");
     }
 
-    public String getCreatePrimitiveWithinQuery() {
+    public String getCreatePrimitiveWithinQuery(boolean emptyReturnFeatureTypes) {
+        String returnFeatureTypes = emptyReturnFeatureTypes ?  "" : "sf:PrimitiveGeoFeature";
+        
         return "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
         "   xmlns:wfs='http://www.opengis.net/wfs/2.0' " + 
         "   xmlns:fes='http://www.opengis.net/fes/2.0' " + 
@@ -127,8 +131,8 @@ public class StoredQueryTest extends WFS20TestSupport {
         "   xmlns:sf='" + MockData.SF_URI + "'>" + 
         "   <wfs:StoredQueryDefinition id='myStoredQuery'> " + 
         "      <wfs:Parameter name='AreaOfInterest' type='gml:Polygon'/> " + 
-        "      <wfs:QueryExpressionText " + 
-        "           returnFeatureTypes='sf:PrimitiveGeoFeature' " + 
+        "      <wfs:QueryExpressionText " +
+        "           returnFeatureTypes='" + returnFeatureTypes + "' " + 
         "           language='urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression' " + 
         "           isPrivate='false'> " + 
         "         <wfs:Query typeNames='sf:PrimitiveGeoFeature'> " + 
@@ -446,5 +450,60 @@ public class StoredQueryTest extends WFS20TestSupport {
         dom = getAsDOM("wfs?request=ListStoredQueries");
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'urn:example:wfs2-query:GetFeatureByName']", dom);
+    }
+
+    @Test
+    public void testCreateStoredQueryWithEmptyReturnFeatureTypes() throws Exception {
+        String xml =
+                "<wfs:ListStoredQueries service='WFS' version='2.0.0' " +
+                        " xmlns:wfs='" + WFS.NAMESPACE + "'/>";
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        assertEquals("wfs:ListStoredQueriesResponse", dom.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
+
+        xml = getCreatePrimitiveWithinQuery(true);
+
+        dom = postAsDOM("wfs", xml);
+        // print(dom);
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        // verify it can be listed
+        dom = getAsDOM("wfs?request=ListStoredQueries");
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+        XMLAssert.assertXpathExists("//wfs:ReturnFeatureType[text() = 'sf:PrimitiveGeoFeature']", dom);
+        
+        // verify it describes correctly
+        xml = "<wfs:DescribeStoredQueries xmlns:wfs='" + WFS.NAMESPACE + "' service='WFS'>" +
+                        "<wfs:StoredQueryId>myStoredQuery</wfs:StoredQueryId>" +
+                        "</wfs:DescribeStoredQueries>";
+        dom = postAsDOM("wfs", xml);
+        // print(dom);
+        assertEquals("wfs:DescribeStoredQueriesResponse", dom.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathExists("//wfs:StoredQueryDescription[@id='myStoredQuery']", dom);
+        XMLAssert.assertXpathExists("//wfs:QueryExpressionText/@returnFeatureTypes", dom);
+        XMLAssert.assertXpathEvaluatesTo("", "//wfs:QueryExpressionText/@returnFeatureTypes", dom);
+
+        // verify it can be run
+        xml = "<wfs:GetFeature service='WFS' version='2.0.0' xmlns:gml='" + GML.NAMESPACE + "'" +
+                "       xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'>" +
+                "   <wfs:StoredQuery id='myStoredQuery'> " +
+                "      <wfs:Parameter name='AreaOfInterest'>"
+                +   "   <gml:Envelope srsName='EPSG:4326'>"
+                +   "      <gml:lowerCorner>57.0 -4.5</gml:lowerCorner>"
+                +   "      <gml:upperCorner>62.0 1.0</gml:upperCorner>"
+                +   "   </gml:Envelope>" +
+                "      </wfs:Parameter> " +
+                "   </wfs:StoredQuery> " +
+                "</wfs:GetFeature>";
+        dom = postAsDOM("wfs", xml);
+        // print(dom);
+        assertGML32(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        XMLAssert.assertXpathExists("//sf:PrimitiveGeoFeature/gml:name[text() = 'name-f002']", dom);
+        
     }
 }

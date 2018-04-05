@@ -12,10 +12,12 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
-import javax.measure.unit.UnitFormat;
+import si.uom.NonSI;
+import si.uom.SI;
+import tec.uom.se.format.SimpleUnitFormat;
+
+import javax.measure.Unit;
+import javax.measure.format.UnitFormat;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -79,7 +81,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
                 }
 
                 List<String> unitNames = new ArrayList<String>();
-                UnitFormat format = UnitFormat.getInstance(Locale.ENGLISH);
+                UnitFormat format = SimpleUnitFormat.getInstance();
                 for (Unit<?> unit : UNITS) {
                     unitNames.add(format.format(unit));
                 }

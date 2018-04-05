@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.measure.quantity.Quantity;
-import javax.measure.unit.BaseUnit;
+import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
+
+import tec.uom.se.unit.BaseUnit;
 
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.WrappedSampleDimension;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
@@ -252,7 +254,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(wrappedName, wrappedDim.getDescription().toString());
 
         // Configure a new GridSampleDimension without categories
-        sampleDim = new GridSampleDimension("original", null, new BaseUnit<Quantity>("test"));
+        sampleDim = new GridSampleDimension("original", null, new BaseUnit<Dimensionless>("test"));
         // New wrapped sample dimension
         wrappedDim = WrappedSampleDimension.build(sampleDim, coverageDim);
         // Get the range

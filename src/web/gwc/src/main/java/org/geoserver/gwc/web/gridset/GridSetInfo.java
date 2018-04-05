@@ -9,11 +9,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.measure.converter.UnitConverter;
+import javax.measure.IncommensurableException;
+import javax.measure.UnconvertibleException;
+import javax.measure.Unit;
+import javax.measure.UnitConverter;
 import javax.measure.quantity.Angle;
-import javax.measure.quantity.Quantity;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.Unit;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Units;
@@ -24,6 +24,9 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.CoordinateSystemAxis;
+
+import si.uom.NonSI;
+import si.uom.SI;
 
 class GridSetInfo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -269,6 +272,12 @@ class GridSetInfo implements Serializable {
         return metersPerUnit;
     }
 
+    /**
+     * 
+     * @param crs
+     * @return
+     * @throws IllegalArgumentException if the equivalence can't be established
+     */
     public Double getMetersPerUnit(CoordinateReferenceSystem crs) {
         if (crs == null) {
             return null;
@@ -280,6 +289,12 @@ class GridSetInfo implements Serializable {
         return metersPerUnit(unit);
     }
 
+    /**
+     * 
+     * @param crs
+     * @return
+     * @throws IllegalArgumentException if the provided unit can't be converted to meters
+     */
     static Double metersPerUnit(final Unit<?> unit) {
         double meters;
         final Unit<Angle> degree = NonSI.DEGREE_ANGLE;
@@ -288,13 +303,17 @@ class GridSetInfo implements Serializable {
         if (degree.equals(unit)) {
             meters = GridSetFactory.EPSG4326_TO_METERS;
         } else {
-            Unit<? extends Quantity> metre = Unit.valueOf("m");
             try {
-                meters = unit.getConverterTo(metre).convert(1);
+                meters = unit.getConverterToAny(SI.METRE).convert(1);
             } catch (Exception e) {
-                UnitConverter converter = unit.getConverterTo(degree);
-                double toDegree = converter.convert(1);
-                meters = toDegree * GridSetFactory.EPSG4326_TO_METERS;
+                UnitConverter converter;
+				try {
+					converter = unit.getConverterToAny(degree);
+	                double toDegree = converter.convert(1);
+	                meters = toDegree * GridSetFactory.EPSG4326_TO_METERS;
+				} catch (UnconvertibleException | IncommensurableException e1) {
+					throw new IllegalArgumentException(e1);
+				}
             }
         }
         return meters;

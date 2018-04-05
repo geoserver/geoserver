@@ -232,11 +232,13 @@ public class CachedRuleReader implements RuleReaderService {
                 LOGGER.fine("params :" + cacheConfiguration);
             }
 
+        AccessInfo accessInfo = null;
         try {
-            return ruleCache.get(filter);
+            accessInfo = ruleCache.get(filter);
         } catch (ExecutionException ex) {
-            throw new RuntimeException(ex); // fixme: handle me
+            // throw new RuntimeException(ex); // fixme: handle me
         }
+        return accessInfo;
     }
 
     @Override

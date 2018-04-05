@@ -168,9 +168,11 @@ public class StoredQuery {
             }
 
             Set<QName> returnTypes = new HashSet(qe.getReturnFeatureTypes());
+            boolean allowAnyReturnType = returnTypes.equals(Collections.singleton(new QName("")));
             for (Iterator<QName> it = queryTypes.iterator(); it.hasNext();) {
                 QName qName = it.next();
-                if (!returnTypes.contains(qName) && !isParameter(qName.getLocalPart(), queryDef.getParameter())) {
+                if (!returnTypes.contains(qName) && !allowAnyReturnType && 
+                        !isParameter(qName.getLocalPart(), queryDef.getParameter())) {
                     throw new WFSException(String.format("StoredQuery references typeName %s:%s " +
                         "not listed in returnFeatureTypes: %s", qName.getPrefix(), 
                         qName.getLocalPart(), toString(qe.getReturnFeatureTypes())));
@@ -179,8 +181,8 @@ public class StoredQuery {
                     returnTypes.remove(qName);
                 }
             }
-
-            if (!returnTypes.isEmpty() && !returnTypes.equals(Collections.singleton(new QName("")))) {
+            
+            if (!returnTypes.isEmpty() && !allowAnyReturnType) {
                 throw new WFSException(String.format("StoredQuery declares return feature type(s) not " +
                         "not referenced in query definition: %s", toString(returnTypes)));
             }

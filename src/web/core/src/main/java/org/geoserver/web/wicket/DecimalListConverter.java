@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.wicket.util.convert.UnconvertibleException;
+import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 
 /**
@@ -22,7 +22,7 @@ public class DecimalListConverter implements IConverter<List<Double>> {
 
     @Override
     public List<Double> convertToObject(String value, Locale locale)
-            throws UnconvertibleException {
+            throws ConversionException {
         List<Double> result = new ArrayList<>();
         if(value != null && !"-".equals(value.trim())) {
             String[] values = value.split("\\s+");

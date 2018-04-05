@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.convert.UnconvertibleException;
+import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 
@@ -40,7 +40,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
             try {
                 return Float.parseFloat(value);
             } catch (NumberFormatException ex) {
-                throw new UnconvertibleException(ex)
+                throw new ConversionException(ex)
                 .setConverter(this)
                 .setLocale(locale)
                 .setTargetType(Float.class)

@@ -10,7 +10,7 @@ import java.util.Locale;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.convert.UnconvertibleException;
+import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -78,7 +78,7 @@ public class GeometryTextArea extends TextArea<Geometry> {
                     // fall through
                 }
 
-                UnconvertibleException ce = new UnconvertibleException(e.getMessage());
+                ConversionException ce = new ConversionException(e.getMessage());
                 ce.setResourceKey(GeometryTextArea.class.getSimpleName() + ".parseError");
                 throw ce;
             }

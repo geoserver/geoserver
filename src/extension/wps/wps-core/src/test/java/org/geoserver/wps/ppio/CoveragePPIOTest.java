@@ -8,9 +8,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -81,12 +84,34 @@ public class CoveragePPIOTest {
         testIsFormat(coverage, ppio, targetJpeg, "JPEG");
     }
 
+    @Test
+    public void testEncodeQuality() throws Exception {
+        GridCoverage2D coverage = getCoverage();
+        JPEGPPIO ppio = new JPEGPPIO();
+        Map <String, Object> encodingParams = new HashMap<String, Object>();
+
+        File highQualityFile = new File("./target/outputHiQ.jpg");
+        encodingParams.put(CoveragePPIO.QUALITY_KEY, "0.99");
+        try (FileOutputStream fos = new FileOutputStream(highQualityFile)) {
+            ppio.encode(coverage, encodingParams, fos);
+        }
+        final long highQualityFileSize = highQualityFile.length();
+
+        File lowQualityFile = new File("./target/outputLoQ.jpg");
+        encodingParams.put(CoveragePPIO.QUALITY_KEY, "0.01");
+        try (FileOutputStream fos = new FileOutputStream(lowQualityFile)) {
+            ppio.encode(coverage, encodingParams, fos);
+        }
+        final long lowQualityFileSize = lowQualityFile.length();
+        assertTrue(highQualityFileSize > lowQualityFileSize);
+    }
+
     private void testIsFormat(GridCoverage2D coverage, CoveragePPIO ppio, 
-            File inputFile, String formatName) throws Exception {
-        try (FileOutputStream fos = new FileOutputStream(inputFile)) {
+            File encodedFile, String formatName) throws Exception {
+        try (FileOutputStream fos = new FileOutputStream(encodedFile)) {
             ppio.encode(coverage, fos);
         }
-        try (FileImageInputStream fis = new FileImageInputStream(inputFile)) {
+        try (FileImageInputStream fis = new FileImageInputStream(encodedFile)) {
             ImageReader imageReader = null;
             try {
                 imageReader = ImageIO.getImageReaders(fis).next();

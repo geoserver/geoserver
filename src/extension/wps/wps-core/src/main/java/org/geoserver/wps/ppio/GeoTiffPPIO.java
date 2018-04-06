@@ -42,7 +42,6 @@ public class GeoTiffPPIO extends BinaryPPIO {
     protected static final String TILE_WIDTH_KEY = "tilewidth";
     protected static final String TILE_HEIGHT_KEY = "tileheight";
     protected static final String COMPRESSION_KEY = "compression";
-    protected static final String QUALITY_KEY = "quality";
 
     private static final Set<String> SUPPORTED_PARAMS = new HashSet<String>();
     

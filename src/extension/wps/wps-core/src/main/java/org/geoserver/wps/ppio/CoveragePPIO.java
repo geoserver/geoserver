@@ -7,12 +7,13 @@ package org.geoserver.wps.ppio;
 import java.awt.image.RenderedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.GridCoverage2D;
-
-import com.sun.media.jai.codec.ImageEncoder;
-import com.sun.media.jai.codecimpl.JPEGImageEncoder;
-import com.sun.media.jai.codecimpl.PNGImageEncoder;
+import org.geotools.image.ImageWorker;
+import org.geotools.util.logging.Logging;
 
 /**
  * Process parameter input / output for GridCoverage on a specific mime type. 
@@ -20,18 +21,37 @@ import com.sun.media.jai.codecimpl.PNGImageEncoder;
  */
 public abstract class CoveragePPIO extends BinaryPPIO {
 
+    private static float DEFAULT_QUALITY = 0.75f;
+
+    private static final Logger LOGGER = Logging.getLogger(CoveragePPIO.class);
+
     protected CoveragePPIO(final String mimeType) {
         super(GridCoverage2D.class, GridCoverage2D.class, mimeType);
     }
 
-    public abstract ImageEncoder getEncoder(OutputStream os);
-
     @Override
     public void encode(Object value, OutputStream outputStream) throws Exception {
-        GridCoverage2D gridCoverage = (GridCoverage2D) value;
-        RenderedImage renderedImage = gridCoverage.getRenderedImage();
-        ImageEncoder encoder = getEncoder(outputStream);
-        encoder.encode(renderedImage);
+        // Call default implementation with no params
+        encode(value, null, outputStream);
+    }
+
+    private static float extractQuality(Map<String, Object> encodingParameters) {
+        float quality = DEFAULT_QUALITY;
+        if (encodingParameters != null && !encodingParameters.isEmpty() && 
+                encodingParameters.containsKey(QUALITY_KEY)) {
+            String compressionQuality = (String) encodingParameters.get(QUALITY_KEY);
+            try {
+                quality = Float.parseFloat(compressionQuality);
+            } catch (NumberFormatException nfe) {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info(
+                            "Specified quality is not valid (it should be in the range [0,1])."
+                                    + " quality = " + compressionQuality 
+                                    + "\nUsing default Quality: " + DEFAULT_QUALITY);
+                }
+            }
+        }
+        return quality;
     }
 
     /**
@@ -47,8 +67,13 @@ public abstract class CoveragePPIO extends BinaryPPIO {
         }
 
         @Override
-        public final ImageEncoder getEncoder(OutputStream outputStream) {
-            return new PNGImageEncoder(outputStream, null);
+        public void encode(Object value, Map<String, Object> encodingParameters,
+                OutputStream outputStream) throws Exception {
+            GridCoverage2D gridCoverage = (GridCoverage2D) value;
+            RenderedImage renderedImage = gridCoverage.getRenderedImage();
+            ImageWorker worker = new ImageWorker(renderedImage);
+            float quality = extractQuality(encodingParameters);
+            worker.writePNG(outputStream, "FILTERED", quality, false, false);
         }
 
         @Override
@@ -81,8 +106,13 @@ public abstract class CoveragePPIO extends BinaryPPIO {
         }
 
         @Override
-        public ImageEncoder getEncoder(OutputStream outputStream) {
-            return new JPEGImageEncoder(outputStream, null);
+        public void encode(Object value, Map<String, Object> encodingParameters,
+                OutputStream outputStream) throws Exception {
+            GridCoverage2D gridCoverage = (GridCoverage2D) value;
+            RenderedImage renderedImage = gridCoverage.getRenderedImage();
+            ImageWorker worker = new ImageWorker(renderedImage);
+            float quality = extractQuality(encodingParameters);
+            worker.writeJPEG(outputStream, "JPEG", quality, false);
         }
 
         @Override

@@ -14,6 +14,8 @@ package org.geoserver.wps.ppio;
  */
 public abstract class BinaryPPIO extends ComplexPPIO {
 
+    public static final String QUALITY_KEY = "quality";
+
 	protected BinaryPPIO(Class externalType, Class internalType, String mimeType) {
 		super(externalType, internalType, mimeType);
 	}

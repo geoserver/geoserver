@@ -427,11 +427,12 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
         if (resourceType == Type.RESOURCE && resource.lastmodified() < expirationThreshold) {
             result = resource.delete();
         } else if (resourceType == Type.DIRECTORY) {
+            long directoryModified = resource.lastmodified();
             for (Resource child : resource.list()) {
                 result &= cleanupResource(child, expirationThreshold);
             }
             // Cleanup the directory too if all the children have been cleanup
-            if (result) {
+            if (result && directoryModified < expirationThreshold) {
                 result &= resource.delete();
             }
         }

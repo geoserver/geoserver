@@ -56,6 +56,9 @@
     <constructor-arg ref="catalog"/>
   </bean>
   
+  <!-- Hack to allow old OWS based services to work along WFS3 -->
+  <bean id="wfs3DispatcherCallback" class="org.geoserver.wfs3.WFS3DispatcherCallback"/>
+
   <!-- Exception handler -->
   <bean id="wfs3ExceptionHandler" class="org.geoserver.wfs3.WFS3ExceptionHandler">
     <constructor-arg>

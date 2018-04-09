@@ -42,17 +42,17 @@ from New York City.</abstrct>
       </gml>
     </entry>
     <entry>
-      <version>V_10</version>
-      <gml>
-        <srsNameStyle>XML</srsNameStyle>
-        <overrideGMLAttributes>true</overrideGMLAttributes>
-      </gml>
-    </entry>
-    <entry>
       <version>V_11</version>
       <gml>
         <srsNameStyle>URN2</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_10</version>
+      <gml>
+        <srsNameStyle>XML</srsNameStyle>
+        <overrideGMLAttributes>true</overrideGMLAttributes>
       </gml>
     </entry>
   </gml>
@@ -62,4 +62,7 @@ from New York City.</abstrct>
   <canonicalSchemaLocation>true</canonicalSchemaLocation>
   <encodeFeatureMember>false</encodeFeatureMember>
   <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
+  <srs>
+    <string>3875</string>
+  </srs>
 </wfs>

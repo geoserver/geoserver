@@ -196,7 +196,8 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
 
         String xpathTemplate = "//fes:Constraint[@name='%s']/ows:DefaultValue";
         for (String constraint : new String[]{"ImplementsAdHocQuery", "ImplementsResourceId", 
-                "ImplementsMinStandardFilter", "ImplementsStandardFilter", "ImplementsMinSpatialFilter", 
+                "ImplementsMinStandardFilter", "ImplementsStandardFilter", "ImplementsMinSpatialFilter",
+                "ImplementsSpatialFilter",
                 "ImplementsSorting", "ImplementsMinimumXPath"}) {
             String xpath = String.format(xpathTemplate, constraint);
             assertXpathEvaluatesTo("TRUE", xpath, doc);

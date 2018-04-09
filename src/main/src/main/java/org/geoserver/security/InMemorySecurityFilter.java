@@ -66,6 +66,9 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
         if (info instanceof NamespaceInfo) {
             info = getCatalog().getWorkspaceByName(((NamespaceInfo) info).getPrefix());
         }
+        if (info == null) {
+            return false;
+        }
         WrapperPolicy policy = getSecurityWrapper().buildWrapperPolicy(resourceAccesssManager,
                 user, info, MixedModeBehavior.HIDE);
         AccessLevel accessLevel = policy.getAccessLevel();

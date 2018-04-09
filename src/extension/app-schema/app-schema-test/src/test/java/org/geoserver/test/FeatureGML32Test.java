@@ -75,7 +75,7 @@ public class FeatureGML32Test extends AbstractAppSchemaTestSupport {
         String xml =
                 "<wfs:CreateStoredQuery service='WFS' version='2.0.0' " +
                 "   xmlns:wfs='http://www.opengis.net/wfs/2.0' " +
-                "   xmlns:fes='http://www.opengis.org/fes/2.0' " +
+                "   xmlns:fes='http://www.opengis.net/fes/2.0' " +
                 "   xmlns:gml='http://www.opengis.net/gml/3.2' " +
                 "   xmlns:gsml='urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0'>" +
                 "   <wfs:StoredQueryDefinition id='myStoredQuery'> " +

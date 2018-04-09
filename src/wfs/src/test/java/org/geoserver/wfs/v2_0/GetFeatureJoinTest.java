@@ -566,6 +566,26 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            
            XMLAssert.assertXpathEvaluatesTo("6", "count(//wfs:Tuple)", dom);
     }
+
+    @Test
+    public void testSelfJoinLocalNamespaces() throws Exception {
+        String xml =
+                "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+                        " xmlns:ns42='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" +
+                        "<wfs:Query typeNames='ns42:Forests ns42:Forests' aliases='a b'>" +
+                        "<fes:Filter> " +
+                        "<Disjoint>" +
+                        "<ValueReference>a/ns42:the_geom</ValueReference>" +
+                        "<ValueReference>b/ns42:the_geom</ValueReference>" +
+                        "</Disjoint>" +
+                        "</fes:Filter> " +
+                        "</wfs:Query>" +
+                        "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+
+        XMLAssert.assertXpathEvaluatesTo("6", "count(//wfs:Tuple)", dom);
+    }
     
     @Test
     public void testTemporalJoin() throws Exception {
@@ -958,4 +978,36 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         }
         return result;
     }
+    
+    @Test
+    public void testSelfJoinNoAliases() throws Exception {
+        String xml = "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" count=\"10\" " +
+                "service=\"WFS\" startIndex=\"0\" version=\"2.0.0\"> <wfs:Query " +
+                "xmlns:ns76=\"" + SystemTestData.DEFAULT_URI + "\" " +
+                "typeNames=\"ns76:PrimitiveGeoFeature ns76:PrimitiveGeoFeature\"> <Filter " +
+                "xmlns=\"http://www.opengis.net/fes/2.0\"> <PropertyIsEqualTo> " +
+                "<ValueReference>ns76:PrimitiveGeoFeature/ns76:booleanProperty</ValueReference> " +
+                "<ValueReference>ns76:PrimitiveGeoFeature/ns76:booleanProperty</ValueReference> " +
+                "</PropertyIsEqualTo> </Filter> </wfs:Query> </wfs:GetFeature>";
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        
+        // many tuples match:
+        // f001 with itself, f003, f008
+        // f003 with itself, f001, f008
+        // f008 with itself, f001, f003
+        // f002 with itself
+        XMLAssert.assertXpathEvaluatesTo("10", "count(//wfs:Tuple)", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f001' and wfs:member[2]//gml:description = 'description-f001']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f001' and wfs:member[2]//gml:description = 'description-f003']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f001' and wfs:member[2]//gml:description = 'description-f008']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f003' and wfs:member[2]//gml:description = 'description-f001']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f003' and wfs:member[2]//gml:description = 'description-f003']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f003' and wfs:member[2]//gml:description = 'description-f008']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f008' and wfs:member[2]//gml:description = 'description-f001']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f008' and wfs:member[2]//gml:description = 'description-f003']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f008' and wfs:member[2]//gml:description = 'description-f008']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member[1]//gml:description = 'description-f002' and wfs:member[2]//gml:description = 'description-f002']", dom);
+    }
+    
 }

@@ -51,8 +51,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
     protected static final String MEASUREMENTS_URI_GML32 = "http://www.measurements_gml32.org/1.0";
 
     // directory that should contain all the new files created during the setup of this data set
-
-    protected final File TEST_ROOT_DIRECTORY = createTestRootDirectory();
+    private File testRootDirectory;
 
     /** Helper method that just quietly creates a temporary directory, */
     private static File createTestRootDirectory() {
@@ -180,7 +179,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
             String mappingsPath,
             Map<String, String> parameters) {
         // create root directory
-        File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
+        File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
         gmlDirectory.mkdirs();
         // add the necessary files
         File measurementsMappings =
@@ -218,7 +217,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
             String mappingsPath,
             Map<String, String> parameters) {
         // create root directory
-        File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
+        File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
         gmlDirectory.mkdirs();
         // add the necessary files
         File stationsMappings =
@@ -259,7 +258,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
             String measurementsMappingsPath,
             Map<String, String> parameters) {
         // create root directory
-        File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
+        File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
         gmlDirectory.mkdirs();
         // add the necessary files
         File stationsMappings =
@@ -300,19 +299,33 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 measurementsProperties.getAbsolutePath());
     }
 
+    /**
+     * Helper method that returns the directory, relative to tests root directory, that will contain
+     * the mappings, schemas, properties, etc ... of the target GML version.
+     */
+    protected synchronized File getDirectoryForGmlPrefix(String gmlPrefix) {
+        if (testRootDirectory == null) {
+            // init the test directory
+            testRootDirectory = createTestRootDirectory();
+        }
+        return new File(testRootDirectory, gmlPrefix);
+    }
+
     @Override
     public void tearDown() {
         super.tearDown();
         try {
-            // remove tests root directory
-            IOUtils.delete(TEST_ROOT_DIRECTORY);
+            // remove tests root directory if needed
+            if (testRootDirectory != null && testRootDirectory.exists()) {
+                IOUtils.delete(testRootDirectory);
+            }
         } catch (Exception exception) {
             // something bad happen, just log the exception and move on
             LOGGER.log(
                     Level.WARNING,
                     String.format(
                             "Error removing tests root directory '%s'.",
-                            TEST_ROOT_DIRECTORY.getAbsolutePath()),
+                            testRootDirectory.getAbsolutePath()),
                     exception);
         }
     }

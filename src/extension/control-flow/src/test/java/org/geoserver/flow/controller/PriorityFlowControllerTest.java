@@ -74,6 +74,64 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
     }
 
     @Test
+    public void testFirstInFirstOut() throws Exception {
+        // create a single item flow controller 
+        HttpHeaderPriorityProvider priorityProvider = new HttpHeaderPriorityProvider
+                (PRIORITY_HEADER_NAME, 0);
+        GlobalFlowController controller = new GlobalFlowController(1, new PriorityThreadBlocker
+                (1, priorityProvider));
+
+        // make three testing threads that will "process" forever, until we interrupt them,
+        // all having the same priority
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(1), 0,
+                Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(1), 0,
+                Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t3 = new FlowControllerTestingThread(buildRequest(1), 0,
+                Long.MAX_VALUE, controller);
+        try {
+            // start threads making sure every one of them managed to block somewhere before 
+            // starting the next one
+            t1.start();
+            waitBlocked(t1, MAX_WAIT);
+            Thread.sleep(10);
+            t2.start();
+            waitBlocked(t2, MAX_WAIT);
+            Thread.sleep(10);
+            t3.start();
+            waitBlocked(t3, MAX_WAIT);
+
+            assertEquals(ThreadState.PROCESSING, t1.state);
+            assertEquals(ThreadState.STARTED, t2.state);
+            assertEquals(ThreadState.STARTED, t3.state);
+
+            // let t1 go and wait until its termination. This should allow t2 to go (has higher 
+            // priority because it has been queued later)
+            t1.interrupt();
+            waitTerminated(t1, MAX_WAIT);
+
+            assertEquals(ThreadState.COMPLETE, t1.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
+            assertEquals(ThreadState.STARTED, t3.state);
+
+            // let t2 go and wait until its termination. This should allow t3 to go
+            t2.interrupt();
+            waitTerminated(t2, MAX_WAIT);
+
+            assertEquals(ThreadState.COMPLETE, t1.state);
+            assertEquals(ThreadState.COMPLETE, t2.state);
+            waitState(ThreadState.PROCESSING, t3, MAX_WAIT);
+
+            // unlock t2 as well
+            t2.interrupt();
+        } finally {
+            waitAndKill(t1, MAX_WAIT);
+            waitAndKill(t2, MAX_WAIT);
+            waitAndKill(t3, MAX_WAIT);
+        }
+    }
+
+    @Test
     public void testTimeout() {
         // create a single item flow controller 
         HttpHeaderPriorityProvider priorityProvider = new HttpHeaderPriorityProvider

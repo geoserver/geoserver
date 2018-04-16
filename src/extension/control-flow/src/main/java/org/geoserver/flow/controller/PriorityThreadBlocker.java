@@ -147,6 +147,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
      */
     private static class WaitToken implements Comparable<WaitToken> {
         CountDownLatch latch = new CountDownLatch(1);
+        long created = System.currentTimeMillis();
         int priority;
 
         public WaitToken(int priority) {
@@ -156,7 +157,13 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         @Override
         public int compareTo(WaitToken o) {
             // to have the highest priority first (smallest) in the queue
-            return o.priority - this.priority;
+            int diff = o.priority - this.priority;
+            if (diff != 0) {
+                return diff;
+            } else {
+                // in case of same priority, first come first served
+                return Long.signum(this.created - o.created);
+            }
         }
     }
 

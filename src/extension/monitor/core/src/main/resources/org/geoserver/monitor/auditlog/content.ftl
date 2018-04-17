@@ -23,6 +23,8 @@
    <ResponseStatus>${responseStatus!""}</ResponseStatus>
    <ResponseLength>${responseLength?c}</ResponseLength>
    <ResponseContentType>${responseContentType!""}</ResponseContentType>
+   <CacheResult>${cacheResult!""}</CacheResult>
+   <MissReason>${missReason!""}</MissReason>
    <#if error??>
    <Failed>true</Failed>
    <ErrorMessage>${errorMessage!""}</ErrorMessage>

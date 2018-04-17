@@ -219,6 +219,16 @@ public class RequestData implements Serializable {
      */
     private BoundingBox bbox;
 
+    /**
+     * Whether the request hit or miss the cache for cache-able protocols (GWC, direct integration)
+     */
+    private String cacheResult;
+
+    /**
+     * If there was a cache miss, the reason for it
+     */
+    private String missReason;
+
     public long getId() {
         return id;
     }
@@ -518,6 +528,8 @@ public class RequestData implements Serializable {
         clone.setResponseStatus(responseStatus);
         clone.setHttpReferer(httpReferer);
         clone.setBbox(bbox);
+        clone.setCacheResult(cacheResult);
+        clone.setMissReason(missReason);
      
         return clone;
     }
@@ -550,6 +562,20 @@ public class RequestData implements Serializable {
     public void setBbox(BoundingBox bbox) {
         this.bbox = bbox;
     }
-    
-    
+
+    public String getCacheResult() {
+        return cacheResult;
+    }
+
+    public void setCacheResult(String cacheResult) {
+        this.cacheResult = cacheResult;
+    }
+
+    public String getMissReason() {
+        return missReason;
+    }
+
+    public void setMissReason(String missReason) {
+        this.missReason = missReason;
+    }
 }

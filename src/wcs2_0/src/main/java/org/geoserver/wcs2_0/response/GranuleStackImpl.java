@@ -21,6 +21,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
+import org.geotools.resources.image.ImageUtilities;
 import org.opengis.coverage.CannotEvaluateException;
 import org.opengis.coverage.PointOutsideCoverageException;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -135,7 +136,11 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/ im
     public boolean dispose(boolean force) {
         boolean disposed = true;
         for (GridCoverage2D coverage: coverages) {
+            RenderedImage ri = coverage.getRenderedImage();
             disposed &= coverage.dispose(force);
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
         }
         return disposed;
     }

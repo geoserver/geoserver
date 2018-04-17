@@ -76,6 +76,9 @@
       <list-index column="IDX"/>
       <element column="NAME" type="string"/>
     </list>
+
+    <property column="CACHE_RESULT" name="cacheResult" length="4096"/>
+    <property column="MISS_REASON" name="missReason" length="4096"/>
     
     <!--list name="layers" table="REQUEST_LAYERS">
         <key column="REQUEST_ID" not-null="true"/>

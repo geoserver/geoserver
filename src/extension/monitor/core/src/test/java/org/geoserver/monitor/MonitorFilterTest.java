@@ -200,8 +200,26 @@ public class MonitorFilterTest {
         assertEquals("/bar/foo", data.getPath());
         assertEquals("78.56.34.12", data.getRemoteAddr());
         assertEquals("http://testhost/testpath", data.getHttpReferer());
+        assertNull(data.getCacheResult());
+        assertNull(data.getMissReason());
+    }
 
-      
+    @Test
+    public void testGWCHeaders() throws Exception {
+        MockHttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
+        MockHttpServletResponse response = response();
+        String cacheResult = "Miss";
+        response.addHeader(MonitorFilter.GEOWEBCACHE_CACHE_RESULT, cacheResult);
+        String missReason = "Wrong planet alignment";
+        response.addHeader(MonitorFilter.GEOWEBCACHE_MISS_REASON, missReason);
+        filter.doFilter(req, response, chain);
+
+        RequestData data = dao.getLast();
+        assertEquals("POST", data.getHttpMethod());
+        assertEquals("/bar/foo", data.getPath());
+        assertEquals("78.56.34.12", data.getRemoteAddr());
+        assertEquals(cacheResult, data.getCacheResult());
+        assertEquals(missReason, data.getMissReason());
     }
 
     @Test

@@ -203,7 +203,9 @@ public class GeofencePage extends GeoServerSecuredPage {
                     target.add(label);
                 }
 
-                target.add(getPage().get("feedback"));
+                if(getPage().get("feedback") != null) {
+                    target.add(getPage().get("feedback"));
+                }
             }
         }.setDefaultFormProcessing(false));
 

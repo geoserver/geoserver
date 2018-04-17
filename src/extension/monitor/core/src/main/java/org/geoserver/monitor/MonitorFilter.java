@@ -34,8 +34,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class MonitorFilter implements GeoServerFilter {
 
-    
     static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
+    
+    // We are are not referring to shared constants as this module does not
+    // depend on GWC, which might be missing in a deploy. 
+    static final String GEOWEBCACHE_CACHE_RESULT = "geowebcache-cache-result";
+    static final String GEOWEBCACHE_MISS_REASON = "geowebcache-miss-reason";
     
     Monitor monitor;
     MonitorRequestFilter requestFilter;
@@ -155,7 +159,13 @@ public class MonitorFilter implements GeoServerFilter {
         data.setResponseContentType(response.getContentType());
         data.setResponseLength(((MonitorServletResponse)response).getContentLength());
         data.setResponseStatus(((MonitorServletResponse)response).getStatus());
-        
+
+        // GWC headers integration.
+        String cacheResult = ((MonitorServletResponse) response).getHeader(GEOWEBCACHE_CACHE_RESULT);
+        String missReason = ((MonitorServletResponse) response).getHeader(GEOWEBCACHE_MISS_REASON);
+        data.setCacheResult(cacheResult);
+        data.setMissReason(missReason);
+
         if (error != null) {
             data.setStatus(Status.FAILED);
             data.setErrorMessage(error.getLocalizedMessage());

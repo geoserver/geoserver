@@ -199,3 +199,24 @@ The following attributes are specific to GeoIP look ups and are not captured out
      - The longitude from which the request originated.
      - Numeric
    
+GWC 
+---
+
+The following attributes are specific to tile cached requests.
+
+.. list-table::
+:widths: 20 65 15
+   :header-rows: 1
+
+      * - Attribute
+        - Description
+        - Type
+      * - CacheResult
+        - "HIT" or "MISS" (can be empty if GWC was not involved)
+        - String
+      * - MissReason
+        - A description of why the cache was not used. Available only on requests hitting a cached layer on direct WMS integration,
+          applies to cases where the request was not forwarded to GWC, for example "no parameter filter exists for FEATUREID",
+          "request does not align to grid(s) "EPSG:4326" or "not a tile layer". Will be missing for
+          any request not hitting the direct integration (e.g., direct WMTS requests, for example)
+        - String

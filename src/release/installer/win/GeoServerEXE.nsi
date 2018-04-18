@@ -983,6 +983,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\lib"
   RMDir /r "$INSTDIR\logs"
   RMDir /r "$INSTDIR\resources"
+  RMDir /r "$INSTDIR\work" ; working data
   RMDir /r "$INSTDIR\webapps"
   RMDir /r "$INSTDIR\v*" ; EPSG DB
   Delete "$INSTDIR\*.*"

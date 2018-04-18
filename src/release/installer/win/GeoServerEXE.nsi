@@ -42,9 +42,10 @@ Var DataDirTemp
 Var DataDirHWND
 Var BrowseDataDirHWND
 Var DataDirPathCheck
-Var IsExisting
+Var DataDirType
 Var DefaultDataDir
 Var ExistingDataDir
+Var IsExistingDataDir
 Var GSUser
 Var GSPass
 Var GSUserHWND
@@ -329,13 +330,13 @@ Function FindDataDirPath
 
   NoErrors:
     ClearErrors
-    StrCpy $IsExisting 1
+    StrCpy $DataDirType 1
     Goto End
 
   Errors:
     ClearErrors
     StrCpy $1 "" ; not found
-    StrCpy $IsExisting 0
+    StrCpy $DataDirType 0
     Goto End
 
   End:
@@ -420,7 +421,7 @@ Function DataDir
     EnableWindow $0 1 ; Turns on
   ${EndIf}
   ${If} $8 == "novalidDataDir"
-    ${If} $IsExisting == 1  ; Dont' turn off unless the radio box is checked!
+    ${If} $DataDirType == 1  ; Dont' turn off unless the radio box is checked!
       ${NSD_SetText} $DataDirPathCheck "This path does not contain a valid data directory"
       GetDlgItem $0 $HWNDPARENT 1 ; Next
       EnableWindow $0 0 ; Turns off
@@ -428,7 +429,7 @@ Function DataDir
   ${EndIf}
 
   ; default check box
-  ${If} $IsExisting == 1
+  ${If} $DataDirType == 1
     ${NSD_Check} $ExistingDataDir
   ${Else}
     ${NSD_Check} $DefaultDataDir
@@ -503,7 +504,7 @@ Function CheckBoxDataDirExisting
 
   End:
     ClearErrors
-    StrCpy $IsExisting 1
+    StrCpy $DataDirType 1
 
 FunctionEnd
 
@@ -512,7 +513,7 @@ Function CheckBoxDataDirDefault
 
   GetDlgItem $0 $HWNDPARENT 1 ; Next
   EnableWindow $0 1 ; Turns on
-  StrCpy $IsExisting 0
+  StrCpy $DataDirType 0
 
 FunctionEnd
 
@@ -526,7 +527,7 @@ Function BrowseDataDir
     ${NSD_SetText} $DataDirHWND $1 ; populate the field
     ${NSD_Check} $ExistingDataDir ; change the check box
     ${NSD_UnCheck} $DefaultDataDir ; change the check box
-    StrCpy $IsExisting 1 ; now using existing datadir
+    StrCpy $DataDirType 1 ; now using existing datadir
   ${EndIf}  
 
 FunctionEnd
@@ -534,18 +535,30 @@ FunctionEnd
 ; When done, set variable permanently
 Function DataDirLeave
 
-  ${If} $IsExisting == 0 ; use the default
+  ${If} $DataDirType == 0 ; use the default
     StrCpy $DataDir "$INSTDIR\data_dir"
-  ${ElseIf} $IsExisting == 1
+  ${ElseIf} $DataDirType == 1
     StrCpy $DataDir $DataDirTemp
   ${EndIf}
+
+  ; check to see wether the data_dir exist
+  IfFileExists $DataDir DataDirExists
+
+  ; does NOT exists
+  StrCpy $IsExistingDataDir 0
+  Goto End
+
+  DataDirExists:
+  StrCpy $IsExistingDataDir 1
+
+  End:
 
 FunctionEnd
 
 ; Will build a page to input default GS admin creds
 Function Creds
 
-  StrCmp $IsExisting 1 SkipCreds
+  StrCmp $IsExistingDataDir 1 SkipCreds
   
   !insertmacro MUI_HEADER_TEXT "$(TEXT_CREDS_TITLE)" "$(TEXT_CREDS_SUBTITLE)"
   nsDialogs::Create 1018
@@ -730,14 +743,14 @@ Function Ready
 
   ; Data dir
   ${NSD_CreateLabel} 10u 85u 35% 24u "Data Directory:"
-  ${If} $IsExisting == 1
+  ${If} $IsExistingDataDir == 1
     ${NSD_CreateLabel} 40% 85u 60% 24u "Using existing data directory:$\r$\n$DataDir"
   ${Else}
     ${NSD_CreateLabel} 40% 85u 60% 24u "Using default data directory:$\r$\n$DataDir"
   ${EndIf}
 
   ; Creds
-  ${If} $IsExisting == 1
+  ${If} $IsExistingDataDir == 1
     ${NSD_CreateLabel} 10u 112u 35% 24u "Port:"
     ${NSD_CreateLabel} 40% 112u 60% 24u "$Port"
   ${Else}
@@ -800,7 +813,7 @@ Section "Main" SectionMain
   File /r gs.ico
 
   ; Special handling of the 'data_dir'
-  ${If} $IsExisting == 0 ; Only place files, when NOT using an existing folder
+  ${If} $IsExistingDataDir == 0 ; Only place files, when NOT using an existing folder
   File /r data_dir
   ${EndIf}
 
@@ -857,7 +870,7 @@ SectionEnd
 Section -FinishSection
 
   ; New users.properties file is created here
-  StrCmp $IsExisting 1 NoWriteCreds WriteCreds
+  StrCmp $IsExistingDataDir 1 NoWriteCreds WriteCreds
 
   WriteCreds:
     Delete "$DataDir\security\users.properties"

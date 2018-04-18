@@ -65,20 +65,6 @@ Var PortHWND
 ;VIAddVersionKey FileVersion "${VERSION}"
 ;VIAddVersionKey Comments "http://geoserver.org"
 
-; Install options page headers
-LangString TEXT_JRE_TITLE ${LANG_ENGLISH} "Java Runtime Environment"
-LangString TEXT_JRE_SUBTITLE ${LANG_ENGLISH} "Java Runtime Environment path selection"
-LangString TEXT_DATADIR_TITLE ${LANG_ENGLISH} "GeoServer Data Directory"
-LangString TEXT_DATADIR_SUBTITLE ${LANG_ENGLISH} "GeoServer Data Directory path selection"
-LangString TEXT_TYPE_TITLE ${LANG_ENGLISH} "Type of Installation"
-LangString TEXT_TYPE_SUBTITLE ${LANG_ENGLISH} "Select the type of installation"
-LangString TEXT_READY_TITLE ${LANG_ENGLISH} "Ready to Install"
-LangString TEXT_READY_SUBTITLE ${LANG_ENGLISH} "GeoServer is ready to be installed"
-LangString TEXT_CREDS_TITLE ${LANG_ENGLISH} "GeoServer Administrator"
-LangString TEXT_CREDS_SUBTITLE ${LANG_ENGLISH} "Set administrator credentials"
-LangString TEXT_PORT_TITLE ${LANG_ENGLISH} "GeoServer Web Server Port"
-LangString TEXT_PORT_SUBTITLE ${LANG_ENGLISH} "Set the port that GeoServer will respond on"
-
 ;Interface Settings
 !define MUI_ICON "gs.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
@@ -127,6 +113,20 @@ Page custom Ready                                             ; Summary page
 ; Set languages (first is default language)
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_RESERVEFILE_LANGDLL
+
+; Install options page headers
+LangString TEXT_JRE_TITLE ${LANG_ENGLISH} "Java Runtime Environment"
+LangString TEXT_JRE_SUBTITLE ${LANG_ENGLISH} "Java Runtime Environment path selection"
+LangString TEXT_DATADIR_TITLE ${LANG_ENGLISH} "GeoServer Data Directory"
+LangString TEXT_DATADIR_SUBTITLE ${LANG_ENGLISH} "GeoServer Data Directory path selection"
+LangString TEXT_TYPE_TITLE ${LANG_ENGLISH} "Type of Installation"
+LangString TEXT_TYPE_SUBTITLE ${LANG_ENGLISH} "Select the type of installation"
+LangString TEXT_READY_TITLE ${LANG_ENGLISH} "Ready to Install"
+LangString TEXT_READY_SUBTITLE ${LANG_ENGLISH} "GeoServer is ready to be installed"
+LangString TEXT_CREDS_TITLE ${LANG_ENGLISH} "GeoServer Administrator"
+LangString TEXT_CREDS_SUBTITLE ${LANG_ENGLISH} "Set administrator credentials"
+LangString TEXT_PORT_TITLE ${LANG_ENGLISH} "GeoServer Web Server Port"
+LangString TEXT_PORT_SUBTITLE ${LANG_ENGLISH} "Set the port that GeoServer will respond on"
 
 ; Startup tasks
 Function .onInit

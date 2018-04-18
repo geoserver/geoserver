@@ -1,3 +1,8 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 ; GeoServer Windows installer creation file.
 
 ; Define your application name
@@ -786,7 +791,6 @@ Section "Main" SectionMain
   File /a LICENSE.txt
   File /a README.txt
   File /a RUNNING.txt
-  File /r data_dir
   File /r etc
   File /r modules
   File /r lib
@@ -794,6 +798,12 @@ Section "Main" SectionMain
   File /r resources
   File /r webapps
   File /r gs.ico
+
+  ; Special handling of the 'data_dir'
+  ${If} $IsExisting == 0 ; Only place files, when NOT using an existing folder
+  File /r data_dir
+  ${EndIf}
+
 
   ; Write environment variables
   Push "JAVA_HOME"
@@ -953,7 +963,7 @@ Section Uninstall
   RMDir /r "$SMPROGRAMS\${APPNAMEANDVERSION}"
 
   ; Delete files/folders
-  RMDir /r "$INSTDIR\data_dir"
+;  RMDir /r "$INSTDIR\data_dir" - do not remove this, as it might be the actual application 'data_dir'
   RMDir /r "$INSTDIR\bin"
   RMDir /r "$INSTDIR\etc"
   RMDir /r "$INSTDIR\modules"

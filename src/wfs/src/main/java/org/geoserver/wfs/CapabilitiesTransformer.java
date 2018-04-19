@@ -2266,8 +2266,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void constraints() {
                 List<DomainType> constraints = new ArrayList<>();
                 constraints.add(new DomainType("ImplementsBasicWFS", TRUE));
-                constraints.add(new DomainType("ImplementsTransactionalWFS", TRUE));
-                constraints.add(new DomainType("ImplementsLockingWFS", TRUE));
+                WFSInfo.ServiceLevel serviceLevel = wfs.getServiceLevel();
+                constraints.add(new DomainType("ImplementsTransactionalWFS",
+                        serviceLevel.contains(WFSInfo.ServiceLevel.TRANSACTIONAL) ? TRUE : FALSE));
+                constraints.add(new DomainType("ImplementsLockingWFS", 
+                        serviceLevel.contains(WFSInfo.ServiceLevel.COMPLETE) ? TRUE : FALSE));
                 constraints.add(new DomainType("KVPEncoding", TRUE));
                 constraints.add(new DomainType("XMLEncoding", TRUE));
                 constraints.add(new DomainType("SOAPEncoding", TRUE));

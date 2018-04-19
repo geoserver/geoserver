@@ -4,7 +4,6 @@
  */
 package org.geoserver.backuprestore.tasklet;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -71,6 +70,15 @@ import com.google.common.collect.Maps;
  */
 public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTasklet {
 
+    //whether existing resources should be deleted
+    private boolean purge = true;
+
+    //whether global settings should be skipped
+    private boolean skipSettings = false;
+
+    //whether GWC should be skipped
+    private boolean skipGWC = false;
+
     public CatalogBackupRestoreTasklet(Backup backupFacade,
             XStreamPersisterFactory xStreamPersisterFactory) {
         super(backupFacade, xStreamPersisterFactory);
@@ -78,7 +86,14 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
     @Override
     protected void initialize(StepExecution stepExecution) {
+        this.skipSettings = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
+            Backup.PARAM_SKIP_SETTINGS));
 
+        this.skipGWC = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
+            Backup.PARAM_SKIP_GWC));
+
+        this.purge = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
+            Backup.PARAM_PURGE_RESOURCES, "true"));
     }
 
     @Override
@@ -121,22 +136,26 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     .getString(Backup.PARAM_OUTPUT_FILE_PATH);
             Resource targetBackupFolder = Resources.fromURL(outputFolderURL);
 
-            // Store GeoServer Global Info
-            doWrite(geoserver.getGlobal(), targetBackupFolder, "global.xml");
 
-            // Store GeoServer Global Settings
-            doWrite(geoserver.getSettings(), targetBackupFolder, "settings.xml");
+            if (!skipSettings) {
+                // Store GeoServer Global Info
+                doWrite(geoserver.getGlobal(), targetBackupFolder, "global.xml");
 
-            // Store GeoServer Global Logging Settings
-            doWrite(geoserver.getLogging(), targetBackupFolder, "logging.xml");
+                // Store GeoServer Global Settings
+                doWrite(geoserver.getSettings(), targetBackupFolder, "settings.xml");
 
-            // Store GeoServer Global Services
-            for (ServiceInfo service : geoserver.getServices()) {
-                // Local Services will be saved later on ...
-                if (service.getWorkspace() == null) {
-                    doWrite(service, targetBackupFolder, "services");
+                // Store GeoServer Global Logging Settings
+                doWrite(geoserver.getLogging(), targetBackupFolder, "logging.xml");
+
+                // Store GeoServer Global Services
+                for (ServiceInfo service : geoserver.getServices()) {
+                    // Local Services will be saved later on ...
+                    if (service.getWorkspace() == null) {
+                        doWrite(service, targetBackupFolder, "services");
+                    }
                 }
             }
+
 
             // Save Workspace specific settings
             Resource targetWorkspacesFolder = BackupUtils.dir(targetBackupFolder, "workspaces");
@@ -207,12 +226,14 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             backupRestoreAdditionalResources(resourceStore, targetBackupFolder);
 
             // Backup GWC Configuration bits
-            try {
-                if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-                    backupGWCSettings(targetBackupFolder);
+            if (!skipGWC) {
+                try {
+                    if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                        backupGWCSettings(targetBackupFolder);
+                    }
+                } catch (NoSuchBeanDefinitionException e) {
+                    LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
                 }
-            } catch (NoSuchBeanDefinitionException e) {
-                LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
             }
         } catch (Exception e) {
             logValidationExceptions((ValidationResult) null,
@@ -253,7 +274,6 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         LoggingInfo newLoggingInfo = null;
         try {
             newGeoServerInfo = (GeoServerInfo) doRead(sourceRestoreFolder, "global.xml");
-            newSettings = (SettingsInfo) doRead(sourceRestoreFolder, "settings.xml");
             newLoggingInfo = (LoggingInfo) doRead(sourceRestoreFolder, "logging.xml");
         } catch (Exception e) {
             logValidationExceptions((ValidationResult) null,
@@ -326,16 +346,15 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
      * @param geoserver
      * @param dd
      * @param sourceRestoreFolder
+     * @param sourceWorkspacesFolder
      * @param newGeoServerInfo
      * @param newLoggingInfo
-     * @param sourceWorkspacesFolder
      * @throws IOException
      * @throws Exception
      * @throws IllegalArgumentException
      */
-    private void hardRestore(final GeoServer geoserver, final GeoServerDataDirectory dd,
-            Resource sourceRestoreFolder, Resource sourceWorkspacesFolder,
-            GeoServerInfo newGeoServerInfo, LoggingInfo newLoggingInfo)
+    private void hardRestore(final GeoServer geoserver, final GeoServerDataDirectory dd, Resource sourceRestoreFolder,
+        Resource sourceWorkspacesFolder, GeoServerInfo newGeoServerInfo, LoggingInfo newLoggingInfo)
             throws IOException, Exception, IllegalArgumentException {
         // TODO: add option 'cleanUpGeoServerDataDir'
         // TODO: purge/preserve GEOSERVER_DATA_DIR
@@ -343,24 +362,28 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         geoserver.getCatalog().dispose();
         geoserver.dispose();
 
-        // Restore GeoServer Global Info
-        Files.delete(dd.get("global.xml").file());
-        doWrite(newGeoServerInfo, dd.get(Paths.BASE), "global.xml");
-        geoserver.setGlobal(newGeoServerInfo);
+        if (!skipSettings) {
+            // Restore GeoServer Global Info
+            Files.delete(dd.get("global.xml").file());
+            doWrite(newGeoServerInfo, dd.get(Paths.BASE), "global.xml");
+            geoserver.setGlobal(newGeoServerInfo);
 
-        // Restore GeoServer Global Logging Settings
-        Files.delete(dd.get("logging.xml").file());
-        doWrite(newLoggingInfo, dd.get(Paths.BASE), "logging.xml");
-        geoserver.setLogging(newLoggingInfo);
+            // Restore GeoServer Global Logging Settings
+            Files.delete(dd.get("logging.xml").file());
+            doWrite(newLoggingInfo, dd.get(Paths.BASE), "logging.xml");
+            geoserver.setLogging(newLoggingInfo);
 
-        restoreGlobalServices(sourceRestoreFolder, dd);
+            restoreGlobalServices(sourceRestoreFolder, dd);
+        }
+
 
         // Restore Workspaces
         // - Prepare folder
         Resource workspaces = dd.get("workspaces");
-        // - TODO: if purge
-        Files.delete(workspaces.dir());
-        workspaces = BackupUtils.dir(dd.get(Paths.BASE), "workspaces");
+        if (purge) {
+            Files.delete(workspaces.dir());
+            workspaces = BackupUtils.dir(dd.get(Paths.BASE), "workspaces");
+        }
 
         restoreWorkSpacesAndLayers(workspaces);
 
@@ -371,9 +394,11 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // Restore Styles
         // - Prepare folder
         Resource styles = dd.get("styles");
-        // - TODO: if purge
-        Files.delete(styles.dir());
-        styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
+
+        if (purge) {
+            Files.delete(styles.dir());
+            styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
+        }
 
         restoreGlobalStyles(sourceRestoreFolder, styles);
 
@@ -381,8 +406,10 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // - Prepare folder
         Resource layerGroups = dd.get("layergroups");
         // - TODO: if purge
-        Files.delete(layerGroups.dir());
-        layerGroups = BackupUtils.dir(dd.get(Paths.BASE), "layergroups");
+        if (purge) {
+            Files.delete(layerGroups.dir());
+            layerGroups = BackupUtils.dir(dd.get(Paths.BASE), "layergroups");
+        }
 
         restoreGlobalLayerGroups(layerGroups);
 
@@ -418,18 +445,20 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         backupRestoreAdditionalResources(sourceGeoServerResourceLoader, dd.get(Paths.BASE));
 
         // Restore GWC Configuration bits
-        try {
-            if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-                restoreGWCSettings(sourceRestoreFolder, dd.get(Paths.BASE));
+        if (!skipGWC) {
+            try {
+                if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                    restoreGWCSettings(sourceRestoreFolder, dd.get(Paths.BASE));
 
-                // Initialize GWC with the new settings
-                GWCInitializer gwcInitializer = GeoServerExtensions.bean(GWCInitializer.class);
-                if (gwcInitializer != null) {
-                    gwcInitializer.initialize(geoserver);
+                    // Initialize GWC with the new settings
+                    GWCInitializer gwcInitializer = GeoServerExtensions.bean(GWCInitializer.class);
+                    if (gwcInitializer != null) {
+                        gwcInitializer.initialize(geoserver);
+                    }
                 }
+            } catch (NoSuchBeanDefinitionException e) {
+                LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
             }
-        } catch (NoSuchBeanDefinitionException e) {
-            LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
         }
     }
 

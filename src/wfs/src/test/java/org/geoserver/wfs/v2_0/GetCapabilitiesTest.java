@@ -10,6 +10,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
@@ -499,5 +500,49 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("" + operationsMetadata, "count(//ows:OperationsMetadata)", dom);
         assertXpathEvaluatesTo("" + featureTypeList, "count(//wfs:FeatureTypeList)", dom);
         assertXpathEvaluatesTo("" + filterCapabilities, "count(//fes:Filter_Capabilities)", dom);
+    }
+    
+    @Test
+    public void testDisableLocking() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setServiceLevel(WFSInfo.ServiceLevel.TRANSACTIONAL);
+        gs.save(wfs);
+        try {
+            Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+
+            assertXpathEvaluatesTo("TRUE", "//ows:Constraint[@name='ImplementsTransactionalWFS']/ows:DefaultValue", doc);
+            assertXpathEvaluatesTo("FALSE", "//ows:Constraint[@name='ImplementsLockingWFS']/ows:DefaultValue", doc);
+            
+            // locking support is gone
+            XMLAssert.assertXpathExists("//ows:Operation[@name='Transaction']", doc);
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='LockFeature']", doc);
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='GetFeatureWithLock']", doc);
+        } finally {
+            wfs.setServiceLevel(WFSInfo.ServiceLevel.COMPLETE);
+            gs.save(wfs);
+        }
+    }
+
+    @Test
+    public void testDisableTransaction() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setServiceLevel(WFSInfo.ServiceLevel.BASIC);
+        gs.save(wfs);
+        try {
+            Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+
+            assertXpathEvaluatesTo("FALSE", "//ows:Constraint[@name='ImplementsTransactionalWFS']/ows:DefaultValue", doc);
+            assertXpathEvaluatesTo("FALSE", "//ows:Constraint[@name='ImplementsLockingWFS']/ows:DefaultValue", doc);
+
+            // transaction support is gone
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='Transaction']", doc);
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='LockFeature']", doc);
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='GetFeatureWithLock']", doc);
+        } finally {
+            wfs.setServiceLevel(WFSInfo.ServiceLevel.COMPLETE);
+            gs.save(wfs);
+        }
     }
 }

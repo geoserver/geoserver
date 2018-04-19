@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
 public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreTasklet {
 
     public static final String SECURITY_RESOURCE_NAME = "security";
+    private boolean skipSecuritySettings = false;
 
     public CatalogSecurityManagerTasklet(Backup backupFacade,
             XStreamPersisterFactory xStreamPersisterFactory) {
@@ -46,7 +47,12 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
 
     @Override
     protected void initialize(StepExecution stepExecution) {
+        boolean skipSettings = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
+            Backup.PARAM_SKIP_SETTINGS));
+        boolean skipSecurity = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
+            Backup.PARAM_SKIP_SECURITY_SETTINGS));
 
+        this.skipSecuritySettings = skipSettings || skipSecurity;
     }
 
     @Override
@@ -58,7 +64,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
         // dd.getResourceStore().get(SECURITY_RESOURCE_NAME);
         final Resource security = dd.getSecurity(Paths.BASE);
 
-        if (!isNew()) {
+        if (!isNew() && !skipSecuritySettings) {
             /*
              * BACKUP Security Resources
              */
@@ -102,7 +108,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                     }
                 }
             }
-        } else {
+        } else if (!skipSecuritySettings) {
             /*
              * RESTORE Security Resources
              */

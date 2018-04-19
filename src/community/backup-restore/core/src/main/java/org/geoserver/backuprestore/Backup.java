@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,6 +67,14 @@ public class Backup extends JobExecutionListenerSupport
         implements DisposableBean, ApplicationContextAware, ApplicationListener {
 
     public static final String PARAM_PASSWORD_TOKENS = "BK_PASSWORD_TOKENS";
+
+    public static final String PARAM_SKIP_SETTINGS = "BK_SKIP_SETTINGS";
+
+    public static final String PARAM_SKIP_SECURITY_SETTINGS = "BK_SKIP_SECURITY";
+
+    public static final String PARAM_PURGE_RESOURCES = "BK_PURGE_RESOURCES";
+
+    public static final String PARAM_SKIP_GWC = "BK_SKIP_GWC";
 
     static Logger LOGGER = Logging.getLogger(Backup.class);
 
@@ -321,13 +330,31 @@ public class Backup extends JobExecutionListenerSupport
         return xp.getClassAliasingMapper().serializedClass(clazz);
     }
 
+    public BackupExecutionAdapter runBackupAsync(final Resource archiveFile,
+        final boolean overwrite, final Filter filter, final Map<String,String> params) throws IOException {
+
+        JobParametersBuilder builder = new JobParametersBuilder();
+        params.forEach(builder::addString);
+
+        return runBackupAsync(archiveFile, overwrite, filter, builder);
+    }
+
+
+    public BackupExecutionAdapter runBackupAsync(final Resource archiveFile,
+        final boolean overwrite, final Filter filter, final Hints hints) throws IOException {
+
+        JobParametersBuilder builder = new JobParametersBuilder();
+        parseParams(hints, builder);
+        return runBackupAsync(archiveFile, overwrite, filter, builder);
+    }
+
     /**
      * @return
      * @throws IOException
      * 
      */
     public BackupExecutionAdapter runBackupAsync(final Resource archiveFile,
-            final boolean overwrite, final Filter filter, final Hints params) throws IOException {
+            final boolean overwrite, final Filter filter, final JobParametersBuilder paramsBuilder) throws IOException {
         // Check if archiveFile exists
         if (archiveFile.file().exists()) {
             if (!overwrite && FileUtils.sizeOf(archiveFile.file()) > 0) {
@@ -356,9 +383,6 @@ public class Backup extends JobExecutionListenerSupport
         // Write flat files into a temporary folder
         Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
 
-        // Fill Job Parameters
-        JobParametersBuilder paramsBuilder = new JobParametersBuilder();
-
         if (filter != null) {
             paramsBuilder.addString("filter", ECQL.toCQL(filter));
         }
@@ -369,7 +393,7 @@ public class Backup extends JobExecutionListenerSupport
                         BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
 
-        parseParams(params, paramsBuilder);
+//        parseParams(params, paramsBuilder);
 
         JobParameters jobParameters = paramsBuilder.toJobParameters();
 
@@ -411,6 +435,14 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
+    public RestoreExecutionAdapter runRestoreAsync(final Resource archiveFile, final Filter filter,
+        final Map<String, String> params) throws IOException {
+
+        JobParametersBuilder paramsBuilder = new JobParametersBuilder();
+        params.forEach(paramsBuilder::addString);
+        return runRestoreAsync(archiveFile, filter, paramsBuilder);
+    }
+
     /**
      * @return
      * @return
@@ -419,28 +451,32 @@ public class Backup extends JobExecutionListenerSupport
      */
     public RestoreExecutionAdapter runRestoreAsync(final Resource archiveFile, final Filter filter,
             final Hints params) throws IOException {
-        // Extract archive into a temporary folder
-        Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
-        BackupUtils.extractTo(archiveFile, tmpDir);
-
         // Fill Job Parameters
         JobParametersBuilder paramsBuilder = new JobParametersBuilder();
+        parseParams(params, paramsBuilder);
+
+        return runRestoreAsync(archiveFile, filter, paramsBuilder);
+    }
+
+    private RestoreExecutionAdapter runRestoreAsync(Resource archiveFile, Filter filter,
+        JobParametersBuilder paramsBuilder) throws IOException {
+
+        Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
+        BackupUtils.extractTo(archiveFile, tmpDir);
+        RestoreExecutionAdapter restoreExecution;
 
         if (filter != null) {
             paramsBuilder.addString("filter", ECQL.toCQL(filter));
         }
 
         paramsBuilder
-                .addString(PARAM_JOB_NAME, RESTORE_JOB_NAME)
-                .addString(PARAM_INPUT_FILE_PATH,
-                        BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
-                .addLong(PARAM_TIME, System.currentTimeMillis());
-
-        parseParams(params, paramsBuilder);
+            .addString(PARAM_JOB_NAME, RESTORE_JOB_NAME)
+            .addString(PARAM_INPUT_FILE_PATH,
+                BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
+            .addLong(PARAM_TIME, System.currentTimeMillis());
 
         JobParameters jobParameters = paramsBuilder.toJobParameters();
 
-        RestoreExecutionAdapter restoreExecution;
         try {
             if (getRestoreRunningExecutions().isEmpty() && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
@@ -470,7 +506,6 @@ public class Backup extends JobExecutionListenerSupport
         } catch (JobExecutionAlreadyRunningException | JobRestartException
                 | JobInstanceAlreadyCompleteException | JobParametersInvalidException e) {
             throw new IOException("Could not start a new Restore Job Execution: ", e);
-        } finally {
         }
     }
 
@@ -611,6 +646,7 @@ public class Backup extends JobExecutionListenerSupport
                             paramsBuilder.addString(k, (String)param.getValue());
                             break;
                         case PARAM_PARAMETERIZE_PASSWDS:
+                        case PARAM_SKIP_SETTINGS:
                         case PARAM_CLEANUP_TEMP:                            
                         case PARAM_DRY_RUN_MODE:
                         case PARAM_BEST_EFFORT_MODE:

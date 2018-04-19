@@ -50,6 +50,14 @@ document.getElementById('cm_reformat').onclick = function() {
         editor.indentLine(i);
     }
 }
+replaceSelection = function(repl) {
+	start = editor.getCursor(true).line;
+    editor.replaceSelection(repl);
+	lines = repl.split(/\r\n|\r|\n/).length;
+    for(i = start + 1; i < start + lines; i++) {
+        editor.indentLine(i);
+    }
+}
 // This comes from http://thereisamoduleforthat.com/content/making-div-fullscreen-and-restoring-it-its-original-position
 // Does not work so commented out
 /*

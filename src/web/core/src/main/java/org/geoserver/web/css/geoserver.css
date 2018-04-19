@@ -665,6 +665,12 @@ background: url(../img/icons/silk/text_align_right.png) no-repeat;
 display: block;
 }
 
+.button-group .button-picture span {
+background: url(../img/icons/silk/photo.png) no-repeat;
+display: block;
+}
+
+
 
 .button-group a img,
 button img {

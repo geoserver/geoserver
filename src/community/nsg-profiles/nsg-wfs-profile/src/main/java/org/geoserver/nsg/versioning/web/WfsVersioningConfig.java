@@ -13,11 +13,13 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.nsg.versioning.TimeVersioning;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
+import org.geoserver.web.util.MapModel;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -36,15 +38,9 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
         List<String> attributesNames = getAttributesNames(featureTypeInfo);
         List<String> timeAttributesNames = getTimeAttributesNames(featureTypeInfo);
         // create dropdown choice for the id attribute name
+        PropertyModel metadata = new PropertyModel(model, "resource.metadata");
         DropDownChoice<String> idAttributeChoice = new DropDownChoice<>("idAttributeChoice",
-                new Model<>(idAttributeName), attributesNames);
-        idAttributeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                String selected = idAttributeChoice.getModel().getObject();
-                TimeVersioning.setIdAttribute(featureTypeInfo, selected);
-            }
-        });
+                new MapModel<>(metadata, TimeVersioning.NAME_PROPERTY_KEY), attributesNames);
         idAttributeChoice.setOutputMarkupId(true);
         idAttributeChoice.setOutputMarkupPlaceholderTag(true);
         idAttributeChoice.setRequired(true);
@@ -58,15 +54,9 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
         idAttributeChoiceLabel.setVisible(isVersioningActivated);
         add(idAttributeChoiceLabel);
         // create dropdown choice for the time attribute name
+        
         DropDownChoice<String> timeAttributeChoice = new DropDownChoice<>("timeAttributeChoice",
-                new Model<>(timeAttributeName), timeAttributesNames);
-        timeAttributeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                String selected = timeAttributeChoice.getModel().getObject();
-                TimeVersioning.setTimeAttribute(featureTypeInfo, selected);
-            }
-        });
+                new MapModel<>(metadata, TimeVersioning.TIME_PROPERTY_KEY), timeAttributesNames);
         timeAttributeChoice.setOutputMarkupId(true);
         timeAttributeChoice.setOutputMarkupPlaceholderTag(true);
         timeAttributeChoice.setRequired(true);
@@ -81,7 +71,7 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
         add(timeAttributeChoiceLabel);
         // checkbox for activating versioning
         CheckBox versioningActivateCheckBox = new AjaxCheckBox("versioningActivateCheckBox",
-                new Model<>(isVersioningActivated)) {
+                new MapModel<>(metadata, TimeVersioning.ENABLED_KEY)) {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean checked = getModelObject();
@@ -91,16 +81,12 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
                     idAttributeChoiceLabel.setVisible(true);
                     timeAttributeChoice.setVisible(true);
                     timeAttributeChoiceLabel.setVisible(true);
-                    // enable time versioning
-                    TimeVersioning.setEnable(featureTypeInfo, true);
                 } else {
                     // deactivate versioning attributes selection
                     idAttributeChoice.setVisible(false);
                     idAttributeChoiceLabel.setVisible(false);
                     timeAttributeChoice.setVisible(false);
                     timeAttributeChoiceLabel.setVisible(false);
-                    // disable time versioning
-                    TimeVersioning.setEnable(featureTypeInfo, false);
                 }
                 // update the dropdown choices and labels
                 target.add(idAttributeChoice);

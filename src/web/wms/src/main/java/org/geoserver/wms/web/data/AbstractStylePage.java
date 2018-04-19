@@ -88,15 +88,6 @@ import org.xml.sax.SAXParseException;
 @SuppressWarnings("serial")
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
     
-    private static String[] IMAGE_EXTENSIONS = new String[] {"png", "jpg", "jpeg", "gif", "svg"};
-    private static MimetypesFileTypeMap IMAGE_TYPES = new MimetypesFileTypeMap();    
-    static {
-        IMAGE_TYPES.addMimeTypes("image/png png");
-        IMAGE_TYPES.addMimeTypes("image/jpg jpg jpeg");
-        IMAGE_TYPES.addMimeTypes("image/gif gif");
-        IMAGE_TYPES.addMimeTypes("image/svg+xml svg");
-    }
-    
     class ChooseImagePanel extends Panel {
         private WorkspaceInfo ws;
         
@@ -115,7 +106,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             GeoServerDataDirectory dd =
                     GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
             for (Resource r : dd.getStyles(ws).list()) {
-                if (ArrayUtils.contains(IMAGE_EXTENSIONS, 
+                if (ArrayUtils.contains(styleHandler().imageExtensions(), 
                         FilenameUtils.getExtension(r.name()).toLowerCase())) {
                     imageSet.add(r.name());
                 }
@@ -462,7 +453,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             @Override
                             protected Component getContents(String id) {
                                 return imagePanel = new ChooseImagePanel(id,
-                                        style.getWorkspace());
+                                        styleModel.getObject().getWorkspace());
                             }
 
                             @Override
@@ -491,16 +482,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                         return false;
                                     }
                                 }
-                                
-                                StringBuffer sb = new StringBuffer("<ExternalGraphic>\\n")
-                                        .append("<OnlineResource xlink:type=\"simple\" xlink:href=\"")
-                                        .append(imageFileName).append("\" />\\n")
-                                        .append("<Format>")
-                                        .append(IMAGE_TYPES.getContentType(imageFileName))
-                                        .append("</Format>\\n")
-                                        .append("</ExternalGraphic>\\n");
                                 target.appendJavaScript(
-                                        "replaceSelection('" + sb.toString() + "');");
+                                        "replaceSelection('" + 
+                                                styleHandler().insertImageCode(imageFileName) 
+                                                + "');");
                                 return true;
                             }
                             

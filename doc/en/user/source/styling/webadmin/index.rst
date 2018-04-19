@@ -59,6 +59,7 @@ The editor page provides several options for submitting a new style:
 
      Uploading an file from the local system
 
+
 When creating a style, only the :guilabel:`Data` tab will be available. Click :guilabel:`Apply` on the new style to stay on the Style Editor page and gain access to all tabs.
 
 .. _styling_webadmin_remove:
@@ -143,6 +144,8 @@ The style editor supports line numbering, automatic indentation, and real-time s
      - Auto-format the editor contents
    * - .. image:: img/styles_editor_fontsize.png
      - Change the font size in the editor
+   * - .. image:: img/styles_editor_image.png
+     - Insert image into style (choose existing or upload)
 
 During editing and especially after editing is complete, you will want to check validation of the syntax. This can be done by clicking the :guilabel:`Validate` button at the bottom.
 

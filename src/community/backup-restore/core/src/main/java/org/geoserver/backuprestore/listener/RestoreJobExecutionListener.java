@@ -127,12 +127,6 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                         + backupFacade.getJobOperator().getSummary(executionId));
 
                 if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-                    // Reload GeoServer Catalog
-                    if (!dryRun) {
-                        backupFacade.getGeoServer().reload();
-                    }
-                    
-                    backupFacade.getGeoServer().reset();
                     
                     JobParameters jobParameters = restoreExecution.getJobParameters();
                     Resource tempFolder = Resources

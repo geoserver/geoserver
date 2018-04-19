@@ -7,7 +7,7 @@
                   http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd">
   <wfs:Query typeNames="gs:versioned">
     <fes:Filter>
-      <fes:ResourceId rid="Feature_1"  startDate="${startDate}"/>
+      <fes:ResourceId rid="versioned.Feature_1"  startDate="${startDate}"/>
     </fes:Filter>
   </wfs:Query>
 </wfs:GetFeature>

@@ -16,6 +16,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.platform.Service;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
@@ -805,6 +806,20 @@ public class TransactionTest extends WFS20TestSupport {
        dom = getAsDOM("wfs?service=wfs&version=2.0.0&request=getfeature&typename=cite:RoadSegments" +
                "&cql_filter=FID+EQ+'1234'");
        XMLAssert.assertXpathExists("//cite:RoadSegments/cite:FID[text() = '1234']", dom);
+   }
+   
+   @Test
+   public void testReplaceOnTransactionalLevel() throws Exception {
+       GeoServer gs = getGeoServer();
+       WFSInfo wfs = gs.getService(WFSInfo.class);
+       wfs.setServiceLevel(WFSInfo.ServiceLevel.TRANSACTIONAL);
+       gs.save(wfs);
+       try {
+           testReplace();
+       } finally {
+           wfs.setServiceLevel(WFSInfo.ServiceLevel.COMPLETE);
+           gs.save(wfs);
+       }
    }
 
     @Test

@@ -140,7 +140,8 @@ public interface WFSInfo extends ServiceInfo {
                 return Arrays.asList(
                     Operation.GETCAPABILITIES,Operation.DESCRIBEFEATURETYPE,
                     Operation.GETFEATURE, Operation.TRANSACTION_INSERT, 
-                    Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE
+                    Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE,
+                    Operation.TRANSACTION_REPLACE
                 );
             }
         }, 

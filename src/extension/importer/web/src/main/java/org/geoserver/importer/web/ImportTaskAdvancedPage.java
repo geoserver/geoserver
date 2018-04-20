@@ -203,7 +203,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                 if (dateFormat == null || "".equals(dateFormat.trim())) {
                                     dateFormat = null;
                                 }
-                                item.setModelObject(new DateFormatTransform(field, dateFormat));
+                                item.setModelObject(new DateFormatTransform(field, dateFormat, null, null));
                             }
                             else if (Number.class.isAssignableFrom(type)) {
                                 item.setModelObject(new NumberFormatTransform(field, type));

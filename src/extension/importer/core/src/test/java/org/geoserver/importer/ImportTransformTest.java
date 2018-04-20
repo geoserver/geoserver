@@ -166,7 +166,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         context.setTargetStore(store);
 
         ImportTask task = context.getTasks().get(0);
-        task.getTransform().add(new DateFormatTransform("timestamp", "yyyy-MM-dd HH:mm:ss.S"));
+        task.getTransform().add(new DateFormatTransform("timestamp", "yyyy-MM-dd HH:mm:ss.S", null, null));
         
         importer.run(context);
 

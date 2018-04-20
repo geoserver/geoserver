@@ -60,11 +60,7 @@ public class RenderingEngineStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getVersion() {
-        if (provider.contains("OracleJDK")) {
-            return Optional.ofNullable(System.getProperty("java.version"));
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(System.getProperty("java.version"));
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -37,6 +38,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.BinarySpatialOperator;
 import org.opengis.filter.temporal.BinaryTemporalOperator;
+import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.namespace.QName;
 
@@ -358,8 +360,34 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     private Set<String> getFilterPrefixes(Filter filter) {
         FilterAttributeExtractor extractor = new FilterAttributeExtractor();
         filter.accept(extractor, null);
-        Set<String> attributeNames = extractor.getAttributeNameSet();
-        Set<String> prefixes = getPrefixes(attributeNames);
+        Set<PropertyName> attributeNames = extractor.getPropertyNameSet();
+        Set<String> prefixes = new HashSet<>();
+        for (PropertyName attributeName : attributeNames) {
+            String name = attributeName.getPropertyName();
+            int idx = name.indexOf('/');
+            if (idx > 0) {
+                String prefix = name.substring(0, idx);
+                idx = prefix.indexOf(":");
+                if (idx > 0) {
+                    String localNsPrefix = prefix.substring(0, idx);                     
+                    NamespaceSupport namespaceSupport = attributeName.getNamespaceContext();
+                    if (namespaceSupport != null) {
+                        String ns = namespaceSupport.getURI(localNsPrefix);
+                        if (ns != null) {
+                            Optional<String> wsName = featureTypes.stream().filter(ft -> ns.equals(ft
+                                    .getQualifiedName().getNamespaceURI())).map(ft -> ft.getStore()
+                                    .getWorkspace().getName()).findFirst();
+                            if (wsName.isPresent()) {
+                                prefix = wsName.get() + ":" + prefix.substring(idx + 1);
+                            }
+                        }
+                    }
+
+                }
+                prefixes.add(prefix);
+                
+            }
+        }
         return prefixes;
     }
 
@@ -452,12 +480,16 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         Map<String, String> nameToAlias = new HashMap<>();
         nameToAlias.put(primaryFeatureType.prefixedName(), primaryAlias);
         nameToAlias.put(primaryFeatureType.getName(), primaryAlias);
+        String localTypeName = getLocalTypeName(primaryFeatureType);
+        if (localTypeName != null) {
+            nameToAlias.put(localTypeName, primaryAlias);
+        }
         for (int i = 0; i < aliases.size(); i++) {
             String alias = aliases.get(i);
             FeatureTypeInfo ft = featureTypes.get(i);
             nameToAlias.put(ft.getName(), alias);
             nameToAlias.put(ft.prefixedName(), alias);
-            String localTypeName = getLocalTypeName(ft);
+            localTypeName = getLocalTypeName(ft);
             if (localTypeName != null) {
                 nameToAlias.put(localTypeName, alias);
             }

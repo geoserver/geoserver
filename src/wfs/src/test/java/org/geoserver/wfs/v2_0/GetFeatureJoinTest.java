@@ -202,6 +202,33 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
         XMLAssert.assertXpathExists("wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
     }
+
+    @Test
+    public void testSpatialJoinNoAliasesCustomPrefixes() throws Exception {
+        String xml =
+                "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+                        " xmlns:gs='" + SystemTestData.DEFAULT_URI + "'" +
+                        " xmlns:ns123='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" +
+                        "<wfs:Query typeNames='ns123:Forests ns123:Lakes'>" +
+                        "<fes:Filter> " +
+                        "<fes:Intersects> " +
+                        "<fes:ValueReference>ns123:Forests/the_geom</fes:ValueReference> " +
+                        "<fes:ValueReference>ns123:Lakes/the_geom</fes:ValueReference>" +
+                        "</fes:Intersects> " +
+                        "</fes:Filter> " +
+                        "</wfs:Query>" +
+                        "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
+
+        XMLAssert.assertXpathExists("//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
+
+        XMLAssert.assertXpathExists("wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
+    }
     
     @Test
     public void testSpatialJoinGET() throws Exception {

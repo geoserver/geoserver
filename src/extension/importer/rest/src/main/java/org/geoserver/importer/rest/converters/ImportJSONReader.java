@@ -300,7 +300,11 @@ public class ImportJSONReader {
         ImportTransform transform;
         String type = json.getString("type");
         if ("DateFormatTransform".equalsIgnoreCase(type)) {
-            transform = new DateFormatTransform(json.getString("field"), json.optString("format", null));
+            transform = new DateFormatTransform(
+                    json.getString("field"),
+                    json.optString("format", null),
+                    json.optString("enddate", null),
+                    json.optString("presentation", null));
         } else if ("IntegerFieldToDateTransform".equalsIgnoreCase(type)) {
             transform = new IntegerFieldToDateTransform(json.getString("field"));
         } else if ("CreateIndexTransform".equalsIgnoreCase(type)) {

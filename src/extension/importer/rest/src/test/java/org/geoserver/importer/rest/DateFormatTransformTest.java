@@ -10,6 +10,7 @@ import com.google.common.collect.Collections2;
 import org.geoserver.importer.DatePattern;
 import org.geoserver.importer.Dates;
 import org.geoserver.importer.transform.DateFormatTransform;
+import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,10 +25,10 @@ public class DateFormatTransformTest extends TransformTestSupport {
     public DateFormatTransformTest() {
     }
     
+    @Test
     public void testExtents() throws Exception {
         // this is mostly a verification of the extents of the builtin date parsing
-        String NOT_USED = null;
-        DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED);
+        DateFormatTransform transform = new DateFormatTransform("not used", null);
         
         GregorianCalendar cal = new GregorianCalendar();
         cal.clear();
@@ -49,9 +50,9 @@ public class DateFormatTransformTest extends TransformTestSupport {
         assertEquals(GregorianCalendar.AD, cal.get(Calendar.ERA));
     }
 
+    @Test
     public void testTransformSuccess() throws ParseException {
-        String NOT_USED = null;
-        DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED);
+        DateFormatTransform transform = new DateFormatTransform("not used", null);
 
         Date now = new Date();
         
@@ -78,6 +79,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
         }
     }
 
+    @Test
     public void testTransformSuccessCustomFormat() throws ParseException {
         String customFormat = "yyyy-MM-dd'X'00";
         DateFormatTransform transform = new DateFormatTransform("not used", customFormat);
@@ -90,8 +92,13 @@ public class DateFormatTransformTest extends TransformTestSupport {
         assertEquals(expected, parsed);
     }
     
+    @Test
     public void testJSON() throws Exception {
         doJSONTest(new DateFormatTransform("foo", null));
         doJSONTest(new DateFormatTransform("foo", "yyyy-MM-dd"));
+        doJSONTest(new DateFormatTransform("foo", null, null, "LIST"));
+        doJSONTest(new DateFormatTransform("foo", null, null, "DISCRETE_INTERVAL"));
+        doJSONTest(new DateFormatTransform("foo", null, null, "CONTINUOUS_INTERVAL"));
+        doJSONTest(new DateFormatTransform("foo", null, "enddate", null));
     }
 }

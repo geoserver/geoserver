@@ -4,17 +4,41 @@
  */
 package org.geoserver.importer.rest;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
-import net.sf.json.JSONObject;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -43,20 +67,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
-
-import org.geoserver.importer.Importer;
-import org.geoserver.platform.resource.Resources;
+import net.sf.json.JSONObject;
 
 
 public class ImporterIntegrationTest extends ImporterTestSupport {
@@ -591,5 +605,68 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 System.clearProperty(Importer.UPLOAD_ROOT_KEY);
             }
         }
+    }
+    
+    @Test
+    public void testRunWithTimeDimention() throws Exception {
+        Catalog cat = getCatalog();
+
+        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming"); 
+
+        // the target layer is not there
+        assertNull(getCatalog().getLayerByName("ming_time"));
+
+        // create context with default name
+        File dir = unpack("shape/ming_time.zip");
+        ImportContext context = importer.createContext(0l);
+        importer.changed(context);
+        importer.update(context, new SpatialFile(new File(dir, "ming_time.shp")));
+        context.setTargetStore(ds);
+
+        assertEquals(1, context.getTasks().size());
+
+        context.getTasks().get(0).getData().setCharsetEncoding("UTF-8");
+
+        // add a transformation to run post script
+        String json = "{\n" +
+                "  \"type\": \"DateFormatTransform\",\n" +
+                "  \"field\": \"Year_Date\",\n" +
+                "  \"presentation\": \"DISCRETE_INTERVAL\"" +
+                "}";
+
+        MockHttpServletResponse resp = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
+
+        // run it
+        context = importer.getContext(0);
+        ImportTask task = context.getTasks().get(0);
+        task.setDirect(false);
+        task.setStore(ds);
+        importer.changed(task);
+        assertEquals(ImportTask.State.READY, task.getState());
+
+        context.updated();
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        // check the layer has been created
+        LayerInfo layer = cat.getLayerByName("ming_time");
+        assertNotNull(layer);
+        
+        ResourceInfo resource = layer.getResource();
+        
+        // verify the TIME dimension has benn defined
+        MetadataMap md = resource.getMetadata();
+        assertNotNull(md);
+        assertTrue(md.containsKey("time"));
+        
+        DimensionInfo timeDimension = (DimensionInfo) md.get("time");
+        assertNotNull(timeDimension);
+        
+        assertEquals(timeDimension.getAttribute(), "Year_Date");
+        assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);                
     }
 }

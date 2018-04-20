@@ -55,10 +55,12 @@ public abstract class Lock extends RequestObject {
         @Override
         public QName getTypeName() {
             List typeNames = eGet(adaptee, "typeNames", List.class);
-            if (typeNames.size() == 1) {
-                return (QName) typeNames.get(0);
-            } else if(typeNames.size() > 0) {
-                throw new IllegalArgumentException("Multiple type names on single lock not supported");
+            if (typeNames != null) {
+                if (typeNames.size() == 1) {
+                    return (QName) typeNames.get(0);
+                } else if (typeNames.size() > 0) {
+                    throw new IllegalArgumentException("Multiple type names on single lock not supported");
+                }
             }
             // no typenames found, happens with GetFeatureById stored query for example
             return null;
@@ -67,8 +69,10 @@ public abstract class Lock extends RequestObject {
         @Override
         public void setTypeName(QName typeName) {
             List typeNames = eGet(adaptee, "typeNames", List.class);
-            typeNames.clear();
-            typeNames.add(typeName);
+            if (typeNames != null) {
+                typeNames.clear();
+                typeNames.add(typeName);
+            }
         }
     }
 

@@ -203,7 +203,10 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
     
     QName qualifyTypeName(QName name, WorkspaceInfo ws, NamespaceInfo ns) {
-        return new QName(ns.getURI(), name.getLocalPart(), ws.getName());
+	    if (name != null) {
+            return new QName(ns.getURI(), name.getLocalPart(), ws.getName());
+        }
+        return null;
     }
 
 }

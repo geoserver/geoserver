@@ -66,6 +66,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -256,7 +257,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         formTester = tester.newFormTester("dialog:dialog:content:form");
         org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(
-                getClass().getResource("GeoServer_75.png").getFile());
+                URLs.urlToFile(getClass().getResource("GeoServer_75.png")));
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit"); 
         

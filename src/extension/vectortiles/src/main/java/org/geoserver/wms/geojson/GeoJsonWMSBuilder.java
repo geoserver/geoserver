@@ -13,8 +13,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
 
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import si.uom.SI;
+import javax.measure.Unit;
 
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.geoserver.wms.WMSMapContent;
@@ -56,7 +56,7 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
         jsonWriter.setAxisOrder(CRS.getAxisOrder(mapCrs));
 
         Unit<?> unit = mapCrs.getCoordinateSystem().getAxis(0).getUnit();
-        Unit<?> standardUnit = unit.getStandardUnit();
+        Unit<?> standardUnit = unit.getSystemUnit();
 
         PrecisionModel pm = null;
         if (SI.RADIAN.equals(standardUnit)) {

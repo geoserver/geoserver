@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.measure.unit.SI;
+import si.uom.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -647,7 +647,7 @@ public class XStreamPersisterTest {
         ft.setAbstract( "abstract");
         ft.setSRS( "EPSG:4326");
         ft.setNativeCRS( CRS.decode( "EPSG:4326") );
-        ft.setLinearizationTolerance(new Measure(10, SI.METER));
+        ft.setLinearizationTolerance(new Measure(10, SI.METRE));
         
         ByteArrayOutputStream out = out();
         persister.save( ft, out );
@@ -660,7 +660,7 @@ public class XStreamPersisterTest {
         assertEquals( ds, ft.getStore() );
         assertEquals( ns, ft.getNamespace() );
         assertEquals( "EPSG:4326", ft.getSRS() );
-        assertEquals( new Measure(10, SI.METER), ft.getLinearizationTolerance() );
+        assertEquals( new Measure(10, SI.METRE), ft.getLinearizationTolerance() );
         assertTrue( CRS.equalsIgnoreMetadata( CRS.decode( "EPSG:4326"), ft.getNativeCRS() ) ); 
     }
     

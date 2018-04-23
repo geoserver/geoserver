@@ -39,10 +39,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.measure.converter.UnitConverter;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import javax.measure.UnitConverter;
+import si.uom.NonSI;
+import si.uom.SI;
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -1395,10 +1396,10 @@ public class ResourcePool {
             // to the measure, we are going to use a very rough estimate (cylindrical earth model)
             // TODO: maybe look at the layer bbox and get a better estimate computed at the center
             // of the bbox
-            UnitConverter converter = mt.getUnit().getConverterTo(SI.METER);
+            UnitConverter converter = mt.getUnit().asType(Length.class).getConverterTo(SI.METRE);
             double tolMeters = converter.convert(mt.doubleValue());
             return tolMeters * OGC_METERS_TO_DEGREES;
-        } else if (targetUnit != null && targetUnit.isCompatible(SI.METER)) {
+        } else if (targetUnit != null && targetUnit.isCompatible(SI.METRE)) {
             // ok, we assume the target is not a geographic one, but we might
             // have to convert between meters and feet maybe
             UnitConverter converter = mt.getUnit().getConverterTo(targetUnit);

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PlanarImage;
 

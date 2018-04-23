@@ -8,6 +8,7 @@ package org.geoserver.importer.web;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -145,7 +146,11 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
                     @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        ImporterWebUtils.importer().changed(itemModel.getObject());
+                        try {
+                            ImporterWebUtils.importer().changed(itemModel.getObject());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         target.add(ImportTaskTable.this);
                         return true;
                     }
@@ -346,7 +351,11 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                     target.add(feedbackPanel);
                     ImportTask item = model.getObject();
-                    ImporterWebUtils.importer().changed(item);
+                    try {
+                        ImporterWebUtils.importer().changed(item);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     //ImportItemTable.this.modelChanged();
                     target.add(ImportTaskTable.this);
@@ -373,7 +382,11 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                             super.onSuccessfulSave();
 
                             //update the item
-                            ImporterWebUtils.importer().changed(model.getObject());
+                            try {
+                                ImporterWebUtils.importer().changed(model.getObject());
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         };
                     });
                 }

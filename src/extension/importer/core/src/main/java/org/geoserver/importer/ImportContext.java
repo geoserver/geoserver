@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import static org.geoserver.importer.ImporterUtils.resolve;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.job.ProgressMonitor;
@@ -26,6 +28,9 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransform;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geotools.util.logging.Logging;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  * Maintains state about an import.
@@ -247,7 +252,7 @@ public class ImportContext implements Serializable {
         return defaultTransforms;
     }
 
-    private void updateState() {
+    private void updateState() throws IOException {
         State newState;
         if (tasks.isEmpty()) {
             if (state == State.INIT) {
@@ -271,16 +276,108 @@ public class ImportContext implements Serializable {
             }
         }
         state = newState;
+
+        final Directory directory = getUploadDirectory();
+        
+        if (state == ImportContext.State.COMPLETE) {
+            if (!isDirect()) {
+                // It seems like we can safely mark Import data as temporary data
+                // Let's remove ".locking" file
+                unlockUploadFolder(directory);
+            }
+        } else {
+            lockUploadFolder(directory);
+        }
     }
 
-    public void updated() {
+    /**
+     * @return
+     */
+    public boolean isDirect() {
+        boolean isDirect = Iterables.any(getTasks(), new Predicate<ImportTask>() {
+            @Override
+            public boolean apply(ImportTask input) {
+                return input.isDirect();
+            }
+        });
+        return isDirect;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isEmpty() {
+        boolean noLayersAvailable = Iterables.any(getTasks(), new Predicate<ImportTask>() {
+            @Override
+            public boolean apply(ImportTask input) {
+                final StoreInfo store = input != null ? input.getStore() : null;
+                final Catalog catalog = store != null ? store.getCatalog() : null;
+                final LayerInfo layer = catalog != null ? catalog.getLayer(input.getLayer().getId()) : null;
+                return (layer == null);
+            }
+        });
+        return noLayersAvailable;
+    }
+
+    /**
+     * @param directory
+     * @throws IOException 
+     */
+    public void lockUploadFolder(Directory directory) throws IOException {
+        if (directory != null) {
+            File locking = new File(directory.getFile(), ".locking");
+            if (!locking.exists()) {
+                locking.createNewFile();
+            }
+        }
+    }
+    
+    /**
+     * @param directory
+     */
+    public void unlockUploadFolder(Directory directory) {
+        if (directory != null) {
+            File locking = new File(directory.getFile(), ".locking");
+            if (locking.exists()) {
+                locking.delete();
+            }
+        }
+    }
+
+    /**
+     * @param context
+     * @return
+     */
+    public Directory getUploadDirectory() {
+        Directory directory = null;
+        if (getData() instanceof Directory) {
+            directory = (Directory) getData();
+        } else if (getData() instanceof SpatialFile ) {
+            directory = new Directory( ((SpatialFile) getData()).getFile().getParentFile() );
+        }
+        
+        if (directory == null) {
+            for (ImportTask task : tasks) {
+                if (task.getData() instanceof Directory) {
+                    directory = (Directory) task.getData();
+                } else if (task.getData() instanceof SpatialFile ) {
+                    directory = new Directory( ((SpatialFile) task.getData()).getFile().getParentFile() );
+                }
+            }
+        }
+        return directory;
+    }
+
+    public void updated() throws IOException {
         updated = new Date();
         updateState();
     }
 
     public void delete() throws IOException {
-        if (data != null) {
-            data.cleanup();
+        for (ImportTask task : this.getTasks()) {
+            if (task.getData() != null) {
+                task.getData().cleanup();
+            }
         }
     }
 

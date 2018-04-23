@@ -125,16 +125,18 @@ public class DateFormatTransform extends AttributeRemapTransform {
         }
         
         //set up the time dimension object
-        ResourceInfo r = task.getLayer().getResource();
-        if (r.getMetadata().get(ResourceInfo.TIME) == null) {
-            DimensionInfo dim = new DimensionInfoImpl();
-            dim.setEnabled(true);
-            dim.setAttribute(field);
-            dim.setEndAttribute(enddate);
-            dim.setPresentation(DimensionPresentation.valueOf(presentation));
-            dim.setUnits("ISO8601"); //TODO: is there an enumeration for this?
- 
-            r.getMetadata().put(ResourceInfo.TIME, dim);
+        if (task.getLayer() != null) {
+            ResourceInfo r = task.getLayer().getResource();
+            if (r != null && r.getMetadata().get(ResourceInfo.TIME) == null) {
+                DimensionInfo dim = new DimensionInfoImpl();
+                dim.setEnabled(true);
+                dim.setAttribute(field);
+                dim.setEndAttribute(enddate);
+                dim.setPresentation(DimensionPresentation.valueOf(presentation));
+                dim.setUnits("ISO8601"); //TODO: is there an enumeration for this?
+     
+                r.getMetadata().put(ResourceInfo.TIME, dim);
+            }
         }
         
         return feature;

@@ -382,7 +382,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                 try {
                     ns.setURI("http://opengeo.org/#" + URLEncoder.encode(wsName, "ASCII"));
                 } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                    error(e);
                 }
 
                 cat.add( targetWorkspace );

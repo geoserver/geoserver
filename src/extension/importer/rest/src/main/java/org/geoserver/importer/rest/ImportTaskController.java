@@ -208,7 +208,11 @@ public class ImportTaskController extends ImportBaseController {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
         } else {
             updateStoreInfo(task(id, taskId), store, importer);
-            importer.changed(task(id, taskId));
+            try {
+                importer.changed(task(id, taskId));
+            } catch (IOException e) {
+                throw new RestException("Error while initializing Importer Context", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
         }
     }
 
@@ -229,7 +233,11 @@ public class ImportTaskController extends ImportBaseController {
     public void taskDelete(@PathVariable Long id, @PathVariable Integer taskId) {
         ImportTask task = task(id, taskId);
         task.getContext().removeTask(task);
-        importer.changed(task.getContext());
+        try {
+            importer.changed(task.getContext());
+        } catch (IOException e) {
+            throw new RestException("Error deleting Importer Context", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
     }
 
     public Object acceptData(ImportData data, ImportContext context, HttpServletResponse response, String expand) {
@@ -373,7 +381,11 @@ public class ImportTaskController extends ImportBaseController {
         if (!change) {
             throw new RestException("Unknown representation", HttpStatus.BAD_REQUEST);
         } else {
-            importer.changed(orig);
+            try {
+                importer.changed(orig);
+            } catch (IOException e) {
+                throw new RestException("Error updating Importer Context", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
             response.setStatus(HttpStatus.NO_CONTENT.value());
         }
     }

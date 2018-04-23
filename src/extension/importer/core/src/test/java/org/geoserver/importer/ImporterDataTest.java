@@ -433,6 +433,10 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("point");
         runChecks("line");
         runChecks("polygon");
+        
+        // Test that temporary data is *not* removed
+        context.delete();
+        assertTrue(dir.exists());
     }
 
     @Test
@@ -475,6 +479,10 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         runChecks("archsites");
         runChecks("bugsites");
+        
+        // Test that temporary data is removed also
+        context.delete();
+        assertFalse(dir.exists());
     }
     
     @Test
@@ -505,6 +513,10 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("杭州前卫",name_ch);
         
         it.close();
+
+        // Test that temporary data is removed also
+        context.delete();
+        assertFalse(dir.exists());
     }
     
     @Test
@@ -542,6 +554,10 @@ public class ImporterDataTest extends ImporterTestSupport {
             assertEquals(archsitesCount * 2, archsitesCount2);
             assertEquals(bugsitesCount, bugsitesCount2);
         }
+
+        // Test that temporary data is removed also
+        context.delete();
+        assertFalse(dir.exists());
     }
 
     @Test
@@ -565,6 +581,10 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(ImportTask.State.COMPLETE, task.getState());
 
         runChecks("EmissiveCampania");
+
+        // Test that temporary data is *not* removed
+        context.delete();
+        assertTrue(dir.exists());
     }
     
     @Test
@@ -637,6 +657,10 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         importer.run(context);
         assertTrue(dir.exists());
+        
+        // Test that temporary data is removed also
+        context.delete();
+        assertFalse(dir.exists());
     }
 
     @Test
@@ -651,6 +675,13 @@ public class ImporterDataTest extends ImporterTestSupport {
      
         ImportContext context = importer.createContext(new Database(params), ds);
         assertEquals(3, context.getTasks().size());
+        
+        // Test that temporary data is removed also
+        context.delete();
+        if (context.getState() == ImportContext.State.COMPLETE)
+            assertFalse(dir.exists());
+        if (context.getState() == ImportContext.State.PENDING)
+            assertTrue(dir.exists());
     }
 
     @Test
@@ -850,6 +881,10 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
         assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
         featureIterator.close();
+        
+        // Test that temporary data is removed also
+        context.delete();
+        assertFalse(dir.exists());
     }
 
     @Test

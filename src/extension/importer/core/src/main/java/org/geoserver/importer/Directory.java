@@ -39,7 +39,7 @@ import com.google.common.collect.Iterables;
 public class Directory extends FileData {
 
     private static final Logger LOGGER = Logging.getLogger(Directory.class);
-    
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -51,6 +51,7 @@ public class Directory extends FileData {
      * flag controlling whether file look up should recurse into sub directories.
      */
     boolean recursive;
+
     String name;
 
     public Directory(File file) {
@@ -64,7 +65,9 @@ public class Directory extends FileData {
 
     public static Directory createNew(File parent) throws IOException {
         File directory = File.createTempFile("tmp", "", parent);
-        if (!directory.delete() || !directory.mkdir()) throw new IOException("Error creating temp directory at " + directory.getAbsolutePath());
+        if (!directory.delete() || !directory.mkdir())
+            throw new IOException(
+                    "Error creating temp directory at " + directory.getAbsolutePath());
         return new Directory(directory);
     }
 
@@ -93,10 +96,11 @@ public class Directory extends FileData {
     }
 
     public void unpack(File file) throws IOException {
-        //if the file is an archive, unpack it
+        // if the file is an archive, unpack it
         VFSWorker vfs = new VFSWorker();
         if (vfs.canHandle(file)) {
-            LOGGER.fine("unpacking " + file.getAbsolutePath() + " to " + this.file.getAbsolutePath());
+            LOGGER.fine(
+                    "unpacking " + file.getAbsolutePath() + " to " + this.file.getAbsolutePath());
             vfs.extractTo(file, this.file);
 
             LOGGER.fine("deleting " + file.getAbsolutePath());
@@ -105,10 +109,10 @@ public class Directory extends FileData {
             }
         }
     }
-    
+
     public File child(String name) {
         if (name == null) {
-            //create random
+            // create random
             try {
                 return File.createTempFile("child", "tmp", file);
             } catch (IOException e) {
@@ -116,7 +120,7 @@ public class Directory extends FileData {
             }
         }
 
-        return new File(this.file,name);
+        return new File(this.file, name);
     }
 
     public void setName(String name) {
@@ -132,11 +136,11 @@ public class Directory extends FileData {
     public void prepare(ProgressMonitor m) throws IOException {
         files = new ArrayList<FileData>();
 
-        //recursively search for spatial files, maintain a queue of directories to recurse into
+        // recursively search for spatial files, maintain a queue of directories to recurse into
         LinkedList<File> q = new LinkedList<File>();
         q.add(file);
 
-        while(!q.isEmpty()) {
+        while (!q.isEmpty()) {
             File dir = q.poll();
 
             if (m.isCanceled()) {
@@ -144,7 +148,7 @@ public class Directory extends FileData {
             }
             m.setTask("Scanning " + dir.getPath());
 
-            //get all the regular (non directory) files
+            // get all the regular (non directory) files
             File[] fileList = dir.listFiles(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return !new File(dir, name).isDirectory();
@@ -157,7 +161,7 @@ public class Directory extends FileData {
             }
             Set<File> all = new LinkedHashSet<File>(Arrays.asList(fileList));
 
-            //scan all the files looking for spatial ones
+            // scan all the files looking for spatial ones
             for (File f : dir.listFiles()) {
                 if (f.isHidden()) {
                     all.remove(f);
@@ -165,7 +169,7 @@ public class Directory extends FileData {
                 }
                 if (f.isDirectory()) {
                     if (!recursive && !f.equals(file)) {
-                        //skip it
+                        // skip it
                         continue;
                     }
                     // @hacky - ignore __MACOSX
@@ -178,23 +182,23 @@ public class Directory extends FileData {
 
                         files.add(d);
                     }
-                    //q.push(f);
+                    // q.push(f);
                     continue;
                 }
 
-                //special case for .aux files, they are metadata but get picked up as readable 
-                // by the erdas imagine reader...just ignore them for now 
+                // special case for .aux files, they are metadata but get picked up as readable
+                // by the erdas imagine reader...just ignore them for now
                 if ("aux".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
                     continue;
                 }
 
-                //determine if this is a spatial format or not
+                // determine if this is a spatial format or not
                 DataFormat format = DataFormat.lookup(f);
 
                 if (format != null) {
                     SpatialFile sf = newSpatialFile(f, format);
-                    
-                    //gather up the related files
+
+                    // gather up the related files
                     sf.prepare(m);
 
                     files.add(sf);
@@ -203,42 +207,42 @@ public class Directory extends FileData {
                 }
             }
 
-            //take any left overs and add them as unspatial/unrecognized
+            // take any left overs and add them as unspatial/unrecognized
             for (File f : all) {
                 files.add(new ASpatialFile(f));
             }
         }
 
         format = format();
-//        //process ignored for files that should be grouped with the spatial files
-//        for (DataFile df : files) {
-//            SpatialFile sf = (SpatialFile) df;
-//            String base = FilenameUtils.getBaseName(sf.getFile().getName());
-//            for (Iterator<File> i = ignored.iterator(); i.hasNext(); ) {
-//                File f = i.next();
-//                if (base.equals(FilenameUtils.getBaseName(f.getName()))) {
-//                    //.prj file?
-//                    if ("prj".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
-//                        sf.setPrjFile(f);
-//                    }
-//                    else {
-//                        sf.getSuppFiles().add(f);
-//                    }
-//                    i.remove();
-//                }
-//            }
-//        }
-//        
-//        //take any left overs and add them as unspatial/unrecognized
-//        for (File f : ignored) {
-//            files.add(new ASpatialFile(f));
-//        }
-//        
-//        return files;
-//        
-//        for (DataFile f : files()) {
-//            f.prepare();
-//        }
+        // //process ignored for files that should be grouped with the spatial files
+        // for (DataFile df : files) {
+        // SpatialFile sf = (SpatialFile) df;
+        // String base = FilenameUtils.getBaseName(sf.getFile().getName());
+        // for (Iterator<File> i = ignored.iterator(); i.hasNext(); ) {
+        // File f = i.next();
+        // if (base.equals(FilenameUtils.getBaseName(f.getName()))) {
+        // //.prj file?
+        // if ("prj".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
+        // sf.setPrjFile(f);
+        // }
+        // else {
+        // sf.getSuppFiles().add(f);
+        // }
+        // i.remove();
+        // }
+        // }
+        // }
+        //
+        // //take any left overs and add them as unspatial/unrecognized
+        // for (File f : ignored) {
+        // files.add(new ASpatialFile(f));
+        // }
+        //
+        // return files;
+        //
+        // for (DataFile f : files()) {
+        // f.prepare();
+        // }
     }
 
     /**
@@ -258,11 +262,11 @@ public class Directory extends FileData {
 
         LinkedList<Directory> q = new LinkedList<Directory>();
         q.addLast(this);
-        while(!q.isEmpty()) {
+        while (!q.isEmpty()) {
             Directory dir = q.removeFirst();
             flat.add(dir);
 
-            for (Iterator<FileData> it = dir.getFiles().iterator(); it.hasNext(); ) {
+            for (Iterator<FileData> it = dir.getFiles().iterator(); it.hasNext();) {
                 FileData f = it.next();
                 if (f instanceof Directory) {
                     Directory d = (Directory) f;
@@ -275,65 +279,64 @@ public class Directory extends FileData {
         return flat;
     }
 
-//    public List<DataFile> files() throws IOException {
-//        LinkedList<DataFile> files = new LinkedList<DataFile>();
-//        
-//        LinkedList<File> ignored = new LinkedList<File>();
-//
-//        LinkedList<File> q = new LinkedList<File>();
-//        q.add(file);
-//
-//        while(!q.isEmpty()) {
-//            File f = q.poll();
-//
-//            if (f.isDirectory()) {
-//                q.addAll(Arrays.asList(f.listFiles()));
-//                continue;
-//            }
-//
-//            //determine if this is a spatial format or not
-//            DataFormat format = DataFormat.lookup(f);
-//
-//            if (format != null) {
-//                SpatialFile file = new SpatialFile(f);
-//                file.setFormat(format);
-//                files.add(file);
-//            }
-//            else {
-//                ignored.add(f);
-//            }
-//        }
-//        
-//        //process ignored for files that should be grouped with the spatial files
-//        for (DataFile df : files) {
-//            SpatialFile sf = (SpatialFile) df;
-//            String base = FilenameUtils.getBaseName(sf.getFile().getName());
-//            for (Iterator<File> i = ignored.iterator(); i.hasNext(); ) {
-//                File f = i.next();
-//                if (base.equals(FilenameUtils.getBaseName(f.getName()))) {
-//                    //.prj file?
-//                    if ("prj".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
-//                        sf.setPrjFile(f);
-//                    }
-//                    else {
-//                        sf.getSuppFiles().add(f);
-//                    }
-//                    i.remove();
-//                }
-//            }
-//        }
-//        
-//        //take any left overs and add them as unspatial/unrecognized
-//        for (File f : ignored) {
-//            files.add(new ASpatialFile(f));
-//        }
-//        
-//        return files;
-//    }
+    // public List<DataFile> files() throws IOException {
+    // LinkedList<DataFile> files = new LinkedList<DataFile>();
+    //
+    // LinkedList<File> ignored = new LinkedList<File>();
+    //
+    // LinkedList<File> q = new LinkedList<File>();
+    // q.add(file);
+    //
+    // while(!q.isEmpty()) {
+    // File f = q.poll();
+    //
+    // if (f.isDirectory()) {
+    // q.addAll(Arrays.asList(f.listFiles()));
+    // continue;
+    // }
+    //
+    // //determine if this is a spatial format or not
+    // DataFormat format = DataFormat.lookup(f);
+    //
+    // if (format != null) {
+    // SpatialFile file = new SpatialFile(f);
+    // file.setFormat(format);
+    // files.add(file);
+    // }
+    // else {
+    // ignored.add(f);
+    // }
+    // }
+    //
+    // //process ignored for files that should be grouped with the spatial files
+    // for (DataFile df : files) {
+    // SpatialFile sf = (SpatialFile) df;
+    // String base = FilenameUtils.getBaseName(sf.getFile().getName());
+    // for (Iterator<File> i = ignored.iterator(); i.hasNext(); ) {
+    // File f = i.next();
+    // if (base.equals(FilenameUtils.getBaseName(f.getName()))) {
+    // //.prj file?
+    // if ("prj".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
+    // sf.setPrjFile(f);
+    // }
+    // else {
+    // sf.getSuppFiles().add(f);
+    // }
+    // i.remove();
+    // }
+    // }
+    // }
+    //
+    // //take any left overs and add them as unspatial/unrecognized
+    // for (File f : ignored) {
+    // files.add(new ASpatialFile(f));
+    // }
+    //
+    // return files;
+    // }
 
     /**
-     * Returns the data format of the files in the directory iff all the files are of the same 
-     * format, if they are not this returns null.
+     * Returns the data format of the files in the directory iff all the files are of the same format, if they are not this returns null.
      */
     public DataFormat format() throws IOException {
         if (files.isEmpty()) {
@@ -401,7 +404,7 @@ public class Directory extends FileData {
 
     public void accept(String childName, InputStream in) throws IOException {
         File dest = child(childName);
-        
+
         IOUtils.copy(in, dest);
 
         try {
@@ -419,23 +422,23 @@ public class Directory extends FileData {
 
         try {
             unpack(dest);
-        } 
-        catch (IOException e) {
+        } catch (IOException e) {
             // problably should delete on error
             LOGGER.warning("Possible invalid file uploaded to " + dest.getAbsolutePath());
             throw e;
         }
     }
-    
+
     public void archive(File output) throws IOException {
         File archiveDir = output.getAbsoluteFile().getParentFile();
-        String outputName = output.getName().replace(".zip","");
+        String outputName = output.getName().replace(".zip", "");
         int id = 0;
         while (output.exists()) {
             output = new File(archiveDir, outputName + id + ".zip");
             id++;
         }
-        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
+        ZipOutputStream zout = new ZipOutputStream(
+                new BufferedOutputStream(new FileOutputStream(output)));
         Exception error = null;
 
         // don't call zout.close in finally block, if an error occurs and the zip
@@ -450,10 +453,11 @@ public class Directory extends FileData {
                 // nothing, we're totally aborting
             }
             output.delete();
-            if (ex instanceof IOException) throw (IOException) ex;
+            if (ex instanceof IOException)
+                throw (IOException) ex;
             throw (IOException) new IOException("Error archiving").initCause(ex);
-        } 
-        
+        }
+
         // if we get here, the zip is properly written
         try {
             zout.close();
@@ -466,7 +470,7 @@ public class Directory extends FileData {
     public void cleanup() throws IOException {
         File[] files = file.listFiles();
         if (files != null) {
-            for (File f: files) {
+            for (File f : files) {
                 if (f.isDirectory()) {
                     new Directory(f).cleanup();
                 } else {
@@ -479,14 +483,13 @@ public class Directory extends FileData {
                 }
             }
         }
-        super.cleanup();
     }
 
     @Override
     public FileData part(final String name) {
         List<FileData> files = this.files;
         if (this instanceof Filtered) {
-            files = ((Filtered)this).filter;
+            files = ((Filtered) this).filter;
         }
 
         try {
@@ -496,8 +499,7 @@ public class Directory extends FileData {
                     return name.equals(input.getName());
                 }
             });
-        }
-        catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return null;
         }
     }

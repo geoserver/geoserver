@@ -32,6 +32,7 @@ import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -80,6 +81,32 @@ public class ImporterDataTest extends ImporterTestSupport {
             feature.setAttribute("description", newDesc);
             return feature;
         }
+    }
+    
+    @Test
+    public void testUploadRootExternalProps() throws Exception {
+        // On a brand new data folder, the directory may not exists until the Importer has been invoked the first time
+        File dirFromProperties = Resources.directory(Resources.fromPath("props_uploads"));
+        
+        // Read the upload root folder and creates it if does not exists
+        importer.getUploadRoot();
+        
+        // Read the folder again...
+        dirFromProperties = Resources.directory(Resources.fromPath("props_uploads"));
+        // ... and ensure it is the same as defined on the .properties file
+        assertEquals(dirFromProperties, importer.getUploadRoot());
+        
+        // Let's now override the external folder through the Environment variable. This takes precedence on .properties
+        System.setProperty(Importer.UPLOAD_ROOT_KEY, "env_uploads");
+        
+        // Let's check that the upload root is now different from the previous one...
+        assertNotEquals(dirFromProperties, importer.getUploadRoot());
+        
+        // ... but it is equal to the one defined through the Environment variable instead
+        // Read the folder again...
+        dirFromProperties = Resources.directory(Resources.fromPath("env_uploads"));
+        // ... and ensure it is the same as defined on the .properties file
+        assertEquals(dirFromProperties, importer.getUploadRoot());
     }
     
     @Test

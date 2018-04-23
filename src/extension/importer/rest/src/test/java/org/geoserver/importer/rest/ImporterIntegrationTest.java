@@ -55,6 +55,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
+import org.geoserver.importer.Importer;
+import org.geoserver.platform.resource.Resources;
+
+
 public class ImporterIntegrationTest extends ImporterTestSupport {
 
     @Override
@@ -538,5 +542,50 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
             FileUtils.deleteDirectory(mosaicRoot);
         }
         mosaicRoot.mkdirs();
+    }
+    
+    @Test
+    public void testUploadRootExternal() throws Exception {
+        File dirFromEnv = null;
+        try {
+            // Let's now override the external folder through the Environment variable. This takes precedence on .properties
+            System.setProperty(Importer.UPLOAD_ROOT_KEY, "env_uploads");
+            assertNotNull(importer.getUploadRoot());
+
+            // the target layer is not there
+            assertNull(getCatalog().getLayerByName("archsites"));
+    
+            // create context with default name
+            File dir = unpack("shape/archsites_epsg_prj.zip");
+            ImportContext context = importer.createContext(0l);
+            importer.changed(context);
+            importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
+    
+            // run it
+            context = importer.getContext(0);
+            importer.run(context);
+    
+            // check the layer has been created
+            assertNotNull(getCatalog().getLayerByName("archsites"));
+    
+            // verify the file has been placed under the uploaded root specified on Env vars
+            dirFromEnv = Resources.directory(Resources.fromPath("env_uploads"));
+            // ... and ensure it is the same as defined on the .properties file
+            assertEquals(dirFromEnv, importer.getUploadRoot());
+            
+            // ... and that the "archsites_epsg_prj" data has been stored inside that folder
+            for(String subFolder : dirFromEnv.list()) {
+                File archsites = new File(subFolder, "archsites.shp");
+                assertTrue(archsites.exists());
+                break;
+            }
+        } finally {
+            if (dirFromEnv != null && dirFromEnv.exists()) {
+                FileUtils.deleteQuietly(dirFromEnv);
+            }
+            if (System.getProperty(Importer.UPLOAD_ROOT_KEY) != null) {
+                System.clearProperty(Importer.UPLOAD_ROOT_KEY);
+            }
+        }
     }
 }

@@ -325,7 +325,7 @@ public class MapDecorationLayout {
             Point offset = null;
             String theOffset = e.getAttributeValue("offset");
             try {
-                if (offset != null) {
+                if (theOffset != null) {
                     String[] offsetArr = theOffset.split(",");
                     offset = new Point(Integer.valueOf(offsetArr[0]), Integer.valueOf(offsetArr[1]));
                 } else {

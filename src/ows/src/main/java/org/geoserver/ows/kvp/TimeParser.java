@@ -208,7 +208,7 @@ public class TimeParser {
                         // limiting number of elements we can create
                         if(j>= MAX_ELEMENTS_TIMES_KVP){
                             if(LOGGER.isLoggable(Level.INFO))
-                                LOGGER.info("Lmiting number of elements in this periodo to "+MAX_ELEMENTS_TIMES_KVP);
+                                LOGGER.info("Limiting number of elements in this period  to " + MAX_ELEMENTS_TIMES_KVP);
                             break;                  
                         }
                     }

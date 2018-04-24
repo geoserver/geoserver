@@ -3,7 +3,7 @@
 Introduction to OpenSearch for EO
 =================================
 
-This plugin adds supporto for the OpenSearch for Earth Observation protocol to
+This plugin adds support for the OpenSearch for Earth Observation protocol to
 GeoServer. References:
 
 * `OpenSearch <http://www.opensearch.org>`_

@@ -13,10 +13,12 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
-import javax.measure.unit.UnitFormat;
+import si.uom.NonSI;
+import si.uom.SI;
+import tec.uom.se.format.SimpleUnitFormat;
+
+import javax.measure.Unit;
+import javax.measure.format.UnitFormat;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -154,7 +156,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 List<String> unitNames = new ArrayList<String>();
                 // adding radiance as it's the most common, but it's not part of the standard units
                 unitNames.add("W.m-2.Sr-1");
-                UnitFormat format = UnitFormat.getInstance(Locale.ENGLISH);
+                UnitFormat format = SimpleUnitFormat.getInstance();
                 for (Unit<?> unit : units) {
                     unitNames.add(format.format(unit));
                 }

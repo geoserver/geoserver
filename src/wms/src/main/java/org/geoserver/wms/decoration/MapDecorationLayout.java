@@ -309,29 +309,31 @@ public class MapDecorationLayout {
 
             Dimension size = null;
 
+            String theSize = e.getAttributeValue("size");
             try {
-                if (e.getAttributeValue("size") != null 
-                        && !e.getAttributeValue("size").equalsIgnoreCase("auto")) {
-                    String[] sizeArr = e.getAttributeValue("size").split(",");
+                if (theSize != null && !theSize.equalsIgnoreCase("auto")) {
+                    String[] sizeArr = theSize.split(",");
 
                     size = new Dimension(Integer.valueOf(sizeArr[0]), Integer.valueOf(sizeArr[1]));
                 }
             } catch (Exception exc){
-                LOGGER.log(
-                    Level.WARNING,
-                    "Couldn't interpret size parameter: "  + e.getAttributeValue("size"),
-                    e
+                LOGGER.log(Level.WARNING,
+                    "Couldn't interpret size parameter: "  + theSize, e
                 );
             }
 
             Point offset = null;
+            String theOffset = e.getAttributeValue("offset");
             try {
-                String[] offsetArr = e.getAttributeValue("offset").split(",");
-                offset = new Point(Integer.valueOf(offsetArr[0]), Integer.valueOf(offsetArr[1]));
+                if (theOffset != null) {
+                    String[] offsetArr = theOffset.split(",");
+                    offset = new Point(Integer.valueOf(offsetArr[0]), Integer.valueOf(offsetArr[1]));
+                } else {
+                    offset = new Point(0, 0);
+                }
             } catch (Exception exc) {
-                LOGGER.log(
-                    Level.WARNING,
-                    "Couldn't interpret size parameter: " + e.getAttributeValue("offset")
+                LOGGER.log(Level.WARNING, 
+                        "Couldn't interpret offset parameter: " + theOffset, e
                 );
                 offset = new Point(0, 0);
             }

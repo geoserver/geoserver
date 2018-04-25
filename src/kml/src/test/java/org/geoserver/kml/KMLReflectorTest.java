@@ -609,7 +609,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         Document document = getAsDOM(requestUrl);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("http://example.com/Cam Stream",
+        XMLAssert.assertXpathEvaluatesTo("http://127.0.0.1/Cam Stream",
                 "//kml:Style[1]/kml:IconStyle/kml:Icon/kml:href", document);
     }
 

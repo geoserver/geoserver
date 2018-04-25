@@ -14,7 +14,7 @@
           <PointSymbolizer>
             <Graphic>
               <ExternalGraphic>
-                <OnlineResource xlink:type="simple" xlink:href="http://example.com/${NAME}"/>
+                <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1/${NAME}"/>
                 <Format>image/png</Format>
               </ExternalGraphic>
             </Graphic>

@@ -5,9 +5,22 @@
  */
 package org.geoserver.wcs.responses;
 
-import it.geosolutions.jaiext.range.NoDataContainer;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import javax.measure.UnconvertibleException;
+import javax.measure.Unit;
+import javax.measure.UnitConverter;
+import javax.media.jai.iterator.RandomIter;
+import javax.media.jai.iterator.RandomIterFactory;
+
 import org.geoserver.wcs.responses.NetCDFDimensionsManager.NetCDFDimensionMapping;
-import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
 import org.geoserver.web.netcdf.DataPacking.DataPacker;
@@ -17,10 +30,11 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.io.netcdf.cf.Entry;
-import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.resources.coverage.CoverageUtilities;
+
+import it.geosolutions.jaiext.range.NoDataContainer;
+import tec.uom.se.format.SimpleUnitFormat;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -29,30 +43,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.units.NoSuchUnitException;
-import ucar.units.PrefixDBException;
-import ucar.units.SpecificationException;
-import ucar.units.UnitDBException;
-import ucar.units.UnitParseException;
-import ucar.units.UnitSystemException;
-
-import javax.measure.converter.ConversionException;
-import javax.measure.converter.UnitConverter;
-import javax.measure.unit.Unit;
-import javax.media.jai.iterator.RandomIter;
-import javax.media.jai.iterator.RandomIterFactory;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * A class which takes care of initializing NetCDF dimension from coverages dimension, 
@@ -173,7 +163,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                 String unitString = variableUoM.replace(" ", "*").replace("-", "^-").replace(".", "*")
                 .replace("m2","m^2").replace("m3","m^3").replace("s2", "s^2");
                 try {
-                    Unit outputUoM = Unit.valueOf(unitString);
+                    Unit outputUoM = SimpleUnitFormat.getInstance().parse(unitString);
                     if (outputUoM != null && !inputUoM.equals(outputUoM)) {
                         if (!inputUoM.isCompatible(outputUoM)){
                             if (LOGGER.isLoggable(Level.WARNING)) {
@@ -185,7 +175,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                             unitConverter = inputUoM.getConverterTo(outputUoM);
                         }
                     }
-                } catch (ConversionException ce) {
+                } catch (UnconvertibleException ce) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
                         LOGGER.severe("Unable to create a converter for the specified unit: " + unitString 
                                 + "\nNo unit conversion will be performed" );

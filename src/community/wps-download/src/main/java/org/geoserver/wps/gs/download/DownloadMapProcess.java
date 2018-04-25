@@ -261,6 +261,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             if (layer.getCapabilities() == null) {
                 RenderedImageMap map = renderInternalLayer(layer, template);
                 image = map.getImage();
+                map.getMapContext().dispose();
             } else {
                 image = getImageFromWebMapServer(layer, template, bbox, serverCache);
             }
@@ -291,6 +292,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 content.setMapWidth(width);
                 content.setMapHeight(height);
                 content.setTransparent(true);
+                content.getViewport().setBounds(bbox);
                 RenderedImageMapOutputFormat renderer = new RenderedImageMapOutputFormat(wms);
                 RenderedImageMap map = renderer.produceMap(content);
 

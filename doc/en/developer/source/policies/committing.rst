@@ -8,8 +8,8 @@ Getting commit access
 
 All contributors are asked to provide an assignment agreement for working on the project:
 
-* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`__
-* `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
+* `corporate_contributor <https://www.osgeo.org/resources/corporate-contributor-license/>`__
+* `individual_contributor <https://www.osgeo.org/resources/individual-contributor-license/>`__
 
 This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_ is the  non-profit which holds the GeoServer codebase for the community.
 
@@ -36,8 +36,8 @@ The process of getting community commit access is as follows:
 
 #. **Print, sign, scan and send the contributor agreement**
    
-   * `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`_
-   * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
+   * `corporate_contributor <https://www.osgeo.org/resources/corporate-contributor-license/>`_
+   * `individual_contributor <https://www.osgeo.org/resources/individual-contributor-license/>`__
    
    Scanned assignment agreement can be emailed `info@osgeo.org <mailto:info@osgeo.org>`_ at OSGeo.
 

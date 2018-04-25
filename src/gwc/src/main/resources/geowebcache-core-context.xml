@@ -137,6 +137,7 @@
     <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcGridSetBroker"/>
     <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcXmlConfig"/>
     <constructor-arg ref="gwcRuntimeStats"/>
     <property name="defaultStorageFinder" ref="gwcDefaultStorageFinder"/>

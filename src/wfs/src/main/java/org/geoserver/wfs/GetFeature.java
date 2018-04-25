@@ -261,7 +261,13 @@ public class GetFeature {
         //stored queries, preprocess compile any stored queries into actual query objects
         boolean getFeatureById = processStoredQueries(request);
         // resolve empty prefix QNnames to local workspace
-        queries = resolveLocalWorkspaceNS(request.getQueries());
+        if(WFSInfo.Version.V_20.compareTo(request.getVersion()) < 0){
+            queries = resolveLocalWorkspaceNS(request.getQueries());
+        }
+        else{
+            queries = request.getQueries();
+        }
+        
         
         if (request.isQueryTypeNamesUnset()) {
             expandTypeNames(request, queries, getFeatureById, getCatalog());

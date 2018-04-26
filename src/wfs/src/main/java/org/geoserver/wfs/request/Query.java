@@ -113,6 +113,13 @@ public abstract class Query extends RequestObject {
         }
         
         @Override
+        public void setTypeNames(List<QName> typeNames) {
+            List l = eGet(adaptee, "typeNames", List.class);
+            l.clear();
+            l.addAll(typeNames);
+        }
+        
+        @Override
         public List<String> getAliases() {
             return eGet(adaptee, "aliases", List.class);
         }

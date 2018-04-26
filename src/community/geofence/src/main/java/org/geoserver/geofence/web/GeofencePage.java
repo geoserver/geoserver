@@ -42,6 +42,7 @@ import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
@@ -112,7 +113,9 @@ public class GeofencePage extends GeoServerSecuredPage {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
 
-                target.add(getPage().get("feedback"));
+                if(getPage() instanceof GeoServerBasePage) {
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                }
             }
 
             private RuleReaderService getRuleReaderService(String servicesUrl) {
@@ -203,8 +206,8 @@ public class GeofencePage extends GeoServerSecuredPage {
                     target.add(label);
                 }
 
-                if(getPage().get("feedback") != null) {
-                    target.add(getPage().get("feedback"));
+                if(getPage() instanceof GeoServerBasePage) {
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                 }
             }
         }.setDefaultFormProcessing(false));

@@ -42,7 +42,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    static final class AdvertisedLayerGroup extends DecoratingLayerGroupInfo {
+    public static final class AdvertisedLayerGroup extends DecoratingLayerGroupInfo {
         private static final long serialVersionUID = 1037043388874118840L;
         private List<PublishedInfo> filteredLayers;
         private List<StyleInfo> filteredStyles;
@@ -61,6 +61,15 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         @Override
         public List<StyleInfo> getStyles() {
             return new FilteredList<>(filteredStyles, delegate.getStyles());
+        }
+
+        /**
+         * Returns the original layers, including the advertised ones. Use this method only if
+         * strictly necessary (current use case, figuring out if the group is queryable or not)
+         * @return
+         */
+        public List<PublishedInfo> getOriginalLayers() {
+            return delegate.getLayers();
         }
     }
     

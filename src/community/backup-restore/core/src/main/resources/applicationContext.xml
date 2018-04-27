@@ -76,6 +76,12 @@
 		<constructor-arg ref="xstreamPersisterFactory" />
 		<property name="timeout" value="600000"/>
 	</bean>
+
+	<bean id="finalizeRestoreTasklet" class="org.geoserver.backuprestore.tasklet.FinalizeRestoreTasklet">
+		<constructor-arg ref="backupFacade" />
+		<constructor-arg ref="xstreamPersisterFactory" />
+		<property name="timeout" value="600000"/>
+	</bean>
 	
 	<!-- The BACKUP Job definition START here -->
 	<batch:job id="backupJob" restartable="true">
@@ -853,10 +859,18 @@
       </batch:listeners>
     </batch:step>
 
-    <!-- extension point for generic restore tasklets -->
-    <batch:step id="genericTaskletsRestore">
-      <batch:tasklet allow-start-if-complete="true" ref="genericTasklet"/>
-    </batch:step>
+      <!-- extension point for generic restore tasklets -->
+      <batch:step id="genericTaskletsRestore">
+        <batch:tasklet allow-start-if-complete="true" ref="genericTasklet"/>
+
+        <batch:fail on="FAILED"/>
+        <batch:stop on="STOPPED" restart="finalizeRestore"/>
+        <batch:next on="*" to="finalizeRestore"/>
+      </batch:step>
+
+      <batch:step id="finalizeRestore">
+        <batch:tasklet ref="finalizeRestoreTasklet"/>
+      </batch:step>
 
 	</batch:job>
 	<!-- The RESTORE Job definition ENDS here -->

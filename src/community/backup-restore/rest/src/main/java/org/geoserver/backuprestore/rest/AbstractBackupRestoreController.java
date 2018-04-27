@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -28,7 +29,6 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
-import org.geotools.factory.Hints;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
@@ -147,55 +147,19 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Hints asParams(List<String> options) {
-        Hints hints = new Hints(new HashMap(2));
+    protected Map<String, String> asParams(List<String> options) {
+        Map<String, String> params = new HashMap<>();
     
         if (options != null) {
             for (String option : options) {
-                if (option.startsWith(Backup.PARAM_DRY_RUN_MODE)) {
-                    if (option.indexOf("=")>0) {
-                        if (!option.toLowerCase().endsWith("true")) {
-                            continue;
-                        }
-                    }
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
-                }
-    
-                if (option.startsWith(Backup.PARAM_BEST_EFFORT_MODE)) {
-                    if (option.indexOf("=")>0) {
-                        if (!option.toLowerCase().endsWith("true")) {
-                            continue;
-                        }
-                    }
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
-                }
-
-                if (option.startsWith(Backup.PARAM_PARAMETERIZE_PASSWDS)) {
-                    if (option.indexOf("=") > 0) {
-                        if (!option.toLowerCase().endsWith("true")) {
-                            continue;
-                        }
-                    }
-                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS),
-                        Backup.PARAM_PARAMETERIZE_PASSWDS));
-                }
-
-                if (option.startsWith(Backup.PARAM_PASSWORD_TOKENS)) {
-                    String[] tokensOption = option.split("=", 2);
-                    if (tokensOption.length != 2) {
-                        continue;
-                    }
-                    else {
-                        hints.add(new Hints(
-                            new Hints(new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"),
-                                tokensOption[1])
-                        ));
-                    }
+                String[] optionsTokens = option.split("=", 2);
+                if (optionsTokens.length > 0) {
+                    params.put(optionsTokens[0], optionsTokens[1]);
                 }
             }
         }
         
-        return hints;
+        return params;
     }
 
     /**

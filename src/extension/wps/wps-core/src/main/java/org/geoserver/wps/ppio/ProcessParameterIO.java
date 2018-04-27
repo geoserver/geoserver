@@ -35,6 +35,27 @@ import com.vividsolutions.jts.geom.Envelope;
 public abstract class ProcessParameterIO {
 
     /**
+     * @author ian
+     *
+     */
+    private static final class ClassComparator implements Comparator<ProcessParameterIO> {
+        public int compare(ProcessParameterIO o1, ProcessParameterIO o2) {
+            Class c1 = o1.getType();
+            Class c2 = o2.getType();
+
+            if (c1.equals(c2)) {
+                return 0;
+            }
+
+            if (c1.isAssignableFrom(c2)) {
+                return 1;
+            }
+
+            return -1;
+        }
+    }
+
+    /**
      * PPIO possible direction:
      * <ul>
      * <li>encoding : PPIO suitable only for outputs</li>
@@ -135,38 +156,32 @@ public abstract class ProcessParameterIO {
         if (all.isEmpty()) {
             return null;
         }
-
+        List<ProcessParameterIO> matches = new ArrayList<>();
         if (mime != null) {
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
-                    return ppio;
+                if (ppio instanceof ComplexPPIO) {
+                    if (((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                        return ppio;
+                    } else if (((ComplexPPIO) ppio).getMimeType().startsWith(mime)) {
+                        matches.add(ppio);
+                    }
                 }
             }
         }
 
         // if more than one sort by class hierarchy, pushing the most specific classes to the
         // beginning
-        if (all.size() > 0) {
-            Collections.sort(all, new Comparator<ProcessParameterIO>() {
-                public int compare(ProcessParameterIO o1, ProcessParameterIO o2) {
-                    Class c1 = o1.getType();
-                    Class c2 = o2.getType();
-
-                    if (c1.equals(c2)) {
-                        return 0;
-                    }
-
-                    if (c1.isAssignableFrom(c2)) {
-                        return 1;
-                    }
-
-                    return -1;
-                }
-            });
+        if (matches.size() > 0) {
+            Collections.sort(matches, new ClassComparator());
+            return matches.get(0);
         }
-
-        // fall back on the first found
-        return all.get(0);
+        // fall back on the first found  
+        if (all.size() > 0) {
+            Collections.sort(all, new ClassComparator());
+            return all.get(0);
+        }
+        return null;
+        
     }
 
     public static List<ProcessParameterIO> findAll(Parameter<?> p, ApplicationContext context) {

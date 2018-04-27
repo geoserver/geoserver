@@ -23,6 +23,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.impl.AdvertisedCatalog;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -44,6 +45,7 @@ import org.geotools.data.Query;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.OperationType;
 import org.geotools.data.ows.WMSCapabilities;
+import org.geotools.decorate.Wrapper;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
@@ -1030,13 +1032,12 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
-        
         if (layerGroup.isQueryDisabled())
             return false;
         
         boolean queryable = false;
-        
-        for (PublishedInfo published : layerGroup.getLayers()) {
+        List<PublishedInfo> layers = getLayersForQueryableChecks(layerGroup);
+        for (PublishedInfo published : layers) {
             if (published instanceof LayerInfo) {
                 queryable |= isQueryable((LayerInfo) published);
             } else {
@@ -1044,6 +1045,37 @@ public class WMS implements ApplicationContextAware {
             }
         }
         return queryable;
+    }
+
+    /**
+     * For queryability purposes, a group is queryable if any layer inside of it, advertised or not,
+     * is queriable (because the non advertised layer is still available in GetFeatureInfo). So,
+     * just for this use case, we are going to unwrap {@link
+     * org.geoserver.catalog.impl.AdvertisedCatalog.AdvertisedLayerGroup} and get the original list
+     * of layers. The security wrappers are below it by construction, so this won't case, per se,
+     * security issues.
+     *
+     * @param layerGroup the group whose query-ability needs to be checked
+     * @return a list of {@link PublishedInfo} contained in the layer (queryable or not)
+     */
+    private List<PublishedInfo> getLayersForQueryableChecks(LayerGroupInfo layerGroup) {
+        List<PublishedInfo> layers = layerGroup.getLayers();
+        // direct wrapper?
+        if (layerGroup instanceof AdvertisedCatalog.AdvertisedLayerGroup) {
+            AdvertisedCatalog.AdvertisedLayerGroup wrapper =
+                    (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;
+            layers = wrapper.getOriginalLayers();
+        } else if (layerGroup instanceof Wrapper) {
+            // hidden inside some other wrapper?
+            Wrapper wrapper = (Wrapper) layerGroup;
+            if (wrapper.isWrapperFor(AdvertisedCatalog.AdvertisedLayerGroup.class)) {
+                wrapper.unwrap(AdvertisedCatalog.AdvertisedLayerGroup.class);
+                AdvertisedCatalog.AdvertisedLayerGroup alg =
+                        (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;
+                layers = alg.getOriginalLayers();
+            }
+        }
+        return layers;
     }
 
     /**

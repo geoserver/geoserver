@@ -134,7 +134,7 @@ public class GetFeature {
 
     static final String GET_FEATURE_BY_ID_DEPRECATED = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
     static final String GET_FEATURE_BY_ID = "http://www.opengis.net/def/query/OGC-WFS/0/GetFeatureById";
-    
+
     /** Standard logging instance for class */
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
 
@@ -1526,5 +1526,4 @@ O:      for (String propName : query.getPropertyNames()) {
         
         return properties;
     }
-    
 }

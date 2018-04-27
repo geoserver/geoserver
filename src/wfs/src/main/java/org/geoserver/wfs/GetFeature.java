@@ -16,7 +16,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.feature.TypeNameExtractingVisitor;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;

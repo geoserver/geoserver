@@ -32,10 +32,10 @@ import org.opengis.parameter.ParameterValueGroup;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -57,8 +57,9 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         final CoverageInfo coverage = (CoverageInfo) getResourceInfo();
 
         final Map<String, Serializable> parameters = coverage.getParameters();
-        List<String> keys = new ArrayList<String>(parameters.keySet());
-        Collections.sort(keys);
+        TreeSet<String> keySet = new TreeSet<>(parameters.keySet());
+        addMissingParameters(keySet, coverage);
+        List<String> keys = new ArrayList<>(keySet);
 
         final IModel paramsModel = new PropertyModel(model, "parameters");
         ListView paramsList = new ListView("parameters", keys) {
@@ -101,6 +102,24 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         if(keys.size() == 0)
             setVisible(false);
    }
+
+    /**
+     * Adds into the keySet any read parameter key that's missing (due to reader growing new
+     * parameters over time/releases
+     */
+    private void addMissingParameters(TreeSet<String> keySet, CoverageInfo coverage) {
+        AbstractGridFormat format = coverage.getStore().getFormat();
+        ParameterValueGroup readParameters = format.getReadParameters();
+        List<GeneralParameterValue> parameterValues = readParameters.values();
+        List<String> paramNames =
+                parameterValues
+                        .stream()
+                        .map(p -> p.getDescriptor())
+                        .filter(p -> p instanceof DefaultParameterDescriptor)
+                        .map(p -> p.getName().getCode())
+                        .collect(Collectors.toList());
+        keySet.addAll(paramNames);
+    }
 
     private void initParameterDescriptors() {
         try {

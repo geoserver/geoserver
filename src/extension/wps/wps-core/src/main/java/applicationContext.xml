@@ -190,6 +190,9 @@
     <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>
+    <bean id="CSVPPIO" class="org.geoserver.wps.ppio.CSVPPIO">
+      <constructor-arg ref="wpsResourceManager" />
+    </bean>
     <bean id="classificationStatsPPIO" class="org.geoserver.wps.gs.ClassificationStatsPPIO"/>
 
     <!-- Register the GeoServer factory and processes -->

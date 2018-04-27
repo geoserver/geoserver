@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -29,13 +30,17 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.opengis.referencing.ReferenceIdentifier;
 
 import javax.xml.namespace.QName;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.geotools.coverage.grid.io.AbstractGridFormat.*;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
@@ -113,7 +118,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
-        print(tester.getLastRenderedPage(), true, true);
+        // print(tester.getLastRenderedPage(), true, true);
         
         // get the list of parameters in the UI
         ListView parametersList = (ListView) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:1:content:parameters");
@@ -141,6 +146,33 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         });
         tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:parameters:0:parameterPanel", 
                 CheckBoxParamPanel.class);
+    }
+
+    @Test
+    public void testMissingParameters() {
+        // get mosaic, remove a parameter
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        String bandCode = ImageMosaicFormat.BANDS.getName().getCode();
+        coverage.getParameters().remove(bandCode);
+        getCatalog().save(coverage);
+        
+        // start up the page        
+        LayerInfo layer = getCatalog().getLayerByName(getLayerId(TIMERANGES));
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        // print(tester.getLastRenderedPage(), true, true);
+
+        // get the list of parameters in the UI
+        ListView parametersList = (ListView) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:1:content:parameters");
+        AtomicBoolean editorFound = new AtomicBoolean(false);
+        parametersList.visitChildren(ParamPanel.class, (c, v) -> {
+            MapModel mapModel = (MapModel) c.getDefaultModel();
+            String parameterKey = mapModel.getExpression();
+            if (bandCode.equals(parameterKey)) {
+                editorFound.set(true);
+            }
+        });
+        assertTrue("Bands parameter not found", editorFound.get());
     }
     
 }

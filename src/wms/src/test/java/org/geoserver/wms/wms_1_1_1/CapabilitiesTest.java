@@ -10,7 +10,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 import static org.junit.Assert.*;
-import java.util.ArrayList;
+
 import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -54,7 +55,6 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
-import org.geotools.data.Base64;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -727,4 +727,68 @@ public class CapabilitiesTest extends WMSTestSupport {
 
         return dom;
     }
+    
+    @Test
+    public void testNonAdvertisedQueriableWithinGroup() throws Exception {
+        // make layers non advertised
+        Catalog catalog = getCatalog();
+        setAdvertised(catalog, MockData.LAKES, false);
+        setAdvertised(catalog, MockData.NAMED_PLACES, false);
+        LayerGroupInfo group = null;
+        try {
+            group = createLakesPlacesLayerGroup(catalog, 
+                    LayerGroupInfo.Mode.SINGLE, null);
+            Document dom = dom(get("wms?request=GetCapabilities&version=1.1.0"), true);
+            // print(dom);
+            
+            assertXpathEvaluatesTo("1", "//Layer[Name='lakes_and_places']/@queryable", dom);
+        } finally {
+            if (group != null) {
+                catalog.remove(group);
+            }
+            setAdvertised(catalog, MockData.LAKES, true);
+            setAdvertised(catalog, MockData.NAMED_PLACES, true);
+        }
+    }
+
+    @Test
+    public void testNonAdvertisedNonQueriableWithinGroup() throws Exception {
+        // make layers non advertised
+        Catalog catalog = getCatalog();
+        setAdvertised(catalog, MockData.LAKES, false);
+        setQueryable(catalog, MockData.LAKES, false);
+        setAdvertised(catalog, MockData.NAMED_PLACES, false);
+        setQueryable(catalog, MockData.NAMED_PLACES, false);
+        LayerGroupInfo group = null;
+        try {
+            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.SINGLE, null);
+            Document dom = dom(get("wms?request=GetCapabilities&version=1.1.0"), true);
+            // print(dom);
+
+            assertXpathEvaluatesTo("0", "//Layer[Name='lakes_and_places']/@queryable", dom);
+        } finally {
+            if (group != null) {
+                catalog.remove(group);
+            }
+            setAdvertised(catalog, MockData.LAKES, true);
+            setQueryable(catalog, MockData.LAKES, true);
+            setAdvertised(catalog, MockData.NAMED_PLACES, true);
+            setQueryable(catalog, MockData.NAMED_PLACES, true);
+        }
+
+
+    }
+
+    private void setAdvertised(Catalog catalog, QName name, boolean advertised) {
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(name));
+        lakes.setAdvertised(advertised);
+        catalog.save(lakes);
+    }
+
+    private void setQueryable(Catalog catalog, QName name, boolean queryable) {
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(name));
+        lakes.setQueryable(queryable);
+        catalog.save(lakes);
+    }
+
 }

@@ -134,7 +134,6 @@ public class GetFeature {
 
     static final String GET_FEATURE_BY_ID_DEPRECATED = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
     static final String GET_FEATURE_BY_ID = "http://www.opengis.net/def/query/OGC-WFS/0/GetFeatureById";
-    static final String WFS_NS = "http://www.opengis.net/wfs";
     
     /** Standard logging instance for class */
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
@@ -260,8 +259,7 @@ public class GetFeature {
 
         //stored queries, preprocess compile any stored queries into actual query objects
         boolean getFeatureById = processStoredQueries(request);
-        // resolve empty prefix QNnames to local workspace
-        queries = resolveLocalWorkspaceNS(request.getQueries());
+        queries = request.getQueries();
         
         if (request.isQueryTypeNamesUnset()) {
             expandTypeNames(request, queries, getFeatureById, getCatalog());
@@ -1529,26 +1527,4 @@ O:      for (String propName : query.getPropertyNames()) {
         return properties;
     }
     
-    protected List<Query> resolveLocalWorkspaceNS(List<Query> origin){
-        if(!(catalog instanceof LocalWorkspaceCatalog)){
-            return origin;
-        }
-        final LocalWorkspaceCatalog localCatalog = (LocalWorkspaceCatalog) catalog;
-        for(Query q : origin){
-            List<QName> names = new ArrayList<>();
-            for(QName n: q.getTypeNames()){
-                // if is using default wfs namespace, resolve local workspace namespace
-                if(WFS_NS.equals(n.getNamespaceURI())){
-                    QName newName = new QName(localCatalog.getDefaultNamespace().getURI(), n.getLocalPart(),
-                            localCatalog.getDefaultWorkspace().getName());
-                    names.add(newName);
-                }
-                else {
-                    names.add(n);
-                }
-            }
-            q.setTypeNames(names);
-        }
-        return origin;
-    }
 }

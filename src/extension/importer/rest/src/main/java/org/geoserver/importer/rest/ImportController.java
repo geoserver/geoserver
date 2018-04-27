@@ -128,12 +128,10 @@ public class ImportController extends ImportBaseController {
         }
         while (contexts.hasNext()) {
             ImportContext ctx = contexts.next();
-            if (ctx.getState() != ImportContext.State.COMPLETE) {
-                try {
-                    importer.delete(ctx);
-                } catch (IOException ioe) {
-                    throw new RestException("Error deleting context " + ctx.getId(), HttpStatus.INTERNAL_SERVER_ERROR, ioe);
-                }
+            try {
+                importer.delete(ctx);
+            } catch (IOException ioe) {
+                throw new RestException("Error deleting context " + ctx.getId(), HttpStatus.INTERNAL_SERVER_ERROR, ioe);
             }
         }
     }

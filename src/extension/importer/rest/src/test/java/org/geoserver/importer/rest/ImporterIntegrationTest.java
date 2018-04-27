@@ -293,6 +293,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         //Test delete
         MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/"+importId);
         assertEquals(204, resp.getStatus());
+        
+        // check it was actually deleted
+        MockHttpServletResponse getAgain = getAsServletResponse("/rest/imports/" + importId);
+        assertEquals(404, getAgain.getStatus());
     }
 
     @Test

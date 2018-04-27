@@ -87,7 +87,7 @@
           <descriptor>release/ext-status-monitoring.xml</descriptor>
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
-	  <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
+          <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
         </descriptors>
       </configuration>

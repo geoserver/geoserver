@@ -5,26 +5,34 @@
  */
 package org.geoserver.config.util;
 
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConversionException;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
+import com.thoughtworks.xstream.converters.collections.MapConverter;
+import com.thoughtworks.xstream.converters.reflection.FieldDictionary;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.converters.reflection.SortableFieldKeySorter;
+import com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider;
+import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
+import com.thoughtworks.xstream.io.xml.StaxWriter;
+import com.thoughtworks.xstream.mapper.CannotResolveClassException;
+import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
+import com.thoughtworks.xstream.mapper.DynamicProxyMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
+import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.collections.MultiHashMap;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
@@ -135,33 +143,25 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
-import com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
-import com.thoughtworks.xstream.converters.collections.MapConverter;
-import com.thoughtworks.xstream.converters.reflection.FieldDictionary;
-import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
-import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
-import com.thoughtworks.xstream.converters.reflection.SortableFieldKeySorter;
-import com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider;
-import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
-import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
-import com.thoughtworks.xstream.io.xml.StaxWriter;
-import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
-import com.thoughtworks.xstream.mapper.DynamicProxyMapper;
-import com.thoughtworks.xstream.mapper.Mapper;
-import com.vividsolutions.jts.geom.Geometry;
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class which loads and saves catalog and configuration objects to and
@@ -483,6 +483,10 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
+        // this should have been a metadata map too, but was not registered as such and got a plain
+        // map converter. Switched to TolerantMapConverter to make it work when plugins get removed and
+        // leave configuration that cannot be parsed anymore in there
+        xs.registerLocalConverter( impl(SettingsInfo.class), "metadata", new TolerantMapConverter(xs.getMapper(), MetadataMap.class));
         xs.registerConverter(new MeasureConverter());
         xs.registerConverter(new MultimapConverter(xs.getMapper()));
         
@@ -952,7 +956,51 @@ public class XStreamPersister {
             }
         }
     }
-    
+
+    class TolerantMapConverter extends MapConverter {
+
+        public TolerantMapConverter(Mapper mapper) {
+            super(mapper);
+        }
+
+        public TolerantMapConverter(Mapper mapper, Class type) {
+            super(mapper, type);
+        }
+
+        @Override
+        public boolean canConvert(Class type) {
+            return super.canConvert(type);
+        }
+
+        protected void putCurrentEntryIntoMap(
+                HierarchicalStreamReader reader,
+                UnmarshallingContext context,
+                Map map,
+                Map target) {
+            Object key;
+            Object value;
+            try {
+                reader.moveDown();
+                key = readItem(reader, context, map);
+                reader.moveUp();
+
+                reader.moveDown();
+                value = readItem(reader, context, map);
+            } catch (CannotResolveClassException e) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Could not load map entry, skipping as it might have put by a plugin " +
+                                "that's no more available",
+                        e);
+                return;
+            } finally {
+                reader.moveUp();
+            }
+
+            target.put(key, value);
+        }
+    }
+
     /**
      * Custom converter for the special metadata map.
      */

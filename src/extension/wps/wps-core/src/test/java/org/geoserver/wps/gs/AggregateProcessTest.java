@@ -26,6 +26,8 @@ import org.w3c.dom.Document;
 
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 public class AggregateProcessTest extends WPSTestSupport {
 
     @Test
@@ -107,7 +109,7 @@ public class AggregateProcessTest extends WPSTestSupport {
                 + "        <wps:Body>\n"
                 + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
                 + "            <wfs:Query typeName=\""
-                + getLayerId(MockData.PRIMITIVEGEOFEATURE)
+                + getWFSQueryLayerId(MockData.PRIMITIVEGEOFEATURE)
                 + "\"/>\n"
                 + "          </wfs:GetFeature>\n"
                 + "        </wps:Body>\n"
@@ -197,7 +199,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         + "        <wps:Body>\n"
         + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
         + "            <wfs:Query typeName=\""
-        + getLayerId(MockData.PRIMITIVEGEOFEATURE)
+        + getWFSQueryLayerId(MockData.PRIMITIVEGEOFEATURE)
         + "\"/>\n"
         + "          </wfs:GetFeature>\n"
         + "        </wps:Body>\n"
@@ -297,12 +299,44 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertTrue(aggregationResults.size() == 5);
     }
 
-    private JSONObject executeJsonRequest(String wpsRequest) throws Exception {
-        MockHttpServletResponse response = postAsServletResponse("wps?", wpsRequest);
+    protected JSONObject executeJsonRequest(String wpsRequest) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse(getWorkspaceAndServicePath(), wpsRequest);
         String content = response.getContentAsString();
         assertFalse(content.isEmpty());
         Object jsonObject = new JSONParser().parse(content);
         assertNotNull(jsonObject);
         return (JSONObject) jsonObject;
     }
+    
+    protected String getWorkspaceAndServicePath(){
+        return "wps?";
+    }
+    
+    protected String getWFSQueryLayerId(QName layerName){
+        return getLayerId(layerName);
+    }
+    
+    /**
+     * Extends AggregateProcessTest to support local workspace resolution cases
+     * @author Geosolutions
+     */
+    public static class LocalWSTest extends AggregateProcessTest{
+        
+        @Override
+        protected String getWorkspaceAndServicePath(){
+            return MockData.PRIMITIVEGEOFEATURE.getPrefix() + "/wps?";
+        }
+        
+        @Override
+        protected String root() {
+            return MockData.PRIMITIVEGEOFEATURE.getPrefix() + "/wps?";
+        }
+        
+        @Override
+        protected String getWFSQueryLayerId(QName layerName){
+            return layerName.getLocalPart();
+        }
+        
+    }
+    
 }

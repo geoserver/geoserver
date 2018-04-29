@@ -18,8 +18,10 @@ import org.geotools.wfs.v1_0.WFS;
 import org.geotools.wfs.v1_1.WFSConfiguration;
 import org.geotools.wfs.v2_0.bindings.CopyingHandler;
 import org.geotools.wps.WPS;
+import org.geotools.xml.Configuration;
 import org.geotools.xml.ParserDelegate;
 import org.geotools.xml.ParserDelegate2;
+import org.geotools.xml.XSDParserDelegate;
 import org.geotools.xml.impl.Handler;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoContainer;
@@ -129,5 +131,15 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
             }
             return this.delegates;
         }
-    } 
+    }
+    
+    private static final class WPSInternalXSDParserDelegate extends XSDParserDelegate {
+
+        public WPSInternalXSDParserDelegate(Configuration configuration, NamespaceSupport nsSupport) {
+            super(configuration);
+            handler.getNamespaceSupport().add(nsSupport);
+        }
+        
+    }
+    
 }

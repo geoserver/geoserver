@@ -58,7 +58,11 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         TextField maxOutputMemory = new TextField("maxOutputMemory");
         maxOutputMemory.add(RangeValidator.minimum(0l));
         form.add(maxOutputMemory);
-        
+        // max dimension values
+        TextField<Integer> maxRequestedDimensionValues = new TextField<Integer>("maxRequestedDimensionValues");
+        maxRequestedDimensionValues.add(RangeValidator.minimum(0));
+        form.add(maxRequestedDimensionValues);
+
         // lat-lon VS lon-lat
         form.add(new CheckBox("latLon"));
         

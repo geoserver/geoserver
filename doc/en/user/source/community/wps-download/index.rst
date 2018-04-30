@@ -46,6 +46,8 @@ GeoServer will automatically create a new one with the default properties:
   hardOutputLimit=52428800
   # STORE =0, BEST =8
   compressionLevel=4
+  # When set to 0 or below, no limit
+  maxAnimationFrames=1000
   
 Where the available limits are:
 
@@ -54,6 +56,7 @@ Where the available limits are:
  * ``writeLimits`` : maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumated sum of each band's pixel sample_type size in bytes, for all bands
  * ``hardOutputLimit`` : maximum file size to download
  * ``compressionLevel`` : compression level for the output zip file
+ * ``maxAnimationFrames`` : maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)
 
 .. note:: Note that limits can be changed when GeoServer is running. Periodically the server will reload the properties file. 
  

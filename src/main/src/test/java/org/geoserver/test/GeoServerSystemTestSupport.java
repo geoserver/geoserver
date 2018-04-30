@@ -2013,6 +2013,25 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void checkOws10Exception(Document dom, String exceptionCode) throws Exception {
         checkOws10Exception(dom, exceptionCode, null);
     }
+
+    /**
+     * Performs basic checks a pre OWS 1.0 exception, to ensure it's well formed
+     * and ensuring that a particular exceptionCode is used.
+     */
+    protected String checkLegacyException(Document dom, String exceptionCode, String locator) throws Exception {
+        Element root = dom.getDocumentElement();
+        assertEquals("ServiceExceptionReport", root.getNodeName() );
+        assertEquals( 1, dom.getElementsByTagName( "ServiceException").getLength() );
+
+        Element ex = (Element) dom.getElementsByTagName( "ServiceException").item(0);
+        if (exceptionCode != null) {
+            assertEquals(exceptionCode, ex.getAttribute("code"));
+        }
+        if (locator != null) {
+            assertEquals( locator, ex.getAttribute( "locator") );
+        }
+        return ex.getTextContent();
+    }
     
     /**
      * Performs basic checks on an OWS 1.0 exception, to ensure it's well formed

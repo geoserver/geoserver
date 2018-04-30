@@ -32,6 +32,7 @@
 	<bean id="downloadAnimationProcess" class="org.geoserver.wps.gs.download.DownloadAnimationProcess">
 		<constructor-arg index="0" ref="downloadMapProcess"/>
 		<constructor-arg index="1" ref="wpsResourceManager"/>
+		<constructor-arg index="2" ref="downloadServiceConfigurationWatcher" />
 	</bean>
 
 

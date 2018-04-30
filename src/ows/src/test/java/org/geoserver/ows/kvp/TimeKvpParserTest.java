@@ -190,10 +190,10 @@ public class TimeKvpParserTest extends TestCase {
         assertInstant(format.parse("2007-01-10T12Z"), l.get(6));
         assertInstant(format.parse("2007-01-12T00Z"), l.get(7));
         
-        l = new ArrayList((Collection) timeKvpParser.parse("2007-01-01T12Z/2007-01-31T12Z/PT01S"));
+        l = new ArrayList((Collection) timeKvpParser.parse("2007-01-01T12Z/2007-01-01T13Z/PT10M"));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
-        assertTrue(l.size()==100);
+        assertEquals(12, l.size());
         assertInstant(format.parse("2007-01-01T12Z"), l.get(0));
     }
     

@@ -51,6 +51,9 @@ The request limits limit the size of the image read from the source and the size
    * - **Maximum output memory**
      - Sets the maximum amount of memory, in kilobytes, a GetCoverage request might use, at most, to host the resulting raster. The memory is computed as ``ow * oh * pixelsize``, where ``ow`` and ``oh`` are the size of the raster to be generated in output.
      - 2.0.3
+   * - **Max number of dimension values**
+     - Sets the maximum number of dimension (time, at least for now) values that a client can request in a GetCoverage request (the work to be done is usually proportional to said number of times, and the list of values is kept in memory during the processing)
+     - 2.14.0
 
      
 To understand the limits let's consider a very simplified examle in which no tiles and overviews enter the game:

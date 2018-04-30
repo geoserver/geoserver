@@ -1236,7 +1236,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT, 10,
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT,
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
 
         final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
@@ -1285,7 +1286,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                 new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT, 10, 10,
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
 
         final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
@@ -1335,7 +1337,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT, 
                         DownloadServiceConfiguration.NO_LIMIT, 921600, // 900KB
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
 
         final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
@@ -1414,7 +1417,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT, 
                         30000,  //= 100x100 pixels x 3 bands x 1 byte (8 bits) per band
                         DownloadServiceConfiguration.NO_LIMIT, 
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
 
         downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -1464,7 +1468,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         (long) 1E12, // huge number, way above integer limits
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT,
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
 
         final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
@@ -1514,7 +1519,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT, 10,
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
         final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
@@ -1614,7 +1620,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT, 1,
-                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                        DownloadServiceConfiguration.NO_LIMIT)), getGeoServer());
 
 
         // Creates the new process for the download

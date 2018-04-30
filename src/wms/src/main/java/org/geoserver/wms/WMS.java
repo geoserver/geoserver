@@ -655,6 +655,15 @@ public class WMS implements ApplicationContextAware {
         return getServiceInfo().getMaxRenderingErrors();
     }
 
+    /**
+     * Returns the maximum number of requested dimension values, picking from the appropriate service 
+     * configuration 
+     * @return
+     */
+    public int getMaxRequestedDimensionValues() {
+        return getServiceInfo().getMaxRequestedDimensionValues();
+    }
+
     public String getKmlReflectorMode() {
         String value = (String) getServiceInfo().getMetadata().get(KML_REFLECTOR_MODE);
         return value != null ? value : KML_REFLECTOR_MODE_DEFAULT;
@@ -1197,9 +1206,17 @@ public class WMS implements ApplicationContextAware {
         
         // custom dimensions
         List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
-        for (String domain : new ArrayList<String>(customDomains)) {
+        for (String domain : new ArrayList<>(customDomains)) {
             List<String> values = request.getCustomDimension(domain);
             if (values != null) {
+                int maxValues = getMaxRequestedDimensionValues();
+                if (maxValues > 0 && maxValues < values.size()) {
+                    throw new ServiceException(
+                            "More than " + maxValues + " dimension values specified in the request, bailing out.",
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            "DIM_" + domain.toUpperCase());
+                }
+
                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
                         dimensions.convertDimensionValue(domain, values), domain);
                 customDomains.remove(domain);

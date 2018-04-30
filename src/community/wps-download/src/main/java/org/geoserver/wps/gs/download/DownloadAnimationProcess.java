@@ -25,11 +25,9 @@ import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Rational;
 import org.opengis.util.ProgressListener;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -61,15 +59,16 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         MAP_FORMAT.setName("image/png");
     }
 
-    private final TimeParser timeParser;
     private final DownloadMapProcess mapper;
     private final WPSResourceManager resourceManager;
     private final DateTimeFormatter formatter;
+    private final DownloadServiceConfigurationGenerator confiGenerator;
 
-    public DownloadAnimationProcess(DownloadMapProcess mapper, WPSResourceManager resourceManager) {
+    public DownloadAnimationProcess(DownloadMapProcess mapper, WPSResourceManager resourceManager,
+                                    DownloadServiceConfigurationGenerator downloadServiceConfigurationGenerator) {
         this.mapper = mapper;
-        this.timeParser = new TimeParser();
         this.resourceManager = resourceManager;
+        this.confiGenerator = downloadServiceConfigurationGenerator;
         // java 8 formatters are thread safe
         this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withLocale(Locale
                 .ENGLISH).withZone(ZoneId.of("GMT"));
@@ -110,6 +109,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         Rational frameRate = getFrameRate(fps);
 
         AWTSequenceEncoder enc = new AWTSequenceEncoder(NIOUtils.writableChannel(output.file()), frameRate);
+        
+        DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
+        TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
         Collection parsedTimes = timeParser.parse(time);
         progressListener.started();
         int count = 1;

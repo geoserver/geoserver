@@ -5,6 +5,8 @@
  */
 package org.geoserver.catalog;
 
+import org.geoserver.platform.GeoServerExtensions;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -21,6 +23,9 @@ public interface DimensionInfo extends Serializable {
     public static final String ELEVATION_UNIT_SYMBOL    = "m";
     /** Default value for time dimension 'unitSymbol'. **/
     public static final String TIME_UNITS               = "ISO8601";
+
+    /** The maximum number of dimension values GeoServer accepts if not otherwise configured */
+    public static int DEFAULT_MAX_REQUESTED_DIMENSION_VALUES = 100;
 
     /**
      * Whether this dimension is enabled or not

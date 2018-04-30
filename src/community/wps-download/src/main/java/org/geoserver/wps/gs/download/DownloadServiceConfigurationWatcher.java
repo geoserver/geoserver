@@ -5,15 +5,6 @@
  */
 package org.geoserver.wps.gs.download;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -23,6 +14,14 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Basic property file based {@link DownloadServiceConfigurationGenerator} implementation with ability to reload config when the file changes. If
@@ -185,150 +184,60 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             LOGGER.log(Level.FINE, "Parsing the properties file");
         }
         // Initialize the configuration fields with default values
-        long maxFeatures = DownloadServiceConfiguration.DEFAULT_MAX_FEATURES;
-        long rasterSizeLimits = DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS;
-        long writeLimits = DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS;
-        long hardOutputLimit = DownloadServiceConfiguration.DEFAULT_WRITE_LIMITS;
-        int compressionLevel = DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL;
+        long maxFeatures = getLongValue(downloadProcessProperties, DownloadServiceConfiguration.MAX_FEATURES_NAME, DownloadServiceConfiguration.DEFAULT_MAX_FEATURES);
+        long rasterSizeLimits = getLongValue(downloadProcessProperties, DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME, DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS);
+        long writeLimits = getLongValue(downloadProcessProperties, DownloadServiceConfiguration.WRITE_LIMITS_NAME, DownloadServiceConfiguration.DEFAULT_RASTER_SIZE_LIMITS);
+        long hardOutputLimit = getLongValue(downloadProcessProperties, "hardOutputLimit", DownloadServiceConfiguration.DEFAULT_WRITE_LIMITS);
+        int compressionLevel =  getIntValue(downloadProcessProperties, "compressionLevel", DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL);
+        int maxFrames =  getIntValue(downloadProcessProperties, DownloadServiceConfiguration.MAX_ANIMATION_FRAMES_NAME, DownloadServiceConfiguration.DEFAULT_MAX_ANIMATION_FRAMES);
+        
+        // create the configuration object
+        return new DownloadServiceConfiguration(maxFeatures, rasterSizeLimits, writeLimits,
+                hardOutputLimit, compressionLevel, maxFrames);
+    }
 
-        // Extract the keyset from the property files
-        Set<Object> properties = downloadProcessProperties.keySet();
-
-        // Iterates on the various keys in order to search for the various properies
-        for (Object property : properties) {
-            String prop = (String) property;
-            // max features
-            if (prop.equalsIgnoreCase(DownloadServiceConfiguration.MAX_FEATURES_NAME)) {
-                // get value
-                String value = (String) downloadProcessProperties
-                        .get(DownloadServiceConfiguration.MAX_FEATURES_NAME);
-
-                // check and assign
-                try {
-                    final long parseLong = Long.parseLong(value);
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("maxFeatures parsed to " + parseLong);
-                    }
-                    if (parseLong > 0) {
-                        maxFeatures = parseLong;
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
-                    }
-                }
+    private long getLongValue(Properties properties, String key, long defaultValue) {
+        // get value
+        String value = (String) properties.get(key);
+        if (value != null) {
+            // check and assign
+            try {
+                final long parseLong = Long.parseLong(value);
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("maxFeatures assigned to " + maxFeatures);
+                    LOGGER.fine(key + " parsed to " + parseLong);
                 }
-            }
-
-            // raster size limits
-            if (prop.equalsIgnoreCase(DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME)) {
-                // get value
-                String value = (String) downloadProcessProperties
-                        .get(DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME);
-
-                // check and assign
-                try {
-                    final long parseLong = Long.parseLong(value);
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("raster size limits parsed to " + parseLong);
-                    }
-                    if (parseLong > 0) {
-                        rasterSizeLimits = Long.parseLong(value);
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
-                    }
+                if (parseLong > 0) {
+                    return parseLong;
                 }
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("raster size limits assigned to " + rasterSizeLimits);
-                }
-            }
-
-            // writeLimits
-            if (prop.equalsIgnoreCase(DownloadServiceConfiguration.WRITE_LIMITS_NAME)) {
-                // get value
-                String value = (String) downloadProcessProperties
-                        .get(DownloadServiceConfiguration.WRITE_LIMITS_NAME);
-
-                // check and assign
-                try {
-                    final long parseLong = Long.parseLong(value);
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("writeLimits parsed to " + parseLong);
-                    }
-                    if (parseLong > 0) {
-                        writeLimits = Long.parseLong(value);
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
-                    }
-                }
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("writeLimits assigned to " + writeLimits);
-                }
-            }
-
-            // hardOutputLimit
-            if (prop.equalsIgnoreCase("hardOutputLimit")) {
-                // get value
-                String value = (String) downloadProcessProperties.get("hardOutputLimit");
-
-                // check and assign
-                try {
-                    final long parseLong = Long.parseLong(value);
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("hardOutputLimit parsed to " + parseLong);
-                    }
-                    if (parseLong > 0) {
-                        hardOutputLimit = Long.parseLong(value);
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
-                    }
-                }
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("hardOutputLimit assigned to " + hardOutputLimit);
-                }
-            }
-
-            // compressionLevel
-            if (prop.equalsIgnoreCase("compressionLevel")) {
-                // get value
-                String value = (String) downloadProcessProperties.get("compressionLevel");
-
-                // check and assign
-                try {
-                    final long parseLong = Long.parseLong(value);
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("compressionLevel parsed to " + parseLong);
-                    }
-                    if (parseLong >= 0 && parseLong <= 8) {
-                        compressionLevel = Integer.parseInt(value);
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
-                    }
-                }
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("compressionLevel assigned to " + compressionLevel);
+            } catch (NumberFormatException e) {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
                 }
             }
         }
+        return defaultValue;
+    }
 
-        // create the configuration object
-        return new DownloadServiceConfiguration(maxFeatures, rasterSizeLimits, writeLimits,
-                hardOutputLimit, compressionLevel);
+    private int getIntValue(Properties properties, String key, int defaultValue) {
+        // get value
+        String value = (String) properties.get(key);
+        if (value != null) {
+            // check and assign
+            try {
+                final int parseInt = Integer.parseInt(value);
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(key + " parsed to " + parseInt);
+                }
+                if (parseInt > 0) {
+                    return parseInt;
+                }
+            } catch (NumberFormatException e) {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
+                }
+            }
+        }
+        return defaultValue;
     }
 
     @Override

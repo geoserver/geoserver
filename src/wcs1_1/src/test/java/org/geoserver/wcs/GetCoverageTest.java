@@ -7,7 +7,9 @@ package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.geoserver.data.test.MockData.WORLD;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
@@ -28,8 +30,11 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.Envelope2D;
@@ -356,6 +361,40 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         } finally {
             setInputLimit(0);
         }
+    }
+
+    @Test
+    public void testTimeInputLimitsDefault() throws Exception {
+        String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326&timeSequence=2010-01-01/2011-01-01/P1D";
+        Document dom = getAsDOM("wcs/BlueMarble/wcs?identifier=" + getLayerId(TASMANIA_BM)
+                + queryString);
+        // print(dom);
+        String text =
+                checkOws11Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "time");
+        assertThat(text, containsString("More than 100 times"));
+    }
+
+    @Test
+    public void testTimeInputLimitsCustom() throws Exception {
+        GeoServer gs = getGeoServer();
+        WCSInfo wcs = gs.getService(WCSInfo.class);
+        wcs.setMaxRequestedDimensionValues(2);
+        gs.save(wcs);
+        try {
+            String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                    + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326&timeSequence=2010-01-01/2011-01-01/P1D";
+            Document dom = getAsDOM("wcs/BlueMarble/wcs?identifier=" + getLayerId(TASMANIA_BM)
+                    + queryString);
+            // print(dom);
+            String text =
+                    checkOws11Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "time");
+            assertThat(text, containsString("More than 2 times"));
+        } finally {
+            wcs.setMaxRequestedDimensionValues(
+                    DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+            gs.save(wcs);
+        }    
     }
 
     @Test

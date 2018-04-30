@@ -5,6 +5,11 @@
  */
 package org.geoserver.ows.kvp;
 
+import org.geoserver.platform.ServiceException;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
+import org.geotools.util.logging.Logging;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,11 +20,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.util.DateRange;
-import org.geotools.util.NumberRange;
-import org.geotools.util.logging.Logging;
 
 /**
  * Parses the {@code elevation} parameter of the request.
@@ -32,28 +32,24 @@ public class ElevationParser {
     
     static final Logger LOGGER = Logging.getLogger(ElevationParser.class);
 
-    /**
-     * Built-in limits
-     */
-    private final static int MAX_ELEMENTS_ELEVATIONS_KVP;
-
     private final static int DEFAULT_MAX_ELEMENTS_ELEVATIONS_KVP = 100;
+    private final Integer maxElevations;
 
-    static {
-        // initialization of the renderer choice flag
-        String value = GeoServerExtensions.getProperty("MAX_ELEMENTS_ELEVATIONS_KVP");
-        // default to true, but allow switching on
-        if (value == null)
-            MAX_ELEMENTS_ELEVATIONS_KVP = DEFAULT_MAX_ELEMENTS_ELEVATIONS_KVP;
-        else {
-            int iVal = -1;
-            try {
-                iVal = Integer.parseInt(value.trim());
-            } catch (Exception e) {
-                iVal = DEFAULT_MAX_ELEMENTS_ELEVATIONS_KVP;
-            }
-            MAX_ELEMENTS_ELEVATIONS_KVP = iVal;
-        }
+    /**
+     * Builds a default ElevationParser with no provided maximum number of times
+     */
+    public ElevationParser() {
+        this.maxElevations = null;
+    }
+
+    /**
+     * Parses elevations throwing an exception if the final list exceeds maxElevations
+     *
+     * @param maxElevations Maximum number of elevations to parse, or a non positive number to have
+     *     no limit
+     */
+    public ElevationParser(int maxElevations) {
+        this.maxElevations = maxElevations;
     }
 
     /**
@@ -106,6 +102,7 @@ public class ElevationParser {
             }
         });
         final String[] listValues = value.split(",");
+        int maxValues = getMaxElevations();
         for (String d : listValues) {
             if (d.indexOf("/") <= 0) {
                 addValue(values, Double.valueOf(d.trim()));
@@ -131,22 +128,36 @@ public class ElevationParser {
                         addValue(values, step);
                         j++;
 
-                        // limiting discrete period elements
-                        if (j >= MAX_ELEMENTS_ELEVATIONS_KVP) {
-                            if (LOGGER.isLoggable(Level.INFO))
-                                LOGGER.info("Lmiting number of elements in this periodo to "
-                                        + MAX_ELEMENTS_ELEVATIONS_KVP);
-                            break;
-
-                        }
+                        checkMaxElevations(values, maxValues);
                     }
                 } else {
                     throw new ParseException("Invalid elevation parameter: " + period, 0);
                 }
             }
+            checkMaxElevations(values, maxValues);
         }
 
         return new ArrayList(values);
+    }
+
+    /**
+     * Maximum number of elevations this parser will parse before throwing an exception
+     * @return
+     */
+    private int getMaxElevations() {
+        if (maxElevations != null) {
+            return maxElevations;
+        } else {
+            return DEFAULT_MAX_ELEMENTS_ELEVATIONS_KVP;
+        }
+    }
+
+    public void checkMaxElevations(Set result, int maxValues) {
+        // limiting number of elements we can create
+        if(maxValues > 0 && result.size() > maxValues){
+            throw new ServiceException("More than " + maxValues
+                    + " elevations specified in the request, bailing out.", ServiceException.INVALID_PARAMETER_VALUE, "elevation");
+        }
     }
 
     private void addValue(Collection result, Double step) {

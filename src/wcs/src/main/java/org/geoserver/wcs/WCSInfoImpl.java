@@ -8,6 +8,7 @@ package org.geoserver.wcs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 
@@ -34,6 +35,8 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
     Boolean subsamplingEnabled = Boolean.TRUE;
     
     OverviewPolicy overviewPolicy;
+    
+    Integer maxRequestedDimensionValues;
 
     public WCSInfoImpl() {
     }
@@ -148,5 +151,14 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
         return true;
     }
 
+    public int getMaxRequestedDimensionValues() {
+        return maxRequestedDimensionValues == null
+                ? DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES
+                : maxRequestedDimensionValues;
+    }
+
+    public void setMaxRequestedDimensionValues(int maxRequestedDimensionValues) {
+        this.maxRequestedDimensionValues = maxRequestedDimensionValues;
+    }
 
 }

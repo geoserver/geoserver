@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 
@@ -41,7 +41,8 @@ import org.geotools.util.logging.Logging;
  */
 public class TimeParser {
     static final Logger LOGGER = Logging.getLogger(TimeParser.class);
-    
+    private final Integer maxTimes;
+
     private static enum FormatAndPrecision {
         MILLISECOND("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Calendar.MILLISECOND),
         SECOND("yyyy-MM-dd'T'HH:mm:ss'Z'", Calendar.SECOND),
@@ -89,28 +90,23 @@ public class TimeParser {
      */
     static final long MILLIS_IN_DAY = 24*60*60*1000;
 
-
-    /**
-     * Built-in limits to avoid exploding on too large requests
-     */
-    private final static int MAX_ELEMENTS_TIMES_KVP;
     private final static int DEFAULT_MAX_ELEMENTS_TIMES_KVP = 100;
 
-    static {
-        // initialization of the renderer choice flag
-        String value = GeoServerExtensions.getProperty("MAX_ELEMENTS_TIMES_KVP");
-        // default to true, but allow switching on
-        if (value == null)
-            MAX_ELEMENTS_TIMES_KVP = DEFAULT_MAX_ELEMENTS_TIMES_KVP;
-        else {
-            int iVal = -1;
-            try {
-                iVal = Integer.parseInt(value.trim());
-            } catch (Exception e) {
-                iVal = DEFAULT_MAX_ELEMENTS_TIMES_KVP;
-            }
-            MAX_ELEMENTS_TIMES_KVP = iVal;
-        }
+    /**
+     * Builds a default TimeParser with no provided maximum number of times
+     */
+    public TimeParser() {
+        this.maxTimes = null;
+    }
+
+    /**
+     * Parses times throwing an exception if the final list exceeds maxTimes
+     *
+     * @param maxTimes Maximum number of times to parse, or a non positive number to have
+     *     no limit
+     */
+    public TimeParser(int maxTimes) {
+        this.maxTimes = maxTimes;
     }
     
     /**
@@ -169,6 +165,7 @@ public class TimeParser {
             }
         });
         String[] listDates = value.split(",");
+        int maxValues = getMaxTimes();
         for(String date: listDates){
             // is it a date or a period?
             if(date.indexOf("/")<=0){
@@ -204,13 +201,7 @@ public class TimeParser {
                         calendar.setTimeInMillis(time);
                         addDate(result, calendar.getTime());
                         j++;
-                        
-                        // limiting number of elements we can create
-                        if(j>= MAX_ELEMENTS_TIMES_KVP){
-                            if(LOGGER.isLoggable(Level.INFO))
-                                LOGGER.info("Limiting number of elements in this period  to " + MAX_ELEMENTS_TIMES_KVP);
-                            break;                  
-                        }
+                        checkMaxTimes(result, maxValues);
                     }
                 } 
                 // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ, it is an extension 
@@ -226,9 +217,30 @@ public class TimeParser {
                     throw new ParseException("Invalid time period: " + Arrays.toString(period), 0);
                 }
             }
+            checkMaxTimes(result, maxValues);
         }
         
         return new ArrayList(result);
+    }
+
+    /**
+     * Maximum number of times this parser will parse before throwing an exception
+     * @return
+     */
+    private int getMaxTimes() {
+        if (maxTimes != null) {
+            return maxTimes;
+        } else {
+            return DEFAULT_MAX_ELEMENTS_TIMES_KVP;
+        }
+    }
+
+    public void checkMaxTimes(Set result, int maxValues) {
+        // limiting number of elements we can create
+        if(maxValues > 0 && result.size() > maxValues){
+            throw new ServiceException("More than " + maxValues
+                    + " times specified in the request, bailing out.", ServiceException.INVALID_PARAMETER_VALUE, "time");              
+        }
     }
 
     private static Date[] parseTimeDuration(final String[] period) throws ParseException {

@@ -7,8 +7,14 @@ package org.geoserver.wps.gs.download;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.kml.KMZMapOutputFormat;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.image.test.ImageAssert;
+import org.hamcrest.CoreMatchers;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.common.Demuxer;
 import org.jcodec.common.DemuxerTrack;
@@ -27,12 +33,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
@@ -80,6 +90,28 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
         BufferedImage expected4 = grabImageFromZip(source, "world.200405.3x5400x2700.tiff");
         ImageAssert.assertEquals(expected4, frame4, 100);
+    }
+    
+    @Test
+    public void testAnimateFrameLimits() throws Exception {
+        // set a limit of 1 frame
+        GeoServerDataDirectory dd = getDataDirectory();
+        Properties props = new Properties();
+        props.put(DownloadServiceConfiguration.MAX_ANIMATION_FRAMES_NAME, "1");
+        Resource config = dd.get("download.properties");
+        try (OutputStream os = config.out()) {
+            props.store(os, null);
+        }
+        try {
+            String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"));
+            Document dom = postAsDOM("wps", xml);
+            print(dom);
+            XMLAssert.assertXpathExists("//wps:ProcessFailed", dom);
+            String message = XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom);
+            assertThat(message, CoreMatchers.containsString("More than 1 times specified in the request"));
+        } finally {
+            assertTrue("Failed to remove download configuration file", config.delete());
+        }
     }
 
     @Test

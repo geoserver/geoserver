@@ -5,31 +5,32 @@
  */
 package org.geoserver.wcs.kvp;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.logging.Logger;
-
 import net.opengis.wcs11.TimeSequenceType;
 import net.opengis.wcs11.Wcs111Factory;
-
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
-import org.geoserver.ows.kvp.TimeKvpParser;
-import org.geotools.util.logging.Logging;
+import org.geoserver.ows.kvp.TimeParser;
+import org.geoserver.wcs.WCSInfo;
+
+import java.util.Collection;
+import java.util.Date;
 
 public class TimeSequenceKvpParser extends KvpParser {
-    Logger LOGGER = Logging.getLogger(TimeSequenceKvpParser.class);
+    private final GeoServer geoServer;
 
-    public TimeSequenceKvpParser() {
+    public TimeSequenceKvpParser(GeoServer geoServer) {
         super("TimeSequence", TimeSequenceType.class);
-        
+        this.geoServer = geoServer;
     }
 
     @Override
     public Object parse(String value) throws Exception {
         TimeSequenceType timeSequence = Wcs111Factory.eINSTANCE.createTimeSequenceType();
-        TimeKvpParser parser = new TimeKvpParser("WCS1_1");
-        
-        Collection<Date> timePositions = (Collection<Date>)parser.parse(value);
+
+        WCSInfo info = geoServer.getService(WCSInfo.class);
+        int maxRequestedDimensionValues = info.getMaxRequestedDimensionValues();
+        TimeParser parser = new TimeParser(maxRequestedDimensionValues);
+        Collection<Date> timePositions = (Collection<Date>) parser.parse(value);
         for (Date tp : timePositions) {
             timeSequence.getTimePosition().add(tp);
         }

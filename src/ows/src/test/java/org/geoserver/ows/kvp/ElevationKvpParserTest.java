@@ -23,7 +23,7 @@ public class ElevationKvpParserTest extends TestCase {
 
     public void testPeriod() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List elements = new ArrayList((Collection) parser.parse("1/9000/1"));
+        List elements = new ArrayList((Collection) parser.parse("1/100/1"));
         assertTrue(elements.get(0) instanceof Double);
         assertTrue(elements.size() == 100);
         assertEquals(1.0, ((Double) elements.get(0)));

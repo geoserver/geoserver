@@ -5,34 +5,18 @@
  */
 package org.geoserver.wcs;
 
-import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.servlet.ServletResponse;
-import javax.xml.namespace.QName;
-
+import net.opengis.wcs10.GetCoverageType;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
@@ -60,7 +44,25 @@ import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import net.opengis.wcs10.GetCoverageType;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.servlet.ServletResponse;
+import javax.xml.namespace.QName;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.geoserver.data.test.MockData.TASMANIA_BM;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for GetCoverage operation on WCS.
@@ -497,7 +499,33 @@ public class GetCoverageTest extends WCSTestSupport {
         
         checkPixelValue(response, 10, 10, 18.2659999176394);
     }
-    
+
+    @Test
+    public void testTimeTooMany() throws Exception {
+        GeoServer gs = getGeoServer();
+        WCSInfo wcs = gs.getService(WCSInfo.class);
+        wcs.setMaxRequestedDimensionValues(2);
+        gs.save(wcs);
+        try {
+            String queryString =
+                    "request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                            + "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=2008-10-31/2008-11-31/PT1H"
+                            + "&coverage="
+                            + getLayerId(WATTEMP);
+            MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
+            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            Document dom = dom(response, true);
+            // print(dom);
+            String text =
+                    checkLegacyException(dom, ServiceException.INVALID_PARAMETER_VALUE, "time");
+            assertThat(text, containsString("More than 2 times"));
+        } finally {
+            wcs.setMaxRequestedDimensionValues(
+                    DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+            gs.save(wcs);
+        }
+    }
+
     @Test
     public void testTimeRangeKVP() throws Exception {
         setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null);

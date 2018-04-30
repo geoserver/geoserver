@@ -20,21 +20,20 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.test.SystemTest;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.map.GIFMapResponse;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -134,7 +133,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
     @Test 
     public void testElevationIntervalResolution() throws Exception {
         // adding a extra elevation that is simply not there, should not break
-        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST,
                 null, UNITS, UNIT_SYMBOL);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
                 + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
@@ -145,6 +144,61 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 10, Color.WHITE);
         assertPixel(image, 20, 30, Color.BLACK);
         assertPixel(image, 60, 30, Color.WHITE);
+    }
+
+    @Test
+    public void testElevationIntervalResolutionTooManyDefault() throws Exception {
+        // adding a extra elevation that is simply not there, should not break
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST,
+                null, UNITS, UNIT_SYMBOL);
+        MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
+                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&layers=" + getLayerId(V_TIME_ELEVATION) + "&elevation=0.0/4.0/0.01");
+
+        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        Document dom = dom(response, true);
+        // print(dom);
+        String text = checkLegacyException(dom, ServiceException.INVALID_PARAMETER_VALUE, "elevation");
+        assertThat(text, containsString("More than " + DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES + " elevations"));        
+    }
+
+    @Test
+    public void testElevationIntervalResolutionTooManyCustom() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setMaxRequestedDimensionValues(2);
+        gs.save(wms);
+        try {
+            // adding a extra elevation that is simply not there, should not break
+            setupVectorDimension(
+                    ResourceInfo.ELEVATION,
+                    "elevation",
+                    DimensionPresentation.LIST,
+                    null,
+                    UNITS,
+                    UNIT_SYMBOL);
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "wms?service=WMS&version=1.1.1&request=GetMap"
+                                    + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                    + "&layers="
+                                    + getLayerId(V_TIME_ELEVATION)
+                                    + "&elevation=0.0/4.0/0.01");
+
+            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            Document dom = dom(response, true);
+            // print(dom);
+            String text =
+                    checkLegacyException(
+                            dom, ServiceException.INVALID_PARAMETER_VALUE, "elevation");
+            assertThat(
+                    text,
+                    containsString("More than 2 elevations"));
+        } finally {
+            wms.setMaxRequestedDimensionValues(
+                    DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+            gs.save(wms);
+        }
     }
 
     @Test
@@ -465,7 +519,6 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testTimeIntervalResolution() throws Exception {
-        // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
                 + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
@@ -478,7 +531,51 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 20, 30, Color.BLACK);
         assertPixel(image, 60, 30, Color.WHITE);
     }
-    
+
+    @Test
+    public void testTimeIntervalResolutionTooManyDefault() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
+                        + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                        + "&layers=" + getLayerId(V_TIME_ELEVATION) + "&time=2011-05-01/2011-06-01/PT1H");
+        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        Document dom = dom(response, true);
+        // print(dom);
+        String text = checkLegacyException(dom, ServiceException.INVALID_PARAMETER_VALUE, "time");
+        assertThat(text, containsString("More than " + DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES + " times"));
+    }
+
+    @Test
+    public void testTimeIntervalResolutionTooManyCustom() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setMaxRequestedDimensionValues(2);
+        gs.save(wms);
+        try {
+            setupVectorDimension(
+                    ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "wms?service=WMS&version=1.1.1&request=GetMap"
+                                    + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                    + "&layers="
+                                    + getLayerId(V_TIME_ELEVATION)
+                                    + "&time=2011-05-01/2011-05-04/P1D",
+                            "image/png");
+
+            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            Document dom = dom(response, true);
+            // print(dom);
+            String text =
+                    checkLegacyException(dom, ServiceException.INVALID_PARAMETER_VALUE, "time");
+            assertThat(text, containsString("More than 2 times"));
+        } finally {
+            wms.setMaxRequestedDimensionValues(
+                    DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+            gs.save(wms);
+        }
+    }
+
     @Test 
     public void testElevationDefaultAsRange() throws Exception {
         // setup a default 

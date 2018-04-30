@@ -135,10 +135,14 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> maxErrors = new TextField<Integer>("maxRenderingErrors");
         maxErrors.add(RangeValidator.minimum(0));
         form.add(maxErrors);
-        // map buffer
+        // max buffer
         TextField<Integer> maxBuffer = new TextField<Integer>("maxBuffer");
         maxBuffer.add(RangeValidator.minimum(0));
         form.add(maxBuffer);
+        // max dimension values
+        TextField<Integer> maxRequestedDimensionValues = new TextField<Integer>("maxRequestedDimensionValues");
+        maxRequestedDimensionValues.add(RangeValidator.minimum(0));
+        form.add(maxRequestedDimensionValues);
         // watermark
         form.add(new CheckBox("watermark.enabled"));
         TextField watermarkUrlField = new TextField("watermark.uRL", new FileModel(new PropertyModel<String>(form.getModel(), "watermark.URL")));

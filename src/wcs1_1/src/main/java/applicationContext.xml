@@ -100,7 +100,9 @@
 
   <bean id="wcs111GridBaseCRSKvpParser" class="org.geoserver.wcs.kvp.GridBaseCRSKvpParser" />
 
-  <bean id="wcs111TimeSequenceKvpParser" class="org.geoserver.wcs.kvp.TimeSequenceKvpParser" />
+  <bean id="wcs111TimeSequenceKvpParser" class="org.geoserver.wcs.kvp.TimeSequenceKvpParser" >
+    <constructor-arg ref="geoServer"/>
+  </bean>
 
   <bean id="wcs111GridTypeKvpParser" class="org.geoserver.wcs.kvp.GridTypeKvpParser" />
 

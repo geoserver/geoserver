@@ -36,7 +36,16 @@ public class TimeKvpParser extends KvpParser {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object parse(String value) throws ParseException {
+        TimeParser parser = getTimeParser();
         return parser.parse(value);
+    }
+
+    /**
+     * Allows subclasses to customize the {@link TimeParser} used in {@link #parse(String)}
+     * @return
+     */
+    protected TimeParser getTimeParser() {
+        return parser;
     }
 
 }

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.measure.unit.SI;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.config.SettingsInfo;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -1334,6 +1336,7 @@ public class XStreamPersisterTest {
         String xml = "<global>\n" +
                 "  <settings>\n" +
                 "    <metadata>\n" +
+                "      <map>\n" +
                 "        <entry>\n" +
                 "            <string>key1</string>\n" +
                 "            <string>value1</string>\n" +                
@@ -1352,16 +1355,31 @@ public class XStreamPersisterTest {
                 "            <string>key2</string>\n" +
                 "            <string>value2</string>\n" +
                 "        </entry>\n" +
+                "      </map>\n" +
                 "    </metadata>\n" +
-                "    <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>\n" +
+                "    <localWorkspaceIncludesPrefix>true</localWorkspaceIncludesPrefix>\n" +
                 "  </settings>\n" +
                 "</global>\n";
         GeoServerInfo gs = persister.load(new ByteArrayInputStream(xml.getBytes()), 
                 GeoServerInfo.class);
-        MetadataMap metadata = gs.getSettings().getMetadata();
+        SettingsInfo settings = gs.getSettings();
+        MetadataMap metadata = settings.getMetadata();
         assertEquals(2, metadata.size());
         assertThat(metadata, hasEntry("key1", "value1"));
         assertThat(metadata, hasEntry("key2", "value2"));
+        assertTrue(settings.isLocalWorkspaceIncludesPrefix());
+        
+        // check it round trips the same way it came in, minus the bit we could not read
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        persister.save(gs, bos);
+        // System.out.println(new String(bos.toByteArray()));
+        Document doc = dom(new ByteArrayInputStream(bos.toByteArray()));
+        XMLAssert.assertXpathExists("//settings/metadata/map", doc);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//settings/metadata/map/entry)", doc);
+        XMLAssert.assertXpathEvaluatesTo("key1", "//settings/metadata/map/entry[1]/string[1]", doc);
+        XMLAssert.assertXpathEvaluatesTo("value1", "//settings/metadata/map/entry[1]/string[2]", doc);
+        XMLAssert.assertXpathEvaluatesTo("key2", "//settings/metadata/map/entry[2]/string[1]", doc);
+        XMLAssert.assertXpathEvaluatesTo("value2", "//settings/metadata/map/entry[2]/string[2]", doc);
     }
     
     @Test

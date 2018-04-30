@@ -484,12 +484,15 @@ public class XStreamPersister {
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
         // this should have been a metadata map too, but was not registered as such and got a plain
-        // map converter. Switched to TolerantMapConverter to make it work when plugins get removed and
-        // leave configuration that cannot be parsed anymore in there
-        xs.registerLocalConverter( impl(SettingsInfo.class), "metadata", new TolerantMapConverter(xs.getMapper(), MetadataMap.class));
+        // map converter. Switched to SettingsTolerantMapConverter to make it work when plugins get
+        // removed and leave configuration that cannot be parsed anymore in there
+        xs.registerLocalConverter(
+                impl(SettingsInfo.class),
+                "metadata",
+                new SettingsTolerantMapConverter(xs.getMapper(), MetadataMap.class));
         xs.registerConverter(new MeasureConverter());
         xs.registerConverter(new MultimapConverter(xs.getMapper()));
-        
+
         // register Virtual structure handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
         registerBreifMapComplexType("coverageView", CoverageView.class);
@@ -957,19 +960,41 @@ public class XStreamPersister {
         }
     }
 
-    class TolerantMapConverter extends MapConverter {
+    class SettingsTolerantMapConverter extends MapConverter {
 
-        public TolerantMapConverter(Mapper mapper) {
+        public SettingsTolerantMapConverter(Mapper mapper) {
             super(mapper);
         }
 
-        public TolerantMapConverter(Mapper mapper, Class type) {
+        public SettingsTolerantMapConverter(Mapper mapper, Class type) {
             super(mapper, type);
         }
 
         @Override
         public boolean canConvert(Class type) {
             return super.canConvert(type);
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            reader.moveDown();
+            String nodeName = reader.getNodeName();
+            if (!"map".equals(nodeName)) {
+                throw new IllegalArgumentException("Expected <map> but found <" + nodeName + ">");
+            }
+            try {
+                return super.unmarshal(reader, context); 
+            } finally {
+                reader.moveUp();
+            }
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext 
+                context) {
+            writer.startNode("map");
+            super.marshal(source, writer, context);
+            writer.endNode();
         }
 
         protected void putCurrentEntryIntoMap(

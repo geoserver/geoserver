@@ -305,11 +305,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-mongodb</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wfs3</artifactId>
      <version>${project.version}</version>
    </dependency>

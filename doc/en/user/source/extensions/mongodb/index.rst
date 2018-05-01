@@ -3,13 +3,13 @@
 MongoDB Data Store
 ==================
 
-This module provides support for MongoDB data store. This community module is build on top of `GeoTools MongoDB plugin
+This module provides support for MongoDB data store. This extension is build on top of `GeoTools MongoDB plugin
 <http://docs.geotools.org/latest/userguide/library/data/mongodb.html>`_.
 
 Installation
 ------------
 
-#. Download the ``mongodb`` community module for `your version of GeoServer <http://ares.opengeo.org/geoserver/>`_.
+#. Download the ``mongodb`` extension for `your version of GeoServer <http://ares.opengeo.org/geoserver/>`_.
 
 #. Unzip the archive into the WEB-INF/lib directory of the GeoServer installation.
 
@@ -18,7 +18,7 @@ Installation
 Usage
 -----
 
-If the community module was successfully installed a new type of data store named ``MongoDB`` should be available:
+If the extension was successfully installed a new type of data store named ``MongoDB`` should be available:
 
 .. figure:: images/mongodb_store_1.png
    :align: center

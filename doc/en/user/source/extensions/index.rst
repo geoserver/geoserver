@@ -28,3 +28,4 @@ This section describes most of the extensions available for GeoServer. Other dat
    vectortiles/index
    xslt/index
    wcs20eo/index
+   mongodb/index

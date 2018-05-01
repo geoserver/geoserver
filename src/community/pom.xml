@@ -88,7 +88,6 @@
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
-          <descriptor>release/ext-mongodb.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -255,7 +254,6 @@
         <module>nsg-profiles/nsg-wfs-profile</module>
         <module>nsg-profiles/nsg-wmts-profile</module>
         <module>netcdf-ghrsst</module>
-        <module>mongodb</module>
       </modules>
     </profile>
     <profile>
@@ -573,12 +571,6 @@
       <id>ghrsst</id>
       <modules>
         <module>netcdf-ghrsst</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>mongodb</id>
-      <modules>
-        <module>mongodb</module>
       </modules>
     </profile>
   </profiles>  

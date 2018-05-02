@@ -43,6 +43,14 @@
     </repository>
   </repositories>
 
+  <distributionManagement>
+    <repository>
+      <id>boundless-server</id>
+      <name>Boundless Secure Repository</name>
+      <url>http://repo.boundlessgeo.com/artifactory/boundless-server</url>
+    </repository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -172,6 +180,7 @@
               <descriptors>
                 <descriptor>assembly.xml</descriptor>
               </descriptors>
+              <attach>false</attach>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>

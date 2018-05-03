@@ -5,29 +5,37 @@
 package org.geoserver.wfs3;
 
 import net.opengis.wfs20.GetFeatureType;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.Request;
+import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
-import org.opengis.feature.Feature;
+import org.geoserver.wfs3.response.APIDocument;
+import org.geoserver.wfs3.response.CollectionsDocument;
+import org.geoserver.wfs3.response.ConformanceDocument;
+import org.geoserver.wfs3.response.LandingPageDocument;
 import org.opengis.filter.FilterFactory2;
 
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * WFS 3.0 implementation
- */
+import static org.geoserver.wfs3.response.ConformanceDocument.CORE;
+import static org.geoserver.wfs3.response.ConformanceDocument.GEOJSON;
+import static org.geoserver.wfs3.response.ConformanceDocument.GMLSF0;
+import static org.geoserver.wfs3.response.ConformanceDocument.OAS30;
+
+/** WFS 3.0 implementation */
 public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     private FilterFactory2 filterFactory;
@@ -48,62 +56,97 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     }
 
     @Override
-    public ContentsDocument contents(ContentRequest request) {
-        ContentsDocument contents = new ContentsDocument(request, geoServer.getService(WFSInfo.class), geoServer
-                .getCatalog());
+    public LandingPageDocument landingPage(LandingPageRequest request) {
+        LandingPageDocument contents = new LandingPageDocument(request, getService(), getCatalog());
         return contents;
     }
 
     @Override
+    public Object collections(CollectionsRequest request) {
+        if (request.getTypeName() == null) {
+            // all collections
+            return new CollectionsDocument(request, getService(), getCatalog());
+        } else {
+            // single collection
+            QName typeName = request.getTypeName();
+            NamespaceInfo ns = getCatalog().getNamespaceByURI(typeName.getNamespaceURI());
+            FeatureTypeInfo featureType =
+                    getCatalog().getFeatureTypeByName(ns, typeName.getLocalPart());
+            if (featureType == null) {
+                throw new ServiceException(
+                        "Unknown collection " + typeName,
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "typeName");
+            } else {
+                return new CollectionsDocument(request, getService(), getCatalog(), featureType);
+            }
+        }
+    }
+
+    @Override
     public APIDocument api(APIRequest request) {
-        return new APIDocument(geoServer.getService(WFSInfo.class), geoServer.getCatalog());
+        return new APIDocument(getService(), getCatalog());
+    }
+
+    @Override
+    public ConformanceDocument conformance(ConformanceRequest request) {
+        List<String> classes = Arrays.asList(CORE, OAS30, GEOJSON, GMLSF0);
+        return new ConformanceDocument(classes);
+    }
+
+    private Catalog getCatalog() {
+        return geoServer.getCatalog();
+    }
+
+    private WFSInfo getService() {
+        return geoServer.getService(WFSInfo.class);
     }
 
     @Override
     public Object getFeature(GetFeatureType request) {
         FeatureCollectionResponse response = wfs20.getFeature(request);
-        // was it a single feature request? Getting at the dispatcher thread local, as delving into the
+        // was it a single feature request? Getting at the dispatcher thread local, as delving into
+        // the
         // request model is hard, the feature id is buried as a filter in one query object
-//        Request dr = Dispatcher.REQUEST.get();
-//        if (dr != null && dr.getKvp().get("featureId") != null && dr.getKvp().get("format").equals(BaseRequest
-//                .HTML_MIME)) {
-//            List<FeatureCollection> features = response.getFeature();
-//            try (FeatureIterator fi = features.get(0).features()) {
-//                // there should be one, WFS 2.0 should have already thrown a 404 otherwise
-//                Feature next = fi.next();
-//                return next;
-//            }
-//        } else {
-            // normal encoding
-            return response;
-//        }
+        //        Request dr = Dispatcher.REQUEST.get();
+        //        if (dr != null && dr.getKvp().get("featureId") != null &&
+        // dr.getKvp().get("format").equals(BaseRequest
+        //                .HTML_MIME)) {
+        //            List<FeatureCollection> features = response.getFeature();
+        //            try (FeatureIterator fi = features.get(0).features()) {
+        //                // there should be one, WFS 2.0 should have already thrown a 404 otherwise
+        //                Feature next = fi.next();
+        //                return next;
+        //            }
+        //        } else {
+        // normal encoding
+        return response;
+        //        }
     }
 
     /**
-     * Returns a selection of supported formats favouring
+     * Returns a selection of supported formats for a given response object
      *
-     * @return
+     * <p>TODO: this should be moved in a more central place, as it's of general utility (maybe the
+     * filtering part could be made customizable via a lambda)
+     *
+     * @return A list of MIME types
      */
-    public static List<String> getAvailableFormats() {
+    public static List<String> getAvailableFormats(Class responseType) {
         Set<String> formatNames = new LinkedHashSet<>();
-        Collection featureProducers = GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
-        for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
-            WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
+        Collection responses = GeoServerExtensions.extensions(Response.class);
+        for (Iterator i = responses.iterator(); i.hasNext(); ) {
+            Response format = (Response) i.next();
+            if (!responseType.isAssignableFrom(format.getBinding())) {
+                continue;
+            }
             // TODO: get better collaboration from content
             Set<String> formats = format.getOutputFormats();
             if (formats.isEmpty()) {
                 continue;
             }
             // try to get a MIME type, otherwise pick the first available
-            String formatName = formats.stream()
-                    .filter(f -> f.contains("/"))
-                    .findFirst()
-                    .orElse(formats.iterator().next());
-            // hack to skip over the JSONP format, not recognizable as is
-            if ("json".equals(formatName)) {
-                continue;
-            }
-            formatNames.add(formatName);
+            formats.stream().filter(f -> f.contains("/")).forEach(f -> formatNames.add(f));
         }
         return new ArrayList<>(formatNames);
     }

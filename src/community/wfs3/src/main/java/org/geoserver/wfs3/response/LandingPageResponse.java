@@ -10,13 +10,13 @@ import org.geoserver.platform.Operation;
 /**
  * JSON/YAML encoding for the API document
  */
-public class APIDocumentResponse extends JacksonResponse {
+public class LandingPageResponse extends JacksonResponse {
 
-    public APIDocumentResponse(GeoServer gs) {
-        super(gs, APIDocument.class);
+    public LandingPageResponse(GeoServer gs) {
+        super(gs, LandingPageDocument.class);
     }
 
     protected String getFileName(Object value, Operation operation) {
-        return "api";
+        return "landingPage";
     }
 }

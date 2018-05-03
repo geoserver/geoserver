@@ -4,9 +4,5 @@
  */
 package org.geoserver.wfs3;
 
-/**
- * Request for the server contents
- */
-public class ContentRequest extends BaseRequest {
-    
-}
+/** Request for the server conformance status */
+public class ConformanceRequest extends BaseRequest {}

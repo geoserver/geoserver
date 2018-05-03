@@ -6,18 +6,17 @@ package org.geoserver.wfs3.response;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
-import org.geoserver.wfs3.ContentsDocument;
 
 /**
  * JSON/YAML encoding for the API document
  */
-public class ContentsDocumentResponse extends JacksonResponse {
+public class CollectionsDocumentResponse extends JacksonResponse {
 
-    public ContentsDocumentResponse(GeoServer gs) {
-        super(gs, ContentsDocument.class);
+    public CollectionsDocumentResponse(GeoServer gs) {
+        super(gs, CollectionsDocument.class);
     }
 
     protected String getFileName(Object value, Operation operation) {
-        return "contents";
+        return "collections";
     }
 }

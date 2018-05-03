@@ -2,27 +2,25 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs3;
+package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.ContactInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs3.BaseRequest;
+import org.geoserver.wfs3.DefaultWebFeatureService30;
+import org.geoserver.wfs3.NCNameResourceCodec;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -578,7 +576,7 @@ public class APIDocument {
             layerResponse.setContent(outputFormats);
             layer.addResponse("200", layerResponse);
             layer.addResponse("default", ERROR_RESPONSE);
-            result.put("/" + layerName, Collections.singletonMap("get", layer));
+            result.put("/collections/" + layerName, Collections.singletonMap("get", layer));
 
             Method layerId = new Method();
             layerId.setSummary("Retrieve one feature from " + ftInfo.prefixedName());
@@ -587,7 +585,7 @@ public class APIDocument {
             layerId.addParameter(REF_ID);
             layerId.addResponse("200", layerResponse);
             layerId.addResponse("default", ERROR_RESPONSE);
-            result.put("/" + layerName + "/{id}", Collections.singletonMap("get", layerId));
+            result.put("/collections/" + layerName + "/items/{id}", Collections.singletonMap("get", layerId));
         }
 
         return result;
@@ -699,7 +697,8 @@ public class APIDocument {
 
     protected Map<String, FormatDescription> getAvailableFormats() {
         Map<String, FormatDescription> descriptions = new LinkedHashMap<>();
-        List<String> formatNames = DefaultWebFeatureService30.getAvailableFormats();
+        List<String> formatNames = DefaultWebFeatureService30.getAvailableFormats
+                (FeatureCollectionResponse.class);
         for (String formatName: formatNames) {
             if ((formatName.contains("text") && !formatName.contains("xml") && !formatName.contains("gml")) ||
                     formatName.contains("csv")) {

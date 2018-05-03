@@ -5,13 +5,47 @@
 package org.geoserver.wfs3;
 
 import net.opengis.wfs20.GetFeatureType;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs3.response.APIDocument;
+import org.geoserver.wfs3.response.CollectionDocument;
+import org.geoserver.wfs3.response.CollectionsDocument;
+import org.geoserver.wfs3.response.ConformanceDocument;
+import org.geoserver.wfs3.response.LandingPageDocument;
 
 public interface WebFeatureService30 {
-    
-    ContentsDocument contents(ContentRequest request);
-    
+
+    /**
+     * Returns the landing page of WFS 3.0
+     * @param request
+     * @return
+     */
+    LandingPageDocument landingPage(LandingPageRequest request);
+
+    /**
+     * Returns a description of the collection(s)
+     * @param request A {@link CollectionRequest}
+     * @return A {@link CollectionDocument} or a {@link CollectionsDocument} depending on the request
+     */
+    Object collections(CollectionsRequest request);
+
+    /**
+     * The OpenAPI description of the service
+     * @param request
+     * @return
+     */
     APIDocument api(APIRequest request);
-    
+
+    /**
+     * The conformance declaration for this service
+     * @param request
+     * @return
+     */
+    ConformanceDocument conformance(ConformanceRequest request);
+
+    /**
+     * Queries features and returns them
+     * 
+     * @param request
+     * @return
+     */
     Object getFeature(GetFeatureType request);
 }

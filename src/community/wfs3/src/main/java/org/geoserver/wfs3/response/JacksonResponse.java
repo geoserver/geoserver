@@ -6,17 +6,20 @@ package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.response.WFSResponse;
-import org.geoserver.wfs3.APIDocument;
-import org.geoserver.wfs3.APIRequest;
 import org.geoserver.wfs3.BaseRequest;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -25,12 +28,13 @@ import java.util.Optional;
 public abstract class JacksonResponse extends WFSResponse {
 
     public JacksonResponse(GeoServer gs, Class targetClass) {
-        super(gs, targetClass);
+        super(gs, targetClass, new LinkedHashSet<>(Arrays.asList(BaseRequest.JSON_MIME, 
+                BaseRequest.YAML_MIME, BaseRequest.XML_MIME)));
     }
 
     @Override
     public boolean canHandle(Operation operation) {
-        return isJsonFormat(operation) || isYamlFormat(operation);
+        return isJsonFormat(operation) || isYamlFormat(operation) || isXMLFormat(operation);
     }
 
     @Override
@@ -39,6 +43,8 @@ public abstract class JacksonResponse extends WFSResponse {
             return BaseRequest.JSON_MIME;
         } else if (isYamlFormat(operation)) {
             return BaseRequest.YAML_MIME;
+        } else if (isXMLFormat(operation)) {
+            return BaseRequest.XML_MIME;
         } else {
             throw new ServiceException("Unknown format requested " + getFormat(operation));
         }
@@ -58,16 +64,37 @@ public abstract class JacksonResponse extends WFSResponse {
         return BaseRequest.YAML_MIME.equalsIgnoreCase(getFormat(operation));
     }
 
+    private boolean isXMLFormat(Operation operation) {
+        return BaseRequest.XML_MIME.equalsIgnoreCase(getFormat(operation));
+    }
+
     @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         ObjectMapper mapper;
         if (isYamlFormat(operation)) {
             YAMLFactory factory = new YAMLFactory();
             mapper = new ObjectMapper(factory);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        } else if (isXMLFormat(operation)) {
+            mapper = new XmlMapper();
+            // using a custom annotation introspector to set the desired namespace 
+            mapper.setAnnotationIntrospector(new JacksonXmlAnnotationIntrospector() {
+                @Override
+                public String findNamespace(Annotated ann) {
+                    String ns = super.findNamespace(ann);
+                    if (ns == null || ns.isEmpty()) {
+                        return "http://www.opengis.net/wfs/3.0";
+                    } else {
+                        return ns;
+                    }
+                }
+            });
+
         } else {
             mapper = new ObjectMapper();
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         }
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        
         mapper.writeValue(output, value);
     }
 

@@ -89,38 +89,65 @@ public class WFS3Filter implements GeoServerFilter {
             super(wrapped);
             String pathInfo = wrapped.getPathInfo();
             if (pathInfo.equals("/")) {
-                request = "contents";
-            } else if (pathInfo.endsWith("api")) {
+                request = "landingPage";
+            } else if (pathInfo.equals("/api") || pathInfo.equals("/api/")) {
                 request = "api";
-            } else if (pathInfo.endsWith("api/conformance")) {
+            } else if (pathInfo.endsWith("/conformance") || pathInfo.endsWith("/conformance/")) {
                 request = "conformance";
-            } else if (pathInfo.contains("__")) {
-                if (pathInfo.startsWith("/")) {
-                    pathInfo = pathInfo.substring(1);
-                }
-                // selection by feature id?
-                if (pathInfo.contains("/")) {
-                    String[] split = pathInfo.split("/");
-                    if (split.length > 2) {
-                        throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Invalid path " + pathInfo);
+            } else if (pathInfo.startsWith("/collections")) {
+                if (pathInfo.contains("items")) {
+                    if (pathInfo.startsWith("/collections/")) {
+                        pathInfo = pathInfo.substring("/collections/".length());
                     }
-                    pathInfo = split[0];
-                    featureId = split[1];
-                }
-                List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, pathInfo);
-                if (!layers.isEmpty()) {
-                    request = "getFeature";
-                    typeName = layers.get(0).prefixedName();
+                    // selection by feature id?
+                    if (pathInfo.contains("/")) {
+                        String[] split = pathInfo.split("/");
+                        if (split.length > 2) {
+                            throw new HttpErrorCodeException(
+                                    HttpStatus.NOT_FOUND.value(), "Invalid path " + pathInfo);
+                        }
+                        pathInfo = split[0];
+                        featureId = split[1];
+                    }
+                    List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, pathInfo);
+                    if (!layers.isEmpty()) {
+                        request = "getFeature";
+                        typeName = layers.get(0).prefixedName();
+                    } else {
+                        throw new HttpErrorCodeException(
+                                HttpStatus.NOT_FOUND.value(), "Could not find layer " + pathInfo);
+                    } 
                 } else {
-                    throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Could not find layer " + pathInfo);
+                    pathInfo = pathInfo.substring("/collections".length());
+                    if (pathInfo.startsWith("/")) {
+                        pathInfo = pathInfo.substring(1);
+                    } 
+                    if (pathInfo.endsWith("/")) {
+                        pathInfo = pathInfo.substring(0, pathInfo.length() -1);
+                    }
+                    request = "collections";
+                    if (!pathInfo.isEmpty()) {
+                        // is it a request to the list of collections, one to a specific collection,
+                        // or something else?
+                        List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, pathInfo);
+                        if (layers.isEmpty()) {
+                            throw new HttpErrorCodeException(
+                                    HttpStatus.NOT_FOUND.value(),
+                                    "Could not find layer " + pathInfo);
+                        } else {
+                            typeName = layers.get(0).prefixedName();
+                        }
+                        
+                    }
                 }
+                
             } else {
                 throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);
             }
             
             mapped = request != null;
 
-            // everythign defaults to JSON in WFS3
+            // everything defaults to JSON in WFS3
             String f = wrapped.getParameter("f");
             if (f != null) {
                 if ("json".equalsIgnoreCase(f)) {

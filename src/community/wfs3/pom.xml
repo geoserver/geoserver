@@ -48,6 +48,17 @@
       <artifactId>jackson-dataformat-yaml</artifactId>
       <version>${jackson2.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson2.version}</version>
+    </dependency>
+    <dependency>
+      <!-- this is added to avoid https://github.com/FasterXML/jackson-dataformat-xml/issues/32 -->
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>woodstox-core-asl</artifactId>
+      <version>4.1.2</version>
+    </dependency>
 
     <dependency>
       <groupId>org.geoserver</groupId>

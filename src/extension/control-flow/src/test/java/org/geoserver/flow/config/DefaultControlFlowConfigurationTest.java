@@ -144,6 +144,22 @@ public class DefaultControlFlowConfigurationTest {
         p.put("ows.wms", "6");
         p.put("ows.wfs.getFeature", "12");
 
+        checkPriorityParsing(p);
+    }
+
+    @Test
+    public void testParsingPriorityWithSpaces() throws Exception {
+        Properties p = new Properties();
+        p.put("timeout", "10");
+        p.put("ows.global", "100");
+        p.put("ows.priority.http", " gs-priority , 3 ");
+        p.put("ows.wms", "6");
+        p.put("ows.wfs.getFeature", "12");
+
+        checkPriorityParsing(p);
+    }
+
+    private void checkPriorityParsing(Properties p) throws Exception {
         DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(
                 new FixedWatcher(p));
         assertTrue(configurator.isStale());

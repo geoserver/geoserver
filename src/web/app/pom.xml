@@ -1595,7 +1595,7 @@
       <id>mongodb</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-mongodb</artifactId>
           <version>${project.version}</version>
           <exclusions>

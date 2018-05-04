@@ -325,6 +325,12 @@
         <module>ysld</module>
       </modules>
     </profile>
+    <profile>
+      <id>mongodb</id>
+      <modules>
+        <module>mongodb</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -365,6 +371,7 @@
         <module>netcdf-out</module>
         <module>vectortiles</module>
         <module>ysld</module>
+        <module>mongodb</module>
       </modules>
     </profile>
 
@@ -407,6 +414,7 @@
         <module>netcdf-out</module>
         <module>vectortiles</module>
         <module>ysld</module>
+        <module>mongodb</module>
       </modules>
     </profile>
   </profiles>

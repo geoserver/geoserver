@@ -85,7 +85,6 @@
           <descriptor>release/ext-opensearch-eo.xml</descriptor>
           <descriptor>release/ext-mbstyle.xml</descriptor> 
           <descriptor>release/ext-status-monitoring.xml</descriptor>
-          <descriptor>release/ext-mongodb.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -249,7 +248,6 @@
         <module>mbstyle</module>
         <module>s3-geotiff</module>
         <module>status-monitoring</module>
-        <module>mongodb</module>
       </modules>
     </profile>
     <profile>
@@ -549,12 +547,6 @@
       <id>status-monitoring</id>
       <modules>
         <module>status-monitoring</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>mongodb</id>
-      <modules>
-        <module>mongodb</module>
       </modules>
     </profile>
   </profiles>  

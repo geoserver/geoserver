@@ -27,7 +27,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
     public void testExtents() throws Exception {
         // this is mostly a verification of the extents of the builtin date parsing
         String NOT_USED = null;
-        DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED);
+        DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED, NOT_USED, NOT_USED);
         
         GregorianCalendar cal = new GregorianCalendar();
         cal.clear();
@@ -51,7 +51,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
 
     public void testTransformSuccess() throws ParseException {
         String NOT_USED = null;
-        DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED);
+        DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED, NOT_USED, NOT_USED);
 
         Date now = new Date();
         
@@ -80,7 +80,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
 
     public void testTransformSuccessCustomFormat() throws ParseException {
         String customFormat = "yyyy-MM-dd'X'00";
-        DateFormatTransform transform = new DateFormatTransform("not used", customFormat);
+        DateFormatTransform transform = new DateFormatTransform("not used", customFormat, null, null);
 
         Date now = new Date();
         SimpleDateFormat fmt = new SimpleDateFormat(customFormat);
@@ -91,7 +91,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
     }
     
     public void testJSON() throws Exception {
-        doJSONTest(new DateFormatTransform("foo", null));
-        doJSONTest(new DateFormatTransform("foo", "yyyy-MM-dd"));
+        doJSONTest(new DateFormatTransform("foo", null, null, null));
+        doJSONTest(new DateFormatTransform("foo", "yyyy-MM-dd", null, null));
     }
 }

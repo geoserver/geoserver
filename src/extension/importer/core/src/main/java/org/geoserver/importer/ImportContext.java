@@ -291,7 +291,12 @@ public class ImportContext implements Serializable {
     }
 
     /**
-     * @return
+     * We are going to scan all the Import Context Tasks and return "true" if any "isDirect".
+     * 
+     * "isDirect" means that the Importer will rely on uploaded data position to create the Store.
+     * The uploaded data should be preserved, otherwise the Layer will be broken.
+     * 
+     * @return boolean
      */
     public boolean isDirect() {
         boolean isDirect = Iterables.any(getTasks(), new Predicate<ImportTask>() {
@@ -304,10 +309,16 @@ public class ImportContext implements Serializable {
     }
 
     /**
-     * @return
+     * We are going to scan all the Import Context Tasks and return "true" if all of them do not have
+     * a configured Layer on the Catalog.
+     * 
+     * That means that the user has removed the Layers from the Catalog and therefore we are safe to
+     * wipe out the uploaded data.
+     * 
+     * @return boolean
      */
     public boolean isEmpty() {
-        boolean noLayersAvailable = Iterables.any(getTasks(), new Predicate<ImportTask>() {
+        boolean noLayersAvailable = Iterables.all(getTasks(), new Predicate<ImportTask>() {
             @Override
             public boolean apply(ImportTask input) {
                 final StoreInfo store = input != null ? input.getStore() : null;
@@ -320,6 +331,11 @@ public class ImportContext implements Serializable {
     }
 
     /**
+     * This method will write an empty ".locking" file into the uploaded data unique directory.
+     * 
+     * Whenever a ".locking" file is present, the scheduler won't wipe out the directory. Otherwise
+     * the folder will be completely removed.
+     * 
      * @param directory
      * @throws IOException 
      */
@@ -333,6 +349,11 @@ public class ImportContext implements Serializable {
     }
     
     /**
+     * This method will delete any ".locking" file present into the uploaded data unique directory.
+     * 
+     * Whenever a ".locking" file is present, the scheduler won't wipe out the directory. Otherwise
+     * the folder will be completely removed.
+     * 
      * @param directory
      */
     public void unlockUploadFolder(Directory directory) {
@@ -345,8 +366,17 @@ public class ImportContext implements Serializable {
     }
 
     /**
+     * This method will return the base upload folder configured for this Import Context.
+     * 
+     * The upload folder base can be configured in several ways:
+     * 
+     *  1. A property into the geoserver-importer.properties file
+     *  2. A System Env variable
+     *  
+     *  Default: a folder named "uploads" into the GEOSERVER_DATA_DIR/
+     * 
      * @param context
-     * @return
+     * @return {@linkplain Directory}
      */
     public Directory getUploadDirectory() {
         Directory directory = null;

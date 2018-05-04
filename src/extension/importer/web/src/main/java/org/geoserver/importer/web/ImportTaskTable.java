@@ -149,7 +149,8 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                         try {
                             ImporterWebUtils.importer().changed(itemModel.getObject());
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            error(e);
+                            return false;
                         }
                         target.add(ImportTaskTable.this);
                         return true;
@@ -354,7 +355,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     try {
                         ImporterWebUtils.importer().changed(item);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        error(e);
                     }
 
                     //ImportItemTable.this.modelChanged();
@@ -385,7 +386,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                             try {
                                 ImporterWebUtils.importer().changed(model.getObject());
                             } catch (IOException e) {
-                                throw new RuntimeException(e);
+                                error(e);
                             }
                         };
                     });

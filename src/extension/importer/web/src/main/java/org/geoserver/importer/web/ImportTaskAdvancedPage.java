@@ -99,7 +99,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                 try {
                     ImporterWebUtils.importer().changed(task);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    error(e);
                 }
 
                 PageParameters pp = new PageParameters().add("id", task.getContext().getId());

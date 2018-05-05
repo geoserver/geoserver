@@ -12,21 +12,22 @@ package org.geoserver.flow.controller;
  * 
  */
 public class BasicOWSController extends SingleQueueFlowController {
-    public BasicOWSController(String service, int queueSize) {
-        this(service, null, null, queueSize);
+    
+    public BasicOWSController(String service, int controllerPriority, ThreadBlocker blocker) {
+        this(service, null, null, controllerPriority, blocker);
     }
 
-    public BasicOWSController(String service, String method, int queueSize) {
-        this(service, method, null, queueSize);
+    public BasicOWSController(String service, String method, int controllerPriority, ThreadBlocker blocker) {
+        this(service, method, null, controllerPriority, blocker);
     }
 
-    public BasicOWSController(String service, String method, String outputFormat, int queueSize) {
-        super(queueSize, new OWSRequestMatcher(service, method, outputFormat));
+    public BasicOWSController(String service, String method, String outputFormat, int controllerPriority, ThreadBlocker blocker) {
+        super(new OWSRequestMatcher(service, method, outputFormat), controllerPriority, blocker);
     }
 
     @Override
     public String toString() {
-        return "BasicOWSController(" + matcher + "," + queueSize + ")";
+        return "BasicOWSController(" + matcher + "," + blocker + ")";
     }
 
 }

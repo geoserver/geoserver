@@ -3,7 +3,7 @@
 Automation with the administration REST API
 ============================================
 
-The OpenSearch module sports full automation REST API that can be used to
+The OpenSearch module supports full automation REST API that can be used to
 create collections, ingest products and eventually their granules.
 The full API is available at this URL:
 

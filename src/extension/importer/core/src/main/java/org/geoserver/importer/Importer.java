@@ -44,7 +44,11 @@ import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
+import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
@@ -95,6 +99,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -109,6 +114,14 @@ import java.util.logging.Logger;
 public class Importer implements DisposableBean, ApplicationListener {
 
     static Logger LOGGER = Logging.getLogger(Importer.class);
+    
+    public static final String PROPERTYFILENAME = "importer.properties";
+    
+    public static final String UPLOAD_ROOT_KEY = "importer.upload_root";
+    
+    private FileWatcher<Properties> configFile;
+
+    private Properties props;
 
     /** catalog */
     Catalog catalog;
@@ -130,6 +143,26 @@ public class Importer implements DisposableBean, ApplicationListener {
     public Importer(Catalog catalog) {
         this.catalog = catalog;
         this.styleGen = new StyleGenerator(catalog);
+        
+        try {
+            GeoServerResourceLoader loader = GeoServerExtensions
+                    .bean(GeoServerResourceLoader.class);
+            configFile = new FileWatcher<Properties>(loader.get("importer/" + PROPERTYFILENAME)) {
+
+                @Override
+                protected Properties parseFileContents(InputStream in) throws IOException {
+                    Properties p = new Properties();
+                    p.load(in);
+                    return p;
+                }
+
+            };
+
+            props = configFile.read();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING,
+                    "Could not find any '" + PROPERTYFILENAME + "' property file.", e);
+        }
     }
 
     /**
@@ -912,7 +945,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     public File getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        File dir = getCatalog().getResourceLoader().findOrCreateDirectory("uploads","archives");
+        File dir = getCatalog().getResourceLoader().findOrCreateDirectory(getUploadRoot(), "archives");
         return new File(dir, archiveName);
     }
     
@@ -1645,7 +1678,36 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public File getUploadRoot() {
+        String value = null;
         try {
+            value = System.getProperty(UPLOAD_ROOT_KEY);
+            if (value == null) {
+                value = System.getenv(UPLOAD_ROOT_KEY);
+            }
+        } catch (Throwable ex) {
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST, "Could not access system property '" + UPLOAD_ROOT_KEY + "': " + ex);
+            }
+        }
+        
+        if (configFile != null && configFile.isModified()) {
+            try {
+                props = configFile.read();
+            } catch (Exception e) {
+                LOGGER.log(Level.FINEST,
+                        "Could not find any '" + PROPERTYFILENAME + "' property file.", e);
+            }
+        }
+        
+        if (props != null && value == null) {
+            value = props.getProperty(UPLOAD_ROOT_KEY);
+        }
+        
+        try {
+            if(value != null) {
+                Resource uploadsRoot = Resources.fromPath(value);
+                return Resources.directory(uploadsRoot, !Resources.exists(uploadsRoot));
+            }
             return catalog.getResourceLoader().findOrCreateDirectory("uploads");
         }
         catch(IOException e) {

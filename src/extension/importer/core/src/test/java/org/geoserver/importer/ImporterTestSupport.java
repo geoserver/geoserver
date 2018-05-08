@@ -20,10 +20,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -38,17 +36,25 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.IOUtils;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import net.sf.json.JSONObject;
+import net.sf.json.util.JSONBuilder;
 
 public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
+    
+    static Logger LOGGER = Logging.getLogger(ImporterTestSupport.class);
     
     static final Set<String> DEFAULT_STYLEs = new HashSet<String>() {{
         add(StyleInfo.DEFAULT_POINT);
@@ -60,6 +66,8 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     
 
     protected Importer importer;
+
+    GeoServerDataDirectory dd;
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -74,6 +82,16 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wms", "http://www.opengis.net/wms");
         
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        
+        // add test importer properties file to the temporary data dir. For testing purposes only
+        dd = new GeoServerDataDirectory(testData.getDataDirectoryRoot());
+        GeoServerExtensionsHelper.singleton("dataDirectory", dd, GeoServerDataDirectory.class);
+
+        // write out a simple shell script in the data dir and make it executable
+        File importerConfigLocation = dd.findOrCreateDir("importer");
+        File importerConfigProps = new File(importerConfigLocation, "importer.properties");
+        IOUtils.copy(ImporterTestSupport.class.getClassLoader().getResourceAsStream(
+                "importer.properties"), importerConfigProps);
     }
     
     @Override
@@ -95,6 +113,22 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         }
     }
     
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        super.onTearDown(testData);
+        
+        File dir = dd.getRoot().dir();
+        FileUtils.deleteQuietly(dir);
+
+        try {
+            if (System.getProperty(Importer.UPLOAD_ROOT_KEY) != null) {
+                System.clearProperty(Importer.UPLOAD_ROOT_KEY);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {" + Importer.UPLOAD_ROOT_KEY + "}", e);
+        }
+    }
+
     @Before
     public void setupImporterField() {
         importer = (Importer) applicationContext.getBean("importer");

@@ -9,4 +9,4 @@ The Open Geospatial Consortium (OGC) defines of series of web protocols that all
 * Version
 * Request - a service 
 
-GoeServer provides a framework for accepting these requests and dispatching them to the appropriate implementation. The services are configured for the Dispatcher using a Spring applicationContext.xml file included in your jar.
+GeoServer provides a framework for accepting these requests and dispatching them to the appropriate implementation. The services are configured for the Dispatcher using a Spring applicationContext.xml file included in your jar.

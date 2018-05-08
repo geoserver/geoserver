@@ -985,6 +985,12 @@ Parses a string representation of a date into a Date/Timestamp object
    * - format
      - Y
      - A date parsing pattern, setup using the Java `SimpleDateFormat syntax <http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html>`_. In case it's missing, a number of built-in formats will be tried instead (short and full ISO date formats, dates without any separators).
+   * - enddate
+     - Y
+     - The field used as end date for the time dimension.
+   * - presentation
+     - Y
+     - The time dimension presentation type; one of {LIST; DISCRETE_INTERVAL; CONTINUOUS_INTERVAL}
    
 IntegerFieldToDateTransform
 """""""""""""""""""""""""""

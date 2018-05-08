@@ -32,7 +32,7 @@ public class TransformTest {
 
     @Test
     public void testDateFormatTransform() throws Exception {
-        SimpleFeature f = transform(new DateFormatTransform("date", null, null, null),
+        SimpleFeature f = transform(new DateFormatTransform("date", null),
                 "date", String.class, "1980-09-10"
         );
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));

@@ -19,6 +19,7 @@ import org.geotools.referencing.CRS;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.util.IOUtils;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -182,6 +183,18 @@ public class SpatialFile extends FileData {
         }
     }
 
+    @Override
+    public void cleanup() throws IOException {
+        File parentFolder = (file.isFile() ? file.getParentFile() : null);
+        for (File file : allFiles()) {
+            cleanupFile(file);
+        }
+
+        if (parentFolder != null && parentFolder.exists() && parentFolder.isDirectory()) {
+            IOUtils.delete(parentFolder);
+        }
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

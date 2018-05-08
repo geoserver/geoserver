@@ -892,22 +892,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         context.updated();
         contextStore.save(context);
-
+        
         if (context.isArchive() && context.getState() == ImportContext.State.COMPLETE) {
-            boolean canArchive = !Iterables.any(context.getTasks(), new Predicate<ImportTask>() {
-                @Override
-                public boolean apply(ImportTask input) {
-                    return input.isDirect();
-                }
-            });
-
-            if (canArchive) {
-                Directory directory = null;
-                if (context.getData() instanceof Directory) {
-                    directory = (Directory) context.getData();
-                } else if ( context.getData() instanceof SpatialFile ) {
-                    directory = new Directory( ((SpatialFile) context.getData()).getFile().getParentFile() );
-                }
+            if (!context.isDirect()) {
+                final Directory directory = context.getUploadDirectory();
+                
                 if (directory != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Archiving directory " + directory.getFile().getAbsolutePath());
@@ -921,7 +910,6 @@ public class Importer implements DisposableBean, ApplicationListener {
                     }
                 }
             }
-
         }
     }
 
@@ -948,13 +936,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         File dir = getCatalog().getResourceLoader().findOrCreateDirectory(getUploadRoot(), "archives");
         return new File(dir, archiveName);
     }
-    
-    public void changed(ImportContext context) {
+
+    public void changed(ImportContext context) throws IOException {
         context.updated();
         contextStore.save(context);
     }
 
-    public void changed(ImportTask task)  {
+    public void changed(ImportTask task) throws IOException  {
         prep(task);
         changed(task.getContext());
     }
@@ -1726,7 +1714,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     
     public void delete(ImportContext importContext, boolean purge) throws IOException {
         if (purge) {
-            importContext.delete();    
+            importContext.delete();
         }
         
         contextStore.remove(importContext);

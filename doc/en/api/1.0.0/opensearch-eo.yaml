@@ -48,7 +48,7 @@ paths:
                    Creates a new collection via its search attributes and ogc links. 
                    The zip format accepts a set of files creating the collection in a single shot, and will contain the following files: 
                    * collection.json: the list of searchable attributes, the format is the same as the one returned by a GET on a collection, the "*HRef" properties should be omitted. 
-                   * description.html: the HTML description for the product
+                   * description.html: the HTML description for the collection
                    * metadata.xml: the ISO metadata for the collection
                    * thumbnail.png: the collection thumbnail (ignored at the time of writing)
                    * owsLinks.json: the list of OWS links, in the same JSON format as the associated resource

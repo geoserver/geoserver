@@ -218,7 +218,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
             if ("ows.priority.http".equals(key)) {
                 String error = "";
                 try {
-                    String[] splitValue = value.split("\\s*,\\s*");
+                    String[] splitValue = value.trim().split("\\s*,\\s*");
                     if (splitValue.length == 2 && splitValue[0].length() > 0) {
                         String httpHeaderName = splitValue[0];
                         int defaultPriority = Integer.parseInt(splitValue[1]);

@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -95,7 +96,11 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                 txChain.removeAll(AttributeRemapTransform.class);
                 txChain.getTransforms().addAll(remapPanel.remaps);
 
-                ImporterWebUtils.importer().changed(task);
+                try {
+                    ImporterWebUtils.importer().changed(task);
+                } catch (IOException e) {
+                    error(e);
+                }
 
                 PageParameters pp = new PageParameters().add("id", task.getContext().getId());
                 setResponsePage(ImportPage.class, pp);

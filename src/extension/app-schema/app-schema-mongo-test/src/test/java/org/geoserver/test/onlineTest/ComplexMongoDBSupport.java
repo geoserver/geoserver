@@ -8,14 +8,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.DifferenceListener;
-import org.custommonkey.xmlunit.examples.RecursiveElementNameAndTextQualifier;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
@@ -23,12 +23,18 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
 import org.geotools.feature.NameImpl;
+import org.geotools.image.test.ImageAssert;
+import org.geotools.util.URLs;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,16 +52,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 
 /**
  * Support for integration tests between MongoDB and App-schema. This test are integration tests
- * hence they require a MongoDB instance. If no fixture file for MongoDB exists these tests will
- * be skipped.
+ * hence they require a MongoDB instance. If no fixture file for MongoDB exists these tests will be
+ * skipped.
  */
 public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
 
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(ComplexMongoDBSupport.class);
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(ComplexMongoDBSupport.class);
 
     private static final Path ROOT_DIRECTORY = createTempDir();
 
@@ -65,6 +73,24 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     private static final String STATIONS_COLLECTION_NAME = "stations";
 
     private static MongoClient MONGO_CLIENT;
+
+    // xpath engines used to check WFS responses
+    private XpathEngine WFS11_XPATH_ENGINE;
+    private XpathEngine WFS20_XPATH_ENGINE;
+
+    @Before
+    public void beforeTest() {
+        // instantiate WFS 1.1 xpath engine
+        WFS11_XPATH_ENGINE =
+                buildXpathEngine(
+                        "wfs", "http://www.opengis.net/wfs",
+                        "gml", "http://www.opengis.net/gml");
+        // instantiate WFS 2.0 xpath engine
+        WFS20_XPATH_ENGINE =
+                buildXpathEngine(
+                        "wfs", "http://www.opengis.net/wfs/2.0",
+                        "gml", "http://www.opengis.net/gml/3.2");
+    }
 
     // return the paths to the mappings that should be used
     protected abstract String getPathOfMappingsToUse();
@@ -86,6 +112,16 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+        // create a cache directory for schema resolutions if it doesn't exists
+        File cache = new File(ROOT_DIRECTORY.toFile(), "app-schema-cache");
+        if (cache.mkdir()) {
+            // cache directory created
+            LOGGER.log(
+                    Level.INFO,
+                    String.format(
+                            "App-Schema schemas resolutions cache directory '%s' created.",
+                            cache.getAbsolutePath()));
+        }
         // setup stations data set mappings an auxiliary files
         setupStationsMappings();
         super.onSetUp(testData);
@@ -113,38 +149,241 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.setStore(dataStore);
         builder.setWorkspace(workspace);
-        FeatureTypeInfo featureType = builder.buildFeatureType(
-                new NameImpl(nameSpace.getURI(), "StationFeature"));
+        FeatureTypeInfo featureType =
+                builder.buildFeatureType(new NameImpl(nameSpace.getURI(), "StationFeature"));
         catalog.add(featureType);
         LayerInfo layer = builder.buildLayer(featureType);
+        layer.setDefaultStyle(catalog.getStyleByName("point"));
         catalog.add(layer);
     }
 
     @Test
     public void testGetStationFeatures() throws Exception {
-        Document result = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
-        checkResult(result, "/results/result1.xml");
+        Document document =
+                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
+        // assert that the response contains station 1 measurements
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 1",
+                "station1@mail.com",
+                "wind",
+                "km/h",
+                "1482146833",
+                "155.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 1",
+                "station1@mail.com",
+                "temp",
+                "c",
+                "1482146800",
+                "20.0");
+        // assert that the response contains station 2 measurements
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "pression",
+                "pa",
+                "1482147051",
+                "1015.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "pression",
+                "pa",
+                "1482147026",
+                "1019.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "wind",
+                "km/h",
+                "1482146964",
+                "80.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "temp",
+                "c",
+                "1482146911",
+                "35.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "temp",
+                "c",
+                "1482146935",
+                "25.0");
     }
 
     @Test
     public void testGetStationFeaturesWithFilter() throws Exception {
         String postContent = readResourceContent("/querys/postQuery1.xml");
-        Document result = postAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature", postContent);
-        checkResult(result, "/results/result2.xml");
+        Document document =
+                postAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature",
+                        postContent);
+        // assert that the response contains station 2 measurements
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "pression",
+                "pa",
+                "1482147051",
+                "1015.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "pression",
+                "pa",
+                "1482147026",
+                "1019.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "wind",
+                "km/h",
+                "1482146964",
+                "80.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "temp",
+                "c",
+                "1482146911",
+                "35.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "temp",
+                "c",
+                "1482146935",
+                "25.0");
+    }
+
+    @Test
+    public void testStationsWmsGetMap() throws Exception {
+        // execute the WMS GetMap request
+        MockHttpServletResponse result =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&LAYERS=st:StationFeature"
+                                + "&SRS=EPSG:4326&WIDTH=349&HEIGHT=768"
+                                + "&BBOX=96.251220703125,-57.81005859375,103.919677734375,-40.93505859375");
+        assertThat(result.getStatus(), is(200));
+        assertThat(result.getContentType(), is("image/png"));
+        // check that we got the expected image back
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(getBinary(result)));
+        ImageAssert.assertEquals(
+                URLs.urlToFile(getClass().getResource("/results/result1.png")), image, 10);
+    }
+
+    @Test
+    public void testStationsWmsGetFeatureInfo() throws Exception {
+        // execute the WMS GetFeatureInfo request
+        Document document =
+                getAsDOM(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=st:StationFeature"
+                                + "&STYLES&LAYERS=st:StationFeature&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
+                                + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                                + "&BBOX=91.23046875,-58.623046874999986,108.984375,-40.869140624999986");
+        // assert that the response contains station 2 measurements
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "pression",
+                "pa",
+                "1482147051",
+                "1015.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "pression",
+                "pa",
+                "1482147026",
+                "1019.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "wind",
+                "km/h",
+                "1482146964",
+                "80.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "temp",
+                "c",
+                "1482146911",
+                "35.0");
+        checkMeasurementExists(
+                WFS11_XPATH_ENGINE,
+                document,
+                "station 2",
+                "station2@mail.com",
+                "temp",
+                "c",
+                "1482146935",
+                "25.0");
     }
 
     /**
-     * Helper method that setup stations data set mappings files and schemas.
+     * Helper method that evaluates a xpath and checks if the number of nodes found correspond to
+     * the expected number,
      */
+    protected void checkCount(
+            XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
+        try {
+            // evaluate the xpath and compare the number of nodes found
+            MatcherAssert.assertThat(
+                    xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
+        } catch (Exception exception) {
+            throw new RuntimeException("Error evaluating xpath.", exception);
+        }
+    }
+
+    /** Helper method that setup stations data set mappings files and schemas. */
     private void setupStationsMappings() throws Exception {
         // check that a fixture file was provided
         File fixtureFile = getFixtureFile();
         if (!fixtureFile.exists()) {
             // create fixture example file
             createFixtureExample(fixtureFile);
-            LOGGER.warning(String.format(
-                    "No fixture file '%s' for MongoDB exists, example file created. Tests will eb skipped.",
-                    fixtureFile.getAbsolutePath()));
+            LOGGER.warning(
+                    String.format(
+                            "No fixture file '%s' for MongoDB exists, example file created. Tests will eb skipped.",
+                            fixtureFile.getAbsolutePath()));
         }
         assumeTrue(fixtureFile.exists());
         // load MongoDB connection properties from fixture file
@@ -152,16 +391,20 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         // check that we have access to a mongodb and instantiate the client
         String hostAsString = properties.getProperty("mongo.host", "127.0.0.1");
         String portAsString = properties.getProperty("mongo.port", "27017");
-        ServerAddress serverAddress = new ServerAddress(hostAsString, Integer.parseInt(portAsString));
-        MONGO_CLIENT = new MongoClient(serverAddress,
-                new MongoClientOptions.Builder().serverSelectionTimeout(2000).build());
+        ServerAddress serverAddress =
+                new ServerAddress(hostAsString, Integer.parseInt(portAsString));
+        MONGO_CLIENT =
+                new MongoClient(
+                        serverAddress,
+                        new MongoClientOptions.Builder().serverSelectionTimeout(2000).build());
         try {
             MONGO_CLIENT.listDatabaseNames().first();
         } catch (Exception exception) {
             // not able to connect to the MongoDB database
-            throw new RuntimeException(String.format(
-                    "Could not connect to MongoDB database with host '%s' and port '%s'.",
-                    hostAsString, portAsString));
+            throw new RuntimeException(
+                    String.format(
+                            "Could not connect to MongoDB database with host '%s' and port '%s'.",
+                            hostAsString, portAsString));
         }
         // moving schemas files to the test directory
         moveResourceToTempDir("/schemas/stations.xsd", "stations.xsd");
@@ -169,11 +412,14 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         APP_SCHEMA_MAPPINGS = moveResourceToTempDir(getPathOfMappingsToUse(), "stations.xml");
         String mappingsContent = new String(Files.readAllBytes(APP_SCHEMA_MAPPINGS.toPath()));
         mappingsContent = mappingsContent.replaceAll("\\{dataBaseName\\}", STATIONS_DATA_BASE_NAME);
-        mappingsContent = mappingsContent.replaceAll("\\{collectionName\\}", STATIONS_COLLECTION_NAME);
+        mappingsContent =
+                mappingsContent.replaceAll("\\{collectionName\\}", STATIONS_COLLECTION_NAME);
         mappingsContent = mappingsContent.replaceAll("\\{mongoHost\\}", hostAsString);
         mappingsContent = mappingsContent.replaceAll("\\{mongoPort\\}", portAsString);
-        mappingsContent = mappingsContent.replaceAll("\\{schemaStore\\}",
-                new File(ROOT_DIRECTORY.toFile(), "schema-store").getAbsolutePath());
+        mappingsContent =
+                mappingsContent.replaceAll(
+                        "\\{schemaStore\\}",
+                        new File(ROOT_DIRECTORY.toFile(), "schema-store").getAbsolutePath());
         Files.write(APP_SCHEMA_MAPPINGS.toPath(), mappingsContent.getBytes());
         // insert stations data set in MongoDB
         File stationsFile1 = moveResourceToTempDir("/data/stations1.json", "stations1.json");
@@ -184,9 +430,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         insertJson(STATIONS_DATA_BASE_NAME, STATIONS_COLLECTION_NAME, stationsContent2);
     }
 
-    /**
-     * Load MongoDB connection properties.
-     */
+    /** Load MongoDB connection properties. */
     private static Properties loadFixtureProperties(File fixtureFile) {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream(fixtureFile)) {
@@ -194,16 +438,14 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
             properties.load(input);
             return properties;
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error reading fixture file '%s'.",
-                    fixtureFile.getAbsolutePath()), exception);
+            throw new RuntimeException(
+                    String.format(
+                            "Error reading fixture file '%s'.", fixtureFile.getAbsolutePath()),
+                    exception);
         }
     }
 
-    /**
-     * Write fixture example file for MongoDB, if the file already
-     * exists nothing will be done.
-     */
+    /** Write fixture example file for MongoDB, if the file already exists nothing will be done. */
     private static void createFixtureExample(File fixtureFile) {
         // example fixture file
         File exampleFixtureFile = new File(fixtureFile.getAbsolutePath() + ".example");
@@ -216,18 +458,20 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         properties.put("mongo.host", "127.0.0.1");
         properties.put("mongo.port", "27017");
         try (OutputStream output = new FileOutputStream(exampleFixtureFile)) {
-            properties.store(output, "This is an example fixture. Update the values " +
-                    "and remove the .example suffix to enable the test");
+            properties.store(
+                    output,
+                    "This is an example fixture. Update the values "
+                            + "and remove the .example suffix to enable the test");
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error writing example fixture file '%s'.",
-                    fixtureFile.getAbsolutePath()), exception);
+            throw new RuntimeException(
+                    String.format(
+                            "Error writing example fixture file '%s'.",
+                            fixtureFile.getAbsolutePath()),
+                    exception);
         }
     }
 
-    /**
-     * Gets the fixture file for MongoDB, parent directories are created if needed.
-     */
+    /** Gets the fixture file for MongoDB, parent directories are created if needed. */
     private static File getFixtureFile() {
         File directory = new File(System.getProperty("user.home") + File.separator + ".geoserver");
         if (!directory.exists()) {
@@ -237,42 +481,19 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         return new File(directory, "mongodb.properties");
     }
 
-    /**
-     * Helper method that reads the content of a resource to a string.
-     */
+    /** Helper method that reads the content of a resource to a string. */
     private static String readResourceContent(String resourcePath) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try (InputStream input = ComplexMongoDBSupport.class.getResourceAsStream(resourcePath)) {
             IOUtils.copy(input, output);
             return new String(output.toByteArray());
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error reading resource '%s' content.",
-                    resourcePath), exception);
+            throw new RuntimeException(
+                    String.format("Error reading resource '%s' content.", resourcePath), exception);
         }
     }
 
-    /**
-     * Helper method that will check the returned document against a
-     * control document. The control document will be parsed from the
-     * provided resource.
-     */
-    private void checkResult(Document result, String resultResourcePath) throws Exception {
-        // parse the expected result document
-        Document expected = dom(ComplexMongoDBSupport.class.getResourceAsStream(resultResourcePath), true);
-        Diff diff = new Diff(expected, result);
-        // elements don't need to be in the same order
-        diff.overrideElementQualifier(new RecursiveElementNameAndTextQualifier());
-        // ignore timestamps and schema locations differences
-        diff.overrideDifferenceListener(new AppSchemaDifferenceListener());
-
-        Assert.assertThat(diff.similar(), is(true));
-    }
-
-    /**
-     * Helper method that creates a temporary directory taking
-     * care of the IO exception.
-     */
+    /** Helper method that creates a temporary directory taking care of the IO exception. */
     private static Path createTempDir() {
         try {
             return Files.createTempDirectory("app-schema-mongo");
@@ -282,14 +503,14 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that moves a resource to the tests temporary directory
-     * and return the resource file path.
+     * Helper method that moves a resource to the tests temporary directory and return the resource
+     * file path.
      */
     private static File moveResourceToTempDir(String resourcePath, String resourceName) {
         // create the output file
         File outputFile = new File(ROOT_DIRECTORY.toFile(), resourceName);
         try (InputStream input = ComplexMongoDBSupport.class.getResourceAsStream(resourcePath);
-             OutputStream output = new FileOutputStream(outputFile)) {
+                OutputStream output = new FileOutputStream(outputFile)) {
             // copy the resource content to the output file
             IOUtils.copy(input, output);
         } catch (Exception exception) {
@@ -299,8 +520,8 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that reads a JSON object from a file and inserts it in
-     * the provided database and collection.
+     * Helper method that reads a JSON object from a file and inserts it in the provided database
+     * and collection.
      */
     private static void insertJson(String databaseName, String collectionName, String json) {
         // insert stations data
@@ -309,31 +530,78 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         // add / update geometry index
         BasicDBObject indexObject = new BasicDBObject();
         indexObject.put("geometry", "2dsphere");
-        MONGO_CLIENT.getDatabase(databaseName).getCollection(collectionName).createIndex(indexObject);
+        MONGO_CLIENT
+                .getDatabase(databaseName)
+                .getCollection(collectionName)
+                .createIndex(indexObject);
     }
 
     /**
-     * Helper listener for ignoring differences related with timestamp
-     * values and schema locations.
+     * Helper method that builds a XPATH engine using the base namespaces (ow, ogc, etc ...), all
+     * the namespaces available in the GeoServer catalog and the provided extra namespaces.
      */
-    private static final class AppSchemaDifferenceListener implements DifferenceListener {
-
-        @Override
-        public int differenceFound(Difference difference) {
-            String controlNode = difference.getControlNodeDetail().getNode().getLocalName();
-            String testNode = difference.getTestNodeDetail().getNode().getLocalName();
-            if (controlNode != null && controlNode.equals(testNode) && (
-                    controlNode.equalsIgnoreCase("timestamp") ||
-                            controlNode.equalsIgnoreCase("schemaLocation"))) {
-                // ignore this difference
-                return RETURN_IGNORE_DIFFERENCE_NODES_SIMILAR;
-            }
-            // valid difference, the engine may try to match a node in a different order
-            return RETURN_ACCEPT_DIFFERENCE;
+    private XpathEngine buildXpathEngine(String... extraNamespaces) {
+        // build xpath engine
+        XpathEngine xpathEngine = XMLUnit.newXpathEngine();
+        Map<String, String> namespaces = new HashMap<>();
+        // add common namespaces
+        namespaces.put("ows", "http://www.opengis.net/ows");
+        namespaces.put("ogc", "http://www.opengis.net/ogc");
+        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        // add catalog namespaces
+        for (NamespaceInfo namespace : getCatalog().getNamespaces()) {
+            namespaces.put(namespace.getPrefix(), namespace.getURI());
         }
-
-        @Override
-        public void skippedComparison(Node node, Node node1) {
+        // add provided namespaces
+        if (extraNamespaces.length % 2 != 0) {
+            throw new RuntimeException("Invalid number of namespaces provided.");
         }
+        for (int i = 0; i < extraNamespaces.length; i += 2) {
+            namespaces.put(extraNamespaces[i], extraNamespaces[i + 1]);
+        }
+        // add namespaces to the xpath engine
+        xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));
+        return xpathEngine;
+    }
+
+    /**
+     * Helper method that checks that the provided XML document contains the correct stations and
+     * associated measurement.
+     */
+    private void checkMeasurementExists(
+            XpathEngine xpathEngine,
+            Document document,
+            String stationName,
+            String stationMail,
+            String measurementName,
+            String measurementUnit,
+            String measurementTimestamp,
+            String measurementValue) {
+        // check that the station metadata is correct
+        checkCount(
+                xpathEngine,
+                document,
+                1,
+                String.format(
+                        "/wfs:FeatureCollection/gml:featureMembers"
+                                + "/st:StationFeature[st:name='%s']/st:contact[st:mail='%s']",
+                        stationName, stationMail));
+        // check that the measurement is present in the XML document
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                String.format(
+                        "/wfs:FeatureCollection/gml:featureMembers"
+                                + "/st:StationFeature[st:name='%s']/st:measurement/st:Measurement[st:name='%s'][st:unit='%s']"
+                                + "/st:values/st:Value[st:timestamp='%s'][st:value='%s']",
+                        stationName,
+                        measurementName,
+                        measurementUnit,
+                        measurementTimestamp,
+                        measurementValue));
     }
 }

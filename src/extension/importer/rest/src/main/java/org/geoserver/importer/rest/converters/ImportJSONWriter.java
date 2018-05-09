@@ -420,6 +420,13 @@ public class ImportJSONWriter {
                     json.key("format").value(df.getDatePattern().dateFormat().toPattern());
                 }
 
+                if (df.getEnddate() != null) {
+                    json.key("enddate").value(df.getEnddate());
+                }
+                
+                if (df.getPresentation() != null) {
+                    json.key("presentation").value(df.getPresentation());
+                }
             } else if (transform instanceof IntegerFieldToDateTransform) {
                 IntegerFieldToDateTransform df = (IntegerFieldToDateTransform) transform;
                 json.key("field").value(df.getField());

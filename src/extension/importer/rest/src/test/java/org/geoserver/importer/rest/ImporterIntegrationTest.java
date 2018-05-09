@@ -25,8 +25,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportContext;
@@ -690,6 +693,69 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // verify the script also run
         File testFile = new File(scripts, "test.abc");
         assertTrue(testFile.exists());
+    }
+    
+    @Test
+    public void testRunWithTimeDimention() throws Exception {
+        Catalog cat = getCatalog();
+
+        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming"); 
+
+        // the target layer is not there
+        assertNull(getCatalog().getLayerByName("ming_time"));
+
+        // create context with default name
+        File dir = unpack("shape/ming_time.zip");
+        ImportContext context = importer.createContext(0l);
+        importer.changed(context);
+        importer.update(context, new SpatialFile(new File(dir, "ming_time.shp")));
+        context.setTargetStore(ds);
+
+        assertEquals(1, context.getTasks().size());
+
+        context.getTasks().get(0).getData().setCharsetEncoding("UTF-8");
+
+        // add a transformation to run post script
+        String json = "{\n" +
+                "  \"type\": \"DateFormatTransform\",\n" +
+                "  \"field\": \"Year_Date\",\n" +
+                "  \"presentation\": \"DISCRETE_INTERVAL\"" +
+                "}";
+
+        MockHttpServletResponse resp = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
+
+        // run it
+        context = importer.getContext(0);
+        ImportTask task = context.getTasks().get(0);
+        task.setDirect(false);
+        task.setStore(ds);
+        importer.changed(task);
+        assertEquals(ImportTask.State.READY, task.getState());
+
+        context.updated();
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        // check the layer has been created
+        LayerInfo layer = cat.getLayerByName("ming_time");
+        assertNotNull(layer);
+        
+        ResourceInfo resource = layer.getResource();
+        
+        // verify the TIME dimension has benn defined
+        MetadataMap md = resource.getMetadata();
+        assertNotNull(md);
+        assertTrue(md.containsKey("time"));
+        
+        DimensionInfo timeDimension = (DimensionInfo) md.get("time");
+        assertNotNull(timeDimension);
+        
+        assertEquals(timeDimension.getAttribute(), "Year_Date");
+        assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);
     }
     
     @Test

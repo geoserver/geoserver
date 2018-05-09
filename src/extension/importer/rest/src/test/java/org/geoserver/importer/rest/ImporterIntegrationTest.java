@@ -7,6 +7,7 @@ package org.geoserver.importer.rest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -667,6 +668,109 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertNotNull(timeDimension);
         
         assertEquals(timeDimension.getAttribute(), "Year_Date");
-        assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);                
+        assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);
+    }
+    
+    @Test
+    public void testIndirectImportTempCleanup() throws Exception {
+        File dir = unpack("csv/locations.zip");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        File locations = new File(dir, "locations.csv");
+
+        // @formatter:off 
+        String contextDefinition = "{\n" + 
+                "   \"import\": {\n" +
+                "      \"targetWorkspace\": {\n" + 
+                "         \"workspace\": {\n" + 
+                "            \"name\": \"" + wsName + "\"\n" + 
+                "         }\n" + 
+                "      },\n" + 
+                "      \"data\": {\n" + 
+                "        \"type\": \"file\",\n" + 
+                "        \"file\": \"" + jsonSafePath(locations) + "\"\n" + 
+                "      },\n" + 
+                "      targetStore: {\n" + 
+                "        dataStore: {\n" + 
+                "        name: \"h2\",\n" + 
+                "        }\n" +
+                "      }\n" +
+                "   }\n" + 
+                "}";
+        // @formatter:on 
+
+        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports",
+                contextDefinition, "application/json"));
+        // print(json);
+        int importId = json.getJSONObject("import").getInt("id");
+
+        ImportContext context = importer.getContext(importId);
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+        
+        assertEquals(1, context.getTasks().size());
+        ImportTask task = context.getTasks().get(0);
+        LayerInfo layer = task.getLayer();
+        ResourceInfo resource = layer.getResource();
+        resource.setSRS("EPSG:4326");
+        importer.changed(task);
+        assertEquals(ImportTask.State.READY, task.getState());
+        context.updated();
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+        assertTrue(context.getState() == ImportContext.State.COMPLETE);
+        
+        assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+    }
+    
+    @Test
+    public void testDirectImportTempCleanup() throws Exception {
+        File dir = unpack("csv/locations.zip");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        File locations = new File(dir, "locations.csv");
+
+        // @formatter:off 
+        String contextDefinition = "{\n" + 
+                "   \"import\": {\n" +
+                "      \"targetWorkspace\": {\n" + 
+                "         \"workspace\": {\n" + 
+                "            \"name\": \"" + wsName + "\"\n" + 
+                "         }\n" + 
+                "      },\n" + 
+                "      \"data\": {\n" + 
+                "        \"type\": \"file\",\n" + 
+                "        \"file\": \"" + jsonSafePath(locations) + "\"\n" + 
+                "      }\n" + 
+                "   }\n" + 
+                "}";
+        // @formatter:on 
+
+        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports",
+                contextDefinition, "application/json"));
+        // print(json);
+        int importId = json.getJSONObject("import").getInt("id");
+
+        ImportContext context = importer.getContext(importId);
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+        
+        assertEquals(1, context.getTasks().size());
+        ImportTask task = context.getTasks().get(0);
+        LayerInfo layer = task.getLayer();
+        ResourceInfo resource = layer.getResource();
+        resource.setSRS("EPSG:4326");
+        importer.changed(task);
+        assertEquals(ImportTask.State.READY, task.getState());
+        context.updated();
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+        assertTrue(context.getState() == ImportContext.State.COMPLETE);
+        
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
     }
 }

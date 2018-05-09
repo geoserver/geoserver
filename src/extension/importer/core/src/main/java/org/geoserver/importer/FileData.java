@@ -57,6 +57,10 @@ public class FileData extends ImportData {
 
     @Override
     public void cleanup() throws IOException {
+        cleanupFile(file);
+    }
+
+    protected void cleanupFile(File file) throws IOException {
         if (file.exists()) {
             if (LOGGER.isLoggable(Level.FINE)){
                 LOGGER.fine("Deleting file "  + file.getAbsolutePath());

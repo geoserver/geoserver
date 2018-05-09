@@ -114,7 +114,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                 String featureType, String mappingsName, String mappingsPath,
                 Map<String, String> parameters) {
             // create root directory
-            File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
+            File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
             File stationsMappings = new File(gmlDirectory,
@@ -144,7 +144,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                 String stationsMappingsPath, String measurementsMappingsName,
                 String measurementsMappingsPath, Map<String, String> parameters) {
             // create root directory
-            File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
+            File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
             File stationsMappings = new File(gmlDirectory,
@@ -174,7 +174,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
         protected void addMeasurementFeatureType(String namespacePrefix, String gmlPrefix,
                 String mappingsName, String mappingsPath, Map<String, String> parameters) {
             // create root directory
-            File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
+            File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
             File measurementsMappings = new File(gmlDirectory,

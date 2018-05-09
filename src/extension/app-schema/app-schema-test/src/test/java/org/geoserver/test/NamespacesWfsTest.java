@@ -8,10 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.nio.file.Files;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.Map;
@@ -19,13 +16,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -37,8 +32,6 @@ import net.opengis.wfs20.StoredQueryDescriptionType;
  * features belonging to different namespaces are chained together.
  */
 public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
-
-    private static final File TEST_ROOT_DIRECTORY;
 
     private static final String TEST_STORED_QUERY_ID = "NamespacesTestStoredQuery";
 
@@ -77,133 +70,6 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
             new SimpleEntry<>("GML_NAMESPACE", "http://www.opengis.net/gml/3.2"),
             new SimpleEntry<>("GML_LOCATION", "http://schemas.opengis.net/gml/3.2.1/gml.xsd"))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
-
-    static {
-        try {
-            // create the tests root directory
-            TEST_ROOT_DIRECTORY = IOUtils.createTempDirectory("app-schema-stations");
-        } catch (Exception exception) {
-            throw new RuntimeException("Error creating temporary directory.", exception);
-        }
-    }
-
-    @AfterClass
-    public static void afterTests() {
-        try {
-            // remove tests root directory
-            IOUtils.delete(TEST_ROOT_DIRECTORY);
-        } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error removing tests root directory '%s'.", TEST_ROOT_DIRECTORY.getAbsolutePath()));
-        }
-    }
-
-    /**
-     * Helper class that will setup custom complex feature types using the stations data set.
-     * Parameterization will be used to setup complex features types for GML31 and GML32 based
-     * on the same mappings files and schemas.
-     */
-    private static final class MockData extends AbstractAppSchemaMockData {
-
-        // stations GML 3.1 namespaces
-        private static final String STATIONS_PREFIX_GML31 = "st_gml31";
-        private static final String STATIONS_URI_GML31 = "http://www.stations_gml31.org/1.0";
-        private static final String MEASUREMENTS_PREFIX_GML31 = "ms_gml31";
-        private static final String MEASUREMENTS_URI_GML31 = "http://www.measurements_gml31.org/1.0";
-
-        // stations GML 3.2 namespaces
-        private static final String STATIONS_PREFIX_GML32 = "st_gml32";
-        private static final String STATIONS_URI_GML32 = "http://www.stations_gml32.org/1.0";
-        private static final String MEASUREMENTS_PREFIX_GML32 = "ms_gml32";
-        private static final String MEASUREMENTS_URI_GML32 = "http://www.measurements_gml32.org/1.0";
-
-        @Override
-        public void addContent() {
-            // add GML 3.1 namespaces
-            putNamespace(STATIONS_PREFIX_GML31, STATIONS_URI_GML31);
-            putNamespace(MEASUREMENTS_PREFIX_GML31, MEASUREMENTS_URI_GML31);
-            // add GML 3.2 namespaces
-            putNamespace(STATIONS_PREFIX_GML32, STATIONS_URI_GML32);
-            putNamespace(MEASUREMENTS_PREFIX_GML32, MEASUREMENTS_URI_GML32);
-            // add GML 3.1 feature type
-            addFeatureType(STATIONS_PREFIX_GML31, "gml31", GML31_PARAMETERS);
-            // add GML 3.2 feature type
-            addFeatureType(STATIONS_PREFIX_GML32, "gml32", GML32_PARAMETERS);
-        }
-
-        /**
-         * Helper method that will add the stations feature type customizing
-         * it for the desired GML version.
-         */
-        private void addFeatureType(String namespacePrefix, String gmlPrefix, Map<String, String> parameters) {
-            // create root directory
-            File gmlDirectory = new File(TEST_ROOT_DIRECTORY, gmlPrefix);
-            gmlDirectory.mkdirs();
-            // add the necessary files
-            File stationsMappings = new File(gmlDirectory, String.format("stations_%s.xml", gmlPrefix));
-            File stationsProperties = new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
-            File stationsSchema = new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
-            File measurementsMappings = new File(gmlDirectory, String.format("measurements_%s.xml", gmlPrefix));
-            File measurementsProperties = new File(gmlDirectory, String.format("measurements_%s.properties", gmlPrefix));
-            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
-            // perform the parameterization
-            substituteParameters("/test-data/stations/mappings/stations.xml", parameters, stationsMappings);
-            substituteParameters("/test-data/stations/data/stations.properties", parameters, stationsProperties);
-            substituteParameters("/test-data/stations/schemas/stations.xsd", parameters, stationsSchema);
-            substituteParameters("/test-data/stations/mappings/measurements.xml", parameters, measurementsMappings);
-            substituteParameters("/test-data/stations/data/measurements.properties", parameters, measurementsProperties);
-            substituteParameters("/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
-            // create the feature type
-            addFeatureType(namespacePrefix, String.format("Station_%s", gmlPrefix),
-                    stationsMappings.getAbsolutePath(),
-                    stationsProperties.getAbsolutePath(),
-                    stationsSchema.getAbsolutePath(),
-                    measurementsMappings.getAbsolutePath(),
-                    measurementsProperties.getAbsolutePath(),
-                    measurementsSchema.getAbsolutePath());
-        }
-
-        /**
-         * Helper method that reads a resource to a string performs the
-         * parameterization and writes the result to the provided new file.
-         */
-        private static void substituteParameters(String resourceName, Map<String, String> parameters, File newFile) {
-            // read the resource content
-            String resourceContent = resourceToString(resourceName);
-            resourceContent = substituteParametersInTemplateString(resourceContent, parameters);
-            try {
-                // write the final resource content to the provided location
-                Files.write(newFile.toPath(), resourceContent.getBytes());
-            } catch (Exception exception) {
-                throw new RuntimeException(String.format(
-                        "Error writing content to file '%s'.", newFile.getAbsolutePath()), exception);
-            }
-        }
-
-        private static String substituteParametersInTemplateString(String templateString,
-                Map<String, String> parameters) {
-            String processedString = templateString;
-
-            for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-                processedString = processedString
-                        .replace(String.format("${%s}", parameter.getKey()), parameter.getValue());
-            }
-
-            return processedString;
-        }
-
-        /**
-         * Helper method the reads a resource content to a string.
-         */
-        private static String resourceToString(String resourceName) {
-            try (InputStream input = NamespacesWfsTest.class.getResourceAsStream(resourceName)) {
-                return IOUtils.toString(input);
-            } catch (Exception exception) {
-                throw new RuntimeException(String.format(
-                        "Error reading resource '%s' content.", resourceName), exception);
-            }
-        }
-    }
 
     // xpath engines used to check WFS responses
     private XpathEngine WFS11_XPATH_ENGINE;
@@ -349,8 +215,7 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
         Parser p = new Parser(new WFSConfiguration());
         p.setRootElementType(WFS.StoredQueryDescriptionType);
 
-        String queryDefinition = MockData
-                .substituteParametersInTemplateString(TEST_STORED_QUERY_DEFINITION, parameters);
+        String queryDefinition = substitutePlaceHolders(TEST_STORED_QUERY_DEFINITION, parameters);
         StringReader reader = new StringReader(queryDefinition);
         try {
             return (StoredQueryDescriptionType) p.parse(reader);
@@ -359,6 +224,19 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
         }
     }
 
+    /**
+     * Helper method that just substitutes the provided place holder values in the provided string.
+     * Place holders are identified with syntax ${PLACE_HOLDER_NAME}.
+     */
+    private static String substitutePlaceHolders(String string, Map<String, String> placeHolderValues) {
+        String processedString = string;
+        for (Map.Entry<String, String> placeHolder : placeHolderValues.entrySet()) {
+            processedString = processedString
+                    .replace(String.format("${%s}", placeHolder.getKey()), placeHolder.getValue());
+        }
+        return processedString;
+    }
+    
     /**
      * Check the result of a WFS 1.1 (GML 3.1) get feature request targeting stations data set.
      */

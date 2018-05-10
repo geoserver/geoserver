@@ -49,7 +49,7 @@ public class APIDocument {
     public static final String IN_PATH = "path";
     private static final Reference REF_FORMAT = new Reference("#/components/parameters/f");
     private static final Reference REF_START_INDEX = new Reference("#/components/parameters/startIndex");
-    private static final Reference REF_COUNT = new Reference("#/components/parameters/count");
+    private static final Reference REF_LIMIT = new Reference("#/components/parameters/limit");
     private static final Reference REF_BBOX = new Reference("#/components/parameters/bbox");
     private static final Reference REF_RESULT_TYPE = new Reference("#/components/parameters/resultType");
     private static final Reference REF_ID = new Reference("#/components/parameters/id");
@@ -568,7 +568,7 @@ public class APIDocument {
             layer.addTag("Features");
             layer.addParameter(REF_FORMAT);
             layer.addParameter(REF_START_INDEX);
-            layer.addParameter(REF_COUNT);
+            layer.addParameter(REF_LIMIT);
             layer.addParameter(REF_RESULT_TYPE);
             layer.addParameter(REF_BBOX);
             Response layerResponse = new Response("Information about the feature collection plus the first features " +

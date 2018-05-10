@@ -23,12 +23,17 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.RequestWrapper;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Simple hack to bridge part of the path based approach in WFS 3 to traditional OWS mappings.
@@ -83,7 +88,7 @@ public class WFS3Filter implements GeoServerFilter {
         private String typeName;
         private String outputFormat;
         private String featureId;
-        private boolean mapped;
+        private String limit;
 
         private RequestWrapper(HttpServletRequest wrapped) {
             super(wrapped);
@@ -95,58 +100,63 @@ public class WFS3Filter implements GeoServerFilter {
             } else if (pathInfo.endsWith("/conformance") || pathInfo.endsWith("/conformance/")) {
                 request = "conformance";
             } else if (pathInfo.startsWith("/collections")) {
-                if (pathInfo.contains("items")) {
-                    if (pathInfo.startsWith("/collections/")) {
-                        pathInfo = pathInfo.substring("/collections/".length());
-                    }
-                    // selection by feature id?
-                    if (pathInfo.contains("/")) {
-                        String[] split = pathInfo.split("/");
-                        if (split.length > 2) {
-                            throw new HttpErrorCodeException(
-                                    HttpStatus.NOT_FOUND.value(), "Invalid path " + pathInfo);
-                        }
-                        pathInfo = split[0];
-                        featureId = split[1];
-                    }
-                    List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, pathInfo);
-                    if (!layers.isEmpty()) {
+                List<Function<String, Boolean>> matchers = new ArrayList<>();
+                matchers.add(path -> {
+                    Matcher matcher = Pattern.compile("/collections/([^/]+)/items/(.+)").matcher(path);
+                    boolean matches = matcher.matches();
+                    if (matches) {
                         request = "getFeature";
-                        typeName = layers.get(0).prefixedName();
-                    } else {
-                        throw new HttpErrorCodeException(
-                                HttpStatus.NOT_FOUND.value(), "Could not find layer " + pathInfo);
-                    } 
-                } else {
-                    pathInfo = pathInfo.substring("/collections".length());
-                    if (pathInfo.startsWith("/")) {
-                        pathInfo = pathInfo.substring(1);
-                    } 
-                    if (pathInfo.endsWith("/")) {
-                        pathInfo = pathInfo.substring(0, pathInfo.length() -1);
+                        String layerName = matcher.group(1);
+                        setLayerName(layerName);
+                        this.featureId = matcher.group(2);
                     }
-                    request = "collections";
-                    if (!pathInfo.isEmpty()) {
-                        // is it a request to the list of collections, one to a specific collection,
-                        // or something else?
-                        List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, pathInfo);
-                        if (layers.isEmpty()) {
-                            throw new HttpErrorCodeException(
-                                    HttpStatus.NOT_FOUND.value(),
-                                    "Could not find layer " + pathInfo);
-                        } else {
-                            typeName = layers.get(0).prefixedName();
-                        }
-                        
+                    return matches;
+                });
+                matchers.add(path -> {
+                    Matcher matcher = Pattern.compile("/collections/([^/]+)/items/?").matcher(path);
+                    boolean matches = matcher.matches();
+                    if (matches) {
+                        request = "getFeature";
+                        String layerName = matcher.group(1);
+                        setLayerName(layerName);
+                    }
+                    return matches;
+                });
+                matchers.add(path -> {
+                    Matcher matcher = Pattern.compile("/collections/([^/]+)/?").matcher(path);
+                    boolean matches = matcher.matches();
+                    if (matches) {
+                        request = "collections";
+                        String layerName = matcher.group(1);
+                        setLayerName(layerName);
+                    }
+                    return matches;
+                });
+                matchers.add(path -> {
+                    Matcher matcher = Pattern.compile("/collections/?").matcher(path);
+                    boolean matches = matcher.matches();
+                    if (matches) {
+                        request = "collections";
+                    }
+                    return matches;
+                });
+                
+                // loop over the matchers
+                boolean matched = false;
+                for (Function<String,Boolean> matcher : matchers) {
+                    if (matcher.apply(pathInfo)) {
+                        matched = true;
+                        break;
                     }
                 }
-                
+                // if none matches, complain
+                if (!matched) {
+                    throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);   
+                }
             } else {
                 throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);
             }
             
-            mapped = request != null;
-
             // everything defaults to JSON in WFS3
             String f = wrapped.getParameter("f");
             if (f != null) {
@@ -161,6 +171,22 @@ public class WFS3Filter implements GeoServerFilter {
                 }
             } else {
                 this.outputFormat = BaseRequest.JSON_MIME;
+            }
+            
+            // support for the limit parameter
+            String limit = wrapped.getParameter("limit");
+            if (limit != null) {
+                this.limit = limit;
+            }
+        }
+
+        private void setLayerName(String layerName) {
+            List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, layerName);
+            if (!layers.isEmpty()) {
+                typeName = layers.get(0).prefixedName();
+            } else {
+                throw new HttpErrorCodeException(
+                        HttpStatus.NOT_FOUND.value(), "Could not find layer " + layerName);
             }
         }
 
@@ -204,6 +230,9 @@ public class WFS3Filter implements GeoServerFilter {
             }
             if (featureId != null && !featureId.isEmpty()) {
                 filtered.put("featureId", featureId);
+            }
+            if (limit != null && !limit.isEmpty()) {
+                filtered.put("count", limit);
             }
             return filtered;
         }

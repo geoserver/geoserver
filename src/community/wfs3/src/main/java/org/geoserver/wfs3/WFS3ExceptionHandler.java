@@ -49,7 +49,13 @@ public class WFS3ExceptionHandler extends ServiceExceptionHandler {
                 response.setStatus(500);
             }
         } else {
-            response.setStatus(500);
+            OWS20Exception.OWSExceptionCode code = OWS20Exception.OWSExceptionCode.getByCode
+                    (exception.getCode());
+            if (code != null) {
+                response.setStatus(code.getHttpCode());
+            } else {
+                response.setStatus(500); 
+            }
         }
 
         Map<String, String> error = new LinkedHashMap<>();

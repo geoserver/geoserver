@@ -10,7 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>	
         <include>gs-wfs3-*.jar</include>
-        <include>jackson-dataformat-yaml*.jar</include>
+        <include>jackson-dataformat-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

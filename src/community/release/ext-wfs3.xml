@@ -11,6 +11,8 @@
       <includes>	
         <include>gs-wfs3-*.jar</include>
         <include>jackson-dataformat-*.jar</include>
+        <include>swagger-core-*.jar</include>
+        <include>swagger-models-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

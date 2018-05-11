@@ -418,8 +418,8 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 + "    <wfs:Query typeName=\"gsml:MappedFeature\">"
                 + "        <ogc:Filter>"
                 + "            <ogc:PropertyIsLike wildCard=\"*\" singleChar=\"#\" escapeChar=\"!\">"
-                + "                <ogc:Literal>M*</ogc:Literal>"
                 + "                <ogc:PropertyName>gml:name</ogc:PropertyName>"
+                + "                <ogc:Literal>M*</ogc:Literal>"
                 + "            </ogc:PropertyIsLike>" + "        </ogc:Filter>"
                 + "    </wfs:Query> " + "</wfs:GetFeature>";
 

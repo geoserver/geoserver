@@ -4,10 +4,18 @@
  */
 package org.geoserver.wfs3;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import net.opengis.wfs20.GetFeatureType;
+import org.geoserver.ManifestLoader;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
@@ -15,10 +23,10 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs3.response.APIDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
 
 import javax.xml.namespace.QName;
@@ -29,6 +37,10 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.geoserver.wfs3.response.ConformanceDocument.CORE;
 import static org.geoserver.wfs3.response.ConformanceDocument.GEOJSON;
@@ -38,6 +50,7 @@ import static org.geoserver.wfs3.response.ConformanceDocument.OAS30;
 /** WFS 3.0 implementation */
 public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
+    private static final Logger LOGGER = Logging.getLogger(DefaultWebFeatureService30.class);
     private FilterFactory2 filterFactory;
     private final GeoServer geoServer;
     private WebFeatureService20 wfs20;
@@ -81,11 +94,6 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
                 return new CollectionsDocument(request, getService(), getCatalog(), featureType);
             }
         }
-    }
-
-    @Override
-    public APIDocument api(APIRequest request) {
-        return new APIDocument(getService(), getCatalog());
     }
 
     @Override
@@ -150,4 +158,10 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
         }
         return new ArrayList<>(formatNames);
     }
+
+    @Override
+    public OpenAPI api(APIRequest request) {
+       return new OpenAPIBuilder().build(request, getService());
+    }
+   
 }

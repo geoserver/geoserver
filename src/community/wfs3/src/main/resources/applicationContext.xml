@@ -51,6 +51,9 @@
   <bean id="apiResponse" class="org.geoserver.wfs3.response.APIDocumentResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
+  <bean id="openAPIResponse" class="org.geoserver.wfs3.response.OpenAPIResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
   <bean id="landingPageResponse" class="org.geoserver.wfs3.response.LandingPageResponse">
     <constructor-arg ref="geoServer"/>
   </bean>

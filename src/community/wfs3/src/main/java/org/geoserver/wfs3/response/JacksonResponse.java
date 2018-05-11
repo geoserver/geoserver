@@ -6,6 +6,7 @@ package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -75,6 +76,7 @@ public abstract class JacksonResponse extends WFSResponse {
             YAMLFactory factory = new YAMLFactory();
             mapper = new ObjectMapper(factory);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
         } else if (isXMLFormat(operation)) {
             mapper = new XmlMapper();
             // using a custom annotation introspector to set the desired namespace 

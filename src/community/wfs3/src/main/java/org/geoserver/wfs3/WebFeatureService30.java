@@ -4,8 +4,8 @@
  */
 package org.geoserver.wfs3;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import net.opengis.wfs20.GetFeatureType;
-import org.geoserver.wfs3.response.APIDocument;
 import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
@@ -32,7 +32,7 @@ public interface WebFeatureService30 {
      * @param request
      * @return
      */
-    APIDocument api(APIRequest request);
+    OpenAPI api(APIRequest request);
 
     /**
      * The conformance declaration for this service

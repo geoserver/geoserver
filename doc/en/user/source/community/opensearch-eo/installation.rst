@@ -44,7 +44,8 @@ Follow these steps:
 
 * Setup a standard PostGIS database pointing to the database and schema created above
   from the SQL file. Note down the full name of the store (e.g. ``test:metadata`` where ``test``
-  is the workspace and ``metadata`` is the store name)
+  is the workspace and ``metadata`` is the store name). 
+  Besides filling the connection parameters, remember to set "expose primary keys" to true.
 * Create a new store of type "JDBC based OpenSearch store" and configure the fully qualified name
   of the basic PostGIS store in its "store" parameter.
 

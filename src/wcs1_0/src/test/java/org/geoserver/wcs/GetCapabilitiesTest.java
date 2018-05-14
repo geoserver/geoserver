@@ -10,7 +10,10 @@ import static org.geoserver.data.test.MockData.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -21,22 +24,20 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wcs.test.WCSTestSupport;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class GetCapabilitiesTest extends WCSTestSupport {
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
-        getGeoServer().save(global);
-    }
 
     // @Override
     // protected String getDefaultLogConfiguration() {
@@ -53,6 +54,35 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
         // print(dom);
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+    }
+
+    @Test
+    public void testExtraOperationKVP() throws Exception {
+        // adds a custom kvp param to the urls
+        URLMangler testMangler = (baseURL, path, kvp, type) -> {
+            if (type == URLMangler.URLType.SERVICE) {
+                kvp.put("test", "abc");
+            }
+        };
+        // force a lookup to prime the extension cache, then add a custom mangler to it
+        GeoServerExtensions.extensions(URLMangler.class);
+        GeoServerExtensionsHelper.singleton("wcs10CapsTestMangler", testMangler, URLMangler.class);
+
+        try {
+            Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
+            print(dom);
+            XpathEngine xpath = XMLUnit.newXpathEngine();
+            NodeList nodes = xpath.getMatchingNodes("//wcs:OnlineResource/@xlink:href", dom);
+            assertTrue(nodes.getLength() > 0);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                String text = node.getTextContent();
+                Map<String, Object> kvp = KvpUtils.parseQueryString(text);
+                assertEquals("abc", kvp.get("test"));
+            }
+        } finally {
+            GeoServerExtensionsHelper.clear();
+        }
     }
     
     @Test
@@ -226,23 +256,33 @@ public class GetCapabilitiesTest extends WCSTestSupport {
 
     @Test
     public void testMetadataLinksTransormToProxyBaseURL() throws Exception {
-        Catalog catalog = getCatalog();
-        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
-        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
-        ml.setContent("/metadata?key=value");
-        ml.setMetadataType("FGDC");
-        ml.setAbout("http://www.geoserver.org");
-        ci.getMetadataLinks().add(ml);
-        catalog.save(ci);
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
+        getGeoServer().save(global);
 
-        String proxyBaseUrl = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
-        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
-        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
-        String xpathBase = "//wcs:CoverageOfferingBrief[wcs:name = '" + getLayerId(TASMANIA_DEM) + "']/wcs:metadataLink";
-        assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
-        assertXpathEvaluatesTo("FGDC", xpathBase + "/@metadataType", dom);
-        assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
-        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?key=value", xpathBase + "/@xlink:href", dom);
+        try {
+            Catalog catalog = getCatalog();
+            CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+            MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+            ml.setContent("/metadata?key=value");
+            ml.setMetadataType("FGDC");
+            ml.setAbout("http://www.geoserver.org");
+            ci.getMetadataLinks().add(ml);
+            catalog.save(ci);
+    
+            String proxyBaseUrl = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
+            Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
+            print(dom);
+            checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+            String xpathBase = "//wcs:CoverageOfferingBrief[wcs:name = '" + getLayerId(TASMANIA_DEM) + "']/wcs:metadataLink";
+            assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
+            assertXpathEvaluatesTo("FGDC", xpathBase + "/@metadataType", dom);
+            assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
+            assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?key=value", xpathBase + "/@xlink:href", dom); 
+        } finally {
+            global.getSettings().setProxyBaseUrl(null);
+            getGeoServer().save(global);
+        }
     }
     
     @Test

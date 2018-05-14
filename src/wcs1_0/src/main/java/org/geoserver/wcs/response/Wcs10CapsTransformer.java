@@ -492,7 +492,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             // String baseURL = RequestUtils.proxifiedBaseURL(request.getBaseUrl(),
             // wcs.getGeoServer().getGlobal().getProxyBaseUrl());
             String url = buildURL(request.getBaseUrl(), "wcs", null, URLType.SERVICE);
-            attributes.addAttribute("", "xlink:href", "xlink:href", "", url+"?");
+            attributes.addAttribute("", "xlink:href", "xlink:href", "", url);
 
             start("wcs:Get");
             start("wcs:OnlineResource", attributes);
@@ -502,7 +502,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             end("wcs:DCPType");
 
             attributes = new AttributesImpl();
-            attributes.addAttribute("", "xlink:href", "xlink:href", "", url+"?");
+            attributes.addAttribute("", "xlink:href", "xlink:href", "", url);
 
             start("wcs:DCPType");
             start("wcs:HTTP");

@@ -15,11 +15,9 @@ it works jump to the :ref:`monitor_overview` section.
    :maxdepth: 2
 
    installation/
-   upgrade/
    overview/	
    reference/
    configuration/
-   db/
    audit/
    query/
    geoip/

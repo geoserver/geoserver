@@ -198,4 +198,4 @@ The following attributes are specific to GeoIP look ups and are not captured out
    * - Remote lon
      - The longitude from which the request originated.
      - Numeric
-   
+

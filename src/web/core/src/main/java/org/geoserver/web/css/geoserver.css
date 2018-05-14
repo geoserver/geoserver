@@ -6,6 +6,7 @@ background: #fff;
 color: #0076a1;
 font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 text-align:left !important; /* override blueprint's ie.css */
+overflow-y: scroll;
 }
 
 body.help {
@@ -1007,7 +1008,7 @@ display: block;
 /* Page */
 
 .page-header {
-padding: 20px 0 20px 0;
+padding: 20px 0 0 0;
 }
 
 .page-header h2 {
@@ -1100,7 +1101,7 @@ margin: 1.5em 0 2.5em;
 }
 
 .tab-row-compact {
-margin: 1.5em 0 1em;
+margin: 1em 0 1em;
 }
 
 
@@ -1294,5 +1295,78 @@ div.wicket-aa ul li.selected {
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow {
   height: 18px;
+}
+
+li.select2-results__option {
+    max-width: 100%;
+    overflow: hidden;
+    /*Altered two below to make word wrap work */
+    word-wrap: break-word !important;
+    white-space: normal;
+}
+
+.fullscreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  padding: 0px;
+  border-right: 10px;
+  margin: 0px !important;
+  overflow-y: scroll;
+  width: auto;
+  z-index: 9;
+}
+
+#fullscreen-div {
+ float: right;
+ display: block;
+ margin-top: 0px;
+ margin-right: 0px;
+ width: 16px;
+ height: 16px;
+ padding: 4px 0px;
+}
+
+#fullscreen-div img {
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px; /* Height of new image */
+  padding-left: 16px; /* Equal to width of new image */
+  background: url(../img/icons/silk/arrow_out.png) no-repeat;
+}
+
+.fullscreen-image-in {
+  background: url(../img/icons/silk/arrow_inwards.png) no-repeat !important;
+}
+
+.fullscreen #header-title {
+   font-size: 12px;
+   font-weight: bold;
+}
+
+.fullscreen #header-description {
+   display: none;
+}
+
+.document-hidden {
+  overflow: hidden;
+}
+
+.page-pane-fullscreen {
+  padding-right: 10px;
+}
+
+.horizontal-form {
+  padding-bottom: 5px;
+}
+
+.horizontal-form input, .horizontal-form label {
+   display: inline;
+}
+
+.horizontal-form li {
+   display: inline;
+   padding-right: 30px;
 }
 

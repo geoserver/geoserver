@@ -22,7 +22,7 @@
         <value>GetFeature</value> <!-- this allows to re-use the WFS 2.0 machinery for getting features -->
       </list>
     </constructor-arg>
-    <property name="customCapabilitiesLink" value="../wfs3/api"/>
+    <property name="customCapabilitiesLink" value="../wfs3/"/>
   </bean>
   <bean id="wfs30ServiceTarget" class="org.geoserver.wfs3.DefaultWebFeatureService30">
     <constructor-arg ref="geoServer"/>

@@ -132,25 +132,25 @@
         <AttributeMapping>
           <targetAttribute>st:Value</targetAttribute>
           <idExpression>
-            <OCQL>collectionId('measurements.values')</OCQL>
+            <OCQL>collectionId('values')</OCQL>
           </idExpression>
         </AttributeMapping>
         <AttributeMapping>
           <targetAttribute>st:timestamp</targetAttribute>
           <sourceExpression>
-            <OCQL>jsonSelect('measurements.values.time')</OCQL>
+            <OCQL>jsonSelect('values.time')</OCQL>
           </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>
           <targetAttribute>st:value</targetAttribute>
           <sourceExpression>
-            <OCQL>jsonSelect('measurements.values.value')</OCQL>
+            <OCQL>jsonSelect('values.value')</OCQL>
           </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>
           <targetAttribute>FEATURE_LINK[2]</targetAttribute>
           <sourceExpression>
-            <OCQL>collectionLink('measurements.values')</OCQL>
+            <OCQL>collectionLink('values')</OCQL>
           </sourceExpression>
         </AttributeMapping>
       </attributeMappings>

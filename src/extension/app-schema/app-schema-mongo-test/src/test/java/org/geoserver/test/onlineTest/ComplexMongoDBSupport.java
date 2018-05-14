@@ -8,14 +8,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.DifferenceListener;
-import org.custommonkey.xmlunit.examples.RecursiveElementNameAndTextQualifier;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
@@ -23,12 +23,18 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
 import org.geotools.feature.NameImpl;
+import org.geotools.image.test.ImageAssert;
+import org.geotools.util.URLs;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -65,6 +72,22 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     private static final String STATIONS_COLLECTION_NAME = "stations";
 
     private static MongoClient MONGO_CLIENT;
+
+    // xpath engines used to check WFS responses
+    private XpathEngine WFS11_XPATH_ENGINE;
+    private XpathEngine WFS20_XPATH_ENGINE;
+
+    @Before
+    public void beforeTest() {
+        // instantiate WFS 1.1 xpath engine
+        WFS11_XPATH_ENGINE = buildXpathEngine(
+                "wfs", "http://www.opengis.net/wfs",
+                "gml", "http://www.opengis.net/gml");
+        // instantiate WFS 2.0 xpath engine
+        WFS20_XPATH_ENGINE = buildXpathEngine(
+                "wfs", "http://www.opengis.net/wfs/2.0",
+                "gml", "http://www.opengis.net/gml/3.2");
+    }
 
     // return the paths to the mappings that should be used
     protected abstract String getPathOfMappingsToUse();
@@ -86,6 +109,14 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+        // create a cache directory for schema resolutions if it doesn't exists
+        File cache = new File(ROOT_DIRECTORY.toFile(), "app-schema-cache");
+        if (cache.mkdir()) {
+            // cache directory created
+            LOGGER.log(Level.INFO, String.format(
+                    "App-Schema schemas resolutions cache directory '%s' created.",
+                    cache.getAbsolutePath()));
+        }
         // setup stations data set mappings an auxiliary files
         setupStationsMappings();
         super.onSetUp(testData);
@@ -117,20 +148,95 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
                 new NameImpl(nameSpace.getURI(), "StationFeature"));
         catalog.add(featureType);
         LayerInfo layer = builder.buildLayer(featureType);
+        layer.setDefaultStyle(catalog.getStyleByName("point"));
         catalog.add(layer);
     }
 
     @Test
     public void testGetStationFeatures() throws Exception {
-        Document result = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
-        checkResult(result, "/results/result1.xml");
+        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
+        // assert that the response contains station 1 measurements
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 1", "station1@mail.com", "wind", "km/h", "1482146833", "155.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 1", "station1@mail.com", "temp", "c", "1482146800", "20.0");
+        // assert that the response contains station 2 measurements
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "pression", "pa", "1482147051", "1015.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "pression", "pa", "1482147026", "1019.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "wind", "km/h", "1482146964", "80.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "temp", "c", "1482146911", "35.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "temp", "c", "1482146935", "25.0");
     }
 
     @Test
     public void testGetStationFeaturesWithFilter() throws Exception {
         String postContent = readResourceContent("/querys/postQuery1.xml");
-        Document result = postAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature", postContent);
-        checkResult(result, "/results/result2.xml");
+        Document document = postAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature", postContent);
+        // assert that the response contains station 2 measurements
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "pression", "pa", "1482147051", "1015.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "pression", "pa", "1482147026", "1019.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "wind", "km/h", "1482146964", "80.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "temp", "c", "1482146911", "35.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "temp", "c", "1482146935", "25.0");
+    }
+
+    @Test
+    public void testStationsWmsGetMap() throws Exception {
+        // execute the WMS GetMap request
+        MockHttpServletResponse result = getAsServletResponse("wms?SERVICE=WMS&VERSION=1.1.1" +
+                "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&LAYERS=st:StationFeature" +
+                "&SRS=EPSG:4326&WIDTH=349&HEIGHT=768" +
+                "&BBOX=96.251220703125,-57.81005859375,103.919677734375,-40.93505859375");
+        assertThat(result.getStatus(), is(200));
+        assertThat(result.getContentType(), is("image/png"));
+        // check that we got the expected image back
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(getBinary(result)));
+        ImageAssert.assertEquals(
+                URLs.urlToFile(getClass().getResource("/results/result1.png")), image, 10);
+    }
+
+    @Test
+    public void testStationsWmsGetFeatureInfo() throws Exception {
+        // execute the WMS GetFeatureInfo request
+        Document document = getAsDOM("wms?SERVICE=WMS&VERSION=1.1.1" +
+                "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=st:StationFeature" +
+                "&STYLES&LAYERS=st:StationFeature&INFO_FORMAT=text/xml; subtype=gml/3.1.1" +
+                "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101" +
+                "&BBOX=91.23046875,-58.623046874999986,108.984375,-40.869140624999986");
+        // assert that the response contains station 2 measurements
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "pression", "pa", "1482147051", "1015.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "pression", "pa", "1482147026", "1019.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "wind", "km/h", "1482146964", "80.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "temp", "c", "1482146911", "35.0");
+        checkMeasurementExists(WFS11_XPATH_ENGINE, document,
+                "station 2", "station2@mail.com", "temp", "c", "1482146935", "25.0");
+    }
+
+    /**
+     * Helper method that evaluates a xpath and checks if the number of nodes found
+     * correspond to the expected number,
+     */
+    protected void checkCount(XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
+        try {
+            // evaluate the xpath and compare the number of nodes found
+            MatcherAssert.assertThat(xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
+        } catch (Exception exception) {
+            throw new RuntimeException("Error evaluating xpath.", exception);
+        }
     }
 
     /**
@@ -253,25 +359,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that will check the returned document against a
-     * control document. The control document will be parsed from the
-     * provided resource.
-     */
-    private void checkResult(Document result, String resultResourcePath) throws Exception {
-        // parse the expected result document
-        Document expected = dom(ComplexMongoDBSupport.class.getResourceAsStream(resultResourcePath), true);
-        Diff diff = new Diff(expected, result);
-        // elements don't need to be in the same order
-        diff.overrideElementQualifier(new RecursiveElementNameAndTextQualifier());
-        // ignore timestamps and schema locations differences
-        diff.overrideDifferenceListener(new AppSchemaDifferenceListener());
-
-        Assert.assertThat(diff.similar(), is(true));
-    }
-
-    /**
-     * Helper method that creates a temporary directory taking
-     * care of the IO exception.
+     * Helper method that creates a temporary directory taking care of the IO exception.
      */
     private static Path createTempDir() {
         try {
@@ -313,27 +401,51 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper listener for ignoring differences related with timestamp
-     * values and schema locations.
+     * Helper method that builds a XPATH engine using the base namespaces (ow, ogc, etc ...),
+     * all the namespaces available in the GeoServer catalog and the provided extra namespaces.
      */
-    private static final class AppSchemaDifferenceListener implements DifferenceListener {
-
-        @Override
-        public int differenceFound(Difference difference) {
-            String controlNode = difference.getControlNodeDetail().getNode().getLocalName();
-            String testNode = difference.getTestNodeDetail().getNode().getLocalName();
-            if (controlNode != null && controlNode.equals(testNode) && (
-                    controlNode.equalsIgnoreCase("timestamp") ||
-                            controlNode.equalsIgnoreCase("schemaLocation"))) {
-                // ignore this difference
-                return RETURN_IGNORE_DIFFERENCE_NODES_SIMILAR;
-            }
-            // valid difference, the engine may try to match a node in a different order
-            return RETURN_ACCEPT_DIFFERENCE;
+    private XpathEngine buildXpathEngine(String... extraNamespaces) {
+        // build xpath engine
+        XpathEngine xpathEngine = XMLUnit.newXpathEngine();
+        Map<String, String> namespaces = new HashMap<>();
+        // add common namespaces
+        namespaces.put("ows", "http://www.opengis.net/ows");
+        namespaces.put("ogc", "http://www.opengis.net/ogc");
+        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        // add catalog namespaces
+        for (NamespaceInfo namespace : getCatalog().getNamespaces()) {
+            namespaces.put(namespace.getPrefix(), namespace.getURI());
         }
-
-        @Override
-        public void skippedComparison(Node node, Node node1) {
+        // add provided namespaces
+        if (extraNamespaces.length % 2 != 0) {
+            throw new RuntimeException("Invalid number of namespaces provided.");
         }
+        for (int i = 0; i < extraNamespaces.length; i += 2) {
+            namespaces.put(extraNamespaces[i], extraNamespaces[i + 1]);
+        }
+        // add namespaces to the xpath engine
+        xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));
+        return xpathEngine;
+    }
+
+    /**
+     * Helper method that checks that the provided XML document contains the correct stations
+     * and associated measurement.
+     */
+    private void checkMeasurementExists(XpathEngine xpathEngine, Document document,
+                                        String stationName, String stationMail,
+                                        String measurementName, String measurementUnit,
+                                        String measurementTimestamp, String measurementValue) {
+        // check that the station metadata is correct
+        checkCount(xpathEngine, document, 1, String.format("/wfs:FeatureCollection/gml:featureMembers" +
+                "/st:StationFeature[st:name='%s']/st:contact[st:mail='%s']", stationName, stationMail));
+        // check that the measurement is present in the XML document
+        checkCount(WFS11_XPATH_ENGINE, document, 1, String.format("/wfs:FeatureCollection/gml:featureMembers" +
+                        "/st:StationFeature[st:name='%s']/st:measurement/st:Measurement[st:name='%s'][st:unit='%s']" +
+                        "/st:values/st:Value[st:timestamp='%s'][st:value='%s']", stationName, measurementName,
+                measurementUnit, measurementTimestamp, measurementValue));
     }
 }

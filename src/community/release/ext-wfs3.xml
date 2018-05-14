@@ -13,6 +13,7 @@
         <include>jackson-dataformat-*.jar</include>
         <include>swagger-core-*.jar</include>
         <include>swagger-models-*.jar</include>
+        <include>snakeyaml-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

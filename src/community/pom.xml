@@ -85,6 +85,13 @@
           <descriptor>release/ext-opensearch-eo.xml</descriptor>
           <descriptor>release/ext-mbstyle.xml</descriptor> 
           <descriptor>release/ext-status-monitoring.xml</descriptor>
+<<<<<<< HEAD
+=======
+          <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
+          <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
+          <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
+          <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+>>>>>>> 9a6e806... [GEOS-8743] Move monitoring-hibernate extension down to community module level
         </descriptors>
       </configuration>
      </plugin>
@@ -248,6 +255,7 @@
         <module>mbstyle</module>
         <module>s3-geotiff</module>
         <module>status-monitoring</module>
+        <module>monitor-hibernate</module>
       </modules>
     </profile>
     <profile>
@@ -547,6 +555,12 @@
       <id>status-monitoring</id>
       <modules>
         <module>status-monitoring</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>monitor-hibernate</id>
+      <modules>
+        <module>monitor-hibernate</module>
       </modules>
     </profile>
   </profiles>  

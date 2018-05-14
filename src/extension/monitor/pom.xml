@@ -85,7 +85,6 @@
 
  <modules>
    <module>core</module>
-   <module>hibernate</module>
  </modules>
 
 </project>

@@ -6,11 +6,11 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.geoserver.extension</groupId>
-        <artifactId>gs-monitor</artifactId>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
         <version>2.14-SNAPSHOT</version>
     </parent>
-    <groupId>org.geoserver.extension</groupId>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
     <packaging>jar</packaging>
     <name>Monitor Hibernate Extension</name>

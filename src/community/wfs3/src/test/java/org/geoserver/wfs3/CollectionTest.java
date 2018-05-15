@@ -5,6 +5,7 @@
 package org.geoserver.wfs3;
 
 import net.sf.json.JSON;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -24,7 +25,13 @@ public class CollectionTest extends WFS3TestSupport {
                         "wfs3/collections/"
                                 + getEncodedName(MockData.ROAD_SEGMENTS)
                                 + "?f=text/xml");
-        print(dom);
+        // print(dom);
+        String expected =
+                "http://localhost:8080/geoserver/wfs3/cite__RoadSegments/items?f=application%2Fjson";
+        XMLAssert.assertXpathEvaluatesTo(
+                expected,
+                "//wfs:Collection[wfs:Name='cite__RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
+                dom);
     }
 
     @Test

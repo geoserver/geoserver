@@ -46,7 +46,7 @@ public class CollectionDocument {
                 (FeatureCollectionResponse.class);
         String baseUrl = request.getBaseUrl();
         for (String format : formats) {
-            String apiUrl = ResponseUtils.buildURL(baseUrl, "wfs3/" + collectionId, Collections.singletonMap("f", format), URLMangler.URLType.SERVICE);
+            String apiUrl = ResponseUtils.buildURL(baseUrl, "wfs3/" + collectionId + "/items", Collections.singletonMap("f", format), URLMangler.URLType.SERVICE);
             addLink(new Link(apiUrl, Link.REL_ABOUT, format, collectionId + " as " + format));
         }
 

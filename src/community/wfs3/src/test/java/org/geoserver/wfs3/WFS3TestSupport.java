@@ -7,13 +7,19 @@ package org.geoserver.wfs3;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonContext;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.Filter;
 import javax.xml.namespace.QName;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -47,4 +53,18 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
         }
         return json;
     }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) {
+        // init xmlunit
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("wfs", "http://www.opengis.net/wfs/3.0");
+        namespaces.put("atom", "http://www.w3.org/2005/Atom");
+
+        CiteTestData.registerNamespaces(namespaces);
+
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+    }
+
+    
 }

@@ -10,8 +10,8 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-monitor-hibernate-*.jar</include>
-        <include>antlr-*.jar</include>
-        <include>asm*.jar</include>
+        <include>antlr-2.7.6.jar</include>
+        <include>asm-3.1.jar</include>
         <include>dom4j-*.jar</include>
         <include>ejb3-*.jar</include>
         <include>ehcache-*.jar</include>

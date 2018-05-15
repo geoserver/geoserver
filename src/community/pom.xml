@@ -89,6 +89,7 @@
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
+          <descriptor>release/ext-monitor-hibernate.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -257,6 +258,7 @@
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
         <module>wfs3</module>
+        <module>monitor-hibernate</module>
       </modules>
     </profile>
     <profile>
@@ -586,6 +588,12 @@
       <id>wfs3</id>
       <modules>
         <module>wfs3</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>monitor-hibernate</id>
+      <modules>
+        <module>monitor-hibernate</module>
       </modules>
     </profile>
   </profiles>  

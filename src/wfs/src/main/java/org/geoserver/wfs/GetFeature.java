@@ -260,7 +260,7 @@ public class GetFeature {
         boolean getFeatureById = processStoredQueries(request);
         queries = request.getQueries();
         
-        if (request.isQueryTypeNamesUnset()) {
+        if (request.isQueryTypeNamesUnset()||getFeatureById) {
             expandTypeNames(request, queries, getFeatureById, getCatalog());
         }
 
@@ -743,7 +743,8 @@ public class GetFeature {
     static void expandTypeNames(RequestObject request, List<Query> queries, boolean getFeatureById, Catalog catalog) {
         // do a check for FeatureId filters in the queries and update the type names for the 
         // queries accordingly
-        for (Query q : queries) {
+        for (Iterator<Query> iterator = queries.iterator(); iterator.hasNext();) {
+            Query q = iterator.next();
             if (!q.getTypeNames().isEmpty()) continue;
             
             if (q.getFilter() != null) {
@@ -751,22 +752,25 @@ public class GetFeature {
                 q.getFilter().accept(v, null);
                 q.getTypeNames().addAll(v.getTypeNames());
             }
-
+            
             if (q.getTypeNames().isEmpty()) {
                 if (getFeatureById) {
-                    // by spec, a 404 should be returned in this case 
-                    throw new WFSException(request, "Could not find feature with specified id", WFSException.NOT_FOUND);
+                    iterator.remove();
                 } else {
                     String msg = "No feature types specified";
                     throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
                 }
             }
         }
+        //an exception is raised when no type is detected and there a no other complex types to check
+        if(getFeatureById && queries.isEmpty()) {
+            throw new WFSException(request, "Could not find feature with specified id", WFSException.NOT_FOUND);
+        }
     }
 
 
     /**
-     * Expands the stored queries, returns true if a single GetFeatureById stored query was found (as a
+     * Expands the stored queries, returns true if a GetFeatureById stored query was found (as a
      * different GML encoding is required in that case)
      * 
      * @param request
@@ -776,14 +780,13 @@ public class GetFeature {
         List queries = request.getAdaptedQueries();
         boolean foundGetFeatureById = expandStoredQueries(request, queries, storedQueryProvider);
 
-        return queries.size() == 1 && foundGetFeatureById;
+        return foundGetFeatureById;
     }
 
     /**
      * Replaces stored queries with actual ad-hoc queries
      * @param request
      * @param queries
-     * @param foundGetFeatureById
      * @param storedQueryProvider
      * @return
      */
@@ -810,7 +813,8 @@ public class GetFeature {
                     throw exception;
                 }
 
-                List<net.opengis.wfs20.QueryType> compiled = storedQuery.compile(sq);
+                List<net.opengis.wfs20.QueryType> compiled = storedQuery.compile(sq,
+                        storedQueryProvider.catalog);
                 queries.remove(i);
                 queries.addAll(i, compiled);
                 i += compiled.size();

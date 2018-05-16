@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-		<include>*s3*.jar</include>
+		<include>*-s3-*.jar</include>
 		<include>aws*.jar</include>
 		<include>httpcore*.jar</include>
 		<include>httpclient*.jar</include>

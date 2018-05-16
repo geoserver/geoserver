@@ -132,15 +132,18 @@ public class GML32OutputFormat extends GML3OutputFormat {
         // without the feature collection wrapper
         if (results.isGetFeatureById()) {
             List<FeatureCollection> features = results.getFeatures();
-            Feature next = DataUtilities.first(features.get(0));
-            if (next == null) {
-                throw new WFSException(
-                        (EObject) null,
-                        "No feature matching the requested id found",
-                        WFSException.NOT_FOUND);
-            } else {
-                encoder.encode(next, GML.AbstractFeature, output);
+            boolean featureFound=false;
+            for(FeatureCollection fc:features) {
+                Feature next = DataUtilities.first(fc);
+                if (next != null) {
+                    encoder.encode(next, GML.AbstractFeature, output);
+                    featureFound=true;
+                    break;
+                    }
             }
+            if(!featureFound)
+                throw new WFSException((EObject) null, "No feature matching the requested id found", WFSException
+                    .NOT_FOUND);
         } else {
             encoder.encode(
                     results.unadapt(FeatureCollectionType.class), WFS.FeatureCollection, output);

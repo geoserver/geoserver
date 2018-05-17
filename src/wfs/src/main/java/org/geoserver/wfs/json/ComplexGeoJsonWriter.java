@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * GeoJSON writer capable of handling complex features.
  */
-public final class ComplexGeoJsonWriter {
+class ComplexGeoJsonWriter {
 
     private final GeoJSONBuilder jsonWriter;
 
@@ -66,7 +66,7 @@ public final class ComplexGeoJsonWriter {
     /**
      * Encode a feature in GeoJSON.
      */
-    private void encodeFeature(Feature feature) {
+    protected void encodeFeature(Feature feature) {
         // start the feature JSON object
         jsonWriter.object();
         jsonWriter.key("type").value("Feature");

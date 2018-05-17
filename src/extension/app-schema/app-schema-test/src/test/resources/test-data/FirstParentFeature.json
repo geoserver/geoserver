@@ -42,5 +42,6 @@
     }
   ],
   "totalFeatures": "unknown",
+  "numberReturned": 5,
   "type": "FeatureCollection"
 }

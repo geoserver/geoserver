@@ -12,6 +12,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.hamcrest.CoreMatchers;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.Filter;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -46,7 +48,9 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
         
 
         assertEquals(expectedHttpCode, response.getStatus());
-        assertThat(response.getContentType(), startsWith("application/json"));
+        assertThat(
+                response.getContentType(), 
+                anyOf(startsWith("application/json"), startsWith("application/geo+json")));
         JsonContext json = (JsonContext) JsonPath.parse(response.getContentAsString());
         if (!isQuietTests()) {
             print(json(response));

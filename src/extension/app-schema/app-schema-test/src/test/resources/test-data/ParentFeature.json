@@ -60,5 +60,6 @@
     }
   ],
   "totalFeatures": "unknown",
+  "numberReturned": 3,
   "type": "FeatureCollection"
 }

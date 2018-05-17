@@ -1684,6 +1684,10 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         JSONObject resultJson = (JSONObject) result;
         // check the returned JSON againts the expected result
         JSONObject expectedJson = readJsonObject(expectResultPath);
+        
+        // the timestamp attribute cannot be the same, remove it
+        resultJson.remove("timeStamp");
+        
         assertThat(resultJson, is(expectedJson));
     }
 

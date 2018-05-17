@@ -830,6 +830,72 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testAutomaticTruncationFeatureChange() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+        final String localName = WORKSPACED_LAYER_QNAME.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // First request should be a MISS
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // Second request should be a HIT
+        MockHttpServletResponse response2 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatus());
+        assertEquals("image/png", response2.getContentType());
+        assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+        // Change the feature via the GeoServerFeatureStore wrapper; this should truncate the
+        // blobStore
+        // SimpleFeatureStore store = DataUtilities.simple((FeatureStore)
+        // ((FeatureTypeInfo)layer.getResource()).getFeatureSource(null,null));
+
+        // Do a WFS Insert against the layer. This should trigger a cache miss.
+        final String wfsInsert =
+                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:testWorkspace=\"http://geoserver.org/GWCIntegerationTest/testWorkspace\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://geoserver.org/GWCIntegerationTest/testWorkspace http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=testWorkspace:workspacedLayer\">\n"
+                        + "    <wfs:Insert>\n"
+                        + "        <testWorkspace:workspacedLayer>\n"
+                        + "            <testWorkspace:location>\n"
+                        + "                    <gml:Point srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\" >\n"
+                        + "                      <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">0,0</gml:coordinates>\n"
+                        + "                    </gml:Point>\n"
+                        + "            </testWorkspace:location>\n"
+                        + "            <testWorkspace:name>origin</testWorkspace:name>\n"
+                        + "            <testWorkspace:value>0</testWorkspace:value>\n"
+                        + "        </testWorkspace:workspacedLayer>\n"
+                        + "    </wfs:Insert>\n"
+                        + "</wfs:Transaction>";
+
+        String wfsRequest =
+                TEST_WORKSPACE_NAME + "/wfs?service=WFS&version=1.0.0&request=Transaction";
+        MockHttpServletResponse wfsResponse = postAsServletResponse(wfsRequest, wfsInsert);
+        assertEquals(200, wfsResponse.getStatus());
+
+        MockHttpServletResponse response3 = getAsServletResponse(request);
+        assertEquals(200, response3.getStatus());
+        assertEquals("image/png", response3.getContentType());
+        assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+    }
+
+    @Test
     public void testLayerGroupInWorkspace() throws Exception {
         // the workspace for the tests
         String workspaceName = MockData.BASIC_POLYGONS.getPrefix();

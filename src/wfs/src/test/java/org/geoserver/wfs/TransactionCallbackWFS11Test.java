@@ -78,6 +78,7 @@ public class TransactionCallbackWFS11Test extends WFSTestSupport {
         // check the plugin reports
         assertTrue(plugin.beforeCommitCalled);
         assertTrue(plugin.committed);
+        assertTrue(plugin.dataStoreChanged);
         assertEquals(1, plugin.result.getTotalInserted().intValue());
         assertEquals(0, plugin.result.getTotalUpdated().intValue());
         assertEquals(0, plugin.result.getTotalDeleted().intValue());
@@ -130,6 +131,7 @@ public class TransactionCallbackWFS11Test extends WFSTestSupport {
         // check the plugin reports
         assertTrue(plugin.beforeCommitCalled);
         assertTrue(plugin.committed);
+        assertTrue(plugin.dataStoreChanged);
         assertEquals(0, plugin.result.getTotalInserted().intValue());
         assertEquals(1, plugin.result.getTotalUpdated().intValue());
         assertEquals(0, plugin.result.getTotalDeleted().intValue());
@@ -160,6 +162,7 @@ public class TransactionCallbackWFS11Test extends WFSTestSupport {
         // check the plugin reports
         assertTrue(plugin.beforeCommitCalled);
         assertTrue(plugin.committed);
+        assertTrue(plugin.dataStoreChanged);
         assertEquals(0, plugin.result.getTotalInserted().intValue());
         assertEquals(0, plugin.result.getTotalUpdated().intValue());
         assertEquals(4, plugin.result.getTotalDeleted().intValue());
@@ -188,6 +191,7 @@ public class TransactionCallbackWFS11Test extends WFSTestSupport {
         // check the plugin reports
         assertTrue(plugin.beforeCommitCalled);
         assertTrue(plugin.committed);
+        assertTrue(plugin.dataStoreChanged);
         assertEquals(1, plugin.result.getTotalInserted().intValue());
         assertEquals(0, plugin.result.getTotalUpdated().intValue());
         assertEquals(0, plugin.result.getTotalDeleted().intValue());
@@ -217,6 +221,7 @@ public class TransactionCallbackWFS11Test extends WFSTestSupport {
         // check the plugin reports
         assertTrue(plugin.beforeCommitCalled);
         assertTrue(plugin.committed);
+        assertTrue(plugin.dataStoreChanged);
         assertEquals(0, plugin.result.getTotalInserted().intValue());
         assertEquals(1, plugin.result.getTotalUpdated().intValue());
         assertEquals(0, plugin.result.getTotalDeleted().intValue());
@@ -246,6 +251,7 @@ public class TransactionCallbackWFS11Test extends WFSTestSupport {
         // check the plugin reports
         assertTrue(plugin.beforeCommitCalled);
         assertTrue(plugin.committed);
+        assertTrue(plugin.dataStoreChanged);
         assertEquals(0, plugin.result.getTotalInserted().intValue());
         assertEquals(0, plugin.result.getTotalUpdated().intValue());
         assertEquals(1, plugin.result.getTotalDeleted().intValue());

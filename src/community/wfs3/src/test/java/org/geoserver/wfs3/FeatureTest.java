@@ -73,6 +73,21 @@ public class FeatureTest extends WFS3TestSupport {
         assertEquals(
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class).size());
     }
+    
+    @Test
+    public void testTimeDurationFilter() throws Exception {
+        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "wfs3/collections/" + roadSegments + "/items?time=2006-09-01/P1M23DT12H31M12S",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class).size());
+    }
 
     @Test
     public void testCombinedSpaceTimeFilter() throws Exception {

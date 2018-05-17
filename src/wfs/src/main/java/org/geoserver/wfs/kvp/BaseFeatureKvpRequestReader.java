@@ -232,19 +232,18 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             Query q = it.next();
 
             List typeName = q.getTypeNames();
-            Filter filter = null;
-
+            Filter filter;
             if (typeName.size() > 1) {
                 //TODO: not sure what to do here, just going to and them up
                 List and = new ArrayList(typeName.size());
 
                 for (Iterator t = typeName.iterator(); t.hasNext(); ) {
-                    and.add(bboxFilter((QName) t.next(), bbox));
+                    and.add(bboxFilter(bbox));
                 }
 
                 filter = filterFactory.and(and);
             } else {
-                filter = bboxFilter((QName) typeName.get(0), bbox);
+                filter = bboxFilter(bbox);
             }
 
             filters.add(filter);
@@ -282,7 +281,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
      * @param kvp
      * @param keys
      */
-    private void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
+    protected void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
         for (int i = 0; i < keys.length; i++) {
             if (kvp.containsKey(keys[i])) {
                 for (int j = i + 1; j < keys.length; j++) {
@@ -338,7 +337,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         return qName;
     }
 
-    BBOX bboxFilter(QName typeName, Envelope bbox) throws Exception {
+    protected BBOX bboxFilter(Envelope bbox) {
         //JD: use "" so that it applies to all geometries
         String name = "";
 

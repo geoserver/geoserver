@@ -27,10 +27,66 @@ public class FeatureTest extends WFS3TestSupport {
         List selfRels = json.read("links[?(@.type == 'application/geo+json')].rel");
         assertEquals(1, selfRels.size());
         assertEquals("self", selfRels.get(0));
-        // check altenate link
+        // check alternate link
         List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
         assertEquals(1, alternatefRels.size());
         assertEquals("alternate", alternatefRels.get(0));
+    }
+
+    @Test
+    public void testBBoxFilter() throws Exception {
+        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath("wfs3/collections/" + roadSegments + "/items?bbox=35,0,60,3", 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f002 and f003
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testTimeFilter() throws Exception {
+        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath("wfs3/collections/" + roadSegments + "/items?time=2006-10-25", 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testTimeRangeFilter() throws Exception {
+        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "wfs3/collections/" + roadSegments + "/items?time=2006-09-01/2006-10-23",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class).size());
+    }
+
+    @Test
+    public void testCombinedSpaceTimeFilter() throws Exception {
+        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "wfs3/collections/"
+                                + roadSegments
+                                + "/items?time=2006-09-01/2006-10-23&bbox=35,0,60,3",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
     }
 
     @Test
@@ -47,8 +103,9 @@ public class FeatureTest extends WFS3TestSupport {
         assertEquals(1, selfRels.size());
         assertEquals("self", selfRels.get(0));
         String href = (String) ((List) json.read(geoJsonLinkPath + "href")).get(0);
-        String expected = "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments" +
-                "/items/RoadSegments.1107532045088?f=application%2Fgeo%2Bjson";
+        String expected =
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments"
+                        + "/items/RoadSegments.1107532045088?f=application%2Fgeo%2Bjson";
         assertEquals(expected, href);
         // check alternate link
         List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");

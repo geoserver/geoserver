@@ -110,13 +110,10 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         Envelope bbox = (Envelope) kvp.get("bbox");
 
         List<LockType> queries = ((LockFeatureType) eObject).getLock();
-        List filters = new ArrayList();
-
         for (Iterator it = queries.iterator(); it.hasNext(); ) {
             LockType lock = (LockType) it.next();
 
-            QName typeName = lock.getTypeName();
-            Filter filter = bboxFilter(typeName, bbox);
+            Filter filter = bboxFilter(bbox);
             lock.setFilter(filter);
         }
     }

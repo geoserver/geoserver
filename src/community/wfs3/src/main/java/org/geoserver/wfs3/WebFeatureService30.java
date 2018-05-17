@@ -5,7 +5,7 @@
 package org.geoserver.wfs3;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import net.opengis.wfs20.GetFeatureType;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
@@ -47,5 +47,5 @@ public interface WebFeatureService30 {
      * @param request
      * @return
      */
-    Object getFeature(GetFeatureType request);
+    FeatureCollectionResponse getFeature(GetFeatureType request);
 }

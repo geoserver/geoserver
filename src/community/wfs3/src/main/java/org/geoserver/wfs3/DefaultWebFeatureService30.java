@@ -102,7 +102,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     }
 
     @Override
-    public Object getFeature(GetFeatureType request) {
+    public FeatureCollectionResponse getFeature(org.geoserver.wfs3.GetFeatureType request) {
         // If the server has any more results available than it returns (the number it returns is
         // less than or equal to the requested/default/maximum limit) then the server will include a
         // link to the next set of results.
@@ -111,7 +111,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
             request.setStartIndex(BigInteger.ZERO);
         }
 
-
+        // delegate execution to WFS 2.0
         FeatureCollectionResponse response = wfs20.getFeature(request);
         return response;
     }

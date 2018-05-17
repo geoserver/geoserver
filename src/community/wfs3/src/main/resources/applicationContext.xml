@@ -66,6 +66,9 @@
   <bean id="conformanceResponse" class="org.geoserver.wfs3.response.ConformanceDocumentResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
+  <bean id="rfcGeoJsonFeaturesResponse" class="org.geoserver.wfs3.response.RFCGeoJSONFeaturesResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 
   <!-- Hack to map WFS3 requests parameters to OGC KVP lookalikes -->
   <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">

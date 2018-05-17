@@ -9,6 +9,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
+import org.geoserver.wfs3.response.RFCGeoJSONFeaturesResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
@@ -161,7 +162,7 @@ public class WFS3Filter implements GeoServerFilter {
             String f = wrapped.getParameter("f");
             if (f != null) {
                 if ("json".equalsIgnoreCase(f)) {
-                    this.outputFormat = BaseRequest.JSON_MIME;
+                    this.outputFormat = "getFeature".equals(request) ? RFCGeoJSONFeaturesResponse.MIME : BaseRequest.JSON_MIME;
                 } else if("yaml".equalsIgnoreCase(f)) {
                     this.outputFormat = BaseRequest.YAML_MIME;
                 } else if("html".equalsIgnoreCase(f)) {
@@ -170,7 +171,7 @@ public class WFS3Filter implements GeoServerFilter {
                     this.outputFormat = f;
                 }
             } else {
-                this.outputFormat = BaseRequest.JSON_MIME;
+                this.outputFormat = "getFeature".equals(request) ? RFCGeoJSONFeaturesResponse.MIME : BaseRequest.JSON_MIME;
             }
             
             // support for the limit parameter

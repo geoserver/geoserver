@@ -4,18 +4,11 @@
  */
 package org.geoserver.wfs3;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import net.opengis.wfs20.GetFeatureType;
-import org.geoserver.ManifestLoader;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
@@ -30,6 +23,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
 
 import javax.xml.namespace.QName;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,10 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.geoserver.wfs3.response.ConformanceDocument.CORE;
 import static org.geoserver.wfs3.response.ConformanceDocument.GEOJSON;
@@ -112,24 +103,17 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     @Override
     public Object getFeature(GetFeatureType request) {
+        // If the server has any more results available than it returns (the number it returns is
+        // less than or equal to the requested/default/maximum limit) then the server will include a
+        // link to the next set of results.
+        // This will make paging in WFS3 slower, as it always introduces sorting
+        if (request.getStartIndex() == null && request.getCount() != null) {
+            request.setStartIndex(BigInteger.ZERO);
+        }
+
+
         FeatureCollectionResponse response = wfs20.getFeature(request);
-        // was it a single feature request? Getting at the dispatcher thread local, as delving into
-        // the
-        // request model is hard, the feature id is buried as a filter in one query object
-        //        Request dr = Dispatcher.REQUEST.get();
-        //        if (dr != null && dr.getKvp().get("featureId") != null &&
-        // dr.getKvp().get("format").equals(BaseRequest
-        //                .HTML_MIME)) {
-        //            List<FeatureCollection> features = response.getFeature();
-        //            try (FeatureIterator fi = features.get(0).features()) {
-        //                // there should be one, WFS 2.0 should have already thrown a 404 otherwise
-        //                Feature next = fi.next();
-        //                return next;
-        //            }
-        //        } else {
-        // normal encoding
         return response;
-        //        }
     }
 
     /**

@@ -453,5 +453,6 @@
     }
   ],
   "totalFeatures": "unknown",
+  "numberReturned": 4,
   "type": "FeatureCollection"
 }

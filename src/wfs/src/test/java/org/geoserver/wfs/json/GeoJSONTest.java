@@ -12,17 +12,20 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
+import org.easymock.internal.matchers.Matches;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -30,9 +33,11 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Converters;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -140,19 +145,25 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals("application/json", response.getContentType());
         String out = response.getContentAsString();
 
-    	
     	JSONObject rootObject = JSONObject.fromObject( out );
+    	// print(rootObject);
     	assertEquals(rootObject.get("type"),"FeatureCollection");
     	JSONArray featureCol = rootObject.getJSONArray("features");
     	JSONObject aFeature = featureCol.getJSONObject(0);
     	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+
+    	// check a timestamp exists and matches the structure of a ISO timestamp 
+        String timeStamp = rootObject.getString("timeStamp");
+        assertNotNull(timeStamp);
+        assertTrue(timeStamp.matches("(\\d{4})-(\\d{2})-(\\d{2})" +
+                "T(\\d{2})\\:(\\d{2})\\:(\\d{2})\\.(\\d{3})Z"));
     }
     
     @Test
     public void testGetSkipCounting() throws Exception {
         Catalog catalog = getCatalog();
         try {
-            // skip the feature cound
+            // skip the feature count
             FeatureTypeInfo primitive = catalog
                     .getFeatureTypeByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
             primitive.setSkipNumberMatched(true);
@@ -399,27 +410,112 @@ public class GeoJSONTest extends WFSTestSupport {
     @Test
     public void testGetFeatureCountWfs20() throws Exception {        
         //request without filter
-        String out = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
+        String out = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&count=10&outputformat="+JSONType.json);
         JSONObject rootObject = JSONObject.fromObject( out );
-        assertEquals(rootObject.get("totalFeatures"),5);
+        // print(rootObject);
+        assertEquals(rootObject.get("totalFeatures"), 5);
+        assertEquals(rootObject.get("numberMatched"), 5);
+        assertNull(rootObject.get("links"));
 
         //request with filter (featureid=PrimitiveGeoFeature.f001)
-        String out2 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
+        String out2 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&count=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
         JSONObject rootObject2 = JSONObject.fromObject( out2 );
-        assertEquals(rootObject2.get("totalFeatures"),1);
-        
+        assertEquals(rootObject2.get("totalFeatures"), 1);
+        assertEquals(rootObject2.get("numberMatched"), 1);
+        assertNull(rootObject2.get("links"));
+
         //check if maxFeatures doesn't affect totalFeatureCount; set Filter and maxFeatures
-        String out3 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
+        String out3 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&count=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject( out3 );
-        assertEquals(rootObject3.get("totalFeatures"),2);
+        assertEquals(rootObject3.get("totalFeatures"), 2);
+        assertEquals(rootObject3.get("numberMatched"), 2);
+        assertNull(rootObject3.get("links"));
         
         //request with multiple featureTypes and Filter
         String out4 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
         JSONObject rootObject4 = JSONObject.fromObject( out4 );
         assertEquals(rootObject4.get("totalFeatures"),3);
+        assertEquals(rootObject4.get("numberMatched"), 3);
+        assertNull(rootObject4.get("links"));
         
     }
- 
+
+    @Test
+    public void getGetFeatureWithPagingFirstPage() throws Exception {
+        // request with paging
+        String out =
+                getAsString(
+                        "wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature" +
+                                "&startIndex=0&&count=2&outputformat=" + JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject(out);
+        // print(rootObject);
+        assertEquals(rootObject.get("totalFeatures"), 5);
+        assertEquals(rootObject.get("numberMatched"), 5);
+        assertEquals(rootObject.get("numberReturned"), 2);
+        JSONArray links = rootObject.getJSONArray("links");
+        assertNotNull(links);
+        assertEquals(1, links.size());
+        JSONObject link = links.getJSONObject(0);
+        assertLink(link, "next page", "application/json", "next", "http://localhost:8080/geoserver" +
+                "/wfs?TYPENAME=sf%3APrimitiveGeoFeature&REQUEST=GetFeature" +
+                "&OUTPUTFORMAT=application%2Fjson&VERSION=2.0.0&COUNT=2&STARTINDEX=2");
+    }
+
+    @Test
+    public void getGetFeatureWithPagingMidPage() throws Exception {
+        // request with paging
+        String out =
+                getAsString(
+                        "wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature" +
+                                "&startIndex=2&&count=2&outputformat=" + JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject(out);
+        print(rootObject);
+        assertEquals(rootObject.get("totalFeatures"), 5);
+        assertEquals(rootObject.get("numberMatched"), 5);
+        assertEquals(rootObject.get("numberReturned"), 2);
+        JSONArray links = rootObject.getJSONArray("links");
+        assertNotNull(links);
+        assertEquals(2, links.size());
+        JSONObject prev = links.getJSONObject(0);
+        assertLink(prev, "previous page", "application/json", "previous", "http://localhost:8080/geoserver" +
+                "/wfs?TYPENAME=sf%3APrimitiveGeoFeature&REQUEST=GetFeature" +
+                "&OUTPUTFORMAT=application%2Fjson&VERSION=2.0.0&COUNT=2&STARTINDEX=0");
+        JSONObject next = links.getJSONObject(1);
+        assertLink(next, "next page", "application/json", "next", "http://localhost:8080/geoserver" +
+                "/wfs?TYPENAME=sf%3APrimitiveGeoFeature&REQUEST=GetFeature" +
+                "&OUTPUTFORMAT=application%2Fjson&VERSION=2.0.0&COUNT=2&STARTINDEX=4");
+    }
+
+    @Test
+    public void getGetFeatureWithPagingLastPage() throws Exception {
+        // request with paging
+        String out =
+                getAsString(
+                        "wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature" +
+                                "&startIndex=4&&count=2&outputformat=" + JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject(out);
+        print(rootObject);
+        assertEquals(rootObject.get("totalFeatures"), 5);
+        assertEquals(rootObject.get("numberMatched"), 5);
+        assertEquals(rootObject.get("numberReturned"), 1);
+        JSONArray links = rootObject.getJSONArray("links");
+        assertNotNull(links);
+        assertEquals(1, links.size());
+        JSONObject prev = links.getJSONObject(0);
+        assertLink(prev, "previous page", "application/json", "previous", "http://localhost:8080/geoserver" +
+                "/wfs?TYPENAME=sf%3APrimitiveGeoFeature&REQUEST=GetFeature" +
+                "&OUTPUTFORMAT=application%2Fjson&VERSION=2.0.0&COUNT=2&STARTINDEX=2");
+    }
+
+    private void assertLink(JSONObject link, String title, String type, String rel, String href) {
+        assertNotNull(link);
+        assertEquals(title, link.getString("title"));
+        assertEquals(type, link.getString("type"));
+        assertEquals(rel, link.getString("rel"));
+        // a bit too rigid, the order of kvp params does not really matter, but good enough for now
+        assertEquals(href, link.getString("href"));
+    }
+
     @Test
     public void testGetFeatureLine3D() throws Exception {
         JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(LINE3D)

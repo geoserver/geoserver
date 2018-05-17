@@ -188,7 +188,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     /**
      * Calls through to {@link #write(FeatureCollectionResponse, OutputStream, Operation)}.
      */
-    public final void write(Object value, OutputStream output, Operation operation)
+    public void write(Object value, OutputStream output, Operation operation)
         throws IOException, ServiceException {
         //for WFS 2.0 we changed the input object type to be the request object adapter, but there
         // is other code (like WMS GetFeatureInfo) that passes in the old objects, so do a check 

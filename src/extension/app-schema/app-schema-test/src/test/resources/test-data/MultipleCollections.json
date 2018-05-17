@@ -646,5 +646,6 @@
     }
   ],
   "totalFeatures": "unknown",
+  "numberReturned": 7,
   "type": "FeatureCollection"
 }

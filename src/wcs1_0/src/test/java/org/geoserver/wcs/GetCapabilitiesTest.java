@@ -54,7 +54,17 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
         // print(dom);
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+        // checke backlinks URLs can simply string-appended to 
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        NodeList nodes = xpath.getMatchingNodes("//wcs:OnlineResource/@xlink:href", dom);
+        assertTrue(nodes.getLength() > 0);
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            String text = node.getTextContent();
+            assertThat(text, CoreMatchers.endsWith("?"));
+        } 
     }
+        
 
     @Test
     public void testExtraOperationKVP() throws Exception {
@@ -70,7 +80,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
 
         try {
             Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
-            print(dom);
+            // print(dom);
             XpathEngine xpath = XMLUnit.newXpathEngine();
             NodeList nodes = xpath.getMatchingNodes("//wcs:OnlineResource/@xlink:href", dom);
             assertTrue(nodes.getLength() > 0);
@@ -79,6 +89,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 String text = node.getTextContent();
                 Map<String, Object> kvp = KvpUtils.parseQueryString(text);
                 assertEquals("abc", kvp.get("test"));
+                assertThat(text, CoreMatchers.endsWith("&"));
             }
         } finally {
             GeoServerExtensionsHelper.clear();

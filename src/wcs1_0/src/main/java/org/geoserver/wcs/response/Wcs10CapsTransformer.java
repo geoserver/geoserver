@@ -492,6 +492,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             // String baseURL = RequestUtils.proxifiedBaseURL(request.getBaseUrl(),
             // wcs.getGeoServer().getGlobal().getProxyBaseUrl());
             String url = buildURL(request.getBaseUrl(), "wcs", null, URLType.SERVICE);
+            url = makeURLAppendable(url);
             attributes.addAttribute("", "xlink:href", "xlink:href", "", url);
 
             start("wcs:Get");
@@ -513,6 +514,22 @@ public class Wcs10CapsTransformer extends TransformerBase {
             end("wcs:HTTP");
             end("wcs:DCPType");
             end(capabilityName);
+        }
+
+        /**
+         * Makes sure the URL can simply be used by appending to it, without checking if it ends
+         * by ?, & or nothing
+         * @param url
+         * @return
+         */
+        private String makeURLAppendable(String url) {
+            if (url.endsWith("?") || url.endsWith("&")) {
+                return url;
+            } else if (url.contains("?")) {
+                return url + "&";
+            } else {
+                return url + "?";
+            }
         }
 
         /**

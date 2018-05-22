@@ -6,19 +6,9 @@
 package org.geoserver.config;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CoverageInfo;
@@ -29,11 +19,8 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
@@ -46,18 +33,14 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.Resources;
-import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 
-public class GeoServerPersister implements CatalogListener, ConfigurationListener {
-
-    private static final int MAX_RENAME_ATTEMPTS = 100;
+/**
+ * Handles the persistence of configuration files when changes happen to the catalog, such as
+ * rename, remove and change of workspace.
+ */
+public class GeoServerConfigPersister implements CatalogListener, ConfigurationListener {
 
     /** logging instance */
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
@@ -66,7 +49,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     GeoServerDataDirectory dd;
     XStreamPersister xp;
 
-    public GeoServerPersister(GeoServerResourceLoader rl, XStreamPersister xp) {
+    public GeoServerConfigPersister(GeoServerResourceLoader rl, XStreamPersister xp) {
         this.rl = rl;
         this.dd = new GeoServerDataDirectory(rl);
         this.xp = xp;
@@ -147,30 +130,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
                     Resource oldDir = dd.get((FeatureTypeInfo) source);
                     Resource newDir = dd.get(newStore);
                     moveResToDir(oldDir, newDir);
-                }
-            }
-
-            // handle the case of a style changing workspace
-            if (source instanceof StyleInfo) {
-                i = event.getPropertyNames().indexOf("workspace");
-                if (i > -1) {
-                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
-                    Resource newDir = dd.getStyles(newWorkspace);
-
-                    // look for any resource files (image, etc...) and copy them over, don't move
-                    // since they could be shared among other styles
-                    for (Resource old : dd.additionalStyleResources((StyleInfo) source)) {
-                        if (old.getType() != Type.UNDEFINED) {
-                            copyResToDir(old, newDir);
-                        }
-                    }
-
-                    // move over the config file and the sld
-                    for (Resource old : baseResources((StyleInfo) source)) {
-                        if (old.getType() != Type.UNDEFINED) {
-                            moveResToDir(old, newDir);
-                        }
-                    }
                 }
             }
 
@@ -586,57 +545,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         // rename xml configuration file
         Resource xml = dd.config(s);
         renameRes(xml, newName + ".xml");
-
-        // rename style definition file
-        Resource style = dd.style(s);
-        StyleHandler format = Styles.handler(s.getFormat());
-
-        Resource target = uniqueResource(style, newName, format.getFileExtension());
-        renameRes(style, target.name());
-        s.setFilename(target.name());
-
-        // rename generated sld if appropriate
-        if (!SLDHandler.FORMAT.equals(format.getFormat())) {
-            Resource sld = style.parent().get(FilenameUtils.getBaseName(style.name()) + ".sld");
-            if (sld.getType() == Type.RESOURCE) {
-                Resource generated = uniqueResource(sld, newName, "sld");
-                renameRes(sld, generated.name());
-            }
-        }
-    }
-
-    /**
-     * Determine unique name of the form <code>newName.extension</code>. newName will have a number
-     * appended as required to produce a unique resource name.
-     *
-     * @param resource Resource being renamed
-     * @param newName proposed name to use as a template
-     * @param extension extension
-     * @return New UNDEFINED resource suitable for use with rename
-     * @throws IOException If unique resource cannot be produced
-     */
-    private Resource uniqueResource(Resource resource, String newName, String extension)
-            throws IOException {
-        Resource target = resource.parent().get(newName + "." + extension);
-
-        int i = 0;
-        while (target.getType() != Type.UNDEFINED && ++i <= MAX_RENAME_ATTEMPTS) {
-            target = resource.parent().get(newName + i + "." + extension);
-        }
-        if (i > MAX_RENAME_ATTEMPTS) {
-            throw new IOException(
-                    "All target files between "
-                            + newName
-                            + "1."
-                            + extension
-                            + " and "
-                            + newName
-                            + MAX_RENAME_ATTEMPTS
-                            + "."
-                            + extension
-                            + " are in use already, giving up");
-        }
-        return target;
     }
 
     private void modifyStyle(StyleInfo s) throws IOException {
@@ -665,64 +573,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         LOGGER.fine("Removing style " + s.getName());
         Resource xml = dd.config(s);
         rmRes(xml);
-
-        Resource sld = dd.style(s);
-        if (Resources.exists(sld)) {
-            Resource sldBackup = dd.get(sld.path() + ".bak");
-            int i = 1;
-            while (Resources.exists(sldBackup)) {
-                sldBackup = dd.get(sld.path() + ".bak." + i++);
-            }
-            LOGGER.fine("Removing the SLD as well but making backup " + sldBackup.name());
-            sld.renameTo(sldBackup);
-        }
-    }
-
-    /*
-     * returns the SLD file as well
-     */
-    private List<Resource> baseResources(StyleInfo s) throws IOException {
-        List<Resource> list = Arrays.asList(dd.config(s), dd.style(s));
-        return list;
-    }
-
-    /*
-     * returns additional resource files
-     */
-    private List<Resource> additionalResources(StyleInfo s) throws IOException {
-        final List<Resource> files = new ArrayList<Resource>();
-        final Resource baseDir = dd.get(s);
-        try {
-            Style parsedStyle = dd.parsedStyle(s);
-            parsedStyle.accept(
-                    new AbstractStyleVisitor() {
-                        @Override
-                        public void visit(ExternalGraphic exgr) {
-                            if (exgr.getOnlineResource() == null) {
-                                return;
-                            }
-
-                            URI uri = exgr.getOnlineResource().getLinkage();
-                            if (uri == null) {
-                                return;
-                            }
-
-                            Resource r = null;
-                            try {
-                                r = uriToResource(baseDir, uri);
-                                if (r != null && r.getType() != Type.UNDEFINED) files.add(r);
-                            } catch (IllegalArgumentException | MalformedURLException e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Error attemping to process SLD resource",
-                                        e);
-                            }
-                        }
-                    });
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error loading style", e);
-        }
-        return files;
     }
 
     // layer groups
@@ -775,25 +625,5 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
 
     private void moveResToDir(Resource r, Resource newDir) {
         rl.move(r.path(), newDir.get(r.name()).path());
-    }
-
-    private void copyResToDir(Resource r, Resource newDir) throws IOException {
-        Resource newR = newDir.get(r.name());
-        try (InputStream in = r.in();
-                OutputStream out = newR.out()) {
-            IOUtils.copy(in, out);
-        }
-    }
-
-    private Resource uriToResource(Resource base, URI uri) throws MalformedURLException {
-        if (uri.getScheme() != null && !uri.getScheme().equals("file")) {
-            return null;
-        }
-        if (uri.isAbsolute() && !uri.isOpaque()) {
-            assert uri.getScheme().equals("file");
-            return Files.asResource(new File(uri.toURL().getFile()));
-        } else {
-            return base.get(uri.getSchemeSpecificPart());
-        }
     }
 }

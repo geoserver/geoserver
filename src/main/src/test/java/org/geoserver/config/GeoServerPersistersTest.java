@@ -34,8 +34,6 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.junit.Before;
@@ -44,19 +42,9 @@ import org.junit.experimental.categories.Category;
 import org.w3c.dom.Document;
 
 @Category(SystemTest.class)
-public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
+public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
 
     Catalog catalog;
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        Catalog catalog = getCatalog();
-        GeoServerPersister p =
-                new GeoServerPersister(
-                        getResourceLoader(), new XStreamPersisterFactory().createXMLPersister());
-        catalog.addListener(p);
-    }
 
     @Before
     public void initCatalog() {
@@ -692,13 +680,16 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         File xmlFile1 = new File(testData.getDataDirectoryRoot(), "styles/foostyle1.xml");
         xmlFile1.createNewFile();
 
+        File sldFile2 = new File(testData.getDataDirectoryRoot(), "styles/foostyle2.sld");
+
         StyleInfo s = catalog.getStyleByName("foostyle");
         s.setName("foostyle");
         catalog.save(s);
 
-        assertThat(sldFile, fileExists());
+        assertThat(sldFile, not(fileExists()));
         assertThat(sldFile1, fileExists());
         assertThat(xmlFile1, fileExists());
+        assertThat(sldFile2, fileExists());
 
         sldFile1.delete();
         xmlFile1.delete();

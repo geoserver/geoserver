@@ -107,7 +107,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
                 }
             }
         }
-        
+
+        @Override
+        public LayerInfoLookup setCatalog(Catalog catalog) {
+            super.setCatalog(catalog);
+            return this;
+        }
     }
     
     /**
@@ -937,17 +942,17 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             //do an optimized sync
             DefaultCatalogFacade other = (DefaultCatalogFacade) dao;
             
-            other.stores = stores;
+            other.stores = stores.setCatalog(catalog);
             other.defaultStores = defaultStores;
-            other.resources = resources;
+            other.resources = resources.setCatalog(catalog);
             other.defaultNamespace = defaultNamespace;
-            other.namespaces = namespaces;
+            other.namespaces = namespaces.setCatalog(catalog);
             other.defaultWorkspace = defaultWorkspace;
-            other.workspaces = workspaces;
-            other.layers = layers;
+            other.workspaces = workspaces.setCatalog(catalog);
+            other.layers = layers.setCatalog(catalog);
             other.maps = maps;
-            other.layerGroups = layerGroups;
-            other.styles = styles;
+            other.layerGroups = layerGroups.setCatalog(catalog);
+            other.styles = styles.setCatalog(catalog);
         } else {
             //do a manual import
             for (WorkspaceInfo ws : workspaces.values()) {

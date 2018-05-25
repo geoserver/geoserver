@@ -99,7 +99,6 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                 doReturn(WorkspacePage.class);
             }
         };
-        form.add(new FeedbackPanel("feedback"));
         form.add( cancelLink );
     }
     /**

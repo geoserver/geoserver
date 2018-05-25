@@ -2842,4 +2842,12 @@ public class ResourcePool {
         }
         return info;
     }
+
+    /**
+     * Package private on purpose, using it for testing
+     * @return
+     */
+    CatalogRepository getRepository() {
+        return repository;
+    }
 }

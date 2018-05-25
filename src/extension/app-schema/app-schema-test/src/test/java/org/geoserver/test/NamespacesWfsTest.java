@@ -17,6 +17,8 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +28,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
+import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
@@ -41,6 +44,8 @@ import net.opengis.wfs20.StoredQueryDescriptionType;
  * features belonging to different namespaces are chained together.
  */
 public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
+
+    private static final Logger LOGGER = Logging.getLogger(NamespacesWfsTest.class);
 
     private static final File TEST_ROOT_DIRECTORY;
 
@@ -97,8 +102,9 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
             // remove tests root directory
             IOUtils.delete(TEST_ROOT_DIRECTORY);
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error removing tests root directory '%s'.", TEST_ROOT_DIRECTORY.getAbsolutePath()));
+            // something bad happen, just log the exception and move on
+            LOGGER.log(Level.WARNING, String.format(
+                    "Error removing tests root directory '%s'.", TEST_ROOT_DIRECTORY.getAbsolutePath()), exception);
         }
     }
 

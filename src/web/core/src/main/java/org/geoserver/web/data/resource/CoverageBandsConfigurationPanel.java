@@ -99,8 +99,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         };
         bands.setFilterVisible(false);
         bands.setSortable(false);
-        bands.getTopPager().setVisible(false);
-        bands.getBottomPager().setVisible(false);
+        bands.setPageable(false);
         bands.setOutputMarkupId(true);
         bands.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
         bands.setFilterable(false);

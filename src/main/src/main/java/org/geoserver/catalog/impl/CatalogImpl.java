@@ -1821,6 +1821,7 @@ public class CatalogImpl implements Catalog {
         if ( resourcePool != other.resourcePool ) {
             resourcePool.dispose();
             resourcePool = other.resourcePool;
+            resourcePool.setCatalog(this);
         }
         
         resourceLoader = other.resourceLoader;

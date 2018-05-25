@@ -4,6 +4,13 @@
  */
 package org.geoserver.catalog.impl;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.ows.util.OwsUtils;
+import org.geotools.util.logging.Logging;
+import org.opengis.feature.type.Name;
+
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,9 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import org.geoserver.catalog.CatalogInfo;
-import org.opengis.feature.type.Name;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A support index for {@link DefaultCatalogFacade}, can perform fast lookups of {@link CatalogInfo} objects
@@ -27,6 +33,8 @@ import org.opengis.feature.type.Name;
  * @param <T>
  */
 class CatalogInfoLookup<T extends CatalogInfo> {
+    static final Logger LOGGER = Logging.getLogger(CatalogInfoLookup.class);
+    
     ConcurrentHashMap<Class<T>, Map<String, T>> idMultiMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<Class<T>, Map<Name, T>> nameMultiMap = new ConcurrentHashMap<>();
     Function<T, Name> nameMapper;
@@ -209,5 +217,34 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         }
 
         return null;
+    }
+
+    /**
+     * Sets the specified catalog into all CatalogInfo objects contained in this lookup
+     *
+     * @param catalog
+     */
+    public CatalogInfoLookup setCatalog(Catalog catalog) {
+        for (Map<Name, T> valueMap : nameMultiMap.values()) {
+            if (valueMap != null) {
+                for (T v : valueMap.values()) {
+                    if (v instanceof CatalogInfo) {
+                        Method setter = OwsUtils.setter(v.getClass(), "catalog", Catalog.class);
+                        if (setter != null) {
+                            try {
+                                setter.invoke(v, catalog);
+                            } catch (Exception e) {
+                                LOGGER.log(
+                                        Level.FINE,
+                                        "Failed to switch CatalogInfo to new catalog impl",
+                                        e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return this;
     }
 }

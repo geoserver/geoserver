@@ -11,12 +11,16 @@ import static org.geoserver.data.test.MockData.SF_PREFIX;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.URLs;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,9 +45,26 @@ public class CatalogRepositoryTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testLookupNotExisting() throws IOException {
+    public void testLookupNotExisting() {
         CatalogRepository repository = getCatalog().getResourcePool().getRepository();
         DataStore store = repository.dataStore(new NameImpl("foo", "bar"));
         assertNull(store);
+    }
+    
+    @Test
+    public void testLookupFreshlyAdded() {
+        Catalog catalog = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        String nsURI = catalog.getDefaultNamespace().getURI();
+        URL buildings = MockData.class.getResource("Buildings.properties");
+        File testData = URLs.urlToFile(buildings).getParentFile();
+        DataStoreInfo storeInfo = cb.buildDataStore("freshOffTheBoat");
+        storeInfo.getConnectionParameters().put("directory", testData);
+        storeInfo.getConnectionParameters().put("namespace", nsURI);
+        catalog.save(storeInfo);
+
+        CatalogRepository repository = getCatalog().getResourcePool().getRepository();
+        DataStore store = repository.dataStore(new NameImpl("freshOffTheBoat"));
+        assertNotNull(store);
     }
 }

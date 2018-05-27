@@ -699,7 +699,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         try {
             tld.getTileLayer("");
-        } catch (GeoWebCacheException gwce) {
+        } catch (Exception gwce) {
 
         }
 
@@ -1259,20 +1259,57 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(response.getStatus(), is(200));
         assertContentType("image/png", response);
     }
+
+    @Test
+    public void testGetTileWithRestEndpointsInVirtualService() throws Exception {
+        // get tile
+        MockHttpServletRequest request = createRequest(MockData.BASIC_POLYGONS.getPrefix()
+                + "/gwc" + WMTSService.REST_PATH + "/"
+                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
+                + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        // mock the request
+        Request mockRequest = mock(Request.class);
+        when(mockRequest.getHttpRequest()).thenReturn(request);
+        Dispatcher.REQUEST.set(mockRequest);
+        MockHttpServletResponse response = dispatch(request, null);
+        // check that the request was successful
+        assertThat(response.getStatus(), is(200));
+        assertContentType("image/png", response);
+    }
     
     @Test
     public void testFeatureInfoWithRestEndpoints() throws Exception {
-        // getting feature info
+        // get feature info
         MockHttpServletRequest request = createRequest("/gwc" + WMTSService.REST_PATH + "/"
                 + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
                 + "/EPSG:4326/EPSG:4326:0/0/0/0/0?format=text/plain");
         request.setMethod("GET");
         request.setContent(new byte[] {});
-
+        // mock the request
         Request mockRequest = mock(Request.class);
         when(mockRequest.getHttpRequest()).thenReturn(request);
         Dispatcher.REQUEST.set(mockRequest);
+        MockHttpServletResponse response = dispatch(request, null);
+        // check that the request was successful
+        assertThat(response.getStatus(), is(200));
+        assertContentType("text/plain", response);
+    }
 
+    @Test
+    public void testFeatureInfoWithRestEndpointsInVirtualService() throws Exception {
+        // getting feature info
+        MockHttpServletRequest request = createRequest(MockData.BASIC_POLYGONS.getPrefix() + 
+                "/gwc" + WMTSService.REST_PATH + "/"
+                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
+                + "/EPSG:4326/EPSG:4326:0/0/0/0/0?format=text/plain");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        // mock the request
+        Request mockRequest = mock(Request.class);
+        when(mockRequest.getHttpRequest()).thenReturn(request);
+        Dispatcher.REQUEST.set(mockRequest);
         MockHttpServletResponse response = dispatch(request, null);
         // check that the request was successful
         assertThat(response.getStatus(), is(200));

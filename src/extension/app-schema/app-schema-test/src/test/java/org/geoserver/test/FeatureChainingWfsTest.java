@@ -33,7 +33,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;

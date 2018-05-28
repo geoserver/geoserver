@@ -358,8 +358,8 @@ height: 18px;
 font-weight: bold;
 }
 fieldset { /* override blueprint's settings */
-padding: 0;
-margin: 0 0 2em;
+padding: 0 0 1em 0;
+margin: 0 0 0.5em;
 border: 1px solid #c6e09b;
 border-width: 1px 0 0;
 position: relative;
@@ -376,8 +376,9 @@ border: 0 none transparent;
 legend span { 
 position: absolute;
 width: 29.2em;
-top: -1.5em;
+top: -3em;
 left: 0;
+padding-top: 1.5em;
 }
 
 legend a {

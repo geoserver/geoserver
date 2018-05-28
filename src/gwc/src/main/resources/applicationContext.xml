@@ -144,4 +144,12 @@
     <constructor-arg ref="resourceLoader"/>
   </bean>
   <bean id="wmtsFactoryExtension" class="org.geoserver.gwc.wmts.WMTSFactoryExtension"/>
+
+  <!-- Specific URL mapping for GWC WMTS REST API -->
+  <bean id="gwcWmtsRestUrlHandlerMapping" class="org.geoserver.gwc.controller.GwcWmtsRestUrlHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="order" value="10" />
+  </bean>
+
 </beans>

@@ -179,8 +179,8 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         context.put("maxx", bbox.getMaxX());
         context.put("maxy", bbox.getMaxY());
         context.put("id", olPreview.getMarkupId());
-        context.put("layer", getStylePage().getLayerInfo().getResource().getName());
-        context.put("style", getStylePage().getStyleInfo().getName());
+        context.put("layer", getStylePage().getLayerInfo().prefixedName());
+        context.put("style", getStylePage().getStyleInfo().prefixedName());
 
         String styleUrl;
         String proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");

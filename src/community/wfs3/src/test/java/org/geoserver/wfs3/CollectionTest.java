@@ -27,7 +27,7 @@ public class CollectionTest extends WFS3TestSupport {
                                 + "?f=text/xml");
         // print(dom);
         String expected =
-                "http://localhost:8080/geoserver/wfs3/cite__RoadSegments/items?f=application%2Fjson";
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/items?f=application%2Fjson";
         XMLAssert.assertXpathEvaluatesTo(
                 expected,
                 "//wfs:Collection[wfs:Name='cite__RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",

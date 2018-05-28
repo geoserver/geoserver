@@ -28,9 +28,12 @@ public abstract class BaseKvpRequestReader extends KvpRequestReader {
     @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         Request dispatcherRequest = Dispatcher.REQUEST.get();
-        if (kvp.containsKey("f")) {
-            Object format = kvp.get("f");
+        if (kvp.containsKey("outputFormat")) {
+            Object format = kvp.get("outputFormat");
             setFormat(kvp, rawKvp, format);
+        } else if (kvp.containsKey("f")) {
+            Object format = kvp.get("f");
+            setFormat(kvp, rawKvp, format);    
         } else if (request != null) {
             // ignoring for the moment, until the HTML output formats are ready, otherwise
             // it won't show up in the browser

@@ -4,16 +4,67 @@
  */
 package org.geoserver.wfs3;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import com.jayway.jsonpath.DocumentContext;
+
 import net.sf.json.JSON;
+
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import java.util.List;
 
 public class LandingPageTest extends WFS3TestSupport {
 
     @Test
-    public void testLandingPageJson() throws Exception {
-        JSON json = getAsJSON("wfs3/");
-        print(json);
+    public void testLandingPageNoFormat() throws Exception {
+        DocumentContext json = getAsJSONPath("wfs3/", 200);
+        checkJSONLandingPage(json);
+    }
+
+    @Test
+    public void testLandingPageJSON() throws Exception {
+        DocumentContext json = getAsJSONPath("wfs3/?f=json", 200);
+        checkJSONLandingPage(json);
+    }
+
+    private void checkJSONLandingPage(DocumentContext json) {
+        assertEquals(12, (int) json.read("links.length()", Integer.class));
+        // check landing page links
+        assertJSONList(
+                json,
+                "links[?(@.type == 'application/json' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "self");
+        assertJSONList(
+                json,
+                "links[?(@.type != 'application/json' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "service",
+                "service");
+        // check API links
+        assertJSONList(
+                json, "links[?(@.href =~ /.*wfs3\\/api.*/)].rel", "service", "service", "service");
+        // check conformance links
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*wfs3\\/conformance.*/)].rel",
+                "service",
+                "service",
+                "service");
+        // check collection links
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*wfs3\\/collections.*/)].rel",
+                "service",
+                "service",
+                "service");
+    }
+
+    private <T> void assertJSONList(DocumentContext json, String path, T... expected) {
+        List<T> selfRels = json.read(path);
+        assertThat(selfRels, Matchers.containsInAnyOrder(expected));
     }
 
     @Test

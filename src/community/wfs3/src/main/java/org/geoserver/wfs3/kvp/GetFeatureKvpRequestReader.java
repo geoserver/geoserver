@@ -20,7 +20,6 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.Envelope;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.xml.namespace.QName;
 
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
@@ -41,6 +42,11 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         GetFeatureType gf = (GetFeatureType) super.read(request, kvp, rawKvp);
         Filter filter = getFullFilter(kvp);
         querySet(gf, "filter", Collections.singletonList(filter));
+        // reset the default, we need to do negotiation, there is generic code to do that
+        // inside WFS3DispatcherCallback
+        if (!kvp.containsKey("outputFormat")) {
+            gf.setOutputFormat(null);
+        }
         return gf;
     }
 

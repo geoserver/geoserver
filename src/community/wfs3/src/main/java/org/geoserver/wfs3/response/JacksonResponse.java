@@ -53,7 +53,7 @@ public abstract class JacksonResponse extends WFSResponse {
 
     private String getFormat(Operation operation) {
         BaseRequest request = (BaseRequest) operation.getParameters()[0];
-        Optional<String> format = Optional.ofNullable(request.getFormat());
+        Optional<String> format = Optional.ofNullable(request.getOutputFormat());
         return format.orElse(BaseRequest.JSON_MIME);
     }
 

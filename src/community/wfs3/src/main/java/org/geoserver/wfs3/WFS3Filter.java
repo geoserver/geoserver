@@ -170,9 +170,7 @@ public class WFS3Filter implements GeoServerFilter {
                 } else {
                     this.outputFormat = f;
                 }
-            } else {
-                this.outputFormat = "getFeature".equals(request) ? RFCGeoJSONFeaturesResponse.MIME : BaseRequest.JSON_MIME;
-            }
+            } 
             
             // support for the limit parameter
             String limit = wrapped.getParameter("limit");

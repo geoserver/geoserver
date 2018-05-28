@@ -14,23 +14,23 @@ public abstract class BaseRequest {
     public static final String XML_MIME = "text/xml";
     public static final String HTML_MIME = "text/html";
     
-    String format;
+    String outputFormat;
     String baseUrl;
 
     /**
      * The requested format
      * @return The format name, or null if not set
      */
-    public String getFormat() {
-        return format;
+    public String getOutputFormat() {
+        return outputFormat;
     }
 
     /**
      * Sets the format name
-     * @param format
+     * @param outputFormat
      */
-    public void setFormat(String format) {
-        this.format = format;
+    public void setOutputFormat(String outputFormat) {
+        this.outputFormat = outputFormat;
     }
 
     /**

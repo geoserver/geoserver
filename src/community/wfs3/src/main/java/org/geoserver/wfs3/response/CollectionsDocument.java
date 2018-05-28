@@ -65,7 +65,8 @@ public class CollectionsDocument {
                             URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document " + " as " + format;
-            if (format.equals(request.getFormat())) {
+            String outputFormat = request.getOutputFormat();
+            if (format.equals(outputFormat) || (outputFormat == null && format.equals(BaseRequest.JSON_MIME))) {
                 linkType = Link.REL_SELF;
                 linkTitle = "This document";
             }

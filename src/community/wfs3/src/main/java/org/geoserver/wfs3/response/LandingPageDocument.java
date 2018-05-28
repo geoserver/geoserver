@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.LandingPageRequest;
 
@@ -46,7 +47,9 @@ public class LandingPageDocument {
                 LandingPageDocument.class,
                 "This document as ",
                 (format, link) -> {
-                    if (format.equals(request.getFormat())) {
+                    String outputFormat = request.getOutputFormat();
+                    if (format.equals(outputFormat) 
+                            || (outputFormat == null && BaseRequest.JSON_MIME.equals(format))) {
                         link.setRel(Link.REL_SELF);
                         link.setTitle("This document");
                     }

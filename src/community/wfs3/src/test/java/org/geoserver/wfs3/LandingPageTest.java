@@ -20,14 +20,20 @@ import java.util.List;
 public class LandingPageTest extends WFS3TestSupport {
 
     @Test
-    public void testLandingPageNoFormat() throws Exception {
+    public void testLandingPageNoSlah() throws Exception {
+        DocumentContext json = getAsJSONPath("wfs3", 200);
+        checkJSONLandingPage(json);
+    }
+
+    @Test
+    public void testLandingPageSlash() throws Exception {
         DocumentContext json = getAsJSONPath("wfs3/", 200);
         checkJSONLandingPage(json);
     }
 
     @Test
     public void testLandingPageJSON() throws Exception {
-        DocumentContext json = getAsJSONPath("wfs3/?f=json", 200);
+        DocumentContext json = getAsJSONPath("wfs3?f=json", 200);
         checkJSONLandingPage(json);
     }
 

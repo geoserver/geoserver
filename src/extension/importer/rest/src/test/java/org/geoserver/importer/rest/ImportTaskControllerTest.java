@@ -151,7 +151,8 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         ImportTask task = context.getTasks().get(0);
         assertTrue(task.getData() instanceof SpatialFile);
-        
+        SpatialFile data = ((SpatialFile) task.getData());
+        assertFalse(new File(data.getFile().getParentFile(), ".locking").exists());
         return id;
     }
     
@@ -291,6 +292,8 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         ImportTask task = context.getTasks().get(0);
         assertTrue(task.getData() instanceof SpatialFile);
         assertEquals(ImportTask.State.READY, task.getState());
+        SpatialFile data = ((SpatialFile) task.getData());
+        assertTrue(new File(data.getFile().getParentFile(), ".locking").exists());
     }
     
     private ImportContext uploadGeotiffAndVerify(String taskName,

@@ -6,6 +6,7 @@ background: #fff;
 color: #0076a1;
 font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
 text-align:left !important; /* override blueprint's ie.css */
+overflow-y: scroll;
 }
 
 body.help {
@@ -357,8 +358,8 @@ height: 18px;
 font-weight: bold;
 }
 fieldset { /* override blueprint's settings */
-padding: 0;
-margin: 0 0 2em;
+padding: 0 0 1em 0;
+margin: 0 0 0.5em;
 border: 1px solid #c6e09b;
 border-width: 1px 0 0;
 position: relative;
@@ -375,8 +376,9 @@ border: 0 none transparent;
 legend span { 
 position: absolute;
 width: 29.2em;
-top: -1.5em;
+top: -3em;
 left: 0;
+padding-top: 1.5em;
 }
 
 legend a {
@@ -1007,7 +1009,7 @@ display: block;
 /* Page */
 
 .page-header {
-padding: 20px 0 20px 0;
+padding: 20px 0 0 0;
 }
 
 .page-header h2 {
@@ -1100,7 +1102,7 @@ margin: 1.5em 0 2.5em;
 }
 
 .tab-row-compact {
-margin: 1.5em 0 1em;
+margin: 1em 0 1em;
 }
 
 
@@ -1296,3 +1298,117 @@ div.wicket-aa ul li.selected {
   height: 18px;
 }
 
+li.select2-results__option {
+    max-width: 100%;
+    overflow: hidden;
+    /*Altered two below to make word wrap work */
+    word-wrap: break-word !important;
+    white-space: normal;
+}
+
+.fullscreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  padding: 0px;
+  border-right: 10px;
+  margin: 0px !important;
+  overflow-y: hidden;
+  width: auto;
+  z-index: 9;
+}
+
+#fullscreen-div {
+ float: right;
+ display: block;
+ margin-top: 0px;
+ margin-right: 0px;
+ width: 16px;
+ height: 16px;
+ padding: 4px 0px;
+}
+
+#fullscreen-div img {
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px; /* Height of new image */
+  padding-left: 16px; /* Equal to width of new image */
+  background: url(../img/icons/silk/arrow_out.png) no-repeat;
+}
+
+.fullscreen-image-in {
+  background: url(../img/icons/silk/arrow_inwards.png) no-repeat !important;
+}
+
+.fullscreen #header-title {
+   font-size: 12px;
+   font-weight: bold;
+}
+
+.fullscreen #header-description {
+   display: none;
+}
+
+.document-hidden {
+  overflow: hidden;
+}
+
+.page-pane-fullscreen {
+  padding-right: 10px;
+  height: 100%;
+}
+
+.horizontal-form {
+  padding-bottom: 5px;
+}
+
+.horizontal-form input, .horizontal-form label {
+   display: inline;
+}
+
+.horizontal-form li {
+   display: inline;
+   padding-right: 30px;
+   height: 100%;
+}
+
+.fullscreen #styleForm {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    
+  }
+
+.fullscreen #styleForm #style-context {
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    -ms-flex-order: 2;
+    -webkit-order: 2;
+    order: 2;
+    width: 50%;
+    height: 100%;
+    padding: 10px;
+  }
+
+.fullscreen #styleForm #style-editor {
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -ms-flex-order: 1;
+    -webkit-order: 1;
+    order: 1;
+    width: 50%;
+    padding: 10px;
+    height: 100%;
+  }
+
+.fullscreen #cm_editor_heigth {
+   enabled: false;
+}

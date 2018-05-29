@@ -43,11 +43,15 @@ map.getView().on('change:resolution', function(evt) {
   var dpi = 25.4 / 0.28;
   var mpu = ol.proj.METERS_PER_UNIT[units];
   var scale = Math.round(res * mpu * 39.37 * dpi);
-  scaleControl.innerHTML =  'Scale = 1 : ' + scale;
+  scaleControl.innerHTML =  'Scale = 1 : ' + scale.toLocaleString();
 });
 
 map.getView().fit(extent, map.getSize());
 
+window.olMap = map;
+
 window.olUpdate = function(id, params) {
   source.updateParams(params);
 };
+
+window.resizeStylePage();

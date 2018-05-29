@@ -550,8 +550,15 @@ public class ImportJSONWriter {
             json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent)));
         }
 
+        String location = null;
+        try {
+            location = data.getFile().getParentFile().getPath();
+        } catch(Exception e) {
+            location = "";
+        }
+
         if (expand > 0) {
-            json.key("location").value(data.getFile().getParentFile().getPath());
+            json.key("location").value(location);
             if (data.getCharsetEncoding() != null) {
                 json.key("charset").value(data.getCharsetEncoding());
             }

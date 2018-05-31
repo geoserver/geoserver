@@ -165,7 +165,8 @@ public class WPSOgrTest extends WPSTestSupport {
                     getWpsRawXML("text/csv; subtype=OGR-CSV"));
             assertEquals("text/csv; subtype=OGR-CSV", r.getContentType());
             assertTrue(r.getContentAsString().length() > 0);
-            assertTrue(r.getContentAsString().contains("WKT,gml_id,STATE_NAME"));
+            assertTrue(r.getContentAsString().contains("WKT,gml_id,STATE_NAME")
+                    || r.getContentAsString().contains("geometry,gml_id,STATE_NAME"));
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
         } finally {

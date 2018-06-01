@@ -354,7 +354,11 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             final String dimensionName = dimension.getName();
             final Object value = properties.get(dimensionName);
             if (value == null) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
+                Set<String> dimensions = crsWriter.getCoordinatesDimensionNames();
+                // Coordinates dimensions (lon/lat) aren't taken into account 
+                // for values update. Do not warn if they are missing
+                if (dimensions != null && !dimensions.contains(dimensionName)
+                        && LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.warning("No Dimensions available with the specified name: " + dimensionName);
                 }
             } else {
@@ -530,27 +534,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                                     + "Proceeding with standard_name set");
                         }
                     }
-                } catch (NoSuchUnitException e1) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(e1.getLocalizedMessage());
-                    }
-                } catch (UnitParseException e1) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(e1.getLocalizedMessage());
-                    }
-                } catch (SpecificationException e1) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(e1.getLocalizedMessage());
-                    }
-                } catch (UnitDBException e1) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(e1.getLocalizedMessage());
-                    }
-                } catch (PrefixDBException e1) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(e1.getLocalizedMessage());
-                    }
-                } catch (UnitSystemException e1) {
+                } catch (UnitDBException | SpecificationException | 
+                        PrefixDBException | UnitSystemException e1) {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine(e1.getLocalizedMessage());
                     }
@@ -561,10 +546,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                                 " UCAR unit so it doesn't allow to define a standard name");
                     }
                 }
-
             }
         }
-
 
         // Return the result
         return validName && validUOM;
@@ -595,19 +578,18 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             case SHORT:
             case INT:
                 sample = data.getSample(x, y, bandIdx);
-                validSample = !Double.isNaN(noDataValue) && !isNaN(sample, noDataValue);
+                validSample = !isNaN(sample, noDataValue);
                 if (unitConverter != null && validSample) {
                     sample = (int) unitConverter.convert(sample);
                 }
                 if (dataPacker != null) {
-
                     sample = dataPacker.pack((double) sample);
                 }
                 setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 break;
             case FLOAT:
                 float sampleFloat = data.getSampleFloat(x, y, bandIdx);
-                validSample = !Double.isNaN(noDataValue) && !isNaN(sampleFloat, noDataValue);
+                validSample = !isNaN(sampleFloat, noDataValue);
                 if (unitConverter != null && validSample) {
                     sampleFloat = (float) unitConverter.convert(sampleFloat);
                 }
@@ -620,8 +602,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 break;
             case DOUBLE:
                 double sampleDouble = data.getSampleDouble(x, y, bandIdx);
-                validSample = !Double.isNaN(noDataValue) && !isNaN(sampleDouble, noDataValue);
-                if (unitConverter != null && !Double.isNaN(noDataValue) && !isNaN(sampleDouble, noDataValue)) {
+                validSample = !isNaN(sampleDouble, noDataValue);
+                if (unitConverter != null && validSample) {
                     sampleDouble = unitConverter.convert(sampleDouble);
                 }
                 if (dataPacker != null) {
@@ -651,6 +633,10 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     protected boolean isNaN(Number sample, double noDataValue) {
+        double sampleValue = sample.doubleValue();
+        if (Double.isNaN(noDataValue)) {
+            return Double.isNaN(sampleValue);
+        }
         return (Math.abs(noDataValue - sample.doubleValue()) < EQUALITY_DELTA);
     }
 

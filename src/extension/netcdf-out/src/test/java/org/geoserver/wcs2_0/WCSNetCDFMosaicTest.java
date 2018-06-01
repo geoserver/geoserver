@@ -7,6 +7,7 @@ package org.geoserver.wcs2_0;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -83,6 +84,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public static QName VISIBILITYPACKED = new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCOMPRESSED = new QName(CiteTestData.WCS_URI, "visibilityCompressed", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCFPACKED = new QName(CiteTestData.WCS_URI, "visibilityCFPacked", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYNANPACKED = new QName(CiteTestData.WCS_URI, "visibilityNaNPacked", CiteTestData.WCS_PREFIX);
     public static QName TEMPERATURE_SURFACE = new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
 
     private final static String STANDARD_NAME = "visibility_in_air";
@@ -150,6 +152,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         testData.addRasterLayer(VISIBILITYCFPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCFPACKED);
 
+        testData.addRasterLayer(VISIBILITYNANPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        setupNetCDFoutSettings(VISIBILITYNANPACKED, false);
+
         testData.addRasterLayer(VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCOMPRESSED);
 
@@ -161,6 +166,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     private void setupNetCDFoutSettings(QName name) {
+        setupNetCDFoutSettings(name, true);
+    }
+
+    private void setupNetCDFoutSettings(QName name, boolean setNoData) {
         CoverageInfo info = getCatalog().getCoverageByName(getLayerId(name));
 
         // Set the Declared SRS
@@ -179,7 +188,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         List<Double> nullValues = dimension.getNullValues();
         if (nullValues != null) {
             nullValues.clear();
-            nullValues.add(ORIGINAL_FILL_VALUE);
+            if (setNoData) nullValues.add(ORIGINAL_FILL_VALUE);
         }
 
         NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
@@ -468,6 +477,29 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         assertNotNull(attribute);
         assertEquals("testing WCS", attribute.getStringValue());
 
+        dataset.close();
+    }
+
+    @Test
+    public void testRequestNetCDFNaNDataPacking() throws Exception {
+
+        // http response from the request inside the string
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__visibilityNaNPacked&format=application/x-netcdf");
+        assertNotNull(response);
+        byte[] netcdfOut = getBinary(response);
+        File file = File.createTempFile("netcdf", "outNaNPK.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, netcdfOut);
+
+        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
+        Variable var = dataset.findVariable(STANDARD_NAME);
+        assertNotNull(var);
+
+        Array readData = var.read(NETCDF_SECTION);
+        assertEquals(DataType.SHORT, readData.getDataType());
+
+        // Check the fix on dataPacking NaN management
+        assertNotEquals(readData.getShort(0), -32768, 1E-6);
         dataset.close();
     }
     

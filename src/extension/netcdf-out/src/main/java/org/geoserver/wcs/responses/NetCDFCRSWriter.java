@@ -82,7 +82,7 @@ class NetCDFCRSWriter {
      */
     private GridCoverage2D sampleGranule;
 
-    /** A map to assign a Dimension manager to each coordinate */
+    /** A map to assign a Dimension Mapping to each coordinate */
     private Map<String, NetCDFDimensionMapping> coordinatesDimensions = new LinkedHashMap<String, NetCDFDimensionMapping>();
 
     /** The underlying CoordinateReferenceSystem */
@@ -423,5 +423,7 @@ class NetCDFCRSWriter {
 
     }
 
-   
+    public Set<String> getCoordinatesDimensionNames() {
+        return coordinatesDimensions.keySet();
+    }
 }

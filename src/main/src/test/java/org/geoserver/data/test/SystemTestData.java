@@ -5,16 +5,6 @@
  */
 package org.geoserver.data.test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -54,7 +44,6 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.feature.NameImpl;
@@ -64,6 +53,19 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.namespace.QName;
 
 /**
  * Test setup uses for GeoServer system tests.
@@ -1035,10 +1037,11 @@ public class SystemTestData extends CiteTestData {
             int MAX_ATTEMPTS = 100;
             for (int i = 0; i < MAX_ATTEMPTS; i++) {
                 try {
-                    FileUtils.deleteDirectory(data);
+                    deleteFilesOnExit(data);
                     break;
                 } catch(IOException e) {
-                    if(i >= MAX_ATTEMPTS) {
+                    if(i >= MAX_ATTEMPTS && data.exists()) {
+                        String tree = printFileTree(data);
                         throw new IOException("Failed to clean up test data dir after " + MAX_ATTEMPTS  + " attempts", e);
                     }
                     System.err.println("Error occurred while removing files, assuming "
@@ -1049,10 +1052,49 @@ public class SystemTestData extends CiteTestData {
                 }
             }
         } else {
-            FileUtils.deleteDirectory(data);  
+            deleteFilesOnExit(data);
         }
     }
     
+    private void deleteFilesOnExit(File directory) throws IOException {
+        try {
+            FileUtils.deleteDirectory(data);
+        } catch (IOException e) {
+            if (!data.exists()) {
+                // gone some other way? good...
+            } else {
+                String tree = printFileTree(data);
+                throw new IOException("Failed to delete tree \n" + tree, e);
+            }
+        }
+    }
+
+    private static String printFileTree(File dir) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dir.getPath()).append("\n");
+        printFileTree_(sb, "", dir);
+        return sb.toString();
+    }
+
+    private static void printFileTree_(StringBuilder sb, String prefix, File dir) {
+        File listFile[] = dir.listFiles();
+        if (listFile != null) {
+            for (int i = 0; i < listFile.length; i++) {
+                boolean last = i == listFile.length - 1;
+                File file = listFile[i];
+                String firstChar = last ? "└" : "├";
+                sb.append(prefix)
+                        .append(firstChar)
+                        .append("──")
+                        .append(file.getName())
+                        .append("\n");
+                if (file.isDirectory()) {
+                    printFileTree_(sb, prefix + (last ? " " : "|") + "  ", file);
+                }
+            }
+        }
+    }
+
     @Override
     public File getDataDirectoryRoot() {
         return data;

@@ -14,7 +14,8 @@ var source = new ol.source.ImageWMS({
 </#if>
     'FORMAT': 'image/png',
     'FORMAT_OPTIONS': "layout:style-editor-legend;fontAntiAliasing:true",
-    'RANDOM': ${cachebuster?c}
+    'RANDOM': ${cachebuster?c},
+    'LEGEND_OPTIONS': 'forceLabels:on'
   },
   serverType: 'geoserver',
   ratio: 1

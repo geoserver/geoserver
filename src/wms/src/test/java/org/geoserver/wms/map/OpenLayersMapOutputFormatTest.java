@@ -7,6 +7,7 @@ package org.geoserver.wms.map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -355,6 +356,30 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rawMap.writeTo(bos);
         return new String(bos.toByteArray(), "UTF-8");
+    }
+    
+    @Test
+    public void testExceptionsInImage() throws Exception {
+        // the base request
+        String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers=" + getLayerId(MockData.BASIC_POLYGONS) +
+                "&styles=&bbox=-180,-90,180,90&width=768&height=330" +
+                "&srs=EPSG:4326&format=application/openlayers";
+
+        String html = getAsString(path);
+        assertThat(html, containsString("\"exceptions\": 'application/vnd.ogc.se_inimage'"));
+    }
+
+    @Test
+    public void testExceptionsXML() throws Exception {
+        // the base request
+        String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers=" + getLayerId(MockData.BASIC_POLYGONS) +
+                "&styles=&bbox=-180,-90,180,90&width=768&height=330" +
+                "&srs=EPSG:4326&format=application/openlayers" +
+                "&exceptions=application/vnd.ogc.se_xml";
+
+        String html = getAsString(path);
+        assertThat(html, containsString("\"EXCEPTIONS\": 'application/vnd.ogc.se_xml'"));
+        assertThat(html, not(containsString("\"exceptions\": 'application/vnd.ogc.se_inimage'")));
     }
 
 }

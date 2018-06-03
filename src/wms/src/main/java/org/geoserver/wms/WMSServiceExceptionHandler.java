@@ -8,10 +8,7 @@ package org.geoserver.wms;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
@@ -21,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.AttributedString;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -196,6 +194,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         Graphics2D g = (Graphics2D) img.getGraphics();
         
         g.setColor(bgcolor);
+        g.addRenderingHints(Collections.singletonMap(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         g.fillRect(0, 0, img.getWidth(), img.getHeight());
         
         if (!("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat))) { //wms 1.3 only

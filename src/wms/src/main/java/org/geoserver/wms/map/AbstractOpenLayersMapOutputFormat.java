@@ -281,10 +281,11 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
      *
      */
     private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>(rawKvp.size());
-
+        List<Map<String, String>> result = new ArrayList<>(rawKvp.size());
+        boolean exceptionsFound = false;
         for (Map.Entry<String, String> en : rawKvp.entrySet()) {
             String paramName = en.getKey();
+            exceptionsFound |= paramName.equalsIgnoreCase("exceptions");
 
             if (ignoredParameters.contains(paramName.toUpperCase())) {
                 continue;
@@ -292,9 +293,16 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
 
             // this won't work for multi-valued parameters, but we have none so
             // far (they are common just in HTML forms...)
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
+            
             map.put("name", paramName);
             map.put("value", en.getValue());
+            result.add(map);
+        }
+        if (!exceptionsFound) {
+            Map<String, String> map = new HashMap<>();
+            map.put("name", "exceptions");
+            map.put("value", "application/vnd.ogc.se_inimage");
             result.add(map);
         }
 

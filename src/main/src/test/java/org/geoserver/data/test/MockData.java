@@ -778,9 +778,12 @@ public class MockData implements TestData {
         writer.flush();
         writer.close();
     }
-
     
     void coverageInfo(QName name, File coverageFile, String styleName) throws Exception {
+        coverageInfo(name, coverageFile, null, styleName);
+    }
+    
+    void coverageInfo(QName name, Object coverageFile, String gridFormat, String styleName) throws Exception {
         String coverage = name.getLocalPart();
 
         File coverageDir = new File(coverages, coverage);
@@ -790,17 +793,19 @@ public class MockData implements TestData {
         info.createNewFile();
         
         // let's grab the necessary metadata
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(coverageFile);
+        AbstractGridFormat format = (AbstractGridFormat) (gridFormat != null ?
+                CoverageStoreUtils.acquireFormat(gridFormat) :
+                GridFormatFinder.findFormat(coverageFile));
         GridCoverage2DReader reader;
         try {
             reader = (GridCoverage2DReader) format.getReader(coverageFile);
         } catch (Exception e) {
-            String message = "Exception while trying to read " + coverageFile.getCanonicalPath() + " with format" + format.getName();
+            String message = "Exception while trying to read " + coverageFile.toString() + " with format" + format.getName();
             throw new RuntimeException(message, e);
         }
         
         if (reader == null) {
-            throw new RuntimeException("No reader for " + coverageFile.getCanonicalPath() + " with format " + format.getName());
+            throw new RuntimeException("No reader for " + coverageFile.toString() + " with format " + format.getName());
         }
         // basic info
         FileWriter writer = new FileWriter(info);
@@ -954,5 +959,15 @@ public class MockData implements TestData {
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         dataStoreNamepaces.put(name.getPrefix(), name.getPrefix());
         dataStores.put(name.getPrefix(), params);
+    }
+    
+    public void addCustomCoverage(QName name, Map params) throws Exception {
+        // write the info file
+        coverageInfo(name, params.get(CatalogWriter.COVERAGE_URL_KEY),
+                (String) params.get(CatalogWriter.COVERAGE_TYPE_KEY), "generic");
+        // setup the meta information to be written in the catalog
+        namespaces.put(name.getPrefix(), name.getNamespaceURI());
+        coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
+        coverageStores.put(name.getLocalPart(), params);
     }
 }

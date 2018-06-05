@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       xmlns:context="http://www.springframework.org/schema/context">
+       
+    <!-- Default File Service -->
+    <bean id="defaultFileService" class="org.geoserver.taskmanager.external.impl.FileServiceImpl">
+    	<property name="name" value="data-directory"/>
+        <property name="description" value="Data Directory"/>
+        <!-- root folder is configured below -->
+    </bean>
+
+  <!-- TODO: configure your email report service -->
+  <!-- <bean class="org.geoserver.taskmanager.report.impl.EmailReportServiceImpl"> 
+  	<constructor-arg name="host" value="smtp-host" /> 
+    <constructor-arg name="from" value="Task Manager&lt;adminemail@dom.ain&gt;" /> 
+    <constructor-arg name="to" value="Your Name&lt;youremail@dom.ain&gt;" />
+    <property name="filter" value="FAILED_ONLY" /> 
+  </bean> -->
+
+  <!-- TODO: configure your databases -->
+  <!-- <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl"> 
+  		<property name="name" value="testsourcedb"/> 
+		<property name="host" value="hostname" /> 
+		<property name="db" value="dbname" /> 
+		<property name="username" value="username" />
+		<property name="password" value="password" /> 
+	</bean> -->
+
+  <!-- TODO: configure your geoservers -->
+  <!-- <bean class="org.geoserver.taskmanager.external.impl.ExternalGSImpl"> 
+  		<property name="name" value="mygs"/> 
+    	<property name="url" value="http://localhost:9090/geoserver" /> 
+    	<property name="username" value="admin" />
+    	<property name="password" value="geoserver" />
+    	 </bean> -->    
+    
+  <!-- Default is H2 file in data directory. To use external db, replace data source properties here 
+    or use properties file (see below) -->
+  <bean id="tmDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.h2.Driver" />
+    <property name="username" value="sa" />
+    <property name="password" value="" />
+    <!-- url is configured below -->
+  </bean>
+  
+  <bean class="org.geoserver.config.GeoServerPropertyOverrideConfigurer">
+    <constructor-arg ref="dataDirectory" />
+    <property name="ignoreResourceNotFound" value="true" />
+    <property name="properties">
+      <props>      
+        <!--  set data directory in default file service  -->
+        <prop key="defaultFileService.rootFolder">${GEOSERVER_DATA_DIR}/data</prop>
+        
+        <!-- this makes it possible to configure db inside data directory -->
+        <prop key="tmDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/taskmanager/taskmanager</prop>
+      </props>
+    </property>    
+    <property name="locations">
+      <list>
+        <!-- Optional overriding values for custom db. Path relative to data dir. You can create this 
+          file in the data directory to configure the databases, email settings, etc... -->
+        <value>file:taskmanager/taskmanager.properties</value>
+      </list>
+    </property>
+  </bean>
+      
+  <bean id="quartzProperties" class="java.util.Properties">
+ 	<constructor-arg>
+		<props>  <!-- TODO: if you want clustering, uncomment this and configure database -->
+<!--  			<prop key="org.quartz.jobStore.misfireThreshold">6000000</prop>
+			<prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreTX</prop>
+			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>	
+			<prop key="org.quartz.jobStore.isClustered">true</prop>
+			<prop key="org.quartz.jobStore.clusterCheckinInterval">20000</prop>
+			<prop key="org.quartz.jobStore.dataSource">qDataSource</prop>
+			<prop key="org.quartz.dataSource.qDataSource.driver">org.postgresql.Driver</prop>
+			<prop key="org.quartz.dataSource.qDataSource.URL">jdbc:postgresql://localhost:5432/testsourcedb?currentSchema=taskmanager</prop>
+			<prop key="org.quartz.dataSource.qDataSource.user">postgres</prop>
+			<prop key="org.quartz.dataSource.qDataSource.password">postgres</prop> -->
+			
+			<!-- TODO: configure maximum number of threads if necessary -->
+			<!--  <prop key="org.quartz.threadPool.threadCount">10</prop>  -->
+		</props>
+	</constructor-arg>
+  </bean>
+
+</beans>

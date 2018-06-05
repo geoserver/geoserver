@@ -313,6 +313,22 @@
     <artifactId>gs-monitor-hibernate</artifactId>
     <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-taskmanager-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-taskmanager-s3</artifactId>
+     <version>${project.version}</version>
+   </dependency>   
+   <dependency>
+     <groupId>it.geosolutions</groupId>
+     <artifactId>geoserver-manager</artifactId>
+     <version>1.8-dov-0.3-SNAPSHOT</version>
+     <scope>compile</scope>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

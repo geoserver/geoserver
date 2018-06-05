@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
+  
+    <bean id="tmSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="tmDataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>org.geoserver.taskmanager.data.impl.AttributeImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.BatchElementImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.BatchImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.ConfigurationImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.ParameterImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.RunImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.TaskImpl</value>
+                <value>org.geoserver.taskmanager.data.impl.BatchRunImpl</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+          <value>
+            hibernate.hbm2ddl.auto=update
+            hibernate.show_sql=false
+          </value>
+        </property>
+    </bean>
+
+    <bean id="tmTransactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="tmSessionFactory"/>
+    </bean>
+    <tx:annotation-driven />
+    
+    <bean name="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    	<property name="applicationContextSchedulerContextKey">
+        	<value>applicationContext</value>
+    	</property>
+    	<property name="quartzProperties" ref="quartzProperties" />
+	</bean>
+	  
+    <context:component-scan base-package="org.geoserver.taskmanager.util" />
+    
+    <context:component-scan base-package="org.geoserver.taskmanager.external" />
+  
+	<context:component-scan base-package="org.geoserver.taskmanager.data.impl" />
+    
+    <context:component-scan base-package="org.geoserver.taskmanager.schedule.impl" />
+    
+    <context:component-scan base-package="org.geoserver.taskmanager.report.impl" />
+    
+    <context:component-scan base-package="org.geoserver.taskmanager.tasks" />
+        
+    <context:component-scan base-package="org.geoserver.taskmanager.web.action" />
+    
+    <context:component-scan base-package="org.geoserver.taskmanager.fileservice.impl"/>
+    
+    <bean class="org.geoserver.taskmanager.util.ConfigurationBeansLoader">
+       <constructor-arg ref="resourceStore"></constructor-arg>
+    </bean>
+
+    <bean id="taskmanagerCategory" class="org.geoserver.web.Category">
+       <property name="nameKey" value="category.taskmanager" />
+       <property name="order" value="1000" />
+    </bean>
+    
+    <bean id="taskManagerMenuAuthorizer" class="org.geoserver.web.WorkspaceAdminComponentAuthorizer" />
+    
+    <bean id="templatesPage" class="org.geoserver.web.MenuPageInfo">
+       <property name="id" value="templatesPage"/>
+       <property name="titleKey" value="TemplatesPage.page.title"/>
+       <property name="descriptionKey" value="TemplatesPage.page.description"/>
+       <property name="componentClass" value="org.geoserver.taskmanager.web.TemplatesPage"/>
+       <property name="category" ref="taskmanagerCategory" />
+       <property name="order" value="1001" />
+       <property name="authorizer" ref="taskManagerMenuAuthorizer"/>
+    </bean>
+    
+    <bean id="configurationsPage" class="org.geoserver.web.MenuPageInfo">
+       <property name="id" value="configurationsPage"/>
+       <property name="titleKey" value="ConfigurationsPage.page.title"/>
+       <property name="descriptionKey" value="ConfigurationsPage.page.description"/>
+       <property name="componentClass" value="org.geoserver.taskmanager.web.ConfigurationsPage"/>
+       <property name="category" ref="taskmanagerCategory" />
+       <property name="order" value="1002" />
+       <property name="authorizer" ref="taskManagerMenuAuthorizer"/>
+    </bean>
+    
+    <bean id="batchesPage" class="org.geoserver.web.MenuPageInfo">
+       <property name="id" value="batchesPage"/>
+       <property name="titleKey" value="BatchesPage.page.title"/>
+       <property name="descriptionKey" value="BatchesPage.page.description"/>
+       <property name="componentClass" value="org.geoserver.taskmanager.web.BatchesPage"/>
+       <property name="category" ref="taskmanagerCategory" />
+       <property name="order" value="1003" />
+       <property name="authorizer" ref="taskManagerMenuAuthorizer"/>
+    </bean>
+
+</beans>

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
 import org.geotools.util.logging.Logging;
+import org.h2.util.New;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -188,22 +190,22 @@ public class RESTUtils {
      * @throws IOException 
      */
     public static org.geoserver.platform.resource.Resource handleEXTERNALUpload(HttpServletRequest request) throws IOException {
-        //get the URL for this file to upload
-        InputStream inStream = null;
-        URL fileURL ;
-        try {
-            inStream = request.getInputStream();
-            final String stringURL = IOUtils.getStringFromStream(inStream);
-            fileURL = new URL(stringURL);
-        } finally {
-            IOUtils.closeQuietly(inStream);
+        // get the URL for this file to upload
+        final String stringURL;
+        File inputFile;
+        try (InputStream inStream = request.getInputStream()) {
+            stringURL = IOUtils.getStringFromStream(inStream);
+            inputFile = new File(stringURL);
+            if (!inputFile.exists()) {
+                URL fileURL = new URL(stringURL);
+                inputFile = IOUtils.URLToFile(fileURL);
+            }
         }
 
-        final File inputFile = IOUtils.URLToFile(fileURL);
         if(inputFile == null || !inputFile.exists()) {
-            throw new RestException("Failed to locate the input file " + fileURL, HttpStatus.BAD_REQUEST);
+            throw new RestException("Failed to locate the input file " + stringURL, HttpStatus.BAD_REQUEST);
         } else if(!inputFile.canRead()) {
-            throw new RestException("Input file is not readable, check filesystem permissions: " + fileURL, 
+            throw new RestException("Input file is not readable, check filesystem permissions: " + stringURL,
                     HttpStatus.BAD_REQUEST);
         }
 

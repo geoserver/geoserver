@@ -399,6 +399,23 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("3", "count(//gf:watertemp)", dom);
         assertXpathEvaluatesTo("1", "count(//gf:watertemp[gf:location = '" + file.getName() + "'])", dom);
     }
+
+    @Test
+    public void testHarvestSingleSimplePath() throws Exception {
+        File file = movedFiles.get(0);
+        File target = new File(mosaic, file.getName());
+        assertTrue(file.renameTo(target));
+
+        String body = target.getCanonicalPath();
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
+                body, "text/plain");
+        assertEquals(202, response.getStatus());
+
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        // print(dom);
+        assertXpathEvaluatesTo("3", "count(//gf:watertemp)", dom);
+        assertXpathEvaluatesTo("1", "count(//gf:watertemp[gf:location = '" + file.getName() + "'])", dom);
+    }
     
     @Test
     public void testHarvestMulti() throws Exception {

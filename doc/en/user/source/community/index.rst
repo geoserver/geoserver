@@ -52,3 +52,5 @@ officially part of the GeoServer releases. They are however built along with the
    nsg-profile/index
    netcdf-ghrsst/index
    monitor-hibernate/index
+   taskmanager/index
+

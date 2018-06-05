@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- set parent pom to taskmanager pom -->
+    <parent>
+        <groupId>org.geoserver.community</groupId>
+        <artifactId>gs-taskmanager</artifactId>
+        <version>2.12.2-dov-1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-taskmanager-core</artifactId>
+    <packaging>jar</packaging>
+    <version>2.12.2-dov-1.0-SNAPSHOT</version>
+
+    <name>GeoServer Task Manager Core</name>
+    <description>
+        GeoServer Task Manager
+
+        Setup of the source DB . Usage:
+        mvn db:schema -Ptestsourcedb
+
+        Setup of the target DB . Usage:
+        mvn db:schema -Ptesttargetdb
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate-version}</version>
+        </dependency>         
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.19.0-GA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>	
+				
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.jdbc</groupId>
+            <artifactId>gt-jdbc-postgis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.web</groupId>
+            <artifactId>gs-web-core</artifactId>
+        </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.web</groupId>
+            <artifactId>gs-web-core</artifactId>
+	   <classifier>tests</classifier>
+            <scope>test</scope>
+	    <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>simple-jndi</groupId>
+            <artifactId>simple-jndi</artifactId>
+            <version>0.11.4.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+      <build>
+        <resources>
+            <resource>
+            <directory>${basedir}/src/main/java</directory>
+              <includes>
+                <include>**/*.html</include>
+              </includes>
+            </resource>
+            <resource>
+              <directory>${basedir}/src/main/resources</directory>
+              <includes>
+                 <include>**/*</include>
+              </includes>
+            </resource>
+        </resources>
+    </build>
+    
+    <repositories>
+      <repository>
+       <id>boundless</id>
+       <name>Boundless Maven Repository</name>
+       <url>https://repo.boundlessgeo.com/main/</url>
+       <snapshots>
+         <enabled>true</enabled>
+       </snapshots>
+       <releases>
+         <enabled>true</enabled>
+       </releases>
+      </repository>  
+      <repository>
+        <id>osgeo</id>
+        <name>Open Source Geospatial Foundation Repository</name>
+        <url>http://download.osgeo.org/webdav/geotools/</url>
+      </repository>
+      <repository>
+       <id>acd</id>
+       <name>ACD Maven Repository</name>
+       <url>https://www.milieuinfo.be/artifactory/acd</url>
+     </repository>
+   </repositories>
+
+    <profiles>
+        <profile>
+            <id>testsourcedb</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.googlecode</groupId>
+                        <artifactId>maven-db-plugin</artifactId>
+                        <version>1.3</version>
+                        <configuration>
+                            <adminDbConnectionSettings>
+                                <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testsourcedb</jdbcUrl>
+                                <userName>postgres</userName>
+                                <password>postgres</password>
+                            </adminDbConnectionSettings>
+                            <appDbConnectionSettings>
+                                <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testsourcedb</jdbcUrl>
+                                <userName>postgres</userName>
+                                <password>postgres</password>
+                            </appDbConnectionSettings>
+                            <sqlDelimiter>#-;</sqlDelimiter>
+                            <useBatch>false</useBatch>
+                            <dbSchemaScriptsDirectory>
+                                <param>src/test/resources/postgres/sourcedb</param>
+                            </dbSchemaScriptsDirectory>
+                            <dbCreateStatements>
+                                <!--schema creation is put in the sql script-->
+                            </dbCreateStatements>
+                            <dbDropStatements>
+
+                            </dbDropStatements>
+                        </configuration>
+                        <dependencies>
+                            <!--Choose the driver version of your postgres installation: 8.1-407.jdbc3/8.1-407.jdbc4-->
+                            <dependency>
+                                <groupId>postgresql</groupId>
+                                <artifactId>postgresql</artifactId>
+                                <version>8.1-407.jdbc3</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>testtargetdb</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.googlecode</groupId>
+                        <artifactId>maven-db-plugin</artifactId>
+                        <version>1.3</version>
+                        <configuration>
+                            <adminDbConnectionSettings>
+                                <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testtargetdb</jdbcUrl>
+                                <userName>postgres</userName>
+                                <password>postgres</password>
+                            </adminDbConnectionSettings>
+                            <appDbConnectionSettings>
+                                <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+                                <jdbcUrl>jdbc:postgresql://localhost:5432/testtargetdb</jdbcUrl>
+                                <userName>postgres</userName>
+                                <password>postgres</password>
+                            </appDbConnectionSettings>
+                            <sqlDelimiter>#-;</sqlDelimiter>
+                            <useBatch>false</useBatch>
+                            <dbSchemaScriptsDirectory>
+                                <param>src/test/resources/postgres/targetdb</param>
+                            </dbSchemaScriptsDirectory>
+                            <dbCreateStatements>
+
+                            </dbCreateStatements>
+                            <dbDropStatements>
+
+                            </dbDropStatements>
+                        </configuration>
+                        <dependencies>
+                            <!--Choose the driver version of your postgres installation: 8.1-407.jdbc3/8.1-407.jdbc4-->
+                            <dependency>
+                                <groupId>postgresql</groupId>
+                                <artifactId>postgresql</artifactId>
+                                <version>8.1-407.jdbc3</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
+</project>
+

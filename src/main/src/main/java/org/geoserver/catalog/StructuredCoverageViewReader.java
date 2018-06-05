@@ -7,22 +7,30 @@ package org.geoserver.catalog;
 
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.feature.CompositeFeatureCollection;
+import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.Hints;
+import org.geotools.feature.FeatureTypes;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,29 +70,71 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
             this.readOnly = readOnly;
         }
 
-        @Override 
+        @Override
         public SimpleFeatureCollection getGranules(Query q) throws IOException {
             List<CoverageBand> bands = coverageView.getCoverageBands();
             Query renamedQuery = q != null ? new Query(q) : new Query();
             List<SimpleFeatureCollection> collections = new ArrayList<>();
-            boolean returnOnlyFirst = Boolean.TRUE.equals(renamedQuery.getHints().getOrDefault(QUERY_FIRST_BAND, false));
+            boolean returnOnlyFirst =
+                    Boolean.TRUE.equals(
+                            renamedQuery.getHints().getOrDefault(QUERY_FIRST_BAND, false));
+            Set<String> queriesCoverages = new HashSet<>();
             for (CoverageBand band : bands) {
                 String coverageName = band.getInputCoverageBands().get(0).getCoverageName();
-                renamedQuery.setTypeName(coverageName);
-                SimpleFeatureCollection collection = reader.getGranules(coverageName, readOnly).getGranules(renamedQuery);
-                collections.add(collection);
+                // do not query the same source multiple times
+                if (queriesCoverages.add(coverageName)) {
+                    renamedQuery.setTypeName(coverageName);
+                    SimpleFeatureCollection collection =
+                            reader.getGranules(coverageName, readOnly).getGranules(renamedQuery);
+                    collections.add(collection);
+                }
 
                 if (returnOnlyFirst) {
                     break;
                 }
             }
             // aggregate and return
+            SimpleFeatureCollection result;
             if (collections.size() == 0) {
-                throw new IllegalStateException("Unexpected, there is not a single band in the definition?");
+                throw new IllegalStateException(
+                        "Unexpected, there is not a single band in the definition?");
             } else if (collections.size() == 1) {
-                return collections.get(0);
+                return renameCollection(collections.get(0));
             } else {
-                return new CompositeFeatureCollection(collections);
+                // need to composite the collections
+                SimpleFeatureType schema = collections.get(0).getSchema();
+                result = new CompositeFeatureCollection(collections, schema);
+                // cannot use a simple retyper here, all features need a unique feature id
+                SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+                tb.init(schema);
+                tb.setName(coverageView.getName());
+                return new RetypingFeatureCollection(result, tb.buildFeatureType()) {
+                    @Override
+                    public SimpleFeatureIterator features() {
+                        return new RetypingIterator(delegate.features(), target) {
+                            @Override
+                            public SimpleFeature next() {
+                                SimpleFeature next = delegate.next();
+                                builder.init(next);
+                                String newId = coverageView.getName() + "." + next.getID();
+                                return builder.buildFeature(newId);
+                            }
+                        };
+                    }
+                };
+            }
+        }
+
+        private SimpleFeatureCollection renameCollection(SimpleFeatureCollection result) {
+            // set the name of the view
+            SimpleFeatureType schema = result.getSchema();
+            if (schema.getTypeName().equals(coverageView.getName())) {
+                return result;
+            } else {
+                SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+                tb.init(schema);
+                tb.setName(coverageView.getName());
+                return new RetypingFeatureCollection(result, tb.buildFeatureType());
             }
         }
 

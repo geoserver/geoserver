@@ -865,7 +865,7 @@ public class SystemTestData extends CiteTestData {
             final String coverageNames[] = reader.getGridCoverageNames();
             if (reader instanceof StructuredGridCoverage2DReader && coverageNames != null && coverageNames.length > 1) {
                 for (String coverageName: coverageNames) {
-                    addCoverage(store, builder, reader, catalog, format, coverageName, qName, props, coverageName);
+                    addCoverage(store, builder, reader, catalog, format, coverageName, new QName(qName.getPrefix(), coverageName), props, coverageName);
                 }
             } else {
                 addCoverage(store, builder, reader, catalog, format, name, qName, props, null);

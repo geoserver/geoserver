@@ -38,7 +38,7 @@ import org.opengis.filter.identity.FeatureId;
 public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection {
 
 
-    SimpleFeatureType target;
+    protected SimpleFeatureType target;
 
     public RetypingFeatureCollection(SimpleFeatureCollection delegate,
             SimpleFeatureType target) {
@@ -112,8 +112,8 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
     }
 
     public static class RetypingIterator implements SimpleFeatureIterator {
-        SimpleFeatureBuilder builder;
-        SimpleFeatureIterator delegate;
+        protected SimpleFeatureBuilder builder;
+        protected SimpleFeatureIterator delegate;
 
         public RetypingIterator(SimpleFeatureIterator delegate, SimpleFeatureType target) {
             this.delegate = delegate;

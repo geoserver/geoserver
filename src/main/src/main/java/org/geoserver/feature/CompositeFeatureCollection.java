@@ -9,6 +9,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.store.DataFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -33,9 +34,15 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
      * wrapped collecitons
      */
     List<FeatureCollection> collections;
+    SimpleFeatureType schema;
 
     public CompositeFeatureCollection(List collections) {
         this.collections = collections;
+    }
+
+    public CompositeFeatureCollection(List collections, SimpleFeatureType schema) {
+        this.collections = collections;
+        this.schema = schema;
     }
 
     protected Iterator openIterator() throws IOException {
@@ -43,7 +50,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
     }
 
     public SimpleFeatureType getSchema() {
-        return null;
+        return schema;
     }
 
     public ReferencedEnvelope getBounds() {

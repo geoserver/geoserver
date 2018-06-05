@@ -313,7 +313,7 @@
     <artifactId>gs-monitor-hibernate</artifactId>
     <version>${project.version}</version>
    </dependency>
-   <dependency>
+   <!--<dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-taskmanager-core</artifactId>
      <version>${project.version}</version>
@@ -328,7 +328,7 @@
      <artifactId>geoserver-manager</artifactId>
      <version>1.8-dov-0.3</version>
      <scope>compile</scope>
-   </dependency>
+   </dependency>-->
  </dependencies>
  <build>
   <plugins>

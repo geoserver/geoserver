@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 dist: trusty
 cache:
   directories:

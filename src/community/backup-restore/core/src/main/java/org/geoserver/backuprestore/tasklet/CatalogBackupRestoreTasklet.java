@@ -74,7 +74,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     private boolean purge = true;
 
     //whether global settings should be skipped
-    private boolean skipSettings = false;
+    private boolean skipSettings = true;
 
     //whether GWC should be skipped
     private boolean skipGWC = false;
@@ -87,13 +87,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     @Override
     protected void initialize(StepExecution stepExecution) {
         this.skipSettings = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
-            Backup.PARAM_SKIP_SETTINGS));
+            Backup.PARAM_SKIP_SETTINGS, "true"));
 
         this.skipGWC = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
-            Backup.PARAM_SKIP_GWC));
+            Backup.PARAM_SKIP_GWC, "true"));
 
         this.purge = Boolean.parseBoolean(stepExecution.getJobParameters().getString(
-            Backup.PARAM_PURGE_RESOURCES, "true"));
+            Backup.PARAM_PURGE_RESOURCES, "false"));
     }
 
     @Override

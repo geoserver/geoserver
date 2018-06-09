@@ -1676,6 +1676,25 @@
     </configuration>
    </plugin>
 
+   <plugin>
+     <groupId>com.coveo</groupId>
+     <artifactId>fmt-maven-plugin</artifactId>
+     <version>2.4.0</version>
+     <configuration>
+       <verbose>false</verbose>
+       <filesNamePattern>.*\.java</filesNamePattern>
+       <skip>false</skip>
+       <style>aosp</style>
+     </configuration>
+     <executions>
+       <execution>
+         <goals>
+           <goal>${fmt.action}</goal>
+         </goals>
+       </execution>
+     </executions>
+   </plugin>
+
   </plugins>
 
   <extensions>
@@ -1901,6 +1920,7 @@
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+  <fmt.action>format</fmt.action>
  </properties>
 
  <profiles>

@@ -16,7 +16,7 @@ before_script:
   - export M2_HOME=$PWD/apache-maven-3.5.0
   - export PATH=$M2_HOME/bin:$PATH
 script:
-  - mvn -f src/pom.xml -B -U -T4 -fae -Prelease clean install && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install
+  - mvn -f src/pom.xml -B -U -T4 -fae -Prelease clean install && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check
 notifications:
   email:
     on_success: never

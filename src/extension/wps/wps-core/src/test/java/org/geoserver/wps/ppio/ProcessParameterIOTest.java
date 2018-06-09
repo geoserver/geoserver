@@ -4,9 +4,11 @@
  */
 package org.geoserver.wps.ppio;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 import java.util.Collections;
 import java.util.List;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geotools.data.Parameter;
@@ -15,15 +17,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.GenericApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
 public class ProcessParameterIOTest {
 
     public static class TestType {};
 
     private static ProcessParameterIO testPPIO =
-        new ProcessParameterIO(TestType.class, TestType.class, "testPPIO") {};
+            new ProcessParameterIO(TestType.class, TestType.class, "testPPIO") {};
 
     private static GenericApplicationContext context = new GenericApplicationContext();
 
@@ -42,16 +41,16 @@ public class ProcessParameterIOTest {
 
     @Test
     public void testFindAllWithNullContext() {
-        List<ProcessParameterIO> matches = ProcessParameterIO
-            .findAll(new Parameter<>("testPPIO", TestType.class), null);
+        List<ProcessParameterIO> matches =
+                ProcessParameterIO.findAll(new Parameter<>("testPPIO", TestType.class), null);
         assertEquals(1, matches.size());
         assertSame(testPPIO, matches.get(0));
     }
 
     @Test
     public void testFindAllWithSameContext() {
-        List<ProcessParameterIO> matches = ProcessParameterIO
-            .findAll(new Parameter<>("testPPIO", TestType.class), context);
+        List<ProcessParameterIO> matches =
+                ProcessParameterIO.findAll(new Parameter<>("testPPIO", TestType.class), context);
         assertEquals(1, matches.size());
         assertSame(testPPIO, matches.get(0));
     }
@@ -60,8 +59,8 @@ public class ProcessParameterIOTest {
     public void testFindAllWithDifferentContext() {
         GenericApplicationContext myContext = new GenericApplicationContext();
         myContext.refresh();
-        List<ProcessParameterIO> matches = ProcessParameterIO
-            .findAll(new Parameter<>("testPPIO", TestType.class), myContext);
+        List<ProcessParameterIO> matches =
+                ProcessParameterIO.findAll(new Parameter<>("testPPIO", TestType.class), myContext);
         assertEquals(0, matches.size());
     }
 }

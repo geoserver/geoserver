@@ -1,26 +1,20 @@
 package org.geoserver.notification.common;
 
-import java.util.List;
-
-import org.geoserver.platform.GeoServerExtensions;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
+import java.util.List;
+import org.geoserver.platform.GeoServerExtensions;
 
 public class EncoderXStreamInitializer implements NotificationXStreamInitializer {
 
-    /**
-     * Alias for encoder tag of in xml configuration
-     */
+    /** Alias for encoder tag of in xml configuration */
     public String name;
 
-    /**
-     * Class to use for encoder with filed 'name'
-     */
+    /** Class to use for encoder with filed 'name' */
     public Class<? extends NotificationEncoder> clazz;
 
     /**
@@ -28,18 +22,16 @@ public class EncoderXStreamInitializer implements NotificationXStreamInitializer
      * Define a class for the {@link NotificationEncoder}<br>
      * An example of encoder configuration section in notifier.xml is:
      *
-     * <pre>
-     *  {@code
+     * <pre>{@code
      *  <genericProcessor>
      *           <geonodeEncoder>
      *           ...
      *           </geonodeEncoder>
      * </genericProcessor>
-     *  }
-     * </pre>
+     *
+     * }</pre>
      *
      * @param xs XStream object
-     *
      */
     public EncoderXStreamInitializer(String name, Class<? extends NotificationEncoder> clazz) {
         super();
@@ -50,16 +42,14 @@ public class EncoderXStreamInitializer implements NotificationXStreamInitializer
     @Override
     public void init(XStream xs) {
         xs.aliasAttribute(DefaultNotificationProcessor.class, "encoder", name);
-        xs.registerLocalConverter(DefaultNotificationProcessor.class, "encoder",
+        xs.registerLocalConverter(
+                DefaultNotificationProcessor.class,
+                "encoder",
                 new EncoderConverter(xs.getMapper(), xs.getReflectionProvider(), this));
     }
 
-    /**
-     *
-     * @author Alessio Fabiani, GeoSolutions S.A.S.
-     *
-     */
-    static public class EncoderConverter extends ReflectionConverter {
+    /** @author Alessio Fabiani, GeoSolutions S.A.S. */
+    public static class EncoderConverter extends ReflectionConverter {
 
         private EncoderXStreamInitializer encoderXStreamInitializer;
 
@@ -68,13 +58,15 @@ public class EncoderXStreamInitializer implements NotificationXStreamInitializer
          * @param reflectionProvider
          * @param senderXStreamInitializer
          */
-        public EncoderConverter(Mapper mapper, ReflectionProvider reflectionProvider,
+        public EncoderConverter(
+                Mapper mapper,
+                ReflectionProvider reflectionProvider,
                 EncoderXStreamInitializer encoderXStreamInitializer) {
             super(mapper, reflectionProvider);
             this.encoderXStreamInitializer = encoderXStreamInitializer;
         }
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
         public boolean canConvert(Class clazz) {
             return clazz.isAssignableFrom(encoderXStreamInitializer.clazz);
@@ -85,13 +77,16 @@ public class EncoderXStreamInitializer implements NotificationXStreamInitializer
             NotificationEncoder encoder = null;
             String nodeName = reader.getNodeName();
 
-            List<EncoderXStreamInitializer> serializers = GeoServerExtensions.extensions(EncoderXStreamInitializer.class);
+            List<EncoderXStreamInitializer> serializers =
+                    GeoServerExtensions.extensions(EncoderXStreamInitializer.class);
 
-            for(EncoderXStreamInitializer serializer : serializers) {
+            for (EncoderXStreamInitializer serializer : serializers) {
                 if (serializer.name.equals(nodeName)) {
                     try {
                         encoder = serializer.clazz.newInstance();
-                        encoder = (NotificationEncoder) context.convertAnother(encoder, serializer.clazz);
+                        encoder =
+                                (NotificationEncoder)
+                                        context.convertAnother(encoder, serializer.clazz);
                         break;
                     } catch (InstantiationException e) {
                         throw new RuntimeException(e);

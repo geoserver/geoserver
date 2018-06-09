@@ -16,13 +16,11 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
-
 /**
- * A binding for ogc:PropertyName which does a special case check for an empty
- * property name and adds namespace support.
+ * A binding for ogc:PropertyName which does a special case check for an empty property name and
+ * adds namespace support.
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
     /** the geoserver catalog */
@@ -31,34 +29,34 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
     /** parser namespace mappings */
     NamespaceSupport namespaceSupport;
 
-    public PropertyNameTypeBinding(FilterFactory filterFactory, NamespaceSupport namespaceSupport,
-        Catalog catalog) {
+    public PropertyNameTypeBinding(
+            FilterFactory filterFactory, NamespaceSupport namespaceSupport, Catalog catalog) {
         super(filterFactory);
         this.namespaceSupport = namespaceSupport;
         this.catalog = catalog;
     }
 
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         PropertyName propertyName = (PropertyName) super.parse(instance, node, value);
 
-        //JD: temporary hack, this should be carried out at evaluation time
+        // JD: temporary hack, this should be carried out at evaluation time
         String name = propertyName.getPropertyName();
 
         if (name != null && name.matches("\\w+:\\w+")) {
-            //namespace qualified name, ensure the prefix is valid
+            // namespace qualified name, ensure the prefix is valid
             String prefix = name.substring(0, name.indexOf(':'));
             String namespaceURI = namespaceSupport.getURI(prefix);
 
-            //only accept if its an application schema namespace, or gml
+            // only accept if its an application schema namespace, or gml
             if (!GML.NAMESPACE.equals(namespaceURI)
                     && (catalog.getNamespaceByURI(namespaceURI) == null)) {
                 throw new WFSException("Illegal attribute namespace: " + namespaceURI);
             }
         }
-        
+
         if (factory instanceof FilterFactory2) {
-            return ((FilterFactory2) factory).property(propertyName.getPropertyName(), namespaceSupport);
+            return ((FilterFactory2) factory)
+                    .property(propertyName.getPropertyName(), namespaceSupport);
         }
 
         return propertyName;

@@ -4,12 +4,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.*;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-
-import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -18,7 +16,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -54,8 +51,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-
 public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTest {
 
     private static final String METADATA_URL = "/saml/metadata";
@@ -76,14 +71,16 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
 
         idpSamlService.stubFor(
                 com.github.tomakehurst.wiremock.client.WireMock.get(urlEqualTo(METADATA_URL))
-                        .willReturn(aResponse().withStatus(200)
-                                .withHeader("Content-Type", MediaType.APPLICATION_XML_VALUE)
-                                .withBodyFile("metadata.xml")));
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader("Content-Type", MediaType.APPLICATION_XML_VALUE)
+                                        .withBodyFile("metadata.xml")));
 
-        idpSamlService.stubFor(com.github.tomakehurst.wiremock.client.WireMock
-                .get(urlPathEqualTo(REDIRECT_URL))
-                .willReturn(aResponse().withStatus(302).withHeader("Location", IDP_LOGIN_URL)));
-
+        idpSamlService.stubFor(
+                com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo(REDIRECT_URL))
+                        .willReturn(
+                                aResponse().withStatus(302).withHeader("Location", IDP_LOGIN_URL)));
     }
 
     @BeforeClass
@@ -159,15 +156,18 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
         /*
          * Check user
          */
-        SecurityContext ctx = (SecurityContext) request.getSession(false)
-                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx =
+                (SecurityContext)
+                        request.getSession(false)
+                                .getAttribute(
+                                        HttpSessionSecurityContextRepository
+                                                .SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         checkForAuthenticatedRole(auth);
         assertEquals("abc@xyz.com", auth.getPrincipal());
-
     }
 
     @Test
@@ -192,8 +192,12 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
         /*
          * Check user
          */
-        SecurityContext ctx = (SecurityContext) request.getSession(false)
-                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx =
+                (SecurityContext)
+                        request.getSession(false)
+                                .getAttribute(
+                                        HttpSessionSecurityContextRepository
+                                                .SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -208,13 +212,16 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
         }
         assertTrue(hasRootRole);
         assertEquals(testUserName, auth.getPrincipal());
-
     }
 
     @Test
     public void logoutTest() throws Exception {
-        LogoutFilterChain logoutchain = (LogoutFilterChain) getSecurityManager().getSecurityConfig()
-                .getFilterChain().getRequestChainByName("webLogout");
+        LogoutFilterChain logoutchain =
+                (LogoutFilterChain)
+                        getSecurityManager()
+                                .getSecurityConfig()
+                                .getFilterChain()
+                                .getRequestChainByName("webLogout");
 
         confgiureFilter(PreAuthenticatedUserNameRoleSource.RoleService);
         MockHttpServletRequest request = createRequest("/foo/bar");
@@ -236,8 +243,12 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
         /*
          * Check user
          */
-        SecurityContext ctx = (SecurityContext) request.getSession(false)
-                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx =
+                (SecurityContext)
+                        request.getSession(false)
+                                .getAttribute(
+                                        HttpSessionSecurityContextRepository
+                                                .SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertEquals(testUserName, auth.getPrincipal());
@@ -249,8 +260,10 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
         request = createRequest(logoutchain.getPatterns().get(0));
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        GeoServerLogoutFilter logoutFilter = (GeoServerLogoutFilter) getSecurityManager()
-                .loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        GeoServerLogoutFilter logoutFilter =
+                (GeoServerLogoutFilter)
+                        getSecurityManager()
+                                .loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         logoutFilter.doFilter(request, response, chain);
 
         assertTrue(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -260,7 +273,6 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
          * Check if SAML logut URL will be called
          */
         assertThat(redirectURL, CoreMatchers.containsString(SAMLLogoutFilter.FILTER_URL));
-
     }
 
     private String buildSAMLRespons(String username) throws Exception {
@@ -268,11 +280,14 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
          * Buld valid SAML response from template
          */
         DateTime now = new DateTime();
-        String xml = IOUtils.toString(this.getClass().getResourceAsStream("/__files/response.xml"),
-                "UTF-8");
+        String xml =
+                IOUtils.toString(
+                        this.getClass().getResourceAsStream("/__files/response.xml"), "UTF-8");
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        Document doc = domFactory.newDocumentBuilder()
-                .parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
+        Document doc =
+                domFactory
+                        .newDocumentBuilder()
+                        .parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
         XPath xpath = XPathFactory.newInstance().newXPath();
 
         NodeList nodes = (NodeList) xpath.evaluate("//@IssueInstant", doc, XPathConstants.NODESET);
@@ -300,15 +315,17 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
             Node value = nodes.item(idx);
             value.setNodeValue(now.plusDays(1).toString("yyyy-MM-dd'T'HH:mm:ssZ"));
         }
-        Node node = (Node) xpath.evaluate("//*[local-name() = 'NameID']/text()", doc,
-                XPathConstants.NODE);
+        Node node =
+                (Node)
+                        xpath.evaluate(
+                                "//*[local-name() = 'NameID']/text()", doc, XPathConstants.NODE);
         node.setNodeValue(username);
         Transformer xformer = TransformerFactory.newInstance().newTransformer();
         StringWriter writer = new StringWriter();
         xformer.transform(new DOMSource(doc), new StreamResult(writer));
         String output = writer.getBuffer().toString();
-        String encodedResponseMessage = Base64
-                .encodeBytes(output.getBytes("UTF-8"), Base64.DONT_BREAK_LINES).trim();
+        String encodedResponseMessage =
+                Base64.encodeBytes(output.getBytes("UTF-8"), Base64.DONT_BREAK_LINES).trim();
         return encodedResponseMessage;
     }
 
@@ -333,5 +350,4 @@ public class OneloginAuthenticationTest extends AbstractAuthenticationProviderTe
         } catch (Exception e) {
         }
     }
-
 }

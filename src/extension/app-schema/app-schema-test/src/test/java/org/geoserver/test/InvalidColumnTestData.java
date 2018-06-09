@@ -6,22 +6,16 @@
 
 package org.geoserver.test;
 
-/**
- * 
- * @author Niels Charlier, Curtin University Of Technology
- * 
- */
-
+/** @author Niels Charlier, Curtin University Of Technology */
 public class InvalidColumnTestData extends AbstractAppSchemaMockData {
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "GeologicUnit", "InvalidColumnGeologicUnit.xml",
+        addFeatureType(
+                GSML_PREFIX,
+                "GeologicUnit",
+                "InvalidColumnGeologicUnit.xml",
                 "InvalidColumnGeologicUnit.properties");
-
     }
-
 }

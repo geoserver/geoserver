@@ -14,12 +14,13 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.data.wms.WebMapServer;
 
 public class WMSStoreEditPage extends AbstractWMSStorePage {
-    
+
     public static final String STORE_NAME = "storeName";
     public static final String WS_NAME = "wsName";
-    
+
     /**
      * Uses a "name" parameter to locate the datastore
+     *
      * @param parameters
      */
     public WMSStoreEditPage(PageParameters parameters) {
@@ -29,9 +30,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
         initUI(store);
     }
 
-    /**
-     * Creates a new edit page directly from a store object.
-     */
+    /** Creates a new edit page directly from a store object. */
     public WMSStoreEditPage(WMSStoreInfo store) {
         initUI(store);
     }
@@ -39,7 +38,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
     @Override
     protected void onSave(WMSStoreInfo info, AjaxRequestTarget target)
             throws IllegalArgumentException {
-        if(!info.isEnabled()) {
+        if (!info.isEnabled()) {
             doSaveStore(info);
         } else {
             try {
@@ -47,38 +46,36 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
                 getCatalog().getResourcePool().clear(info);
                 // do not call info.getWebMapServer cause it ends up calling
                 // resourcepool.getWebMapServer with the unproxied instance (old values)
-                //info.getWebMapServer(null).getCapabilities();
+                // info.getWebMapServer(null).getCapabilities();
                 WebMapServer webMapServer = getCatalog().getResourcePool().getWebMapServer(info);
                 webMapServer.getCapabilities();
                 doSaveStore(info);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 confirmSaveOnConnectionFailure(info, target, e);
             }
         }
-
     }
 
     /**
      * Performs the save of the store.
-     * <p>
-     * This method may be subclasses to provide custom save functionality.
-     * </p>
+     *
+     * <p>This method may be subclasses to provide custom save functionality.
      */
     protected void doSaveStore(WMSStoreInfo info) {
         Catalog catalog = getCatalog();
 
         // Cloning into "expandedStore" through the super class "clone" method
-        WMSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true); 
-        
+        WMSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
+
         getCatalog().validate(expandedStore, false).throwIfInvalid();
-        
+
         getCatalog().save(info);
         doReturn(StorePage.class);
     }
 
     @SuppressWarnings("serial")
-    private void confirmSaveOnConnectionFailure(final WMSStoreInfo info,
-            final AjaxRequestTarget requestTarget, final Exception error) {
+    private void confirmSaveOnConnectionFailure(
+            final WMSStoreInfo info, final AjaxRequestTarget requestTarget, final Exception error) {
 
         getCatalog().getResourcePool().clear(info);
 
@@ -91,35 +88,36 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
             exceptionMessage = message;
         }
 
-        dialog.showOkCancel(requestTarget, new GeoServerDialog.DialogDelegate() {
+        dialog.showOkCancel(
+                requestTarget,
+                new GeoServerDialog.DialogDelegate() {
 
-            boolean accepted = false;
+                    boolean accepted = false;
 
-            @Override
-            protected Component getContents(String id) {
-                return new StoreConnectionFailedInformationPanel(id, info.getName(),
-                        exceptionMessage);
-            }
+                    @Override
+                    protected Component getContents(String id) {
+                        return new StoreConnectionFailedInformationPanel(
+                                id, info.getName(), exceptionMessage);
+                    }
 
-            @Override
-            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                doSaveStore(info);
-                accepted = true;
-                return true;
-            }
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        doSaveStore(info);
+                        accepted = true;
+                        return true;
+                    }
 
-            @Override
-            protected boolean onCancel(AjaxRequestTarget target) {
-                return true;
-            }
+                    @Override
+                    protected boolean onCancel(AjaxRequestTarget target) {
+                        return true;
+                    }
 
-            @Override
-            public void onClose(AjaxRequestTarget target) {
-                if (accepted) {
-                    doReturn(StorePage.class);
-                }
-            }
-        });
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        if (accepted) {
+                            doReturn(StorePage.class);
+                        }
+                    }
+                });
     }
-
 }

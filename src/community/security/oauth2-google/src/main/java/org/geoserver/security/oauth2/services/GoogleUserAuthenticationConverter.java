@@ -5,14 +5,13 @@
 package org.geoserver.security.oauth2.services;
 
 import java.util.Map;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 
 /**
  * User Authentication Converter for Google token details.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GoogleUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
@@ -21,7 +20,7 @@ public class GoogleUserAuthenticationConverter extends DefaultUserAuthentication
 
     /**
      * Default Constructor.
-     * 
+     *
      * @param username_key
      */
     public GoogleUserAuthenticationConverter(String username_key) {

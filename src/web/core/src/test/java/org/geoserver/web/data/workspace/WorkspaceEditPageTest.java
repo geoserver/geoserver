@@ -8,7 +8,6 @@ package org.geoserver.web.data.workspace;
 import static org.junit.Assert.*;
 
 import java.util.List;
-
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.util.tester.FormTester;
@@ -31,7 +30,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
     public void init() {
         login();
         citeWorkspace = getCatalog().getWorkspaceByName(MockData.CITE_PREFIX);
-        
+
         GeoServer gs = getGeoServer();
         SettingsInfo s = gs.getSettings(citeWorkspace);
         if (s != null) {
@@ -49,7 +48,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.setValue("uri", "");
         form.submit();
-        
+
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
     }
@@ -82,8 +81,9 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
         List messages = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, messages.size());
-        assertEquals("Invalid URI syntax: not a valid uri", 
-            ((ValidationErrorFeedback)messages.get(0)).getMessage());
+        assertEquals(
+                "Invalid URI syntax: not a valid uri",
+                ((ValidationErrorFeedback) messages.get(0)).getMessage());
     }
 
     /**
@@ -93,8 +93,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testUpdatesDataStoresNamespace() {
         final Catalog catalog = getCatalog();
-        final List<DataStoreInfo> storesInitial = catalog.getStoresByWorkspace(citeWorkspace,
-                DataStoreInfo.class);
+        final List<DataStoreInfo> storesInitial =
+                catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
 
         final NamespaceInfo citeNamespace = catalog.getNamespaceByPrefix(citeWorkspace.getName());
 
@@ -108,22 +108,22 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         form.submit();
         tester.assertNoErrorMessage();
 
-        List<DataStoreInfo> storesChanged = catalog.getStoresByWorkspace(citeWorkspace,
-                DataStoreInfo.class);
+        List<DataStoreInfo> storesChanged =
+                catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
         for (DataStoreInfo store : storesChanged) {
             assertEquals(newNsURI, store.getConnectionParameters().get("namespace"));
         }
     }
-    
+
     @Test
     public void testDefaultCheckbox() {
         assertFalse(getCatalog().getDefaultWorkspace().getName().equals(MockData.CITE_PREFIX));
-        
+
         FormTester form = tester.newFormTester("form");
         form.setValue("default", "true");
         form.submit();
         tester.assertNoErrorMessage();
-        
+
         assertEquals(MockData.CITE_PREFIX, getCatalog().getDefaultWorkspace().getName());
     }
 
@@ -132,7 +132,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
 
         assertNull(gs.getSettings(citeWorkspace));
-        
+
         FormTester form = tester.newFormTester("form");
         form.setValue("settings:enabled", true);
         form.submit();
@@ -140,7 +140,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         assertNotNull(gs.getSettings(citeWorkspace));
     }
-    
+
     @Test
     public void testLocalworkspaceRemovePrefix() throws Exception {
         GeoServer gs = getGeoServer();
@@ -154,7 +154,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("settings:settingsContainer:otherSettings:localWorkspaceIncludesPrefix", false);
+        form.setValue(
+                "settings:settingsContainer:otherSettings:localWorkspaceIncludesPrefix", false);
         form.submit();
 
         assertEquals(false, settings.isLocalWorkspaceIncludesPrefix());
@@ -173,12 +174,13 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
 
         FormTester form = tester.newFormTester("form");
-        assertEquals("http://foo.org", 
-            form.getTextComponentValue("settings:settingsContainer:otherSettings:proxyBaseUrl"));
+        assertEquals(
+                "http://foo.org",
+                form.getTextComponentValue(
+                        "settings:settingsContainer:otherSettings:proxyBaseUrl"));
         form.setValue("settings:enabled", false);
         form.submit();
 
         assertNull(gs.getSettings(citeWorkspace));
     }
-
 }

@@ -7,7 +7,6 @@ package org.geoserver.monitor.hib;
 
 import java.sql.SQLException;
 import java.sql.Types;
-
 import org.hibernate.Hibernate;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
@@ -20,9 +19,8 @@ import org.hibernate.util.ReflectHelper;
 
 /**
  * A dialect compatible with the H2 database.
- * 
+ *
  * @author Thomas Mueller
- * 
  */
 public class H2Dialect extends Dialect {
 
@@ -117,7 +115,8 @@ public class H2Dialect extends Dialect {
         // registerFunction("lower", new StandardSQLFunction("lower", Hibernate.STRING));
         registerFunction("lcase", new StandardSQLFunction("lcase", Hibernate.STRING));
         registerFunction("ltrim", new StandardSQLFunction("ltrim", Hibernate.STRING));
-        registerFunction("octet_length", new StandardSQLFunction("octet_length", Hibernate.INTEGER));
+        registerFunction(
+                "octet_length", new StandardSQLFunction("octet_length", Hibernate.INTEGER));
         registerFunction("position", new StandardSQLFunction("position", Hibernate.INTEGER));
         registerFunction("rawtohex", new StandardSQLFunction("rawtohex", Hibernate.STRING));
         registerFunction("repeat", new StandardSQLFunction("repeat", Hibernate.STRING));
@@ -137,8 +136,9 @@ public class H2Dialect extends Dialect {
 
         registerFunction("current_date", new NoArgSQLFunction("current_date", Hibernate.DATE));
         registerFunction("current_time", new NoArgSQLFunction("current_time", Hibernate.TIME));
-        registerFunction("current_timestamp", new NoArgSQLFunction("current_timestamp",
-                Hibernate.TIMESTAMP));
+        registerFunction(
+                "current_timestamp",
+                new NoArgSQLFunction("current_timestamp", Hibernate.TIMESTAMP));
         registerFunction("datediff", new NoArgSQLFunction("datediff", Hibernate.INTEGER));
         registerFunction("dayname", new StandardSQLFunction("dayname", Hibernate.STRING));
         registerFunction("dayofmonth", new StandardSQLFunction("dayofmonth", Hibernate.INTEGER));
@@ -162,7 +162,6 @@ public class H2Dialect extends Dialect {
         registerFunction("user", new NoArgSQLFunction("user", Hibernate.STRING));
 
         getDefaultProperties().setProperty(Environment.STATEMENT_BATCH_SIZE, DEFAULT_BATCH_SIZE);
-
     }
 
     public String getAddColumnString() {
@@ -198,8 +197,10 @@ public class H2Dialect extends Dialect {
     }
 
     public String getLimitString(String sql, boolean hasOffset) {
-        return new StringBuffer(sql.length() + 20).append(sql).append(
-                hasOffset ? " limit ? offset ?" : " limit ?").toString();
+        return new StringBuffer(sql.length() + 20)
+                .append(sql)
+                .append(hasOffset ? " limit ? offset ?" : " limit ?")
+                .toString();
     }
 
     public boolean bindLimitParametersInReverseOrder() {
@@ -215,11 +216,11 @@ public class H2Dialect extends Dialect {
     }
 
     public String[] getCreateSequenceStrings(String sequenceName) {
-        return new String[] { "create sequence " + sequenceName };
+        return new String[] {"create sequence " + sequenceName};
     }
 
     public String[] getDropSequenceStrings(String sequenceName) {
-        return new String[] { "drop sequence " + sequenceName };
+        return new String[] {"drop sequence " + sequenceName};
     }
 
     public String getSelectSequenceNextValString(String sequenceName) {
@@ -242,30 +243,29 @@ public class H2Dialect extends Dialect {
         return EXTRACTER;
     }
 
-    private static ViolatedConstraintNameExtracter EXTRACTER = new TemplatedViolatedConstraintNameExtracter() {
+    private static ViolatedConstraintNameExtracter EXTRACTER =
+            new TemplatedViolatedConstraintNameExtracter() {
 
-        /**
-         * Extract the name of the violated constraint from the given SQLException.
-         * 
-         * @param e
-         *            The exception that was the result of the constraint violation.
-         * @return The extracted constraint name.
-         */
-        public String extractConstraintName(SQLException e) {
-            String constraintName = null;
-            // 23000: Check constraint violation: {0}
-            // 23001: Unique index or primary key violation: {0}
-            if (e.getSQLState().startsWith("23")) {
-                String message = e.getMessage();
-                int idx = message.indexOf("violation: ");
-                if (idx > 0) {
-                    constraintName = message.substring(idx + "violation: ".length());
+                /**
+                 * Extract the name of the violated constraint from the given SQLException.
+                 *
+                 * @param e The exception that was the result of the constraint violation.
+                 * @return The extracted constraint name.
+                 */
+                public String extractConstraintName(SQLException e) {
+                    String constraintName = null;
+                    // 23000: Check constraint violation: {0}
+                    // 23001: Unique index or primary key violation: {0}
+                    if (e.getSQLState().startsWith("23")) {
+                        String message = e.getMessage();
+                        int idx = message.indexOf("violation: ");
+                        if (idx > 0) {
+                            constraintName = message.substring(idx + "violation: ".length());
+                        }
+                    }
+                    return constraintName;
                 }
-            }
-            return constraintName;
-        }
-
-    };
+            };
 
     public boolean supportsTemporaryTables() {
         return true;
@@ -290,5 +290,4 @@ public class H2Dialect extends Dialect {
     public boolean supportsUnionAll() {
         return true;
     }
-
 }

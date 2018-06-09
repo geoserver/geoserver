@@ -15,8 +15,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.config.GeoServerLoader;
 
 /**
- * Small utility panel showed only in dev mode that allows developers to control
- * some Wicket behavior
+ * Small utility panel showed only in dev mode that allows developers to control some Wicket
+ * behavior
  */
 @SuppressWarnings("serial")
 public class DeveloperToolbar extends Panel {
@@ -28,68 +28,72 @@ public class DeveloperToolbar extends Panel {
         super(id);
 
         // Clears the resource caches
-        add(new IndicatingAjaxLink("clearCache") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                GeoServerApplication.get().clearWicketCaches();
-            }
-        });
-        
-        // Reloads the whole catalog and config from the file system
-        add(new IndicatingAjaxLink("reload") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                try {
-                    GeoServerLoader loader = (GeoServerLoader) GeoServerApplication.get().getBean("geoServerLoader");
-                    synchronized (org.geoserver.config.GeoServer.CONFIGURATION_LOCK) {
-                        loader.reload();
+        add(
+                new IndicatingAjaxLink("clearCache") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        GeoServerApplication.get().clearWicketCaches();
                     }
-                    info("Catalog and configuration reloaded");
-                } catch(Exception e) {
-                    error(e);
-                }
-            }
-        });
+                });
+
+        // Reloads the whole catalog and config from the file system
+        add(
+                new IndicatingAjaxLink("reload") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        try {
+                            GeoServerLoader loader =
+                                    (GeoServerLoader)
+                                            GeoServerApplication.get().getBean("geoServerLoader");
+                            synchronized (org.geoserver.config.GeoServer.CONFIGURATION_LOCK) {
+                                loader.reload();
+                            }
+                            info("Catalog and configuration reloaded");
+                        } catch (Exception e) {
+                            error(e);
+                        }
+                    }
+                });
 
         IModel gsApp = new GeoServerApplicationModel();
 
         // controls whether wicket paths are being generated
-        final AjaxCheckBox wicketPaths = new AjaxCheckBox("wicketPaths",
-                new PropertyModel(gsApp, "debugSettings.outputComponentPath")) {
+        final AjaxCheckBox wicketPaths =
+                new AjaxCheckBox(
+                        "wicketPaths",
+                        new PropertyModel(gsApp, "debugSettings.outputComponentPath")) {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-
-            }
-
-        };
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {}
+                };
         wicketPaths.setOutputMarkupId(true);
         add(wicketPaths);
-        
+
         // controls whether wicket ids are being generated
-        wicketIds = new AjaxCheckBox("wicketIds", new PropertyModel(gsApp,
-                "markupSettings.stripWicketTags")) {
+        wicketIds =
+                new AjaxCheckBox(
+                        "wicketIds", new PropertyModel(gsApp, "markupSettings.stripWicketTags")) {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                wicketPaths.setModelObject(Boolean.FALSE);
-                target.add(wicketPaths);
-            }
-
-        };
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        wicketPaths.setModelObject(Boolean.FALSE);
+                        target.add(wicketPaths);
+                    }
+                };
         wicketIds.setOutputMarkupId(true);
         add(wicketIds);
-        
+
         // controls whether the ajax debug is enabled or not
-        add(new AjaxCheckBox("ajaxDebug", new PropertyModel(gsApp, "debugSettings.ajaxDebugModeEnabled")) {
+        add(
+                new AjaxCheckBox(
+                        "ajaxDebug",
+                        new PropertyModel(gsApp, "debugSettings.ajaxDebugModeEnabled")) {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                // nothing to do, the property binding does the work for us
-            }
-            
-        });
-
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        // nothing to do, the property binding does the work for us
+                    }
+                });
     }
 
     static class GeoServerApplicationModel extends LoadableDetachableModel {
@@ -102,8 +106,5 @@ public class DeveloperToolbar extends Panel {
         protected Object load() {
             return GeoServerApplication.get();
         }
-
     }
-    
-
 }

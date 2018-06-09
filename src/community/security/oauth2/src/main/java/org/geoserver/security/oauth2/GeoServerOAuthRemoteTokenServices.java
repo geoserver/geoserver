@@ -11,14 +11,15 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.web.client.RestOperations;
 
 /**
- * Base Class for GeoServer specific {@link RemoteTokenServices}. Each specific GeoServer OAuth2 Extension must implement its own.
- * 
+ * Base Class for GeoServer specific {@link RemoteTokenServices}. Each specific GeoServer OAuth2
+ * Extension must implement its own.
+ *
  * @author Alessio Fabiani, GeoSoltuions S.A.S.
  */
 public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServices {
 
-    protected static Logger LOGGER = LoggerFactory
-            .getLogger(GeoServerOAuthRemoteTokenServices.class);
+    protected static Logger LOGGER =
+            LoggerFactory.getLogger(GeoServerOAuthRemoteTokenServices.class);
 
     protected RestOperations restTemplate;
 
@@ -49,5 +50,4 @@ public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServi
     public void setAccessTokenConverter(AccessTokenConverter accessTokenConverter) {
         this.tokenConverter = accessTokenConverter;
     }
-
 }

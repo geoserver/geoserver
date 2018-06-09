@@ -8,7 +8,7 @@ public class S3BlobStoreType implements BlobStoreType<S3BlobStoreConfig> {
     private static final long serialVersionUID = 7349157660150568235L;
 
     @Override
-    public String toString(){
+    public String toString() {
         return "S3 BlobStore";
     }
 
@@ -29,5 +29,4 @@ public class S3BlobStoreType implements BlobStoreType<S3BlobStoreConfig> {
     public Panel createPanel(String id, IModel<S3BlobStoreConfig> model) {
         return new S3BlobStorePanel(id, model);
     }
-
 }

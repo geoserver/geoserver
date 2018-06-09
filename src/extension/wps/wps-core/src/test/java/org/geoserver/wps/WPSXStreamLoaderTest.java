@@ -14,13 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -74,7 +71,9 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         boolean found1 = false;
         boolean found2 = false;
         for (ProcessGroupInfo pg : wps.getProcessGroups()) {
-            if (pg.getFactoryClass().getName().equals("org.geoserver.wps.DeprecatedProcessFactory")) {
+            if (pg.getFactoryClass()
+                    .getName()
+                    .equals("org.geoserver.wps.DeprecatedProcessFactory")) {
                 assertFalse(pg.isEnabled());
                 found1 = true;
             }
@@ -82,14 +81,18 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
                 for (Object opi : pg.getFilteredProcesses()) {
                     assertTrue(opi instanceof ProcessInfo);
                 }
-                if (pg.getFactoryClass().getName()
+                if (pg.getFactoryClass()
+                        .getName()
                         .equals("org.geoserver.wps.jts.SpringBeanProcessFactory")) {
                     assertTrue(pg.isEnabled());
-                    assertEquals(pg.getFilteredProcesses().get(0).getName().toString(),
+                    assertEquals(
+                            pg.getFilteredProcesses().get(0).getName().toString(),
                             "gs:GeorectifyCoverage");
-                    assertEquals(pg.getFilteredProcesses().get(1).getName().toString(),
+                    assertEquals(
+                            pg.getFilteredProcesses().get(1).getName().toString(),
                             "gs:GetFullCoverage");
-                    assertEquals(pg.getFilteredProcesses().get(2).getName().toString(), "gs:Import");
+                    assertEquals(
+                            pg.getFilteredProcesses().get(2).getName().toString(), "gs:Import");
                     found2 = true;
                 }
             }
@@ -113,8 +116,11 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         ProcessInfo contour = new ProcessInfoImpl();
         contour.setEnabled(true);
         contour.setName(new NameImpl("ras", "Contour"));
-        contour.getValidators().put("levels",
-                new NumberRangeValidator(new NumberRange<Double>(Double.class, -8000d, 8000d)));
+        contour.getValidators()
+                .put(
+                        "levels",
+                        new NumberRangeValidator(
+                                new NumberRange<Double>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasGroup.getFilteredProcesses().add(contour);
 
@@ -132,25 +138,36 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         Document dom = dom(xml);
 
         // geometry factory
-        String baseGeomPath = "/wps/processGroups/processGroup[factoryClass='"
-                + GeometryProcessFactory.class.getName() + "']/filteredProcesses/accessInfo";
+        String baseGeomPath =
+                "/wps/processGroups/processGroup[factoryClass='"
+                        + GeometryProcessFactory.class.getName()
+                        + "']/filteredProcesses/accessInfo";
         XMLAssert.assertXpathExists(baseGeomPath, dom);
         String geoAreaBase = baseGeomPath + "[name='geo:Area']/validators/entry[@key='geom']";
         XMLAssert.assertXpathExists(geoAreaBase, dom);
         XMLAssert.assertXpathEvaluatesTo("10", geoAreaBase + "/maxSizeValidator/maxSizeMB", dom);
 
         // raster factory
-        String baseRasPath = "/wps/processGroups/processGroup[factoryClass='"
-                + RasterProcessFactory.class.getName() + "']/filteredProcesses/accessInfo";
+        String baseRasPath =
+                "/wps/processGroups/processGroup[factoryClass='"
+                        + RasterProcessFactory.class.getName()
+                        + "']/filteredProcesses/accessInfo";
         XMLAssert.assertXpathExists(baseRasPath, dom);
         String rasContourBase = baseRasPath + "[name='ras:Contour']";
         XMLAssert.assertXpathExists(rasContourBase, dom);
-        XMLAssert.assertXpathEvaluatesTo("3", rasContourBase
-                + "/validators/entry[@key='levels']/maxMultiplicityValidator/maxInstances", dom);
-        XMLAssert.assertXpathEvaluatesTo("-8000.0", rasContourBase
-                + "/validators/entry[@key='levels']/rangeValidator/range/minValue", dom);
-        XMLAssert.assertXpathEvaluatesTo("8000.0", rasContourBase
-                + "/validators/entry[@key='levels']/rangeValidator/range/maxValue", dom);
+        XMLAssert.assertXpathEvaluatesTo(
+                "3",
+                rasContourBase
+                        + "/validators/entry[@key='levels']/maxMultiplicityValidator/maxInstances",
+                dom);
+        XMLAssert.assertXpathEvaluatesTo(
+                "-8000.0",
+                rasContourBase + "/validators/entry[@key='levels']/rangeValidator/range/minValue",
+                dom);
+        XMLAssert.assertXpathEvaluatesTo(
+                "8000.0",
+                rasContourBase + "/validators/entry[@key='levels']/rangeValidator/range/maxValue",
+                dom);
 
         // check unmarshalling
         WPSInfo wps2 = loader.load(getGeoServer(), Files.asResource(root));
@@ -162,7 +179,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         }
     }
-    
+
     @Test
     public void testLoadFromXML() throws Exception {
         WPSInfo wpsInfo = loadFromXml("wps-test.xml");
@@ -182,7 +199,8 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         assertNotNull(wpsInfo);
         assertNotNull(wpsInfo.getWorkspace());
         assertTrue(wpsInfo.getWorkspace().getId().equals("wps-load-test-workspace-id"));
-        // if the workspace was correctly retrieved from the catalog it should have the name property available
+        // if the workspace was correctly retrieved from the catalog it should have the name
+        // property available
         try {
             assertTrue(wpsInfo.getWorkspace().getName().equals("wps-load-test-workspace-name"));
         } catch (NullPointerException exception) {
@@ -191,9 +209,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         }
     }
 
-    /**
-     * Helper method tha reads a WPS configuration from a XML file and return that info.
-     */
+    /** Helper method tha reads a WPS configuration from a XML file and return that info. */
     private WPSInfo loadFromXml(String resource) throws Exception {
         XStreamPersisterFactory factory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
         XStreamPersister xp = factory.createXMLPersister();

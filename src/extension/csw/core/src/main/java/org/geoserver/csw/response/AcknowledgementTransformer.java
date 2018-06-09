@@ -7,13 +7,10 @@ package org.geoserver.csw.response;
 
 import java.io.StringReader;
 import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import net.opengis.cat.csw20.RequestBaseType;
-
 import org.apache.xml.serializer.TreeWalker;
 import org.geoserver.csw.xml.v2_0_2.CSWRecordingXmlReader;
 import org.geoserver.ows.Dispatcher;
@@ -31,7 +28,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Encodes a Acknoledgement response
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class AcknowledgementTransformer extends AbstractCSWTransformer {
@@ -79,7 +76,6 @@ public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
             end("csw:EchoedRequest");
             end("csw:Acknowledgement");
-
         }
 
         private void encodeGetEcho(Request request) {
@@ -120,21 +116,21 @@ public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
         private Document parseAsXML(String data) {
             try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
-                factory.setNamespaceAware( true );
-                factory.setValidating( false );
-               
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                factory.setValidating(false);
+
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 if (!data.startsWith("<?xml")) {
                     data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + data;
                 }
                 return builder.parse(new InputSource(new StringReader(data)));
             } catch (Throwable t) {
-                throw new ServiceException("Failed to parse the original request into XML, "
-                        + "this should never happen??", t);
+                throw new ServiceException(
+                        "Failed to parse the original request into XML, "
+                                + "this should never happen??",
+                        t);
             }
         }
-
     }
-
 }

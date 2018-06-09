@@ -7,7 +7,6 @@ package org.geoserver.crs.netcdf;
 import java.io.File;
 import java.net.URL;
 import java.util.logging.Level;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -18,12 +17,12 @@ import org.geotools.factory.Hints;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 
 /**
- * Same as the {@link NetCDFCRSAuthorityFactory}, but this one reads a different file and
- * can be populate from an external properties file provided within the
- * GEOSERVER_DATA_DIR/user_projections/netcdf.projections.properties file. 
- * 
+ * Same as the {@link NetCDFCRSAuthorityFactory}, but this one reads a different file and can be
+ * populate from an external properties file provided within the
+ * GEOSERVER_DATA_DIR/user_projections/netcdf.projections.properties file.
  */
-public class NetCDFCRSOverridingAuthorityFactory extends NetCDFCRSAuthorityFactory implements CRSAuthorityFactory {
+public class NetCDFCRSOverridingAuthorityFactory extends NetCDFCRSAuthorityFactory
+        implements CRSAuthorityFactory {
 
     public NetCDFCRSOverridingAuthorityFactory() {
         this(null);
@@ -34,15 +33,16 @@ public class NetCDFCRSOverridingAuthorityFactory extends NetCDFCRSAuthorityFacto
     }
 
     /**
-     * Returns the URL to the property file that contains CRS definitions. The default implementation returns the URL to the {@value #FILENAME} file.
+     * Returns the URL to the property file that contains CRS definitions. The default
+     * implementation returns the URL to the {@value #FILENAME} file.
      *
      * @return The URL, or {@code null} if none.
      */
     protected URL getDefinitionsURL() {
         String cust_proj_file = System.getProperty(SYSTEM_DEFAULT_USER_PROJ_FILE);
         if (cust_proj_file == null) {
-            GeoServerResourceLoader loader = GeoServerExtensions
-                    .bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader =
+                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
             if (loader != null) { // Not available for SystemTestData
                 Resource custom_proj = loader.get("user_projections/netcdf.projections.properties");
                 if (custom_proj.getType() == Type.RESOURCE) {
@@ -59,8 +59,8 @@ public class NetCDFCRSOverridingAuthorityFactory extends NetCDFCRSAuthorityFacto
                 if (url != null) {
                     return url;
                 } else {
-                    LOGGER.log(Level.SEVERE, "Had troubles converting " + cust_proj_file
-                            + " to URL");
+                    LOGGER.log(
+                            Level.SEVERE, "Had troubles converting " + cust_proj_file + " to URL");
                 }
             }
         }

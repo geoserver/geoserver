@@ -8,7 +8,6 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
-
 import org.geoserver.wfs.WebFeatureService;
 import org.geoserver.wfs.kvp.GetFeatureKvpRequestReader;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -19,15 +18,15 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Handles an internal reference to a local FeatureType by a WFS request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class InternalWFSInputProvider extends AbstractInputProvider {
 
     private ApplicationContext context;
 
-    public InternalWFSInputProvider(InputType input, ProcessParameterIO ppio,
-            ApplicationContext context) {
+    public InternalWFSInputProvider(
+            InputType input, ProcessParameterIO ppio, ApplicationContext context) {
         super(input, ppio);
         this.context = context;
     }
@@ -40,8 +39,8 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
         if (ref.getMethod() == MethodType.POST_LITERAL) {
             gft = (GetFeatureType) ref.getBody();
         } else {
-            GetFeatureKvpRequestReader reader = (GetFeatureKvpRequestReader) context
-                    .getBean("getFeatureKvpReader");
+            GetFeatureKvpRequestReader reader =
+                    (GetFeatureKvpRequestReader) context.getBean("getFeatureKvpReader");
             gft = (GetFeatureType) kvpParse(ref.getHref(), reader);
         }
 
@@ -54,5 +53,4 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
     public int longStepCount() {
         return 0;
     }
-
 }

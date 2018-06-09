@@ -28,7 +28,6 @@ public interface TileLayerCatalog {
     public boolean exists(String layerId);
 
     public void initialize();
-    
-    public void reset();
 
+    public void reset();
 }

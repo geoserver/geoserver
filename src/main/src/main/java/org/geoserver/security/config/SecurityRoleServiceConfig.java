@@ -16,27 +16,20 @@ import org.geoserver.security.impl.GeoServerRole;
 public interface SecurityRoleServiceConfig extends SecurityNamedServiceConfig {
 
     /**
-     * Optional, the name of the administrator role for this service.
-     * The role has the same privileges as {@link GeoServerRole#ADMIN_ROLE} 
+     * Optional, the name of the administrator role for this service. The role has the same
+     * privileges as {@link GeoServerRole#ADMIN_ROLE}
      */
     String getAdminRoleName();
 
-    /**
-     * Sets the name of the administrator role for this service.
-     */
+    /** Sets the name of the administrator role for this service. */
     void setAdminRoleName(String adminRoleName);
-    
+
     /**
-     * Optional, the name of the group administrator role for this service.
-     * The role has the same privileges as {@link GeoServerRole#GROUP_ADMIN_ROLE} 
-     *
+     * Optional, the name of the group administrator role for this service. The role has the same
+     * privileges as {@link GeoServerRole#GROUP_ADMIN_ROLE}
      */
     String getGroupAdminRoleName();
 
-    /**
-     * Sets the name of the group administrator role for this service.
-     */
+    /** Sets the name of the group administrator role for this service. */
     void setGroupAdminRoleName(String adminRoleName);
-
-
 }

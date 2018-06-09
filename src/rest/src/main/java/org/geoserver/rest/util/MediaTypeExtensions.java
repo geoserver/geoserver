@@ -7,8 +7,8 @@ package org.geoserver.rest.util;
 import org.springframework.http.MediaType;
 
 /**
- * Container class for {@link org.springframework.http.MediaType} definitions that are not an official MIME type,
- * but nevertheless supported by GeoServer.
+ * Container class for {@link org.springframework.http.MediaType} definitions that are not an
+ * official MIME type, but nevertheless supported by GeoServer.
  */
 public class MediaTypeExtensions {
     public static final String TEXT_JSON_VALUE = "text/json";

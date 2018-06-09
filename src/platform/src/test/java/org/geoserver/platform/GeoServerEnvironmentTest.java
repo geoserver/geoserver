@@ -7,29 +7,24 @@ package org.geoserver.platform;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletContext;
-
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-import junit.framework.TestCase;
-
 /**
  * Unit test suite for {@link GeoServerEnvironment}
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
  */
 public class GeoServerEnvironmentTest extends TestCase {
 
-    /**
-     * logger
-     */
+    /** logger */
     protected static final Logger LOGGER = Logging.getLogger("org.geoserver.platform");
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -44,25 +39,31 @@ public class GeoServerEnvironmentTest extends TestCase {
         EasyMock.replay(context);
         System.setProperty("GEOSERVER_REQUIRE_FILE", "pom.xml");
         try {
-            Assert.assertEquals("data",
-                    GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
+            Assert.assertEquals(
+                    "data", GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
         } finally {
             System.clearProperty("GEOSERVER_REQUIRE_FILE");
         }
 
-        GeoServerResourceLoader loader = EasyMock.createMockBuilder(GeoServerResourceLoader.class)
-                .withConstructor().createMock();
+        GeoServerResourceLoader loader =
+                EasyMock.createMockBuilder(GeoServerResourceLoader.class)
+                        .withConstructor()
+                        .createMock();
 
         ApplicationContext appContext = EasyMock.createMock(ApplicationContext.class);
         EasyMock.expect(appContext.getBeanNamesForType(ExtensionFilter.class))
-                .andReturn(new String[] {}).anyTimes();
+                .andReturn(new String[] {})
+                .anyTimes();
         EasyMock.expect(appContext.getBeanNamesForType(ExtensionProvider.class))
-                .andReturn(new String[] {}).anyTimes();
+                .andReturn(new String[] {})
+                .anyTimes();
         EasyMock.expect(appContext.getBeanNamesForType(GeoServerResourceLoader.class))
-                .andReturn(new String[] { "geoServerLoader" }).anyTimes();
+                .andReturn(new String[] {"geoServerLoader"})
+                .anyTimes();
         Map<String, GeoServerResourceLoader> genvMap = new HashMap<>();
         genvMap.put("geoServerLoader", loader);
-        EasyMock.expect(appContext.getBeansOfType(GeoServerResourceLoader.class)).andReturn(genvMap)
+        EasyMock.expect(appContext.getBeansOfType(GeoServerResourceLoader.class))
+                .andReturn(genvMap)
                 .anyTimes();
         EasyMock.expect(appContext.getBean("geoServerLoader")).andReturn(loader).anyTimes();
         EasyMock.expect(appContext.isSingleton("geoServerLoader")).andReturn(true).anyTimes();
@@ -88,5 +89,4 @@ public class GeoServerEnvironmentTest extends TestCase {
         assertEquals("ABC", genv.resolveValue("${TEST_SYS_PROPERTY}"));
         assertEquals("${TEST_PROPERTY}", genv.resolveValue("${TEST_PROPERTY}"));
     }
-
 }

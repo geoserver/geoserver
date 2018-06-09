@@ -10,20 +10,15 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ImporterTest extends ImporterTestSupport {
-
 
     @Before
     public void addPrimitiveGeoFeature() throws IOException {
@@ -35,7 +30,7 @@ public class ImporterTest extends ImporterTestSupport {
 
         SpatialFile file = new SpatialFile(new File(dir, "archsites.shp"));
         file.prepare();
-        
+
         ImportContext context = importer.createContext(file);
         assertEquals(1, context.getTasks().size());
 
@@ -63,21 +58,21 @@ public class ImporterTest extends ImporterTestSupport {
         unpack("geotiff/EmissiveCampania.tif.bz2", dir);
 
         Directory d = new Directory(dir);
-        
+
         ImportContext context = importer.createContext(d);
         assertEquals(2, context.getTasks().size());
-        
+
         // cannot ensure order of tasks due to hashing
         HashSet files = new HashSet();
         files.add(context.getTasks().get(0).getData());
-        files.add(context.getTasks().get(1).getData());        
+        files.add(context.getTasks().get(1).getData());
         assertTrue(files.containsAll(d.getFiles()));
     }
 
     public void testCreateContextFromArchive() throws Exception {
         File file = file("shape/archsites_epsg_prj.zip");
         Archive arch = new Archive(file);
-        
+
         ImportContext context = importer.createContext(arch);
         assertEquals(1, context.getTasks().size());
     }
@@ -89,61 +84,61 @@ public class ImporterTest extends ImporterTestSupport {
         ImportContext context = importer.createContext(new Directory(dir));
         assertEquals(1, context.getTasks().size());
     }
-    
+
     @Test
     public void testCalculateBounds() throws Exception {
-        
+
         FeatureTypeInfo resource = getCatalog().getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
         resource.setNativeBoundingBox(nativeBounds);
-        resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
-                resource.getCRS()));
+        resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds, resource.getCRS()));
         getCatalog().save(resource);
-        
+
         assertNotNull(resource.getNativeBoundingBox());
         assertFalse(resource.getNativeBoundingBox().isEmpty());
-        
+
         ReferencedEnvelope bbox = resource.getNativeBoundingBox();
-        
-        //Test null bbox
+
+        // Test null bbox
         resource.setNativeBoundingBox(null);
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertEquals(bbox, resource.getNativeBoundingBox());
-        
-        //Test empty bbox
+
+        // Test empty bbox
         resource.setNativeBoundingBox(new ReferencedEnvelope());
         assertTrue(resource.getNativeBoundingBox().isEmpty());
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertEquals(bbox, resource.getNativeBoundingBox());
-        
-        //Test nonempty bbox - should not be changed
-        ReferencedEnvelope customBbox = new ReferencedEnvelope(30, 60, -10, 30, bbox.getCoordinateReferenceSystem());
+
+        // Test nonempty bbox - should not be changed
+        ReferencedEnvelope customBbox =
+                new ReferencedEnvelope(30, 60, -10, 30, bbox.getCoordinateReferenceSystem());
         resource.setNativeBoundingBox(customBbox);
         assertFalse(bbox.equals(resource.getNativeBoundingBox()));
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertFalse(bbox.equals(resource.getNativeBoundingBox()));
-        
-        //Test with "recalculate-bounds"=false
+
+        // Test with "recalculate-bounds"=false
         resource.setNativeBoundingBox(customBbox);
         resource.getMetadata().put("recalculate-bounds", false);
         assertFalse(bbox.equals(resource.getNativeBoundingBox()));
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertFalse(bbox.equals(resource.getNativeBoundingBox()));
-        
-        //Test with "recalculate-bounds"=true
+
+        // Test with "recalculate-bounds"=true
         resource.setNativeBoundingBox(customBbox);
         resource.getMetadata().put("recalculate-bounds", true);
         assertFalse(bbox.equals(resource.getNativeBoundingBox()));
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertTrue(bbox.equals(resource.getNativeBoundingBox()));
-        
-        //Test with "recalculate-bounds"="true"
+
+        // Test with "recalculate-bounds"="true"
         resource.setNativeBoundingBox(customBbox);
         resource.getMetadata().put("recalculate-bounds", "true");
         assertFalse(bbox.equals(resource.getNativeBoundingBox()));
@@ -151,5 +146,4 @@ public class ImporterTest extends ImporterTestSupport {
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertTrue(bbox.equals(resource.getNativeBoundingBox()));
     }
-    
 }

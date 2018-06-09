@@ -7,9 +7,8 @@ package org.geoserver.flow.controller;
 
 /**
  * A flow controller that can categorize requests by service, method and output format
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 public class BasicOWSController extends SingleQueueFlowController {
     public BasicOWSController(String service, int queueSize) {
@@ -28,5 +27,4 @@ public class BasicOWSController extends SingleQueueFlowController {
     public String toString() {
         return "BasicOWSController(" + matcher + "," + queueSize + ")";
     }
-
 }

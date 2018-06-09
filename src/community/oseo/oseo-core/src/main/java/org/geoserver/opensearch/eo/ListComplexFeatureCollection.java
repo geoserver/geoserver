@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureIterator;
@@ -19,14 +18,13 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
 /**
- * FeatureCollection implementation wrapping around a java.util.List. Derived from
- * {@link ListFeatureCollection}, but adapted to work with complex features too
- * 
+ * FeatureCollection implementation wrapping around a java.util.List. Derived from {@link
+ * ListFeatureCollection}, but adapted to work with complex features too
+ *
  * @see Hints#FEATURE_DETACHED
  * @author Oliver Gottwald
  * @author Jody
  * @author Andrea Aime - GeoSolutions
- * 
  * @source $URL$
  */
 @SuppressWarnings("unchecked")
@@ -43,11 +41,11 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
      * be of the provided schema for this to make sense. Please keep in mind the feature collection
      * control, no two Features in the list should have the same feature id, and you should not
      * insert the same feature more then once.
-     * <p>
-     * The provided list is directly used for storage, most feature collection operations just use a
-     * simple iterator so there is no performance advantaged to be gained over using an ArrayList vs
-     * a LinkedList (other then for the size() method of course).
-     * 
+     *
+     * <p>The provided list is directly used for storage, most feature collection operations just
+     * use a simple iterator so there is no performance advantaged to be gained over using an
+     * ArrayList vs a LinkedList (other then for the size() method of course).
+     *
      * @param schema
      * @param list
      */
@@ -55,18 +53,18 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
         super(schema);
         this.list = list;
     }
-    
-   /**
-    * Create a ListFeatureCollection around the provided feature.
-    * 
-    * @param schema
-    * @param list
-    */
-   public ListComplexFeatureCollection(Feature feature) {
-       super(feature.getType());
-       this.list = new ArrayList<>();
-       this.list.add(feature);
-   }
+
+    /**
+     * Create a ListFeatureCollection around the provided feature.
+     *
+     * @param schema
+     * @param list
+     */
+    public ListComplexFeatureCollection(Feature feature) {
+        super(feature.getType());
+        this.list = new ArrayList<>();
+        this.list.add(feature);
+    }
 
     @Override
     public int size() {
@@ -86,19 +84,13 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
         return bounds;
     }
 
-    /**
-     * Calculate bounds from features
-     * 
-     *
-     */
+    /** Calculate bounds from features */
     private ReferencedEnvelope calculateBounds() {
         ReferencedEnvelope extent = new ReferencedEnvelope();
         for (Feature feature : list) {
-            if (feature == null)
-                continue;
+            if (feature == null) continue;
             ReferencedEnvelope bbox = ReferencedEnvelope.reference(feature.getBounds());
-            if (bbox == null || bbox.isEmpty() || bbox.isNull())
-                continue;
+            if (bbox == null || bbox.isEmpty() || bbox.isNull()) continue;
             extent.expandToInclude(bbox);
         }
         return new ReferencedEnvelope(extent, schema.getCoordinateReferenceSystem());
@@ -111,7 +103,7 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
 
     /**
      * SimpleFeatureIterator that will use collection close method.
-     * 
+     *
      * @author Jody
      */
     private static class ListComplexFeatureIterator implements FeatureIterator {
@@ -138,5 +130,4 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
             return iter.next();
         }
     }
-
 }

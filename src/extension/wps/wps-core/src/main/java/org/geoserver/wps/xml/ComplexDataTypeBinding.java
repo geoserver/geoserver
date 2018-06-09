@@ -7,45 +7,42 @@ package org.geoserver.wps.xml;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.opengis.wps10.ComplexDataType;
 import net.opengis.wps10.Wps10Factory;
-
 import org.geoserver.wps.XMLEncoderDelegate;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 
 public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDataTypeBinding {
 
-    public ComplexDataTypeBinding( Wps10Factory factory ) {
-        super( factory );
+    public ComplexDataTypeBinding(Wps10Factory factory) {
+        super(factory);
     }
 
     @Override
     public List getProperties(Object object) throws Exception {
         ComplexDataType complex = (ComplexDataType) object;
-        if ( !complex.getData().isEmpty() && complex.getData().get( 0 ) instanceof XMLEncoderDelegate ) {
-            XMLEncoderDelegate delegate = (XMLEncoderDelegate) complex.getData().get( 0 );
+        if (!complex.getData().isEmpty()
+                && complex.getData().get(0) instanceof XMLEncoderDelegate) {
+            XMLEncoderDelegate delegate = (XMLEncoderDelegate) complex.getData().get(0);
             List properties = new ArrayList();
-            properties.add( new Object[]{ 
-                delegate.getProcessParameterIO().getElement(), delegate } );
-            
+            properties.add(new Object[] {delegate.getProcessParameterIO().getElement(), delegate});
+
             return properties;
         }
-        
+
         return super.getProperties(object);
     }
-    
+
     @Override
-    public Object parse(ElementInstance instance, Node node, Object value)
-    		throws Exception {
-    	ComplexDataType cd = (ComplexDataType) super.parse(instance, node, value);
-    	
-    	// handle non xml content as well
-    	if(cd.getData().size() == 0) {
-    		cd.getData().add(instance.getText().toString());
-    	}
-    	
-    	return cd;
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        ComplexDataType cd = (ComplexDataType) super.parse(instance, node, value);
+
+        // handle non xml content as well
+        if (cd.getData().size() == 0) {
+            cd.getData().add(instance.getText().toString());
+        }
+
+        return cd;
     }
 }

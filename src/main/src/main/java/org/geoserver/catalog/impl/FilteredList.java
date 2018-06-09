@@ -8,7 +8,8 @@ import java.util.AbstractList;
 import java.util.List;
 
 /**
- * Allows exposing a filtered list of items, but keeping in synch the underlying full list on modification
+ * Allows exposing a filtered list of items, but keeping in synch the underlying full list on
+ * modification
  *
  * @author Niels Charlier (grabbed from SecuredLayerGroupInfo.getLayers() inner class)
  */
@@ -54,14 +55,14 @@ public class FilteredList<T> extends AbstractList<T> {
         delegate.remove(o);
         return filtered.remove(o);
     }
-    
+
     /**
      * Allows to unwrap an element before setting it into the delegate list
+     *
      * @param element
      * @return
      */
     protected T unwrap(T element) {
         return element;
     }
-
 }

@@ -7,40 +7,35 @@ package org.geoserver.importer.rest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import org.geoserver.importer.DatePattern;
 import org.geoserver.importer.Dates;
 import org.geoserver.importer.transform.DateFormatTransform;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-/**
- *
- * @author Ian Schneider <ischneider@opengeo.org>
- */
+/** @author Ian Schneider <ischneider@opengeo.org> */
 public class DateFormatTransformTest extends TransformTestSupport {
-    
-    public DateFormatTransformTest() {
-    }
-    
+
+    public DateFormatTransformTest() {}
+
     public void testExtents() throws Exception {
         // this is mostly a verification of the extents of the builtin date parsing
         String NOT_USED = null;
         DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED);
-        
+
         GregorianCalendar cal = new GregorianCalendar();
         cal.clear();
         cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-        
+
         int minYear = -292269052; // this is the text value
         Date parsed = transform.parseDate("" + minYear);
         cal.setTime(parsed);
 
         // the real value is the minYear - 1 since 0BC == 1AD
-        assertEquals(minYear - 1, - cal.get(Calendar.YEAR));
-        assertEquals(GregorianCalendar.BC,cal.get(Calendar.ERA));
-        
+        assertEquals(minYear - 1, -cal.get(Calendar.YEAR));
+        assertEquals(GregorianCalendar.BC, cal.get(Calendar.ERA));
+
         cal.setTimeInMillis(Long.MAX_VALUE);
         int maxYear = cal.get(Calendar.YEAR);
         parsed = transform.parseDate("" + maxYear);
@@ -54,21 +49,23 @@ public class DateFormatTransformTest extends TransformTestSupport {
         DateFormatTransform transform = new DateFormatTransform("not used", NOT_USED);
 
         Date now = new Date();
-        
+
         // make a big shuffled list of patterns to ensure caching of last pattern
         // doesn't cause any problems
         List<String> patterns = new ArrayList<String>();
-        patterns.addAll(Collections2.transform(Dates.patterns(false), 
-            new Function<DatePattern, String>() {
-            
-            @Override
-            public String apply(DatePattern input) {
-                return input.dateFormat().toPattern();
-            }
-        }));
-        
+        patterns.addAll(
+                Collections2.transform(
+                        Dates.patterns(false),
+                        new Function<DatePattern, String>() {
+
+                            @Override
+                            public String apply(DatePattern input) {
+                                return input.dateFormat().toPattern();
+                            }
+                        }));
+
         Collections.shuffle(patterns);
-        
+
         for (String f : patterns) {
             SimpleDateFormat fmt = new SimpleDateFormat(f);
             fmt.setTimeZone(Dates.UTC_TZ);
@@ -89,7 +86,7 @@ public class DateFormatTransformTest extends TransformTestSupport {
         Date parsed = transform.parseDate(fmt.format(now));
         assertEquals(expected, parsed);
     }
-    
+
     public void testJSON() throws Exception {
         doJSONTest(new DateFormatTransform("foo", null));
         doJSONTest(new DateFormatTransform("foo", "yyyy-MM-dd"));

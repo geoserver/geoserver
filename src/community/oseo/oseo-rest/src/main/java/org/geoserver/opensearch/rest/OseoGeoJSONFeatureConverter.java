@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
-
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geotools.geojson.feature.FeatureJSON;
@@ -42,9 +41,8 @@ public class OseoGeoJSONFeatureConverter extends BaseMessageConverter<Object> {
             throws IOException, HttpMessageNotReadableException {
         return new FeatureJSON().readFeature(inputMessage.getBody());
     }
-    
+
     public int getPriority() {
         return ExtensionPriority.HIGHEST;
     }
-
 }

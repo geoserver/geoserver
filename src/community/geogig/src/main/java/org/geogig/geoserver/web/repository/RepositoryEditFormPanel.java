@@ -4,15 +4,20 @@
  */
 package org.geogig.geoserver.web.repository;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -41,16 +46,7 @@ import org.locationtech.geogig.repository.impl.GeogigTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-/**
- */
+/** */
 public abstract class RepositoryEditFormPanel extends Panel {
 
     private static final long serialVersionUID = -9001389048321749075L;
@@ -58,17 +54,17 @@ public abstract class RepositoryEditFormPanel extends Panel {
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryEditFormPanel.class);
 
     private RemotesListPanel remotes;
-    
+
     private ConfigListPanel localConfig;
-    
+
     private ConfigListPanel globalConfig;
-    
+
     private IndexListPanel indexes;
 
     private ModalWindow popupWindow;
 
     private Form<RepositoryInfo> form;
-    
+
     private boolean isNew = false;
 
     public RepositoryEditFormPanel(final String id) {
@@ -88,55 +84,57 @@ public abstract class RepositoryEditFormPanel extends Panel {
 
         form = new Form<>("repoForm", repoInfo);
         form.add(new RepositoryEditPanel("repo", repoInfo, isNew));
-        
+
         form.add(addRemoteLink());
         List<RemoteInfo> remoteInfos = loadRemoteInfos(repoInfo.getObject());
         form.add(remotes = new RemotesListPanel("remotes", remoteInfos));
-        
+
         form.add(addConfigLink(false));
         Map<String, String> localConfigMap = loadConfig(repoInfo.getObject(), false);
         form.add(localConfig = new ConfigListPanel("localConfig", localConfigMap));
-        
+
         form.add(addConfigLink(true));
         Map<String, String> globalConfigMap = loadConfig(repoInfo.getObject(), true);
         form.add(globalConfig = new ConfigListPanel("globalConfig", globalConfigMap));
-        
+
         List<IndexInfo> indexInfos = loadIndexes(repoInfo.getObject());
         form.add(indexes = new IndexListPanel("indexes", indexInfos));
-        
+
         add(form);
         FeedbackPanel feedback = new FeedbackPanel("feedback");
         form.add(feedback);
 
-        form.add(new AjaxLink<Void>("cancel") {
-            private static final long serialVersionUID = 6220299771769708060L;
+        form.add(
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = 6220299771769708060L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                cancelled(target);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        cancelled(target);
+                    }
+                });
 
-        form.add(new AjaxSubmitLink("save", form) {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxSubmitLink("save", form) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
-                target.add(form);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        super.onError(target, form);
+                        target.add(form);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                try {
-                    RepositoryInfo repoInfo = (RepositoryInfo) form.getModelObject();
-                    onSave(repoInfo, target);
-                } catch (IllegalArgumentException e) {
-                    form.error(e.getMessage());
-                    target.add(form);
-                }
-            }
-        });
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        try {
+                            RepositoryInfo repoInfo = (RepositoryInfo) form.getModelObject();
+                            onSave(repoInfo, target);
+                        } catch (IllegalArgumentException e) {
+                            form.error(e.getMessage());
+                            target.add(form);
+                        }
+                    }
+                });
     }
 
     private List<RemoteInfo> loadRemoteInfos(RepositoryInfo repo) {
@@ -159,24 +157,25 @@ public abstract class RepositoryEditFormPanel extends Panel {
 
         return list;
     }
-    
+
     private Map<String, String> loadConfig(RepositoryInfo repo, boolean global) {
         String repoId = repo.getId();
         if (null == repoId) {
             return Maps.newHashMap();
         }
-        
+
         Repository geogig;
         try {
             geogig = RepositoryManager.get().getRepository(repoId);
             if (geogig != null) {
-            	Optional<Map<String, String>> config = geogig.command(ConfigOp.class)//
-            			.setAction(ConfigAction.CONFIG_LIST)//
-            			.setScope(global ? ConfigScope.GLOBAL : ConfigScope.LOCAL)//
-            			.call();
-            	if (config.isPresent()) {
-            		return config.get();
-            	}
+                Optional<Map<String, String>> config =
+                        geogig.command(ConfigOp.class) //
+                                .setAction(ConfigAction.CONFIG_LIST) //
+                                .setScope(global ? ConfigScope.GLOBAL : ConfigScope.LOCAL) //
+                                .call();
+                if (config.isPresent()) {
+                    return config.get();
+                }
             }
         } catch (Exception e) {
             LOGGER.warn("Failed to load config for repository", e);
@@ -184,13 +183,13 @@ public abstract class RepositoryEditFormPanel extends Panel {
 
         return Maps.newHashMap();
     }
-    
+
     private List<IndexInfo> loadIndexes(RepositoryInfo repo) {
         String repoId = repo.getId();
         if (null == repoId) {
             return Lists.newArrayList();
         }
-        
+
         Repository geogig;
         try {
             geogig = RepositoryManager.get().getRepository(repoId);
@@ -212,8 +211,8 @@ public abstract class RepositoryEditFormPanel extends Panel {
                 RemoteInfo ri = new RemoteInfo();
                 IModel<RemoteInfo> model = new Model<>(ri);
                 RemotesListPanel table = RepositoryEditFormPanel.this.remotes;
-                RemoteEditPanel editPanel = new RemoteEditPanel(popupWindow.getContentId(), model,
-                        popupWindow, table);
+                RemoteEditPanel editPanel =
+                        new RemoteEditPanel(popupWindow.getContentId(), model, popupWindow, table);
 
                 popupWindow.setContent(editPanel);
                 popupWindow.setTitle(new ResourceModel("RemoteEditPanel.title"));
@@ -221,7 +220,7 @@ public abstract class RepositoryEditFormPanel extends Panel {
             }
         };
     }
-    
+
     private Component addConfigLink(boolean global) {
         return new AjaxLink<Void>(global ? "addGlobalConfig" : "addLocalConfig") {
 
@@ -231,9 +230,12 @@ public abstract class RepositoryEditFormPanel extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 ConfigEntry config = new ConfigEntry();
                 IModel<ConfigEntry> model = new Model<>(config);
-                ConfigListPanel table = global ? RepositoryEditFormPanel.this.globalConfig : RepositoryEditFormPanel.this.localConfig;
-                ConfigEditPanel editPanel = new ConfigEditPanel(popupWindow.getContentId(), model,
-                        popupWindow, table);
+                ConfigListPanel table =
+                        global
+                                ? RepositoryEditFormPanel.this.globalConfig
+                                : RepositoryEditFormPanel.this.localConfig;
+                ConfigEditPanel editPanel =
+                        new ConfigEditPanel(popupWindow.getContentId(), model, popupWindow, table);
 
                 popupWindow.setContent(editPanel);
                 popupWindow.setTitle(new ResourceModel("ConfigEditPanel.title"));
@@ -250,21 +252,25 @@ public abstract class RepositoryEditFormPanel extends Panel {
             repoInfo = manager.save(repoInfo);
             geogig = manager.getRepository(repoInfo.getId());
         } catch (Exception e) {
-            form.error("Unable to connect to repository " + repoInfo.getLocation() + "\n"
-                    + e.getMessage());
+            form.error(
+                    "Unable to connect to repository "
+                            + repoInfo.getLocation()
+                            + "\n"
+                            + e.getMessage());
             target.add(form);
             return;
         }
 
-        Function<RemoteInfo, Integer> keyFunction = new Function<RemoteInfo, Integer>() {
-            @Override
-            public Integer apply(RemoteInfo r) {
-                return r.getId();
-            }
-        };
+        Function<RemoteInfo, Integer> keyFunction =
+                new Function<RemoteInfo, Integer>() {
+                    @Override
+                    public Integer apply(RemoteInfo r) {
+                        return r.getId();
+                    }
+                };
 
-        Map<Integer, RemoteInfo> currentRemotes = new HashMap<>(
-                Maps.uniqueIndex(loadRemoteInfos(repoInfo), keyFunction));
+        Map<Integer, RemoteInfo> currentRemotes =
+                new HashMap<>(Maps.uniqueIndex(loadRemoteInfos(repoInfo), keyFunction));
 
         Set<RemoteInfo> newRemotes = Sets.newHashSet(remotes.getRemotes());
         if (!currentRemotes.isEmpty() || !newRemotes.isEmpty()) {
@@ -283,14 +289,23 @@ public abstract class RepositoryEditFormPanel extends Panel {
             }
         }
         Map<String, String> currentLocalConfig = loadConfig(repoInfo, false);
-        updateConfig(geogig.context(), currentLocalConfig, Lists.newArrayList(localConfig.getConfigs()), false);
+        updateConfig(
+                geogig.context(),
+                currentLocalConfig,
+                Lists.newArrayList(localConfig.getConfigs()),
+                false);
         Map<String, String> currentGlobalConfig = loadConfig(repoInfo, true);
-        updateConfig(geogig.context(), currentGlobalConfig, Lists.newArrayList(globalConfig.getConfigs()), true);
+        updateConfig(
+                geogig.context(),
+                currentGlobalConfig,
+                Lists.newArrayList(globalConfig.getConfigs()),
+                true);
         saved(repoInfo, target);
     }
 
-    private void updateRemotes(Context geogig, Map<Integer, RemoteInfo> currentRemotes,
-            Set<RemoteInfo> newRemotes) throws Exception {
+    private void updateRemotes(
+            Context geogig, Map<Integer, RemoteInfo> currentRemotes, Set<RemoteInfo> newRemotes)
+            throws Exception {
 
         // handle deletes first, in case a remote was deleted in the table and then a new one added
         // with the same name
@@ -315,7 +330,7 @@ public abstract class RepositoryEditFormPanel extends Panel {
         }
 
         for (RemoteInfo ri : newRemotes) {
-            if (ri.getId() == null) {// its a new one
+            if (ri.getId() == null) { // its a new one
                 RemoteAddOp cmd = geogig.command(RemoteAddOp.class);
                 cmd.setName(ri.getName());
                 cmd.setURL(ri.getURL());
@@ -332,57 +347,62 @@ public abstract class RepositoryEditFormPanel extends Panel {
                 RemoteInfo old = currentRemotes.remove(ri.getId());
                 Preconditions.checkNotNull(old);
                 if (old.equals(ri)) {
-                    continue;// didn't change
+                    continue; // didn't change
                 }
                 try {
                     geogig.command(RemoteRemoveOp.class).setName(old.getName()).call();
                     RemoteAddOp addop = geogig.command(RemoteAddOp.class);
-                    addop.setName(ri.getName()).setURL(ri.getURL()).setUserName(ri.getUserName())
+                    addop.setName(ri.getName())
+                            .setURL(ri.getURL())
+                            .setUserName(ri.getUserName())
                             .setPassword(ri.getPassword());
                     addop.call();
                 } catch (RuntimeException e) {
                     throw new RuntimeException(
                             "Error updating remote " + ri.getName() + ": " + e.getMessage(), e);
                 }
-
             }
         }
     }
-    
-    private void updateConfig(Context geogig, Map<String, String> currentConfig, List<ConfigEntry> newConfig, boolean global) {
-    	ConfigScope scope = global ? ConfigScope.GLOBAL : ConfigScope.LOCAL;
-    	for (ConfigEntry entry : newConfig) {
-    		if (currentConfig.containsKey(entry.getName())) {
-    			if (!currentConfig.get(entry.getName()).equals(entry.getValue())) {
-    				// entry changed
-    				geogig.command(ConfigOp.class)//
-    				  .setAction(ConfigAction.CONFIG_SET)//
-    				  .setName(entry.getName())//
-    				  .setValue(entry.getValue())//
-    				  .setScope(scope)//
-    				  .call();
-    			}
-        		currentConfig.remove(entry.getName());
-    		} else {
-    			// new entry
-				geogig.command(ConfigOp.class)//
-				  .setAction(ConfigAction.CONFIG_SET)//
-				  .setName(entry.getName())//
-				  .setValue(entry.getValue())//
-				  .setScope(scope)//
-				  .call();
-    		}
-    	}
-    	if (!isNew) {
-	    	for(Entry<String, String> entry : currentConfig.entrySet()) {
-	    		// removed entry
-				geogig.command(ConfigOp.class)//
-				  .setAction(ConfigAction.CONFIG_UNSET)//
-				  .setName(entry.getKey())//
-				  .setScope(scope)//
-				  .call();
-	    	}
-    	}
+
+    private void updateConfig(
+            Context geogig,
+            Map<String, String> currentConfig,
+            List<ConfigEntry> newConfig,
+            boolean global) {
+        ConfigScope scope = global ? ConfigScope.GLOBAL : ConfigScope.LOCAL;
+        for (ConfigEntry entry : newConfig) {
+            if (currentConfig.containsKey(entry.getName())) {
+                if (!currentConfig.get(entry.getName()).equals(entry.getValue())) {
+                    // entry changed
+                    geogig.command(ConfigOp.class) //
+                            .setAction(ConfigAction.CONFIG_SET) //
+                            .setName(entry.getName()) //
+                            .setValue(entry.getValue()) //
+                            .setScope(scope) //
+                            .call();
+                }
+                currentConfig.remove(entry.getName());
+            } else {
+                // new entry
+                geogig.command(ConfigOp.class) //
+                        .setAction(ConfigAction.CONFIG_SET) //
+                        .setName(entry.getName()) //
+                        .setValue(entry.getValue()) //
+                        .setScope(scope) //
+                        .call();
+            }
+        }
+        if (!isNew) {
+            for (Entry<String, String> entry : currentConfig.entrySet()) {
+                // removed entry
+                geogig.command(ConfigOp.class) //
+                        .setAction(ConfigAction.CONFIG_UNSET) //
+                        .setName(entry.getKey()) //
+                        .setScope(scope) //
+                        .call();
+            }
+        }
     }
 
     protected abstract void saved(RepositoryInfo info, AjaxRequestTarget target);

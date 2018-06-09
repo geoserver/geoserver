@@ -6,31 +6,31 @@
 package org.geoserver.security;
 
 import java.util.Collection;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- * An authentication based on a unique key. Allows the unique key to be retrieved later
- */
+/** An authentication based on a unique key. Allows the unique key to be retrieved later */
 public class KeyAuthenticationToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = -6354705060521817602L;
 
     public static final String DEFAULT_URL_PARAM = "authkey";
 
-    private String key,authKeyParamName;
+    private String key, authKeyParamName;
 
     public KeyAuthenticationToken(String key, String authKeyParamName, UserDetails user) {
-        this(key,authKeyParamName,user,user.getAuthorities());
+        this(key, authKeyParamName, user, user.getAuthorities());
     }
-    
-    public KeyAuthenticationToken(String key, String authKeyParamName,UserDetails user, 
+
+    public KeyAuthenticationToken(
+            String key,
+            String authKeyParamName,
+            UserDetails user,
             Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.key = key;
         setDetails(user);
-        this.authKeyParamName=authKeyParamName;
+        this.authKeyParamName = authKeyParamName;
         setAuthenticated(true);
     }
 
@@ -39,11 +39,10 @@ public class KeyAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     public Object getPrincipal() {
-        return ((UserDetails)getDetails()).getUsername();
+        return ((UserDetails) getDetails()).getUsername();
     }
 
     public String getAuthKeyParamName() {
         return authKeyParamName;
     }
-
 }

@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
@@ -27,9 +26,7 @@ import org.geotools.util.Version;
 import org.opengis.filter.FilterFactory;
 import org.xml.sax.EntityResolver;
 
-/**
- * Test style handler based on properties format.
- */
+/** Test style handler based on properties format. */
 public class PropertyStyleHandler extends StyleHandler {
 
     public static final String FORMAT = "psl";
@@ -55,10 +52,14 @@ public class PropertyStyleHandler extends StyleHandler {
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator,
-       EntityResolver enityResolver) throws IOException {
+    public StyledLayerDescriptor parse(
+            Object input,
+            Version version,
+            ResourceLocator resourceLocator,
+            EntityResolver enityResolver)
+            throws IOException {
         Properties p = new Properties();
-        try(Reader reader = toReader(input)) {
+        try (Reader reader = toReader(input)) {
             p.load(reader);
         }
 
@@ -68,21 +69,20 @@ public class PropertyStyleHandler extends StyleHandler {
         String type = p.getProperty("type");
         if ("line".equalsIgnoreCase(type)) {
             LineSymbolizer ls = styleFactory.createLineSymbolizer();
-            ls.setStroke(styleFactory.createStroke(filterFactory.literal(color), filterFactory.literal(2)));
+            ls.setStroke(
+                    styleFactory.createStroke(
+                            filterFactory.literal(color), filterFactory.literal(2)));
 
             sym = ls;
-        }
-        else if ("polygon".equalsIgnoreCase(type)) {
+        } else if ("polygon".equalsIgnoreCase(type)) {
             PolygonSymbolizer ps = styleFactory.createPolygonSymbolizer();
             ps.setFill(styleFactory.createFill(filterFactory.literal(color)));
 
             sym = ps;
-        }
-        else if ("raster".equalsIgnoreCase(type)) {
+        } else if ("raster".equalsIgnoreCase(type)) {
             RasterSymbolizer rs = styleFactory.createRasterSymbolizer();
             sym = rs;
-        }
-        else {
+        } else {
             Mark mark = styleFactory.createMark();
             mark.setFill(styleFactory.createFill(filterFactory.literal(color)));
 
@@ -115,24 +115,25 @@ public class PropertyStyleHandler extends StyleHandler {
             return def;
         }
 
-        return new Color(Integer.valueOf(color.substring(0,2), 16),
-            Integer.valueOf(color.substring(2,4), 16), Integer.valueOf(color.substring(4,6), 16));
+        return new Color(
+                Integer.valueOf(color.substring(0, 2), 16),
+                Integer.valueOf(color.substring(2, 4), 16),
+                Integer.valueOf(color.substring(4, 6), 16));
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
+    public void encode(
+            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+            throws IOException {
         Properties props = new Properties();
         for (Symbolizer sym : SLD.symbolizers(Styles.style(sld))) {
             if (sym instanceof PointSymbolizer) {
                 props.put("type", "point");
-            }
-            else if (sym instanceof LineSymbolizer) {
+            } else if (sym instanceof LineSymbolizer) {
                 props.put("type", "line");
-            }
-            else if (sym instanceof PolygonSymbolizer) {
+            } else if (sym instanceof PolygonSymbolizer) {
                 props.put("type", "polygon");
-            }
-            else if (sym instanceof RasterSymbolizer) {
+            } else if (sym instanceof RasterSymbolizer) {
                 props.put("type", "raster");
             }
         }
@@ -141,7 +142,8 @@ public class PropertyStyleHandler extends StyleHandler {
     }
 
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
+            throws IOException {
         return Collections.emptyList();
     }
 }

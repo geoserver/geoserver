@@ -8,15 +8,14 @@ package org.geoserver.rest;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Class with FontListResource tests
@@ -27,7 +26,7 @@ public class FontListTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        //make the request, parsing the result as a dom
+        // make the request, parsing the result as a dom
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/fonts.xml");
 
         /*TransformerFactory tf = TransformerFactory.newInstance();
@@ -37,18 +36,18 @@ public class FontListTest extends GeoServerSystemTestSupport {
         transformer.transform(new DOMSource(dom), new StreamResult(writer));
         String output = writer.toString();
         System.out.println(output);*/
-        //make assertions
+        // make assertions
         Node fonts = getFirstElementByTagName(dom, "fonts");
         assertNotNull(fonts);
-        assertTrue( ((Element) fonts).getElementsByTagName("entry").getLength()  > 0);
+        assertTrue(((Element) fonts).getElementsByTagName("entry").getLength() > 0);
     }
 
     @Test
     public void testGetAsJSON() throws Exception {
-        //make the request, parsing the result into a json object
+        // make the request, parsing the result into a json object
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/fonts.json");
 
-        //make assertions
+        // make assertions
         assertTrue(json instanceof JSONObject);
         assertTrue(((JSONObject) json).get("fonts") instanceof JSONArray);
     }

@@ -17,10 +17,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.TimeZone;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geotools.data.DataUtilities;
@@ -29,10 +27,10 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * Controller which publishes files through a web interface from the classpath
- * <p>
- * To use this controller, it should be mapped to a particular url in the url mapping of the spring
- * dispatcher servlet. Example:
- * 
+ *
+ * <p>To use this controller, it should be mapped to a particular url in the url mapping of the
+ * spring dispatcher servlet. Example:
+ *
  * <pre>
  * <code>
  *   &lt;bean id="filePublisher" class="org.geoserver.ows.FilePublisher"/&gt;
@@ -47,14 +45,14 @@ import org.springframework.web.servlet.mvc.AbstractController;
  *   &lt;/bean&gt;
  * </code>
  * </pre>
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractURLPublisher extends AbstractController {
 
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    protected ModelAndView handleRequestInternal(
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
         URL url = getUrl(request);
 
         // if not found return a 404
@@ -62,18 +60,18 @@ public abstract class AbstractURLPublisher extends AbstractController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        
+
         File file = DataUtilities.urlToFile(url);
-        if(file != null && file.exists() && file.isDirectory()) {
+        if (file != null && file.exists() && file.isDirectory()) {
             String uri = request.getRequestURI();
             uri += uri.endsWith("/") ? "index.html" : "/index.html";
-            
+
             response.addHeader("Location", uri);
             response.sendError(HttpServletResponse.SC_MOVED_TEMPORARILY);
-            
+
             return null;
         }
-        
+
         if (file != null && checkNotModified(request, file.lastModified())) {
             response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
             return null;
@@ -112,15 +110,15 @@ public abstract class AbstractURLPublisher extends AbstractController {
             // Read the first four bytes, and determine charset encoding
             count = input.read(b4);
             encInfo = XmlCharsetDetector.getEncodingName(b4, count);
-            response.setCharacterEncoding(encInfo.getEncoding() != null ? encInfo.getEncoding()
-                    : "UTF-8");
+            response.setCharacterEncoding(
+                    encInfo.getEncoding() != null ? encInfo.getEncoding() : "UTF-8");
 
-            //count < 1 -> empty file
+            // count < 1 -> empty file
             if (count > 0) {
                 // send out the first four bytes read
                 output = response.getOutputStream();
                 output.write(b4, 0, count);
-    
+
                 // copy the content to the output
                 byte[] buffer = new byte[8192];
                 int n = -1;
@@ -129,8 +127,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
                 }
             }
         } finally {
-            if (input != null)
-                input.close();
+            if (input != null) input.close();
         }
 
         return null;
@@ -138,7 +135,10 @@ public abstract class AbstractURLPublisher extends AbstractController {
 
     private boolean checkNotModified(HttpServletRequest request, long timeStamp) {
         Enumeration headers = request.getHeaders("If-Modified-Since");
-        String header = headers != null && headers.hasMoreElements() ? headers.nextElement().toString() : null;
+        String header =
+                headers != null && headers.hasMoreElements()
+                        ? headers.nextElement().toString()
+                        : null;
         if (header != null && header.length() > 0) {
             long ifModSinceSeconds = lastModified(header);
             // the HTTP header has second precision
@@ -149,8 +149,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
     }
 
     static String lastModified(long timeStamp) {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                Locale.ENGLISH);
+        SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH);
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         return format.format(new Date(timeStamp)) + " GMT";
     }
@@ -158,8 +157,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
     static long lastModified(String timeStamp) {
         long ifModifiedSince = Long.MIN_VALUE;
         try {
-            SimpleDateFormat fmt = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                    Locale.ENGLISH);
+            SimpleDateFormat fmt = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH);
             fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
             ifModifiedSince = fmt.parse(timeStamp).getTime();
         } catch (ParseException pe) {
@@ -171,9 +169,9 @@ public abstract class AbstractURLPublisher extends AbstractController {
 
     /**
      * Retrieves the resource URL from the specified request
-     * @param request
      *
-     * @throws IOException 
+     * @param request
+     * @throws IOException
      */
     protected abstract URL getUrl(HttpServletRequest request) throws IOException;
 }

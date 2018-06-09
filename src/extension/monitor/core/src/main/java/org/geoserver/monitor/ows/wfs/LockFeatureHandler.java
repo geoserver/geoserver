@@ -7,7 +7,6 @@ package org.geoserver.monitor.ows.wfs;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.MonitorConfig;
@@ -23,24 +22,22 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
     @Override
     public List<String> getLayers(Object request) {
         @SuppressWarnings("unchecked")
-        List<Object> locks = (List<Object>) EMFUtils.get((EObject)request, "lock");
+        List<Object> locks = (List<Object>) EMFUtils.get((EObject) request, "lock");
         if (locks == null) {
             return null;
         }
-        
+
         List<String> layers = new ArrayList<String>();
         for (Object lock : locks) {
-            layers.add(toString(EMFUtils.get((EObject)lock, "typeName")));
+            layers.add(toString(EMFUtils.get((EObject) lock, "typeName")));
         }
-        
+
         return layers;
     }
-    
 
     @SuppressWarnings("unchecked")
     @Override
     protected List<Object> getElements(Object request) {
         return (List<Object>) OwsUtils.get(request, "lock");
     }
-
 }

@@ -10,48 +10,33 @@ import java.util.Map;
 
 /**
  * Information about a particular image format.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public interface ImageFormatInfo {
 
-    /**
-     * Identifier.
-     */
+    /** Identifier. */
     String getId();
 
-    /**
-     * The mime type of the image format.
-     */
+    /** The mime type of the image format. */
     String getMimeType();
 
-    void setMimeType( String mimeType );
-    
-    /**
-     * @uml.property name="antiAliasing"
-     */
+    void setMimeType(String mimeType);
+
+    /** @uml.property name="antiAliasing" */
     boolean isAntiAliasing();
 
-    /**
-     * @uml.property name="antiAliasing"
-     */
+    /** @uml.property name="antiAliasing" */
     void setAntiAliasing(boolean antiAliasing);
 
-    /**
-     * @uml.property name="nativeAcceleration"
-     */
+    /** @uml.property name="nativeAcceleration" */
     boolean isNativeAcceleration();
 
-    /**
-     * @uml.property name="nativeAcceleration"
-     */
+    /** @uml.property name="nativeAcceleration" */
     void setNativeAcceleration(boolean nativeAcceleration);
 
-    /**
-     * @uml.property name="metadata"
-     */
-    Map<String,Serializable> getMetadata();
+    /** @uml.property name="metadata" */
+    Map<String, Serializable> getMetadata();
 
-    Map<Object,Object> getClientProperties();
+    Map<Object, Object> getClientProperties();
 }

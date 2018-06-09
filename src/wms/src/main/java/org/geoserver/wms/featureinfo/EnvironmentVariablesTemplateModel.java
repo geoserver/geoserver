@@ -4,12 +4,11 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import org.geoserver.platform.GeoServerExtensions;
-
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import org.geoserver.platform.GeoServerExtensions;
 
 public class EnvironmentVariablesTemplateModel implements TemplateHashModel {
 
@@ -22,7 +21,4 @@ public class EnvironmentVariablesTemplateModel implements TemplateHashModel {
     public boolean isEmpty() throws TemplateModelException {
         return false;
     }
-
-    
-
 }

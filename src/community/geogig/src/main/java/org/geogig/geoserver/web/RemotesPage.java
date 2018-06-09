@@ -15,8 +15,7 @@ import org.geogig.geoserver.web.security.WhitelistRuleEditor;
 import org.geogig.geoserver.web.security.WhitelistRulePanel;
 import org.geoserver.web.GeoServerSecuredPage;
 
-/**
- */
+/** */
 public class RemotesPage extends GeoServerSecuredPage {
 
     private ModalWindow window;
@@ -26,25 +25,32 @@ public class RemotesPage extends GeoServerSecuredPage {
 
         window = new ModalWindow("popup");
         add(window);
-        final WhitelistRulePanel whitelistRulePanel = new WhitelistRulePanel("whitelist.rules",
-                window);
+        final WhitelistRulePanel whitelistRulePanel =
+                new WhitelistRulePanel("whitelist.rules", window);
         whitelistRulePanel.setOutputMarkupId(true);
         add(whitelistRulePanel);
 
-        add(new AjaxLink<Void>("whitelist.add") {
+        add(
+                new AjaxLink<Void>("whitelist.add") {
 
-            private static final long serialVersionUID = 5869313981483016964L;
+                    private static final long serialVersionUID = 5869313981483016964L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-//                window.setInitialHeight(300);
-//                window.setInitialWidth(300);
-                window.setTitle(new Model<String>("Edit whitelist rule"));
-                IModel<WhitelistRule> model = new Model<>(new WhitelistRule(null, null, false));
-                window.setContent(new WhitelistRuleEditor(window.getContentId(), model, window,
-                        whitelistRulePanel, true));
-                window.show(target);
-            };
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        //                window.setInitialHeight(300);
+                        //                window.setInitialWidth(300);
+                        window.setTitle(new Model<String>("Edit whitelist rule"));
+                        IModel<WhitelistRule> model =
+                                new Model<>(new WhitelistRule(null, null, false));
+                        window.setContent(
+                                new WhitelistRuleEditor(
+                                        window.getContentId(),
+                                        model,
+                                        window,
+                                        whitelistRulePanel,
+                                        true));
+                        window.show(target);
+                    };
+                });
     }
 }

@@ -4,9 +4,9 @@
  */
 package org.geoserver.backuprestore;
 
+import com.thoughtworks.xstream.XStream;
 import java.util.Arrays;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.ValidationResult;
@@ -23,19 +23,12 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.util.Assert;
 
-import com.thoughtworks.xstream.XStream;
-
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public abstract class BackupRestoreItem<T> {
 
-    /**
-     * logger
-     */
+    /** logger */
     private static final Logger LOGGER = Logging.getLogger(BackupRestoreItem.class);
-    
+
     protected Backup backupFacade;
 
     private Catalog catalog;
@@ -61,72 +54,52 @@ public abstract class BackupRestoreItem<T> {
         this.xStreamPersisterFactory = xStreamPersisterFactory;
     }
 
-    /**
-     * @return the xStreamPersisterFactory
-     */
+    /** @return the xStreamPersisterFactory */
     public XStreamPersisterFactory getxStreamPersisterFactory() {
         return xStreamPersisterFactory;
     }
 
-    /**
-     * @return the xp
-     */
+    /** @return the xp */
     public XStream getXp() {
         return xp;
     }
 
-    /**
-     * @param xp the xp to set
-     */
+    /** @param xp the xp to set */
     public void setXp(XStream xp) {
         this.xp = xp;
     }
 
-    /**
-     * @return the catalog
-     */
+    /** @return the catalog */
     public Catalog getCatalog() {
         return catalog;
     }
 
-    /**
-     * @return the isNew
-     */
+    /** @return the isNew */
     public boolean isNew() {
         return isNew;
     }
 
-    /**
-     * @return the currentJobExecution
-     */
+    /** @return the currentJobExecution */
     public AbstractExecutionAdapter getCurrentJobExecution() {
         return currentJobExecution;
     }
 
-    /**
-     * @return the dryRun
-     */
+    /** @return the dryRun */
     public boolean isDryRun() {
         return dryRun;
     }
 
-    /**
-     * @return the bestEffort
-     */
+    /** @return the bestEffort */
     public boolean isBestEffort() {
         return bestEffort;
     }
 
-    /**
-     * @return the filter
-     */
+    /** @return the filter */
     public Filter getFilter() {
         return filter;
     }
 
-    /**
-     * @param filter the filter to set
-     */
+    /** @param filter the filter to set */
     public void setFilter(Filter filter) {
         this.filter = filter;
     }
@@ -143,8 +116,8 @@ public abstract class BackupRestoreItem<T> {
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()
                 && backupFacade.getRestoreExecutions().containsKey(jobExecution.getId())) {
-            this.currentJobExecution = backupFacade.getRestoreExecutions()
-                    .get(jobExecution.getId());
+            this.currentJobExecution =
+                    backupFacade.getRestoreExecutions().get(jobExecution.getId());
             this.catalog = ((RestoreExecutionAdapter) currentJobExecution).getRestoreCatalog();
             this.isNew = true;
         } else {
@@ -164,10 +137,11 @@ public abstract class BackupRestoreItem<T> {
 
         JobParameters jobParameters = this.currentJobExecution.getJobParameters();
 
-        this.dryRun = Boolean
-                .parseBoolean(jobParameters.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
-        this.bestEffort = Boolean
-                .parseBoolean(jobParameters.getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+        this.dryRun =
+                Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
+        this.bestEffort =
+                Boolean.parseBoolean(
+                        jobParameters.getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
 
         final String cql = jobParameters.getString("filter", null);
         if (cql != null && cql.contains("name")) {
@@ -179,13 +153,11 @@ public abstract class BackupRestoreItem<T> {
         } else {
             this.filter = null;
         }
-        
+
         initialize(stepExecution);
     }
 
-    /**
-     * 
-     */
+    /** */
     protected abstract void initialize(StepExecution stepExecution);
 
     /**
@@ -194,9 +166,10 @@ public abstract class BackupRestoreItem<T> {
      * @return
      * @throws Exception
      */
-    protected boolean logValidationExceptions(ValidationResult result, Exception e) throws Exception {
+    protected boolean logValidationExceptions(ValidationResult result, Exception e)
+            throws Exception {
         CatalogException validationException = new CatalogException(e);
-        if(!isBestEffort()) {
+        if (!isBestEffort()) {
             if (result != null) {
                 result.throwIfInvalid();
             } else {
@@ -204,18 +177,18 @@ public abstract class BackupRestoreItem<T> {
             }
         }
 
-        if(!isBestEffort()) {
+        if (!isBestEffort()) {
             getCurrentJobExecution().addFailureExceptions(Arrays.asList(validationException));
         }
         return false;
     }
 
-    /**
-     * @param resource
-     */
+    /** @param resource */
     protected boolean logValidationExceptions(T resource, Throwable e) {
-        CatalogException validationException = e != null ? new CatalogException(e) : 
-            new CatalogException("Invalid resource: " + resource);
+        CatalogException validationException =
+                e != null
+                        ? new CatalogException(e)
+                        : new CatalogException("Invalid resource: " + resource);
         if (!isBestEffort()) {
             getCurrentJobExecution().addFailureExceptions(Arrays.asList(validationException));
             throw validationException;
@@ -224,7 +197,7 @@ public abstract class BackupRestoreItem<T> {
         }
         return false;
     }
-    
+
     /**
      * @param resource
      * @param ws

@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -22,7 +21,7 @@ import org.geotools.util.Version;
 /**
  * Default component for a {@link CapabilitiesHomePageLinkProvider} implementation to provide a list
  * of getcapabilities links discriminated by service name and version.
- * 
+ *
  * @author Gabriel Roldan
  */
 public class CapabilitiesHomePagePanel extends Panel {
@@ -65,17 +64,15 @@ public class CapabilitiesHomePagePanel extends Panel {
                 return false;
             }
             CapsInfo ci = (CapsInfo) o;
-            return service.equals(ci.service) && version.equals(ci.version)
+            return service.equals(ci.service)
+                    && version.equals(ci.version)
                     && capsLink.equals(ci.capsLink);
         }
     }
 
     /**
-     * 
-     * @param id
-     *            this component's wicket id
-     * @param capsLinks
-     *            the list of getcapabilities link to create the component for
+     * @param id this component's wicket id
+     * @param capsLinks the list of getcapabilities link to create the component for
      */
     public CapabilitiesHomePagePanel(final String id, final List<CapsInfo> capsLinks) {
 
@@ -83,7 +80,8 @@ public class CapabilitiesHomePagePanel extends Panel {
 
         final Map<String, List<CapsInfo>> byService = new HashMap<String, List<CapsInfo>>();
         for (CapsInfo c : capsLinks) {
-            final String key=c.getService().toLowerCase();// to avoid problems with uppercase definitions
+            final String key =
+                    c.getService().toLowerCase(); // to avoid problems with uppercase definitions
             List<CapsInfo> serviceLinks = byService.get(key);
             if (serviceLinks == null) {
                 serviceLinks = new ArrayList<CapsInfo>();
@@ -94,31 +92,33 @@ public class CapabilitiesHomePagePanel extends Panel {
 
         ArrayList<String> services = new ArrayList<String>(byService.keySet());
         Collections.sort(services);
-        
-        ListView<String> view = new ListView<String>("services", services) {
 
-            private static final long serialVersionUID = 1L;
+        ListView<String> view =
+                new ListView<String>("services", services) {
 
-            @Override
-            protected void populateItem(ListItem<String> item) {
-                final String serviceId = item.getModelObject();
-                item.add(new Label("service", serviceId.toUpperCase()));
-                item.add(new ListView<CapsInfo>("versions", byService.get(serviceId)) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void populateItem(ListItem<CapsInfo> item) {
-                        CapsInfo capsInfo = item.getModelObject();
-                        Version version = capsInfo.getVersion();
-                        String capsLink = capsInfo.getCapsLink();
-                        ExternalLink link = new ExternalLink("link", capsLink);
-                        item.add(link);
+                    protected void populateItem(ListItem<String> item) {
+                        final String serviceId = item.getModelObject();
+                        item.add(new Label("service", serviceId.toUpperCase()));
+                        item.add(
+                                new ListView<CapsInfo>("versions", byService.get(serviceId)) {
+                                    private static final long serialVersionUID = 1L;
 
-                        link.add(new Label("version", version.toString()));
+                                    @Override
+                                    protected void populateItem(ListItem<CapsInfo> item) {
+                                        CapsInfo capsInfo = item.getModelObject();
+                                        Version version = capsInfo.getVersion();
+                                        String capsLink = capsInfo.getCapsLink();
+                                        ExternalLink link = new ExternalLink("link", capsLink);
+                                        item.add(link);
+
+                                        link.add(new Label("version", version.toString()));
+                                    }
+                                });
                     }
-                });
-            }
-        };
+                };
 
         add(view);
     }

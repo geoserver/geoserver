@@ -5,21 +5,18 @@
  */
 package org.geoserver.wps.gs.download;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 import junit.framework.TestCase;
-
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * Test case for the {@link ROIManager} class.
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
- * 
  */
 public class ROIManagerTest extends TestCase {
 

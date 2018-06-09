@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.geoserver.backuprestore.tasklet.GenericTaskletHandler;
 import org.geoserver.backuprestore.tasklet.GenericTaskletUtils;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -20,9 +19,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
-/**
- * Test generic handler that backup and restore an extra file that is not used by GeoServer.
- */
+/** Test generic handler that backup and restore an extra file that is not used by GeoServer. */
 public final class ExtraFileHandler implements GenericTaskletHandler {
 
     public static final String EXTRA_FILE_NAME = "extra_file.properties";
@@ -39,8 +36,11 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
     }
 
     @Override
-    public RepeatStatus handle(StepContribution contribution, ChunkContext chunkContext,
-                               JobExecution jobExecution, BackupRestoreItem context) {
+    public RepeatStatus handle(
+            StepContribution contribution,
+            ChunkContext chunkContext,
+            JobExecution jobExecution,
+            BackupRestoreItem context) {
         File inputDirectory;
         File outputDirectory;
         if (GenericTaskletUtils.isBackup(context)) {
@@ -56,10 +56,12 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
         return RepeatStatus.FINISHED;
     }
 
-    /**
-     * Helper method for copying a file from a directory to another.
-     */
-    private void copyFile(File inputDirectory, String inputFileName, File outputDirectory, String outputFileName) {
+    /** Helper method for copying a file from a directory to another. */
+    private void copyFile(
+            File inputDirectory,
+            String inputFileName,
+            File outputDirectory,
+            String outputFileName) {
         File inputFile = new File(inputDirectory, inputFileName);
         if (!inputFile.exists()) {
             // nothing to copy
@@ -72,8 +74,11 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
                     OutputStream output = new FileOutputStream(outputFile)) {
                 IOUtils.copy(input, output);
             } catch (Exception exception) {
-                throw new RuntimeException(String.format("Error copying file '%s' to file '%s'.",
-                        inputFile, outputFile.getAbsolutePath()), exception);
+                throw new RuntimeException(
+                        String.format(
+                                "Error copying file '%s' to file '%s'.",
+                                inputFile, outputFile.getAbsolutePath()),
+                        exception);
             }
         }
     }

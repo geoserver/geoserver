@@ -5,9 +5,7 @@
 package org.geoserver.security;
 
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpMethod;
@@ -17,17 +15,17 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Improved version of Spring Security AntPathRequestMatcher with optional
- * query string regular expression matching in addition to path matching.
- * 
- * The original AntPathRequestMatcher was declared final and not easily extendable
- * by composition, so we have wrote our own enhanced version.
- * 
- * @author Mauro Bartolomeoli
+ * Improved version of Spring Security AntPathRequestMatcher with optional query string regular
+ * expression matching in addition to path matching.
  *
+ * <p>The original AntPathRequestMatcher was declared final and not easily extendable by
+ * composition, so we have wrote our own enhanced version.
+ *
+ * @author Mauro Bartolomeoli
  */
 public final class IncludeQueryStringAntPathRequestMatcher implements RequestMatcher {
-    private static final Log logger = LogFactory.getLog(IncludeQueryStringAntPathRequestMatcher.class);
+    private static final Log logger =
+            LogFactory.getLog(IncludeQueryStringAntPathRequestMatcher.class);
     private static final String MATCH_ALL = "/**";
     private static final String QUERYSTRING_SEPARATOR = "|";
 
@@ -49,15 +47,15 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
      * Creates a matcher with the supplied pattern which will match all HTTP methods.
      *
      * @param pattern the ant pattern to use for matching
-     * @param httpMethod the HTTP method. The {@code matches} method will return false if the incoming request doesn't
-     * have the same method.
+     * @param httpMethod the HTTP method. The {@code matches} method will return false if the
+     *     incoming request doesn't have the same method.
      */
     public IncludeQueryStringAntPathRequestMatcher(String pattern, String httpMethod) {
         Assert.hasText(pattern, "Pattern cannot be null or empty");
         String queryStringPattern = "";
         String originalPattern = pattern;
         // check for querystring pattern existance
-        if(pattern.contains(QUERYSTRING_SEPARATOR)) {
+        if (pattern.contains(QUERYSTRING_SEPARATOR)) {
             queryStringPattern = pattern.substring(pattern.indexOf(QUERYSTRING_SEPARATOR) + 1);
             pattern = pattern.substring(0, pattern.indexOf(QUERYSTRING_SEPARATOR));
         }
@@ -67,18 +65,20 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
         } else {
             pattern = pattern.toLowerCase();
 
-            // If the pattern ends with {@code /**} and has no other wildcards, then optimize to a sub-path match
-            if (pattern.endsWith(MATCH_ALL) && pattern.indexOf('?') == -1 &&
-                    pattern.indexOf("*") == pattern.length() - 2) {
+            // If the pattern ends with {@code /**} and has no other wildcards, then optimize to a
+            // sub-path match
+            if (pattern.endsWith(MATCH_ALL)
+                    && pattern.indexOf('?') == -1
+                    && pattern.indexOf("*") == pattern.length() - 2) {
                 matcher = new SubpathMatcher(pattern.substring(0, pattern.length() - 3));
             } else {
                 matcher = new SpringAntMatcher(pattern);
             }
         }
-        
+
         this.pattern = originalPattern;
         // build query string matcher if needed
-        if(StringUtils.hasLength(queryStringPattern)) {
+        if (StringUtils.hasLength(queryStringPattern)) {
             queryStringMatcher = new QueryStringMatcher(queryStringPattern);
         } else {
             queryStringMatcher = null;
@@ -87,16 +87,25 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
     }
 
     /**
-     * Returns true if the configured pattern(s) (and HTTP-Method) match those of the supplied request.
+     * Returns true if the configured pattern(s) (and HTTP-Method) match those of the supplied
+     * request.
      *
      * @param request the request to match against. The ant pattern will be matched against the
-     *    {@code servletPath} + {@code pathInfo} of the request.
+     *     {@code servletPath} + {@code pathInfo} of the request.
      */
     public boolean matches(HttpServletRequest request) {
         if (httpMethod != null && httpMethod != HttpMethod.valueOf(request.getMethod())) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Request '" + request.getMethod() + " " + getRequestPath(request) + "'"
-                        + " doesn't match '" + httpMethod  + " " + pattern);
+                logger.debug(
+                        "Request '"
+                                + request.getMethod()
+                                + " "
+                                + getRequestPath(request)
+                                + "'"
+                                + " doesn't match '"
+                                + httpMethod
+                                + " "
+                                + pattern);
             }
 
             return false;
@@ -108,14 +117,14 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
             logger.debug("Checking match of request : '" + url + "'; against '" + pattern + "'");
         }
         boolean matched = matchesPath(url) && matchesQueryString(url);
-        if(matched) {
+        if (matched) {
             logger.debug("Matched " + url + " with " + pattern);
         }
         return matched;
     }
 
     private boolean matchesQueryString(RequestUrlParts url) {
-        if(queryStringMatcher != null) {
+        if (queryStringMatcher != null) {
             return queryStringMatcher.matches(url.getQueryString());
         }
         return true;
@@ -138,9 +147,9 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
         if (request.getPathInfo() != null) {
             url += request.getPathInfo();
         }
-        
+
         url = url.toLowerCase();
-        
+
         String queryString = request.getQueryString();
 
         return new RequestUrlParts(url, queryString);
@@ -155,9 +164,9 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
         if (!(obj instanceof IncludeQueryStringAntPathRequestMatcher)) {
             return false;
         }
-        IncludeQueryStringAntPathRequestMatcher other = (IncludeQueryStringAntPathRequestMatcher)obj;
-        return this.pattern.equals(other.pattern) &&
-            this.httpMethod == other.httpMethod;
+        IncludeQueryStringAntPathRequestMatcher other =
+                (IncludeQueryStringAntPathRequestMatcher) obj;
+        return this.pattern.equals(other.pattern) && this.httpMethod == other.httpMethod;
     }
 
     @Override
@@ -200,41 +209,38 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
             return antMatcher.match(pattern, path);
         }
     }
-    
+
     private static class QueryStringMatcher implements Matcher {
-        
 
         private Pattern pattern = null;
 
         private QueryStringMatcher(String pattern) {
             try {
                 this.pattern = Pattern.compile(parsePattern(pattern), Pattern.CASE_INSENSITIVE);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 logger.error("Error in filter chain query string pattern", e);
             }
         }
 
         private String parsePattern(String unparsed) {
-            if(!unparsed.startsWith("^")) {
+            if (!unparsed.startsWith("^")) {
                 unparsed = "^" + unparsed;
             }
-            if(!unparsed.endsWith("$")) {
+            if (!unparsed.endsWith("$")) {
                 unparsed = unparsed + "$";
             }
             return unparsed;
         }
 
         public boolean matches(String path) {
-            if(pattern != null && path != null) {
+            if (pattern != null && path != null) {
                 return pattern.matcher(path).matches();
             }
             return false;
         }
     }
 
-    /**
-     * Optimized matcher for trailing wildcards
-     */
+    /** Optimized matcher for trailing wildcards */
     private static class SubpathMatcher implements Matcher {
         private final String subpath;
         private final int length;
@@ -246,34 +252,33 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
         }
 
         public boolean matches(String path) {
-            return path.startsWith(subpath) && (path.length() == length || path.charAt(length) == '/');
+            return path.startsWith(subpath)
+                    && (path.length() == length || path.charAt(length) == '/');
         }
     }
-    
-    /**
-     * Value object for request parts handled by different matchers.
-     * 
-     */
+
+    /** Value object for request parts handled by different matchers. */
     private static class RequestUrlParts {
         private String path;
         private String queryString;
+
         public RequestUrlParts(String path, String queryString) {
             super();
             this.path = path;
             this.queryString = queryString;
         }
+
         public String getPath() {
             return path;
         }
+
         public String getQueryString() {
             return queryString;
         }
+
         @Override
         public String toString() {
             return "Path: " + path + ", QueryString: " + queryString;
         }
-        
-        
     }
-
 }

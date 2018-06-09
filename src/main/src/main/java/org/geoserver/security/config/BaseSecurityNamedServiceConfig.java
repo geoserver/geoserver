@@ -12,7 +12,7 @@ import org.geoserver.platform.GeoServerExtensions;
 
 /**
  * Base class for named security service configuration objects.
- * 
+ *
  * @author christian
  */
 public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfig {
@@ -22,8 +22,7 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
     private String name;
     private String className;
 
-    public BaseSecurityNamedServiceConfig() {
-    }
+    public BaseSecurityNamedServiceConfig() {}
 
     public BaseSecurityNamedServiceConfig(BaseSecurityNamedServiceConfig other) {
         name = other.getName();
@@ -38,66 +37,63 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
         this.id = id;
     }
 
-    /**
-     * @return the name of the service
-     */
+    /** @return the name of the service */
     public String getName() {
         return name;
     }
 
-    /**
-     * sets the name for a service
-     */
+    /** sets the name for a service */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the service class name
-     */
+    /** @return the service class name */
     public String getClassName() {
         return className;
     }
 
     /**
-     * The class name of the service to be constructed
-     * The class must have a constructor with a string
-     * argument, specifying the name of the service
-     * 
+     * The class name of the service to be constructed The class must have a constructor with a
+     * string argument, specifying the name of the service
+     *
      * @param className
      */
     public void setClassName(String className) {
         this.className = className;
     }
 
-    /**
-     * Does nothing, subclasses may override.
-     */
+    /** Does nothing, subclasses may override. */
     @Override
-    public void initBeforeSave() {
-    }
+    public void initBeforeSave() {}
 
     @Override
     public String toString() {
-        return "BaseSecurityNamedServiceConfig [name=" + name + ", className="
-                + className + ", id=" + id + "]";
+        return "BaseSecurityNamedServiceConfig [name="
+                + name
+                + ", className="
+                + className
+                + ", id="
+                + id
+                + "]";
     }
 
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        
-        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-        
-        BaseSecurityNamedServiceConfig target = (BaseSecurityNamedServiceConfig) SerializationUtils.clone(this);
-        
+
+        final GeoServerEnvironment gsEnvironment =
+                GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+        BaseSecurityNamedServiceConfig target =
+                (BaseSecurityNamedServiceConfig) SerializationUtils.clone(this);
+
         if (target != null) {
-            if (allowEnvParametrization && gsEnvironment != null
+            if (allowEnvParametrization
+                    && gsEnvironment != null
                     && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
                 target.setName((String) gsEnvironment.resolveValue(name));
             }
         }
-        
+
         return target;
     }
-    
 }

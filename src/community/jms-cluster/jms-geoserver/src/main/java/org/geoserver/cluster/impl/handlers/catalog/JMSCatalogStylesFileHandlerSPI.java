@@ -5,6 +5,7 @@
  */
 package org.geoserver.cluster.impl.handlers.catalog;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.configuration.JMSConfiguration;
@@ -13,45 +14,35 @@ import org.geoserver.cluster.impl.handlers.DocumentFileHandlerSPI;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.thoughtworks.xstream.XStream;
-
-/**
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- *
- */
+/** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
 public class JMSCatalogStylesFileHandlerSPI extends DocumentFileHandlerSPI {
-	
-	final Catalog catalog;
-	final XStream xstream;
-	private final GeoServerResourceLoader loader;
-	
-	@Autowired
-	public JMSConfiguration config;
-	
-	public JMSCatalogStylesFileHandlerSPI(final int priority, Catalog cat,
-										  XStream xstream, GeoServerResourceLoader loader) {
-		super(priority,xstream);
-		this.catalog=cat;
-		this.xstream=xstream;
-		this.loader = loader;
-	}
 
-	@Override
-	public boolean canHandle(final Object event) {
-		if (event instanceof DocumentFile)
-			return true;
-		else
-			return false;
-	}
+    final Catalog catalog;
+    final XStream xstream;
+    private final GeoServerResourceLoader loader;
 
-	@Override
-	public JMSEventHandler<String,DocumentFile> createHandler() {
-		JMSCatalogStylesFileHandler styleHandler = new JMSCatalogStylesFileHandler(catalog,xstream,
-				JMSCatalogStylesFileHandlerSPI.class, loader);
-		styleHandler.setConfig(config);
-		return styleHandler;
-	}
+    @Autowired public JMSConfiguration config;
 
+    public JMSCatalogStylesFileHandlerSPI(
+            final int priority, Catalog cat, XStream xstream, GeoServerResourceLoader loader) {
+        super(priority, xstream);
+        this.catalog = cat;
+        this.xstream = xstream;
+        this.loader = loader;
+    }
 
+    @Override
+    public boolean canHandle(final Object event) {
+        if (event instanceof DocumentFile) return true;
+        else return false;
+    }
+
+    @Override
+    public JMSEventHandler<String, DocumentFile> createHandler() {
+        JMSCatalogStylesFileHandler styleHandler =
+                new JMSCatalogStylesFileHandler(
+                        catalog, xstream, JMSCatalogStylesFileHandlerSPI.class, loader);
+        styleHandler.setConfig(config);
+        return styleHandler;
+    }
 }

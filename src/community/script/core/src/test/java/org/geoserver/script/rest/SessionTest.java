@@ -26,15 +26,17 @@ public class SessionTest extends ScriptIntTestSupport {
         assertEquals(201, response.getStatus());
 
         long sid = Long.valueOf(response.getContentAsString());
-        response = 
-            putAsServletResponse("/script/sessions/js/" + sid, "print('Hello World!');", "text/plain");
+        response =
+                putAsServletResponse(
+                        "/script/sessions/js/" + sid, "print('Hello World!');", "text/plain");
 
-        assertEquals("Hello World!", response.getContentAsString().trim()); // print is a Rhino-specific function
+        assertEquals(
+                "Hello World!",
+                response.getContentAsString().trim()); // print is a Rhino-specific function
 
         putAsServletResponse("/script/sessions/js/" + sid, "var x = 3;", "text/plain");
 
-        response = 
-            putAsServletResponse("/script/sessions/js/" + sid, "print(x);", "text/plain");
+        response = putAsServletResponse("/script/sessions/js/" + sid, "print(x);", "text/plain");
         assertEquals("3", response.getContentAsString().trim());
     }
 
@@ -44,7 +46,7 @@ public class SessionTest extends ScriptIntTestSupport {
 
         JSONObject result = (JSONObject) getAsJSON("/script/sessions");
         assertTrue(result.has("sessions"));
-        
+
         JSONArray sessions = result.getJSONArray("sessions");
         assertEquals(2, sessions.size());
 
@@ -62,6 +64,5 @@ public class SessionTest extends ScriptIntTestSupport {
         assertTrue(session.has("self"));
 
         assertEquals(sid, session.getInt("id"));
-
     }
 }

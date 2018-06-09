@@ -6,24 +6,21 @@ package org.geoserver.rest.security;
 
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.catalog.MapXMLConverter;
 import org.jdom.Element;
 import org.springframework.stereotype.Component;
 
-/**
- * Converts a RuleMap into XML and back
- */
+/** Converts a RuleMap into XML and back */
 @Component
 public class RuleMapXMLConverter extends MapXMLConverter {
 
-    final static String ROOTELEMENT = "rules";
+    static final String ROOTELEMENT = "rules";
 
-    final static String RULEELEMENT = "rule";
+    static final String RULEELEMENT = "rule";
 
-    final static String RESOURCEATTR = "resource";
-    
+    static final String RESOURCEATTR = "resource";
+
     @Override
     public int getPriority() {
         // pretty specific, but leave some room for more specific converters just in case
@@ -36,20 +33,20 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     }
 
     @Override
-    protected String getMapName(Map<?,?> map) {
+    protected String getMapName(Map<?, ?> map) {
         return ROOTELEMENT;
     }
 
     /**
-     * Generate the JDOM element needed to represent an access control rule and insert it into the parent element given.
+     * Generate the JDOM element needed to represent an access control rule and insert it into the
+     * parent element given.
      *
      * @param elem , the root elment
      * @param o
      */
-
     @SuppressWarnings("unchecked")
     protected final void insert(Element elem, Object o) {
-        if(o instanceof RuleMap) {
+        if (o instanceof RuleMap) {
             Map<String, String> ruleMap = (Map<String, String>) o;
             for (Map.Entry<String, String> entry : ruleMap.entrySet()) {
                 Element ruleElement = new Element(RULEELEMENT);
@@ -60,7 +57,6 @@ public class RuleMapXMLConverter extends MapXMLConverter {
         } else {
             throw new IllegalArgumentException();
         }
-        
     }
 
     /**
@@ -79,5 +75,4 @@ public class RuleMapXMLConverter extends MapXMLConverter {
         }
         return ruleMap;
     }
-
 }

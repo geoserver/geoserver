@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
@@ -20,18 +19,19 @@ import org.geotools.gce.arcgrid.ArcGridWriter;
 
 /**
  * {@link CoverageResponseDelegate} implementation for Ascii Grids
- * 
+ *
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
+public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
+        implements CoverageResponseDelegate {
 
     @SuppressWarnings("serial")
     public AscCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList("ArcGrid","ArcGrid-GZIP"), //output formats
-                new HashMap<String, String>(){ // file extensions
+                Arrays.asList("ArcGrid", "ArcGrid-GZIP"), // output formats
+                new HashMap<String, String>() { // file extensions
                     {
                         put("ArcGrid", "asc");
                         put("ArcGrid-GZIP", "asc.gz");
@@ -39,7 +39,7 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
                         put("application/x-gzip", "ArcGrid-GZIP");
                     }
                 },
-                new HashMap<String, String>(){ //mime types
+                new HashMap<String, String>() { // mime types
                     {
                         put("ArcGrid", "text/plain");
                         put("ArcGrid-GZIP", "application/x-gzip");
@@ -48,14 +48,21 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
     }
 
     private boolean isOutputCompressed(String outputFormat) {
-        return "ArcGrid-GZIP".equalsIgnoreCase(outputFormat) || "application/arcgrid;gzipped=\"true\"".equals(outputFormat);
+        return "ArcGrid-GZIP".equalsIgnoreCase(outputFormat)
+                || "application/arcgrid;gzipped=\"true\"".equals(outputFormat);
     }
 
-    public void encode(GridCoverage2D sourceCoverage, String outputFormat,  Map<String,String> econdingParameters,OutputStream output) throws ServiceException, IOException {
+    public void encode(
+            GridCoverage2D sourceCoverage,
+            String outputFormat,
+            Map<String, String> econdingParameters,
+            OutputStream output)
+            throws ServiceException, IOException {
         if (sourceCoverage == null) {
-            throw new IllegalStateException(new StringBuffer(
-                    "It seems prepare() has not been called").append(" or has not succeed")
-                    .toString());
+            throw new IllegalStateException(
+                    new StringBuffer("It seems prepare() has not been called")
+                            .append(" or has not succeed")
+                            .toString());
         }
 
         GZIPOutputStream gzipOut = null;
@@ -64,7 +71,7 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
             output = gzipOut;
         }
 
-        ArcGridWriter writer=null;
+        ArcGridWriter writer = null;
         try {
             writer = new ArcGridWriter(output);
             writer.write(sourceCoverage, null);
@@ -74,18 +81,15 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
                 gzipOut.flush();
             }
 
+        } finally {
+            try {
+                if (writer != null) writer.dispose();
+            } catch (Throwable e) {
+                // eating exception
+            }
+            if (gzipOut != null) IOUtils.closeQuietly(gzipOut);
 
-        }finally {
-        	try{
-        	if(writer!=null)
-        		writer.dispose();
-        	}catch (Throwable e) {
-				// eating exception
-			}
-        	if(gzipOut!=null)
-        		IOUtils.closeQuietly(gzipOut);
-        	
             sourceCoverage.dispose(true);
-		}
+        }
     }
 }

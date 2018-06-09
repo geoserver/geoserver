@@ -25,28 +25,28 @@ public class AdvertisedCatalogTest extends AbstractAuthorizationTest {
 
     @After
     public void tearDown() throws Exception {
-        Dispatcher.REQUEST.set(null);        
+        Dispatcher.REQUEST.set(null);
     }
-    
+
     @Test
-    public void testNotAdvertisedLayersInGroupWithHideGroupIfEmptyPolicy() throws Exception {        
+    public void testNotAdvertisedLayersInGroupWithHideGroupIfEmptyPolicy() throws Exception {
         AdvertisedCatalog sc = new AdvertisedCatalog(catalog);
         sc.setLayerGroupVisibilityPolicy(LayerGroupVisibilityPolicy.HIDE_EMPTY);
-        
+
         assertNull(sc.getLayerByName("topp:states"));
         assertNull(sc.getLayerByName("topp:roads"));
-        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");        
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");
         assertNull(layerGroup);
     }
 
     @Test
-    public void testNotAdvertisedLayersInGroupWithNeverHideGroupPolicy() throws Exception {        
+    public void testNotAdvertisedLayersInGroupWithNeverHideGroupPolicy() throws Exception {
         AdvertisedCatalog sc = new AdvertisedCatalog(catalog);
         sc.setLayerGroupVisibilityPolicy(LayerGroupVisibilityPolicy.HIDE_NEVER);
-        
+
         assertNull(sc.getLayerByName("topp:states"));
         assertNull(sc.getLayerByName("topp:roads"));
-        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer"); 
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");
         assertNotNull(layerGroup);
         assertEquals(0, layerGroup.getLayers().size());
     }

@@ -4,7 +4,6 @@
  * application directory.
  */
 
-
 package org.geoserver.security.auth;
 
 import static org.junit.Assert.*;
@@ -23,37 +22,40 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
 
     @Test
     public void testRootProvider() throws Exception {
-        
+
         // Check if the root provider is the first
         AuthenticationProvider first = getSecurityManager().getProviders().get(0);
         assertEquals(GeoServerRootAuthenticationProvider.class, first.getClass());
-        
+
         GeoServerRootAuthenticationProvider provider = new GeoServerRootAuthenticationProvider();
         provider.setSecurityManager(getSecurityManager());
         provider.initializeFromConfig(null);
-       
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("abc", null);
-        
+
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken("abc", null);
+
         assertTrue(provider.supports(token.getClass()));
         assertFalse(provider.supports(RememberMeAuthenticationToken.class));
-        
+
         assertNull(provider.authenticate(token));
-        
+
         token = new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, null);
         assertNull(provider.authenticate(token));
-        
+
         token = new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, "abc");
         assertNull(provider.authenticate(token));
 
         String masterPassword = getMasterPassword();
-        token = new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, masterPassword);
+        token =
+                new UsernamePasswordAuthenticationToken(
+                        GeoServerUser.ROOT_USERNAME, masterPassword);
         token.setDetails("hallo");
-        UsernamePasswordAuthenticationToken result = (UsernamePasswordAuthenticationToken)
-                provider.authenticate(token);
-        
+        UsernamePasswordAuthenticationToken result =
+                (UsernamePasswordAuthenticationToken) provider.authenticate(token);
+
         assertNotNull(result);
         assertNull(result.getCredentials());
-        assertEquals(GeoServerUser.ROOT_USERNAME,result.getPrincipal());
-        assertEquals("hallo",result.getDetails());        
+        assertEquals(GeoServerUser.ROOT_USERNAME, result.getPrincipal());
+        assertEquals("hallo", result.getDetails());
     }
 }

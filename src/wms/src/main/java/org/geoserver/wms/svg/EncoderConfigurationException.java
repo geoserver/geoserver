@@ -7,7 +7,6 @@ package org.geoserver.wms.svg;
 
 import org.geoserver.platform.ServiceException;
 
-
 /**
  * @author Gabriel Rold?n
  * @version $Id$

@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.CoordinateReferenceSystemPPIO;
@@ -27,13 +26,18 @@ import org.opengis.feature.type.Name;
 /**
  * Contains the set of values for a single parameter. For most input parameters it will be just one
  * value actually
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
 class InputParameterValues implements Serializable {
     public enum ParameterType {
-        LITERAL, TEXT, VECTOR_LAYER, RASTER_LAYER, REFERENCE, SUBPROCESS;
+        LITERAL,
+        TEXT,
+        VECTOR_LAYER,
+        RASTER_LAYER,
+        REFERENCE,
+        SUBPROCESS;
     };
 
     Name processName;
@@ -54,8 +58,7 @@ class InputParameterValues implements Serializable {
     }
 
     private ParameterType guessBestType() {
-        if (!isComplex())
-            return ParameterType.LITERAL;
+        if (!isComplex()) return ParameterType.LITERAL;
         if (FeatureCollection.class.isAssignableFrom(getParameter().type)) {
             return ParameterType.VECTOR_LAYER;
         } else if (GridCoverage2D.class.isAssignableFrom(getParameter().type)) {
@@ -100,11 +103,11 @@ class InputParameterValues implements Serializable {
         }
         return results;
     }
-    
+
     public boolean isEnum() {
         return Enum.class.isAssignableFrom(getParameter().type);
     }
-    
+
     public boolean isComplex() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
         return ppios.size() > 0 && ppios.get(0) instanceof ComplexPPIO;
@@ -132,9 +135,7 @@ class InputParameterValues implements Serializable {
         return getProcessFactory().getParameterInfo(processName).get(paramName);
     }
 
-    /**
-     * A single value, along with the chosen editor and its mime type
-     */
+    /** A single value, along with the chosen editor and its mime type */
     static class ParameterValue implements Serializable {
         ParameterType type;
 
@@ -171,6 +172,5 @@ class InputParameterValues implements Serializable {
         public void setValue(Serializable value) {
             this.value = value;
         }
-
     }
 }

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
-
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -17,7 +16,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
@@ -26,17 +27,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-/**
- * @author Carlo Cancellieri - GeoSolutions SAS
- */
+/** @author Carlo Cancellieri - GeoSolutions SAS */
 public class AboutControllerTest extends GeoServerSystemTestSupport {
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
-    
+
     @Test
     public void testEmptyListHTMLTemplate() throws Exception {
         try {
@@ -82,7 +77,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     public void testGetAsVersionsJSON() throws Exception {
         // make the request, parsing the result into a json object
         JSONObject json = (JSONObject) getAsJSON(BASEPATH + "/about/version.json");
-        //print(json);
+        // print(json);
         checkJSONModel(json);
     }
 
@@ -93,32 +88,29 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
 
         checkJSONModel(json);
     }
-    
+
     @Test
     public void testGetStatusAsHTML() throws Exception {
-        //add an escape char to the environment
+        // add an escape char to the environment
         System.setProperty("badString", "[46m");
         // make the request, parsing the result into a Dom object
         Document dom = getAsDOM(BASEPATH + "/about/status");
         checkHTMLModel(dom);
-        
+
         Document dom2 = getAsDOM(BASEPATH + "/about/status.html");
         checkHTMLModel(dom2);
     }
-    
+
     @Test
     public void testGetStatusAsJSON() throws Exception {
         // make the request, parsing the result into a Dom object
         JSON dom = getAsJSON(BASEPATH + "/about/status.json");
- 
-        
     }
-    
+
     @Test
     public void testGetStatusAsXML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/status.xml");        
-        
+        Document dom = getAsDOM(BASEPATH + "/about/status.xml");
     }
 
     private void checkHTMLModel(Document dom) {
@@ -131,7 +123,6 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         }
-
     }
 
     private void checkJSONModel(JSONObject json) {
@@ -185,7 +176,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
 
             txformer.transform(domSrc, sr);
 
-            //System.out.println(sw.toString());
+            // System.out.println(sw.toString());
         } catch (TransformerFactoryConfigurationError | TransformerException ex) {
             ex.printStackTrace();
             throw ex;

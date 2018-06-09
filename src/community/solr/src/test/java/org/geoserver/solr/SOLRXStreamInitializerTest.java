@@ -5,7 +5,6 @@
 package org.geoserver.solr;
 
 import java.io.InputStream;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -28,6 +27,5 @@ public class SOLRXStreamInitializerTest extends GeoServerSystemTestSupport {
         try (InputStream is = getClass().getResourceAsStream("xstream-featuretype.xml")) {
             xp.load(is, FeatureTypeInfo.class);
         }
-
     }
 }

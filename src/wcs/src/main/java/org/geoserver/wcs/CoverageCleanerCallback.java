@@ -11,9 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.media.jai.PlanarImage;
-
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
@@ -48,7 +46,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
 
     /**
      * Mark coverage for cleaning.
-     * 
+     *
      * @param coverages
      */
     public static void addCoverages(GridCoverage... coverages) {
@@ -62,7 +60,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
 
     /**
      * Cleans up a coverage and its internal rendered image
-     * 
+     *
      * @param coverage
      */
     public static void disposeCoverage(GridCoverage coverage) {
@@ -75,9 +73,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         }
     }
 
-    /**
-     * Clean up any coverages collected by {@link #addCoverages(GridCoverage...)}
-     */
+    /** Clean up any coverages collected by {@link #addCoverages(GridCoverage...)} */
     public void clean() {
         try {
             List<GridCoverage> coverages = COVERAGES.get();
@@ -86,8 +82,8 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
                     try {
                         disposeCoverage(coverage);
                     } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage,
-                                e);
+                        LOGGER.log(
+                                Level.WARNING, "Failed to fully dispose coverage: " + coverage, e);
                     }
                 }
             }

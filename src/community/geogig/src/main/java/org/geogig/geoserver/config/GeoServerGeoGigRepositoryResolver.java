@@ -7,20 +7,16 @@ package org.geogig.geoserver.config;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.List;
-
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.storage.ConfigDatabase;
 
-import com.google.common.base.Strings;
-
-/**
- * Specialized RepositoryResolver for GeoServer manager Geogig Repositories.
- */
+/** Specialized RepositoryResolver for GeoServer manager Geogig Repositories. */
 public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
 
     public static final String GEOSERVER_URI_SCHEME = "geoserver";
@@ -86,13 +82,14 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
             // instance when
             // GeoServer decides to dispose the DataStore.
             Repository repo = RepositoryResolver.load(info.getLocation());
-            checkState(repo.isOpen(), "RepositoryManager returned a closed repository for %s",
-                    name);
+            checkState(
+                    repo.isOpen(), "RepositoryManager returned a closed repository for %s", name);
             return repo;
         } else {
             // didn't find a repo
-            RepositoryConnectionException rce = new RepositoryConnectionException(
-                    "No GeoGig repository found with NAME or ID: " + name);
+            RepositoryConnectionException rce =
+                    new RepositoryConnectionException(
+                            "No GeoGig repository found with NAME or ID: " + name);
             throw rce;
         }
     }

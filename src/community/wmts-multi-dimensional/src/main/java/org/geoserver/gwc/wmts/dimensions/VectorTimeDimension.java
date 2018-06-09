@@ -10,18 +10,20 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMS;
 
-/**
- * Represents a time dimension of a vector (feature type).
- */
+/** Represents a time dimension of a vector (feature type). */
 public class VectorTimeDimension extends VectorDimension {
 
     public VectorTimeDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, DimensionsUtils.TEMPORAL_COMPARATOR);
+        super(
+                wms,
+                ResourceInfo.TIME,
+                layerInfo,
+                dimensionInfo,
+                DimensionsUtils.TEMPORAL_COMPARATOR);
     }
 
     @Override
     protected String getDefaultValueFallbackAsString() {
         return DimensionDefaultValueSetting.TIME_CURRENT;
     }
-
 }

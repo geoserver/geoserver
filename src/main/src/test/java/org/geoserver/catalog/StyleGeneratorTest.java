@@ -19,11 +19,9 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.FeatureTypeStyle;
@@ -66,43 +64,53 @@ public class StyleGeneratorTest {
     public void testGenericStyle() throws Exception {
         ResourcePool rp = createNiceMock(ResourcePool.class);
         rp.writeStyle((StyleInfo) anyObject(), (InputStream) anyObject());
-        expectLastCall().andAnswer(new IAnswer<Void>() {
+        expectLastCall()
+                .andAnswer(
+                        new IAnswer<Void>() {
 
-            @Override
-            public Void answer() throws Throwable {
-                Object[] args = getCurrentArguments();
-                InputStream is = (InputStream) args[1];
-                byte[] input = IOUtils.toByteArray(is);
-                
-                SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory());
-                parser.setInput(new ByteArrayInputStream(input));
-                StyledLayerDescriptor sld = parser.parseSLD();
-                
-                NamedLayer nl = (NamedLayer) sld.getStyledLayers()[0];
-                assertEquals("foo", nl.getName());
-                Style style = nl.getStyles()[0];
-                assertEquals("A orange generic style", style.getDescription().getTitle()
-                        .toString());
-                assertEquals(1, style.featureTypeStyles().size());
-                FeatureTypeStyle fts = style.featureTypeStyles().get(0);
-                assertEquals("first", fts.getOptions().get("ruleEvaluation"));
-                assertEquals(4, fts.rules().size());
-                assertEquals("raster", fts.rules().get(0).getDescription().getTitle().toString());
-                assertEquals("orange polygon", fts.rules().get(1).getDescription().getTitle()
-                        .toString());
-                assertEquals("orange line", fts.rules().get(2).getDescription().getTitle()
-                        .toString());
-                assertEquals("orange point", fts.rules().get(3).getDescription().getTitle()
-                        .toString());
-                
-                // make sure it's valid
-                SLDValidator validator = new SLDValidator();
-                List errors = validator.validateSLD(new ByteArrayInputStream(input));
-                assertEquals(0, errors.size());
-                
-                return null;
-            }
-        });
+                            @Override
+                            public Void answer() throws Throwable {
+                                Object[] args = getCurrentArguments();
+                                InputStream is = (InputStream) args[1];
+                                byte[] input = IOUtils.toByteArray(is);
+
+                                SLDParser parser =
+                                        new SLDParser(CommonFactoryFinder.getStyleFactory());
+                                parser.setInput(new ByteArrayInputStream(input));
+                                StyledLayerDescriptor sld = parser.parseSLD();
+
+                                NamedLayer nl = (NamedLayer) sld.getStyledLayers()[0];
+                                assertEquals("foo", nl.getName());
+                                Style style = nl.getStyles()[0];
+                                assertEquals(
+                                        "A orange generic style",
+                                        style.getDescription().getTitle().toString());
+                                assertEquals(1, style.featureTypeStyles().size());
+                                FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+                                assertEquals("first", fts.getOptions().get("ruleEvaluation"));
+                                assertEquals(4, fts.rules().size());
+                                assertEquals(
+                                        "raster",
+                                        fts.rules().get(0).getDescription().getTitle().toString());
+                                assertEquals(
+                                        "orange polygon",
+                                        fts.rules().get(1).getDescription().getTitle().toString());
+                                assertEquals(
+                                        "orange line",
+                                        fts.rules().get(2).getDescription().getTitle().toString());
+                                assertEquals(
+                                        "orange point",
+                                        fts.rules().get(3).getDescription().getTitle().toString());
+
+                                // make sure it's valid
+                                SLDValidator validator = new SLDValidator();
+                                List errors =
+                                        validator.validateSLD(new ByteArrayInputStream(input));
+                                assertEquals(0, errors.size());
+
+                                return null;
+                            }
+                        });
 
         Catalog cat = createNiceMock(Catalog.class);
         expect(cat.getFactory()).andReturn(new CatalogFactoryImpl(null)).anyTimes();
@@ -115,11 +123,12 @@ public class StyleGeneratorTest {
 
         replay(rp, ft, ws, cat);
 
-        StyleGenerator gen = new StyleGenerator(cat) {
-            protected void randomizeRamp() {
-                // do not randomize for this test
-            };
-        };
+        StyleGenerator gen =
+                new StyleGenerator(cat) {
+                    protected void randomizeRamp() {
+                        // do not randomize for this test
+                    };
+                };
         gen.setWorkspace(ws);
 
         SimpleFeatureType schema = DataUtilities.createType("foo", "geom:Geometry");
@@ -127,42 +136,48 @@ public class StyleGeneratorTest {
         assertNotNull(style);
         assertNotNull(style.getWorkspace());
     }
-    
+
     @Test
     public void testRasterStyle() throws Exception {
         ResourcePool rp = createNiceMock(ResourcePool.class);
         rp.writeStyle((StyleInfo) anyObject(), (InputStream) anyObject());
-        expectLastCall().andAnswer(new IAnswer<Void>() {
+        expectLastCall()
+                .andAnswer(
+                        new IAnswer<Void>() {
 
-            @Override
-            public Void answer() throws Throwable {
-                Object[] args = getCurrentArguments();
-                InputStream is = (InputStream) args[1];
-                byte[] input = IOUtils.toByteArray(is);
-                
-                SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory());
-                parser.setInput(new ByteArrayInputStream(input));
-                StyledLayerDescriptor sld = parser.parseSLD();
-                
-                NamedLayer nl = (NamedLayer) sld.getStyledLayers()[0];
-                assertEquals("foo", nl.getName());
-                Style style = nl.getStyles()[0];
-                assertEquals("A raster style", style.getDescription().getTitle()
-                        .toString());
-                assertEquals(1, style.featureTypeStyles().size());
-                FeatureTypeStyle fts = style.featureTypeStyles().get(0);
-                assertEquals(1, fts.rules().size());
-                assertThat(fts.rules().get(0).symbolizers().get(0), instanceOf(RasterSymbolizer.class));
-                
-                // make sure it's valid
-                SLDValidator validator = new SLDValidator();
-                List errors = validator.validateSLD(new ByteArrayInputStream(input));
-                assertEquals(0, errors.size());
-                
-                
-                return null;
-            }
-        });
+                            @Override
+                            public Void answer() throws Throwable {
+                                Object[] args = getCurrentArguments();
+                                InputStream is = (InputStream) args[1];
+                                byte[] input = IOUtils.toByteArray(is);
+
+                                SLDParser parser =
+                                        new SLDParser(CommonFactoryFinder.getStyleFactory());
+                                parser.setInput(new ByteArrayInputStream(input));
+                                StyledLayerDescriptor sld = parser.parseSLD();
+
+                                NamedLayer nl = (NamedLayer) sld.getStyledLayers()[0];
+                                assertEquals("foo", nl.getName());
+                                Style style = nl.getStyles()[0];
+                                assertEquals(
+                                        "A raster style",
+                                        style.getDescription().getTitle().toString());
+                                assertEquals(1, style.featureTypeStyles().size());
+                                FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+                                assertEquals(1, fts.rules().size());
+                                assertThat(
+                                        fts.rules().get(0).symbolizers().get(0),
+                                        instanceOf(RasterSymbolizer.class));
+
+                                // make sure it's valid
+                                SLDValidator validator = new SLDValidator();
+                                List errors =
+                                        validator.validateSLD(new ByteArrayInputStream(input));
+                                assertEquals(0, errors.size());
+
+                                return null;
+                            }
+                        });
 
         Catalog cat = createNiceMock(Catalog.class);
         expect(cat.getFactory()).andReturn(new CatalogFactoryImpl(null)).anyTimes();
@@ -175,11 +190,12 @@ public class StyleGeneratorTest {
 
         replay(rp, ci, ws, cat);
 
-        StyleGenerator gen = new StyleGenerator(cat) {
-            protected void randomizeRamp() {
-                // do not randomize for this test
-            };
-        };
+        StyleGenerator gen =
+                new StyleGenerator(cat) {
+                    protected void randomizeRamp() {
+                        // do not randomize for this test
+                    };
+                };
         gen.setWorkspace(ws);
 
         StyleInfo style = gen.createStyle(new SLDHandler(), ci);

@@ -5,14 +5,13 @@
 package org.geoserver.security.oauth2.services;
 
 import java.util.Map;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 
 /**
  * User Authentication Converter for GeoNode token details.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GeoNodeUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
@@ -21,7 +20,7 @@ public class GeoNodeUserAuthenticationConverter extends DefaultUserAuthenticatio
 
     /**
      * Default Constructor.
-     * 
+     *
      * @param username_key
      */
     public GeoNodeUserAuthenticationConverter() {
@@ -30,7 +29,7 @@ public class GeoNodeUserAuthenticationConverter extends DefaultUserAuthenticatio
 
     /**
      * Default Constructor.
-     * 
+     *
      * @param username_key
      */
     public GeoNodeUserAuthenticationConverter(final String username_key) {

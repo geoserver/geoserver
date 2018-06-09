@@ -6,6 +6,13 @@ package org.geoserver.rest.catalog;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
@@ -46,14 +53,6 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}")
@@ -66,11 +65,15 @@ public class CoverageController extends AbstractCatalogController {
         super(catalog);
     }
 
-    @GetMapping(path = "coveragestores/{storeName}/coverages", produces = {
+    @GetMapping(
+        path = "coveragestores/{storeName}/coverages",
+        produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE})
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName,
@@ -87,12 +90,16 @@ public class CoverageController extends AbstractCatalogController {
         return wrapList(coverages, CoverageInfo.class);
     }
 
-    @GetMapping(path = "coverages", produces = {
+    @GetMapping(
+        path = "coverages",
+        produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE})
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        }
+    )
     public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName) {
@@ -100,13 +107,17 @@ public class CoverageController extends AbstractCatalogController {
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
-            throw new ResourceNotFoundException(String.format(
-                    "Name space not found for workspace '%s'.", workspaceName));
+            throw new ResourceNotFoundException(
+                    String.format("Name space not found for workspace '%s'.", workspaceName));
         }
         if (list != null && list.equalsIgnoreCase("all")) {
-            // we need to ask the coverage reader of each available coverage store which coverages are available
-            List<String> coverages = catalog.getCoverageStores().stream()
-                    .flatMap(store -> getStoreCoverages(store).stream()).collect(Collectors.toList());
+            // we need to ask the coverage reader of each available coverage store which coverages
+            // are available
+            List<String> coverages =
+                    catalog.getCoverageStores()
+                            .stream()
+                            .flatMap(store -> getStoreCoverages(store).stream())
+                            .collect(Collectors.toList());
             return new StringsList(coverages, "coverageName");
         }
         // get all the coverages of the workspace \ name space
@@ -114,12 +125,16 @@ public class CoverageController extends AbstractCatalogController {
         return wrapList(coverages, CoverageInfo.class);
     }
 
-    @GetMapping(path = "coveragestores/{storeName}/coverages/{coverageName}", produces = {
+    @GetMapping(
+        path = "coveragestores/{storeName}/coverages/{coverageName}",
+        produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE})
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        }
+    )
     public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
@@ -127,72 +142,89 @@ public class CoverageController extends AbstractCatalogController {
 
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
-        Optional<CoverageInfo> optCoverage = coverages.stream()
-                .filter(ci -> coverageName.equals(ci.getName())).findFirst();
+        Optional<CoverageInfo> optCoverage =
+                coverages.stream().filter(ci -> coverageName.equals(ci.getName())).findFirst();
         if (!optCoverage.isPresent()) {
-            throw new ResourceNotFoundException(String.format(
-                    "No such coverage: %s,%s,%s", workspaceName, storeName, coverageName));
+            throw new ResourceNotFoundException(
+                    String.format(
+                            "No such coverage: %s,%s,%s", workspaceName, storeName, coverageName));
         }
         CoverageInfo coverage = optCoverage.get();
         checkCoverageExists(coverage, workspaceName, coverageName);
         return wrapObject(coverage, CoverageInfo.class);
     }
 
-    @GetMapping(path = "coverages/{coverageName}", produces = {
+    @GetMapping(
+        path = "coverages/{coverageName}",
+        produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE})
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        }
+    )
     public RestWrapper<CoverageInfo> coverageGet(
-            @PathVariable String workspaceName,
-            @PathVariable String coverageName) {
+            @PathVariable String workspaceName, @PathVariable String coverageName) {
         // get the workspace name space
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
-            throw new ResourceNotFoundException(String.format(
-                    "Name space not found for workspace '%s'.", workspaceName));
+            throw new ResourceNotFoundException(
+                    String.format("Name space not found for workspace '%s'.", workspaceName));
         }
         CoverageInfo coverage = catalog.getCoverageByName(nameSpace, coverageName);
         checkCoverageExists(coverage, workspaceName, coverageName);
         return wrapObject(coverage, CoverageInfo.class);
     }
 
-    @PostMapping(path = {"coverages", "coveragestores/{storeName}/coverages"}, consumes = {
+    @PostMapping(
+        path = {"coverages", "coveragestores/{storeName}/coverages"},
+        consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE})
+            MediaType.APPLICATION_JSON_VALUE
+        }
+    )
     public ResponseEntity<String> coveragePost(
             @RequestBody CoverageInfo coverage,
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
-            UriComponentsBuilder builder) throws Exception {
+            UriComponentsBuilder builder)
+            throws Exception {
 
         String coverageName = handleObjectPost(coverage, workspaceName, storeName);
         UriComponents uriComponents;
         if (storeName == null) {
-            uriComponents = builder.path("/workspaces/{workspaceName}/coverages/{coverageName}")
-                    .buildAndExpand(workspaceName, storeName, coverageName);
+            uriComponents =
+                    builder.path("/workspaces/{workspaceName}/coverages/{coverageName}")
+                            .buildAndExpand(workspaceName, storeName, coverageName);
         } else {
-            uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}")
-                    .buildAndExpand(workspaceName, storeName, coverageName);
+            uriComponents =
+                    builder.path(
+                                    "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}")
+                            .buildAndExpand(workspaceName, storeName, coverageName);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>(coverageName, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "coveragestores/{storeName}/coverages/{coverageName}", consumes = {
+    @PutMapping(
+        path = "coveragestores/{storeName}/coverages/{coverageName}",
+        consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE})
+            MediaType.APPLICATION_JSON_VALUE
+        }
+    )
     public void coveragePut(
             @RequestBody CoverageInfo coverage,
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
-            @RequestParam(required = false) String calculate) throws Exception {
+            @RequestParam(required = false) String calculate)
+            throws Exception {
 
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspaceName, storeName);
         CoverageInfo original = catalog.getCoverageByCoverageStore(cs, coverageName);
@@ -205,7 +237,6 @@ public class CoverageController extends AbstractCatalogController {
         LOGGER.info("PUT coverage " + storeName + "," + coverage);
     }
 
-
     @DeleteMapping(path = "coveragestores/{storeName}/coverages/{coverageName}")
     protected void coverageDelete(
             @PathVariable String workspaceName,
@@ -216,12 +247,12 @@ public class CoverageController extends AbstractCatalogController {
         CoverageStoreInfo ds = catalog.getCoverageStoreByName(workspaceName, storeName);
         CoverageInfo c = catalog.getCoverageByCoverageStore(ds, coverageName);
         if (c == null) {
-            throw new RestException(String.format(
-                    "Coverage '%s' not found.", coverageName), HttpStatus.NOT_FOUND);
+            throw new RestException(
+                    String.format("Coverage '%s' not found.", coverageName), HttpStatus.NOT_FOUND);
         }
         List<LayerInfo> layers = catalog.getLayers(c);
         if (recurse) {
-            //by recurse we clear out all the layers that public this resource
+            // by recurse we clear out all the layers that public this resource
             for (LayerInfo l : layers) {
                 catalog.remove(l);
                 LOGGER.info("DELETE layer " + l.getName());
@@ -242,25 +273,20 @@ public class CoverageController extends AbstractCatalogController {
             return Arrays.stream(reader.getGridCoverageNames()).collect(Collectors.toList());
         } catch (Exception exception) {
             // the read failed to retrieve the available coverages for publishing
-            throw new RuntimeException(
-                    "Error getting coverages from coverage reader.", exception);
+            throw new RuntimeException("Error getting coverages from coverage reader.", exception);
         }
     }
 
-
-    /**
-     * If the coverage doesn't exists throws a REST exception with HTTP 404 code.
-     */
-    private void checkCoverageExists(CoverageInfo coverage, String workspaceName, String coverageName) {
+    /** If the coverage doesn't exists throws a REST exception with HTTP 404 code. */
+    private void checkCoverageExists(
+            CoverageInfo coverage, String workspaceName, String coverageName) {
         if (coverage == null) {
-            throw new ResourceNotFoundException(String.format(
-                    "No such coverage: %s,%s", workspaceName, coverageName));
+            throw new ResourceNotFoundException(
+                    String.format("No such coverage: %s,%s", workspaceName, coverageName));
         }
     }
 
-    /**
-     * Helper method that find a store based on the workspace name and store name.
-     */
+    /** Helper method that find a store based on the workspace name and store name. */
     private CoverageStoreInfo getExistingCoverageStore(String workspaceName, String storeName) {
         CoverageStoreInfo original = catalog.getCoverageStoreByName(workspaceName, storeName);
         if (original == null) {
@@ -271,10 +297,11 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     /**
-     * Helper method that handles the POST of a coverage. This handles both the cases
-     * when the store is provided and when the store is not provided.
+     * Helper method that handles the POST of a coverage. This handles both the cases when the store
+     * is provided and when the store is not provided.
      */
-    private String handleObjectPost(CoverageInfo coverage, String workspace, String coverageStoreName) throws Exception {
+    private String handleObjectPost(
+            CoverageInfo coverage, String workspace, String coverageStoreName) throws Exception {
         if (coverage.getStore() == null) {
             CoverageStoreInfo ds = catalog.getCoverageStoreByName(workspace, coverageStoreName);
             coverage.setStore(ds);
@@ -300,14 +327,19 @@ public class CoverageController extends AbstractCatalogController {
 
         NamespaceInfo ns = coverage.getNamespace();
         if (ns != null && !ns.getPrefix().equals(workspace)) {
-            //TODO: change this once the two can be different and we untie namespace
+            // TODO: change this once the two can be different and we untie namespace
             // from workspace
-            LOGGER.warning("Namespace: " + ns.getPrefix() + " does not match workspace: " + workspace + ", overriding.");
+            LOGGER.warning(
+                    "Namespace: "
+                            + ns.getPrefix()
+                            + " does not match workspace: "
+                            + workspace
+                            + ", overriding.");
             ns = null;
         }
 
         if (ns == null) {
-            //infer from workspace
+            // infer from workspace
             ns = catalog.getNamespaceByPrefix(workspace);
             coverage.setNamespace(ns);
         }
@@ -316,7 +348,7 @@ public class CoverageController extends AbstractCatalogController {
         catalog.validate(coverage, true).throwIfInvalid();
         catalog.add(coverage);
 
-        //create a layer for the coverage
+        // create a layer for the coverage
         catalog.add(builder.buildLayer(coverage));
 
         LOGGER.info("POST coverage " + coverageStoreName + "," + coverage.getName());
@@ -324,69 +356,97 @@ public class CoverageController extends AbstractCatalogController {
     }
 
     /**
-     * This method returns {@code true} in case we have POSTed a Coverage object with the name only, as an instance
-     * when configuring a new coverage which has just been harvested.
+     * This method returns {@code true} in case we have POSTed a Coverage object with the name only,
+     * as an instance when configuring a new coverage which has just been harvested.
      *
      * @param coverage
      */
     private boolean isNewCoverage(CoverageInfo coverage) {
-        return coverage.getName() != null && (coverage.isAdvertised()) && (!coverage.isEnabled())
-                && (coverage.getAlias() == null) && (coverage.getCRS() == null)
+        return coverage.getName() != null
+                && (coverage.isAdvertised())
+                && (!coverage.isEnabled())
+                && (coverage.getAlias() == null)
+                && (coverage.getCRS() == null)
                 && (coverage.getDefaultInterpolationMethod() == null)
-                && (coverage.getDescription() == null) && (coverage.getDimensions() == null)
-                && (coverage.getGrid() == null) && (coverage.getInterpolationMethods() == null)
-                && (coverage.getKeywords() == null) && (coverage.getLatLonBoundingBox() == null)
-                && (coverage.getMetadata() == null) && (coverage.getNativeBoundingBox() == null)
-                && (coverage.getNativeCRS() == null) && (coverage.getNativeFormat() == null)
-                && (coverage.getProjectionPolicy() == null) && (coverage.getSRS() == null)
-                && (coverage.getResponseSRS() == null) && (coverage.getRequestSRS() == null);
+                && (coverage.getDescription() == null)
+                && (coverage.getDimensions() == null)
+                && (coverage.getGrid() == null)
+                && (coverage.getInterpolationMethods() == null)
+                && (coverage.getKeywords() == null)
+                && (coverage.getLatLonBoundingBox() == null)
+                && (coverage.getMetadata() == null)
+                && (coverage.getNativeBoundingBox() == null)
+                && (coverage.getNativeCRS() == null)
+                && (coverage.getNativeFormat() == null)
+                && (coverage.getProjectionPolicy() == null)
+                && (coverage.getSRS() == null)
+                && (coverage.getResponseSRS() == null)
+                && (coverage.getRequestSRS() == null);
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return CoverageInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(new XStreamPersister.Callback() {
-            @Override
-            protected Class<CoverageInfo> getObjectClass() {
-                return CoverageInfo.class;
-            }
+        persister.setCallback(
+                new XStreamPersister.Callback() {
+                    @Override
+                    protected Class<CoverageInfo> getObjectClass() {
+                        return CoverageInfo.class;
+                    }
 
-            @Override
-            protected CatalogInfo getCatalogObject() {
-                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes()
-                        .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspaceName");
-                String coveragestore = uriTemplateVars.get("storeName");
-                String coverage = uriTemplateVars.get("coverageName");
+                    @Override
+                    protected CatalogInfo getCatalogObject() {
+                        Map<String, String> uriTemplateVars =
+                                (Map<String, String>)
+                                        RequestContextHolder.getRequestAttributes()
+                                                .getAttribute(
+                                                        HandlerMapping
+                                                                .URI_TEMPLATE_VARIABLES_ATTRIBUTE,
+                                                        RequestAttributes.SCOPE_REQUEST);
+                        String workspace = uriTemplateVars.get("workspaceName");
+                        String coveragestore = uriTemplateVars.get("storeName");
+                        String coverage = uriTemplateVars.get("coverageName");
 
-                if (workspace == null || coveragestore == null || coverage == null) {
-                    return null;
-                }
-                CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
-                if (cs == null) {
-                    return null;
-                }
-                return catalog.getCoverageByCoverageStore(cs, coverage);
-            }
+                        if (workspace == null || coveragestore == null || coverage == null) {
+                            return null;
+                        }
+                        CoverageStoreInfo cs =
+                                catalog.getCoverageStoreByName(workspace, coveragestore);
+                        if (cs == null) {
+                            return null;
+                        }
+                        return catalog.getCoverageByCoverageStore(cs, coverage);
+                    }
 
-            @Override
-            protected void postEncodeReference(Object obj, String ref, String prefix,
-                                               HierarchicalStreamWriter writer, MarshallingContext context) {
-                if (obj instanceof NamespaceInfo) {
-                    NamespaceInfo ns = (NamespaceInfo) obj;
-                    converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
-                }
-                if (obj instanceof CoverageStoreInfo) {
-                    CoverageStoreInfo cs = (CoverageStoreInfo) obj;
-                    converter.encodeLink("/workspaces/" + converter.encode(cs.getWorkspace().getName()) +
-                            "/coveragestores/" + converter.encode(cs.getName()), writer);
-
-                }
-            }
-        });
+                    @Override
+                    protected void postEncodeReference(
+                            Object obj,
+                            String ref,
+                            String prefix,
+                            HierarchicalStreamWriter writer,
+                            MarshallingContext context) {
+                        if (obj instanceof NamespaceInfo) {
+                            NamespaceInfo ns = (NamespaceInfo) obj;
+                            converter.encodeLink(
+                                    "/namespaces/" + converter.encode(ns.getPrefix()), writer);
+                        }
+                        if (obj instanceof CoverageStoreInfo) {
+                            CoverageStoreInfo cs = (CoverageStoreInfo) obj;
+                            converter.encodeLink(
+                                    "/workspaces/"
+                                            + converter.encode(cs.getWorkspace().getName())
+                                            + "/coveragestores/"
+                                            + converter.encode(cs.getName()),
+                                    writer);
+                        }
+                    }
+                });
     }
 }

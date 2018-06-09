@@ -6,6 +6,10 @@ package org.geogig.geoserver.gwc;
 
 import static com.google.common.base.Optional.fromNullable;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.vividsolutions.jts.geom.Geometry;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.model.RevTree;
@@ -16,29 +20,23 @@ import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk.Consumer;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.storage.ObjectDatabase;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
  * An operation that computes the "approximate minimal bounds" difference between two {@link RevTree
  * trees}.
- * <p>
- * The "approximate minimal bounds" is defined as the geometry union of the bounds of each
+ *
+ * <p>The "approximate minimal bounds" is defined as the geometry union of the bounds of each
  * individual difference, with the exception that when a tree node or bucket tree does not exist at
  * either side of the comparison, the traversal of the existing tree is skipped and its whole bounds
  * are used instead of adding up the bounds of each individual feature.
- * <p>
- * One depth level filtering by tree name is supported through {@link #setTreeNameFilter(String)} in
- * order to skip root node's children sibling of the tree of interest.
- * <p>
- * The tree-ish at the left side of the comparison is set through {@link #setOldVersion(String)},
+ *
+ * <p>One depth level filtering by tree name is supported through {@link #setTreeNameFilter(String)}
+ * in order to skip root node's children sibling of the tree of interest.
+ *
+ * <p>The tree-ish at the left side of the comparison is set through {@link #setOldVersion(String)},
  * and defaults to {@link Ref#HEAD} if not set.
- * <p>
- * The tree-ish at the right side of the comparison is set through {@link #setNewVersion(String)},
- * and defaults to {@link Ref#WORK_HEAD} if not set.
- * 
+ *
+ * <p>The tree-ish at the right side of the comparison is set through {@link
+ * #setNewVersion(String)}, and defaults to {@link Ref#WORK_HEAD} if not set.
  */
 public class MinimalDiffBounds extends AbstractGeoGigOp<Geometry> {
 
@@ -92,5 +90,4 @@ public class MinimalDiffBounds extends AbstractGeoGigOp<Geometry> {
 
         return objectDatabase().getTree(id.get());
     }
-
 }

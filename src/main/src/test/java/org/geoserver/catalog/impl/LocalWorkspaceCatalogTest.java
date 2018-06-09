@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -82,7 +81,7 @@ public class LocalWorkspaceCatalogTest {
         expect(ft1.getName()).andReturn("l1").anyTimes();
         expect(ft1.getNamespace()).andReturn(ns1).anyTimes();
         replay(ft1);
-        
+
         LayerInfo l1 = createNiceMock(LayerInfo.class);
         expect(l1.getName()).andReturn("ws1:l1").anyTimes();
         expect(l1.getResource()).andReturn(ft1).anyTimes();
@@ -92,7 +91,7 @@ public class LocalWorkspaceCatalogTest {
         expect(ft2.getName()).andReturn("l2").anyTimes();
         expect(ft2.getNamespace()).andReturn(ns2).anyTimes();
         replay(ft2);
-        
+
         LayerInfo l2 = createNiceMock(LayerInfo.class);
         expect(l2.getName()).andReturn("ws2:l2").anyTimes();
         expect(l2.getResource()).andReturn(ft2).anyTimes();
@@ -113,37 +112,37 @@ public class LocalWorkspaceCatalogTest {
 
         Catalog cat = createNiceMock(Catalog.class);
 
-        expect(cat.getWorkspaces()).andReturn(Arrays.asList(ws1,ws2)).anyTimes();
+        expect(cat.getWorkspaces()).andReturn(Arrays.asList(ws1, ws2)).anyTimes();
         expect(cat.getWorkspaceByName("ws1")).andReturn(ws1).anyTimes();
         expect(cat.getWorkspaceByName("ws2")).andReturn(ws2).anyTimes();
         expect(cat.getNamespaceByPrefix("ws1")).andReturn(ns1).anyTimes();
         expect(cat.getNamespaceByPrefix("ws2")).andReturn(ns2).anyTimes();
-        
+
         expect(cat.getStyleByName("ws1", "s1")).andReturn(s1).anyTimes();
         expect(cat.getStyleByName(ws1, "s1")).andReturn(s1).anyTimes();
         expect(cat.getStyleByName("s1")).andReturn(null).anyTimes();
-        
+
         expect(cat.getStyleByName("ws2", "s2")).andReturn(s1).anyTimes();
         expect(cat.getStyleByName(ws2, "s2")).andReturn(s1).anyTimes();
         expect(cat.getStyleByName("s2")).andReturn(null).anyTimes();
-        
+
         expect(cat.getLayerGroupByName("ws1", "lg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName(ws1, "lg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName("ws1:lg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName("lg1")).andReturn(null).anyTimes();
-        
+
         expect(cat.getLayerGroupByName("ws2", "lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName(ws2, "lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName("ws2:lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName("lg2")).andReturn(null).anyTimes();
 
-        //expect(cat.getLayerByName("ws1", "l1")).andReturn(l1).anyTimes();
-        //expect(cat.getLayerByName(ws1, "l1")).andReturn(l1).anyTimes();
+        // expect(cat.getLayerByName("ws1", "l1")).andReturn(l1).anyTimes();
+        // expect(cat.getLayerByName(ws1, "l1")).andReturn(l1).anyTimes();
         expect(cat.getLayerByName(new NameImpl("ws1", "l1"))).andReturn(l1).anyTimes();
         expect(cat.getLayerByName("l1")).andReturn(null).anyTimes();
 
-        //expect(cat.getLayerByName("ws2", "l2")).andReturn(l2).anyTimes();
-        //expect(cat.getLayerByName(ws2, "l2")).andReturn(l2).anyTimes();
+        // expect(cat.getLayerByName("ws2", "l2")).andReturn(l2).anyTimes();
+        // expect(cat.getLayerByName(ws2, "l2")).andReturn(l2).anyTimes();
         expect(cat.getLayerByName(new NameImpl("ws2", "l2"))).andReturn(l2).anyTimes();
         expect(cat.getLayerByName("l2")).andReturn(null).anyTimes();
 
@@ -159,11 +158,17 @@ public class LocalWorkspaceCatalogTest {
         layers.add(lc1);
         layers.add(lc2);
         expect(cat.getLayers()).andReturn(layers).anyTimes();
-        expect(cat.list(LayerInfo.class, Filter.INCLUDE, 
-                (Integer) null, (Integer) null, (SortBy) null))
-            .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers.iterator())).anyTimes();
+        expect(
+                        cat.list(
+                                LayerInfo.class,
+                                Filter.INCLUDE,
+                                (Integer) null,
+                                (Integer) null,
+                                (SortBy) null))
+                .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers.iterator()))
+                .anyTimes();
         replay(cat);
-        
+
         catalog = new LocalWorkspaceCatalog(cat);
     }
 
@@ -171,14 +176,15 @@ public class LocalWorkspaceCatalogTest {
     public void tearDown() {
         LocalWorkspace.remove();
     }
-    @Test 
+
+    @Test
     public void testGetStyleByName() throws Exception {
         assertNull(catalog.getStyleByName("s1"));
         assertNull(catalog.getStyleByName("s2"));
 
         WorkspaceInfo ws1 = catalog.getWorkspaceByName("ws1");
         WorkspaceInfo ws2 = catalog.getWorkspaceByName("ws2");
-        
+
         LocalWorkspace.set(ws1);
         assertNotNull(catalog.getStyleByName("s1"));
         assertNull(catalog.getStyleByName("s2"));
@@ -203,7 +209,7 @@ public class LocalWorkspaceCatalogTest {
 
         WorkspaceInfo ws1 = catalog.getWorkspaceByName("ws1");
         WorkspaceInfo ws2 = catalog.getWorkspaceByName("ws2");
-        
+
         LocalWorkspace.set(ws1);
         assertNotNull(catalog.getLayerGroupByName("lg1"));
         assertNotNull(catalog.getLayerGroupByName("ws1:lg1"));
@@ -261,9 +267,7 @@ public class LocalWorkspaceCatalogTest {
         assertEquals("Invalid namespace prefix", "ws2", nsPrefix2);
     }
 
-    /**
-     * The setting says to not include the prefix.  This is default behaviour
-     */
+    /** The setting says to not include the prefix. This is default behaviour */
     @Test
     public void testGetNonPrefixedLayerNames() {
         boolean includePrefix = false;
@@ -273,9 +277,9 @@ public class LocalWorkspaceCatalogTest {
     }
 
     /**
-     * No geoserver instance has been set.  This means there is no access to geoserver.
-     * this should not happen but we want to protect against this consideration.  In this case
-     * we have a local workspace set and we will use the default behaviour (no prefix)
+     * No geoserver instance has been set. This means there is no access to geoserver. this should
+     * not happen but we want to protect against this consideration. In this case we have a local
+     * workspace set and we will use the default behaviour (no prefix)
      */
     @Test
     public void testGetNoGeoserverPrefixedLayerNameBehaviour() {
@@ -286,10 +290,11 @@ public class LocalWorkspaceCatalogTest {
     }
 
     /**
-     * No local workspace is set this means the prefix should be included since the global capabilities
-     * is probably being created.
-     * 
-     * The No Geoserver part is just to verify there are no nullpointer exceptions because of a coding error
+     * No local workspace is set this means the prefix should be included since the global
+     * capabilities is probably being created.
+     *
+     * <p>The No Geoserver part is just to verify there are no nullpointer exceptions because of a
+     * coding error
      */
     @Test
     public void testGetNoGeoserverLocalWorkspacePrefixedLayerNameBehaviour() {
@@ -298,10 +303,10 @@ public class LocalWorkspaceCatalogTest {
         boolean createGeoServer = false;
         assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
     }
-    
+
     /**
-     * No localworkspace so prefix should be included since the global capabilities
-     * is probably being created.
+     * No localworkspace so prefix should be included since the global capabilities is probably
+     * being created.
      */
     @Test
     public void testGetNoLocalWorkspacePrefixedLayerNameBehaviour() {
@@ -311,9 +316,7 @@ public class LocalWorkspaceCatalogTest {
         assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
     }
 
-    /**
-     * The setting is set to include the prefixes.
-     */
+    /** The setting is set to include the prefixes. */
     @Test
     public void testGetPrefixedLayerNames() {
         boolean includePrefix = true;
@@ -322,18 +325,17 @@ public class LocalWorkspaceCatalogTest {
         assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
     }
 
-    private void assertPrefixInclusion(boolean includePrefix,
-            boolean setLocalWorkspace, boolean createGeoServer) {
-        if (createGeoServer ) {
+    private void assertPrefixInclusion(
+            boolean includePrefix, boolean setLocalWorkspace, boolean createGeoServer) {
+        if (createGeoServer) {
             SettingsInfo settings = createNiceMock(SettingsInfo.class);
-            expect(settings.isLocalWorkspaceIncludesPrefix()).andReturn(includePrefix)
-                    .anyTimes();
+            expect(settings.isLocalWorkspaceIncludesPrefix()).andReturn(includePrefix).anyTimes();
             replay(settings);
-    
+
             GeoServer geoServer = createNiceMock(GeoServer.class);
             expect(geoServer.getSettings()).andReturn(settings).anyTimes();
             replay(geoServer);
-    
+
             catalog.setGeoServer(geoServer);
         }
 
@@ -343,22 +345,24 @@ public class LocalWorkspaceCatalogTest {
         }
 
         checkLayerNamePrefixInclusion(includePrefix, catalog.getLayers().iterator());
-        
+
         checkLayerNamePrefixInclusion(includePrefix, catalog.list(LayerInfo.class, Filter.INCLUDE));
     }
 
-    private void checkLayerNamePrefixInclusion(boolean includePrefix,
-            Iterator<LayerInfo> layers) {
-        while(layers.hasNext()) {
+    private void checkLayerNamePrefixInclusion(boolean includePrefix, Iterator<LayerInfo> layers) {
+        while (layers.hasNext()) {
             LayerInfo layerInfo = layers.next();
             String message;
-            if(includePrefix) {
-                message = layerInfo.getName() + " should contain a : because the prefix should have been kept";
+            if (includePrefix) {
+                message =
+                        layerInfo.getName()
+                                + " should contain a : because the prefix should have been kept";
             } else {
-                message = layerInfo.getName() + " should contain not a : because the prefix should have been removed";
+                message =
+                        layerInfo.getName()
+                                + " should contain not a : because the prefix should have been removed";
             }
             assertEquals(message, includePrefix, layerInfo.getName().contains(":"));
         }
     }
-
 }

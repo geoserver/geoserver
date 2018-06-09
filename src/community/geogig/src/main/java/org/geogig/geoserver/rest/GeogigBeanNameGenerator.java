@@ -9,10 +9,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 
 /**
- * Bean name generator that prefixes geogig in front of the default bean name to avoid naming conflicts between geogig and geoserver beans.
+ * Bean name generator that prefixes geogig in front of the default bean name to avoid naming
+ * conflicts between geogig and geoserver beans.
  */
 public class GeogigBeanNameGenerator extends AnnotationBeanNameGenerator {
-    
+
     public GeogigBeanNameGenerator() {
         super();
     }
@@ -21,5 +22,4 @@ public class GeogigBeanNameGenerator extends AnnotationBeanNameGenerator {
     public String generateBeanName(BeanDefinition arg0, BeanDefinitionRegistry arg1) {
         return "geogig" + super.generateBeanName(arg0, arg1);
     }
-
 }

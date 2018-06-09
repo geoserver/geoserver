@@ -6,12 +6,9 @@ package org.geoserver.gwc.wmts.dimensions;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
-
-/**
- * Simple containers of statistics about a domain
- */
+/** Simple containers of statistics about a domain */
 class DomainSummary {
-    
+
     private ReferencedEnvelope envelope;
     private Object min;
     private Object max;

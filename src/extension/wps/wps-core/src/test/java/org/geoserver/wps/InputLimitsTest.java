@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URLEncoder;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -78,26 +77,35 @@ public class InputLimitsTest extends WPSTestSupport {
         buffer.setEnabled(true);
         buffer.setName(new NameImpl("geo", "buffer"));
         buffer.getValidators().put("geom", new MaxSizeValidator(1));
-        buffer.getValidators().put("distance",
-                new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
-        buffer.getValidators().put("quadrantSegments",
-                new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
+        buffer.getValidators()
+                .put(
+                        "distance",
+                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
+        buffer.getValidators()
+                .put(
+                        "quadrantSegments",
+                        new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
         geoGroup.getFilteredProcesses().add(buffer);
 
         // simplify process distance
         ProcessInfo simplify = new ProcessInfoImpl();
         simplify.setEnabled(true);
         simplify.setName(new NameImpl("geo", "simplify"));
-        simplify.getValidators().put("distance",
-                new NumberRangeValidator(new NumberRange<Double>(Double.class, null, 100d)));
+        simplify.getValidators()
+                .put(
+                        "distance",
+                        new NumberRangeValidator(
+                                new NumberRange<Double>(Double.class, null, 100d)));
         geoGroup.getFilteredProcesses().add(simplify);
 
         // densify process
         ProcessInfo densify = new ProcessInfoImpl();
         densify.setEnabled(true);
         densify.setName(new NameImpl("geo", "densify"));
-        densify.getValidators().put("distance",
-                new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, null)));
+        densify.getValidators()
+                .put(
+                        "distance",
+                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, null)));
         geoGroup.getFilteredProcesses().add(densify);
 
         // for the contour process
@@ -109,8 +117,11 @@ public class InputLimitsTest extends WPSTestSupport {
         contour.setEnabled(true);
         contour.setName(new NameImpl("ras", "Contour"));
         contour.getValidators().put("data", new MaxSizeValidator(1));
-        contour.getValidators().put("levels",
-                new NumberRangeValidator(new NumberRange<Double>(Double.class, -8000d, 8000d)));
+        contour.getValidators()
+                .put(
+                        "levels",
+                        new NumberRangeValidator(
+                                new NumberRange<Double>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasterGroup.getFilteredProcesses().add(contour);
 
@@ -138,29 +149,41 @@ public class InputLimitsTest extends WPSTestSupport {
         assertXpathExists(base + "/Input[2]", d);
         assertXpathEvaluatesTo("distance", base + "/Input[2]/ows:Identifier", d);
         assertXpathExists(base + "/Input[2]/LiteralData", d);
-        assertXpathEvaluatesTo("closed", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure", d);
-        assertXpathEvaluatesTo("0.0", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue", d);
-        assertXpathEvaluatesTo("100.0", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue", d);
+        assertXpathEvaluatesTo(
+                "closed",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure",
+                d);
+        assertXpathEvaluatesTo(
+                "0.0",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue",
+                d);
+        assertXpathEvaluatesTo(
+                "100.0",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue",
+                d);
 
         // third parameter (integer range)
         assertXpathExists(base + "/Input[3]", d);
         assertXpathEvaluatesTo("quadrantSegments", base + "/Input[3]/ows:Identifier", d);
         assertXpathExists(base + "/Input[3]/LiteralData", d);
-        assertXpathEvaluatesTo("closed", base
-                + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure", d);
-        assertXpathEvaluatesTo("2", base
-                + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue", d);
-        assertXpathEvaluatesTo("20", base
-                + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue", d);
+        assertXpathEvaluatesTo(
+                "closed",
+                base + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure",
+                d);
+        assertXpathEvaluatesTo(
+                "2",
+                base + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue",
+                d);
+        assertXpathEvaluatesTo(
+                "20",
+                base + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue",
+                d);
     }
 
     @Test
     public void testDescribeSimplify() throws Exception {
-        Document d = getAsDOM(root()
-                + "service=wps&request=describeprocess&identifier=geo:simplify");
+        Document d =
+                getAsDOM(root() + "service=wps&request=describeprocess&identifier=geo:simplify");
         // print(d);
         // first off, let's check it's schema compliant
         checkValidationErrors(d);
@@ -178,17 +201,22 @@ public class InputLimitsTest extends WPSTestSupport {
         assertXpathExists(base + "/Input[2]", d);
         assertXpathEvaluatesTo("distance", base + "/Input[2]/ows:Identifier", d);
         assertXpathExists(base + "/Input[2]/LiteralData", d);
-        assertXpathEvaluatesTo("open-closed", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure", d);
-        assertXpathNotExists(base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue", d);
-        assertXpathEvaluatesTo("100.0", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue", d);
+        assertXpathEvaluatesTo(
+                "open-closed",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure",
+                d);
+        assertXpathNotExists(
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue", d);
+        assertXpathEvaluatesTo(
+                "100.0",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue",
+                d);
     }
 
     @Test
     public void testDescribeDensify() throws Exception {
-        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=geo:densify");
+        Document d =
+                getAsDOM(root() + "service=wps&request=describeprocess&identifier=geo:densify");
         // print(d);
         // first off, let's check it's schema compliant
         checkValidationErrors(d);
@@ -206,12 +234,16 @@ public class InputLimitsTest extends WPSTestSupport {
         assertXpathExists(base + "/Input[2]", d);
         assertXpathEvaluatesTo("distance", base + "/Input[2]/ows:Identifier", d);
         assertXpathExists(base + "/Input[2]/LiteralData", d);
-        assertXpathEvaluatesTo("closed-open", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure", d);
-        assertXpathEvaluatesTo("0.0", base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue", d);
-        assertXpathNotExists(base
-                + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue", d);
+        assertXpathEvaluatesTo(
+                "closed-open",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure",
+                d);
+        assertXpathEvaluatesTo(
+                "0.0",
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue",
+                d);
+        assertXpathNotExists(
+                base + "/Input[2]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue", d);
     }
 
     @Test
@@ -235,7 +267,8 @@ public class InputLimitsTest extends WPSTestSupport {
     @Test
     public void testDescribeContour() throws Exception {
         // this one has no custom limits, but there is the global limit for the complex input size
-        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=ras:Contour");
+        Document d =
+                getAsDOM(root() + "service=wps&request=describeprocess&identifier=ras:Contour");
         // print(d);
         // first off, let's check it's schema compliant
         checkValidationErrors(d);
@@ -255,12 +288,18 @@ public class InputLimitsTest extends WPSTestSupport {
         assertXpathEvaluatesTo("0", base + "/Input[3]/@minOccurs", d);
         assertXpathEvaluatesTo("3", base + "/Input[3]/@maxOccurs", d);
         assertXpathExists(base + "/Input[3]/LiteralData", d);
-        assertXpathEvaluatesTo("closed", base
-                + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure", d);
-        assertXpathEvaluatesTo("-8000.0", base
-                + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue", d);
-        assertXpathEvaluatesTo("8000.0", base
-                + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue", d);
+        assertXpathEvaluatesTo(
+                "closed",
+                base + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/@ows:rangeClosure",
+                d);
+        assertXpathEvaluatesTo(
+                "-8000.0",
+                base + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MinimumValue",
+                d);
+        assertXpathEvaluatesTo(
+                "8000.0",
+                base + "/Input[3]/LiteralData/ows:AllowedValues/ows:Range/ows:MaximumValue",
+                d);
 
         // first parameter, the roid geometry
         assertXpathExists(base + "/Input[7]", d);
@@ -273,41 +312,46 @@ public class InputLimitsTest extends WPSTestSupport {
     public void testBufferLargeInlineGeometry() throws Exception {
         String wkt = buildLineString((Short.MAX_VALUE + 1) * 2 + 1);
 
-        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                + "<ows:Identifier>geo:buffer</ows:Identifier>"
-                + "<wps:DataInputs>"
-                + "<wps:Input>"
-                + "<ows:Identifier>distance</ows:Identifier>"
-                + "<wps:Data>"
-                + "<wps:LiteralData>1</wps:LiteralData>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "<wps:Input>"
-                + "<ows:Identifier>geom</ows:Identifier>"
-                + "<wps:Data>"
-                + "<wps:ComplexData mimeType=\"application/wkt\">"
-                + "<![CDATA["
-                + wkt
-                + "]]>"
-                + "</wps:ComplexData>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "</wps:DataInputs>"
-                + "<wps:ResponseForm>"
-                + "<wps:ResponseDocument storeExecuteResponse='false'>"
-                + "<wps:Output>"
-                + "<ows:Identifier>result</ows:Identifier>"
-                + "</wps:Output>"
-                + "</wps:ResponseDocument>" + "</wps:ResponseForm>" + "</wps:Execute>";
+        String xml =
+                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                        + "<ows:Identifier>geo:buffer</ows:Identifier>"
+                        + "<wps:DataInputs>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>distance</ows:Identifier>"
+                        + "<wps:Data>"
+                        + "<wps:LiteralData>1</wps:LiteralData>"
+                        + "</wps:Data>"
+                        + "</wps:Input>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>geom</ows:Identifier>"
+                        + "<wps:Data>"
+                        + "<wps:ComplexData mimeType=\"application/wkt\">"
+                        + "<![CDATA["
+                        + wkt
+                        + "]]>"
+                        + "</wps:ComplexData>"
+                        + "</wps:Data>"
+                        + "</wps:Input>"
+                        + "</wps:DataInputs>"
+                        + "<wps:ResponseForm>"
+                        + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                        + "<wps:Output>"
+                        + "<ows:Identifier>result</ows:Identifier>"
+                        + "</wps:Output>"
+                        + "</wps:ResponseDocument>"
+                        + "</wps:ResponseForm>"
+                        + "</wps:Execute>";
 
         Document dom = postAsDOM("wps", xml);
         // print(dom);
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        assertXpathEvaluatesTo("geom",
-                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator", dom);
-        String message = xp
-                .evaluate(
+        assertXpathEvaluatesTo(
+                "geom",
+                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator",
+                dom);
+        String message =
+                xp.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
         assertTrue(message.contains("exceeds the maximum allowed"));
@@ -322,39 +366,44 @@ public class InputLimitsTest extends WPSTestSupport {
         File wktDataFile = new File(tmp, "line.wkt");
         FileUtils.writeStringToFile(wktDataFile, wkt);
 
-        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                + "<ows:Identifier>geo:buffer</ows:Identifier>"
-                + "<wps:DataInputs>"
-                + "<wps:Input>"
-                + "<ows:Identifier>distance</ows:Identifier>"
-                + "<wps:Data>"
-                + "<wps:LiteralData>1</wps:LiteralData>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "<wps:Input>"
-                + "<ows:Identifier>geom</ows:Identifier>"
-                + "  <wps:Reference mimeType=\"application/wkt\" "
-                + "xlink:href=\""
-                + DataUtilities.fileToURL(wktDataFile)
-                + "\"/>\n"
-                + "</wps:Input>"
-                + "</wps:DataInputs>"
-                + "<wps:ResponseForm>"
-                + "<wps:ResponseDocument storeExecuteResponse='false'>"
-                + "<wps:Output>"
-                + "<ows:Identifier>result</ows:Identifier>"
-                + "</wps:Output>"
-                + "</wps:ResponseDocument>" + "</wps:ResponseForm>" + "</wps:Execute>";
+        String xml =
+                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                        + "<ows:Identifier>geo:buffer</ows:Identifier>"
+                        + "<wps:DataInputs>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>distance</ows:Identifier>"
+                        + "<wps:Data>"
+                        + "<wps:LiteralData>1</wps:LiteralData>"
+                        + "</wps:Data>"
+                        + "</wps:Input>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>geom</ows:Identifier>"
+                        + "  <wps:Reference mimeType=\"application/wkt\" "
+                        + "xlink:href=\""
+                        + DataUtilities.fileToURL(wktDataFile)
+                        + "\"/>\n"
+                        + "</wps:Input>"
+                        + "</wps:DataInputs>"
+                        + "<wps:ResponseForm>"
+                        + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                        + "<wps:Output>"
+                        + "<ows:Identifier>result</ows:Identifier>"
+                        + "</wps:Output>"
+                        + "</wps:ResponseDocument>"
+                        + "</wps:ResponseForm>"
+                        + "</wps:Execute>";
         FileUtils.writeStringToFile(new File("/tmp/request.xml"), xml);
 
         Document dom = postAsDOM("wps", xml);
         // print(dom);
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        assertXpathEvaluatesTo("geom",
-                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator", dom);
-        String message = xp
-                .evaluate(
+        assertXpathEvaluatesTo(
+                "geom",
+                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator",
+                dom);
+        String message =
+                xp.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
         assertTrue(message.contains("exceeds maximum allowed size"));
@@ -365,41 +414,46 @@ public class InputLimitsTest extends WPSTestSupport {
     public void testBufferLargeDistance() throws Exception {
         String wkt = buildLineString(10);
 
-        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                + "<ows:Identifier>geo:buffer</ows:Identifier>"
-                + "<wps:DataInputs>"
-                + "<wps:Input>"
-                + "<ows:Identifier>distance</ows:Identifier>"
-                + "<wps:Data>"
-                + "<wps:LiteralData>200</wps:LiteralData>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "<wps:Input>"
-                + "<ows:Identifier>geom</ows:Identifier>"
-                + "<wps:Data>"
-                + "<wps:ComplexData mimeType=\"application/wkt\">"
-                + "<![CDATA["
-                + wkt
-                + "]]>"
-                + "</wps:ComplexData>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "</wps:DataInputs>"
-                + "<wps:ResponseForm>"
-                + "<wps:ResponseDocument storeExecuteResponse='false'>"
-                + "<wps:Output>"
-                + "<ows:Identifier>result</ows:Identifier>"
-                + "</wps:Output>"
-                + "</wps:ResponseDocument>" + "</wps:ResponseForm>" + "</wps:Execute>";
+        String xml =
+                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                        + "<ows:Identifier>geo:buffer</ows:Identifier>"
+                        + "<wps:DataInputs>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>distance</ows:Identifier>"
+                        + "<wps:Data>"
+                        + "<wps:LiteralData>200</wps:LiteralData>"
+                        + "</wps:Data>"
+                        + "</wps:Input>"
+                        + "<wps:Input>"
+                        + "<ows:Identifier>geom</ows:Identifier>"
+                        + "<wps:Data>"
+                        + "<wps:ComplexData mimeType=\"application/wkt\">"
+                        + "<![CDATA["
+                        + wkt
+                        + "]]>"
+                        + "</wps:ComplexData>"
+                        + "</wps:Data>"
+                        + "</wps:Input>"
+                        + "</wps:DataInputs>"
+                        + "<wps:ResponseForm>"
+                        + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                        + "<wps:Output>"
+                        + "<ows:Identifier>result</ows:Identifier>"
+                        + "</wps:Output>"
+                        + "</wps:ResponseDocument>"
+                        + "</wps:ResponseForm>"
+                        + "</wps:Execute>";
 
         Document dom = postAsDOM("wps", xml);
         // print(dom);
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        assertXpathEvaluatesTo("distance",
-                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator", dom);
-        String message = xp
-                .evaluate(
+        assertXpathEvaluatesTo(
+                "distance",
+                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator",
+                dom);
+        String message =
+                xp.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
         assertTrue(message.contains("distance"));
@@ -422,69 +476,73 @@ public class InputLimitsTest extends WPSTestSupport {
 
     @Test
     public void testCountourTooManyLevels() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                + "  <ows:Identifier>ras:Contour</ows:Identifier>\n"
-                + "  <wps:DataInputs>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>data</ows:Identifier>\n"
-                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                + "        <wps:Body>\n"
-                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                + "            <ows:Identifier>"
-                + getLayerId(MockData.TASMANIA_DEM)
-                + "</ows:Identifier>\n"
-                + "            <wcs:DomainSubset>\n"
-                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                + "                <ows:LowerCorner>-180 -90</ows:LowerCorner>\n"
-                + "                <ows:UpperCorner>180 90</ows:UpperCorner>\n"
-                + "              </gml:BoundingBox>\n"
-                + "            </wcs:DomainSubset>\n"
-                + "            <wcs:Output format=\"image/tiff\"/>\n"
-                + "          </wcs:GetCoverage>\n"
-                + "        </wps:Body>\n"
-                + "      </wps:Reference>\n"
-                + "    </wps:Input>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>levels</ows:Identifier>\n"
-                + "      <wps:Data>\n"
-                + "        <wps:LiteralData>0</wps:LiteralData>\n"
-                + "      </wps:Data>\n"
-                + "    </wps:Input>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>levels</ows:Identifier>\n"
-                + "      <wps:Data>\n"
-                + "        <wps:LiteralData>10</wps:LiteralData>\n"
-                + "      </wps:Data>\n"
-                + "    </wps:Input>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>levels</ows:Identifier>\n"
-                + "      <wps:Data>\n"
-                + "        <wps:LiteralData>20</wps:LiteralData>\n"
-                + "      </wps:Data>\n"
-                + "    </wps:Input>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>levels</ows:Identifier>\n"
-                + "      <wps:Data>\n"
-                + "        <wps:LiteralData>30</wps:LiteralData>\n"
-                + "      </wps:Data>\n"
-                + "    </wps:Input>\n"
-                + "  </wps:DataInputs>\n"
-                + "  <wps:ResponseForm>\n"
-                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
-                + "      <ows:Identifier>result</ows:Identifier>\n"
-                + "    </wps:RawDataOutput>\n"
-                + "  </wps:ResponseForm>\n" + "</wps:Execute>";
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                        + "  <ows:Identifier>ras:Contour</ows:Identifier>\n"
+                        + "  <wps:DataInputs>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>data</ows:Identifier>\n"
+                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                        + "        <wps:Body>\n"
+                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                        + "            <ows:Identifier>"
+                        + getLayerId(MockData.TASMANIA_DEM)
+                        + "</ows:Identifier>\n"
+                        + "            <wcs:DomainSubset>\n"
+                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                        + "                <ows:LowerCorner>-180 -90</ows:LowerCorner>\n"
+                        + "                <ows:UpperCorner>180 90</ows:UpperCorner>\n"
+                        + "              </gml:BoundingBox>\n"
+                        + "            </wcs:DomainSubset>\n"
+                        + "            <wcs:Output format=\"image/tiff\"/>\n"
+                        + "          </wcs:GetCoverage>\n"
+                        + "        </wps:Body>\n"
+                        + "      </wps:Reference>\n"
+                        + "    </wps:Input>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>levels</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:LiteralData>0</wps:LiteralData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>levels</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:LiteralData>10</wps:LiteralData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>levels</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:LiteralData>20</wps:LiteralData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>levels</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:LiteralData>30</wps:LiteralData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "  </wps:DataInputs>\n"
+                        + "  <wps:ResponseForm>\n"
+                        + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
+                        + "      <ows:Identifier>result</ows:Identifier>\n"
+                        + "    </wps:RawDataOutput>\n"
+                        + "  </wps:ResponseForm>\n"
+                        + "</wps:Execute>";
 
         Document dom = postAsDOM("wps", xml);
         // print(dom);
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
 
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        assertXpathEvaluatesTo("levels",
-                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator", dom);
-        String message = xp
-                .evaluate(
+        assertXpathEvaluatesTo(
+                "levels",
+                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator",
+                dom);
+        String message =
+                xp.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
         assertTrue(message.contains("levels"));
@@ -493,51 +551,55 @@ public class InputLimitsTest extends WPSTestSupport {
 
     @Test
     public void testCountourLevelsOutOfRange() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                + "  <ows:Identifier>ras:Contour</ows:Identifier>\n"
-                + "  <wps:DataInputs>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>data</ows:Identifier>\n"
-                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                + "        <wps:Body>\n"
-                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                + "            <ows:Identifier>"
-                + getLayerId(MockData.TASMANIA_DEM)
-                + "</ows:Identifier>\n"
-                + "            <wcs:DomainSubset>\n"
-                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                + "                <ows:LowerCorner>-180 -90</ows:LowerCorner>\n"
-                + "                <ows:UpperCorner>180 90</ows:UpperCorner>\n"
-                + "              </gml:BoundingBox>\n"
-                + "            </wcs:DomainSubset>\n"
-                + "            <wcs:Output format=\"image/tiff\"/>\n"
-                + "          </wcs:GetCoverage>\n"
-                + "        </wps:Body>\n"
-                + "      </wps:Reference>\n"
-                + "    </wps:Input>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>levels</ows:Identifier>\n"
-                + "      <wps:Data>\n"
-                + "        <wps:LiteralData>10000</wps:LiteralData>\n"
-                + "      </wps:Data>\n"
-                + "    </wps:Input>\n"
-                + "  </wps:DataInputs>\n"
-                + "  <wps:ResponseForm>\n"
-                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
-                + "      <ows:Identifier>result</ows:Identifier>\n"
-                + "    </wps:RawDataOutput>\n"
-                + "  </wps:ResponseForm>\n" + "</wps:Execute>";
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                        + "  <ows:Identifier>ras:Contour</ows:Identifier>\n"
+                        + "  <wps:DataInputs>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>data</ows:Identifier>\n"
+                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                        + "        <wps:Body>\n"
+                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                        + "            <ows:Identifier>"
+                        + getLayerId(MockData.TASMANIA_DEM)
+                        + "</ows:Identifier>\n"
+                        + "            <wcs:DomainSubset>\n"
+                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                        + "                <ows:LowerCorner>-180 -90</ows:LowerCorner>\n"
+                        + "                <ows:UpperCorner>180 90</ows:UpperCorner>\n"
+                        + "              </gml:BoundingBox>\n"
+                        + "            </wcs:DomainSubset>\n"
+                        + "            <wcs:Output format=\"image/tiff\"/>\n"
+                        + "          </wcs:GetCoverage>\n"
+                        + "        </wps:Body>\n"
+                        + "      </wps:Reference>\n"
+                        + "    </wps:Input>\n"
+                        + "    <wps:Input>\n"
+                        + "      <ows:Identifier>levels</ows:Identifier>\n"
+                        + "      <wps:Data>\n"
+                        + "        <wps:LiteralData>10000</wps:LiteralData>\n"
+                        + "      </wps:Data>\n"
+                        + "    </wps:Input>\n"
+                        + "  </wps:DataInputs>\n"
+                        + "  <wps:ResponseForm>\n"
+                        + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
+                        + "      <ows:Identifier>result</ows:Identifier>\n"
+                        + "    </wps:RawDataOutput>\n"
+                        + "  </wps:ResponseForm>\n"
+                        + "</wps:Execute>";
 
         Document dom = postAsDOM("wps", xml);
         // print(dom);
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
 
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        assertXpathEvaluatesTo("levels",
-                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator", dom);
-        String message = xp
-                .evaluate(
+        assertXpathEvaluatesTo(
+                "levels",
+                "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/@locator",
+                dom);
+        String message =
+                xp.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
         assertTrue(message.contains("levels"));
@@ -555,12 +617,14 @@ public class InputLimitsTest extends WPSTestSupport {
 
         getGeoServer().save(wps);
 
-        // submit an asynchronous request which will take longer than the execution time limit to run
+        // submit an asynchronous request which will take longer than the execution time limit to
+        // run
 
-        String statusLocation = submitAsynchronousRequest(
-            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
-                + urlEncode("id=x1"));
-        
+        String statusLocation =
+                submitAsynchronousRequest(
+                        "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                                + urlEncode("id=x1"));
+
         waitForProcessStart(statusLocation, 10);
 
         MonkeyProcess.wait("x1", 2500);
@@ -569,8 +633,8 @@ public class InputLimitsTest extends WPSTestSupport {
         // request should fail exceeding asynchronous execution time limit
         Document response3 = waitForProcessEnd(statusLocation, 10);
         assertXpathExists(
-            "//ows:ExceptionText[contains(., 'maxExecutionTime 2 seconds, maxTotalTime 3 seconds')]",
-            response3);
+                "//ows:ExceptionText[contains(., 'maxExecutionTime 2 seconds, maxTotalTime 3 seconds')]",
+                response3);
     }
 
     @Test
@@ -585,20 +649,24 @@ public class InputLimitsTest extends WPSTestSupport {
 
         getGeoServer().save(wps);
 
-        // submit 3 asynchronous requests each running within the execution time limit but the last one
+        // submit 3 asynchronous requests each running within the execution time limit but the last
+        // one
         // exceeding the total time limit when run one after another
 
-        String statusLocationX1 = submitAsynchronousRequest(
-            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
-                + urlEncode("id=x1"));
+        String statusLocationX1 =
+                submitAsynchronousRequest(
+                        "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                                + urlEncode("id=x1"));
 
-        String statusLocationX2 = submitAsynchronousRequest(
-            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
-                + urlEncode("id=x2"));
+        String statusLocationX2 =
+                submitAsynchronousRequest(
+                        "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                                + urlEncode("id=x2"));
 
-        String statusLocationX3 = submitAsynchronousRequest(
-            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
-                + urlEncode("id=x3"));
+        String statusLocationX3 =
+                submitAsynchronousRequest(
+                        "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                                + urlEncode("id=x3"));
 
         MonkeyProcess.wait("x1", 1100);
         MonkeyProcess.wait("x2", 1100);
@@ -618,8 +686,8 @@ public class InputLimitsTest extends WPSTestSupport {
         // Third request should fail as it exceeds the asynchronous total time limit
         Document response3 = waitForProcessEnd(statusLocationX3, 10);
         assertXpathExists(
-            "//ows:ExceptionText[contains(., 'maxExecutionTime 2 seconds, maxTotalTime 3 seconds')]",
-            response3);
+                "//ows:ExceptionText[contains(., 'maxExecutionTime 2 seconds, maxTotalTime 3 seconds')]",
+                response3);
     }
 
     @Test
@@ -633,18 +701,21 @@ public class InputLimitsTest extends WPSTestSupport {
 
         getGeoServer().save(wps);
 
-        // set process called to wait for longer than maximum execution timeout and then update progress
+        // set process called to wait for longer than maximum execution timeout and then update
+        // progress
         MonkeyProcess.wait("x1", 1100);
         MonkeyProcess.progress("x1", 54f, false);
 
         // run the process and get the result
-        Document result = getAsDOM("wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
-            + urlEncode("id=x1"));
+        Document result =
+                getAsDOM(
+                        "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
+                                + urlEncode("id=x1"));
 
         // request should have failed as it exceeds the synchronous execution time limit
         assertXpathExists(
-            "//ows:ExceptionText[contains(., 'maxExecutionTime 1 seconds, maxTotalTime 2 seconds')]",
-            result);
+                "//ows:ExceptionText[contains(., 'maxExecutionTime 1 seconds, maxTotalTime 2 seconds')]",
+                result);
     }
 
     @Test
@@ -656,26 +727,26 @@ public class InputLimitsTest extends WPSTestSupport {
 
         getGeoServer().save(wps);
 
-        // set process called to wait for longer than maximum queue and execution timeout and then update progress
+        // set process called to wait for longer than maximum queue and execution timeout and then
+        // update progress
         MonkeyProcess.wait("x1", 1100);
         MonkeyProcess.progress("x1", 54f, false);
 
         // run the process and get the result
-        Document result = getAsDOM("wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
-            + urlEncode("id=x1"));
+        Document result =
+                getAsDOM(
+                        "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
+                                + urlEncode("id=x1"));
 
         // request should have failed as it exceeds the synchronous total time limit
-        assertXpathExists(
-            "//ows:ExceptionText[contains(., 'maxTotalTime 1 seconds')]",
-            result);
+        assertXpathExists("//ows:ExceptionText[contains(., 'maxTotalTime 1 seconds')]", result);
     }
 
     String urlEncode(String string) throws Exception {
         return URLEncoder.encode(string, "ASCII");
     }
 
-    private String submitAsynchronousRequest(String request)
-            throws Exception {
+    private String submitAsynchronousRequest(String request) throws Exception {
         Document response = getAsDOM(request);
         return getStatusLocation(response);
     }
@@ -685,5 +756,4 @@ public class InputLimitsTest extends WPSTestSupport {
         String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
         return fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
     }
-
 }

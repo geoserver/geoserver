@@ -11,10 +11,7 @@ import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.util.FastOutputStream;
 import java.io.*;
 
-/**
- *
- * @author Ian Schneider <ischneider@opengeo.org>
- */
+/** @author Ian Schneider <ischneider@opengeo.org> */
 public class SerialVersionSafeSerialBinding<T> extends SerialBase implements EntryBinding<T> {
 
     @Override
@@ -39,7 +36,7 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        
+
         final byte[] bytes = serialOutput.getBufferBytes();
         final int offset = 0;
         final int length = serialOutput.getBufferLength();
@@ -52,9 +49,15 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
             super(in);
         }
 
-        protected ObjectStreamClass readClassDescriptor() throws IOException, ClassNotFoundException {
-            ObjectStreamClass resultClassDescriptor = super.readClassDescriptor(); // initially streams descriptor
-            Class localClass = Class.forName(resultClassDescriptor.getName()); // the class in the local JVM that this descriptor represents.
+        protected ObjectStreamClass readClassDescriptor()
+                throws IOException, ClassNotFoundException {
+            ObjectStreamClass resultClassDescriptor =
+                    super.readClassDescriptor(); // initially streams descriptor
+            Class localClass =
+                    Class.forName(
+                            resultClassDescriptor
+                                    .getName()); // the class in the local JVM that this descriptor
+            // represents.
             if (localClass == null) {
                 return resultClassDescriptor;
             }
@@ -63,16 +66,17 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
                 final long localSUID = localClassDescriptor.getSerialVersionUID();
                 final long streamSUID = resultClassDescriptor.getSerialVersionUID();
                 if (streamSUID != localSUID) { // check for serialVersionUID mismatch.
-                    final StringBuffer s = new StringBuffer("Overriding serialized class version mismatch: ");
+                    final StringBuffer s =
+                            new StringBuffer("Overriding serialized class version mismatch: ");
                     s.append("local serialVersionUID = ").append(localSUID);
                     s.append(" stream serialVersionUID = ").append(streamSUID);
                     Exception e = new InvalidClassException(s.toString());
                     e.printStackTrace();
-                    resultClassDescriptor = localClassDescriptor; // Use local class descriptor for deserialization
+                    resultClassDescriptor =
+                            localClassDescriptor; // Use local class descriptor for deserialization
                 }
             }
             return resultClassDescriptor;
         }
     }
 }
-

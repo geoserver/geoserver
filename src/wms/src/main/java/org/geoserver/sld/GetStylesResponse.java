@@ -7,9 +7,7 @@ package org.geoserver.sld;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -30,8 +28,8 @@ public class GetStylesResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         StyledLayerDescriptor sld = (StyledLayerDescriptor) value;
 
         SLDTransformer tx = new SLDTransformer();
@@ -42,5 +40,4 @@ public class GetStylesResponse extends Response {
             throw new ServiceException(e);
         }
     }
-
 }

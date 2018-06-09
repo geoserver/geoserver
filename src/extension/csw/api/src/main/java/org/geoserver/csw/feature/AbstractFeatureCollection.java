@@ -20,19 +20,15 @@ import org.opengis.feature.type.FeatureType;
 /**
  * A derivation of GeoTools {@link org.geotools.feature.collection.AbstractFeatureCollection} that
  * works on top of complex features
- * 
+ *
  * @author Jody Garnett (Refractions Research Inc)
  * @author Andrea Aime - GeoSolutions
- * 
  * @source $URL$
  */
-public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature> implements
-        FeatureCollection<T, F> {
-	    
-	    
-    /**
-     * id used when serialized to gml
-     */
+public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature>
+        implements FeatureCollection<T, F> {
+
+    /** id used when serialized to gml */
     protected String id;
 
     protected T schema;
@@ -54,8 +50,8 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     /**
      * Clean up after any resources associated with this iteartor in a manner similar to JDO
-     * collections. </p> Example (safe) use:
-     * 
+     * collections. Example (safe) use:
+     *
      * <pre>
      * <code>
      * Iterator iterator = collection.iterator();
@@ -70,15 +66,12 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
      * }
      * </code>
      * </pre>
-     * 
-     * </p>
-     * 
+     *
      * @param close iterator to close
      */
     @SuppressWarnings("unchecked")
-    final public void close(Iterator close) {
-        if (close == null)
-            return;
+    public final void close(Iterator close) {
+        if (close == null) return;
         try {
             closeIterator(close);
         } catch (Throwable e) {
@@ -96,48 +89,47 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     /**
      * Open a resource based Iterator, we will call close( iterator ).
-     * <p>
-     * Please subclass to provide your own iterator for the the ResourceCollection, note
-     * <code>iterator()</code> is implemented to call <code>open()</code> and track the results in
-     * for later <code>purge()</code>.
-     * 
+     *
+     * <p>Please subclass to provide your own iterator for the the ResourceCollection, note <code>
+     * iterator()</code> is implemented to call <code>open()</code> and track the results in for
+     * later <code>purge()</code>.
+     *
      * @return Iterator based on resource use
      */
-    abstract protected Iterator<F> openIterator();
+    protected abstract Iterator<F> openIterator();
 
     /**
      * Please override to cleanup after your own iterators, and any used resources.
-     * <p>
-     * As an example if the iterator was working off a File then the inputstream should be closed.
-     * </p>
-     * <p>
-     * Subclass must call super.close( close ) to allow the list of open iterators to be adjusted.
-     * </p>
-     * 
+     *
+     * <p>As an example if the iterator was working off a File then the inputstream should be
+     * closed.
+     *
+     * <p>Subclass must call super.close( close ) to allow the list of open iterators to be
+     * adjusted.
+     *
      * @param close Iterator, will not be <code>null</code>
      */
-    abstract protected void closeIterator(Iterator<F> close);
+    protected abstract void closeIterator(Iterator<F> close);
 
     /**
      * Close any outstanding resources released by this resources.
-     * <p>
-     * This method should be used with great caution, it is however available to allow the use of
+     *
+     * <p>This method should be used with great caution, it is however available to allow the use of
      * the ResourceCollection with algorthims that are unaware of the need to close iterators after
      * use.
-     * </p>
-     * <p>
-     * Example of using a normal Collections utility method:
-     * 
+     *
+     * <p>Example of using a normal Collections utility method:
+     *
      * <pre>
      * <code>
      * Collections.sort( collection );
-     * collection.purge(); 
+     * collection.purge();
      * </code>
      * </pre>
      */
     @SuppressWarnings("unchecked")
     public void purge() {
-        for (Iterator i = open.iterator(); i.hasNext();) {
+        for (Iterator i = open.iterator(); i.hasNext(); ) {
             Object resource = i.next();
             if (resource instanceof Iterator) {
                 Iterator resourceIterator = (Iterator) resource;
@@ -154,9 +146,9 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     /**
      * Removes all of the elements from this collection (optional operation).
-     * 
+     *
      * @throws UnsupportedOperationException if the <tt>clear</tt> method is not supported by this
-     *         collection.
+     *     collection.
      */
     public void clear() {
         Iterator<F> e = iterator();
@@ -172,11 +164,10 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     /**
      * Returns <tt>true</tt> if this collection contains the specified element. <tt></tt>.
-     * <p>
-     * 
-     * This implementation iterates over the elements in the collection, checking each element in
+     *
+     * <p>This implementation iterates over the elements in the collection, checking each element in
      * turn for equality with the specified element.
-     * 
+     *
      * @param o object to be checked for containment in this collection.
      * @return <tt>true</tt> if this collection contains the specified element.
      */
@@ -185,13 +176,9 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
         try {
             e = iterator();
             if (o == null) {
-                while (e.hasNext())
-                    if (e.next() == null)
-                        return true;
+                while (e.hasNext()) if (e.next() == null) return true;
             } else {
-                while (e.hasNext())
-                    if (o.equals(e.next()))
-                        return true;
+                while (e.hasNext()) if (o.equals(e.next())) return true;
             }
             return false;
         } finally {
@@ -202,21 +189,19 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     /**
      * Returns <tt>true</tt> if this collection contains all of the elements in the specified
      * collection.
+     *
      * <p>
-     * 
+     *
      * @param c collection to be checked for containment in this collection.
      * @return <tt>true</tt> if this collection contains all of the elements in the specified
-     *         collection.
+     *     collection.
      * @throws NullPointerException if the specified collection is null.
-     * 
      * @see #contains(Object)
      */
     public boolean containsAll(Collection<?> c) {
         Iterator<?> e = c.iterator();
         try {
-            while (e.hasNext())
-                if (!contains(e.next()))
-                    return false;
+            while (e.hasNext()) if (!contains(e.next())) return false;
             return true;
         } finally {
             close(e);
@@ -233,31 +218,28 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     /**
      * Returns the set of open iterators.
-     * <p>
-     * Contents are a mix of Iterator<F> and FeatureIterator
+     *
+     * <p>Contents are a mix of Iterator<F> and FeatureIterator
      */
     @SuppressWarnings("unchecked")
-    final public Set getOpenIterators() {
+    public final Set getOpenIterators() {
         return open;
     }
 
     /**
      * Please implement!
-     * <p>
-     * Note: If you return a ResourceIterator, the default implemntation of close( Iterator ) will
-     * know what to do.
-     * 
+     *
+     * <p>Note: If you return a ResourceIterator, the default implemntation of close( Iterator )
+     * will know what to do.
      */
     @SuppressWarnings("unchecked")
-    final public Iterator<F> iterator() {
+    public final Iterator<F> iterator() {
         Iterator<F> iterator = openIterator();
         getOpenIterators().add(iterator);
         return iterator;
     }
 
-    /**
-     * @return <tt>true</tt> if this collection contains no elements.
-     */
+    /** @return <tt>true</tt> if this collection contains no elements. */
     public boolean isEmpty() {
         Iterator<F> iterator = iterator();
         try {
@@ -269,7 +251,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     /**
      * Array of all the elements.
-     * 
+     *
      * @return an array containing all of the elements in this collection.
      */
     public Object[] toArray() {
@@ -277,8 +259,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
         Iterator<F> e = null;
         try {
             e = iterator();
-            for (int i = 0; e.hasNext(); i++)
-                result[i] = e.next();
+            for (int i = 0; e.hasNext(); i++) result[i] = e.next();
             return result;
         } finally {
             close(e);
@@ -295,28 +276,25 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
         try {
 
             Object[] result = a;
-            for (int i = 0; i < size; i++)
-                result[i] = it.next();
-            if (a.length > size)
-                a[size] = null;
+            for (int i = 0; i < size; i++) result[i] = it.next();
+            if (a.length > size) a[size] = null;
             return a;
         } finally {
             close(it);
         }
     }
 
-    public void accepts(org.opengis.feature.FeatureVisitor visitor,
+    public void accepts(
+            org.opengis.feature.FeatureVisitor visitor,
             org.opengis.util.ProgressListener progress) {
         Iterator<F> iterator = null;
-        if (progress == null)
-            progress = new NullProgressListener();
+        if (progress == null) progress = new NullProgressListener();
         try {
             float size = size();
             float position = 0;
             progress.started();
-            for (iterator = iterator(); !progress.isCanceled() && iterator.hasNext();) {
-                if (size > 0)
-                    progress.progress(position++ / size);
+            for (iterator = iterator(); !progress.isCanceled() && iterator.hasNext(); ) {
+                if (size > 0) progress.progress(position++ / size);
                 try {
                     Feature feature = (Feature) iterator.next();
                     visitor.visit(feature);
@@ -380,5 +358,4 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
         return bounds;
     }
-
 }

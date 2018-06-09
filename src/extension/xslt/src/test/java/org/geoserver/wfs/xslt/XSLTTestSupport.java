@@ -2,7 +2,6 @@ package org.geoserver.wfs.xslt;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.geoserver.wfs.WFSTestSupport;
@@ -20,8 +19,10 @@ public class XSLTTestSupport extends WFSTestSupport {
                 FileUtils.deleteQuietly(directory);
             }
             if (directory.exists()) {
-                throw new IOException("Could not remove directory " + directory.getPath()
-                        + " after repeated attempts");
+                throw new IOException(
+                        "Could not remove directory "
+                                + directory.getPath()
+                                + " after repeated attempts");
             }
         } else {
             // aaah, sanity

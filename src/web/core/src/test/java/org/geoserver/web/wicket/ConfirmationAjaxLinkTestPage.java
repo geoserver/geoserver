@@ -12,19 +12,22 @@ import org.apache.wicket.model.Model;
 public class ConfirmationAjaxLinkTestPage extends WebPage {
 
     public ConfirmationAjaxLinkTestPage() {
-        Form form = new Form("form" );
+        Form form = new Form("form");
         add(form);
-        
-                ConfirmationAjaxLink<String> link = new ConfirmationAjaxLink<String>("confirmationLink", new Model<String>("model"), new Model("label"), new Model("'confirmation'")) {
-            
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                // nothing to do
-                
-            }
-        };
+
+        ConfirmationAjaxLink<String> link =
+                new ConfirmationAjaxLink<String>(
+                        "confirmationLink",
+                        new Model<String>("model"),
+                        new Model("label"),
+                        new Model("'confirmation'")) {
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        // nothing to do
+
+                    }
+                };
         form.add(link);
     }
-    
-    
 }

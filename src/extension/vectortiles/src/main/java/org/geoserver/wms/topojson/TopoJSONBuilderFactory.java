@@ -4,14 +4,12 @@
  */
 package org.geoserver.wms.topojson;
 
+import com.google.common.collect.ImmutableSet;
 import java.awt.Rectangle;
 import java.util.Set;
-
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geoserver.wms.vector.VectorTileBuilderFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-
-import com.google.common.collect.ImmutableSet;
 
 public class TopoJSONBuilderFactory implements VectorTileBuilderFactory {
 
@@ -33,5 +31,4 @@ public class TopoJSONBuilderFactory implements VectorTileBuilderFactory {
     public VectorTileBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
         return new TopologyBuilder(screenSize, mapArea);
     }
-
 }

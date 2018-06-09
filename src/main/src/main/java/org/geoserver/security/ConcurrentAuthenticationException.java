@@ -20,8 +20,10 @@ public class ConcurrentAuthenticationException extends AuthenticationException {
     private int count;
 
     public ConcurrentAuthenticationException(String user, int count) {
-        super("Concurrent login attempts during delay period not allowed, stopped " + count
-                + " attempts. If you see a large number of blocked attempts, a brute force attack to crack this user's password may be underway.");
+        super(
+                "Concurrent login attempts during delay period not allowed, stopped "
+                        + count
+                        + " attempts. If you see a large number of blocked attempts, a brute force attack to crack this user's password may be underway.");
         this.user = user;
         this.count = count;
     }
@@ -33,5 +35,4 @@ public class ConcurrentAuthenticationException extends AuthenticationException {
     public int getCount() {
         return count;
     }
-
 }

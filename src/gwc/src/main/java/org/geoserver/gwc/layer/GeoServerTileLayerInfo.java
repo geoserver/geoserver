@@ -5,18 +5,15 @@
  */
 package org.geoserver.gwc.layer;
 
+import com.google.common.collect.ImmutableSet;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.layer.ExpirationRule;
-
-import com.google.common.collect.ImmutableSet;
 
 public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
 
@@ -29,15 +26,15 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     public abstract void setName(String name);
 
     /**
-     * @return The {@link BlobStoreConfig#getId() blob store id} for this layer's tiles, or
-     *         {@code null} if whatever the default blob store is shall be used
+     * @return The {@link BlobStoreConfig#getId() blob store id} for this layer's tiles, or {@code
+     *     null} if whatever the default blob store is shall be used
      */
     @Nullable
     public abstract String getBlobStoreId();
 
     /**
      * @param blobStoreId the {@link BlobStoreConfig#getId() blob store id} for this layer's tiles,
-     *        or {@code null} if whatever the default blob store is shall be used
+     *     or {@code null} if whatever the default blob store is shall be used
      */
     public abstract void setBlobStoreId(@Nullable String blobStoreId);
 
@@ -48,28 +45,26 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     public abstract void setMetaTilingY(int metaTilingY);
 
     public abstract void setMetaTilingX(int metaTilingX);
-    
+
     public abstract int getExpireCache();
-    
+
     public abstract void setExpireCache(int expireCache);
-    
+
     public abstract List<ExpirationRule> getExpireCacheList();
-    
+
     public abstract void setExpireCacheList(List<ExpirationRule> expireCacheList);
-    
+
     public abstract int getExpireClients();
-    
+
     public abstract void setExpireClients(int seconds);
 
     /**
      * Derived property from {@link #getParameterFilters()}, returns the configured allowable values
      * for a parameter filter over the {@code STYLE} key, if exists, or the empty set.
-     * <p>
-     * The returned set is immutable and dettached from this object's internal state
-     * </p>
-     * <p>
-     * The returned set shall not return the default style for the layer
-     * </p>
+     *
+     * <p>The returned set is immutable and dettached from this object's internal state
+     *
+     * <p>The returned set shall not return the default style for the layer
      */
     public abstract ImmutableSet<String> cachedStyles();
 
@@ -91,26 +86,27 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
 
     public abstract void setAutoCacheStyles(boolean autoCacheStyles);
 
-    /**
-     * @return the parameterFilters
-     */
+    /** @return the parameterFilters */
     public abstract Set<ParameterFilter> getParameterFilters();
 
     /**
      * Replace the set of parameter filters
+     *
      * @param parameterFilters
      */
     public abstract void setParameterFilters(Set<ParameterFilter> parameterFilters);
-    
+
     /**
      * Add a parameter filter, replacing any existing filter with the same key.
+     *
      * @param parameterFilter
      * @return true if an existing filter was replaced, false otherwise.
      */
     public abstract boolean addParameterFilter(ParameterFilter parameterFilter);
-    
+
     /**
      * Remove the filter with the specified key
+     *
      * @param key
      * @return true if the filter existed, false otherwise
      */
@@ -120,13 +116,12 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
 
     /**
      * Get the ParameterFilter with the specified key
-     * @param key
      *
+     * @param key
      */
     public abstract ParameterFilter getParameterFilter(String key);
 
     public abstract boolean isInMemoryCached();
-    
-    public abstract void setInMemoryCached(boolean inMemoryCached);
 
+    public abstract void setInMemoryCached(boolean inMemoryCached);
 }

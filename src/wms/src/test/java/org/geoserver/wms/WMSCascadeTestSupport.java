@@ -8,7 +8,6 @@ package org.geoserver.wms;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
@@ -23,11 +22,11 @@ import org.junit.Before;
 
 /**
  * Base class for WMS cascading tests
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class WMSCascadeTestSupport extends WMSTestSupport {
-    
+
     protected static final String WORLD4326_130 = "world4326_130";
     protected static final String WORLD4326_110 = "world4326_110";
     protected static final String WORLD4326_110_NFI = "world4326_110_NFI";
@@ -39,18 +38,17 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
     protected URL wms11BaseNfiURL;
     protected XpathEngine xpath;
 
-    
     @Before
     public void setupXpathEngine() {
         xpath = XMLUnit.newXpathEngine();
     }
-    
+
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // we only setup the cascaded WMS layer, so no call to super
         testData.setUpSecurity();
     }
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // we only setup the cascaded WMS layer, so no call to super
@@ -64,15 +62,21 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         wms13Client = new MockHttpClient();
         wms13BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms13");
         URL capsDocument = WMSTestSupport.class.getResource("caps130.xml");
-        wms13Client.expectGet(new URL(wms13BaseURL + "?service=WMS&request=GetCapabilities&version=1.3.0"), new MockHttpResponse(capsDocument, "text/xml"));
+        wms13Client.expectGet(
+                new URL(wms13BaseURL + "?service=WMS&request=GetCapabilities&version=1.3.0"),
+                new MockHttpResponse(capsDocument, "text/xml"));
         URL pngImage = WMSTestSupport.class.getResource("world.png");
         // we expect a getmap request with flipped coordinates
-        wms13Client.expectGet(new URL(wms13BaseURL + "?service=WMS&version=1.3.0&request=GetMap&layers=world4326" 
-                + "&styles&bbox=-90.0,-180.0,90.0,180.0&crs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=180&height=90"), new MockHttpResponse(pngImage, "image/png"));
-        
+        wms13Client.expectGet(
+                new URL(
+                        wms13BaseURL
+                                + "?service=WMS&version=1.3.0&request=GetMap&layers=world4326"
+                                + "&styles&bbox=-90.0,-180.0,90.0,180.0&crs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=180&height=90"),
+                new MockHttpResponse(pngImage, "image/png"));
+
         String caps = wms13BaseURL + "?service=WMS&request=GetCapabilities&version=1.3.0";
         TestHttpClientProvider.bind(wms13Client, caps);
-        
+
         // setup the WMS layer
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-130");
@@ -85,21 +89,27 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
     }
-    
+
     private void setupWMS110Layer() throws MalformedURLException, IOException {
         // prepare the WMS 1.1 mock client
         wms11Client = new MockHttpClient();
         wms11BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
         URL capsDocument = WMSTestSupport.class.getResource("caps111.xml");
-        wms11Client.expectGet(new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"), new MockHttpResponse(capsDocument, "text/xml"));
+        wms11Client.expectGet(
+                new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                new MockHttpResponse(capsDocument, "text/xml"));
         URL pngImage = WMSTestSupport.class.getResource("world.png");
         // we expect a getmap request with flipped coordinates
-        wms11Client.expectGet(new URL(wms11BaseURL + "?service=WMS&version=1.1.1&request=GetMap&layers=world4326" 
-                + "&styles&bbox=-180.0,-90.0,180.0,90.0&srs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=180&height=90"), new MockHttpResponse(pngImage, "image/png"));
-        
+        wms11Client.expectGet(
+                new URL(
+                        wms11BaseURL
+                                + "?service=WMS&version=1.1.1&request=GetMap&layers=world4326"
+                                + "&styles&bbox=-180.0,-90.0,180.0,90.0&srs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=180&height=90"),
+                new MockHttpResponse(pngImage, "image/png"));
+
         String caps = wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
         TestHttpClientProvider.bind(wms11Client, caps);
-        
+
         // setup the WMS layer
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-110");
@@ -112,17 +122,19 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
     }
-    
+
     private void setupWMS110NfiLayer() throws MalformedURLException, IOException {
         // prepare the WMS 1.1 mock client
         wms11ClientNfi = new MockHttpClient();
         wms11BaseNfiURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11_nfi");
         URL capsDocument = WMSTestSupport.class.getResource("caps111_no_feature_info.xml");
-        wms11ClientNfi.expectGet(new URL(wms11BaseNfiURL + "?service=WMS&request=GetCapabilities&version=1.1.1"), new MockHttpResponse(capsDocument, "text/xml"));
+        wms11ClientNfi.expectGet(
+                new URL(wms11BaseNfiURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                new MockHttpResponse(capsDocument, "text/xml"));
 
         String caps = wms11BaseNfiURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
         TestHttpClientProvider.bind(wms11ClientNfi, caps);
-        
+
         // setup the WMS layer
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-110-nfi");
@@ -135,5 +147,4 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
     }
-    
 }

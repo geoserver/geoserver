@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.GeoServerUser;
@@ -22,80 +21,71 @@ import org.geoserver.security.validation.PasswordValidatorImpl;
 
 /**
  * JDBC Implementation of {@link GeoServerUserGroupStore}
- * 
- * @author christian
  *
+ * @author christian
  */
 public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServerUserGroupStore {
 
     public JDBCUserGroupStore() throws IOException {
-        super();        
+        super();
     }
-    
+
     protected boolean modified;
     protected Connection connection;
     protected JDBCUserGroupService jdbcService;
-    
 
-    
     /**
-     * The identical connection is used until {@link #store()} or
-     * {@link #load()} is called. Within a transaction it is not possible
-     * to use different connections.
+     * The identical connection is used until {@link #store()} or {@link #load()} is called. Within
+     * a transaction it is not possible to use different connections.
      *
      * @see org.geoserver.security.jdbc.AbstractJDBCService#getConnection()
      */
     @Override
-    public Connection getConnection() throws SQLException{
-        if (connection == null)
-            connection = super.getConnection();
+    public Connection getConnection() throws SQLException {
+        if (connection == null) connection = super.getConnection();
         return connection;
     }
-    
+
     @Override
-    protected void closeConnection(Connection con) throws SQLException{
+    protected void closeConnection(Connection con) throws SQLException {
         // do nothing
     }
-    
+
     /**
-     * To be called at the the end of a transaction,
-     * frees the current {@link Connection} 
-     * 
+     * To be called at the the end of a transaction, frees the current {@link Connection}
+     *
      * @throws SQLException
      */
-    protected void releaseConnection() throws SQLException{
-        if (connection!=null) {
+    protected void releaseConnection() throws SQLException {
+        if (connection != null) {
             connection.close();
-            connection=null;
+            connection = null;
         }
     }
 
-
-    
     /**
-     * @see org.geoserver.security.GeoServerUserGroupStore#initializeFromServer(org.geoserver.security.GeoServerUserGroupService)
+     * @see
+     *     org.geoserver.security.GeoServerUserGroupStore#initializeFromServer(org.geoserver.security.GeoServerUserGroupService)
      */
     public void initializeFromService(GeoServerUserGroupService service) throws IOException {
-        jdbcService= (JDBCUserGroupService) service;
+        jdbcService = (JDBCUserGroupService) service;
         setSecurityManager(service.getSecurityManager());
-        this.name=jdbcService.getName();
-        this.passwordEncoderName=service.getPasswordEncoderName();
-        this.passwordValidatorName=service.getPasswordValidatorName();
-        this.datasource=jdbcService.datasource;
-        this.ddlProps=jdbcService.ddlProps;
-        this.dmlProps=jdbcService.dmlProps;
+        this.name = jdbcService.getName();
+        this.passwordEncoderName = service.getPasswordEncoderName();
+        this.passwordValidatorName = service.getPasswordValidatorName();
+        this.datasource = jdbcService.datasource;
+        this.ddlProps = jdbcService.ddlProps;
+        this.dmlProps = jdbcService.dmlProps;
         try {
             getConnection().commit();
         } catch (SQLException e) {
             throw new IOException();
         }
-    }    
-    
-    
+    }
+
     /**
-     * 
-     * Executes {@link Connection#rollback() }and
-     * frees the connection object
+     * Executes {@link Connection#rollback() }and frees the connection object
+     *
      * @see org.geoserver.security.jdbc.JDBCUserGroupService#load()
      */
     public void load() throws IOException {
@@ -103,95 +93,90 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         try {
             getConnection().rollback();
             releaseConnection();
-            
+
         } catch (SQLException ex) {
             throw new IOException(ex);
         }
         setModified(false);
-        //fireUserGroupChangedEvent();
+        // fireUserGroupChangedEvent();
     }
 
     /**
      * Helper method for inserting user properties
-     * 
+     *
      * @param user
      * @param con
      * @throws SQLException
      * @throws IOException
      */
-    protected void addUserProperties(GeoServerUser user, Connection con) throws SQLException,IOException {
-        if (user.getProperties().size()==0) return; // nothing to do
-        
+    protected void addUserProperties(GeoServerUser user, Connection con)
+            throws SQLException, IOException {
+        if (user.getProperties().size() == 0) return; // nothing to do
+
         PreparedStatement ps = getDMLStatement("userprops.insert", con);
         try {
             for (Object key : user.getProperties().keySet()) {
                 Object propertyVal = user.getProperties().get(key);
-                ps.setString(1,user.getUsername());
-                ps.setString(2,key.toString());
-                ps.setObject(3,propertyVal);
+                ps.setString(1, user.getUsername());
+                ps.setString(2, key.toString());
+                ps.setObject(3, propertyVal);
                 ps.execute();
             }
-        } finally {        
+        } finally {
             closeFinally(null, ps, null);
         }
-        
-
     }
-    
-    
+
     /**
-     * validates and encodes the password. Do nothing
-     * for a not changed password of an existing user
-     * 
+     * validates and encodes the password. Do nothing for a not changed password of an existing user
+     *
      * @param user
      * @throws IOException
      */
-    protected void preparePassword(GeoServerUser user) throws IOException,PasswordPolicyException {
-        
-        char []passwordArray = user.getPassword() != null ? user.getPassword().toCharArray() : null; 
-        
-        if (PasswordValidatorImpl.passwordStartsWithEncoderPrefix(passwordArray)!=null)
+    protected void preparePassword(GeoServerUser user) throws IOException, PasswordPolicyException {
+
+        char[] passwordArray = user.getPassword() != null ? user.getPassword().toCharArray() : null;
+
+        if (PasswordValidatorImpl.passwordStartsWithEncoderPrefix(passwordArray) != null)
             return; // do nothing, password already encoded
-            
+
         // we have a plain text password
         // validate it
-        getSecurityManager().loadPasswordValidator(getPasswordValidatorName()).
-            validatePassword(passwordArray);
+        getSecurityManager()
+                .loadPasswordValidator(getPasswordValidatorName())
+                .validatePassword(passwordArray);
 
         // validation ok, initializer encoder and set encoded password
-        GeoServerPasswordEncoder enc = 
+        GeoServerPasswordEncoder enc =
                 getSecurityManager().loadPasswordEncoder(getPasswordEncoderName());
 
         enc.initializeFor(this);
         user.setPassword(enc.encodePassword(user.getPassword(), null));
-        
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#addUser(org.geoserver.security.impl.GeoserverUser)
      */
     public void addUser(GeoServerUser user) throws IOException, PasswordPolicyException {
-        
+
         preparePassword(user);
         Connection con = null;
         PreparedStatement ps = null;
         try {
             con = getConnection();
             ps = getDMLStatement("users.insert", con);
-            ps.setString(1,user.getUsername());
+            ps.setString(1, user.getUsername());
             if (user.getPassword() != null) {
-                ps.setString(2,user.getPassword());
-            }
-            else {
+                ps.setString(2, user.getPassword());
+            } else {
                 ps.setNull(2, Types.VARCHAR);
             }
-            
-            ps.setString(3,convertToString(user.isEnabled()));
+
+            ps.setString(3, convertToString(user.isEnabled()));
             ps.execute();
 
             addUserProperties(user, con);
-                                    
+
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
@@ -203,26 +188,26 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#updateUser(org.geoserver.security.impl.GeoserverUser)
      */
-    public void updateUser(GeoServerUser user) throws IOException,PasswordPolicyException {
-        
+    public void updateUser(GeoServerUser user) throws IOException, PasswordPolicyException {
+
         preparePassword(user);
         Connection con = null;
         PreparedStatement ps = null;
         try {
             con = getConnection();
-            ps = getDMLStatement("users.update", con);            
-            ps.setString(1,user.getPassword());
-            ps.setString(2,convertToString(user.isEnabled()));
-            ps.setString(3,user.getUsername());
+            ps = getDMLStatement("users.update", con);
+            ps.setString(1, user.getPassword());
+            ps.setString(2, convertToString(user.isEnabled()));
+            ps.setString(3, user.getUsername());
             ps.execute();
-            
+
             ps.close();
-            ps = getDMLStatement("userprops.deleteForUser",con);
-            ps.setString(1,user.getUsername());
+            ps = getDMLStatement("userprops.deleteForUser", con);
+            ps.setString(1, user.getUsername());
             ps.execute();
-            
+
             addUserProperties(user, con);
-            
+
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
@@ -240,26 +225,26 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         boolean retval = false;
         try {
             con = getConnection();
-            ps = getDMLStatement("users.delete", con);            
-            ps.setString(1,user.getUsername());
+            ps = getDMLStatement("users.delete", con);
+            ps.setString(1, user.getUsername());
             ps.execute();
-            retval= ps.getUpdateCount()>0;
-            
+            retval = ps.getUpdateCount() > 0;
+
             ps.close();
-            ps = getDMLStatement("userprops.deleteForUser",con);
-            ps.setString(1,user.getUsername());
+            ps = getDMLStatement("userprops.deleteForUser", con);
+            ps.setString(1, user.getUsername());
             ps.execute();
-            
+
             ps.close();
             ps = getDMLStatement("groupmembers.deleteUser", con);
-            ps.setString(1,user.getUsername());
+            ps.setString(1, user.getUsername());
             ps.execute();
 
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
             closeFinally(con, ps, null);
-        }        
+        }
         setModified(true);
         return retval;
     }
@@ -273,14 +258,14 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         try {
             con = getConnection();
             ps = getDMLStatement("groups.insert", con);
-            ps.setString(1,group.getGroupname());            
-            ps.setString(2,convertToString(group.isEnabled()));
+            ps.setString(1, group.getGroupname());
+            ps.setString(2, convertToString(group.isEnabled()));
             ps.execute();
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
             closeFinally(con, ps, null);
-        }        
+        }
         setModified(true);
     }
 
@@ -292,9 +277,9 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         PreparedStatement ps = null;
         try {
             con = getConnection();
-            ps = getDMLStatement("groups.update", con);            
-            ps.setString(1,convertToString(group.isEnabled()));
-            ps.setString(2,group.getGroupname());
+            ps = getDMLStatement("groups.update", con);
+            ps.setString(1, convertToString(group.isEnabled()));
+            ps.setString(2, group.getGroupname());
             ps.execute();
         } catch (SQLException ex) {
             throw new IOException(ex);
@@ -310,32 +295,31 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     public boolean removeGroup(GeoServerUserGroup group) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
-        boolean retval=false;
+        boolean retval = false;
         try {
             con = getConnection();
-            ps = getDMLStatement("groups.delete", con);            
-            ps.setString(1,group.getGroupname());
+            ps = getDMLStatement("groups.delete", con);
+            ps.setString(1, group.getGroupname());
             ps.execute();
-            retval =  ps.getUpdateCount()>0;
-            
+            retval = ps.getUpdateCount() > 0;
+
             ps.close();
             ps = getDMLStatement("groupmembers.deleteGroup", con);
-            ps.setString(1,group.getGroupname());
+            ps.setString(1, group.getGroupname());
             ps.execute();
-            
+
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
             closeFinally(con, ps, null);
-        }        
+        }
         setModified(true);
         return retval;
     }
 
-    /** 
-     * Executes {@link Connection#commit()} and frees
-     * the connection
-     * 
+    /**
+     * Executes {@link Connection#commit()} and frees the connection
+     *
      * @see org.geoserver.security.GeoServerUserGroupStore#store()
      */
     public void store() throws IOException {
@@ -347,7 +331,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             throw new IOException(ex);
         }
         setModified(false);
-        //fireUserGroupChangedEvent();
+        // fireUserGroupChangedEvent();
     }
 
     /* (non-Javadoc)
@@ -355,20 +339,20 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
      */
     public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
             throws IOException {
-        
+
         Connection con = null;
         PreparedStatement ps = null;
         try {
             con = getConnection();
             ps = getDMLStatement("groupmembers.insert", con);
-            ps.setString(1,group.getGroupname());            
-            ps.setString(2,user.getUsername());
+            ps.setString(1, group.getGroupname());
+            ps.setString(2, user.getUsername());
             ps.execute();
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
             closeFinally(con, ps, null);
-        }                
+        }
         setModified(true);
     }
 
@@ -377,29 +361,29 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
      */
     public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
             throws IOException {
-        
+
         Connection con = null;
         PreparedStatement ps = null;
         try {
             con = getConnection();
             ps = getDMLStatement("groupmembers.delete", con);
-            ps.setString(1,group.getGroupname());            
-            ps.setString(2,user.getUsername());
+            ps.setString(1, group.getGroupname());
+            ps.setString(2, user.getUsername());
             ps.execute();
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
             closeFinally(con, ps, null);
-        }                
+        }
         setModified(true);
     }
 
     public boolean isModified() {
         return modified;
     }
-    
+
     public void setModified(boolean modified) {
-        this.modified=modified;
+        this.modified = modified;
     }
 
     /* (non-Javadoc)
@@ -413,31 +397,29 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             ps = getDMLStatement("groupmembers.deleteAll", con);
             ps.execute();
             ps.close();
-            
+
             ps = getDMLStatement("groups.deleteAll", con);
             ps.execute();
             ps.close();
-            
+
             ps = getDMLStatement("userprops.deleteAll", con);
             ps.execute();
             ps.close();
-            
+
             ps = getDMLStatement("users.deleteAll", con);
             ps.execute();
-            
+
         } catch (SQLException ex) {
             throw new IOException(ex);
         } finally {
             closeFinally(con, ps, null);
         }
-        setModified(true);                                                
-    }    
-    /** 
-     * Delegates to the {@link GeoServerUserGroupService} backend
-     */
+        setModified(true);
+    }
+    /** Delegates to the {@link GeoServerUserGroupService} backend */
     @Override
-    public GeoServerUser createUserObject(String username,String password, boolean isEnabled) throws IOException{        
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
+            throws IOException {
         return jdbcService.createUserObject(username, password, isEnabled);
-     }
-
+    }
 }

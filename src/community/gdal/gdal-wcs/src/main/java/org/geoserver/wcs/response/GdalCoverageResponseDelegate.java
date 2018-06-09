@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.ZipOutputStream;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
@@ -39,69 +38,55 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
- * Implementation of {@link CoverageResponseDelegate} that leverages the gdal_translate utility to encode coverages in any output format supported by the
- * GDAL library available on the system where GeoServer is running.
- * 
- * <p>
- * The encoding process involves two steps:
+ * Implementation of {@link CoverageResponseDelegate} that leverages the gdal_translate utility to
+ * encode coverages in any output format supported by the GDAL library available on the system where
+ * GeoServer is running.
+ *
+ * <p>The encoding process involves two steps:
+ *
  * <ol>
- * <li>the coverage passed as input to the <code>encode()</code> method is dumped to a temporary file on disk in GeoTIFF format</li>
- * <li>the <code>gdal_translate</code> command is invoked with the provided options to convert the dumped GeoTIFF file to the desired format</li>
+ *   <li>the coverage passed as input to the <code>encode()</code> method is dumped to a temporary
+ *       file on disk in GeoTIFF format
+ *   <li>the <code>gdal_translate</code> command is invoked with the provided options to convert the
+ *       dumped GeoTIFF file to the desired format
  * </ol>
- * </p>
- * 
- * <p>
- * Configuration for the supported output formats must be passed to the class via its {@link #addFormat(GdalFormat)} method.
- * </p>
- * 
+ *
+ * <p>Configuration for the supported output formats must be passed to the class via its {@link
+ * #addFormat(GdalFormat)} method.
+ *
  * @author Stefano Costa, GeoSolutions
  */
 public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, FormatConverter {
 
     private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
 
-    /**
-     * Facade to GeoServer's configuration
-     */
+    /** Facade to GeoServer's configuration */
     GeoServer geoServer;
 
-    /**
-     * Factory to create the gdal_translate wrapper.
-     */
+    /** Factory to create the gdal_translate wrapper. */
     ToolWrapperFactory gdalWrapperFactory;
 
     /**
-     * The fs path to gdal_translate. If null, we'll assume gdal_translate is in the PATH and that we can execute it just by running gdal_translate
+     * The fs path to gdal_translate. If null, we'll assume gdal_translate is in the PATH and that
+     * we can execute it just by running gdal_translate
      */
     String gdalTranslatePath = null;
 
-    /**
-     * The full path to gdal_translate
-     */
+    /** The full path to gdal_translate */
     String gdalTranslateExecutable = "gdal_translate";
 
-    /**
-     * The environment variables to set before invoking gdal_translate
-     */
+    /** The environment variables to set before invoking gdal_translate */
     Map<String, String> environment = null;
 
-    /**
-     * Map holding the descriptors of the supported GDAL formats (keyed by format name).
-     */
+    /** Map holding the descriptors of the supported GDAL formats (keyed by format name). */
     static Map<String, Format> formats = new HashMap<String, Format>();
-    /**
-     * Map holding the descriptors of the supported GDAL formats (keyed by mime type).
-     */
+    /** Map holding the descriptors of the supported GDAL formats (keyed by mime type). */
     static Map<String, Format> formatsByMimeType = new HashMap<String, Format>();
 
-    /**
-     * Lock guarding concurrent access to the maps holding the format descriptors.
-     */
+    /** Lock guarding concurrent access to the maps holding the format descriptors. */
     private ReadWriteLock formatsLock;
 
-    /**
-     * @param gs
-     */
+    /** @param gs */
     public GdalCoverageResponseDelegate(GeoServer gs, ToolWrapperFactory wrapperFactory) {
         this.formatsLock = new ReentrantReadWriteLock();
         this.geoServer = gs;
@@ -109,19 +94,16 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         this.environment = new HashMap<String, String>();
     }
 
-    /**
-     * Returns the gdal_translate executable full path.
-     * 
-     *
-     */
+    /** Returns the gdal_translate executable full path. */
     @Override
     public String getExecutable() {
         return gdalTranslateExecutable;
     }
 
     /**
-     * Sets the gdal_translate executable full path. The default value is simply "gdal_translate", which will work if gdal_translate is in the path.
-     * 
+     * Sets the gdal_translate executable full path. The default value is simply "gdal_translate",
+     * which will work if gdal_translate is in the path.
+     *
      * @param gdalTranslate
      */
     @Override
@@ -129,20 +111,16 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         this.gdalTranslateExecutable = gdalTranslate;
     }
 
-    /**
-     * Returns the environment variables that are set prior to invoking gdal_translate.
-     * 
-     *
-     */
+    /** Returns the environment variables that are set prior to invoking gdal_translate. */
     @Override
     public Map<String, String> getEnvironment() {
         return environment;
     }
 
     /**
-     * Provides the environment variables that are set prior to invoking gdal_translate (notably the GDAL_DATA variable, specifying the location of
-     * GDAL's data directory).
-     * 
+     * Provides the environment variables that are set prior to invoking gdal_translate (notably the
+     * GDAL_DATA variable, specifying the location of GDAL's data directory).
+     *
      * @param environment
      */
     @Override
@@ -155,7 +133,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
     /**
      * Adds a GDAL format among the supported ones
-     * 
+     *
      * @param format
      */
     @Override
@@ -194,9 +172,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         }
     }
 
-    /**
-     * Programmatically removes all formats
-     */
+    /** Programmatically removes all formats */
     @Override
     public void clearFormats() {
         formatsLock.writeLock().lock();
@@ -214,7 +190,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
     /**
      * Replaces currently supported formats with the provided list.
-     *  
+     *
      * @param formats
      */
     @Override
@@ -226,7 +202,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         formatsLock.writeLock().lock();
         try {
             clearFormatsInternal();
-            for (Format format: formats) {
+            for (Format format : formats) {
                 if (format != null) {
                     addFormatInternal(format);
                 }
@@ -311,15 +287,18 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
     }
 
     @Override
-    public void encode(GridCoverage2D coverage, String outputFormat,
-            Map<String, String> econdingParameters, OutputStream output) throws ServiceException,
-            IOException {
+    public void encode(
+            GridCoverage2D coverage,
+            String outputFormat,
+            Map<String, String> econdingParameters,
+            OutputStream output)
+            throws ServiceException, IOException {
         Utilities.ensureNonNull("sourceCoverage", coverage);
 
         // figure out which output format we're going to generate
         Format format = getGdalFormat(outputFormat);
-        
-        for (FormatAdapter adapter: format.getFormatAdapters()) {
+
+        for (FormatAdapter adapter : format.getFormatAdapters()) {
             coverage = (GridCoverage2D) adapter.adapt(coverage);
         }
 
@@ -329,7 +308,8 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         File tempGDAL = org.geoserver.data.util.IOUtils.createTempDirectory("gdaltmpout");
 
         // build the gdal wrapper used to run the gdal_translate commands
-        ToolWrapper wrapper = gdalWrapperFactory.createWrapper(gdalTranslateExecutable, environment);
+        ToolWrapper wrapper =
+                gdalWrapperFactory.createWrapper(gdalTranslateExecutable, environment);
 
         // actually export the coverage
         try {
@@ -340,14 +320,15 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
             // convert with gdal_translate
             final CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
-            outputFile = wrapper.convert(intermediate, tempGDAL, coverage.getName().toString(),
-                    format, crs);
+            outputFile =
+                    wrapper.convert(
+                            intermediate, tempGDAL, coverage.getName().toString(), format, crs);
 
             // wipe out the input dir contents
             IOUtils.emptyDirectory(tempGS);
 
             // was it a single file output?
-            if(format.isSingleFile()) {
+            if (format.isSingleFile()) {
                 try (FileInputStream fis = new FileInputStream(outputFile)) {
                     org.apache.commons.io.IOUtils.copy(fis, output);
                 }
@@ -369,10 +350,9 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
     /**
      * Writes to disk using GeoTIFF format.
-     *  
+     *
      * @param tempDir
      * @param coverage
-     *
      */
     private File writeToDisk(File tempDir, GridCoverage2D coverage) throws Exception {
         // create the temp file for this output
@@ -388,21 +368,26 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
             final GeoTiffWriteParams wp = new GeoTiffWriteParams();
 
             final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
-            writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
+            writerParams
+                    .parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+                    .setValue(wp);
 
             WCSInfo wcsService = geoServer.getService(WCSInfo.class);
-            if(wcsService != null && wcsService.isLatLon()){
-                writerParams.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
+            if (wcsService != null && wcsService.isLatLon()) {
+                writerParams
+                        .parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString())
+                        .setValue(true);
             }
 
             // write down
             if (writer != null)
-                writer.write(coverage, (GeneralParameterValue[]) writerParams.values()
-                        .toArray(new GeneralParameterValue[1]));
+                writer.write(
+                        coverage,
+                        (GeneralParameterValue[])
+                                writerParams.values().toArray(new GeneralParameterValue[1]));
         } finally {
             try {
-                if (writer != null)
-                    writer.dispose();
+                if (writer != null) writer.dispose();
             } catch (Throwable e) {
                 // eating exception
             }
@@ -436,5 +421,4 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
     public String getConformanceClass(String format) {
         return "http://www.opengis.net/spec/WCS_coverage-encoding-x" + getMimeType(format);
     }
-
 }

@@ -15,24 +15,24 @@ public class JDBCUserListPageTest extends UserListPageTest {
     protected void doInitialize() throws Exception {
         initializeForJDBC();
     }
-    
+
     @Test
     public void testRemoveWithRoles() throws Exception {
-        withRoles=true;
+        withRoles = true;
         addAdditonalData();
-        doRemove(getTabbedPanelPath()+":panel:header:removeSelectedWithRoles");
+        doRemove(getTabbedPanelPath() + ":panel:header:removeSelectedWithRoles");
     }
-    
+
     @Test
     public void testRemoveJDBC() throws Exception {
         addAdditonalData();
-        doRemove(getTabbedPanelPath()+":panel:header:removeSelected");
+        doRemove(getTabbedPanelPath() + ":panel:header:removeSelected");
     }
 
     void initializeForJDBC() throws Exception {
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }
-    
+
     @Override
     public String getRoleServiceName() {
         return "h2";
@@ -42,5 +42,4 @@ public class JDBCUserListPageTest extends UserListPageTest {
     public String getUserGroupServiceName() {
         return "h2";
     }
-
 }

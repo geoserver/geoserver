@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -55,14 +53,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH
-        + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}")
+@RequestMapping(
+    path =
+            RestBaseController.ROOT_PATH
+                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}"
+)
 public class CoverageStoreFileController extends AbstractStoreUploadController {
 
-    /**
-     * Keys every known coverage format by lowercase name
-     */
+    /** Keys every known coverage format by lowercase name */
     protected static final HashMap<String, String> FORMAT_LOOKUP = new HashMap<>();
+
     static {
         for (Format format : CoverageStoreUtils.formats) {
             FORMAT_LOOKUP.put(format.getName().toLowerCase(), format.getName());
@@ -82,7 +82,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @PathVariable UploadMethod method,
             @PathVariable String format,
             @RequestParam(required = false) String filename,
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request)
+            throws IOException {
 
         // check the coverage store exists
         CoverageStoreInfo info = catalog.getCoverageStoreByName(workspaceName, storeName);
@@ -108,14 +109,15 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
         // This method returns a List of the harvested files.
         final List<File> uploadedFiles = new ArrayList<>();
-        for (Resource res : doFileUpload(method, workspaceName, storeName, filename, format, request)) {
+        for (Resource res :
+                doFileUpload(method, workspaceName, storeName, filename, format, request)) {
             uploadedFiles.add(Resources.find(res));
         }
         // File Harvesting
         sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
     }
 
-    @PutMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @PutMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(code = HttpStatus.CREATED)
     public RestWrapper<CoverageStoreInfo> coverageStorePut(
             @PathVariable String workspaceName,
@@ -126,12 +128,15 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @RequestParam(name = "USE_JAI_IMAGEREAD", required = false) Boolean useJaiImageRead,
             @RequestParam(name = "coverageName", required = false) String coverageName,
             @RequestParam(required = false) String filename,
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request)
+            throws IOException {
 
         Format coverageFormat = getCoverageFormat(format);
 
-        // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
-        List<Resource> files = doFileUpload(method, workspaceName, storeName, filename, format, request);
+        // doFileUpload returns a List of File but in the case of a Put operation the list contains
+        // only a value
+        List<Resource> files =
+                doFileUpload(method, workspaceName, storeName, filename, format, request);
         final Resource uploadedFile = files.get(0);
 
         // create a builder to help build catalog objects
@@ -162,11 +167,11 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
             StringBuilder urlBuilder;
             try {
-                urlBuilder = new StringBuilder(
-                        Resources.find(uploadedFile).toURI().toURL().toString());
+                urlBuilder =
+                        new StringBuilder(Resources.find(uploadedFile).toURI().toURL().toString());
             } catch (MalformedURLException e) {
-                throw new RestException("Error create building coverage URL",
-                        HttpStatus.INTERNAL_SERVER_ERROR, e);
+                throw new RestException(
+                        "Error create building coverage URL", HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
 
             String url;
@@ -225,40 +230,41 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
         GridCoverage2DReader reader = null;
         try {
-            reader = ((AbstractGridFormat) coverageFormat)
-                    .getReader(uploadedFileURL);
+            reader = ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL);
             if (reader == null) {
-                throw new RestException("Could not aquire reader for coverage.",
-                        HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new RestException(
+                        "Could not aquire reader for coverage.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             // coverage read params
             final Map customParameters = new HashMap();
             if (useJaiImageRead != null) {
-                customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(),
-                        useJaiImageRead);
+                customParameters.put(
+                        AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), useJaiImageRead);
             }
 
             // check if the name of the coverage was specified
             String[] names = reader.getGridCoverageNames();
             if (names.length > 1 && coverageName != null) {
-                throw new RestException("The reader found more than one coverage, "
-                        + "coverageName cannot be used in this case (it would generate "
-                        + "the same name for all coverages found", HttpStatus.BAD_REQUEST);
+                throw new RestException(
+                        "The reader found more than one coverage, "
+                                + "coverageName cannot be used in this case (it would generate "
+                                + "the same name for all coverages found",
+                        HttpStatus.BAD_REQUEST);
             }
 
             // configure all available coverages, preserving backwards compatibility for the
             // case of single coverage reader
             if (names.length > 1) {
                 for (String name : names) {
-                    SingleGridCoverage2DReader singleReader = new SingleGridCoverage2DReader(reader,
-                            name);
-                    configureCoverageInfo(builder, info, add, name, name, singleReader,
-                            customParameters);
+                    SingleGridCoverage2DReader singleReader =
+                            new SingleGridCoverage2DReader(reader, name);
+                    configureCoverageInfo(
+                            builder, info, add, name, name, singleReader, customParameters);
                 }
             } else {
-                configureCoverageInfo(builder, info, add, names[0], coverageName, reader,
-                        customParameters);
+                configureCoverageInfo(
+                        builder, info, add, names[0], coverageName, reader, customParameters);
             }
 
             // poach the coverage store data format
@@ -266,8 +272,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         } catch (RestException e) {
             throw e;
         } catch (Exception e) {
-            throw new RestException("Error auto-configuring coverage",
-                    HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new RestException(
+                    "Error auto-configuring coverage", HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             if (reader != null) {
                 try {
@@ -283,21 +289,32 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         String coverageFormatName = FORMAT_LOOKUP.get(format);
 
         if (coverageFormatName == null) {
-            throw new RestException("Unsupported format: " + format + ", available formats are: "
-                    + FORMAT_LOOKUP.keySet().toString(), HttpStatus.BAD_REQUEST);
+            throw new RestException(
+                    "Unsupported format: "
+                            + format
+                            + ", available formats are: "
+                            + FORMAT_LOOKUP.keySet().toString(),
+                    HttpStatus.BAD_REQUEST);
         }
 
         try {
             return CoverageStoreUtils.acquireFormat(coverageFormatName);
         } catch (Exception e) {
-            throw new RestException("Coveragestore format unavailable: " + coverageFormatName,
+            throw new RestException(
+                    "Coveragestore format unavailable: " + coverageFormatName,
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void configureCoverageInfo(CatalogBuilder builder, CoverageStoreInfo storeInfo,
-            boolean add, String nativeName, String coverageName, GridCoverage2DReader reader,
-            final Map customParameters) throws Exception {
+    private void configureCoverageInfo(
+            CatalogBuilder builder,
+            CoverageStoreInfo storeInfo,
+            boolean add,
+            String nativeName,
+            String coverageName,
+            GridCoverage2DReader reader,
+            final Map customParameters)
+            throws Exception {
         CoverageInfo cinfo = builder.buildCoverage(reader, customParameters);
 
         if (coverageName != null) {
@@ -396,18 +413,25 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     /**
      * Does the file upload based on the specified method.
-     * 
-     * @param method The method, one of 'file.' (inline), 'url.' (via url), or 'external.' (already on server)
+     *
+     * @param method The method, one of 'file.' (inline), 'url.' (via url), or 'external.' (already
+     *     on server)
      * @param storeName The name of the store being added
      * @param format The store format.
      * @throws IOException
      */
-    protected List<Resource> doFileUpload(UploadMethod method, String workspaceName,
-            String storeName, String filename, String format, HttpServletRequest request) throws IOException {
+    protected List<Resource> doFileUpload(
+            UploadMethod method,
+            String workspaceName,
+            String storeName,
+            String filename,
+            String format,
+            HttpServletRequest request)
+            throws IOException {
         Resource directory = null;
 
-        boolean postRequest = request != null
-                && HttpMethod.POST.name().equalsIgnoreCase(request.getMethod());
+        boolean postRequest =
+                request != null && HttpMethod.POST.name().equalsIgnoreCase(request.getMethod());
 
         // Prepare the directory only in case this is not an external upload
         if (method.isInline()) {
@@ -419,7 +443,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
                 directory = createFinalRoot(workspaceName, storeName, postRequest);
             }
         }
-        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request);
+        return handleFileUpload(
+                storeName, workspaceName, filename, method, format, directory, request);
     }
 
     private Resource createFinalRoot(String workspaceName, String storeName, boolean isPost)
@@ -430,18 +455,20 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             // Check if the coverage already exists
             CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
             if (coverage != null) {
-                if (workspaceName == null || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
+                if (workspaceName == null
+                        || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
                     // If the coverage exists then the associated directory is defined by its URL
-                    directory = Resources.fromPath(
-                            DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
-                            catalog.getResourceLoader().get(""));
+                    directory =
+                            Resources.fromPath(
+                                    DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
+                                    catalog.getResourceLoader().get(""));
                 }
             }
         }
         // If the directory has not been found then it is created directly
         if (directory == null) {
-            directory = catalog.getResourceLoader()
-                    .get(Paths.path("data", workspaceName, storeName));
+            directory =
+                    catalog.getResourceLoader().get(Paths.path("data", workspaceName, storeName));
         }
 
         // Selection of the original ROOT directory path
@@ -449,8 +476,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         // StoreParams to use for the mapping.
         Map<String, String> storeParams = new HashMap<>();
         // Listing of the available pathMappers
-        List<RESTUploadPathMapper> mappers = GeoServerExtensions
-                .extensions(RESTUploadPathMapper.class);
+        List<RESTUploadPathMapper> mappers =
+                GeoServerExtensions.extensions(RESTUploadPathMapper.class);
         // Mapping of the root directory
         for (RESTUploadPathMapper mapper : mappers) {
             mapper.mapStorePath(root, workspaceName, storeName, storeParams);

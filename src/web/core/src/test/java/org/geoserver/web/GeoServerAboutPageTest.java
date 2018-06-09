@@ -12,18 +12,16 @@ import org.apache.wicket.util.tester.TagTester;
 import org.junit.Test;
 
 public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
-    
+
     @Test
     public void testLoginFormAction() throws Exception {
         logout();
         tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");
         assertThat(tester.getLastRenderedPage(), instanceOf(AboutGeoServerPage.class));
-        
+
         String responseTxt = tester.getLastResponse().getDocument();
         // System.out.println(responseTxt);
         TagTester tagTester = TagTester.createTagByAttribute(responseTxt, "form");
         assertEquals("../../../j_spring_security_check", tagTester.getAttribute("action"));
     }
-
-    
 }

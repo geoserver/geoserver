@@ -5,6 +5,11 @@
  */
 package org.geoserver.wps.ppio;
 
+import com.vividsolutions.jts.geom.Geometry;
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.KMLEncoder;
@@ -44,17 +48,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Geometry;
-
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Folder;
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-
-/**
- * PPIO for KML 2.2.
- * 
- */
+/** PPIO for KML 2.2. */
 public class KMLPPIO extends CDataPPIO {
     private static final Logger LOGGER = Logging.getLogger(KMLPPIO.class);
 
@@ -79,15 +73,18 @@ public class KMLPPIO extends CDataPPIO {
         this.type = b.buildFeatureType();
     }
 
-    private final static HashMap<Name, Class> getSignature(SimpleFeature f) {
+    private static final HashMap<Name, Class> getSignature(SimpleFeature f) {
         HashMap ftype = new HashMap();
         Collection properties = f.getProperties();
         for (Object op : properties) {
             Property p = (Property) op;
             Class c = p.getType().getBinding();
-            if ((c.isAssignableFrom(String.class)) || (c.isAssignableFrom(Boolean.class))
-                    || (c.isAssignableFrom(Integer.class)) || (c.isAssignableFrom(Float.class))
-                    || (c.isAssignableFrom(Double.class)) || (c.isAssignableFrom(Geometry.class))) {
+            if ((c.isAssignableFrom(String.class))
+                    || (c.isAssignableFrom(Boolean.class))
+                    || (c.isAssignableFrom(Integer.class))
+                    || (c.isAssignableFrom(Float.class))
+                    || (c.isAssignableFrom(Double.class))
+                    || (c.isAssignableFrom(Geometry.class))) {
                 ftype.put(p.getName(), c);
             }
         }
@@ -142,8 +139,11 @@ public class KMLPPIO extends CDataPPIO {
 
     @Override
     public void encode(Object obj, OutputStream os) throws Exception {
-        LOGGER.info("KMLPPIO::encode: obj is of class " + obj.getClass().getName()
-                + ", handler is of class " + os.getClass().getName());
+        LOGGER.info(
+                "KMLPPIO::encode: obj is of class "
+                        + obj.getClass().getName()
+                        + ", handler is of class "
+                        + os.getClass().getName());
 
         // prepare the encoding context
         KMLEncoder encoder = new KMLEncoder();
@@ -156,8 +156,8 @@ public class KMLPPIO extends CDataPPIO {
 
         List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
         collections.add(fcObj);
-        KmlEncodingContext context = new WFSKmlEncodingContext(gs.getService(WFSInfo.class),
-                collections);
+        KmlEncodingContext context =
+                new WFSKmlEncodingContext(gs.getService(WFSInfo.class), collections);
 
         // create the document
         Kml kml = new Kml();
@@ -168,8 +168,10 @@ public class KMLPPIO extends CDataPPIO {
         for (KmlDecorator decorator : docDecorators) {
             document = (Document) decorator.decorate(document, context);
             if (document == null) {
-                throw new ServiceException("Coding error in decorator " + decorator
-                        + ", document objects cannot be set to null");
+                throw new ServiceException(
+                        "Coding error in decorator "
+                                + decorator
+                                + ", document objects cannot be set to null");
             }
         }
 
@@ -194,22 +196,20 @@ public class KMLPPIO extends CDataPPIO {
 
             // create the streaming features
             context.setCurrentFeatureCollection(fc);
-            List<Feature> features = new SequenceList<Feature>(new WFSFeatureSequenceFactory(
-                    context));
+            List<Feature> features =
+                    new SequenceList<Feature>(new WFSFeatureSequenceFactory(context));
             context.addFeatures(folder, features);
         }
 
         // write out the output
         encoder.encode(kml, os, context);
         os.flush();
-
     }
 
     /**
      * A special KML encoding context for the WFS case
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
-     * 
      */
     static class WFSKmlEncodingContext extends KmlEncodingContext {
 
@@ -242,14 +242,12 @@ public class KMLPPIO extends CDataPPIO {
             super.setCurrentFeatureCollection(currentFeatureCollection);
             this.layerIndex++;
             this.featureType = currentFeatureCollection.getSchema();
-
         }
 
         @Override
         public SimpleFeatureType getCurrentFeatureType() {
             return featureType;
         }
-
     }
 
     public String getFileExtension() {

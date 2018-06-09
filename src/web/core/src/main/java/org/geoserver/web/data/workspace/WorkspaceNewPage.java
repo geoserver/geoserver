@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -25,101 +26,103 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
 
-import java.util.logging.Level;
-
-/**
- * Allows creation of a new workspace
- */
+/** Allows creation of a new workspace */
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -4355978268880701910L;
-	
+
     Form<WorkspaceInfo> form;
     TextField<String> nsUriTextField;
     boolean defaultWs;
-    
+
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
-        
-        form = new Form<WorkspaceInfo>( "form", new CompoundPropertyModel<WorkspaceInfo>(ws) ) {
-            private static final long serialVersionUID = 6088042051374665053L;
-    
-            @Override
-            protected void onSubmit() {
-                Catalog catalog = getCatalog();
-                
-                WorkspaceInfo ws = (WorkspaceInfo) form.getModelObject();
-                
-                NamespaceInfo ns = catalog.getFactory().createNamespace();
-                ns.setPrefix ( ws.getName() );
-                ns.setURI(nsUriTextField.getDefaultModelObjectAsString());
 
-                try {
-                    catalog.add( ws );
-                    catalog.add( ns );
+        form =
+                new Form<WorkspaceInfo>("form", new CompoundPropertyModel<WorkspaceInfo>(ws)) {
+                    private static final long serialVersionUID = 6088042051374665053L;
 
-                    if(defaultWs)
-                        catalog.setDefaultWorkspace(ws);
+                    @Override
+                    protected void onSubmit() {
+                        Catalog catalog = getCatalog();
 
-                    //TODO: set the response page to be the edit
-                    doReturn(WorkspacePage.class);
-                } catch (RuntimeException e1) {
-                    LOGGER.log(Level.WARNING, "Failed to add workspace", e1);
-                    error(e1.getMessage() == null ? "Failed to add workspace, no error message available, see logs for details" : e1.getMessage());
-                    try {
-                        //remove anything that got added before the error
-                        if (ws.getId() != null) {
-                            catalog.remove(ws);
+                        WorkspaceInfo ws = (WorkspaceInfo) form.getModelObject();
+
+                        NamespaceInfo ns = catalog.getFactory().createNamespace();
+                        ns.setPrefix(ws.getName());
+                        ns.setURI(nsUriTextField.getDefaultModelObjectAsString());
+
+                        try {
+                            catalog.add(ws);
+                            catalog.add(ns);
+
+                            if (defaultWs) catalog.setDefaultWorkspace(ws);
+
+                            // TODO: set the response page to be the edit
+                            doReturn(WorkspacePage.class);
+                        } catch (RuntimeException e1) {
+                            LOGGER.log(Level.WARNING, "Failed to add workspace", e1);
+                            error(
+                                    e1.getMessage() == null
+                                            ? "Failed to add workspace, no error message available, see logs for details"
+                                            : e1.getMessage());
+                            try {
+                                // remove anything that got added before the error
+                                if (ws.getId() != null) {
+                                    catalog.remove(ws);
+                                }
+                                if (ns.getId() != null) {
+                                    catalog.remove(ns);
+                                }
+                            } catch (RuntimeException e2) {
+                                LOGGER.log(Level.WARNING, "Failed to remove invalid workspace", e2);
+                            }
                         }
-                        if (ns.getId() != null) {
-                            catalog.remove(ns);
-                        }
-                    } catch (RuntimeException e2) {
-                        LOGGER.log(Level.WARNING, "Failed to remove invalid workspace", e2);
                     }
-                }
-            }
-        };
+                };
         add(form);
-        
+
         TextField<String> nameTextField = new TextField<String>("name");
         nameTextField.setRequired(true);
         nameTextField.add(new XMLNameValidator());
-        nameTextField.add(new StringValidator() {
+        nameTextField.add(
+                new StringValidator() {
 
-            private static final long serialVersionUID = -5475431734680134780L;
+                    private static final long serialVersionUID = -5475431734680134780L;
 
-            @Override
-            public void validate(IValidatable<String> validatable) {
-                if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
-                    validatable.error(new ValidationError("defaultWsError").addKey("defaultWsError"));
-                }
-            }
-        });
-        form.add( nameTextField.setRequired(true) );
-        
-        nsUriTextField = new TextField<String>( "uri", new Model<String>() );
+                    @Override
+                    public void validate(IValidatable<String> validatable) {
+                        if (CatalogImpl.DEFAULT.equals(validatable.getValue())) {
+                            validatable.error(
+                                    new ValidationError("defaultWsError").addKey("defaultWsError"));
+                        }
+                    }
+                });
+        form.add(nameTextField.setRequired(true));
+
+        nsUriTextField = new TextField<String>("uri", new Model<String>());
         // maybe a bit too restrictive, but better than not validation at all
         nsUriTextField.setRequired(true);
         nsUriTextField.add(new URIValidator());
-        form.add( nsUriTextField );
-        
-        CheckBox defaultChk = new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
-        form.add(defaultChk);
-        
-        SubmitLink submitLink = new SubmitLink( "submit", form );
-        form.add( submitLink );
-        form.setDefaultButton(submitLink);
-        
-        AjaxLink<Void> cancelLink = new AjaxLink<Void>( "cancel" ) {
-            private static final long serialVersionUID = -1731475076965108576L;
+        form.add(nsUriTextField);
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                doReturn(WorkspacePage.class);
-            }
-        };
-        form.add( cancelLink );
-        
+        CheckBox defaultChk =
+                new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
+        form.add(defaultChk);
+
+        SubmitLink submitLink = new SubmitLink("submit", form);
+        form.add(submitLink);
+        form.setDefaultButton(submitLink);
+
+        AjaxLink<Void> cancelLink =
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = -1731475076965108576L;
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        doReturn(WorkspacePage.class);
+                    }
+                };
+        form.add(cancelLink);
     }
 }

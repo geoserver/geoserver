@@ -5,27 +5,19 @@
  */
 package org.geoserver.catalog.impl;
 
-
 import static org.junit.Assert.assertEquals;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
-
-import javax.xml.namespace.QName;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -34,12 +26,8 @@ import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 
 @Category(SystemTest.class)
 public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
@@ -56,7 +44,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         File mosaic = new File("./target/largeMosaic");
         try {
             createTimeMosaic(mosaic, 1025);
-            
+
             // now configure a new store based on it
             Catalog cat = getCatalog();
             CatalogBuilder cb = new CatalogBuilder(cat);
@@ -64,14 +52,14 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
             store.setURL(mosaic.getAbsolutePath());
             store.setType("ImageMosaic");
             cat.add(store);
-            
+
             // and configure also the coverage
             cb.setStore(store);
             CoverageInfo ci = cb.buildCoverage();
             cat.add(ci);
             cat.getResourcePool().dispose();
         } finally {
-            if(mosaic.exists() && mosaic.isDirectory()) {
+            if (mosaic.exists() && mosaic.isDirectory()) {
                 FileUtils.deleteDirectory(mosaic);
             }
         }
@@ -83,7 +71,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         File mosaic = new File("./target/smallMosaic");
         try {
             createTimeMosaic(mosaic, 4);
-            
+
             // now configure a new store based on it
             Catalog cat = getCatalog();
             CatalogBuilder cb = new CatalogBuilder(cat);
@@ -91,26 +79,29 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
             store.setURL(mosaic.getAbsolutePath());
             store.setType("ImageMosaic");
             cat.add(store);
-            
+
             // and configure also the coverage
             cb.setStore(store);
             CoverageInfo ci = cb.buildCoverage();
             cat.add(ci);
-            
+
             // check the parameters have the default values
-            assertEquals(String.valueOf(-1), ci.getParameters().get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
+            assertEquals(
+                    String.valueOf(-1),
+                    ci.getParameters()
+                            .get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
             assertEquals("", ci.getParameters().get(ImageMosaicFormat.FILTER.getName().toString()));
             cat.getResourcePool().dispose();
         } finally {
-            if(mosaic.exists() && mosaic.isDirectory()) {
+            if (mosaic.exists() && mosaic.isDirectory()) {
                 FileUtils.deleteDirectory(mosaic);
             }
         }
     }
 
     private void createTimeMosaic(File mosaic, int fileCount) throws Exception {
-        if(mosaic.exists()) {
-            if(mosaic.isDirectory()) {
+        if (mosaic.exists()) {
+            if (mosaic.isDirectory()) {
                 FileUtils.deleteDirectory(mosaic);
             } else {
                 mosaic.delete();
@@ -118,7 +109,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         }
         mosaic.mkdir();
         System.out.println(mosaic.getAbsolutePath());
-        
+
         // build the reference coverage into a byte array
         GridCoverageFactory factory = new GridCoverageFactory();
         BufferedImage bi = new BufferedImage(10, 10, BufferedImage.TYPE_4BYTE_ABGR);
@@ -128,22 +119,22 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         GeoTiffWriter writer = new GeoTiffWriter(bos);
         writer.write(test, null);
         writer.dispose();
-        
+
         // create the lot of files
         byte[] bytes = bos.toByteArray();
-        for(int i = 0; i < fileCount; i++) {
+        for (int i = 0; i < fileCount; i++) {
             String pad = "";
-            if(i < 10) {
+            if (i < 10) {
                 pad = "000";
-            } else if(i < 100) {
+            } else if (i < 100) {
                 pad = "00";
-            } else if(i < 1000){
+            } else if (i < 1000) {
                 pad = "0";
             }
-            File target = new File(mosaic, "tile_" +pad + i + ".tiff");
+            File target = new File(mosaic, "tile_" + pad + i + ".tiff");
             FileUtils.writeByteArrayToFile(target, bytes);
         }
-        
+
         // create the mosaic indexer property file
         Properties p = new Properties();
         p.put("ElevationAttribute", "elevation");
@@ -159,5 +150,4 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         p.store(fos, null);
         fos.close();
     }
-
 }

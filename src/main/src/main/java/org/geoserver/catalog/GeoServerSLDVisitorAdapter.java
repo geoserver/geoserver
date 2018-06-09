@@ -10,9 +10,7 @@ import org.geotools.styling.StyledLayer;
 import org.geotools.styling.UserLayer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-/**
- * Adapter implementation of {@link GeoServerSLDVisitor}
- */
+/** Adapter implementation of {@link GeoServerSLDVisitor} */
 public abstract class GeoServerSLDVisitorAdapter extends GeoServerSLDVisitor {
     public GeoServerSLDVisitorAdapter(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
         super(catalog, fallbackCrs);
@@ -24,14 +22,10 @@ public abstract class GeoServerSLDVisitorAdapter extends GeoServerSLDVisitor {
     }
 
     @Override
-    public void visitUserLayerRemoteOWS(UserLayer userLayer) {
-
-    }
+    public void visitUserLayerRemoteOWS(UserLayer userLayer) {}
 
     @Override
-    public void visitUserLayerInlineFeature(UserLayer userLayer) {
-
-    }
+    public void visitUserLayerInlineFeature(UserLayer userLayer) {}
 
     @Override
     public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
@@ -39,7 +33,5 @@ public abstract class GeoServerSLDVisitorAdapter extends GeoServerSLDVisitor {
     }
 
     @Override
-    public void visitUserStyleInternal(Style userStyle) {
-
-    }
+    public void visitUserStyleInternal(Style userStyle) {}
 }

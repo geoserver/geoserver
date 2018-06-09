@@ -19,8 +19,11 @@
  */
 package org.geoserver.geofence.web;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,139 +46,161 @@ import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.geoserver.web.util.MapModel;
 
 /**
  * GeoFence wicket administration UI for GeoServer.
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
- *
  */
 public class GeofencePage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 5845823599005718408L;
 
-    /**
-     * Configuration object.
-     */
+    /** Configuration object. */
     private GeoFenceConfiguration config;
 
     private CacheConfiguration cacheParams;
 
     public GeofencePage() {
         // extracts cfg object from the registered probe instance
-        GeoFenceConfigurationManager configManager = GeoServerExtensions
-                .bean(GeoFenceConfigurationManager.class);
+        GeoFenceConfigurationManager configManager =
+                GeoServerExtensions.bean(GeoFenceConfigurationManager.class);
 
         config = configManager.getConfiguration().clone();
         cacheParams = configManager.getCacheConfiguration().clone();
 
         final IModel<GeoFenceConfiguration> configModel = getGeoFenceConfigModel();
         final IModel<CacheConfiguration> cacheModel = getCacheConfigModel();
-        Form<IModel<GeoFenceConfiguration>> form = new Form<IModel<GeoFenceConfiguration>>("form",
-                new CompoundPropertyModel<IModel<GeoFenceConfiguration>>(configModel));
+        Form<IModel<GeoFenceConfiguration>> form =
+                new Form<IModel<GeoFenceConfiguration>>(
+                        "form",
+                        new CompoundPropertyModel<IModel<GeoFenceConfiguration>>(configModel));
         form.setOutputMarkupId(true);
         add(form);
-        form.add(new TextField<String>("instanceName",
-                new PropertyModel<String>(configModel, "instanceName")).setRequired(true));
+        form.add(
+                new TextField<String>(
+                                "instanceName",
+                                new PropertyModel<String>(configModel, "instanceName"))
+                        .setRequired(true));
         // .setVisible(!config.isInternal());
-        form.add(new TextField<String>("servicesUrl",
-                new ExtPropertyModel<String>(configModel, "servicesUrl")
-                        .setReadOnly(config.isInternal())).setRequired(true)
-                                .setEnabled(!config.isInternal()));
+        form.add(
+                new TextField<String>(
+                                "servicesUrl",
+                                new ExtPropertyModel<String>(configModel, "servicesUrl")
+                                        .setReadOnly(config.isInternal()))
+                        .setRequired(true)
+                        .setEnabled(!config.isInternal()));
 
-        form.add(new AjaxSubmitLink("test") {
-            private static final long serialVersionUID = -91239899377941223L;
+        form.add(
+                new AjaxSubmitLink("test") {
+                    private static final long serialVersionUID = -91239899377941223L;
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((FormComponent<?>) form.get("servicesUrl")).processInput();
-                String servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl"))
-                        .getConvertedInput();
-                RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
-                try {
-                    ruleReader.getMatchingRules(new RuleFilter());
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        ((FormComponent<?>) form.get("servicesUrl")).processInput();
+                        String servicesUrl =
+                                (String)
+                                        ((FormComponent<?>) form.get("servicesUrl"))
+                                                .getConvertedInput();
+                        RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
+                        try {
+                            ruleReader.getMatchingRules(new RuleFilter());
 
-                    info(new StringResourceModel(
-                            GeofencePage.class.getSimpleName() + ".connectionSuccessful")
-                                    .getObject());
-                } catch (Exception e) {
-                    error(e);
-                    LOGGER.log(Level.WARNING, e.getMessage(), e);
-                }
+                            info(
+                                    new StringResourceModel(
+                                                    GeofencePage.class.getSimpleName()
+                                                            + ".connectionSuccessful")
+                                            .getObject());
+                        } catch (Exception e) {
+                            error(e);
+                            LOGGER.log(Level.WARNING, e.getMessage(), e);
+                        }
 
-                target.add(getPage().get("feedback"));
-            }
+                        target.add(getPage().get("feedback"));
+                    }
 
-            private RuleReaderService getRuleReaderService(String servicesUrl) {
-                if (config.isInternal()) {
-                    return (RuleReaderService) GeoServerExtensions.bean("ruleReaderService");
-                } else {
-                    HttpInvokerProxyFactoryBean invoker = new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
-                    invoker.setServiceUrl(servicesUrl);
-                    invoker.setServiceInterface(RuleReaderService.class);
-                    invoker.afterPropertiesSet();
-                    return (RuleReaderService) invoker.getObject();
-                }
-            }
-        }.setDefaultFormProcessing(false));
+                    private RuleReaderService getRuleReaderService(String servicesUrl) {
+                        if (config.isInternal()) {
+                            return (RuleReaderService)
+                                    GeoServerExtensions.bean("ruleReaderService");
+                        } else {
+                            HttpInvokerProxyFactoryBean invoker =
+                                    new org.springframework.remoting.httpinvoker
+                                            .HttpInvokerProxyFactoryBean();
+                            invoker.setServiceUrl(servicesUrl);
+                            invoker.setServiceInterface(RuleReaderService.class);
+                            invoker.afterPropertiesSet();
+                            return (RuleReaderService) invoker.getObject();
+                        }
+                    }
+                }.setDefaultFormProcessing(false));
 
-        form.add(new CheckBox("allowRemoteAndInlineLayers",
-                new PropertyModel<Boolean>(configModel, "allowRemoteAndInlineLayers")));
-        form.add(new CheckBox("grantWriteToWorkspacesToAuthenticatedUsers",
-                new PropertyModel<Boolean>(configModel,
-                        "grantWriteToWorkspacesToAuthenticatedUsers")));
-        form.add(new CheckBox("useRolesToFilter",
-                new PropertyModel<Boolean>(configModel, "useRolesToFilter")));
+        form.add(
+                new CheckBox(
+                        "allowRemoteAndInlineLayers",
+                        new PropertyModel<Boolean>(configModel, "allowRemoteAndInlineLayers")));
+        form.add(
+                new CheckBox(
+                        "grantWriteToWorkspacesToAuthenticatedUsers",
+                        new PropertyModel<Boolean>(
+                                configModel, "grantWriteToWorkspacesToAuthenticatedUsers")));
+        form.add(
+                new CheckBox(
+                        "useRolesToFilter",
+                        new PropertyModel<Boolean>(configModel, "useRolesToFilter")));
 
-        form.add(new TextField<String>("acceptedRoles",
-                new PropertyModel<String>(configModel, "acceptedRoles")));
+        form.add(
+                new TextField<String>(
+                        "acceptedRoles", new PropertyModel<String>(configModel, "acceptedRoles")));
 
-        Button submit = new Button("submit") {
-            private static final long serialVersionUID = 1L;
+        Button submit =
+                new Button("submit") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onSubmit() {
-                try {
-                    // save the changed configuration
-                    GeoServerExtensions.bean(GeoFenceConfigurationController.class)
-                            .storeConfiguration(config, cacheParams);
-                    doReturn();
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Save error", e);
-                    error(e);
-                }
-
-            }
-        };
+                    @Override
+                    public void onSubmit() {
+                        try {
+                            // save the changed configuration
+                            GeoServerExtensions.bean(GeoFenceConfigurationController.class)
+                                    .storeConfiguration(config, cacheParams);
+                            doReturn();
+                        } catch (Exception e) {
+                            LOGGER.log(Level.WARNING, "Save error", e);
+                            error(e);
+                        }
+                    }
+                };
         form.add(submit);
 
-        Button cancel = new Button("cancel") {
-            private static final long serialVersionUID = 1L;
+        Button cancel =
+                new Button("cancel") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onSubmit() {
-                doReturn();
-            }
-        }.setDefaultFormProcessing(false);
+                    @Override
+                    public void onSubmit() {
+                        doReturn();
+                    }
+                }.setDefaultFormProcessing(false);
         form.add(cancel);
 
-        form.add(new TextField<Long>("cacheSize", new PropertyModel<Long>(cacheModel, "size"))
-                .setRequired(true));
+        form.add(
+                new TextField<Long>("cacheSize", new PropertyModel<Long>(cacheModel, "size"))
+                        .setRequired(true));
 
-        form.add(new TextField<Long>("cacheRefresh",
-                new PropertyModel<Long>(cacheModel, "refreshMilliSec")).setRequired(true));
+        form.add(
+                new TextField<Long>(
+                                "cacheRefresh",
+                                new PropertyModel<Long>(cacheModel, "refreshMilliSec"))
+                        .setRequired(true));
 
-        form.add(new TextField<Long>("cacheExpire",
-                new PropertyModel<Long>(cacheModel, "expireMilliSec")).setRequired(true));
+        form.add(
+                new TextField<Long>(
+                                "cacheExpire",
+                                new PropertyModel<Long>(cacheModel, "expireMilliSec"))
+                        .setRequired(true));
 
         CachedRuleReader cacheRuleReader = GeoServerExtensions.bean(CachedRuleReader.class);
 
@@ -188,25 +213,29 @@ public class GeofencePage extends GeoServerSecuredPage {
             statsLabels.add(label);
         }
 
-        form.add(new AjaxSubmitLink("invalidate") {
+        form.add(
+                new AjaxSubmitLink("invalidate") {
 
-            private static final long serialVersionUID = 3847903240475052867L;
+                    private static final long serialVersionUID = 3847903240475052867L;
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                CachedRuleReader cacheRuleReader = GeoServerExtensions.bean(CachedRuleReader.class);
-                cacheRuleReader.invalidateAll();
-                info(new StringResourceModel(
-                        GeofencePage.class.getSimpleName() + ".cacheInvalidated").getObject());
-                updateStatsValues(cacheRuleReader);
-                for (Label label : statsLabels) {
-                    target.add(label);
-                }
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        CachedRuleReader cacheRuleReader =
+                                GeoServerExtensions.bean(CachedRuleReader.class);
+                        cacheRuleReader.invalidateAll();
+                        info(
+                                new StringResourceModel(
+                                                GeofencePage.class.getSimpleName()
+                                                        + ".cacheInvalidated")
+                                        .getObject());
+                        updateStatsValues(cacheRuleReader);
+                        for (Label label : statsLabels) {
+                            target.add(label);
+                        }
 
-                target.add(getPage().get("feedback"));
-            }
-        }.setDefaultFormProcessing(false));
-
+                        target.add(getPage().get("feedback"));
+                    }
+                }.setDefaultFormProcessing(false));
     }
 
     private final Map<String, Object> statsValues = new HashMap<String, Object>();
@@ -268,14 +297,14 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_ADMIN_SIZE, "" + cacheRuleReader.getAdminAuthCacheSize());
         statsValues.put(KEY_ADMIN_HIT, "" + cacheRuleReader.getAdminAuthStats().hitCount());
         statsValues.put(KEY_ADMIN_MISS, "" + cacheRuleReader.getAdminAuthStats().missCount());
-        statsValues.put(KEY_ADMIN_LOADOK,
-                "" + cacheRuleReader.getAdminAuthStats().loadSuccessCount());
-        statsValues.put(KEY_ADMIN_LOADKO,
-                "" + cacheRuleReader.getAdminAuthStats().loadExceptionCount());
-        statsValues.put(KEY_ADMIN_LOADTIME,
-                "" + cacheRuleReader.getAdminAuthStats().totalLoadTime());
-        statsValues.put(KEY_ADMIN_EVICTION,
-                "" + cacheRuleReader.getAdminAuthStats().evictionCount());
+        statsValues.put(
+                KEY_ADMIN_LOADOK, "" + cacheRuleReader.getAdminAuthStats().loadSuccessCount());
+        statsValues.put(
+                KEY_ADMIN_LOADKO, "" + cacheRuleReader.getAdminAuthStats().loadExceptionCount());
+        statsValues.put(
+                KEY_ADMIN_LOADTIME, "" + cacheRuleReader.getAdminAuthStats().totalLoadTime());
+        statsValues.put(
+                KEY_ADMIN_EVICTION, "" + cacheRuleReader.getAdminAuthStats().evictionCount());
 
         statsValues.put(KEY_USER_SIZE, "" + cacheRuleReader.getUserCacheSize());
         statsValues.put(KEY_USER_HIT, "" + cacheRuleReader.getUserStats().hitCount());
@@ -286,22 +315,13 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_USER_EVICTION, "" + cacheRuleReader.getUserStats().evictionCount());
     }
 
-    /**
-     * Creates a new wicket model from the configuration object.
-     *
-     *
-     */
+    /** Creates a new wicket model from the configuration object. */
     private IModel<GeoFenceConfiguration> getGeoFenceConfigModel() {
         return new Model<GeoFenceConfiguration>(config);
     }
 
-    /**
-     * Creates a new wicket model from the configuration object.
-     *
-     *
-     */
+    /** Creates a new wicket model from the configuration object. */
     private IModel<CacheConfiguration> getCacheConfigModel() {
         return new Model<CacheConfiguration>(cacheParams);
     }
-
 }

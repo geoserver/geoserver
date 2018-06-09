@@ -6,23 +6,20 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.util.Map;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.wfs.xml.PropertyTypePropertyExtractor;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:PropertyType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="PropertyType"&gt;
  *      &lt;xsd:sequence&gt;
@@ -47,6 +44,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class PropertyTypeBinding extends AbstractComplexBinding {
@@ -56,14 +54,13 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.PROPERTYTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -74,36 +71,36 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        //TODO: much of this method is duplicated in the 1.1.0 binding, it 
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        // TODO: much of this method is duplicated in the 1.1.0 binding, it
         // would be nice if we could sync them up somewhow....
         PropertyType property = wfsfactory.createPropertyType();
 
-        //&lt;xsd:element name="Name" type="xsd:QName"&gt;
+        // &lt;xsd:element name="Name" type="xsd:QName"&gt;
         property.setName((QName) node.getChildValue(QName.class));
 
-        //&lt;xsd:element minOccurs="0" name="Value"&gt;
+        // &lt;xsd:element minOccurs="0" name="Value"&gt;
         if (node.hasChild("Value")) {
             Object object = node.getChildValue("Value");
 
-            //check for a map
+            // check for a map
             if (object instanceof Map) {
                 Map map = (Map) object;
 
-                //this means a complex element parsed by xs:AnyType binding
+                // this means a complex element parsed by xs:AnyType binding
                 // try to pull out some text
                 if (!map.isEmpty()) {
-                    //first check for some text
+                    // first check for some text
                     if (map.containsKey(null)) {
                         property.setValue(map.get(null));
                     } else {
-                        //perhaps some other value
+                        // perhaps some other value
                         property.setValue(map.values().iterator().next());
                     }
                 }
@@ -116,11 +113,10 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
     }
 
     /**
-     * This method does nothing, its functionality is implemented by
-     * {@link PropertyTypePropertyExtractor}.
+     * This method does nothing, its functionality is implemented by {@link
+     * PropertyTypePropertyExtractor}.
      */
-    public Object getProperty(Object object, QName name)
-        throws Exception {
+    public Object getProperty(Object object, QName name) throws Exception {
         return null;
     }
 }

@@ -16,9 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -52,13 +50,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-/**
- * @author Nicola Lagomarsini
- */
+/** @author Nicola Lagomarsini */
 public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
 
-    private static final QName MOSAIC_HOLES = new QName(MockData.SF_URI, "mosaic_holes",
-            MockData.SF_PREFIX);
+    private static final QName MOSAIC_HOLES =
+            new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX);
 
     private static final String RGB_IR_VIEW = "RgbIrView";
     private static final QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
@@ -90,8 +86,13 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         Map properties = new HashMap();
         properties.put(LayerProperty.STYLE, "raster");
         final Catalog cat = getCatalog();
-        testData.addRasterLayer(MOSAIC_HOLES, "mosaic_holes.zip", null, properties,
-                RenderedImageMapOutputFormatExtendedTest.class, cat);
+        testData.addRasterLayer(
+                MOSAIC_HOLES,
+                "mosaic_holes.zip",
+                null,
+                properties,
+                RenderedImageMapOutputFormatExtendedTest.class,
+                cat);
 
         testData.addRasterLayer(IR_RGB, "ir-rgb.zip", null, null, TestData.class, cat);
 
@@ -101,8 +102,8 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo,
-                builder);
+        final CoverageInfo coverageInfo =
+                coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("Red");
         coverageInfo.getDimensions().get(1).setName("Green");
@@ -112,27 +113,39 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
     }
 
     private CoverageView buildRgbIRView() {
-        final CoverageBand rBand = new CoverageBand(
-                Arrays.asList(new InputCoverageBand("rgb", "0")), "rband", 0,
-                CompositionType.BAND_SELECT);
-        final CoverageBand gBand = new CoverageBand(
-                Arrays.asList(new InputCoverageBand("rgb", "1")), "gband", 1,
-                CompositionType.BAND_SELECT);
-        final CoverageBand bBand = new CoverageBand(
-                Arrays.asList(new InputCoverageBand("rgb", "2")), "bband", 2,
-                CompositionType.BAND_SELECT);
-        final CoverageBand irBand = new CoverageBand(
-                Collections.singletonList(new InputCoverageBand("ir", "0")), "irband", 3,
-                CompositionType.BAND_SELECT);
-        final CoverageView coverageView = new CoverageView(RGB_IR_VIEW,
-                Arrays.asList(rBand, gBand, bBand, irBand));
+        final CoverageBand rBand =
+                new CoverageBand(
+                        Arrays.asList(new InputCoverageBand("rgb", "0")),
+                        "rband",
+                        0,
+                        CompositionType.BAND_SELECT);
+        final CoverageBand gBand =
+                new CoverageBand(
+                        Arrays.asList(new InputCoverageBand("rgb", "1")),
+                        "gband",
+                        1,
+                        CompositionType.BAND_SELECT);
+        final CoverageBand bBand =
+                new CoverageBand(
+                        Arrays.asList(new InputCoverageBand("rgb", "2")),
+                        "bband",
+                        2,
+                        CompositionType.BAND_SELECT);
+        final CoverageBand irBand =
+                new CoverageBand(
+                        Collections.singletonList(new InputCoverageBand("ir", "0")),
+                        "irband",
+                        3,
+                        CompositionType.BAND_SELECT);
+        final CoverageView coverageView =
+                new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
         return coverageView;
     }
 
     /**
-     * Test to check that a channel selection after a renderingTransformation involving 
-     * an optimized read with underlying BANDS selection will not thrown an exception,
-     * by updating the band select accordingly
+     * Test to check that a channel selection after a renderingTransformation involving an optimized
+     * read with underlying BANDS selection will not thrown an exception, by updating the band
+     * select accordingly
      */
     @Test
     public void testRenderingTransformationChannelsSelectionFromCoverageView() throws Exception {
@@ -141,7 +154,8 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
 
         // Get the RGB-IR View which is combining an RGB GeoTIFF and an IR GeoTIFF
         final CoverageInfo ci = catalog.getCoverageByName(RGB_IR_VIEW);
-        final GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        final GridCoverage2DReader reader =
+                (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         final ReferencedEnvelope bbox = new ReferencedEnvelope(reader.getOriginalEnvelope());
 
         final GetMapRequest request = new GetMapRequest();
@@ -155,9 +169,10 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         map.setTransparent(false);
         map.getViewport().setBounds(bbox);
 
-        // Setup a style 
+        // Setup a style
         final SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory());
-        parser.setInput(RasterSymbolizerVisitorTest.class.getResource("CropTransformAndChannelSelect.sld"));
+        parser.setInput(
+                RasterSymbolizerVisitorTest.class.getResource("CropTransformAndChannelSelect.sld"));
         final StyledLayerDescriptor sld = parser.parseSLD();
         final NamedLayer ul = (NamedLayer) sld.getStyledLayers()[0];
         final Style style = ul.getStyles()[0];
@@ -166,10 +181,10 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         map.addLayer(dl);
 
         // Without the symbolizer update fix, the rendering would have thrown a
-        // "java.lang.IllegalArgumentException: Band number 4 is not valid." 
-        // trying to do a band select on the 4th element to setup the gray channel. 
-        // However, the optimized read performed through the BANDS parameter 
-        // returned the IR image only so the channel selection 
+        // "java.lang.IllegalArgumentException: Band number 4 is not valid."
+        // trying to do a band select on the 4th element to setup the gray channel.
+        // However, the optimized read performed through the BANDS parameter
+        // returned the IR image only so the channel selection
         // should have been updated with a proper index (as part of the fix)
         // as already made in the path not involving a RenderingTransformation.
         RenderedImageMap dstImageMap = this.rasterMapProducer.produceMap(map);
@@ -185,16 +200,18 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         map.dispose();
     }
 
-    /**
-     * Test to check that disabling ADVANCED PROJECTION HANDLING will not return a blank image 
-     */
+    /** Test to check that disabling ADVANCED PROJECTION HANDLING will not return a blank image */
     @Test
     public void testMosaicNoProjection() throws IOException, IllegalFilterException, Exception {
         // Request
-        MockHttpServletResponse response = getAsServletResponse("wms?BBOX=6.40284375,36.385494140625,12.189662109375,42.444494140625"
-                + "&styles=&layers=sf:mosaic_holes&Format=image/png"
-                + "&request=GetMap"
-                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?BBOX=6.40284375,36.385494140625,12.189662109375,42.444494140625"
+                                + "&styles=&layers=sf:mosaic_holes&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326");
         checkImage(response);
     }
 

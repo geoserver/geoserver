@@ -17,19 +17,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
 import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
 import org.geotools.styling.ColorMapEntry;
 import org.opengis.style.ColorMap;
 
-import com.vividsolutions.jts.awt.PointShapeFactory.Square;
-
 /**
  * This class mimics a simple cell for the final {@link ColorMap} legend reprensentation.
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
- * 
  */
 @SuppressWarnings("deprecation")
 public abstract class Cell {
@@ -53,9 +49,16 @@ public abstract class Cell {
 
     protected final Color borderColor;
 
-    protected Cell(final Color bkgColor, final double bkgOpacity, final String text,
-            final HAlign hAlign, final VAlign vAlign, final Dimension requestedDimension,
-            final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
+    protected Cell(
+            final Color bkgColor,
+            final double bkgOpacity,
+            final String text,
+            final HAlign hAlign,
+            final VAlign vAlign,
+            final Dimension requestedDimension,
+            final Font labelFont,
+            final Color labelFontColor,
+            final boolean fontAntiAliasing,
             final Color borderColor) {
         this.bkgColor = bkgColor;
         this.bkgOpacity = bkgOpacity;
@@ -69,31 +72,28 @@ public abstract class Cell {
         this.borderColor = borderColor;
     }
 
-    public abstract void draw(final Graphics2D graphics, final Rectangle2D clipBox,
-            final boolean completeBorder);
+    public abstract void draw(
+            final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
 
     /**
      * Retrieves the preferred dimension for this {@link Cell} element within the provided graphics
      * element.
-     * 
-     * @param graphics
-     *            {@link Graphics2D} object to use for computing the preferred dimension
+     *
+     * @param graphics {@link Graphics2D} object to use for computing the preferred dimension
      * @return the preferred dimension for this {@link Cell} element within the provided graphics
-     *         element.
+     *     element.
      */
     public abstract Dimension getPreferredDimension(final Graphics2D graphics);
-    
+
     /**
      * This class mimics a simple row for the final {@link ColorMap} legend representation.
-     * 
+     *
      * @author Simone Giannecchini, GeoSolutions SAS
-     * 
      */
-    public static abstract class Row {
+    public abstract static class Row {
         private final List<Cell> cells = new ArrayList<Cell>();
 
-        Row() {
-        }
+        Row() {}
 
         Row(final List<Cell> columns) {
             columns.addAll(columns);
@@ -106,13 +106,13 @@ public abstract class Cell {
         protected void add(final Cell cell) {
             cells.add(cell);
         }
-        
+
         protected void set(final Cell cell, int idx) {
             cells.set(idx, cell);
         }
     }
-    
-    public static abstract class ColorMapEntryLegendBuilder extends Row {
+
+    public abstract static class ColorMapEntryLegendBuilder extends Row {
 
         protected ColorMapEntryLegendBuilder() {
             super();
@@ -120,13 +120,13 @@ public abstract class Cell {
 
         protected ColorMapEntryLegendBuilder(List<Cell> columns) {
             super(columns);
-
         }
 
-        protected ColorMapEntryLegendBuilder(final ColorManager colorManager,
-                final TextManager labelManager, final TextManager ruleManager) {
+        protected ColorMapEntryLegendBuilder(
+                final ColorManager colorManager,
+                final TextManager labelManager,
+                final TextManager ruleManager) {
             super(Arrays.asList(colorManager, ruleManager, labelManager));
-
         }
 
         public boolean hasLabel() {
@@ -146,79 +146,154 @@ public abstract class Cell {
         public Cell getColorManager() {
             return get(0);
         }
-        
-        protected String formatQuantity(final double quantity, final int digits, final String unit) {
-            final String format ="%." + digits + "f";
+
+        protected String formatQuantity(
+                final double quantity, final int digits, final String unit) {
+            final String format = "%." + digits + "f";
             return String.format(Locale.US, format, quantity) + (unit != null ? (" " + unit) : "");
         }
-        
+
         protected void setLastRow() {
             // nothing to do by default
         }
     }
-        
+
     public static class SingleColorMapEntryLegendBuilder extends ColorMapEntryLegendBuilder {
-        
+
         @SuppressWarnings("deprecation")
-        public SingleColorMapEntryLegendBuilder(final List<ColorMapEntry> cMapEntries,
-                final HAlign hAlign, final VAlign vAling, final Color bkgColor,
-                final double bkgOpacity, final String text, final Dimension requestedDimension,
-                final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
-                final Color borderColor, final String unit, final int digits, boolean formatQuantity) {
+        public SingleColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> cMapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits,
+                boolean formatQuantity) {
 
             final ColorMapEntry currentCME = cMapEntries.get(0);
             Color color = LegendUtils.color(currentCME);
             final double opacity = LegendUtils.getOpacity(currentCME);
-            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
-            super.add(new ColorManager.SimpleColorManager(color, opacity, requestedDimension, borderColor));
+            color =
+                    new Color(
+                            color.getRed(),
+                            color.getGreen(),
+                            color.getBlue(),
+                            (int) (255 * opacity));
+            super.add(
+                    new ColorManager.SimpleColorManager(
+                            color, opacity, requestedDimension, borderColor));
 
             final String label = currentCME.getLabel();
             final double quantity = LegendUtils.getQuantity(currentCME);
             final String symbol = " = ";
-            
+
             String rule;
-            //Added variant for DynamicColorMap
-            if(formatQuantity){
+            // Added variant for DynamicColorMap
+            if (formatQuantity) {
                 String value = formatQuantity(quantity, digits, unit);
                 rule = value + " " + symbol + " x";
-            }else{
+            } else {
                 rule = Double.toString(quantity) + " " + symbol + " x";
             }
 
-            super.add(new TextManager(rule, vAling, hAlign, bkgColor, requestedDimension, labelFont,
-                    labelFontColor, fontAntiAliasing, borderColor));
+            super.add(
+                    new TextManager(
+                            rule,
+                            vAling,
+                            hAlign,
+                            bkgColor,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            fontAntiAliasing,
+                            borderColor));
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
 
                 hasLabel = true;
-                super.add(new TextManager(label, vAling, hAlign, bkgColor, requestedDimension,
-                        labelFont, labelFontColor, fontAntiAliasing, borderColor));
-            } else
-                super.add(null);
+                super.add(
+                        new TextManager(
+                                label,
+                                vAling,
+                                hAlign,
+                                bkgColor,
+                                requestedDimension,
+                                labelFont,
+                                labelFontColor,
+                                fontAntiAliasing,
+                                borderColor));
+            } else super.add(null);
         }
-        
+
         @SuppressWarnings("deprecation")
-        public SingleColorMapEntryLegendBuilder(final List<ColorMapEntry> cMapEntries,
-                final HAlign hAlign, final VAlign vAling, final Color bkgColor,
-                final double bkgOpacity, final String text, final Dimension requestedDimension,
-                final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
+        public SingleColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> cMapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
                 final Color borderColor) {
-            this(cMapEntries, hAlign, vAling, bkgColor, bkgOpacity, text, requestedDimension, labelFont, labelFontColor, 
-                    fontAntiAliasing, borderColor, null, 0, false);
+            this(
+                    cMapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    null,
+                    0,
+                    false);
         }
-        
+
         @SuppressWarnings("deprecation")
-        public SingleColorMapEntryLegendBuilder(final List<ColorMapEntry> cMapEntries,
-                final HAlign hAlign, final VAlign vAling, final Color bkgColor,
-                final double bkgOpacity, final String text, final Dimension requestedDimension,
-                final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
-                final Color borderColor, final String unit, final int digits) {
-            this(cMapEntries, hAlign, vAling, bkgColor, bkgOpacity, text, requestedDimension, labelFont, labelFontColor, 
-                    fontAntiAliasing, borderColor, unit, digits, true);
+        public SingleColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> cMapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits) {
+            this(
+                    cMapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    unit,
+                    digits,
+                    true);
         }
-
-
     }
 
     public static class RampColorMapEntryLegendBuilder extends ColorMapEntryLegendBuilder {
@@ -226,46 +301,100 @@ public abstract class Cell {
         private TextManager lastRuleManager;
 
         @SuppressWarnings("deprecation")
-        public RampColorMapEntryLegendBuilder(final List<ColorMapEntry> mapEntries,
-                final HAlign hAlign, final VAlign vAling, final Color bkgColor,
-                final double bkgOpacity, final String text, final Dimension requestedDimension,
-                final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
+        public RampColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
                 final Color borderColor) {
-            this(mapEntries, hAlign, vAling, bkgColor, bkgOpacity, text, requestedDimension, 
-                    labelFont, labelFontColor, fontAntiAliasing, borderColor, null, 0, false);
+            this(
+                    mapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    null,
+                    0,
+                    false);
         }
-        
+
         @SuppressWarnings("deprecation")
-        public RampColorMapEntryLegendBuilder(final List<ColorMapEntry> mapEntries,
-                final HAlign hAlign, final VAlign vAling, final Color bkgColor,
-                final double bkgOpacity, final String text, final Dimension requestedDimension,
-                final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
-                final Color borderColor, final String unit, final int digits){
-            this(mapEntries, hAlign, vAling, bkgColor, bkgOpacity, text, requestedDimension, 
-                    labelFont, labelFontColor, fontAntiAliasing, borderColor, unit, digits, true);
+        public RampColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits) {
+            this(
+                    mapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    unit,
+                    digits,
+                    true);
         }
-        
+
         @SuppressWarnings("deprecation")
-        public RampColorMapEntryLegendBuilder(final List<ColorMapEntry> mapEntries,
-                final HAlign hAlign, final VAlign vAling, final Color bkgColor,
-                final double bkgOpacity, final String text, final Dimension requestedDimension,
-                final Font labelFont, final Color labelFontColor, final boolean fontAntiAliasing,
-                final Color borderColor, final String unit, final int digits, boolean formatQuantity) {
+        public RampColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits,
+                boolean formatQuantity) {
 
             final ColorMapEntry previousCME = mapEntries.get(0);
             final ColorMapEntry currentCME = mapEntries.get(1);
             boolean leftEdge;
-            if (previousCME == null)
-                leftEdge = true;
-            else
-                leftEdge = false;
+            if (previousCME == null) leftEdge = true;
+            else leftEdge = false;
 
             Color previousColor;
             if (!leftEdge) {
                 previousColor = LegendUtils.color(previousCME);
                 final double opacity = LegendUtils.getOpacity(previousCME);
-                previousColor = new Color(previousColor.getRed(), previousColor.getGreen(),
-                        previousColor.getBlue(), (int) (255 * opacity + 0.5));
+                previousColor =
+                        new Color(
+                                previousColor.getRed(),
+                                previousColor.getGreen(),
+                                previousColor.getBlue(),
+                                (int) (255 * opacity + 0.5));
             } else {
                 previousColor = null;
             }
@@ -273,180 +402,294 @@ public abstract class Cell {
             Color color = LegendUtils.color(currentCME);
             double opacity = LegendUtils.getOpacity(currentCME);
 
-            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
-            super.add(new ColorManager.SimpleColorManager.GradientColorManager(color, opacity, previousColor, requestedDimension,
-                    borderColor));
+            color =
+                    new Color(
+                            color.getRed(),
+                            color.getGreen(),
+                            color.getBlue(),
+                            (int) (255 * opacity));
+            super.add(
+                    new ColorManager.SimpleColorManager.GradientColorManager(
+                            color, opacity, previousColor, requestedDimension, borderColor));
 
             String label = currentCME.getLabel();
             double quantity = LegendUtils.getQuantity(currentCME);
-            
+
             // Added variation for DynamicColorMap
             String rule;
             String lastRuleText;
-            
-            if(formatQuantity){
+
+            if (formatQuantity) {
                 rule = "";
                 lastRuleText = "";
                 if (opacity > 0) {
                     String formattedQuantity = formatQuantity(quantity, digits, unit);
-                    if(leftEdge) {
+                    if (leftEdge) {
                         rule = formattedQuantity + " >= x";
                         lastRuleText = "";
                     } else {
-                        rule = formattedQuantity  + " ";
-                        lastRuleText = formattedQuantity  + " <= x";
+                        rule = formattedQuantity + " ";
+                        lastRuleText = formattedQuantity + " <= x";
                     }
                 }
             } else {
                 final String formattedQuantity = Double.toString(quantity);
-                if(leftEdge) {
+                if (leftEdge) {
                     rule = formattedQuantity + " >= x";
                     lastRuleText = "";
                 } else {
-                    rule = formattedQuantity  + " = x";
-                    lastRuleText = formattedQuantity  + " <= x";
+                    rule = formattedQuantity + " = x";
+                    lastRuleText = formattedQuantity + " <= x";
                 }
             }
 
-            super.add(new TextManager(rule, vAling, hAlign, bkgColor, requestedDimension, labelFont,
-                    labelFontColor, leftEdge, borderColor));
-            lastRuleManager = new TextManager(lastRuleText, vAling, hAlign, bkgColor, requestedDimension, labelFont,
-                    labelFontColor, leftEdge, borderColor);
+            super.add(
+                    new TextManager(
+                            rule,
+                            vAling,
+                            hAlign,
+                            bkgColor,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            leftEdge,
+                            borderColor));
+            lastRuleManager =
+                    new TextManager(
+                            lastRuleText,
+                            vAling,
+                            hAlign,
+                            bkgColor,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            leftEdge,
+                            borderColor);
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
 
                 hasLabel = true;
-                super.add(new TextManager(label, vAling, hAlign, bkgColor, requestedDimension,
-                        labelFont, labelFontColor, leftEdge, borderColor));
+                super.add(
+                        new TextManager(
+                                label,
+                                vAling,
+                                hAlign,
+                                bkgColor,
+                                requestedDimension,
+                                labelFont,
+                                labelFontColor,
+                                leftEdge,
+                                borderColor));
             } else {
                 super.add(null);
             }
-
         }
-        
+
         @Override
         protected void setLastRow() {
             set(lastRuleManager, 1);
         }
-        
     }
 
     public static class ClassesEntryLegendBuilder extends ColorMapEntryLegendBuilder {
 
         @SuppressWarnings("deprecation")
         public ClassesEntryLegendBuilder(
-
-        final List<ColorMapEntry> mapEntries, final HAlign hAlign, final VAlign vAling,
-                final Color bkgColor, final double bkgOpacity, final String text,
-                final Dimension requestedDimension, final Font labelFont, final Color labelFontColor,
-                final boolean fontAntiAliasing, final Color borderColor) {
-            this(mapEntries, hAlign, vAling, bkgColor, bkgOpacity, text, requestedDimension, labelFont, 
-                    labelFontColor, fontAntiAliasing, borderColor, null, 0, false);
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor) {
+            this(
+                    mapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    null,
+                    0,
+                    false);
         }
-        
-        
+
         @SuppressWarnings("deprecation")
         public ClassesEntryLegendBuilder(
-
-        final List<ColorMapEntry> mapEntries, final HAlign hAlign, final VAlign vAling,
-                final Color bkgColor, final double bkgOpacity, final String text,
-                final Dimension requestedDimension, final Font labelFont, final Color labelFontColor,
-                final boolean fontAntiAliasing, final Color borderColor, final String unit, final int digits) {
-            this(mapEntries, hAlign, vAling, bkgColor, bkgOpacity, text, requestedDimension, labelFont, 
-                    labelFontColor, fontAntiAliasing, borderColor, unit, digits, true);        
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits) {
+            this(
+                    mapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    unit,
+                    digits,
+                    true);
         }
-        
-        
+
         @SuppressWarnings("deprecation")
         public ClassesEntryLegendBuilder(
-
-        final List<ColorMapEntry> mapEntries, final HAlign hAlign, final VAlign vAling,
-                final Color bkgColor, final double bkgOpacity, final String text,
-                final Dimension requestedDimension, final Font labelFont, final Color labelFontColor,
-                final boolean fontAntiAliasing, final Color borderColor, final String unit, final int digits,
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits,
                 boolean formatQuantity) {
 
             final ColorMapEntry previousCME = mapEntries.get(0);
             final ColorMapEntry currentCME = mapEntries.get(1);
             boolean leftEdge;
-            if (previousCME == null)
-                leftEdge = true;
-            else
-                leftEdge = false;
+            if (previousCME == null) leftEdge = true;
+            else leftEdge = false;
 
             Color color = LegendUtils.color(currentCME);
             final double opacity = LegendUtils.getOpacity(currentCME);
-            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
-            super.add(new ColorManager.SimpleColorManager(color, opacity, requestedDimension, borderColor));
+            color =
+                    new Color(
+                            color.getRed(),
+                            color.getGreen(),
+                            color.getBlue(),
+                            (int) (255 * opacity));
+            super.add(
+                    new ColorManager.SimpleColorManager(
+                            color, opacity, requestedDimension, borderColor));
 
             String label = currentCME.getLabel();
-            double quantity1 = leftEdge ? LegendUtils.getQuantity(currentCME) : LegendUtils
-                    .getQuantity(previousCME);
+            double quantity1 =
+                    leftEdge
+                            ? LegendUtils.getQuantity(currentCME)
+                            : LegendUtils.getQuantity(previousCME);
             double quantity2 = LegendUtils.getQuantity(currentCME);
-            
+
             // Added variation for DynamicColorMap
             String ruleText;
             String symbol1 = null, symbol2 = null;
-            if (leftEdge)
-                symbol1 = " < ";
+            if (leftEdge) symbol1 = " < ";
             else {
                 symbol1 = " <= ";
                 symbol2 = " < ";
             }
-            if(formatQuantity){
+            if (formatQuantity) {
                 ruleText = "";
                 if (opacity > 0) {
                     String value1 = formatQuantity(quantity1, digits, unit);
                     String value2 = formatQuantity(quantity2, digits, unit);
-                    if(leftEdge) {
+                    if (leftEdge) {
                         ruleText = "x" + symbol1 + value1;
-                    } else if(Double.isInfinite(quantity2)) {
+                    } else if (Double.isInfinite(quantity2)) {
                         ruleText = value1 + symbol1 + "x";
                     } else {
-                        ruleText = value1 + symbol1 + "x" + symbol2 + value2;    
+                        ruleText = value1 + symbol1 + "x" + symbol2 + value2;
                     }
                 }
             } else {
                 final String value1 = Double.toString(quantity1);
                 final String value2 = Double.toString(quantity2);
-                if(leftEdge) {
+                if (leftEdge) {
                     ruleText = "x" + symbol1 + value1;
-                } else if(Double.isInfinite(quantity2)) {
+                } else if (Double.isInfinite(quantity2)) {
                     ruleText = value1 + symbol1 + "x";
                 } else {
-                    ruleText = value1 + symbol1 + "x" + symbol2 + value2;    
+                    ruleText = value1 + symbol1 + "x" + symbol2 + value2;
                 }
             }
-            
-            super.add(new TextManager(ruleText, vAling, hAlign, bkgColor, requestedDimension, labelFont,
-                    labelFontColor, leftEdge, borderColor));
+
+            super.add(
+                    new TextManager(
+                            ruleText,
+                            vAling,
+                            hAlign,
+                            bkgColor,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            leftEdge,
+                            borderColor));
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
 
                 hasLabel = true;
-                super.add(new TextManager(label, vAling, hAlign, bkgColor, requestedDimension,
-                        labelFont, labelFontColor, leftEdge, borderColor));
-            } else
-                super.add(null);
-
+                super.add(
+                        new TextManager(
+                                label,
+                                vAling,
+                                hAlign,
+                                bkgColor,
+                                requestedDimension,
+                                labelFont,
+                                labelFontColor,
+                                leftEdge,
+                                borderColor));
+            } else super.add(null);
         }
     }
 
     /**
      * This class mimics a simple text cell for the final {@link ColorMap} legend representation.
-     * 
+     *
      * @author Simone Giannecchini, GeoSolutions SAS
-     * 
      */
     public static class TextManager extends Cell {
 
-        public TextManager(final String text, final VAlign vAlign, final HAlign hAlign,
-                final Color bkgColor, final Dimension requestedDimension, final Font labelFont,
-                final Color labelFontColor, final boolean fontAntiAliasing, final Color borderColor) {
-            super(bkgColor, 1.0, text, hAlign, vAlign, requestedDimension, labelFont, labelFontColor,
-                    fontAntiAliasing, borderColor);
+        public TextManager(
+                final String text,
+                final VAlign vAlign,
+                final HAlign hAlign,
+                final Color bkgColor,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor) {
+            super(
+                    bkgColor,
+                    1.0,
+                    text,
+                    hAlign,
+                    vAlign,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor);
         }
 
         @Override
@@ -456,18 +699,29 @@ public abstract class Cell {
 
             // set new font
             graphics.setFont(labelFont);
-            // computing label dimension and creating buffered image on which we can draw the label on
+            // computing label dimension and creating buffered image on which we can draw the label
+            // on
             // it
-            final int labelHeight = (int) Math.ceil(graphics.getFontMetrics().getStringBounds(text,
-                    graphics).getHeight());
-            final int labelWidth = (int) Math.ceil(graphics.getFontMetrics().getStringBounds(text,
-                    graphics).getWidth());
+            final int labelHeight =
+                    (int)
+                            Math.ceil(
+                                    graphics.getFontMetrics()
+                                            .getStringBounds(text, graphics)
+                                            .getHeight());
+            final int labelWidth =
+                    (int)
+                            Math.ceil(
+                                    graphics.getFontMetrics()
+                                            .getStringBounds(text, graphics)
+                                            .getWidth());
             // restore the old font
             graphics.setFont(oldFont);
             return new Dimension(labelWidth, labelHeight);
         }
 
-        public void draw(final Graphics2D graphics, final Rectangle2D clipBox,
+        public void draw(
+                final Graphics2D graphics,
+                final Rectangle2D clipBox,
                 final boolean completeBorder) {
 
             // save old font
@@ -477,7 +731,8 @@ public abstract class Cell {
             graphics.setColor(labelFontColor);
             graphics.setFont(labelFont);
             if (fontAntiAliasing)
-                graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                graphics.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             // Halign==center vAlign==bottom
@@ -489,83 +744,102 @@ public abstract class Cell {
             // where do we draw?
             final int xText;
             switch (hAlign) {
-            case CENTERED:
-                xText = (int) (minx + (w - dimension.getWidth()) / 2.0 + 0.5);
-                break;
-            case LEFT:
-                xText = (int) (minx + 0.5);
-                break;
-            case RIGHT:
-                xText = (int) (minx + (w - dimension.getWidth()) + 0.5);
-                break;
-            case JUSTIFIED:
-                throw new UnsupportedOperationException("Unsupported");
-            default:
-                throw new IllegalStateException("Unsupported horizontal alignment " + hAlign);
+                case CENTERED:
+                    xText = (int) (minx + (w - dimension.getWidth()) / 2.0 + 0.5);
+                    break;
+                case LEFT:
+                    xText = (int) (minx + 0.5);
+                    break;
+                case RIGHT:
+                    xText = (int) (minx + (w - dimension.getWidth()) + 0.5);
+                    break;
+                case JUSTIFIED:
+                    throw new UnsupportedOperationException("Unsupported");
+                default:
+                    throw new IllegalStateException("Unsupported horizontal alignment " + hAlign);
             }
 
             final int yText;
             switch (vAlign) {
-            case BOTTOM:
-                yText = (int) (miny + h - graphics.getFontMetrics().getDescent() + 0.5);
-                break;
-            case TOP:
-                yText = (int) (miny + graphics.getFontMetrics().getHeight() + 0.5);
-                break;
-            case MIDDLE:
-                yText = (int) (miny + (h + graphics.getFontMetrics().getHeight()) / 2 + 0.5);
-                break;
-            default:
-                throw new IllegalStateException("Unsupported vertical alignment " + vAlign);
+                case BOTTOM:
+                    yText = (int) (miny + h - graphics.getFontMetrics().getDescent() + 0.5);
+                    break;
+                case TOP:
+                    yText = (int) (miny + graphics.getFontMetrics().getHeight() + 0.5);
+                    break;
+                case MIDDLE:
+                    yText = (int) (miny + (h + graphics.getFontMetrics().getHeight()) / 2 + 0.5);
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported vertical alignment " + vAlign);
             }
             // draw
             graphics.drawString(text, xText, yText);
 
             // restore the old font
             graphics.setFont(oldFont);
-
         }
     }
-    
-    /**
-     * This class mimics a simple color cell for the final {@link ColorMap} legend representation. It is
-     * responsible for for drawing colors for a {@link ColorMapEntry}.
-     * 
-     * @author Simone Giannecchini, GeoSolutions SAS
-     * 
-     */
-    public static abstract class ColorManager extends Cell {
 
-        public ColorManager(final Color color, final double opacity,
-                final Dimension requestedDimension, final Color borderColor) {
-            super(color, opacity, null, null, null, requestedDimension, null, null, false, borderColor);
+    /**
+     * This class mimics a simple color cell for the final {@link ColorMap} legend representation.
+     * It is responsible for for drawing colors for a {@link ColorMapEntry}.
+     *
+     * @author Simone Giannecchini, GeoSolutions SAS
+     */
+    public abstract static class ColorManager extends Cell {
+
+        public ColorManager(
+                final Color color,
+                final double opacity,
+                final Dimension requestedDimension,
+                final Color borderColor) {
+            super(
+                    color,
+                    opacity,
+                    null,
+                    null,
+                    null,
+                    requestedDimension,
+                    null,
+                    null,
+                    false,
+                    borderColor);
         }
 
-        public abstract void draw(final Graphics2D graphics, final Rectangle2D clipBox,
-                final boolean completeBorder);
+        public abstract void draw(
+                final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
 
         @Override
         public Dimension getPreferredDimension(final Graphics2D graphics) {
             return new Dimension(requestedDimension);
         }
 
-        
         public static class SimpleColorManager extends ColorManager {
 
-            public SimpleColorManager(final Color color, final double opacity,
-                    final Dimension requestedDimension, final Color borderColor) {
+            public SimpleColorManager(
+                    final Color color,
+                    final double opacity,
+                    final Dimension requestedDimension,
+                    final Color borderColor) {
                 super(color, opacity, requestedDimension, borderColor);
             }
 
             @Override
-            public void draw(final Graphics2D graphics, final Rectangle2D clipBox,
+            public void draw(
+                    final Graphics2D graphics,
+                    final Rectangle2D clipBox,
                     final boolean completeBorder) {
                 // bkgColor fill
                 if (bkgOpacity > 0) {
                     // OPAQUE
                     final Color oldColor = graphics.getColor();
-                    final Color newColor = new Color(bkgColor.getRed(), bkgColor.getGreen(), bkgColor
-                            .getBlue(), (int) (255 * bkgOpacity + 0.5));
+                    final Color newColor =
+                            new Color(
+                                    bkgColor.getRed(),
+                                    bkgColor.getGreen(),
+                                    bkgColor.getBlue(),
+                                    (int) (255 * bkgOpacity + 0.5));
                     graphics.setColor(newColor);
                     graphics.fill(clipBox);
                     // make bkgColor customizable
@@ -608,18 +882,15 @@ public abstract class Cell {
                     // restore bkgColor
                     graphics.setColor(oldColor);
                 }
-
             }
 
-            
-            
-            
             public static class GradientColorManager extends SimpleColorManager {
 
                 @Override
                 public Dimension getPreferredDimension(Graphics2D graphics) {
                     // twice as much space for the Height to account for the gradient
-                    return new Dimension(requestedDimension.width,
+                    return new Dimension(
+                            requestedDimension.width,
                             (int) (1.5 * requestedDimension.height + 0.5));
                 }
 
@@ -627,16 +898,21 @@ public abstract class Cell {
 
                 private boolean leftEdge;
 
-                public GradientColorManager(final Color color, final double opacity, final Color previousColor,
-                        final Dimension requestedDimension, final Color borderColor) {
+                public GradientColorManager(
+                        final Color color,
+                        final double opacity,
+                        final Color previousColor,
+                        final Dimension requestedDimension,
+                        final Color borderColor) {
                     super(color, opacity, requestedDimension, borderColor);
                     this.previousColor = previousColor;
-                    if (previousColor == null)
-                        leftEdge = true;
+                    if (previousColor == null) leftEdge = true;
                 }
 
                 @Override
-                public void draw(final Graphics2D graphics, final Rectangle2D clipBox,
+                public void draw(
+                        final Graphics2D graphics,
+                        final Rectangle2D clipBox,
                         final boolean completeBorder) {
 
                     // getting clipbox dimensions
@@ -648,12 +924,19 @@ public abstract class Cell {
                     // GRADIENT
                     if (!leftEdge) {
                         // rectangle for the gradient
-                        final Rectangle2D.Double rectLegend = new Rectangle2D.Double(minx, miny, w, h / 2);
+                        final Rectangle2D.Double rectLegend =
+                                new Rectangle2D.Double(minx, miny, w, h / 2);
 
                         // gradient paint
                         final Paint oldPaint = graphics.getPaint();
-                        final GradientPaint paint = new GradientPaint((float) minx, (float) miny,
-                                previousColor, (float) minx, (float) (miny + h / 2), bkgColor);
+                        final GradientPaint paint =
+                                new GradientPaint(
+                                        (float) minx,
+                                        (float) miny,
+                                        previousColor,
+                                        (float) minx,
+                                        (float) (miny + h / 2),
+                                        bkgColor);
 
                         // do the magic
                         graphics.setPaint(paint);
@@ -661,13 +944,13 @@ public abstract class Cell {
 
                         // restore paint
                         graphics.setPaint(oldPaint);
-
                     }
 
                     // COLOR BOX
                     // careful with handling the leftEdge case
-                    final Rectangle2D rectLegend = new Rectangle2D.Double(minx, miny + (leftEdge ? 0 : h / 2),
-                            w, !leftEdge ? h / 2 : h);
+                    final Rectangle2D rectLegend =
+                            new Rectangle2D.Double(
+                                    minx, miny + (leftEdge ? 0 : h / 2), w, !leftEdge ? h / 2 : h);
                     super.draw(graphics, rectLegend, completeBorder);
                     if (completeBorder) {
                         final Color oldColor = graphics.getColor();
@@ -680,13 +963,8 @@ public abstract class Cell {
                         // restore bkgColor
                         graphics.setColor(oldColor);
                     }
-
                 }
-
             }
         }
     }
 }
-
-
-

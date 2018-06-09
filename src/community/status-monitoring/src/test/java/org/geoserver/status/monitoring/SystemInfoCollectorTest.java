@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.status.monitoring.collector.BaseSystemInfoCollector;
 import org.geoserver.status.monitoring.collector.MetricValue;
 import org.geoserver.status.monitoring.collector.Metrics;
@@ -24,8 +23,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SystemInfoCollectorTest {
 
-    @Rule
-    public ErrorCollector collector = new ErrorCollector();
+    @Rule public ErrorCollector collector = new ErrorCollector();
 
     private static ClassPathXmlApplicationContext context;
 
@@ -41,8 +39,8 @@ public class SystemInfoCollectorTest {
 
     @Test
     public void testMetricCollector() throws Exception {
-        Map<String, SystemInfoCollector> collectors = context
-                .getBeansOfType(SystemInfoCollector.class);
+        Map<String, SystemInfoCollector> collectors =
+                context.getBeansOfType(SystemInfoCollector.class);
         assertEquals(1, collectors.size());
         SystemInfoCollector systemInfoCollector = collectors.values().iterator().next();
         // SystemInfoCollector systemInfoCollector = context.getBean(SystemInfoCollector.class);
@@ -63,5 +61,4 @@ public class SystemInfoCollectorTest {
                     equalTo(true));
         }
     }
-
 }

@@ -6,30 +6,25 @@
 
 package org.geoserver.test;
 
-/**
- * @author Niels Charlier (Curtin University Of Technology)
- * 
- */
+/** @author Niels Charlier (Curtin University Of Technology) */
 public class IdNotEncodedMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * Prefix for gwml namespace.
-     */
+    /** Prefix for gwml namespace. */
     protected static final String GWML_PREFIX = "gwml";
 
-    /**
-     * URI for gwml namespace.
-     */
+    /** URI for gwml namespace. */
     protected static final String GWML_URI = "http://www.nrcan.gc.ca/xml/gwml/1";
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
         putNamespace(GWML_PREFIX, GWML_URI);
-        addFeatureType(GSML_PREFIX, "MappedInterval", "MappedInterval.xml",  "HydrostratigraphicUnit.xml",
-                "mappedinterval.properties", "HydrogeologicUnit.xsd");
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedInterval",
+                "MappedInterval.xml",
+                "HydrostratigraphicUnit.xml",
+                "mappedinterval.properties",
+                "HydrogeologicUnit.xsd");
     }
-
 }

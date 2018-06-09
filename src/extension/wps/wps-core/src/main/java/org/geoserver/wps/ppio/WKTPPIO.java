@@ -5,6 +5,10 @@
  */
 package org.geoserver.wps.ppio;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,14 +17,9 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Writer;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
-
 /**
  * Used to represent geometries in WKT format
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class WKTPPIO extends CDataPPIO {
@@ -45,17 +44,16 @@ public class WKTPPIO extends CDataPPIO {
         try {
             Geometry g = (Geometry) value;
             if (g instanceof LinearRing) {
-                g = g.getFactory().createLineString(((LinearRing)g).getCoordinateSequence());
+                g = g.getFactory().createLineString(((LinearRing) g).getCoordinateSequence());
             }
             new WKTWriter().write(g, w);
         } finally {
             w.flush();
         }
     }
-    
+
     @Override
     public String getFileExtension() {
         return "wkt";
     }
-
 }

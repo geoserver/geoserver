@@ -6,13 +6,10 @@
 package org.geoserver.grib;
 
 import java.util.Optional;
-
 import org.geoserver.platform.ModuleStatus;
 import org.geotools.factory.GeoTools;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.Version;
-
-import ucar.nc2.jni.netcdf.Nc4prototypes;
 
 public class GribStatus implements ModuleStatus {
 
@@ -60,5 +57,4 @@ public class GribStatus implements ModuleStatus {
     public Optional<String> getDocumentation() {
         return Optional.ofNullable("");
     }
-
 }

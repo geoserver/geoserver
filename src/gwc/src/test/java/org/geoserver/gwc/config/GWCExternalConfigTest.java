@@ -4,21 +4,19 @@
  */
 package org.geoserver.gwc.config;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import java.io.File;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 /**
- * Tests that is possible to set a different GWC configuration directory
- * using properties GEOWEBCACHE_CONFIG_DIR_PROPERTY and GEOWEBCACHE_CACHE_DIR_PROPERTY.
+ * Tests that is possible to set a different GWC configuration directory using properties
+ * GEOWEBCACHE_CONFIG_DIR_PROPERTY and GEOWEBCACHE_CACHE_DIR_PROPERTY.
  */
 public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
 
@@ -53,35 +51,49 @@ public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
      * Helper method that setup the correct configuration variables, force Spring beans to be
      * reloaded and checks GWC configuration beans.
      */
-    private void testUseCase(String configDirPath, String cacheDirPath, String expectedConfigFirPath) {
+    private void testUseCase(
+            String configDirPath, String cacheDirPath, String expectedConfigFirPath) {
         // set or clear the gwc configuration directory property
         if (configDirPath == null) {
             System.clearProperty(GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY);
         } else {
-            System.setProperty(GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY, configDirPath);
+            System.setProperty(
+                    GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY, configDirPath);
         }
         // set or clear the gwc cache directory property
         if (cacheDirPath == null) {
             System.clearProperty(GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY);
         } else {
-            System.setProperty(GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY, cacheDirPath);
+            System.setProperty(
+                    GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY, cacheDirPath);
         }
         // rebuild the spring beans
         applicationContext.refresh();
         // check that the correct configuration directory is used
-        applicationContext.getBeansOfType(GeoserverXMLResourceProvider.class)
-                .values().forEach(bean -> {
-            try {
-                // check that configuration files are located in our custom directory
-                assertThat(bean.getConfigDirectory(), notNullValue());
-                assertThat(bean.getConfigDirectory().dir().getCanonicalPath(), is(expectedConfigFirPath));
-                // rely on canonical path for comparisons
-                assertThat(new File(bean.getLocation()).getCanonicalPath(),
-                        is(new File(expectedConfigFirPath, bean.getConfigFileName()).getCanonicalPath()));
-            } catch (Exception exception) {
-                throw new RuntimeException(exception);
-            }
-        });
+        applicationContext
+                .getBeansOfType(GeoserverXMLResourceProvider.class)
+                .values()
+                .forEach(
+                        bean -> {
+                            try {
+                                // check that configuration files are located in our custom
+                                // directory
+                                assertThat(bean.getConfigDirectory(), notNullValue());
+                                assertThat(
+                                        bean.getConfigDirectory().dir().getCanonicalPath(),
+                                        is(expectedConfigFirPath));
+                                // rely on canonical path for comparisons
+                                assertThat(
+                                        new File(bean.getLocation()).getCanonicalPath(),
+                                        is(
+                                                new File(
+                                                                expectedConfigFirPath,
+                                                                bean.getConfigFileName())
+                                                        .getCanonicalPath()));
+                            } catch (Exception exception) {
+                                throw new RuntimeException(exception);
+                            }
+                        });
     }
 
     @AfterClass

@@ -7,7 +7,7 @@ package org.geoserver.wps.xml;
 
 import java.util.List;
 import java.util.Map;
-
+import javax.xml.namespace.QName;
 import org.geoserver.wfs.xml.v1_0_0.GetFeatureTypeBinding;
 import org.geotools.wfs.WFSParserDelegate;
 import org.geotools.wfs.v1_0.WFS;
@@ -24,17 +24,15 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.NamespaceSupport;
 
-import javax.xml.namespace.QName;
-
 public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
 
     protected void registerBindings(Map bindings) {
         super.registerBindings(bindings);
-        
-        //binding overrides
-        bindings.put( WPS.ComplexDataType, ComplexDataTypeBinding.class );
+
+        // binding overrides
+        bindings.put(WPS.ComplexDataType, ComplexDataTypeBinding.class);
     }
-    
+
     @Override
     protected void configureContext(MutablePicoContainer container) {
         super.configureContext(container);
@@ -43,23 +41,27 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
         container.registerComponentInstance(new org.geoserver.wcs.xml.v1_0_0.WCSParserDelegate());
         container.registerComponentInstance(new org.geoserver.wcs2_0.xml.WCSParserDelegate());
         container.registerComponentInstance(container);
-        // replace WFSParserDelegate from GeoTools with a new one using GeoServer GetFeatureTypeBinding,
+        // replace WFSParserDelegate from GeoTools with a new one using GeoServer
+        // GetFeatureTypeBinding,
         // able to parse viewParams attribute and enable usage of SQL views
         Object wfs = container.getComponentInstanceOfType(WFSParserDelegate.class);
         container.unregisterComponentByInstance(wfs);
-        container.registerComponentInstance(new XSDParserDelegate(new WFSConfiguration() {
+        container.registerComponentInstance(
+                new XSDParserDelegate(
+                        new WFSConfiguration() {
 
-            @Override
-            protected void configureBindings(MutablePicoContainer container) {
-                super.configureBindings(container);
-                container.registerComponentImplementation(WFS.GetFeatureType, GetFeatureTypeBinding.class);
-            }
-            
-        }));
+                            @Override
+                            protected void configureBindings(MutablePicoContainer container) {
+                                super.configureBindings(container);
+                                container.registerComponentImplementation(
+                                        WFS.GetFeatureType, GetFeatureTypeBinding.class);
+                            }
+                        }));
         container.registerComponentImplementation(ComplexDataHandler.class);
     }
-    
-    public static class ComplexDataHandler extends CopyingHandler implements ParserDelegate, ParserDelegate2 {
+
+    public static class ComplexDataHandler extends CopyingHandler
+            implements ParserDelegate, ParserDelegate2 {
 
         private List<ParserDelegate> delegates;
         private final PicoContainer container;
@@ -69,26 +71,29 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
             super(ns);
             this.container = container;
         }
-        
+
         @Override
-        public boolean canHandle(QName elementName, Attributes attributes, Handler handler, Handler parent) {
-            if(parent == null || !("ComplexData".equals(parent.getComponent().getName()))) {
+        public boolean canHandle(
+                QName elementName, Attributes attributes, Handler handler, Handler parent) {
+            if (parent == null || !("ComplexData".equals(parent.getComponent().getName()))) {
                 return false;
             }
-            
+
             // make sure we're not going over the toes of any other delegate
             for (ParserDelegate delegate : getDelegates()) {
                 // skip copies of self
-                if(delegate instanceof ComplexDataHandler) {
+                if (delegate instanceof ComplexDataHandler) {
                     continue;
                 }
-                if(delegate instanceof ParserDelegate2 && ((ParserDelegate2) delegate).canHandle(elementName, attributes, handler, parent)) {
+                if (delegate instanceof ParserDelegate2
+                        && ((ParserDelegate2) delegate)
+                                .canHandle(elementName, attributes, handler, parent)) {
                     return false;
-                } else if(delegate.canHandle(elementName)) {
+                } else if (delegate.canHandle(elementName)) {
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -114,5 +119,5 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
             }
             return this.delegates;
         }
-    } 
+    }
 }

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -30,166 +29,167 @@ import org.geowebcache.s3.S3BlobStoreConfig;
 import org.junit.Test;
 
 /**
- * 
  * Modified Test for the BlobStoresPage, but now with a S3 BlobStore
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
-    
+
     private static final String ID_DUMMY1 = "zzz";
     private static final String ID_DUMMY2 = "yyy";
-    
+
     public BlobStoreConfig dummyStore1() {
         FileBlobStoreConfig config = new FileBlobStoreConfig(ID_DUMMY1);
         config.setFileSystemBlockSize(1024);
         config.setBaseDirectory("/tmp");
         return config;
     }
-    
+
     public BlobStoreConfig dummyStore2() throws Exception {
         S3BlobStoreConfig config = new S3BlobStoreConfig();
         Field id = BlobStoreConfig.class.getDeclaredField("id");
         id.setAccessible(true);
         id.set(config, ID_DUMMY2);
         config.setBucket("bucket");
-        return config; 
+        return config;
     }
-                
+
     @Test
     public void testPage() {
         BlobStoresPage page = new BlobStoresPage();
 
         tester.startPage(page);
         tester.assertRenderedPage(BlobStoresPage.class);
-        
+
         tester.assertComponent("storesPanel", GeoServerTablePanel.class);
         tester.assertComponent("confirmDeleteDialog", GeoServerDialog.class);
-        
+
         tester.assertComponent("headerPanel:addNew", AjaxLink.class);
         tester.assertComponent("headerPanel:removeSelected", AjaxLink.class);
-    }    
+    }
 
     @Test
-    public void testBlobStores() throws Exception {        
+    public void testBlobStores() throws Exception {
         BlobStoresPage page = new BlobStoresPage();
-        
+
         BlobStoreConfig dummy1 = dummyStore1();
         GWC.get().addBlobStore(dummy1);
-                        
-        List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
-        
-        tester.startPage(page);        
 
-        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("storesPanel");
-        
+        List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
+
+        tester.startPage(page);
+
+        GeoServerTablePanel table =
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("storesPanel");
+
         assertEquals(blobStores.size(), table.getDataProvider().size());
-        assertTrue(getStoresFromTable(table).contains(dummy1));  
-         
+        assertTrue(getStoresFromTable(table).contains(dummy1));
+
         BlobStoreConfig dummy2 = dummyStore2();
         GWC.get().addBlobStore(dummy2);
-        
-        assertEquals(blobStores.size() + 1, table.getDataProvider().size());        
-        assertTrue(getStoresFromTable(table).contains(dummy2));   
-        
-        //sort descending on type, S3 should be on top
+
+        assertEquals(blobStores.size() + 1, table.getDataProvider().size());
+        assertTrue(getStoresFromTable(table).contains(dummy2));
+
+        // sort descending on type, S3 should be on top
         tester.clickLink("storesPanel:listContainer:sortableLinks:1:header:link", true);
         tester.clickLink("storesPanel:listContainer:sortableLinks:1:header:link", true);
-        assertEquals(dummy2, getStoresFromTable(table).get(0));           
-                        
+        assertEquals(dummy2, getStoresFromTable(table).get(0));
+
         GWC.get().removeBlobStores(Collections.singleton(ID_DUMMY1));
         GWC.get().removeBlobStores(Collections.singleton(ID_DUMMY2));
-        
     }
-    
+
     @Test
     public void testNew() {
         BlobStoresPage page = new BlobStoresPage();
-        tester.startPage(page);        
-        
+        tester.startPage(page);
+
         tester.clickLink("headerPanel:addNew", true);
-        
+
         tester.assertRenderedPage(BlobStorePage.class);
     }
-    
+
     @Test
     public void testDelete() throws Exception {
         BlobStoresPage page = new BlobStoresPage();
-        tester.startPage(page);   
-        
-        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("storesPanel");
-                
+        tester.startPage(page);
+
+        GeoServerTablePanel table =
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("storesPanel");
+
         BlobStoreConfig dummy1 = dummyStore1();
         GWC.get().addBlobStore(dummy1);
-                                
-        assertTrue(GWC.get().getBlobStores().contains(dummy1));  
-        
-        //sort descending on id
+
+        assertTrue(GWC.get().getBlobStores().contains(dummy1));
+
+        // sort descending on id
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
-        
-        //select
-        CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
+
+        // select
+        CheckBox selector =
+                ((CheckBox)
+                        tester.getComponentFromLastRenderedPage(
+                                "storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
-                
-        assertEquals(1, table.getSelection().size());        
+
+        assertEquals(1, table.getSelection().size());
         assertEquals(dummy1, table.getSelection().get(0));
-        
-        //click delete
+
+        // click delete
         tester.clickLink("headerPanel:removeSelected", true);
 
         assertFalse(GWC.get().getBlobStores().contains(dummy1));
-        
-        //with layer
-        GWC.get().addBlobStore(dummy1);        
+
+        // with layer
+        GWC.get().addBlobStore(dummy1);
         assertTrue(GWC.get().getBlobStores().contains(dummy1));
         TileLayer layer = GWC.get().getTileLayerByName("cite:Lakes");
         layer.setBlobStoreId(ID_DUMMY1);
         assertEquals(ID_DUMMY1, layer.getBlobStoreId());
         GWC.get().save(layer);
-        
-        
-        //sort descending on id
+
+        // sort descending on id
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
-        
-        //select
-        //super.print(page, false, false, true);
-        selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
+
+        // select
+        // super.print(page, false, false, true);
+        selector =
+                ((CheckBox)
+                        tester.getComponentFromLastRenderedPage(
+                                "storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
-        
-        //click delete
-        assertEquals(1, table.getSelection().size());        
+
+        // click delete
+        assertEquals(1, table.getSelection().size());
         assertEquals(dummy1, table.getSelection().get(0));
-        
-        ModalWindow w  = (ModalWindow) tester.getComponentFromLastRenderedPage("confirmDeleteDialog:dialog");
-        assertFalse(w.isShown());            
+
+        ModalWindow w =
+                (ModalWindow) tester.getComponentFromLastRenderedPage("confirmDeleteDialog:dialog");
+        assertFalse(w.isShown());
         tester.clickLink("headerPanel:removeSelected", true);
         assertTrue(w.isShown());
-        
-        //confirm      
-        GeoServerDialog dialog = (GeoServerDialog) tester.getComponentFromLastRenderedPage("confirmDeleteDialog");
+
+        // confirm
+        GeoServerDialog dialog =
+                (GeoServerDialog) tester.getComponentFromLastRenderedPage("confirmDeleteDialog");
         dialog.submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
-        
+
         assertFalse(GWC.get().getBlobStores().contains(dummy1));
         layer = GWC.get().getTileLayerByName("cite:Lakes");
         assertNull(layer.getBlobStoreId());
-        
     }
-    
+
     public List<BlobStoreConfig> getStoresFromTable(GeoServerTablePanel table) {
         List<BlobStoreConfig> result = new ArrayList<BlobStoreConfig>();
         Iterator it = table.getDataProvider().iterator(0, table.size());
         while (it.hasNext()) {
-            result.add( (BlobStoreConfig) it.next());
+            result.add((BlobStoreConfig) it.next());
         }
         return result;
-        
     }
-    
-    
-
 }

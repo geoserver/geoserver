@@ -5,7 +5,6 @@ import static org.easymock.classextension.EasyMock.*;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.Style;
@@ -56,9 +55,9 @@ public class IconServiceTest extends IconTestSupport {
         expect(res.getOutputStream()).andReturn(out).anyTimes();
         res.setContentType("image/png");
         expectLastCall();
-        
+
         replay(req, res, out);
-        
+
         IconService service = new IconService(cat);
         service.handleRequestInternal(req, res);
 

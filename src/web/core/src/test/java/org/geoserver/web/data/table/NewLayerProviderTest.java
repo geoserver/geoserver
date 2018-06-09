@@ -8,7 +8,6 @@ package org.geoserver.web.data.table;
 import static org.junit.Assert.*;
 
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -17,7 +16,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layer.NewLayerPageProvider;
 import org.junit.Test;
-
 
 public class NewLayerProviderTest extends GeoServerWicketTestSupport {
 
@@ -29,7 +27,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testFeatureType() {
-        StoreInfo cite = getCatalog().getStoreByName( MockData.CITE_PREFIX,StoreInfo.class );
+        StoreInfo cite = getCatalog().getStoreByName(MockData.CITE_PREFIX, StoreInfo.class);
         NewLayerPageProvider provider = new NewLayerPageProvider();
         provider.setStoreId(cite.getId());
         provider.setShowPublished(true);
@@ -37,10 +35,11 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
         provider.setShowPublished(false);
         assertEquals(0, provider.size());
     }
-    
+
     @Test
     public void testCoverages() {
-        StoreInfo dem = getCatalog().getStoreByName( MockData.TASMANIA_DEM.getLocalPart(),StoreInfo.class );
+        StoreInfo dem =
+                getCatalog().getStoreByName(MockData.TASMANIA_DEM.getLocalPart(), StoreInfo.class);
         NewLayerPageProvider provider = new NewLayerPageProvider();
         provider.setStoreId(dem.getId());
         provider.setShowPublished(true);
@@ -49,7 +48,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
         // todo: fix this
         // assertEquals(0, provider.size());
     }
-    
+
     @Test
     public void testEmpty() {
         NewLayerPageProvider provider = new NewLayerPageProvider();

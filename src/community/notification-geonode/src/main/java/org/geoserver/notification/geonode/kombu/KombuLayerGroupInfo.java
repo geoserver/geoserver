@@ -53,5 +53,4 @@ public class KombuLayerGroupInfo extends KombuPublishedInfo {
     public void addLayer(KombuLayerSimpleInfo layer) {
         this.layers.add(layer);
     }
-
 }

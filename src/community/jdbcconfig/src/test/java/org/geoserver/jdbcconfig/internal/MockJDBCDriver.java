@@ -1,6 +1,3 @@
 package org.geoserver.jdbcconfig.internal;
 
-
-public class MockJDBCDriver {
-
-}
+public class MockJDBCDriver {}

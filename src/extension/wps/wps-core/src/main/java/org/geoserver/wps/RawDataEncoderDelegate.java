@@ -8,7 +8,6 @@ package org.geoserver.wps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wps.process.RawData;
@@ -17,11 +16,10 @@ import org.xml.sax.ContentHandler;
 
 /**
  * Encodes objects as base64 binaries
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class RawDataEncoderDelegate implements EncoderDelegate {
-
 
     private RawData rawData;
 

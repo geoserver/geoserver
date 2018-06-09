@@ -9,21 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
 /**
- * Special watcher that watches an underlying script and when changed creates a new 
- * {@link ScriptEngine} instance evaluated with the contents of the modified script.
- * 
- * @author Justin Deoliveira, OpenGeo
+ * Special watcher that watches an underlying script and when changed creates a new {@link
+ * ScriptEngine} instance evaluated with the contents of the modified script.
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ScriptFileWatcher extends FileWatcher<ScriptEngine> {
 
@@ -34,15 +31,16 @@ public class ScriptFileWatcher extends FileWatcher<ScriptEngine> {
         super(resource);
         this.scriptMgr = scriptMgr;
     }
+
     @Deprecated
     public ScriptFileWatcher(File file, ScriptManager scriptMgr) {
         super(file);
         this.scriptMgr = scriptMgr;
     }
-    
+
     /**
-     * Create a new script engine and evaluate the script if modified since the
-     * last call to read.  Otherwise return the existing engine.
+     * Create a new script engine and evaluate the script if modified since the last call to read.
+     * Otherwise return the existing engine.
      *
      * @throws IOException
      */

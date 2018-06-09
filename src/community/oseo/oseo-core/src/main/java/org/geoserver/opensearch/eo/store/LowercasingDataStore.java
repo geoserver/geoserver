@@ -5,12 +5,11 @@
 package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
-
 import org.geoserver.feature.retype.RetypingDataStore;
 import org.geotools.data.DataStore;
 
 /**
- * Handles idiosyncrasies in database table naming, for the moment only lowercase vs uppercase, 
+ * Handles idiosyncrasies in database table naming, for the moment only lowercase vs uppercase,
  * later we could extend it to handle property names and the like
  */
 class LowercasingDataStore extends RetypingDataStore {
@@ -23,6 +22,4 @@ class LowercasingDataStore extends RetypingDataStore {
     protected String transformFeatureTypeName(String originalName) {
         return originalName.toLowerCase();
     }
-
-    
 }

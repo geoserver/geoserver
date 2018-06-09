@@ -7,7 +7,6 @@ package org.geoserver.opensearch.eo;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geotools.data.Parameter;
 
 /**
@@ -45,7 +44,7 @@ class ParameterBuilder {
         this.prefix = prefix;
         return this;
     }
-    
+
     public ParameterBuilder name(String name) {
         this.name = name;
         return this;
@@ -65,7 +64,15 @@ class ParameterBuilder {
         if (max != null) {
             metadata.put(OpenSearchParameters.MAX_INCLUSIVE, max);
         }
-        return new Parameter<>(key, type, null, null, required, required ? 1 : 0, 1, null,
+        return new Parameter<>(
+                key,
+                type,
+                null,
+                null,
+                required,
+                required ? 1 : 0,
+                1,
+                null,
                 Collections.unmodifiableMap(metadata));
     }
 

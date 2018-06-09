@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,22 +17,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
-import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
-import org.geoserver.test.http.MockHttpClient;
-import org.geoserver.test.http.MockHttpResponse;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.CoverageInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
@@ -46,33 +46,30 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.vividsolutions.jts.geom.Envelope;
-import org.junit.Ignore;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
     private OpenLayersMapOutputFormat mapProducer;
-    
-    Pattern lookForEscapedParam = Pattern
-            .compile(Pattern
-                    .quote("\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
 
-    @Rule
-    public TestHttpClientRule clientMocker = new TestHttpClientRule();
-    
+    Pattern lookForEscapedParam =
+            Pattern.compile(
+                    Pattern.quote(
+                            "\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
+
+    @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+
     @Before
     public void setMapProducer() throws Exception {
         Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
         this.mapProducer = getProducerInstance();
     }
-    
+
     protected OpenLayersMapOutputFormat getProducerInstance() {
         return new OpenLayersMapOutputFormat(getWMS());
     }
-    
+
     @After
     public void unsetMapProducer() throws Exception {
         this.mapProducer = null;
@@ -90,38 +87,37 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Test for GEOS-5318: xss vulnerability when a weird parameter is added to the
-     * request (something like: %3C%2Fscript%
-     * 3E%3Cscript%3Ealert%28%27x-scripted%27%29%3C%2Fscript%3E%3Cscript%3E=foo) the
-     * causes js code execution.
-     * 
+     * Test for GEOS-5318: xss vulnerability when a weird parameter is added to the request
+     * (something like: %3C%2Fscript%
+     * 3E%3Cscript%3Ealert%28%27x-scripted%27%29%3C%2Fscript%3E%3Cscript%3E=foo) the causes js code
+     * execution.
+     *
      * @throws IOException
      */
     @Test
     public void testXssFix() throws Exception {
-    
+
         Catalog catalog = getCatalog();
-        final FeatureSource fs = catalog.getFeatureTypeByName(
-                MockData.BASIC_POLYGONS.getPrefix(),
-                MockData.BASIC_POLYGONS.getLocalPart())
-                .getFeatureSource(null, null);
-    
+        final FeatureSource fs =
+                catalog.getFeatureTypeByName(
+                                MockData.BASIC_POLYGONS.getPrefix(),
+                                MockData.BASIC_POLYGONS.getLocalPart())
+                        .getFeatureSource(null, null);
+
         final Envelope env = fs.getBounds();
-    
+
         LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
-    
+
         GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
-        request.getRawKvp().put(
-                "</script><script>alert('x-scripted');</script><script>", "foo");
+        request.getRawKvp().put("</script><script>alert('x-scripted');</script><script>", "foo");
         final WMSMapContent map = new WMSMapContent();
-        map.getViewport().setBounds(
-                new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
         map.setMapWidth(300);
         map.setMapHeight(300);
         map.setBgColor(Color.red);
         map.setTransparent(false);
         map.setRequest(request);
-    
+
         StyleInfo styleByName = catalog.getStyleByName("Default");
         Style basicStyle = styleByName.getStyle();
         FeatureLayer layer = new FeatureLayer(fs, basicStyle);
@@ -133,39 +129,42 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         rawMap.writeTo(bos);
         String htmlDoc = new String(bos.toByteArray(), "UTF-8");
         // check that weird param is correctly encoded to avoid js code execution
-        int index = htmlDoc
-                .replace("\\n", "")
-                .replace("\\r", "")
-                .indexOf(
-                        "\"</script\\><script\\>alert(\\'x-scripted\\');</script\\><script\\>\": 'foo'");
+        int index =
+                htmlDoc.replace("\\n", "")
+                        .replace("\\r", "")
+                        .indexOf(
+                                "\"</script\\><script\\>alert(\\'x-scripted\\');</script\\><script\\>\": 'foo'");
         assertTrue(index > -1);
     }
 
     @Test
     public void testRastersFilteringCapabilities() throws Exception {
         // static raster layer supports filtering
-        MockHttpServletResponse response = getAsServletResponse(
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:staticRaster" +
-                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
-                        "14.592757149389236,44.55808294568743&width=768&height=330" +
-                        "&srs=EPSG:4326&format=application/openlayers");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:staticRaster"
+                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                                + "&srs=EPSG:4326&format=application/openlayers");
         String content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = true;"), is(true));
         // world raster layer doesn't support filtering
-        response = getAsServletResponse(
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World" +
-                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
-                        "14.592757149389236,44.55808294568743&width=768&height=330" +
-                        "&srs=EPSG:4326&format=application/openlayers");
+        response =
+                getAsServletResponse(
+                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World"
+                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                                + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = false;"), is(true));
 
         // if at least one layer supports filtering, overall filtering should be supported
-        response = getAsServletResponse(
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World,gs:staticRaster" +
-                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
-                        "14.592757149389236,44.55808294568743&width=768&height=330" +
-                        "&srs=EPSG:4326&format=application/openlayers");
+        response =
+                getAsServletResponse(
+                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World,gs:staticRaster"
+                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                                + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = true;"), is(true));
     }
@@ -177,27 +176,27 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         createWMTSCatalogStuff();
 
         // wmts by itself should not support filtering
-        MockHttpServletResponse response = getAsServletResponse(
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername" +
-                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
-                        "14.592757149389236,44.55808294568743&width=768&height=330" +
-                        "&srs=EPSG:4326&format=application/openlayers");
-        String content = response.getContentAsString();        
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername"
+                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                                + "&srs=EPSG:4326&format=application/openlayers");
+        String content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = false;"), is(true));
 
         // wmts along with filterable layer should support filtering
-        response = getAsServletResponse(
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername,gs:staticRaster" +
-                        "&styles=&bbox=0.2372206885127698,40.562080748421806," +
-                        "14.592757149389236,44.55808294568743&width=768&height=330" +
-                        "&srs=EPSG:4326&format=application/openlayers");
-        content = response.getContentAsString();       
+        response =
+                getAsServletResponse(
+                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername,gs:staticRaster"
+                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                                + "&srs=EPSG:4326&format=application/openlayers");
+        content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = true;"), is(true));
     }
 
-    /**
-     * Helper method that creates a static raster store and adds it to the catalog.
-     */
+    /** Helper method that creates a static raster store and adds it to the catalog. */
     private StoreInfo createStaticRasterStore(WorkspaceInfo workspace) {
         Catalog catalog = getCatalog();
         CoverageStoreInfo store = catalog.getFactory().createCoverageStore();
@@ -213,12 +212,13 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Helper method that creates a static WMTS store and related layer
-     * and adds it to the catalog.
+     * Helper method that creates a static WMTS store and related layer and adds it to the catalog.
      */
     private StoreInfo createWMTSCatalogStuff() throws MalformedURLException, IOException {
         // use a local mock capabilities
-        String capabilities = clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+        String capabilities =
+                clientMocker.getServer()
+                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         MockHttpClient client = new MockHttpClient();
         client.expectGet(
                 new URL(capabilities),
@@ -258,10 +258,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         return store;
     }
 
-    /**
-     * Helper method that creates a static raster layer and adds it to the catalog.
-     */
-    private void createStaticRasterLayer(NamespaceInfo namespace, StoreInfo store, String layerName) {
+    /** Helper method that creates a static raster layer and adds it to the catalog. */
+    private void createStaticRasterLayer(
+            NamespaceInfo namespace, StoreInfo store, String layerName) {
         Catalog catalog = getCatalog();
         // creating the coverage info
         CoverageInfoImpl coverageInfo = new CoverageInfoImpl(catalog);
@@ -286,22 +285,23 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
     /**
      * Test for GEOS-8178: OpenLayersOutputFormat NoSuchAuthorityCodeExceptions being thrown due to
-     *  malformed URN codes.
-     *  
-     * Exception is thrown when decoding CRS in isWms13FlippedCRS which is called by produceMap,
+     * malformed URN codes.
+     *
+     * <p>Exception is thrown when decoding CRS in isWms13FlippedCRS which is called by produceMap,
      * test uses produceMap and reads the resulting output steam to ensure "yx: true" is returned
      * for EPSG:4326, output is false before fix
      *
      * @throws Exception
      */
     @Test
-    public void testUrnCodeFix() throws Exception{
+    public void testUrnCodeFix() throws Exception {
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs = catalog.getFeatureTypeByName(
-            MockData.BASIC_POLYGONS.getPrefix(),
-            MockData.BASIC_POLYGONS.getLocalPart())
-            .getFeatureSource(null, null);
+        final FeatureSource fs =
+                catalog.getFeatureTypeByName(
+                                MockData.BASIC_POLYGONS.getPrefix(),
+                                MockData.BASIC_POLYGONS.getLocalPart())
+                        .getFeatureSource(null, null);
 
         final Envelope env = fs.getBounds();
 

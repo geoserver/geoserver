@@ -9,20 +9,17 @@ import java.lang.reflect.Constructor;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.ows.HttpServletRequestAware;
 import org.vfny.geoserver.util.requests.readers.KvpRequestReader;
 
-
 /**
- * Wraps an old style {@link KvpRequestReader} in a new
- * {@link org.geoserver.ows.KvpRequestReader}.
- * <p>
- * This class needs to be defined in a spring context like:
+ * Wraps an old style {@link KvpRequestReader} in a new {@link org.geoserver.ows.KvpRequestReader}.
+ *
+ * <p>This class needs to be defined in a spring context like:
+ *
  * <pre>
  * <code>
  *   &lt;bean id="getMapKvpReader" class="org.geoserver.ows.adapters.KvpRequestReaderAdapter"&gt;
@@ -37,13 +34,11 @@ import org.vfny.geoserver.util.requests.readers.KvpRequestReader;
  *   &lt;bean&gt;
  * </code>
  * </pre>
- * </p>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader
-    implements HttpServletRequestAware {
+        implements HttpServletRequestAware {
     Class delegateClass;
     ServiceInfo service;
     HttpServletRequest request;
@@ -59,53 +54,51 @@ public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader
     }
 
     public Object createRequest() throws Exception {
-        //simulate the old kvp processin
+        // simulate the old kvp processin
         Map kvp = new HashMap();
         String paramName;
         String paramValue;
 
-        for (Enumeration pnames = request.getParameterNames(); pnames.hasMoreElements();) {
+        for (Enumeration pnames = request.getParameterNames(); pnames.hasMoreElements(); ) {
             paramName = (String) pnames.nextElement();
             paramValue = request.getParameter(paramName);
             kvp.put(paramName.toUpperCase(), paramValue);
         }
 
-        //look for a constructor, may have to walk up teh class hierachy
+        // look for a constructor, may have to walk up teh class hierachy
         Class clazz = GeoServerImpl.unwrap(service).getClass();
         Constructor constructor = null;
 
         while (clazz != null && constructor == null) {
             try {
-                constructor = delegateClass.getConstructor(new Class[] { Map.class, clazz });
+                constructor = delegateClass.getConstructor(new Class[] {Map.class, clazz});
             } catch (NoSuchMethodException e) {
                 Class[] classes = clazz.getInterfaces();
                 for (Class c : classes) {
-                	try {
-                		constructor = delegateClass.getConstructor(new Class[] { Map.class, c });
-                	} catch(NoSuchMethodException e2) {
-                		// no harm done
-                	}
-				}
+                    try {
+                        constructor = delegateClass.getConstructor(new Class[] {Map.class, c});
+                    } catch (NoSuchMethodException e2) {
+                        // no harm done
+                    }
+                }
                 clazz = clazz.getSuperclass();
             }
         }
-        
 
         if (constructor == null) {
             throw new IllegalStateException("No appropriate constructor");
         }
 
-        //create an instance of the delegate	
-        KvpRequestReader delegate = (KvpRequestReader) constructor.newInstance(new Object[] {
-                    kvp, service
-                });
+        // create an instance of the delegate
+        KvpRequestReader delegate =
+                (KvpRequestReader) constructor.newInstance(new Object[] {kvp, service});
 
-        //create the request object
+        // create the request object
         return delegate.getRequest(request);
     }
 
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        //request object already initialized, just send it back
+        // request object already initialized, just send it back
         return request;
     }
 }

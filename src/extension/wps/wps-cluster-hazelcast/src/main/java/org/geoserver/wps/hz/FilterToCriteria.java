@@ -6,9 +6,10 @@ package org.geoserver.wps.hz;
 
 import static com.hazelcast.query.Predicates.*;
 
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.TruePredicate;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.collections.functors.FalsePredicate;
 import org.geotools.filter.LikeToRegexConverter;
 import org.opengis.filter.And;
@@ -60,14 +61,10 @@ import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.filter.temporal.TOverlaps;
 
-import com.hazelcast.query.Predicate;
-import com.hazelcast.query.TruePredicate;
-
 /**
  * Converts a OGC Filter to the Hazelcast Criteria API (a {@link Predicate}).
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class FilterToCriteria implements FilterVisitor {
 
@@ -111,7 +108,6 @@ public class FilterToCriteria implements FilterVisitor {
                                 + op);
             }
         }
-
     }
 
     @Override
@@ -172,8 +168,8 @@ public class FilterToCriteria implements FilterVisitor {
 
     private String getPropertyName(Expression expression) {
         if (!(expression instanceof PropertyName)) {
-            throw new IllegalArgumentException("Was expecting a property name, but found: "
-                    + expression);
+            throw new IllegalArgumentException(
+                    "Was expecting a property name, but found: " + expression);
         }
         String propertyName = ((PropertyName) expression).getPropertyName();
         if ("processName".equals(propertyName)) {
@@ -198,28 +194,32 @@ public class FilterToCriteria implements FilterVisitor {
     @Override
     public Object visit(PropertyIsGreaterThan filter, Object extraData) {
         PropertyComparable components = new PropertyComparable(filter);
-        return components.inverted ? lessEqual(components.property, components.literal)
+        return components.inverted
+                ? lessEqual(components.property, components.literal)
                 : greaterThan(components.property, components.literal);
     }
 
     @Override
     public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
         PropertyComparable components = new PropertyComparable(filter);
-        return components.inverted ? lessThan(components.property, components.literal)
+        return components.inverted
+                ? lessThan(components.property, components.literal)
                 : greaterEqual(components.property, components.literal);
     }
 
     @Override
     public Object visit(PropertyIsLessThan filter, Object extraData) {
         PropertyComparable components = new PropertyComparable(filter);
-        return components.inverted ? greaterEqual(components.property, components.literal)
+        return components.inverted
+                ? greaterEqual(components.property, components.literal)
                 : lessThan(components.property, components.literal);
     }
 
     @Override
     public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
         PropertyComparable components = new PropertyComparable(filter);
-        return components.inverted ? greaterThan(components.property, components.literal)
+        return components.inverted
+                ? greaterThan(components.property, components.literal)
                 : lessEqual(components.property, components.literal);
     }
 
@@ -304,7 +304,8 @@ public class FilterToCriteria implements FilterVisitor {
     @Override
     public Object visit(After after, Object extraData) {
         PropertyComparable components = new PropertyComparable(after);
-        return components.inverted ? lessEqual(components.property, components.literal)
+        return components.inverted
+                ? lessEqual(components.property, components.literal)
                 : greaterThan(components.property, components.literal);
     }
 
@@ -316,7 +317,8 @@ public class FilterToCriteria implements FilterVisitor {
     @Override
     public Object visit(Before before, Object extraData) {
         PropertyComparable components = new PropertyComparable(before);
-        return components.inverted ? greaterEqual(components.property, components.literal)
+        return components.inverted
+                ? greaterEqual(components.property, components.literal)
                 : lessThan(components.property, components.literal);
     }
 
@@ -375,5 +377,4 @@ public class FilterToCriteria implements FilterVisitor {
     public Object visit(TOverlaps contains, Object extraData) {
         throw new UnsupportedOperationException();
     }
-
 }

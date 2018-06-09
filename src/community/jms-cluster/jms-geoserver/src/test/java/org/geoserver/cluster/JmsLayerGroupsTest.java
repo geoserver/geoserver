@@ -4,6 +4,16 @@
  */
 package org.geoserver.cluster;
 
+import static org.geoserver.cluster.JmsEventsListener.getMessagesForHandler;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+import javax.jms.Message;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -21,20 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.jms.Message;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.geoserver.cluster.JmsEventsListener.getMessagesForHandler;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-/**
- * Tests related with layer groups events.
- */
+/** Tests related with layer groups events. */
 public final class JmsLayerGroupsTest extends GeoServerSystemTestSupport {
 
     private static final String TEST_LAYER_GROUP_NAME = "test_layer_group";
@@ -53,7 +50,8 @@ public final class JmsLayerGroupsTest extends GeoServerSystemTestSupport {
     @Before
     public void beforeTest() {
         // initiate the catalog add event handler
-        addEventHandler = GeoServerExtensions.bean(JMSCatalogAddEventHandlerSPI.class).createHandler();
+        addEventHandler =
+                GeoServerExtensions.bean(JMSCatalogAddEventHandlerSPI.class).createHandler();
     }
 
     @After
@@ -69,13 +67,15 @@ public final class JmsLayerGroupsTest extends GeoServerSystemTestSupport {
         // create the layer group
         createTetLayerGroup();
         // wait for a catalog add event
-        List<Message> messages = JmsEventsListener.getMessagesByHandlerKey(5000,
-                (selected) -> selected.size() >= 2, CATALOG_ADD_EVENT_HANDLER_KEY);
+        List<Message> messages =
+                JmsEventsListener.getMessagesByHandlerKey(
+                        5000, (selected) -> selected.size() >= 2, CATALOG_ADD_EVENT_HANDLER_KEY);
         // remove the test layer group to force a complete deserialization
         removeTestLayerGroup();
         // let's see if we got the correct event
         assertThat(messages.size(), is(1));
-        List<CatalogEvent> layerGroupAddEvent = getMessagesForHandler(messages, CATALOG_ADD_EVENT_HANDLER_KEY, addEventHandler);
+        List<CatalogEvent> layerGroupAddEvent =
+                getMessagesForHandler(messages, CATALOG_ADD_EVENT_HANDLER_KEY, addEventHandler);
         assertThat(layerGroupAddEvent.size(), is(1));
         assertThat(layerGroupAddEvent.get(0).getSource(), instanceOf(LayerGroupInfo.class));
         LayerGroupInfo layerGroup = (LayerGroupInfo) layerGroupAddEvent.get(0).getSource();
@@ -88,8 +88,11 @@ public final class JmsLayerGroupsTest extends GeoServerSystemTestSupport {
         for (PublishedInfo item : content) {
             assertThat(item, instanceOf(LayerInfo.class));
             LayerInfo layer = (LayerInfo) item;
-            assertThat(layer.getName(), anyOf(
-                    is(MockData.ROAD_SEGMENTS.getLocalPart()), is(MockData.BRIDGES.getLocalPart())));
+            assertThat(
+                    layer.getName(),
+                    anyOf(
+                            is(MockData.ROAD_SEGMENTS.getLocalPart()),
+                            is(MockData.BRIDGES.getLocalPart())));
             FeatureTypeInfo resource = (FeatureTypeInfo) layer.getResource();
             // check that the transient catalog variable has initiated properly
             assertThat(resource.getStore().getCatalog(), notNullValue());

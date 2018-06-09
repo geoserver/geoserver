@@ -12,6 +12,17 @@ import static org.geogig.geoserver.config.LogStoreInitializer.newDataSource;
 import static org.geogig.geoserver.config.LogStoreInitializer.runScript;
 import static org.geogig.geoserver.config.LogStoreInitializer.saveConfig;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.db.DBAppender;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.core.db.DataSourceConnectionSource;
+import ch.qos.logback.core.util.StatusPrinter;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +35,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
-
 import org.geogig.geoserver.config.LogEvent.Severity;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
@@ -36,19 +45,6 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.db.DBAppender;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.core.db.DataSourceConnectionSource;
-import ch.qos.logback.core.util.StatusPrinter;
 
 public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
 
@@ -93,9 +89,7 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         init();
     }
 
-    /**
-     * Called when geoserver is being shutdown
-     */
+    /** Called when geoserver is being shutdown */
     @Override
     public void onDispose() {
         destroy();
@@ -111,8 +105,8 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
     }
 
     /**
-     * Called as {@link GeoServer#reload()} begins its work. A subsequent call to
-     * {@link #onReload()} is guaranteed
+     * Called as {@link GeoServer#reload()} begins its work. A subsequent call to {@link
+     * #onReload()} is guaranteed
      */
     @Override
     public void beforeReload() {
@@ -149,7 +143,8 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         try (InputStream in = configResource.in()) {
             properties.load(in);
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("properties file does not exist: " + configResource.path());
+            throw new IllegalArgumentException(
+                    "properties file does not exist: " + configResource.path());
         } catch (IOException e) {
             throw new RuntimeException("Error loading properties file " + configResource.path(), e);
         }
@@ -173,12 +168,14 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
     }
 
     private Resource resolveScript(String scriptProp, Resource configResource) {
-    	Resource scriptResource = resourceStore.get(scriptProp);
-    	
+        Resource scriptResource = resourceStore.get(scriptProp);
+
         if (scriptResource.getType().equals(Resource.Type.UNDEFINED)) {
             scriptResource = configResource.parent().get(scriptProp);
-            checkArgument(scriptResource.getType().equals(Resource.Type.RESOURCE), "Script file %s does not exist",
-                scriptResource.path());
+            checkArgument(
+                    scriptResource.getType().equals(Resource.Type.RESOURCE),
+                    "Script file %s does not exist",
+                    scriptResource.path());
         }
 
         return scriptResource;
@@ -198,7 +195,8 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         }
     }
 
-    public void error(@Nullable String repoUrl, @Nullable CharSequence message, Throwable exception) {
+    public void error(
+            @Nullable String repoUrl, @Nullable CharSequence message, Throwable exception) {
         if (enabled && message != null) {
             String msg = buildMessage(repoUrl, message);
             LOGBACKLOGGER.error(msg, exception);
@@ -218,9 +216,7 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         }
     }
 
-    /**
-     * @param offset unlike JDBC offset, this offset starts at zero, not at one
-     */
+    /** @param offset unlike JDBC offset, this offset starts at zero, not at one */
     public List<LogEvent> getLogEntries(final int offset, final int limit) {
         return getLogEntries(offset, limit, (LogEvent.Severity[]) null);
     }
@@ -230,18 +226,19 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
      * @param limit max number of entries to retrieve
      * @param severity filter logs by severity
      */
-    public List<LogEvent> getLogEntries(final int offset, final int limit,
-            final @Nullable LogEvent.Severity... severity) {
+    public List<LogEvent> getLogEntries(
+            final int offset, final int limit, final @Nullable LogEvent.Severity... severity) {
 
         checkState(enabled, "LogStore has not been initialized");
         checkArgument(offset >= 0);
         checkArgument(limit >= 0);
 
-        StringBuilder sql = new StringBuilder(
-                "SELECT event_id, timestmp, level_string, formatted_message FROM logging_event ");
+        StringBuilder sql =
+                new StringBuilder(
+                        "SELECT event_id, timestmp, level_string, formatted_message FROM logging_event ");
         if (severity != null) {
             sql.append("WHERE level_string IN(");
-            for (Iterator<Severity> it = Arrays.asList(severity).iterator(); it.hasNext();) {
+            for (Iterator<Severity> it = Arrays.asList(severity).iterator(); it.hasNext(); ) {
                 Severity s = it.next();
                 sql.append('\'').append(s.toString()).append('\'');
                 if (it.hasNext()) {
@@ -302,8 +299,8 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
             levelString = rs.getString(3);
             formattedMessage = rs.getString(4);
             msgParts = Splitter.on(MSG_FIELD_SEPARATOR).splitToList(formattedMessage);
-            Preconditions.checkState(msgParts.size() == 3, "Unknown message format: %s",
-                    formattedMessage);
+            Preconditions.checkState(
+                    msgParts.size() == 3, "Unknown message format: %s", formattedMessage);
             repoUrl = msgParts.get(0);
             user = msgParts.get(1);
             message = msgParts.get(2);
@@ -314,12 +311,14 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         return list;
     }
 
-    /**
-     * @return a string composed of {@code <repoUrl>|<user>|<message>}
-     */
+    /** @return a string composed of {@code <repoUrl>|<user>|<message>} */
     private String buildMessage(@Nullable String repoUrl, @Nullable CharSequence message) {
-        return new StringBuilder(url(repoUrl)).append(MSG_FIELD_SEPARATOR).append(user())
-                .append(MSG_FIELD_SEPARATOR).append(message).toString();
+        return new StringBuilder(url(repoUrl))
+                .append(MSG_FIELD_SEPARATOR)
+                .append(user())
+                .append(MSG_FIELD_SEPARATOR)
+                .append(message)
+                .toString();
     }
 
     private String url(String repoUrl) {

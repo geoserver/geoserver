@@ -6,6 +6,7 @@ package org.geoserver.importer.rest;
 
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
+import java.lang.reflect.Type;
 import org.apache.commons.lang.NotImplementedException;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
@@ -24,13 +25,12 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.Type;
-
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/imports/{importId}", produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.TEXT_HTML_VALUE })
+@RequestMapping(
+    path = RestBaseController.ROOT_PATH + "/imports/{importId}",
+    produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE}
+)
 public class ImportTransformController extends ImportBaseController {
 
     @Autowired
@@ -38,7 +38,7 @@ public class ImportTransformController extends ImportBaseController {
         super(importer);
     }
 
-    @PostMapping(path = { "/tasks/{taskId}/transforms" })
+    @PostMapping(path = {"/tasks/{taskId}/transforms"})
     public ResponseEntity postTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
@@ -52,13 +52,15 @@ public class ImportTransformController extends ImportBaseController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(
                 builder.path("/imports/{importId}/tasks/{taskId}/transforms/{transformId}")
-                        .buildAndExpand(importId.toString(), taskId.toString(),
+                        .buildAndExpand(
+                                importId.toString(),
+                                taskId.toString(),
                                 task.getTransform().getTransforms().size() - 1)
                         .toUri());
         return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
     }
 
-    @GetMapping(path = {"/tasks/{taskId}/transforms", "/tasks/{taskId}/transforms/{transformId}" })
+    @GetMapping(path = {"/tasks/{taskId}/transforms", "/tasks/{taskId}/transforms/{transformId}"})
     public ImportWrapper getTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
@@ -68,7 +70,8 @@ public class ImportTransformController extends ImportBaseController {
         return (writer, builder, converter) -> {
             ImportTransform tx = transform(importId, taskId, transformId, true);
             if (tx == null) {
-                converter.transformChain(builder,task(importId, taskId), true, converter.expand(expand, 1));
+                converter.transformChain(
+                        builder, task(importId, taskId), true, converter.expand(expand, 1));
             } else {
                 ImportTask task = task(importId, taskId);
                 int index = task.getTransform().getTransforms().indexOf(tx);
@@ -78,9 +81,10 @@ public class ImportTransformController extends ImportBaseController {
         };
     }
 
-    @PutMapping(path = { "/tasks/{taskId}/transforms/{transformId}" }, consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE})
+    @PutMapping(
+        path = {"/tasks/{taskId}/transforms/{transformId}"},
+        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE}
+    )
     public ImportWrapper putTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
@@ -99,7 +103,7 @@ public class ImportTransformController extends ImportBaseController {
         };
     }
 
-    @DeleteMapping(path = { "/tasks/{taskId}/transforms/{transformId}" })
+    @DeleteMapping(path = {"/tasks/{taskId}/transforms/{transformId}"})
     public ResponseEntity deleteTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
@@ -117,7 +121,9 @@ public class ImportTransformController extends ImportBaseController {
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType,
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
             Class<? extends HttpMessageConverter<?>> converterType) {
         return ImportTransform.class.isAssignableFrom(methodParameter.getParameterType());
     }

@@ -5,26 +5,22 @@
  */
 package org.geoserver.util;
 
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.io.Files;
-
-import org.geoserver.util.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.zip.ZipOutputStream;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class IOUtilsTest {
 
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder(new File("target"));
+    @Rule public TemporaryFolder temp = new TemporaryFolder(new File("target"));
 
     @Test
     public void testZipUnzip() throws IOException {

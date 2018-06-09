@@ -6,47 +6,48 @@
 package org.geoserver.ows;
 
 import static org.geoserver.ows.util.ResponseUtils.stripRemainingPath;
+
 import java.util.Map;
 
 /**
- * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link LocalPublished}.
- * <p>
- * When the local workspace and layer are present this mangler will turns urls of the form:</p>
+ * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link
+ * LocalPublished}.
+ *
+ * <p>When the local workspace and layer are present this mangler will turns urls of the form:
+ *
  * <pre>
  *   /geoserver/wfs?...
  * </pre>
+ *
  * into:
+ *
  * <pre>
  *   /geoserver/&lt;localWorkspace&gt;/&lt;localLayer&gt;/wfs?...
  * </pre>
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class LocalWorkspaceURLMangler implements URLMangler {
 
-    /**
-     * the name/identifier of the ows: wfs, wms, wcs, etc...
-     */
+    /** the name/identifier of the ows: wfs, wms, wcs, etc... */
     String ows;
-    
+
     public LocalWorkspaceURLMangler(String ows) {
         this.ows = ows;
     }
-    
-    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp,
-            URLType type) {
-        
+
+    public void mangleURL(
+            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+
         if (type == URLType.SERVICE && stripRemainingPath(path.toString()).equalsIgnoreCase(ows)) {
             if (LocalWorkspace.get() != null) {
-                path.insert(0, LocalWorkspace.get().getName()+"/");
-                
+                path.insert(0, LocalWorkspace.get().getName() + "/");
+
                 if (LocalPublished.get() != null) {
-                    int i = LocalWorkspace.get().getName().length()+1;
-                    path.insert(i, LocalPublished.get().getName()+"/");
+                    int i = LocalWorkspace.get().getName().length() + 1;
+                    path.insert(i, LocalPublished.get().getName() + "/");
                 }
             }
         }
     }
-
 }

@@ -4,11 +4,12 @@
  */
 package org.geoserver.importer.rest.converters;
 
+import java.io.IOException;
+import java.io.InputStream;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-
-/**
- * Convert {@link ImportTask} to/from JSON.
- */
+/** Convert {@link ImportTask} to/from JSON. */
 @Component
 public class ImportLayerJSONMessageConverter extends BaseMessageConverter<LayerInfo> {
 
@@ -56,8 +51,9 @@ public class ImportLayerJSONMessageConverter extends BaseMessageConverter<LayerI
     // Reading
     //
     @Override
-    protected LayerInfo readInternal(Class<? extends LayerInfo> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected LayerInfo readInternal(
+            Class<? extends LayerInfo> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);
             JSONObject json = reader.parse(in);
@@ -71,7 +67,7 @@ public class ImportLayerJSONMessageConverter extends BaseMessageConverter<LayerI
     // writing
     //
     @Override
-    protected void writeInternal(LayerInfo layer , HttpOutputMessage outputMessage)
+    protected void writeInternal(LayerInfo layer, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
         throw new UnsupportedOperationException();

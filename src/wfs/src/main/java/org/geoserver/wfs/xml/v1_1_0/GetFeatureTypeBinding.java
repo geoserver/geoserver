@@ -6,26 +6,23 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.math.BigInteger;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.wfs.xml.SqlViewParamsExtractor;
-
 import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:GetFeatureType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="GetFeatureType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -135,6 +132,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class GetFeatureTypeBinding extends AbstractComplexBinding {
@@ -144,21 +142,18 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.GETFEATURETYPE;
     }
 
-    /**
-     * Sets execution mode to be before
-     */
+    /** Sets execution mode to be before */
     public int getExecutionMode() {
         return BEFORE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -169,58 +164,57 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
-        
-        //lt;xsd:element maxOccurs="unbounded" ref="wfs:Query"/&gt;
+
+        // lt;xsd:element maxOccurs="unbounded" ref="wfs:Query"/&gt;
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
 
-        //&lt;xsd:attribute default="results" name="resultType"
+        // &lt;xsd:attribute default="results" name="resultType"
         //      type="wfs:ResultTypeType" use="optional"&gt;
         if (node.hasAttribute("resultType")) {
             getFeature.setResultType((ResultTypeType) node.getAttributeValue("resultType"));
         }
 
-        //&lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
+        // &lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
         //		name="outputFormat" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("outputFormat")) {
             getFeature.setOutputFormat((String) node.getAttributeValue("outputFormat"));
         }
 
-        //&lt;xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional"&gt;
+        // &lt;xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("maxFeatures")) {
             getFeature.setMaxFeatures((BigInteger) node.getAttributeValue("maxFeatures"));
         }
 
-        //support startIndex from wfs 2.0
+        // support startIndex from wfs 2.0
         if (node.hasAttribute("startIndex")) {
-            //since this is not going to be defined as a type in the schema we have to manually
+            // since this is not going to be defined as a type in the schema we have to manually
             // convert it since the parser won't parse it into the correct type for us
             getFeature.setStartIndex(
-                Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class));
+                    Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class));
         }
 
-        //&lt;xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional"&gt;
+        // &lt;xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("traverseXlinkDepth")) {
             getFeature.setTraverseXlinkDepth((String) node.getAttributeValue("traverseXlinkDepth"));
         }
 
-        //&lt;xsd:attribute name="traverseXlinkExpiry"
+        // &lt;xsd:attribute name="traverseXlinkExpiry"
         //		type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("traverseXlinkExpiry")) {
-            getFeature.setTraverseXlinkExpiry((BigInteger) node.getAttributeValue(
-                    "traverseXlinkExpiry"));
+            getFeature.setTraverseXlinkExpiry(
+                    (BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
         }
-        
+
         // viewParams
         SqlViewParamsExtractor.viewParams(getFeature, node);
-
 
         return getFeature;
     }

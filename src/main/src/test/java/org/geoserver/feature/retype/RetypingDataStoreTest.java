@@ -11,24 +11,20 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureLock;
 import org.geotools.data.FeatureLockFactory;
 import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.property.PropertyDataStore;
@@ -50,8 +46,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
-
-import com.vividsolutions.jts.io.WKTReader;
 
 public class RetypingDataStoreTest {
 
@@ -76,15 +70,14 @@ public class RetypingDataStoreTest {
         IOUtils.copy(properties.openStream(), new File(data, fileName));
 
         PropertyDataStore pds = new PropertyDataStore(data);
-        rts = new RetypingDataStore(pds) {
-            @Override
-            protected String transformFeatureTypeName(String originalName) {
-                if (originalName.equals(MockData.BUILDINGS.getLocalPart()))
-                    return RENAMED;
-                else
-                    return super.transformFeatureTypeName(originalName);
-            }
-        };
+        rts =
+                new RetypingDataStore(pds) {
+                    @Override
+                    protected String transformFeatureTypeName(String originalName) {
+                        if (originalName.equals(MockData.BUILDINGS.getLocalPart())) return RENAMED;
+                        else return super.transformFeatureTypeName(originalName);
+                    }
+                };
 
         // build a filter that will retrieve one feature only
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -121,15 +114,16 @@ public class RetypingDataStoreTest {
         assertTrue(fc.size() > 0);
 
         // make sure the feature schema is good as well
-        FeatureIterator <SimpleFeature> it = fc.features();
+        FeatureIterator<SimpleFeature> it = fc.features();
         SimpleFeature sf = it.next();
         it.close();
 
         assertEquals(RENAMED, sf.getFeatureType().getName().getLocalPart());
 
         // check the feature ids have been renamed as well
-        assertTrue("Feature id has not been renamed, it's still " + sf.getID(), sf.getID()
-                .startsWith(RENAMED));
+        assertTrue(
+                "Feature id has not been renamed, it's still " + sf.getID(),
+                sf.getID().startsWith(RENAMED));
     }
 
     @Test
@@ -142,8 +136,9 @@ public class RetypingDataStoreTest {
         assertEquals(RENAMED, sf.getFeatureType().getName().getLocalPart());
 
         // check the feature ids have been renamed as well
-        assertTrue("Feature id has not been renamed, it's still " + sf.getID(), sf.getID()
-                .startsWith(RENAMED));
+        assertTrue(
+                "Feature id has not been renamed, it's still " + sf.getID(),
+                sf.getID().startsWith(RENAMED));
     }
 
     @Test
@@ -159,7 +154,7 @@ public class RetypingDataStoreTest {
         SimpleFeatureCollection fc = fs.getFeatures(new Query(RENAMED, fidFilter));
         assertEquals(RENAMED, fc.getSchema().getName().getLocalPart());
         assertEquals(1, fc.size());
-        FeatureIterator <SimpleFeature> it = fc.features();
+        FeatureIterator<SimpleFeature> it = fc.features();
         assertTrue(it.hasNext());
         SimpleFeature sf = it.next();
         assertFalse(it.hasNext());
@@ -200,40 +195,40 @@ public class RetypingDataStoreTest {
         SimpleFeature original = store.getFeatures(fidFilter).features().next();
         String newAddress = ((String) original.getAttribute("ADDRESS")) + " xxx";
 
-        store.modifyFeatures(original.getFeatureType().getDescriptor("ADDRESS"), newAddress,
-                fidFilter);
+        store.modifyFeatures(
+                original.getFeatureType().getDescriptor("ADDRESS"), newAddress, fidFilter);
         SimpleFeature modified = store.getFeatures(fidFilter).features().next();
         assertEquals(newAddress, modified.getAttribute("ADDRESS"));
     }
 
     /**
-     * This test is made with mock objects because the property data store does
-     * not generate fids in the <type>.<id> form
-     * 
+     * This test is made with mock objects because the property data store does not generate fids in
+     * the <type>.<id> form
      */
     @SuppressWarnings("unchecked")
     @Test
     public void testAppend() throws Exception {
-        SimpleFeatureType type = DataUtilities.createType("trees",
-                "the_geom:Point,FID:String,NAME:String");
+        SimpleFeatureType type =
+                DataUtilities.createType("trees", "the_geom:Point,FID:String,NAME:String");
 
         SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
-        expect(fs.addFeatures(isA(FeatureCollection.class))).andReturn(
-                Collections.singletonList((FeatureId)(new FeatureIdImpl("trees.105"))));
+        expect(fs.addFeatures(isA(FeatureCollection.class)))
+                .andReturn(Collections.singletonList((FeatureId) (new FeatureIdImpl("trees.105"))));
         replay(fs);
 
         DataStore ds = createMock(DataStore.class);
-        expect(ds.getTypeNames()).andReturn(new String[] { "trees" }).anyTimes();
+        expect(ds.getTypeNames()).andReturn(new String[] {"trees"}).anyTimes();
         expect(ds.getSchema("trees")).andReturn(type).anyTimes();
         expect(ds.getFeatureSource("trees")).andReturn(fs);
         replay(ds);
 
-        RetypingDataStore rts = new RetypingDataStore(ds) {
-            @Override
-            protected String transformFeatureTypeName(String originalName) {
-                return "oaks";
-            }
-        };
+        RetypingDataStore rts =
+                new RetypingDataStore(ds) {
+                    @Override
+                    protected String transformFeatureTypeName(String originalName) {
+                        return "oaks";
+                    }
+                };
 
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(type);
         WKTReader reader = new WKTReader();
@@ -271,7 +266,7 @@ public class RetypingDataStoreTest {
         fl.unLockFeatures(fidFilter);
         assertEquals(1, fl2.lockFeatures(fidFilter));
     }
-    
+
     @Test
     public void testLockUnlockQuery() throws Exception {
         SimpleFeatureLocking fl;
@@ -299,17 +294,17 @@ public class RetypingDataStoreTest {
     public void testQueryWithPropertyNames() throws Exception {
         // check the schemas in feature source and feature collection
         SimpleFeatureSource fs = rts.getFeatureSource(RENAMED);
-        Query q = new Query(RENAMED, Filter.INCLUDE, new String[] { "ADDRESS"} );
-        FeatureCollection<SimpleFeatureType,SimpleFeature> fc = fs.getFeatures( q );
-        assertEquals( 1, fc.getSchema().getAttributeCount() );
-        
+        Query q = new Query(RENAMED, Filter.INCLUDE, new String[] {"ADDRESS"});
+        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = fs.getFeatures(q);
+        assertEquals(1, fc.getSchema().getAttributeCount());
+
         // make sure the feature schema is good as well
-        FeatureIterator <SimpleFeature> it = fc.features();
+        FeatureIterator<SimpleFeature> it = fc.features();
         SimpleFeature sf = it.next();
         it.close();
-        
-        assertEquals( 1, sf.getAttributeCount() );
-        assertNull( sf.getAttribute( "FID" ) );
-        assertNotNull( sf.getAttribute( "ADDRESS"));
+
+        assertEquals(1, sf.getAttributeCount());
+        assertNull(sf.getAttribute("FID"));
+        assertNotNull(sf.getAttribute("ADDRESS"));
     }
 }

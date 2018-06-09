@@ -6,20 +6,18 @@
 package org.geoserver.threadlocals;
 
 import java.util.Map;
-
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.ows.LocalPublished;
 
 /**
  * Transfers the {@link LocalPublished} management to another thread
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class LocalPublishedThreadLocalTransfer implements ThreadLocalTransfer {
 
     public static final String KEY = LocalPublished.class.getName() + "#threadLocal";
-    
+
     @Override
     public void collect(Map<String, Object> storage) {
         PublishedInfo pi = LocalPublished.get();
@@ -36,5 +34,4 @@ public class LocalPublishedThreadLocalTransfer implements ThreadLocalTransfer {
     public void cleanup() {
         LocalPublished.remove();
     }
-
 }

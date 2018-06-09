@@ -5,13 +5,14 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.FeatureInfoRequestParameters;
@@ -29,7 +30,6 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
-import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
@@ -42,20 +42,18 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Or;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * An identifier for vector layers that will take into account the filters, viewparams, styles and
  * build a bbox (plus extra filters) query against the database
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
-    
+
     static final Logger LOGGER = Logging.getLogger(VectorBasicLayerIdentifier.class);
 
-    public static final String FEATUREINFO_DEFAULT_BUFFER = "org.geoserver.wms.featureinfo.minBuffer";
+    public static final String FEATUREINFO_DEFAULT_BUFFER =
+            "org.geoserver.wms.featureinfo.minBuffer";
     protected static final int MIN_BUFFER_SIZE = Integer.getInteger(FEATUREINFO_DEFAULT_BUFFER, 5);
 
     private WMS wms;
@@ -64,10 +62,10 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         this.wms = wms;
     }
 
-    public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures) throws Exception {
+    public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
+            throws Exception {
         LOGGER.log(Level.FINER, "Appliying bbox based feature info identifier");
 
-        
         final MapLayerInfo layer = params.getLayer();
         final Filter filter = params.getFilter();
         final Style style = params.getStyle();
@@ -80,7 +78,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         // compute the request radius
         double radius = getSearchRadius(params, layer, rules);
 
-        // compute the bbox for the request 
+        // compute the bbox for the request
         ReferencedEnvelope queryEnvelope = getEnvelopeFilter(params, radius);
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
         CoordinateReferenceSystem dataCRS = layer.getCoordinateReferenceSystem();
@@ -127,8 +125,9 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         }
 
         // handle time/elevation
-        Filter timeElevationFilter = wms.getTimeElevationToFilter(params.getTimes(),
-                params.getElevations(), layer.getFeature());
+        Filter timeElevationFilter =
+                wms.getTimeElevationToFilter(
+                        params.getTimes(), params.getElevations(), layer.getFeature());
         getFInfoFilter = Filters.and(ff, getFInfoFilter, timeElevationFilter);
 
         // simplify the filter
@@ -137,8 +136,14 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         // build the query
         String typeName = schema.getName().getLocalPart();
-        Query q = new Query(typeName, null, getFInfoFilter, maxFeatures, params.getPropertyNames(),
-                null);
+        Query q =
+                new Query(
+                        typeName,
+                        null,
+                        getFInfoFilter,
+                        maxFeatures,
+                        params.getPropertyNames(),
+                        null);
         q.setSortBy(params.getSort());
 
         // handle sql view params
@@ -151,7 +156,8 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         LOGGER.log(Level.FINE, q.toString());
         // let's see if we need to reproject
         if (!wms.isFeaturesReprojectionDisabled()) {
-            // reproject the features to the request CRS, this way complex feature will also be reprojected
+            // reproject the features to the request CRS, this way complex feature will also be
+            // reprojected
             q.setCoordinateSystemReproject(requestedCRS);
         }
         match = featureSource.getFeatures(q);
@@ -163,11 +169,10 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         }
 
         return Collections.singletonList(match);
-
     }
 
-    private double getSearchRadius(FeatureInfoRequestParameters params, final MapLayerInfo layer,
-            final List<Rule> rules) {
+    private double getSearchRadius(
+            FeatureInfoRequestParameters params, final MapLayerInfo layer, final List<Rule> rules) {
         double radius;
         int buffer = params.getBuffer();
         if (buffer <= 0) {
@@ -195,13 +200,13 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         } else {
             radius = buffer;
         }
-        
+
         // make sure we don't go overboard, the admin might have set a maximum
         int maxRadius = wms.getMaxBuffer();
         if (maxRadius > 0 && radius > maxRadius) {
             radius = maxRadius;
         }
-        
+
         return radius;
     }
 
@@ -209,8 +214,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         // build up a or of all the rule filters
         List<Filter> filters = new ArrayList<Filter>();
         for (Rule rule : rules) {
-            if (rule.getFilter() == null || rule.isElseFilter())
-                return Filter.INCLUDE;
+            if (rule.getFilter() == null || rule.isElseFilter()) return Filter.INCLUDE;
             filters.add(rule.getFilter());
         }
         // not or and and simplify (if there is any include/exclude we'll get
@@ -220,8 +224,8 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         return (Filter) or.accept(simplifier, null);
     }
 
-   
-    private ReferencedEnvelope getEnvelopeFilter(FeatureInfoRequestParameters params, double radius) {
+    private ReferencedEnvelope getEnvelopeFilter(
+            FeatureInfoRequestParameters params, double radius) {
         final int x = params.getX();
         final int y = params.getY();
         final ReferencedEnvelope bbox = params.getRequestedBounds();
@@ -230,8 +234,11 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         Coordinate upperLeft = WMS.pixelToWorld(x - radius, y - radius, bbox, width, height);
         Coordinate lowerRight = WMS.pixelToWorld(x + radius, y + radius, bbox, width, height);
 
-        return new ReferencedEnvelope(upperLeft.x, lowerRight.x, lowerRight.y, upperLeft.y,
+        return new ReferencedEnvelope(
+                upperLeft.x,
+                lowerRight.x,
+                lowerRight.y,
+                upperLeft.y,
                 bbox.getCoordinateReferenceSystem());
     }
-
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -21,14 +20,10 @@ import org.geotools.util.logging.Logging;
 import org.hsqldb.lib.StringInputStream;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-/**
- * Inputs and outputs feature collections in GPX format using gt-gpx
- * 
- * 
- */
+/** Inputs and outputs feature collections in GPX format using gt-gpx */
 public class GPXPPIO extends CDataPPIO {
     private static final Logger LOGGER = Logging.getLogger(GPXPPIO.class);
-    
+
     private GeoServer geoServer;
 
     protected GPXPPIO(GeoServer geoServer) {
@@ -48,13 +43,12 @@ public class GPXPPIO extends CDataPPIO {
             SimpleFeatureCollection fc = (SimpleFeatureCollection) input;
             CoordinateReferenceSystem crs = fc.getSchema().getCoordinateReferenceSystem();
             // gpx is defined only in wgs84
-            if(crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
+            if (crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
                 fc = new ReprojectingFeatureCollection(fc, DefaultGeographicCRS.WGS84);
             }
             encoder.encode(os, fc);
         } catch (Exception e) {
             throw new IOException("Unable to encode in GPX", e);
-
         }
     }
 
@@ -72,5 +66,4 @@ public class GPXPPIO extends CDataPPIO {
     public String getFileExtension() {
         return "gpx";
     }
-
 }

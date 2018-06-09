@@ -4,6 +4,9 @@
  */
 package org.geoserver.wps.web;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
@@ -40,20 +42,23 @@ import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.springframework.context.ApplicationContext;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-
 /**
  * Allows the admin to edit the limits for a specific process
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ProcessLimitsPage extends GeoServerSecuredPage {
 
-    private static final Set<Class<?>> PRIMITIVE_NUMBERS = new ImmutableSet.Builder<Class<?>>()
-            .add(byte.class).add(char.class).add(double.class).add(float.class).add(int.class)
-            .add(long.class).add(short.class).build();
+    private static final Set<Class<?>> PRIMITIVE_NUMBERS =
+            new ImmutableSet.Builder<Class<?>>()
+                    .add(byte.class)
+                    .add(char.class)
+                    .add(double.class)
+                    .add(float.class)
+                    .add(int.class)
+                    .add(long.class)
+                    .add(short.class)
+                    .build();
 
     private GeoServerTablePanel<InputLimit> table;
 
@@ -67,71 +72,81 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
         add(form);
 
         final List<InputLimit> inputLimits = buildInputLimits(process);
-        GeoServerDataProvider<InputLimit> inputLimitsProvider = new GeoServerDataProvider<ProcessLimitsPage.InputLimit>() {
+        GeoServerDataProvider<InputLimit> inputLimitsProvider =
+                new GeoServerDataProvider<ProcessLimitsPage.InputLimit>() {
 
-            @Override
-            protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<InputLimit>> getProperties() {
-                List<Property<InputLimit>> result = new ArrayList<>();
-                result.add(new BeanProperty<InputLimit>("name", "name"));
-                result.add(new PropertyPlaceholder("type"));
-                result.add(new BeanProperty<InputLimit>("editor", "validator"));
-                return result;
-            }
-
-            @Override
-            protected List<InputLimit> getItems() {
-                return inputLimits;
-            }
-
-        };
-
-        table = new GeoServerTablePanel<InputLimit>("table", inputLimitsProvider) {
-
-            @Override
-            protected Component getComponentForProperty(String id, IModel<InputLimit> itemModel,
-                    Property<InputLimit> property) {
-                InputLimit limit = (InputLimit) itemModel.getObject();
-                String propertyName = property.getName();
-                if (propertyName.equals("type")) {
-                    String type;
-                    try {
-                        String key = "type." + limit.getValidator().getClass().getName();
-                        type = new ParamResourceModel(key, ProcessLimitsPage.this).getString();
-                    } catch (Exception e) {
-                        type = limit.validator.getClass().getSimpleName();
+                    @Override
+                    protected List<
+                                    org.geoserver.web.wicket.GeoServerDataProvider.Property<
+                                            InputLimit>>
+                            getProperties() {
+                        List<Property<InputLimit>> result = new ArrayList<>();
+                        result.add(new BeanProperty<InputLimit>("name", "name"));
+                        result.add(new PropertyPlaceholder("type"));
+                        result.add(new BeanProperty<InputLimit>("editor", "validator"));
+                        return result;
                     }
-                    return new Label(id, type);
-                } else if (propertyName.equals("editor")) {
-                    WPSInputValidator validator = limit.getValidator();
-                    if (validator instanceof MaxSizeValidator) {
-                        Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
-                        PropertyModel maxSizeModel = new PropertyModel(itemModel,
-                                "validator.maxSizeMB");
-                        TextField<Integer> text = new TextField<Integer>("text", maxSizeModel,
-                                Integer.class);
-                        f.add(text);
-                        return f;
-                    } else if (validator instanceof MultiplicityValidator) {
-                        Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
-                        PropertyModel maxMultiplicityModel = new PropertyModel(itemModel,
-                                "validator.maxInstances");
-                        TextField<Integer> text = new TextField<Integer>("text",
-                                maxMultiplicityModel, Integer.class);
-                        f.add(text);
-                        return f;
-                    } else if (validator instanceof NumberRangeValidator) {
-                        Fragment f = new Fragment(id, "rangeEditor", ProcessLimitsPage.this);
-                        PropertyModel rangeModel = new PropertyModel(itemModel, "validator.range");
-                        RangePanel rangeEditor = new RangePanel("range", rangeModel);
-                        f.add(rangeEditor);
-                        return f;
-                    }
-                }
-                // have the base class create a label for us
-                return null;
-            }
 
-        };
+                    @Override
+                    protected List<InputLimit> getItems() {
+                        return inputLimits;
+                    }
+                };
+
+        table =
+                new GeoServerTablePanel<InputLimit>("table", inputLimitsProvider) {
+
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id,
+                            IModel<InputLimit> itemModel,
+                            Property<InputLimit> property) {
+                        InputLimit limit = (InputLimit) itemModel.getObject();
+                        String propertyName = property.getName();
+                        if (propertyName.equals("type")) {
+                            String type;
+                            try {
+                                String key = "type." + limit.getValidator().getClass().getName();
+                                type =
+                                        new ParamResourceModel(key, ProcessLimitsPage.this)
+                                                .getString();
+                            } catch (Exception e) {
+                                type = limit.validator.getClass().getSimpleName();
+                            }
+                            return new Label(id, type);
+                        } else if (propertyName.equals("editor")) {
+                            WPSInputValidator validator = limit.getValidator();
+                            if (validator instanceof MaxSizeValidator) {
+                                Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
+                                PropertyModel maxSizeModel =
+                                        new PropertyModel(itemModel, "validator.maxSizeMB");
+                                TextField<Integer> text =
+                                        new TextField<Integer>("text", maxSizeModel, Integer.class);
+                                f.add(text);
+                                return f;
+                            } else if (validator instanceof MultiplicityValidator) {
+                                Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
+                                PropertyModel maxMultiplicityModel =
+                                        new PropertyModel(itemModel, "validator.maxInstances");
+                                TextField<Integer> text =
+                                        new TextField<Integer>(
+                                                "text", maxMultiplicityModel, Integer.class);
+                                f.add(text);
+                                return f;
+                            } else if (validator instanceof NumberRangeValidator) {
+                                Fragment f =
+                                        new Fragment(id, "rangeEditor", ProcessLimitsPage.this);
+                                PropertyModel rangeModel =
+                                        new PropertyModel(itemModel, "validator.range");
+                                RangePanel rangeEditor = new RangePanel("range", rangeModel);
+                                f.add(rangeEditor);
+                                return f;
+                            }
+                        }
+                        // have the base class create a label for us
+                        return null;
+                    }
+                };
         table.setOutputMarkupId(true);
         table.setFilterable(false);
         table.setPageable(false);
@@ -139,28 +154,29 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
         table.setSortable(false);
         form.add(table);
 
-        SubmitLink apply = new SubmitLink("apply") {
-            @Override
-            public void onSubmit() {
-                // super.onSubmit();
-                process.setValidators(buildValidators(inputLimits));
-                doReturn();
-            }
-        };
+        SubmitLink apply =
+                new SubmitLink("apply") {
+                    @Override
+                    public void onSubmit() {
+                        // super.onSubmit();
+                        process.setValidators(buildValidators(inputLimits));
+                        doReturn();
+                    }
+                };
         form.add(apply);
-        Link cancel = new Link("cancel") {
-            @Override
-            public void onClick() {
-                doReturn();
-            }
-        };
+        Link cancel =
+                new Link("cancel") {
+                    @Override
+                    public void onClick() {
+                        doReturn();
+                    }
+                };
         form.add(cancel);
     }
 
     /**
      * Turn the input limits into the UI into a set of operational validators, filtering out those
      * that have empty or default input
-     * 
      */
     protected Multimap<String, WPSInputValidator> buildValidators(List<InputLimit> inputLimits) {
         Multimap<String, WPSInputValidator> result = ArrayListMultimap.create();
@@ -181,9 +197,8 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
     /**
      * Go from the available process validator to a UI representation, adding also the possible
      * validators that are not yet set
-     * 
-     * @param process
      *
+     * @param process
      */
     private List<InputLimit> buildInputLimits(FilteredProcess process) {
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
@@ -193,8 +208,8 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
         List<InputLimit> result = new ArrayList<>();
         for (Parameter param : parameters.values()) {
             String name = param.getName();
-            Collection<WPSInputValidator> paramValidators = validators != null ? validators
-                    .get(name) : null;
+            Collection<WPSInputValidator> paramValidators =
+                    validators != null ? validators.get(name) : null;
 
             // add the existing validators and collect their types
             Set<Class> validatorTypes = new HashSet<>();
@@ -241,7 +256,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
 
     /**
      * The input limit
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     static final class InputLimit implements Serializable {
@@ -268,7 +283,5 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
         public WPSInputValidator getValidator() {
             return validator;
         }
-
     }
-
 }

@@ -22,10 +22,7 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
     @Override
@@ -49,7 +46,7 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
         when(response.getStatusCode()).thenReturn(statusCode);
         when(request.execute()).thenReturn(response);
     }
-    
+
     @Test(expected = AccessTokenRequiredException.class)
     public void testAccessDeneiedException() throws Exception {
         DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken("12345");
@@ -73,21 +70,26 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
         DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken("12345");
         token.setTokenType("access_token");
         restTemplate.getOAuth2ClientContext().setAccessToken(token);
-        OAuth2RequestAuthenticator customAuthenticator = new OAuth2RequestAuthenticator() {
+        OAuth2RequestAuthenticator customAuthenticator =
+                new OAuth2RequestAuthenticator() {
 
-            @Override
-            public void authenticate(OAuth2ProtectedResourceDetails resource,
-                    OAuth2ClientContext clientContext, ClientHttpRequest req) {
-                req.getHeaders().set("X-Authorization",
-                        clientContext.getAccessToken().getTokenType() + " " + "Nah-nah-na-nah-nah");
-            }
-
-        };
+                    @Override
+                    public void authenticate(
+                            OAuth2ProtectedResourceDetails resource,
+                            OAuth2ClientContext clientContext,
+                            ClientHttpRequest req) {
+                        req.getHeaders()
+                                .set(
+                                        "X-Authorization",
+                                        clientContext.getAccessToken().getTokenType()
+                                                + " "
+                                                + "Nah-nah-na-nah-nah");
+                    }
+                };
 
         customAuthenticator.authenticate(resource, restTemplate.getOAuth2ClientContext(), request);
         String auth = request.getHeaders().getFirst("X-Authorization");
 
         assertEquals("access_token Nah-nah-na-nah-nah", auth);
     }
-
 }

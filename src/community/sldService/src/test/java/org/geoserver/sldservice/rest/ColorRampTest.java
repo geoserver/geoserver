@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.util.List;
-
 import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
@@ -34,9 +33,13 @@ public class ColorRampTest extends SLDServiceBaseTest {
         assertEquals("Incorrect value for last color", new Color(0, 0, maxColorInt), colors.get(9));
         blueRamp.revert();
         List<Color> reverseColors = blueRamp.getRamp();
-        assertEquals("Incorrect value for last reverse color", new Color(0, 0, minColorInt),
+        assertEquals(
+                "Incorrect value for last reverse color",
+                new Color(0, 0, minColorInt),
                 reverseColors.get(9));
-        assertEquals("Incorrect value for 1st reverse color", new Color(0, 0, maxColorInt),
+        assertEquals(
+                "Incorrect value for 1st reverse color",
+                new Color(0, 0, maxColorInt),
                 reverseColors.get(0));
     }
 
@@ -51,9 +54,13 @@ public class ColorRampTest extends SLDServiceBaseTest {
         assertEquals("Incorrect value for last color", new Color(maxColorInt, 0, 0), colors.get(9));
         redRamp.revert();
         List<Color> reverseColors = redRamp.getRamp();
-        assertEquals("Incorrect value for last reverse color", new Color(maxColorInt, 0, 0),
+        assertEquals(
+                "Incorrect value for last reverse color",
+                new Color(maxColorInt, 0, 0),
                 reverseColors.get(0));
-        assertEquals("Incorrect value for 1st reverse color", new Color(minColorInt, 0, 0),
+        assertEquals(
+                "Incorrect value for 1st reverse color",
+                new Color(minColorInt, 0, 0),
                 reverseColors.get(9));
     }
 
@@ -64,16 +71,24 @@ public class ColorRampTest extends SLDServiceBaseTest {
         assertEquals(11, grayRamp.getNumClasses());
         List<Color> colors = grayRamp.getRamp();
         assertEquals("Incorrect size for color ramp", 10, colors.size());
-        assertEquals("Incorrect value for 1st color",
-                new Color(minColorInt, minColorInt, minColorInt), colors.get(0));
-        assertEquals("Incorrect value for last color",
-                new Color(maxColorInt, maxColorInt, maxColorInt), colors.get(9));
+        assertEquals(
+                "Incorrect value for 1st color",
+                new Color(minColorInt, minColorInt, minColorInt),
+                colors.get(0));
+        assertEquals(
+                "Incorrect value for last color",
+                new Color(maxColorInt, maxColorInt, maxColorInt),
+                colors.get(9));
         grayRamp.revert();
         List<Color> reverseColors = grayRamp.getRamp();
-        assertEquals("Incorrect value for last reverse color",
-                new Color(minColorInt, minColorInt, minColorInt), reverseColors.get(9));
-        assertEquals("Incorrect value for 1st reverse color",
-                new Color(maxColorInt, maxColorInt, maxColorInt), reverseColors.get(0));
+        assertEquals(
+                "Incorrect value for last reverse color",
+                new Color(minColorInt, minColorInt, minColorInt),
+                reverseColors.get(9));
+        assertEquals(
+                "Incorrect value for 1st reverse color",
+                new Color(maxColorInt, maxColorInt, maxColorInt),
+                reverseColors.get(0));
     }
 
     @Test
@@ -88,9 +103,13 @@ public class ColorRampTest extends SLDServiceBaseTest {
 
         jetRamp.revert();
         List<Color> reverseColors = jetRamp.getRamp();
-        assertEquals("Incorrect value for last reverse color", new Color(0, 0, 255),
+        assertEquals(
+                "Incorrect value for last reverse color",
+                new Color(0, 0, 255),
                 reverseColors.get(9));
-        assertEquals("Incorrect value for 1st reverse color", new Color(255, 0, 0),
+        assertEquals(
+                "Incorrect value for 1st reverse color",
+                new Color(255, 0, 0),
                 reverseColors.get(0));
     }
 
@@ -98,5 +117,4 @@ public class ColorRampTest extends SLDServiceBaseTest {
     protected String getServiceUrl() {
         return null;
     }
-
 }

@@ -7,14 +7,14 @@ package org.geoserver.wcs2_0.eo;
 
 /**
  * Keys for metadata items used by the WCS Earth Observation Extension
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public enum WCSEOMetadata {
-    
-    ENABLED("wcseo.enabled"), DATASET("wcseo.dataset"), COUNT_DEFAULT("wcseo.describeEoCoverageSet.countDefault");
-    
+    ENABLED("wcseo.enabled"),
+    DATASET("wcseo.dataset"),
+    COUNT_DEFAULT("wcseo.describeEoCoverageSet.countDefault");
+
     public static final String NAMESPACE = "http://www.opengis.net/wcseo/1.0";
 
     public String key;

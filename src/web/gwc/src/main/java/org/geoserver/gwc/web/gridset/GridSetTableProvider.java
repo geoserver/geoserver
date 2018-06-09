@@ -8,7 +8,6 @@ package org.geoserver.gwc.web.gridset;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.gwc.GWC;
@@ -22,55 +21,59 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
 
     static final Property<GridSet> NAME = new BeanProperty<GridSet>("name", "name");
 
-    static final Property<GridSet> EPSG_CODE = new AbstractProperty<GridSet>("epsg_code") {
-        private static final long serialVersionUID = -4311392731568045337L;
+    static final Property<GridSet> EPSG_CODE =
+            new AbstractProperty<GridSet>("epsg_code") {
+                private static final long serialVersionUID = -4311392731568045337L;
 
-        @Override
-        public Object getPropertyValue(GridSet item) {
-            return item.getSrs().toString();
-        }
-    };
+                @Override
+                public Object getPropertyValue(GridSet item) {
+                    return item.getSrs().toString();
+                }
+            };
 
-    static final Property<GridSet> TILE_DIMENSION = new AbstractProperty<GridSet>("tile_dimension") {
-        private static final long serialVersionUID = 7300188694215155063L;
+    static final Property<GridSet> TILE_DIMENSION =
+            new AbstractProperty<GridSet>("tile_dimension") {
+                private static final long serialVersionUID = 7300188694215155063L;
 
-        @Override
-        public Object getPropertyValue(GridSet item) {
-            return item.getTileWidth() + " x " + item.getTileHeight();
-        }
-    };
+                @Override
+                public Object getPropertyValue(GridSet item) {
+                    return item.getTileWidth() + " x " + item.getTileHeight();
+                }
+            };
 
-    static final Property<GridSet> ZOOM_LEVELS = new AbstractProperty<GridSet>("zoom_levels") {
-        private static final long serialVersionUID = 3155098860179765581L;
+    static final Property<GridSet> ZOOM_LEVELS =
+            new AbstractProperty<GridSet>("zoom_levels") {
+                private static final long serialVersionUID = 3155098860179765581L;
 
-        @Override
-        public Integer getPropertyValue(GridSet item) {
-            return item.getNumLevels(); // this may fail if item.gridLevels is null
-        }
-    };
+                @Override
+                public Integer getPropertyValue(GridSet item) {
+                    return item.getNumLevels(); // this may fail if item.gridLevels is null
+                }
+            };
 
-    static final Property<GridSet> QUOTA_USED = new AbstractProperty<GridSet>("quota_used") {
-        private static final long serialVersionUID = 1152149141759317288L;
+    static final Property<GridSet> QUOTA_USED =
+            new AbstractProperty<GridSet>("quota_used") {
+                private static final long serialVersionUID = 1152149141759317288L;
 
-        @Override
-        public Object getPropertyValue(GridSet item) {
-            String gridSetName = item.getName();
-            Quota usedQuotaByGridSet = GWC.get().getUsedQuotaByGridSet(gridSetName);
-            return usedQuotaByGridSet;
-        }
-    };
+                @Override
+                public Object getPropertyValue(GridSet item) {
+                    String gridSetName = item.getName();
+                    Quota usedQuotaByGridSet = GWC.get().getUsedQuotaByGridSet(gridSetName);
+                    return usedQuotaByGridSet;
+                }
+            };
 
-    static final Property<GridSet> ACTION_LINK = new AbstractProperty<GridSet>("") {
-        private static final long serialVersionUID = -7593097569735264194L;
+    static final Property<GridSet> ACTION_LINK =
+            new AbstractProperty<GridSet>("") {
+                private static final long serialVersionUID = -7593097569735264194L;
 
-        @Override
-        public Object getPropertyValue(GridSet item) {
-            return item.getName();
-        }
-    };
+                @Override
+                public Object getPropertyValue(GridSet item) {
+                    return item.getName();
+                }
+            };
 
-    public GridSetTableProvider() {
-    }
+    public GridSetTableProvider() {}
 
     @Override
     public abstract List<GridSet> getItems();

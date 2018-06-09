@@ -33,14 +33,14 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
     public void testCallback() throws Exception {
         callback.init(anyObject(), anyObject());
         expectLastCall();
-        callback.dispatched(anyObject(), anyObject(),
-                anyObject());
+        callback.dispatched(anyObject(), anyObject(), anyObject());
         expectLastCall();
         callback.finished(anyObject(), anyObject());
         expectLastCall();
         replay(callback);
 
-        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/index.html");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/index.html");
         assertEquals(200, response.getStatus());
         verify(callback);
     }
@@ -49,11 +49,9 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
     public void testCallbackException() throws Exception {
         callback.init(anyObject(), anyObject());
         expectLastCall();
-        callback.dispatched(anyObject(), anyObject(),
-                anyObject());
+        callback.dispatched(anyObject(), anyObject(), anyObject());
         expectLastCall();
-        callback.exception(anyObject(), anyObject(),
-                anyObject());
+        callback.exception(anyObject(), anyObject(), anyObject());
         expectLastCall();
         callback.finished(anyObject(), anyObject());
         expectLastCall();
@@ -62,6 +60,4 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
         getAsServletResponse(RestBaseController.ROOT_PATH + "/exception?code=400&message=error");
         verify(callback);
     }
-
-   
 }

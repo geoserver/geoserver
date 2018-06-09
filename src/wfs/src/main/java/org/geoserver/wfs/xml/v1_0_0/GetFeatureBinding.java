@@ -6,19 +6,17 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the element http://www.opengis.net/wfs:GetFeature.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:element name="GetFeature" type="wfs:GetFeatureType"&gt;
  *          &lt;xsd:annotation&gt;          &lt;xsd:documentation&gt;             The
@@ -28,6 +26,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class GetFeatureBinding extends AbstractComplexBinding {
@@ -37,14 +36,13 @@ public class GetFeatureBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.GETFEATURE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -55,14 +53,14 @@ public class GetFeatureBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        //TODO: implement
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        // TODO: implement
         return null;
     }
 }

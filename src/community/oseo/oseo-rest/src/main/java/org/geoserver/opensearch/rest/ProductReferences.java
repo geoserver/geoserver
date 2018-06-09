@@ -18,5 +18,4 @@ class ProductReferences {
     public List<ProductReference> getProducts() {
         return products;
     }
-
 }

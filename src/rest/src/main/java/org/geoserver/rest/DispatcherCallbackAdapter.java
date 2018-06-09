@@ -7,16 +7,16 @@ package org.geoserver.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * No-op implementation of DispatcherCallback.
- */
+/** No-op implementation of DispatcherCallback. */
 public class DispatcherCallbackAdapter implements DispatcherCallback {
 
     public void init(HttpServletRequest request, HttpServletResponse response) {}
 
-    public void dispatched(HttpServletRequest request, HttpServletResponse response, Object handler) {}
-    
-    public void exception(HttpServletRequest request, HttpServletResponse response, Exception error) {}
-    
+    public void dispatched(
+            HttpServletRequest request, HttpServletResponse response, Object handler) {}
+
+    public void exception(
+            HttpServletRequest request, HttpServletResponse response, Exception error) {}
+
     public void finished(HttpServletRequest request, HttpServletResponse response) {}
 }

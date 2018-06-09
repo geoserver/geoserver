@@ -9,28 +9,23 @@ import org.geoserver.config.GeoServer;
 import org.geotools.xml.PreventLocalEntityResolver;
 import org.xml.sax.EntityResolver;
 
-
 /**
  * Creates an EntityResolver using geoserver configuration settings.
- * 
+ *
  * @author Davide Savazzi - geo-solutions.it
  */
 public class EntityResolverProvider {
-    
-    /**
-     * A entity resolver provider that always disabled entity resolution
-     */
-    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider(
-            null);
+
+    /** A entity resolver provider that always disabled entity resolution */
+    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER =
+            new EntityResolverProvider(null);
 
     private GeoServer geoServer;
-    
+
     public EntityResolverProvider(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
-    
-    
-    
+
     public EntityResolver getEntityResolver() {
         if (geoServer != null) {
             Boolean externalEntitiesEnabled = geoServer.getGlobal().isXmlExternalEntitiesEnabled();
@@ -42,5 +37,5 @@ public class EntityResolverProvider {
 
         // default behaviour: entities disabled
         return PreventLocalEntityResolver.INSTANCE;
-    } 
+    }
 }

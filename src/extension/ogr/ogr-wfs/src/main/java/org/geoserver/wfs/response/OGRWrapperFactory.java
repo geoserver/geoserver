@@ -5,13 +5,12 @@
 package org.geoserver.wfs.response;
 
 import java.util.Map;
-
 import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 
 /**
  * Factory to create {@link OGRWrapper} instances.
- * 
+ *
  * @author Stefano Costa, GeoSolutions
  */
 public class OGRWrapperFactory implements ToolWrapperFactory {
@@ -20,5 +19,4 @@ public class OGRWrapperFactory implements ToolWrapperFactory {
     public ToolWrapper createWrapper(String executable, Map<String, String> environment) {
         return new OGRWrapper(executable, environment);
     }
-
 }

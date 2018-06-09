@@ -7,10 +7,10 @@ package org.geoserver.web;
 
 import static org.geoserver.catalog.Predicates.acceptAll;
 
+import com.google.common.base.Stopwatch;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -41,75 +41,78 @@ import org.geoserver.web.data.workspace.WorkspacePage;
 import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
-import com.google.common.base.Stopwatch;
-
 /**
  * Home page, shows just the introduction and the capabilities link
- * 
- * <p>
- * This page uses the {@link CapabilitiesHomePageLinkProvider} extension point to enable other
- * modules to contribute links for GetCapabilities documents. The default
- * {@link ServiceInfoCapabilitiesProvider} contributes the capabilities links for all the available
- * {@link ServiceInfo} implementations. Other extension point implementations may contribute service
+ *
+ * <p>This page uses the {@link CapabilitiesHomePageLinkProvider} extension point to enable other
+ * modules to contribute links for GetCapabilities documents. The default {@link
+ * ServiceInfoCapabilitiesProvider} contributes the capabilities links for all the available {@link
+ * ServiceInfo} implementations. Other extension point implementations may contribute service
  * description document links non backed by ServiceInfo objects.
- * </p>
- * 
+ *
  * @author Andrea Aime - TOPP
- * 
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public GeoServerHomePage() {
         GeoServer gs = getGeoServer();
         ContactInfo contact = gs.getGlobal().getSettings().getContact();
 
-        //add some contact info
-        add(new ExternalLink("contactURL", contact.getOnlineResource())
-            .add( new Label("contactName", contact.getContactOrganization())));
+        // add some contact info
+        add(
+                new ExternalLink("contactURL", contact.getOnlineResource())
+                        .add(new Label("contactName", contact.getContactOrganization())));
         {
             String version = String.valueOf(new ResourceModel("version").getObject());
             String contactEmail = contact.getContactEmail();
-            HashMap<String, String>params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("version", version);
-            params.put("contactEmail", (contactEmail == null ? "geoserver@example.org" : contactEmail));
-            Label label = new Label("footerMessage", new StringResourceModel("GeoServerHomePage.footer", this, new Model(params)));
+            params.put(
+                    "contactEmail",
+                    (contactEmail == null ? "geoserver@example.org" : contactEmail));
+            Label label =
+                    new Label(
+                            "footerMessage",
+                            new StringResourceModel(
+                                    "GeoServerHomePage.footer", this, new Model(params)));
             label.setEscapeModelStrings(false);
             add(label);
         }
-        
-        
+
         Authentication auth = getSession().getAuthentication();
-        if(isAdmin(auth)) {
+        if (isAdmin(auth)) {
             Stopwatch sw = Stopwatch.createStarted();
             Fragment f = new Fragment("catalogLinks", "catalogLinksFragment", this);
             Catalog catalog = getCatalog();
-            
+
             NumberFormat numberFormat = NumberFormat.getIntegerInstance(getLocale());
             numberFormat.setGroupingUsed(true);
-            
+
             final Filter allLayers = acceptAll();
             final Filter allStores = acceptAll();
             final Filter allWorkspaces = acceptAll();
-            
+
             final int layerCount = catalog.count(LayerInfo.class, allLayers);
             final int storesCount = catalog.count(StoreInfo.class, allStores);
-            final int wsCount =  catalog.count(WorkspaceInfo.class, allWorkspaces);
-            
-            f.add(new BookmarkablePageLink("layersLink", LayerPage.class)
-                .add(new Label( "nlayers", numberFormat.format(layerCount) )));
+            final int wsCount = catalog.count(WorkspaceInfo.class, allWorkspaces);
+
+            f.add(
+                    new BookmarkablePageLink("layersLink", LayerPage.class)
+                            .add(new Label("nlayers", numberFormat.format(layerCount))));
             f.add(new BookmarkablePageLink("addLayerLink", NewLayerPage.class));
-            
-            
-            f.add(new BookmarkablePageLink("storesLink",StorePage.class)
-                .add(new Label( "nstores", numberFormat.format(storesCount) )));
+
+            f.add(
+                    new BookmarkablePageLink("storesLink", StorePage.class)
+                            .add(new Label("nstores", numberFormat.format(storesCount))));
             f.add(new BookmarkablePageLink("addStoreLink", NewDataPage.class));
-            
-            f.add(new BookmarkablePageLink("workspacesLink",WorkspacePage.class)
-                .add(new Label( "nworkspaces", numberFormat.format(wsCount) )));
+
+            f.add(
+                    new BookmarkablePageLink("workspacesLink", WorkspacePage.class)
+                            .add(new Label("nworkspaces", numberFormat.format(wsCount))));
             f.add(new BookmarkablePageLink("addWorkspaceLink", WorkspaceNewPage.class));
             add(f);
-            
+
             sw.stop();
         } else {
             Label placeHolder = new Label("catalogLinks");
@@ -119,62 +122,61 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         final IModel<List<GeoServerHomePageContentProvider>> contentProviders;
         contentProviders = getContentProviders(GeoServerHomePageContentProvider.class);
-        ListView<GeoServerHomePageContentProvider> contentView = new ListView<GeoServerHomePageContentProvider>(
-                "contributedContent", contentProviders) {
-            private static final long serialVersionUID = 1L;
+        ListView<GeoServerHomePageContentProvider> contentView =
+                new ListView<GeoServerHomePageContentProvider>(
+                        "contributedContent", contentProviders) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void populateItem(ListItem<GeoServerHomePageContentProvider> item) {
-                GeoServerHomePageContentProvider provider = item.getModelObject();
-                Component extraContent = provider.getPageBodyComponent("contentList");
-                if(null == extraContent){
-                    Label placeHolder = new Label("contentList");
-                    placeHolder.setVisible(false);
-                    extraContent = placeHolder;
-                }
-                item.add(extraContent);
-            }
-        };
+                    @Override
+                    protected void populateItem(ListItem<GeoServerHomePageContentProvider> item) {
+                        GeoServerHomePageContentProvider provider = item.getModelObject();
+                        Component extraContent = provider.getPageBodyComponent("contentList");
+                        if (null == extraContent) {
+                            Label placeHolder = new Label("contentList");
+                            placeHolder.setVisible(false);
+                            extraContent = placeHolder;
+                        }
+                        item.add(extraContent);
+                    }
+                };
         add(contentView);
 
         final IModel<List<CapabilitiesHomePageLinkProvider>> capsProviders;
         capsProviders = getContentProviders(CapabilitiesHomePageLinkProvider.class);
 
-        ListView<CapabilitiesHomePageLinkProvider> capsView = new ListView<CapabilitiesHomePageLinkProvider>(
-                "providedCaps", capsProviders) {
-            private static final long serialVersionUID = 1L;
+        ListView<CapabilitiesHomePageLinkProvider> capsView =
+                new ListView<CapabilitiesHomePageLinkProvider>("providedCaps", capsProviders) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void populateItem(ListItem<CapabilitiesHomePageLinkProvider> item) {
-                CapabilitiesHomePageLinkProvider provider = item.getModelObject();
-                Component capsList = provider.getCapabilitiesComponent("capsList");
-                item.add(capsList);
-            }
-        };
+                    @Override
+                    protected void populateItem(ListItem<CapabilitiesHomePageLinkProvider> item) {
+                        CapabilitiesHomePageLinkProvider provider = item.getModelObject();
+                        Component capsList = provider.getCapabilitiesComponent("capsList");
+                        item.add(capsList);
+                    }
+                };
         add(capsView);
     }
 
     private <T> IModel<List<T>> getContentProviders(final Class<T> providerClass) {
-        IModel<List<T>> providersModel = new LoadableDetachableModel<List<T>>() {
-            private static final long serialVersionUID = 1L;
+        IModel<List<T>> providersModel =
+                new LoadableDetachableModel<List<T>>() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected List<T> load() {
-                GeoServerApplication app = getGeoServerApplication();
-                List<T> providers = app.getBeansOfType(providerClass);
-                return providers;
-            }
-        };
+                    @Override
+                    protected List<T> load() {
+                        GeoServerApplication app = getGeoServerApplication();
+                        List<T> providers = app.getBeansOfType(providerClass);
+                        return providers;
+                    }
+                };
         return providersModel;
     }
-    
-    /**
-     * Checks if the current user is authenticated and is the administrator
-     */
-    private boolean isAdmin(Authentication authentication) {        
-        
-        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
-            checkAuthenticationForAdminRole(authentication);
-    }
 
+    /** Checks if the current user is authenticated and is the administrator */
+    private boolean isAdmin(Authentication authentication) {
+
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class)
+                .checkAuthenticationForAdminRole(authentication);
+    }
 }

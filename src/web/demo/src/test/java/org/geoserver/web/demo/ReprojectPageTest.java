@@ -33,13 +33,15 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         form.setValue("sourceGeom", "12 45");
         form.submit();
         tester.clickLink("form:forward", true);
-        
+
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(0, tester.getMessages(FeedbackMessage.ERROR).size());
-        String tx = tester.getComponentFromLastRenderedPage("form:targetGeom").getDefaultModelObjectAsString();
+        String tx =
+                tester.getComponentFromLastRenderedPage("form:targetGeom")
+                        .getDefaultModelObjectAsString();
         assertEquals("736446.0261038465 4987329.504699742", tx);
     }
-    
+
     @Test
     public void testInvalidPoint() {
         tester.startPage(ReprojectPage.class);
@@ -49,14 +51,17 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         form.setValue("sourceGeom", "12 a45a");
         form.submit();
         tester.clickLink("form:forward", true);
-        
+
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
+        String message =
+                ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0))
+                        .getMessage()
+                        .toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
-    
+
     @Test
     public void testReprojectLinestring() {
         tester.startPage(ReprojectPage.class);
@@ -66,13 +71,17 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         form.setValue("sourceGeom", "LINESTRING(12 45, 13 45)");
         form.submit();
         tester.clickLink("form:forward", true);
-        
+
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(0, tester.getMessages(FeedbackMessage.ERROR).size());
-        String tx = tester.getComponentFromLastRenderedPage("form:targetGeom").getDefaultModelObjectAsString();
-        assertEquals("LINESTRING (736446.0261038465 4987329.504699742, 815261.4271666661 4990738.261612577)", tx);
+        String tx =
+                tester.getComponentFromLastRenderedPage("form:targetGeom")
+                        .getDefaultModelObjectAsString();
+        assertEquals(
+                "LINESTRING (736446.0261038465 4987329.504699742, 815261.4271666661 4990738.261612577)",
+                tx);
     }
-    
+
     @Test
     public void testInvalidGeometry() {
         tester.startPage(ReprojectPage.class);
@@ -82,23 +91,29 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         form.setValue("sourceGeom", "LINESTRING(12 45, 13 45"); // missing ) at the end
         form.submit();
         tester.clickLink("form:forward", true);
-        
+
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
+        String message =
+                ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0))
+                        .getMessage()
+                        .toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
-    
+
     @Test
     public void testPageParams() {
-        tester.startPage(ReprojectPage.class, new PageParameters().add("fromSRS", "EPSG:4326").add("toSRS", "EPSG:32632"));
-        String source = tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();
-        String target = tester.getComponentFromLastRenderedPage("form:targetCRS:srs").getDefaultModelObjectAsString();
+        tester.startPage(
+                ReprojectPage.class,
+                new PageParameters().add("fromSRS", "EPSG:4326").add("toSRS", "EPSG:32632"));
+        String source =
+                tester.getComponentFromLastRenderedPage("form:sourceCRS:srs")
+                        .getDefaultModelObjectAsString();
+        String target =
+                tester.getComponentFromLastRenderedPage("form:targetCRS:srs")
+                        .getDefaultModelObjectAsString();
         assertEquals("EPSG:4326", source);
         assertEquals("EPSG:32632", target);
     }
-    
-    
-    
 }

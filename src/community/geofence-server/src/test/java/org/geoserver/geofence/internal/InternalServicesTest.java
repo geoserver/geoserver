@@ -12,10 +12,10 @@ import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.RuleReaderServiceImpl;
 import org.junit.Test;
 
-/***
- * 
- * @author Niels Charlier
+/**
+ * *
  *
+ * @author Niels Charlier
  */
 public class InternalServicesTest extends ServicesTest {
 
@@ -24,8 +24,8 @@ public class InternalServicesTest extends ServicesTest {
         setValidating(true);
         super.oneTimeSetUp();
 
-        RuleAdminService adminService = (RuleAdminService) applicationContext
-                .getBean("ruleAdminService");
+        RuleAdminService adminService =
+                (RuleAdminService) applicationContext.getBean("ruleAdminService");
         adminService.insert(
                 new Rule(0, "cite", null, null, null, "wms", null, "cite", null, GrantType.ALLOW));
         adminService.insert(
@@ -38,7 +38,5 @@ public class InternalServicesTest extends ServicesTest {
         assertTrue(configManager.getConfiguration().isInternal());
 
         assertTrue(geofenceService instanceof RuleReaderServiceImpl);
-
     }
-
 }

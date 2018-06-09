@@ -16,5 +16,4 @@ public class CacheManagerBeanModel extends LoadableDetachableModel<CacheManagerB
     protected CacheManagerBean load() {
         return CacheManager.INSTANCE;
     }
-
 }

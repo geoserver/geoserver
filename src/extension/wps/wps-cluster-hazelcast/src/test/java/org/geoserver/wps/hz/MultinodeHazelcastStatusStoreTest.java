@@ -1,17 +1,16 @@
 package org.geoserver.wps.hz;
 
-import org.geoserver.wps.AbstractProcessStoreTest;
-import org.geoserver.wps.ProcessStatusStore;
-import org.junit.After;
-
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.test.TestHazelcastInstanceFactory;
+import org.geoserver.wps.AbstractProcessStoreTest;
+import org.geoserver.wps.ProcessStatusStore;
+import org.junit.After;
 
 /**
  * Tests the hazelcast based process status store with a single hazelcast instance
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class MultinodeHazelcastStatusStoreTest extends AbstractProcessStoreTest {
@@ -49,5 +48,4 @@ public class MultinodeHazelcastStatusStoreTest extends AbstractProcessStoreTest 
         store2.save(s3);
         store2.save(s4);
     }
-
 }

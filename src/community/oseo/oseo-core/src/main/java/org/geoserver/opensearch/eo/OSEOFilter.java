@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -18,7 +16,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.geoserver.filters.GeoServerFilter;
 
@@ -33,19 +30,19 @@ public class OSEOFilter implements GeoServerFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         if (request instanceof HttpServletRequest) {
-            HttpServletRequest requestHTTP = (HttpServletRequest)request;
+            HttpServletRequest requestHTTP = (HttpServletRequest) request;
             if (requestNeedsWrapper(requestHTTP)) {
                 request = new RequestWrapper(requestHTTP);
             }
         }
         chain.doFilter(request, response);
-
     }
 
     private boolean requestNeedsWrapper(HttpServletRequest requestHTTP) {
         String pathInfo = requestHTTP.getPathInfo();
         Map<String, String[]> parameterMap = requestHTTP.getParameterMap();
-        return pathInfo != null && parameterMap != null
+        return pathInfo != null
+                && parameterMap != null
                 && "GET".equalsIgnoreCase(requestHTTP.getMethod())
                 && !(new CaseInsensitiveMap(parameterMap).containsKey("service"))
                 && (pathInfo.endsWith("search") || pathInfo.endsWith("description"));
@@ -55,13 +52,13 @@ public class OSEOFilter implements GeoServerFilter {
     public void destroy() {
         // nothing to do
     }
-    
-    private static class RequestWrapper extends HttpServletRequestWrapper {        
+
+    private static class RequestWrapper extends HttpServletRequestWrapper {
         private String request;
 
         private RequestWrapper(HttpServletRequest wrapped) {
             super(wrapped);
-            if(wrapped.getPathInfo().endsWith("search")) {
+            if (wrapped.getPathInfo().endsWith("search")) {
                 request = "search";
             } else {
                 request = "description";
@@ -74,7 +71,7 @@ public class OSEOFilter implements GeoServerFilter {
         }
 
         @Override
-        public Map<String,String[]> getParameterMap() {
+        public Map<String, String[]> getParameterMap() {
             Map<String, String[]> original = super.getParameterMap();
             Map filtered = new HashMap<String, String[]>(original);
             filtered.put("service", "OSEO");
@@ -105,5 +102,4 @@ public class OSEOFilter implements GeoServerFilter {
             return super.getParameter(name);
         }
     }
-
 }

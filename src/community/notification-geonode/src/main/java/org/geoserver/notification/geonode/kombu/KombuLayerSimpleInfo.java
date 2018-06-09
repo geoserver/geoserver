@@ -26,5 +26,4 @@ public class KombuLayerSimpleInfo {
     public void setStyle(String style) {
         this.style = style;
     }
-
 }

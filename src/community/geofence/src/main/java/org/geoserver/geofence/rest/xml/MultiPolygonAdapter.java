@@ -4,25 +4,22 @@
  */
 package org.geoserver.geofence.rest.xml;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.xml.DOMParser;
 import org.geotools.xml.Encoder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * Translates between GML3.2 MultiGeometry and MultiPolygon object for JAXB.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
 
@@ -48,7 +45,7 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
             DOMParser parser = new DOMParser(new GMLConfiguration(), doc);
             Geometry geom = (Geometry) parser.parse();
             if (geom instanceof Polygon) {
-                return new MultiPolygon(new Polygon[] { (Polygon) geom }, geom.getFactory());
+                return new MultiPolygon(new Polygon[] {(Polygon) geom}, geom.getFactory());
             } else if (geom instanceof GeometryCollection) {
                 Polygon[] pols = new Polygon[((GeometryCollection) geom).getNumGeometries()];
                 for (int i = 0; i < pols.length; i++) {
@@ -61,5 +58,4 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
             throw new Exception("Cannot parse specified XML as GML Polygon", e);
         }
     }
-
 }

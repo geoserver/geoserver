@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -32,35 +31,33 @@ import org.vfny.geoserver.wcs.WcsException;
 
 /**
  * Provides support to build the coverage description for time/elevation/additional dim based data
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  * @author Daniele Romagnoli - GeoSolutions
  */
 public class WCSDimensionsHelper {
 
-    /**
-     * Duration in ms of well know time periods
-     */
-    static final BigDecimal[] DURATIONS = new BigDecimal[] { new BigDecimal(31536000000L),
-            new BigDecimal(2628000000L), new BigDecimal(86400000L), new BigDecimal(3600000L),
-            new BigDecimal(60000), new BigDecimal(1000L) };
+    /** Duration in ms of well know time periods */
+    static final BigDecimal[] DURATIONS =
+            new BigDecimal[] {
+                new BigDecimal(31536000000L),
+                new BigDecimal(2628000000L),
+                new BigDecimal(86400000L),
+                new BigDecimal(3600000L),
+                new BigDecimal(60000),
+                new BigDecimal(1000L)
+            };
 
-    /**
-     * Labels for the above time periods
-     */
-    static final String[] DURATION_UNITS = new String[] { "year", "month", "day", "hour", "minute",
-            "second" };
+    /** Labels for the above time periods */
+    static final String[] DURATION_UNITS =
+            new String[] {"year", "month", "day", "hour", "minute", "second"};
 
-    /** 
-     * Quick access fields for timeDimension and elevationDimension 
-     */
+    /** Quick access fields for timeDimension and elevationDimension */
     DimensionInfo timeDimension;
 
     DimensionInfo elevationDimension;
 
-    /**
-     * Additional dimensions map
-     */
+    /** Additional dimensions map */
     Map<String, DimensionInfo> additionalDimensions;
 
     ReaderDimensionsAccessor accessor;
@@ -76,11 +73,11 @@ public class WCSDimensionsHelper {
     long timeResolutionValue;
 
     String coverageId;
-    
+
     /**
      * Base constructor which only deals with timeDimension. It is used by WCS-EO classes which
      * deals with up to timeDimensions
-     * 
+     *
      * @param timeDimension
      * @param reader
      * @param coverageId
@@ -88,11 +85,13 @@ public class WCSDimensionsHelper {
      */
     public WCSDimensionsHelper(CoverageInfo ci) throws IOException {
         this.coverageId = NCNameResourceCodec.encode(ci);
-        this.accessor = new ReaderDimensionsAccessor((GridCoverage2DReader) ci.getGridCoverageReader(null, null));
+        this.accessor =
+                new ReaderDimensionsAccessor(
+                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
 
         Map<String, DimensionInfo> dimensions = new HashMap<String, DimensionInfo>();
         for (Map.Entry<String, Serializable> entry : ci.getMetadata().entrySet()) {
-            if(entry.getValue() instanceof DimensionInfo) {
+            if (entry.getValue() instanceof DimensionInfo) {
                 dimensions.put(entry.getKey(), (DimensionInfo) entry.getValue());
             }
         }
@@ -104,22 +103,32 @@ public class WCSDimensionsHelper {
     /**
      * Base constructor which only deals with timeDimension. It is used by WCS-EO classes which
      * deals with up to timeDimensions
-     * 
+     *
      * @param timeDimension
      * @param reader
      * @param coverageId
      * @throws IOException
      */
-    public WCSDimensionsHelper(final DimensionInfo timeDimension,
-            final GridCoverage2DReader reader, final String coverageId) throws IOException {
-        this(new HashMap<String, DimensionInfo>() {
-            {
-                put(ResourceInfo.TIME, timeDimension);
-            }
-        }, reader, coverageId);
+    public WCSDimensionsHelper(
+            final DimensionInfo timeDimension,
+            final GridCoverage2DReader reader,
+            final String coverageId)
+            throws IOException {
+        this(
+                new HashMap<String, DimensionInfo>() {
+                    {
+                        put(ResourceInfo.TIME, timeDimension);
+                    }
+                },
+                reader,
+                coverageId);
     }
 
-    public WCSDimensionsHelper(final Map<String, DimensionInfo> dimensions, final GridCoverage2DReader reader, final String coverageId) throws IOException {
+    public WCSDimensionsHelper(
+            final Map<String, DimensionInfo> dimensions,
+            final GridCoverage2DReader reader,
+            final String coverageId)
+            throws IOException {
         this.accessor = new ReaderDimensionsAccessor(reader);
         this.coverageId = coverageId;
 
@@ -130,17 +139,17 @@ public class WCSDimensionsHelper {
 
     /**
      * Initialize dimensions
-     * 
+     *
      * @param updatedDimensions
      */
     private void initDimensions(Map<String, DimensionInfo> dimensions) {
         Utilities.ensureNonNull("dimensions", dimensions);
         Map<String, DimensionInfo> updatedDimensions = new HashMap<String, DimensionInfo>();
         updatedDimensions.putAll(dimensions);
-        
+
         // Initialize Time dimensions
         if (updatedDimensions.containsKey(ResourceInfo.TIME)) {
-            timeDimension = updatedDimensions.remove(ResourceInfo.TIME) ;
+            timeDimension = updatedDimensions.remove(ResourceInfo.TIME);
             if (timeDimension != null) {
                 final BigDecimal resolution = timeDimension.getResolution();
                 if (resolution != null) {
@@ -148,17 +157,17 @@ public class WCSDimensionsHelper {
                 }
             }
         }
-        
+
         // Initialize Elevation Dimensions
         if (updatedDimensions.containsKey(ResourceInfo.ELEVATION)) {
-            elevationDimension = updatedDimensions.remove(ResourceInfo.ELEVATION) ;
+            elevationDimension = updatedDimensions.remove(ResourceInfo.ELEVATION);
             final BigDecimal resolution = elevationDimension.getResolution();
             if (resolution != null) {
                 elevationResolutionValue = resolution.doubleValue();
                 elevationResolutionUnit = elevationDimension.getUnitSymbol();
             }
         }
-        
+
         // Remaining dimensions are custom dimensions
         this.additionalDimensions = updatedDimensions;
     }
@@ -204,7 +213,8 @@ public class WCSDimensionsHelper {
 
     /**
      * Returns the minimum time, formatted according to ISO8601
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public String getBeginTime() throws IOException {
         Date minTime = accessor.getMinTime();
@@ -213,7 +223,8 @@ public class WCSDimensionsHelper {
 
     /**
      * Returns the maximum time, formatted according to ISO8601
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public String getEndTime() throws IOException {
         Date maxTime = accessor.getMaxTime();
@@ -222,7 +233,8 @@ public class WCSDimensionsHelper {
 
     /**
      * Returns the minimum elevation
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public String getBeginElevation() throws IOException {
         Double minElevation = accessor.getMinElevation();
@@ -231,7 +243,8 @@ public class WCSDimensionsHelper {
 
     /**
      * Returns the maximum elevation
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public String getEndElevation() throws IOException {
         Double maxElevation = accessor.getMaxElevation();
@@ -240,22 +253,23 @@ public class WCSDimensionsHelper {
 
     /**
      * Return the default value of the specified additional domain
-     * 
-     * @param domainName
      *
+     * @param domainName
      * @throws IOException
      */
     public String getDefaultValue(String domainName) throws IOException {
-        if (additionalDimensions != null && !additionalDimensions.isEmpty() && additionalDimensions.containsKey(domainName)) {
+        if (additionalDimensions != null
+                && !additionalDimensions.isEmpty()
+                && additionalDimensions.containsKey(domainName)) {
             return accessor.getCustomDomainDefaultValue(domainName);
         }
         return null;
     }
 
     /**
-     * Formats a Date into ISO86011 
-     * @param time
+     * Formats a Date into ISO86011
      *
+     * @param time
      */
     public String format(Date time) {
         if (time != null) {
@@ -268,8 +282,6 @@ public class WCSDimensionsHelper {
     /**
      * Returns the time resolution unit, choosing among "year", "month", "day", "hour", "minute",
      * "second"
-     * 
-     *
      */
     public String getTimeResolutionUnit() {
         return timeResolutionUnit;
@@ -277,34 +289,22 @@ public class WCSDimensionsHelper {
 
     /**
      * The time resolution value, expressed in the unit returned by {@link #getTimeResolutionUnit()}
-     * 
-     *
      */
     public long getTimeResolutionValue() {
         return timeResolutionValue;
     }
 
-    /**
-     * Returns the elevation resolution unit
-     * 
-     *
-     */
+    /** Returns the elevation resolution unit */
     public String getElevationResolutionUnit() {
         return elevationResolutionUnit;
     }
 
-    /**
-     * The elevation resolution value
-     *
-     */
+    /** The elevation resolution value */
     public double getElevationResolutionValue() {
         return elevationResolutionValue;
     }
 
-    /**
-     * The coverage identifier
-     *
-     */
+    /** The coverage identifier */
     public String getCoverageId() {
         return coverageId;
     }
@@ -312,9 +312,8 @@ public class WCSDimensionsHelper {
     /**
      * Scan the metadataMap looking for resources related to {@link DimensionInfo} objects and
      * return a dimensions Map. Return an empty map if no dimensions are found.
-     * 
-     * @param metadata
      *
+     * @param metadata
      */
     public static Map<String, DimensionInfo> getDimensionsFromMetadata(MetadataMap metadata) {
         Map<String, DimensionInfo> dimensionsMap = new HashMap<String, DimensionInfo>();
@@ -341,7 +340,10 @@ public class WCSDimensionsHelper {
         return dimensionsMap;
     }
 
-    public static DimensionDescriptor getDimensionDescriptor(final StructuredGridCoverage2DReader reader, final String coverageName, final String dimensionName) {
+    public static DimensionDescriptor getDimensionDescriptor(
+            final StructuredGridCoverage2DReader reader,
+            final String coverageName,
+            final String dimensionName) {
         try {
             List<DimensionDescriptor> descriptors = reader.getDimensionDescriptors(coverageName);
             for (DimensionDescriptor dd : descriptors) {
@@ -351,19 +353,21 @@ public class WCSDimensionsHelper {
             }
 
             return null;
-        } catch(IOException e) {
-            throw new WCS20Exception("Failed to locate the reader's " + dimensionName + " dimension descriptor", e);
+        } catch (IOException e) {
+            throw new WCS20Exception(
+                    "Failed to locate the reader's " + dimensionName + " dimension descriptor", e);
         }
     }
-    
+
     /**
      * Return {@code true} in case the specified Key refers to a Dimension.
-     * @param key
      *
+     * @param key
      */
-    private final static boolean isADimension(final String key) {
-        return key != null && (key.equals(ResourceInfo.TIME) || key.equals(ResourceInfo.ELEVATION) || key
-                        .startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX));
+    private static final boolean isADimension(final String key) {
+        return key != null
+                && (key.equals(ResourceInfo.TIME)
+                        || key.equals(ResourceInfo.ELEVATION)
+                        || key.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX));
     }
-
 }

@@ -21,18 +21,18 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
 
     @Test
     public void testSingleDelay() throws Exception {
-        // create a single item flow controller 
+        // create a single item flow controller
         GlobalFlowController controller = new GlobalFlowController(1);
 
         // make three testing threads that will "process" forever, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(new Request(), 0,
-                Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(new Request(), 0,
-                Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t3 = new FlowControllerTestingThread(new Request(), 0,
-                Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t1 =
+                new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 =
+                new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t3 =
+                new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
         try {
-            // start threads making sure every one of them managed to block somewhere before 
+            // start threads making sure every one of them managed to block somewhere before
             // starting the next one
             t1.start();
             waitBlocked(t1, MAX_WAIT);
@@ -69,38 +69,34 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
             waitAndKill(t3, MAX_WAIT);
         }
     }
-    
+
     @Test
     public void testTimeout() {
-        // create a single item flow controller 
+        // create a single item flow controller
         GlobalFlowController controller = new GlobalFlowController(1);
 
         // make two testing threads that will "process" for 400ms, but with a timeout of 200 on the
         // flow controller
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(new Request(), 100,
-                400, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(new Request(), 100,
-                400, controller);
-        
+        FlowControllerTestingThread t1 =
+                new FlowControllerTestingThread(new Request(), 100, 400, controller);
+        FlowControllerTestingThread t2 =
+                new FlowControllerTestingThread(new Request(), 100, 400, controller);
+
         // start t1 first, let go t2 after
         try {
             t1.start();
             waitBlocked(t1, MAX_WAIT);
             t2.start();
-            
+
             // wait until both terminate
             waitTerminated(t1, MAX_WAIT);
             waitTerminated(t2, MAX_WAIT);
-            
+
             assertEquals(ThreadState.COMPLETE, t1.state);
             assertEquals(ThreadState.TIMED_OUT, t2.state);
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
         }
-
     }
-
-    
-
 }

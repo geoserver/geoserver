@@ -8,10 +8,8 @@ package org.geoserver.wfs.kvp.v2_0;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-
 import net.opengis.wfs20.DropStoredQueryType;
 import net.opengis.wfs20.Wfs20Factory;
-
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.kvp.WFSKvpRequestReader;
 import org.geotools.xml.EMFUtils;
@@ -25,10 +23,10 @@ public class DropStoredQueryKvpRequestReader extends WFSKvpRequestReader {
     @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         EObject obj = (EObject) super.read(request, kvp, rawKvp);
-        
-        //handle storedQuery_id parameter
+
+        // handle storedQuery_id parameter
         if (kvp.containsKey("storedQuery_id")) {
-            //we get it back as a list of uri
+            // we get it back as a list of uri
             List<URI> list = (List<URI>) kvp.get("storedQuery_id");
             EMFUtils.set(obj, "id", list.get(0).toString());
         }

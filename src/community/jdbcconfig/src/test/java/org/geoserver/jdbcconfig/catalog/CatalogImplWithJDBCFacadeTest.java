@@ -10,8 +10,9 @@ import static org.geoserver.catalog.Predicates.asc;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import com.google.common.collect.Lists;
 import java.util.List;
-
+import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -20,16 +21,13 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
-
-import com.google.common.collect.Lists;
-import java.util.logging.Level;
-import org.geotools.util.logging.Logging;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 @RunWith(Parameterized.class)
 public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.CatalogImplTest {
@@ -50,7 +48,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     @Override
     public void setUp() throws Exception {
         super.GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 10;
-        
+
         testSupport.setUp();
 
         ConfigDatabase configDb = testSupport.getDatabase();
@@ -116,7 +114,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         LayerInfo l6 = newLayer(ft3, s3);
         LayerInfo l7 = newLayer(ft2, s1);
         LayerInfo l8 = newLayer(ft1, s2);
-        
+
         catalog.add(l1);
         catalog.add(l2);
         catalog.add(l3);
@@ -146,8 +144,16 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         sortOrder = asc("resource.name");
         expected = Lists.newArrayList(l1, l2, l3);
 
-        //testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
-        CloseableIterator<LayerInfo> it = facade.list(LayerInfo.class, filter, null, null, asc("resource.SRS"), asc("defaultStyle.name"), asc("resource.name"));
+        // testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
+        CloseableIterator<LayerInfo> it =
+                facade.list(
+                        LayerInfo.class,
+                        filter,
+                        null,
+                        null,
+                        asc("resource.SRS"),
+                        asc("defaultStyle.name"),
+                        asc("resource.name"));
         try {
             assertThat(it.next(), is(l4));
             assertThat(it.next(), is(l8));
@@ -162,35 +168,39 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         }
     }
 
-    
-//    @Override
-//    public void testGetLayerGroupByNameWithWorkspace() {
-//        try {
-//            super.testGetLayerGroupByNameWithWorkspace();
-//        } catch (AssertionFailedError e) {
-//            // ignoring failure, we need to fix this as we did for styles by workspace. Check the
-//            // comment in the original test case:
-//            // "//will randomly return one... we should probably return null with multiple matches"
-//            e.printStackTrace();
-//        }
-//    }
+    //    @Override
+    //    public void testGetLayerGroupByNameWithWorkspace() {
+    //        try {
+    //            super.testGetLayerGroupByNameWithWorkspace();
+    //        } catch (AssertionFailedError e) {
+    //            // ignoring failure, we need to fix this as we did for styles by workspace. Check
+    // the
+    //            // comment in the original test case:
+    //            // "//will randomly return one... we should probably return null with multiple
+    // matches"
+    //            e.printStackTrace();
+    //        }
+    //    }
 
     /**
-     * Allow execution of a single test method with a hard-coded DBConfig. Due
-     * to the way junit/maven work with parameterized tests, running a single
-     * test was not possible at the time of the change.
+     * Allow execution of a single test method with a hard-coded DBConfig. Due to the way
+     * junit/maven work with parameterized tests, running a single test was not possible at the time
+     * of the change.
      *
-     * To do so, use the public constructor of DBConfig, create your test, call
-     * setUp and then the test(s) of interest as in the example below.
+     * <p>To do so, use the public constructor of DBConfig, create your test, call setUp and then
+     * the test(s) of interest as in the example below.
      */
     public static void main(String[] args) throws Exception {
         Logging.getLogger("").getHandlers()[0].setLevel(Level.ALL);
         Logging.getLogger("org.geoserver.jdbcconfig.internal").setLevel(Level.ALL);
 
-        JDBCConfigTestSupport.DBConfig config = new JDBCConfigTestSupport.DBConfig(
-                "oracle", "oracle.jdbc.OracleDriver",
-                "jdbc:oracle:thin:system/oracle@//localhost:49161/xe",
-                "system", "oracle");
+        JDBCConfigTestSupport.DBConfig config =
+                new JDBCConfigTestSupport.DBConfig(
+                        "oracle",
+                        "oracle.jdbc.OracleDriver",
+                        "jdbc:oracle:thin:system/oracle@//localhost:49161/xe",
+                        "system",
+                        "oracle");
         CatalogImplWithJDBCFacadeTest test = new CatalogImplWithJDBCFacadeTest(config);
         test.setUp();
         test.testOrderBy();

@@ -16,8 +16,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 /**
- * Shows a paged list of the fonts that are available to the JVM 
- * 
+ * Shows a paged list of the fonts that are available to the JVM
+ *
  * @author Miles Jordan, Australian Antarctic Division
  */
 public class JVMFontsPage extends ServerAdminPage {
@@ -31,22 +31,26 @@ public class JVMFontsPage extends ServerAdminPage {
     }
 
     @SuppressWarnings("serial")
-	private void updateModel() {
-       table = new GeoServerTablePanel<PreviewFont>("table", provider) {
-           @Override
-           protected Component getComponentForProperty(String id, IModel<PreviewFont> itemModel, 
-            Property<PreviewFont> property) {
-                PreviewFont previewFont = itemModel.getObject();
+    private void updateModel() {
+        table =
+                new GeoServerTablePanel<PreviewFont>("table", provider) {
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id,
+                            IModel<PreviewFont> itemModel,
+                            Property<PreviewFont> property) {
+                        PreviewFont previewFont = itemModel.getObject();
 
-                if (property == PREVIEW_IMAGE) {
-                	BufferedDynamicImageResource image = previewFont.getPreviewImage();
-                	Fragment f = new Fragment(id, "previewImageFragment", JVMFontsPage.this);
-                    f.add(new Image("previewImage", image));
-                    return f;
-                } 
-                return null;
-            }
-        };
+                        if (property == PREVIEW_IMAGE) {
+                            BufferedDynamicImageResource image = previewFont.getPreviewImage();
+                            Fragment f =
+                                    new Fragment(id, "previewImageFragment", JVMFontsPage.this);
+                            f.add(new Image("previewImage", image));
+                            return f;
+                        }
+                        return null;
+                    }
+                };
         table.setOutputMarkupId(true);
         add(table);
     }

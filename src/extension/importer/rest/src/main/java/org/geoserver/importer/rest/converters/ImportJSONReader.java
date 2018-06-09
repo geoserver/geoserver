@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
@@ -55,53 +56,56 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 /**
- * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link ImportTask} objects from JSON
+ * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link
+ * ImportTask} objects from JSON
  */
 @Component
 public class ImportJSONReader {
 
     Importer importer;
-    
+
     @Autowired
-    public ImportJSONReader(Importer importer)  {
+    public ImportJSONReader(Importer importer) {
         this.importer = importer;
     }
-    
-//    public ImportContextJSONConverterReader(Importer importer, InputStream in) throws IOException {
-//        super(MediaType.APPLICATION_JSON,AbstractCatalogController.TEXT_JSON);
-//        this.importer = importer;
-//        JSONObject json = parse(in);
-//    }
 
-//    @Override
-//    protected boolean supports(Class<?> clazz) {
-//        return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz) ||
-//                ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz));
-//    }
-    
-//    @Override
-//    protected boolean canWrite(MediaType mediaType) {
-//        return false; // write not supported
-//    }
+    //    public ImportContextJSONConverterReader(Importer importer, InputStream in) throws
+    // IOException {
+    //        super(MediaType.APPLICATION_JSON,AbstractCatalogController.TEXT_JSON);
+    //        this.importer = importer;
+    //        JSONObject json = parse(in);
+    //    }
 
-//    @Override
-//    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
-//            throws IOException, HttpMessageNotReadableException {
-//        InputStream in = inputMessage.getBody();
-//        JSONObject json = parse(in);
-//        if (ImportContext.class.isAssignableFrom(clazz)) {
-//            return context(json);
-//        } else if (ImportTask.class.isAssignableFrom(clazz)) {
-//            return task(json);
-//        } else if (ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz)) {
-//            return transform(json);
-//        }
-//        return null;
-//    }
+    //    @Override
+    //    protected boolean supports(Class<?> clazz) {
+    //        return (ImportContext.class.isAssignableFrom(clazz) ||
+    // ImportTask.class.isAssignableFrom(clazz) ||
+    //                ImportTransform.class.isAssignableFrom(clazz) ||
+    // TransformChain.class.isAssignableFrom(clazz));
+    //    }
+
+    //    @Override
+    //    protected boolean canWrite(MediaType mediaType) {
+    //        return false; // write not supported
+    //    }
+
+    //    @Override
+    //    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage
+    // inputMessage)
+    //            throws IOException, HttpMessageNotReadableException {
+    //        InputStream in = inputMessage.getBody();
+    //        JSONObject json = parse(in);
+    //        if (ImportContext.class.isAssignableFrom(clazz)) {
+    //            return context(json);
+    //        } else if (ImportTask.class.isAssignableFrom(clazz)) {
+    //            return task(json);
+    //        } else if (ImportTransform.class.isAssignableFrom(clazz) ||
+    // TransformChain.class.isAssignableFrom(clazz)) {
+    //            return transform(json);
+    //        }
+    //        return null;
+    //    }
 
     public ImportContext context(JSONObject json) throws IOException {
         ImportContext context = null;
@@ -146,7 +150,7 @@ public class ImportJSONReader {
             json = json.getJSONObject("layer");
         }
 
-        //TODO: what about coverages?
+        // TODO: what about coverages?
         ResourceInfo r = f.createFeatureType();
         if (json.has("name")) {
             r.setName(json.getString("name"));
@@ -158,11 +162,9 @@ public class ImportJSONReader {
             r.setSRS(json.getString("srs"));
             try {
                 r.setNativeCRS(CRS.decode(json.getString("srs")));
+            } catch (Exception e) {
+                // should fail later
             }
-            catch(Exception e) {
-                //should fail later
-            }
-            
         }
         if (json.has("bbox")) {
             r.setNativeBoundingBox(bbox(json.getJSONObject("bbox")));
@@ -179,8 +181,8 @@ public class ImportJSONReader {
 
         LayerInfo l = f.createLayer();
         l.setResource(r);
-        //l.setName(); don't need to this, layer.name just forwards to name of underlying resource
-        
+        // l.setName(); don't need to this, layer.name just forwards to name of underlying resource
+
         if (json.has("style")) {
             JSONObject sobj = new JSONObject();
             sobj.put("defaultStyle", json.get("style"));
@@ -191,14 +193,12 @@ public class ImportJSONReader {
             LayerInfo tmp = fromJSON(lobj, LayerInfo.class);
             if (tmp.getDefaultStyle() != null) {
                 l.setDefaultStyle(tmp.getDefaultStyle());
-            }
-            else {
+            } else {
                 sobj = new JSONObject();
                 sobj.put("style", json.get("style"));
-                
+
                 l.setDefaultStyle(fromJSON(sobj, StyleInfo.class));
             }
-
         }
         return l;
     }
@@ -207,10 +207,11 @@ public class ImportJSONReader {
         JSONObject json = parse(inputStream);
         return task(json);
     }
+
     public ImportTask task(JSONObject json) throws IOException {
 
         if (json.has("task")) {
-            json =  json.getJSONObject("task");
+            json = json.getJSONObject("task");
         }
 
         ImportTask task = new ImportTask();
@@ -229,8 +230,7 @@ public class ImportJSONReader {
         JSONObject data = null;
         if (json.has("data")) {
             data = json.getJSONObject("data");
-        }
-        else if (json.has("source")) { // backward compatible check for source
+        } else if (json.has("source")) { // backward compatible check for source
             data = json.getJSONObject("source");
         }
 
@@ -247,7 +247,7 @@ public class ImportJSONReader {
             task.setStore(fromJSON(json.getJSONObject("target"), StoreInfo.class));
         }
 
-        LayerInfo layer = null; 
+        LayerInfo layer = null;
         if (json.has("layer")) {
             layer = layer(json.getJSONObject("layer"));
         } else {
@@ -267,7 +267,8 @@ public class ImportJSONReader {
         TransformChain chain = null;
         if ("vector".equalsIgnoreCase(type) || "VectorTransformChain".equalsIgnoreCase(type)) {
             chain = new VectorTransformChain();
-        } else if ("raster".equalsIgnoreCase(type) || "RasterTransformChain".equalsIgnoreCase(type)) {
+        } else if ("raster".equalsIgnoreCase(type)
+                || "RasterTransformChain".equalsIgnoreCase(type)) {
             chain = new RasterTransformChain();
         } else {
             throw new IOException("Unable to parse transformChain of type " + type);
@@ -290,15 +291,19 @@ public class ImportJSONReader {
     public ImportTransform transform(String json) throws IOException {
         return transform(IOUtils.toInputStream(json));
     }
+
     public ImportTransform transform(InputStream inputStream) throws IOException {
         JSONObject json = parse(inputStream);
         return transform(json);
     }
+
     public ImportTransform transform(JSONObject json) throws IOException {
         ImportTransform transform;
         String type = json.getString("type");
         if ("DateFormatTransform".equalsIgnoreCase(type)) {
-            transform = new DateFormatTransform(json.getString("field"), json.optString("format", null));
+            transform =
+                    new DateFormatTransform(
+                            json.getString("field"), json.optString("format", null));
         } else if ("IntegerFieldToDateTransform".equalsIgnoreCase(type)) {
             transform = new IntegerFieldToDateTransform(json.getString("field"));
         } else if ("CreateIndexTransform".equalsIgnoreCase(type)) {
@@ -306,23 +311,25 @@ public class ImportJSONReader {
         } else if ("AttributeRemapTransform".equalsIgnoreCase(type)) {
             Class clazz;
             try {
-                clazz = Class.forName( json.getString("target") );
+                clazz = Class.forName(json.getString("target"));
             } catch (ClassNotFoundException cnfe) {
-                throw new ValidationException("unable to locate target class " + json.getString("target"));
+                throw new ValidationException(
+                        "unable to locate target class " + json.getString("target"));
             }
             transform = new AttributeRemapTransform(json.getString("field"), clazz);
         } else if ("AttributesToPointGeometryTransform".equalsIgnoreCase(type)) {
             String latField = json.getString("latField");
             String lngField = json.getString("lngField");
             transform = new AttributesToPointGeometryTransform(latField, lngField);
-        } else if ("ReprojectTransform".equalsIgnoreCase(type)){
-            CoordinateReferenceSystem source = json.has("source") ? crs(json.getString("source")) : null;
-            CoordinateReferenceSystem target = json.has("target") ? crs(json.getString("target")) : null;
+        } else if ("ReprojectTransform".equalsIgnoreCase(type)) {
+            CoordinateReferenceSystem source =
+                    json.has("source") ? crs(json.getString("source")) : null;
+            CoordinateReferenceSystem target =
+                    json.has("target") ? crs(json.getString("target")) : null;
 
             try {
                 transform = new ReprojectTransform(source, target);
-            } 
-            catch(Exception e) {
+            } catch (Exception e) {
                 throw new ValidationException("Error parsing reproject transform", e);
             }
         } else if ("GdalTranslateTransform".equalsIgnoreCase(type)) {
@@ -364,35 +371,28 @@ public class ImportJSONReader {
 
         if ("file".equalsIgnoreCase(type)) {
             return file(json);
-        }
-        else if("directory".equalsIgnoreCase(type)) {
+        } else if ("directory".equalsIgnoreCase(type)) {
             return directory(json);
-        }
-        else if("mosaic".equalsIgnoreCase(type)) {
+        } else if ("mosaic".equalsIgnoreCase(type)) {
             return mosaic(json);
-        }
-        else if("archive".equalsIgnoreCase(type)) {
+        } else if ("archive".equalsIgnoreCase(type)) {
             return archive(json);
-        }
-        else if ("database".equalsIgnoreCase(type)) {
+        } else if ("database".equalsIgnoreCase(type)) {
             return database(json);
-        }
-        else if ("remote".equalsIgnoreCase(type)) {
+        } else if ("remote".equalsIgnoreCase(type)) {
             return remote(json);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Unknown data type: " + type);
         }
     }
 
     FileData file(JSONObject json) throws IOException {
         if (json.has("file")) {
-            //TODO: find out if spatial or not
+            // TODO: find out if spatial or not
             String file = json.getString("file");
             return FileData.createFromFile(new File(file));
-            //return new FileData(new File(file));
-        }
-        else {
+            // return new FileData(new File(file));
+        } else {
             throw new IOException(
                     "Could not find 'file' entry in data, mandatory for file type data");
         }
@@ -419,16 +419,21 @@ public class ImportJSONReader {
     }
 
     Mosaic mosaic(JSONObject json) throws IOException {
-        Mosaic m = new Mosaic(json.has("location") ?  new File(json.getString("location")) : 
-            Directory.createNew(importer.getUploadRoot()).getFile());
+        Mosaic m =
+                new Mosaic(
+                        json.has("location")
+                                ? new File(json.getString("location"))
+                                : Directory.createNew(importer.getUploadRoot()).getFile());
         if (json.has("name")) {
             m.setName(json.getString("name"));
         }
         if (json.containsKey("time")) {
             JSONObject time = json.getJSONObject("time");
             if (!time.containsKey("mode")) {
-                throw new IllegalArgumentException("time object must specific mode property as " +
-                    "one of " + TimeMode.values());
+                throw new IllegalArgumentException(
+                        "time object must specific mode property as "
+                                + "one of "
+                                + TimeMode.values());
             }
 
             m.setTimeMode(TimeMode.valueOf(time.getString("mode").toUpperCase()));
@@ -444,8 +449,7 @@ public class ImportJSONReader {
     public Directory directory(JSONObject json) throws IOException {
         if (json.has("location")) {
             return new Directory(new File(json.getString("location")));
-        }
-        else {
+        } else {
             return Directory.createNew(importer.getUploadRoot());
         }
     }
@@ -453,16 +457,21 @@ public class ImportJSONReader {
     Database database(JSONObject json) throws IOException {
         throw new UnsupportedOperationException("TODO: implement");
     }
-    
+
     ReferencedEnvelope bbox(JSONObject json) {
         CoordinateReferenceSystem crs = null;
         if (json.has("crs")) {
-            crs = (CoordinateReferenceSystem) 
-                new XStreamPersister.CRSConverter().fromString(json.getString("crs"));
+            crs =
+                    (CoordinateReferenceSystem)
+                            new XStreamPersister.CRSConverter().fromString(json.getString("crs"));
         }
 
-        return new ReferencedEnvelope(json.getDouble("minx"), json.getDouble("maxx"), 
-            json.getDouble("miny"), json.getDouble("maxy"), crs);
+        return new ReferencedEnvelope(
+                json.getDouble("minx"),
+                json.getDouble("maxx"),
+                json.getDouble("miny"),
+                json.getDouble("maxy"),
+                crs);
     }
 
     CoordinateReferenceSystem crs(String srs) {
@@ -493,5 +502,4 @@ public class ImportJSONReader {
         XStreamPersister xp = importer.createXStreamPersisterJSON();
         return xp.load(new ByteArrayInputStream(json.toString().getBytes()), clazz);
     }
-
 }

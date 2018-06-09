@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.security;
 
+import com.google.common.base.Optional;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.geogig.geoserver.config.ConfigStore;
 import org.geogig.geoserver.config.WhitelistRule;
 import org.geoserver.platform.GeoServerExtensions;
@@ -26,12 +26,9 @@ import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Remote;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
-import com.google.common.base.Optional;
-
 /**
  * Classpath {@link CommandHook hook} that catches remotes related commands before they are executed
  * and validates them against the {@link WhitelistRule whitelist rules} to let them process or not.
- *
  */
 public final class NetworkSecurityHook implements CommandHook {
 
@@ -70,15 +67,18 @@ public final class NetworkSecurityHook implements CommandHook {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T post(AbstractGeoGigOp<T> command, Object retVal,
-            RuntimeException potentialException) throws Exception {
+    public <T> T post(
+            AbstractGeoGigOp<T> command, Object retVal, RuntimeException potentialException)
+            throws Exception {
         return (T) retVal;
     }
 
     @Override
     public boolean appliesTo(Class<? extends AbstractGeoGigOp<?>> clazz) {
-        return LsRemoteOp.class.equals(clazz) || CloneOp.class.equals(clazz)
-                || FetchOp.class.equals(clazz) || PushOp.class.equals(clazz);
+        return LsRemoteOp.class.equals(clazz)
+                || CloneOp.class.equals(clazz)
+                || FetchOp.class.equals(clazz)
+                || PushOp.class.equals(clazz);
     }
 
     private void checkRestricted(String remoteUrl) throws CannotRunGeogigOperationException {
@@ -94,12 +94,14 @@ public final class NetworkSecurityHook implements CommandHook {
         if (!rules.isEmpty()) {
             for (WhitelistRule rule : rules) {
                 if (!ruleBlocks(rule, remoteUrl)) {
-                    return;// break fast if any of the rules doesn't block the url
+                    return; // break fast if any of the rules doesn't block the url
                 }
             }
 
-            String msg = String.format("Remote %s does not pass any white list rule: %s", remoteUrl,
-                    new ArrayList<>(rules));
+            String msg =
+                    String.format(
+                            "Remote %s does not pass any white list rule: %s",
+                            remoteUrl, new ArrayList<>(rules));
             throw new CannotRunGeogigOperationException(msg);
         }
     }
@@ -147,6 +149,6 @@ public final class NetworkSecurityHook implements CommandHook {
         }
     }
 
-    private static final Pattern IP_ADDRESS_OR_CIDR_RANGE = Pattern
-            .compile("^(([:\\p{XDigit}]+)|([\\d\\.]+))(/\\d+)?$");
+    private static final Pattern IP_ADDRESS_OR_CIDR_RANGE =
+            Pattern.compile("^(([:\\p{XDigit}]+)|([\\d\\.]+))(/\\d+)?$");
 }

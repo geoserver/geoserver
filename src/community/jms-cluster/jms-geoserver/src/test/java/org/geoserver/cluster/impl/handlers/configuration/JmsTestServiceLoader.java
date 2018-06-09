@@ -8,9 +8,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 
-/**
- * Loader for the test service.
- */
+/** Loader for the test service. */
 public class JmsTestServiceLoader extends XStreamServiceLoader<JmsTestServiceInfo> {
 
     public JmsTestServiceLoader(GeoServerResourceLoader resourceLoader) {

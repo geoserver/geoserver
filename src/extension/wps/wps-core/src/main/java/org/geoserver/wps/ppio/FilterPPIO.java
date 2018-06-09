@@ -6,9 +6,7 @@
 package org.geoserver.wps.ppio;
 
 import java.io.InputStream;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.IOUtils;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.filter.v1_0.OGCConfiguration;
@@ -20,7 +18,7 @@ import org.xml.sax.ContentHandler;
 
 /**
  * Parses and encodes an OGC filter using ECQL
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class FilterPPIO extends XMLPPIO {
@@ -29,15 +27,15 @@ public class FilterPPIO extends XMLPPIO {
     protected FilterPPIO(Class type, String mimeType, QName element) {
         super(type, type, mimeType, element);
     }
-    
+
     @Override
     public Object decode(Object input) throws Exception {
-        if(input == null) {
+        if (input == null) {
             return null;
-        } else if(input instanceof Filter) {
+        } else if (input instanceof Filter) {
             return input;
-        } else if(input instanceof String) {
-            return decode(IOUtils.toInputStream((String) input)); 
+        } else if (input instanceof String) {
+            return decode(IOUtils.toInputStream((String) input));
         } else {
             throw new IllegalArgumentException("Cannot convert " + input + " into a Filter object");
         }
@@ -66,9 +64,11 @@ public class FilterPPIO extends XMLPPIO {
     public static class Filter11 extends FilterPPIO {
 
         public Filter11() {
-            super(Filter.class, "text/xml; subtype=filter/1.1", org.geotools.filter.v1_1.OGC.Filter);
+            super(
+                    Filter.class,
+                    "text/xml; subtype=filter/1.1",
+                    org.geotools.filter.v1_1.OGC.Filter);
             xml = new org.geotools.filter.v1_1.OGCConfiguration();
         }
     }
-
 }

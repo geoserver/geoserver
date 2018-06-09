@@ -12,17 +12,15 @@ import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
 
 /**
  * Configuration panel for {@link GeoServerRequestHeaderAuthenticationFilter}.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class HeaderAuthFilterPanel 
-    extends PreAuthenticatedUserNameFilterPanel<RequestHeaderAuthenticationFilterConfig> {
-
+public class HeaderAuthFilterPanel
+        extends PreAuthenticatedUserNameFilterPanel<RequestHeaderAuthenticationFilterConfig> {
 
     public HeaderAuthFilterPanel(String id, IModel<RequestHeaderAuthenticationFilterConfig> model) {
         super(id, model);
-        
+
         add(new TextField("principalHeaderAttribute").setRequired(true));
     }
-
 }

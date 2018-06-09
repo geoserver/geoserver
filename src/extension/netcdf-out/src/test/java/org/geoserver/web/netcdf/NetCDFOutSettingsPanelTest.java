@@ -30,20 +30,21 @@ public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:extensions:0:content", NetCDFOutSettingsPanel.class);
         tester.assertComponent("form:extensions:0:content:panel", NetCDFPanel.class);
 
-        NetCDFSettingsContainer container = map.get(NetCDFSettingsContainer.NETCDFOUT_KEY,
-                NetCDFSettingsContainer.class);
+        NetCDFSettingsContainer container =
+                map.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
         // Ensure the element is in the map
         assertNotNull(container);
         // Ensure the panel is present
-        NetCDFPanel panel = (NetCDFPanel) tester
-                .getComponentFromLastRenderedPage("form:extensions:0:content:panel");
+        NetCDFPanel panel =
+                (NetCDFPanel)
+                        tester.getComponentFromLastRenderedPage("form:extensions:0:content:panel");
         assertNotNull(panel);
         // Check that the values are the same
         NetCDFSettingsContainer container2 = (NetCDFSettingsContainer) panel.getModelObject();
         assertNotNull(container2);
-        
+
         assertEquals(container.getCompressionLevel(), container2.getCompressionLevel(), 0.001d);
-//        assertEquals(container.getNetcdfVersion(), container2.getNetcdfVersion());
+        //        assertEquals(container.getNetcdfVersion(), container2.getNetcdfVersion());
         assertEquals(container.isShuffle(), container2.isShuffle());
         assertEquals(container.isCopyAttributes(), container2.isCopyAttributes());
         assertEquals(container.isCopyGlobalAttributes(), container2.isCopyGlobalAttributes());
@@ -60,5 +61,4 @@ public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
         assertNotNull(container2.getExtraVariables());
         assertEquals(container.getExtraVariables(), container2.getExtraVariables());
     }
-
 }

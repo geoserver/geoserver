@@ -5,12 +5,11 @@
  */
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -51,8 +50,8 @@ public class DescribeFeatureTest extends WFSTestSupport {
         // make sure AggregateGeoFeature is in the mock data set
         Document doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("1",
-                "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "1", "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
 
         // enable skipping of misconfigured layers
         GeoServerInfo global = getGeoServer().getGlobal();
@@ -60,23 +59,25 @@ public class DescribeFeatureTest extends WFSTestSupport {
         getGeoServer().save(global);
 
         // misconfigure a layer
-        FeatureTypeInfo ftype = getCatalog()
-                .getFeatureTypeByName(CiteTestData.AGGREGATEGEOFEATURE.getLocalPart());
+        FeatureTypeInfo ftype =
+                getCatalog().getFeatureTypeByName(CiteTestData.AGGREGATEGEOFEATURE.getLocalPart());
         ftype.setNativeName("NOT ACTUALLY THERE");
         getCatalog().save(ftype);
 
         // check the results again
         doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("0",
-                "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
-
+        XMLAssert.assertXpathEvaluatesTo(
+                "0", "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
     }
 
     @Test
     public void testPost() throws Exception {
-        String xml = "<wfs:DescribeFeatureType " + "service=\"WFS\" " + "version=\"1.0.0\" "
-                + "xmlns:wfs=\"http://www.opengis.net/wfs\" />";
+        String xml =
+                "<wfs:DescribeFeatureType "
+                        + "service=\"WFS\" "
+                        + "version=\"1.0.0\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" />";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
@@ -85,21 +86,26 @@ public class DescribeFeatureTest extends WFSTestSupport {
     @Test
     public void testPostDummyFeature() throws Exception {
 
-        String xml = "<wfs:DescribeFeatureType " + "service=\"WFS\" " + "version=\"1.0.0\" "
-                + "xmlns:wfs=\"http://www.opengis.net/wfs\" >"
-                + " <wfs:TypeName>cgf:DummyFeature</wfs:TypeName>" + "</wfs:DescribeFeatureType>";
+        String xml =
+                "<wfs:DescribeFeatureType "
+                        + "service=\"WFS\" "
+                        + "version=\"1.0.0\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" >"
+                        + " <wfs:TypeName>cgf:DummyFeature</wfs:TypeName>"
+                        + "</wfs:DescribeFeatureType>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
-
     }
 
     @Test
     public void testWithoutExplicitMapping() throws Exception {
-        String xml = "<DescribeFeatureType xmlns='http://www.opengis.net/wfs'"
-                + " xmlns:gml='http://www.opengis.net/gml'"
-                + " xmlns:ogc='http://www.opengis.net/ogc' version='1.0.0' service='WFS'>"
-                + " <TypeName>cdf:Locks</TypeName>" + " </DescribeFeatureType>";
+        String xml =
+                "<DescribeFeatureType xmlns='http://www.opengis.net/wfs'"
+                        + " xmlns:gml='http://www.opengis.net/gml'"
+                        + " xmlns:ogc='http://www.opengis.net/ogc' version='1.0.0' service='WFS'>"
+                        + " <TypeName>cdf:Locks</TypeName>"
+                        + " </DescribeFeatureType>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
@@ -131,8 +137,8 @@ public class DescribeFeatureTest extends WFSTestSupport {
             imprts.put(namespace, params);
         }
 
-        String[] expected = new String[] { CiteTestData.SF_URI, CiteTestData.CDF_URI,
-                CiteTestData.CGF_URI };
+        String[] expected =
+                new String[] {CiteTestData.SF_URI, CiteTestData.CDF_URI, CiteTestData.CGF_URI};
         for (String namespace : expected) {
             assertNotNull(imprts.get(namespace));
             HashMap params = imprts.get(namespace);
@@ -149,7 +155,6 @@ public class DescribeFeatureTest extends WFSTestSupport {
             // %2c == , (url-encoded, comma is not considered a safe char)
             assertEquals(cat.getFeatureTypesByNamespace(ns).size(), types.split("%2c").length);
         }
-
     }
 
     @Test
@@ -165,32 +170,37 @@ public class DescribeFeatureTest extends WFSTestSupport {
 
         doc = getAsDOM("sf/wfs?request=DescribeFeatureType&version=1.0.0&typename=cdf:Fifteen");
         XMLAssert.assertXpathExists("//ogc:ServiceException", doc);
-
     }
 
     @Test
     public void testMultipleNamespaceNoTargetNamespace() throws Exception {
-        Document doc = getAsDOM(
-                "wfs?request=DescribeFeatureType&version=1.0.0&typeName=sf:PrimitiveGeoFeature,cgf:Points");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=DescribeFeatureType&version=1.0.0&typeName=sf:PrimitiveGeoFeature,cgf:Points");
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         assertFalse(doc.getDocumentElement().hasAttribute("targetNamespace"));
     }
 
     @Test
     public void testMethodNameInjection() throws Exception {
-        Document dom = getAsDOM("wfs?service=WFS&version=1.0.0"
-                + "&request=DescribeFeatureType%22%3E%3C/ServiceException%3E%3Cfoo%3EHello,%20World%3C/foo%3E%3CServiceException+foo=%22"
-                + "&typeName=sf:archsites");
+        Document dom =
+                getAsDOM(
+                        "wfs?service=WFS&version=1.0.0"
+                                + "&request=DescribeFeatureType%22%3E%3C/ServiceException%3E%3Cfoo%3EHello,%20World%3C/foo%3E%3CServiceException+foo=%22"
+                                + "&typeName=sf:archsites");
         // print(dom);
 
         // check we have a valid exception
         XMLAssert.assertXpathExists("/ogc:ServiceExceptionReport/ogc:ServiceException", dom);
-        XMLAssert.assertXpathEvaluatesTo("OperationNotSupported",
-                "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", dom);
+        XMLAssert.assertXpathEvaluatesTo(
+                "OperationNotSupported",
+                "/ogc:ServiceExceptionReport/ogc:ServiceException/@code",
+                dom);
         // the locator has been escaped
         XMLAssert.assertXpathEvaluatesTo(
                 "DescribeFeatureType\"></ServiceException><foo>Hello, World</foo><ServiceException foo=\"",
-                "/ogc:ServiceExceptionReport/ogc:ServiceException/@locator", dom);
+                "/ogc:ServiceExceptionReport/ogc:ServiceException/@locator",
+                dom);
         // the attack failed and the foo element is not there
         XMLAssert.assertXpathNotExists("//foo", dom);
     }

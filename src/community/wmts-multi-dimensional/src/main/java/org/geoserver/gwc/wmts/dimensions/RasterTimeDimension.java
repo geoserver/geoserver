@@ -10,13 +10,16 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMS;
 
-/**
- * Represents a time dimension of a raster.
- */
+/** Represents a time dimension of a raster. */
 public class RasterTimeDimension extends RasterDimension {
 
     public RasterTimeDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.TEMPORAL, 
+        super(
+                wms,
+                ResourceInfo.TIME,
+                layerInfo,
+                dimensionInfo,
+                CoverageDimensionsReader.DataType.TEMPORAL,
                 DimensionsUtils.TEMPORAL_COMPARATOR);
     }
 
@@ -24,5 +27,4 @@ public class RasterTimeDimension extends RasterDimension {
     protected String getDefaultValueFallbackAsString() {
         return DimensionDefaultValueSetting.TIME_CURRENT;
     }
-
 }

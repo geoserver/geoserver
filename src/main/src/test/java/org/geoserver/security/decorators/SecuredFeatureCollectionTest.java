@@ -11,9 +11,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
 import org.geotools.data.FeatureStore;
@@ -25,7 +22,6 @@ import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -56,8 +52,8 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
         store = createNiceMock(FeatureStore.class);
         expect(store.getSchema()).andReturn(schema).anyTimes();
         expect(store.getFeatures()).andReturn(fc).anyTimes();
-        expect(store.getFeatures((Filter)anyObject())).andReturn(fc).anyTimes();
-        expect(store.getFeatures((Query)anyObject())).andReturn(fc).anyTimes();
+        expect(store.getFeatures((Filter) anyObject())).andReturn(fc).anyTimes();
+        expect(store.getFeatures((Query) anyObject())).andReturn(fc).anyTimes();
         replay(store);
         /*expect(fc.features()).andReturn(it).anyTimes();
         expect(fc.sort(sort)).andReturn(fc).anyTimes();
@@ -94,27 +90,28 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
     @Test
     public void testReadOnly() throws Exception {
         SecuredFeatureStore ro = new SecuredFeatureStore(store, WrapperPolicy.readOnlyHide(null));
-        
+
         // let's check the iterator, should allow read but not remove
         FeatureCollection rofc = ro.getFeatures();
         FeatureIterator roit = rofc.features();
         roit.hasNext();
         roit.next();
-    
+
         // check derived collections are still read only and share the same
         // challenge policy
-        SecuredFeatureCollection sorted = (SecuredFeatureCollection) rofc
-                .sort(SortBy.NATURAL_ORDER);
+        SecuredFeatureCollection sorted =
+                (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
         assertEquals(ro.policy, sorted.policy);
-        SecuredFeatureCollection sub = (SecuredFeatureCollection) rofc
-                .subCollection(Filter.INCLUDE);
+        SecuredFeatureCollection sub =
+                (SecuredFeatureCollection) rofc.subCollection(Filter.INCLUDE);
         assertEquals(ro.policy, sorted.policy);
     }
 
     @Test
     public void testChallenge() throws Exception {
 
-        SecuredFeatureStore ro = new SecuredFeatureStore(store, WrapperPolicy.readOnlyChallenge(null));
+        SecuredFeatureStore ro =
+                new SecuredFeatureStore(store, WrapperPolicy.readOnlyChallenge(null));
 
         DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(feature);
@@ -125,7 +122,7 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
             ro.addFeatures(fc);
             fail("Should have failed with a spring security exception");
         } catch (Exception e) {
-            if (ReadOnlyDataStoreTest.isSpringSecurityException(e)==false)
+            if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)
                 fail("Should have failed with a security exception");
         }
 
@@ -133,21 +130,21 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
             ro.removeFeatures(Filter.INCLUDE);
             fail("Should have failed with a spring security exception");
         } catch (Exception e) {
-            if (ReadOnlyDataStoreTest.isSpringSecurityException(e)==false)
+            if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)
                 fail("Should have failed with a security exception");
         }
         try {
             ro.removeFeatures(ECQL.toFilter("IN ('testSchema.1')"));
             fail("Should have failed with a spring security exception");
         } catch (Exception e) {
-            if (ReadOnlyDataStoreTest.isSpringSecurityException(e)==false)
+            if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)
                 fail("Should have failed with a security exception");
         }
         try {
             ro.removeFeatures(Filter.EXCLUDE);
             fail("Should have failed with a spring security exception");
         } catch (Exception e) {
-            if (ReadOnlyDataStoreTest.isSpringSecurityException(e)==false)
+            if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)
                 fail("Should have failed with a security exception");
         }
 
@@ -159,11 +156,11 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
         // check derived collections are still read only and share the same
         // challenge policy
-        SecuredFeatureCollection sorted = (SecuredFeatureCollection) rofc
-                .sort(SortBy.NATURAL_ORDER);
+        SecuredFeatureCollection sorted =
+                (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
         assertEquals(ro.policy, sorted.policy);
-        SecuredFeatureCollection sub = (SecuredFeatureCollection) rofc
-                .subCollection(Filter.INCLUDE);
+        SecuredFeatureCollection sub =
+                (SecuredFeatureCollection) rofc.subCollection(Filter.INCLUDE);
         assertEquals(ro.policy, sorted.policy);
     }
 }

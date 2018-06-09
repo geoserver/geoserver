@@ -10,7 +10,7 @@ import org.opengis.filter.expression.PropertyName;
 
 /**
  * Visits a filter and transforms back the properties into
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class MappingFilterVisitor extends DuplicatingFilterVisitor {
@@ -25,13 +25,15 @@ class MappingFilterVisitor extends DuplicatingFilterVisitor {
     public Object visit(PropertyName expression, Object extraData) {
         String name = expression.getPropertyName();
         // special case for "default geometry" property
-        if("".equals(name)) {
+        if ("".equals(name)) {
             return expression;
         }
         String sourceName = mapper.getSourceName(name);
         if (sourceName == null) {
-            throw new ServiceException("Simple feature translation failed, could not back-map '"
-                    + name + "' to a source property");
+            throw new ServiceException(
+                    "Simple feature translation failed, could not back-map '"
+                            + name
+                            + "' to a source property");
         } else {
             return ff.property(sourceName);
         }

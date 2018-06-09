@@ -11,9 +11,9 @@ import org.geotools.styling.Style;
 import org.opengis.parameter.GeneralParameterValue;
 
 /**
- * A grid reader layer that works with a cached reader, that is, a reader that the layer does not own
- * and thus should not dispose of
- * 
+ * A grid reader layer that works with a cached reader, that is, a reader that the layer does not
+ * own and thus should not dispose of
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CachedGridReaderLayer extends GridReaderLayer {
@@ -26,16 +26,19 @@ public class CachedGridReaderLayer extends GridReaderLayer {
         super(reader, style, title);
     }
 
-    public CachedGridReaderLayer(GridCoverage2DReader reader, Style style,
-            GeneralParameterValue[] params) {
+    public CachedGridReaderLayer(
+            GridCoverage2DReader reader, Style style, GeneralParameterValue[] params) {
         super(reader, style, params);
     }
 
-    public CachedGridReaderLayer(GridCoverage2DReader reader, Style style, String title,
+    public CachedGridReaderLayer(
+            GridCoverage2DReader reader,
+            Style style,
+            String title,
             GeneralParameterValue[] params) {
         super(reader, style, title, params);
     }
-    
+
     @Override
     public void dispose() {
         this.reader = null;
@@ -43,5 +46,4 @@ public class CachedGridReaderLayer extends GridReaderLayer {
         this.params = null;
         super.dispose();
     }
-
 }

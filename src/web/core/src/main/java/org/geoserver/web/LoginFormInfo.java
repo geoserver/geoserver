@@ -5,13 +5,14 @@
 package org.geoserver.web;
 
 /**
- * Information about a login form that should be shown from the main page in the GeoServer UI.
- * The "order" field is based on the "name".
- * 
+ * Information about a login form that should be shown from the main page in the GeoServer UI. The
+ * "order" field is based on the "name".
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 @SuppressWarnings("serial")
-public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements Comparable<LoginFormInfo> {
+public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
+        implements Comparable<LoginFormInfo> {
     String name;
     String icon = "";
     private String include = "";
@@ -19,17 +20,17 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
 
     /**
      * Name of the login extension; it will determine also the order displayed for the icons
-     * 
+     *
      * @param name
      */
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Path to the icon; the graphic file must be places under resources on the same
-     * package of the "componentClass"
-     * 
+     * Path to the icon; the graphic file must be places under resources on the same package of the
+     * "componentClass"
+     *
      * @return
      */
     public String getIcon() {
@@ -37,9 +38,9 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
     }
 
     /**
-     * Path to the icon; the graphic file must be places under resources on the same
-     * package of the "componentClass"
-     * 
+     * Path to the icon; the graphic file must be places under resources on the same package of the
+     * "componentClass"
+     *
      * @param icon
      */
     public void setIcon(String icon) {
@@ -48,7 +49,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
 
     /**
      * Static HTML Resource to include in the form (if needed).
-     * 
+     *
      * @return the include
      */
     public String getInclude() {
@@ -57,7 +58,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
 
     /**
      * Static HTML Resource to include in the form (if needed).
-     * 
+     *
      * @param include the include to set
      */
     public void setInclude(String include) {
@@ -66,16 +67,16 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
 
     /**
      * Name of the login extension; it will determine also the order displayed for the icons
-     * 
+     *
      * @return
      */
-    public String getName(){
+    public String getName() {
         return name;
     }
 
     /**
-     * Authentication Security Endpoint invoked by the pluggable form 
-     * 
+     * Authentication Security Endpoint invoked by the pluggable form
+     *
      * @return the loginPath
      */
     public String getLoginPath() {
@@ -84,17 +85,15 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements C
 
     /**
      * Authentication Security Endpoint invoked by the pluggable form
-     *  
+     *
      * @param loginPath the loginPath to set
      */
     public void setLoginPath(String loginPath) {
         this.loginPath = loginPath;
     }
 
-    /**
-     * Sorts by name the Login extensions
-     */
-    public int compareTo(LoginFormInfo other){
+    /** Sorts by name the Login extensions */
+    public int compareTo(LoginFormInfo other) {
         return getName().compareTo(other.getName());
     }
 }

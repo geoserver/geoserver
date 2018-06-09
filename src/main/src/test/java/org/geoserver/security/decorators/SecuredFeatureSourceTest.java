@@ -12,9 +12,9 @@ import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
-import org.geotools.data.Query;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.junit.Test;
@@ -35,15 +35,15 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         expect(fs.getFeatures((Filter) anyObject())).andReturn(fc).anyTimes();
         expect(fs.getFeatures((Query) anyObject())).andReturn(fc).anyTimes();
         replay(fs);
-        
+
         SecuredFeatureSource ro = new SecuredFeatureSource(fs, WrapperPolicy.hide(null));
-        assertTrue(ro.getDataStore() instanceof ReadOnlyDataStore); 
+        assertTrue(ro.getDataStore() instanceof ReadOnlyDataStore);
         SecuredFeatureCollection collection = (SecuredFeatureCollection) ro.getFeatures();
         assertTrue(ro.policy.isHide());
         assertTrue(ro.getFeatures(Filter.INCLUDE) instanceof SecuredFeatureCollection);
         assertTrue(ro.getFeatures(new Query()) instanceof SecuredFeatureCollection);
     }
-    
+
     @Test
     public void testReadOnlyFeatureStore() throws Exception {
         // build up the mock
@@ -53,18 +53,17 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         FeatureStore fs = createNiceMock(FeatureStore.class);
         expect(fs.getSchema()).andReturn(schema);
         replay(fs);
-        
+
         SecuredFeatureStore ro = new SecuredFeatureStore(fs, WrapperPolicy.readOnlyChallenge(null));
         try {
             ro.addFeatures(createNiceMock(FeatureCollection.class));
             fail("This should have thrown a security exception");
-        } catch(Exception e) {
-            if (ReadOnlyDataStoreTest.isSpringSecurityException(e)==false)
+        } catch (Exception e) {
+            if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)
                 fail("Should have failed with a security exception");
         }
     }
-    
-    
+
     @Test
     public void testReadOnlyFeatureSourceDataAccess() throws Exception {
         // build the mock up
@@ -73,10 +72,9 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         FeatureSource fs = createNiceMock(FeatureSource.class);
         expect(fs.getDataStore()).andReturn(da);
         replay(fs);
-        
-        SecuredFeatureSource ro = new SecuredFeatureSource(fs, WrapperPolicy.readOnlyChallenge(null));
-        assertTrue(ro.getDataStore() instanceof ReadOnlyDataAccess); 
+
+        SecuredFeatureSource ro =
+                new SecuredFeatureSource(fs, WrapperPolicy.readOnlyChallenge(null));
+        assertTrue(ro.getDataStore() instanceof ReadOnlyDataAccess);
     }
-    
-    
 }

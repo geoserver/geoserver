@@ -14,7 +14,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -37,49 +36,56 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  * A XML editor based on CodeMirror
- * @author Andrea Aime 
+ *
+ * @author Andrea Aime
  */
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
 
-    public static final PackageResourceReference REFERENCE = new PackageResourceReference(
-            CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
-    
-    public static final PackageResourceReference[] CSS_REFERENCE = new PackageResourceReference[] {
-            new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
-            new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/show-hint.css")};
-            
-    
-    public static final PackageResourceReference[] MODES = new PackageResourceReference[] {
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
-        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js")
-    };
-    
+    public static final PackageResourceReference REFERENCE =
+            new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
+
+    public static final PackageResourceReference[] CSS_REFERENCE =
+            new PackageResourceReference[] {
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/css/show-hint.css")
+            };
+
+    public static final PackageResourceReference[] MODES =
+            new PackageResourceReference[] {
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js")
+            };
 
     private TextArea<String> editor;
 
     private WebMarkupContainer container;
 
     private String mode;
-    
+
     public CodeMirrorEditor(String id, String mode, IModel<String> model) {
         super(id, model);
         this.mode = mode;
-        
+
         // figure out if we're running against a browser supported by CodeMirror
         boolean enableCodeMirror = isCodeMirrorSupported();
 
         container = new WebMarkupContainer("editorContainer");
         container.setOutputMarkupId(true);
         add(container);
-        
+
         WebMarkupContainer toolbar = new WebMarkupContainer("toolbar");
         toolbar.setVisible(enableCodeMirror);
         container.add(toolbar);
@@ -106,24 +112,30 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         ClientProperties clientProperties = clientInfo.getProperties();
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 8
-                || props.getBrowserVersionMajor() >= 8;
+            enableCodeMirror =
+                    clientProperties.getBrowserVersionMajor() >= 8
+                            || props.getBrowserVersionMajor() >= 8;
         } else if (clientProperties.isBrowserMozillaFirefox()) {
-            ClientProperties props = extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 3
-                || props.getBrowserVersionMajor() >= 3;
+            ClientProperties props =
+                    extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
+            enableCodeMirror =
+                    clientProperties.getBrowserVersionMajor() >= 3
+                            || props.getBrowserVersionMajor() >= 3;
         } else if (clientProperties.isBrowserSafari()) {
-            ClientProperties props = extractSafariVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() > 5
-                    || (clientProperties.getBrowserVersionMajor() == 5
-                    && clientProperties.getBrowserVersionMinor() >= 2)
-                    || props.getBrowserVersionMajor() > 5
-                    || (props.getBrowserVersionMajor() == 5
-                    && props.getBrowserVersionMinor() >= 2);
+            ClientProperties props =
+                    extractSafariVersion(clientProperties.getNavigatorAppVersion());
+            enableCodeMirror =
+                    clientProperties.getBrowserVersionMajor() > 5
+                            || (clientProperties.getBrowserVersionMajor() == 5
+                                    && clientProperties.getBrowserVersionMinor() >= 2)
+                            || props.getBrowserVersionMajor() > 5
+                            || (props.getBrowserVersionMajor() == 5
+                                    && props.getBrowserVersionMinor() >= 2);
         } else if (clientProperties.isBrowserOpera()) {
             ClientProperties props = extractOperaVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 9
-                || props.getBrowserVersionMajor() >= 9;
+            enableCodeMirror =
+                    clientProperties.getBrowserVersionMajor() >= 9
+                            || props.getBrowserVersionMajor() >= 9;
         }
         return enableCodeMirror;
     }
@@ -132,7 +144,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        if (userAgent != null ) {
+        if (userAgent != null) {
             String userAgencyLc = userAgent.toLowerCase();
             String pattern;
             if (userAgencyLc.contains("like gecko")) {
@@ -144,7 +156,6 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         }
         return props;
     }
-
 
     private ClientProperties extractFirefoxVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
@@ -187,7 +198,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
-    private void setMajorMinorVersionByPattern(String userAgent, String patternString, ClientProperties properties) {
+    private void setMajorMinorVersionByPattern(
+            String userAgent, String patternString, ClientProperties properties) {
         Matcher matcher = Pattern.compile(patternString).matcher(userAgent);
         if (matcher.find()) {
             properties.setBrowserVersionMajor(Integer.parseInt(matcher.group(1)));
@@ -198,71 +210,79 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public CodeMirrorEditor(String id, IModel<String> model) {
         this(id, "xml", model);
     }
-    
+
     @Override
     public void convertInput() {
         editor.processInput();
         setConvertedInput(editor.getConvertedInput());
     }
-    
+
     @Override
     public String getInput() {
         return editor.getInput();
     }
-    
+
     public void setTextAreaMarkupId(String id) {
         editor.setMarkupId(id);
     }
-    
+
     public String getTextAreaMarkupId() {
         return editor.getMarkupId();
     }
-    
+
     public void setMode(String mode) {
         this.mode = mode;
         AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
         if (requestTarget != null) {
-            String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
-            requestTarget .appendJavaScript(javascript);
+            String javascript =
+                    "document.gsEditors."
+                            + editor.getMarkupId()
+                            + ".setOption('mode', '"
+                            + mode
+                            + "');";
+            requestTarget.appendJavaScript(javascript);
         }
     }
-    
+
     public void reset() {
         super.validate();
         editor.validate();
         editor.clearInput();
     }
-    
+
     public IAjaxCallListener getSaveDecorator() {
         // we need to force CodeMirror to update the textarea contents (which it hid)
         // before submitting the form, otherwise the validation will use the old contents
         return new AjaxCallListener() {
-            
+
             @Override
             public CharSequence getBeforeHandler(Component component) {
                 String id = getTextAreaMarkupId();
-                return "if (document.gsEditors) { document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue(); }";            
+                return "if (document.gsEditors) { document.getElementById('"
+                        + id
+                        + "').value = document.gsEditors."
+                        + id
+                        + ".getValue(); }";
             }
-            
         };
     }
-    
+
     class CodeMirrorBehavior extends Behavior {
 
         @Override
         public void renderHead(Component component, IHeaderResponse response) {
             super.renderHead(component, response);
             // Add CSS
-            for(PackageResourceReference css : CSS_REFERENCE) {
+            for (PackageResourceReference css : CSS_REFERENCE) {
                 response.render(CssHeaderItem.forReference(css));
             }
             // Add JS
             response.render(JavaScriptHeaderItem.forReference(REFERENCE));
             // Add Modes
-            for(PackageResourceReference mode : MODES) {
+            for (PackageResourceReference mode : MODES) {
                 response.render(JavaScriptHeaderItem.forReference(mode));
             }
-            
+
             response.render(OnDomReadyHeaderItem.forScript(getInitJavascript()));
         }
 
@@ -303,7 +323,5 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                 throw new RuntimeException("Did not expect this one...", e);
             }
         }
-
     }
-
 }

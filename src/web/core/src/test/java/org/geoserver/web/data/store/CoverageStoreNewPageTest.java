@@ -23,9 +23,7 @@ import org.opengis.coverage.grid.Format;
 
 public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
-    /**
-     * print page structure?
-     */
+    /** print page structure? */
     private static final boolean debugMode = false;
 
     String formatType;
@@ -64,9 +62,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         }
     }
 
-    /**
-     * A kind of smoke test that only asserts the page is rendered when first loaded
-     */
+    /** A kind of smoke test that only asserts the page is rendered when first loaded */
     @Test
     public void testPageRendersOnLoad() {
 
@@ -87,10 +83,11 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         assertNull(page.getDefaultModelObject());
 
         tester.assertModelValue("rasterStoreForm:enabledPanel:paramValue", Boolean.TRUE);
-        tester.assertModelValue("rasterStoreForm:workspacePanel:border:border_body:paramValue", getCatalog()
-                .getDefaultWorkspace());
-        tester.assertModelValue("rasterStoreForm:parametersPanel:url",
-                "file:data/example.extension");
+        tester.assertModelValue(
+                "rasterStoreForm:workspacePanel:border:border_body:paramValue",
+                getCatalog().getDefaultWorkspace());
+        tester.assertModelValue(
+                "rasterStoreForm:parametersPanel:url", "file:data/example.extension");
     }
 
     @Test
@@ -101,21 +98,22 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         assertNull(page.getDefaultModelObject());
 
         tester.assertModelValue("rasterStoreForm:enabledPanel:paramValue", Boolean.TRUE);
-        tester.assertModelValue("rasterStoreForm:workspacePanel:border:border_body:paramValue", getCatalog()
-                .getDefaultWorkspace());
-        tester.assertModelValue("rasterStoreForm:parametersPanel:url",
-                "file:data/example.extension");
-
+        tester.assertModelValue(
+                "rasterStoreForm:workspacePanel:border:border_body:paramValue",
+                getCatalog().getDefaultWorkspace());
+        tester.assertModelValue(
+                "rasterStoreForm:parametersPanel:url", "file:data/example.extension");
     }
-    
+
     @Test
     public void testGeoPackageRaster() {
         formatType = new GeoPackageFormat().getName();
         final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
         tester.startPage(page);
-        
+
         tester.debugComponentTrees();
-        Component urlComponent = tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel:url");
+        Component urlComponent =
+                tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel:url");
         assertThat(urlComponent, instanceOf(FileParamPanel.class));
     }
 }

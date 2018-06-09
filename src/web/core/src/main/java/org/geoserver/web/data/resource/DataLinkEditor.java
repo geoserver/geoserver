@@ -6,7 +6,6 @@
 package org.geoserver.web.data.resource;
 
 import java.util.List;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -31,11 +30,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DataLinkInfoImpl;
 
 /**
- * Shows and allows editing of the {@link DataLinkInfo} attached to a
- * {@link ResourceInfo}
- * 
+ * Shows and allows editing of the {@link DataLinkInfo} attached to a {@link ResourceInfo}
+ *
  * @author Marcus Sen - British Geological Survey
- * 
  */
 @SuppressWarnings("serial")
 public class DataLinkEditor extends Panel {
@@ -50,7 +47,7 @@ public class DataLinkEditor extends Panel {
      */
     public DataLinkEditor(String id, final IModel<ResourceInfo> resourceModel) {
         super(id, resourceModel);
-        
+
         // container for ajax updates
         final WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -60,66 +57,77 @@ public class DataLinkEditor extends Panel {
         table = new WebMarkupContainer("table");
         table.setOutputMarkupId(true);
         container.add(table);
-        links = new ListView<DataLinkInfo>("links", new PropertyModel<List<DataLinkInfo>>(resourceModel, "dataLinks")) {
-
-            @Override
-            protected void populateItem(ListItem<DataLinkInfo> item) {
-                
-                // odd/even style
-                item.add(AttributeModifier.replace("class",
-                        item.getIndex() % 2 == 0 ? "even" : "odd"));
-
-                // link info
-                FormComponentFeedbackBorder urlBorder = new FormComponentFeedbackBorder("urlBorder");
-                item.add(urlBorder);
-                TextField<String> format = new TextField<>("format", new PropertyModel<String>(item.getModel(), "type"));
-                format.setRequired(true);
-                item.add(format);
-                TextField<String> url = new TextField<>("dataLinkURL", new PropertyModel<String>(item.getModel(), "content"));
-                url.add(new UrlValidator());
-                url.setRequired(true);
-                urlBorder.add(url);
-                
-                // remove link
-                AjaxLink<DataLinkInfo> link = 
-                        new AjaxLink<DataLinkInfo>("removeLink", item.getModel()) {
+        links =
+                new ListView<DataLinkInfo>(
+                        "links",
+                        new PropertyModel<List<DataLinkInfo>>(resourceModel, "dataLinks")) {
 
                     @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
-                        ri.getDataLinks().remove(getModelObject());
-                        updateLinksVisibility();
-                        target.add(container);
+                    protected void populateItem(ListItem<DataLinkInfo> item) {
+
+                        // odd/even style
+                        item.add(
+                                AttributeModifier.replace(
+                                        "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+
+                        // link info
+                        FormComponentFeedbackBorder urlBorder =
+                                new FormComponentFeedbackBorder("urlBorder");
+                        item.add(urlBorder);
+                        TextField<String> format =
+                                new TextField<>(
+                                        "format",
+                                        new PropertyModel<String>(item.getModel(), "type"));
+                        format.setRequired(true);
+                        item.add(format);
+                        TextField<String> url =
+                                new TextField<>(
+                                        "dataLinkURL",
+                                        new PropertyModel<String>(item.getModel(), "content"));
+                        url.add(new UrlValidator());
+                        url.setRequired(true);
+                        urlBorder.add(url);
+
+                        // remove link
+                        AjaxLink<DataLinkInfo> link =
+                                new AjaxLink<DataLinkInfo>("removeLink", item.getModel()) {
+
+                                    @Override
+                                    public void onClick(AjaxRequestTarget target) {
+                                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
+                                        ri.getDataLinks().remove(getModelObject());
+                                        updateLinksVisibility();
+                                        target.add(container);
+                                    }
+                                };
+                        item.add(link);
                     }
-                    
                 };
-                item.add(link);
-            }
-        };
         // this is necessary to avoid loosing item contents on edit/validation checks
         links.setReuseItems(true);
         table.add(links);
-        
+
         // the no data links label
         noData = new Label("noLinks", new ResourceModel("noDataLinksSoFar"));
         container.add(noData);
         updateLinksVisibility();
-        
-        // add new link button
-        AjaxButton button = new AjaxButton("addlink") {
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
-                DataLinkInfo link = ri.getCatalog().getFactory().createDataLink();;
-                link.setType("text/plain");
-                ri.getDataLinks().add(link);
-                updateLinksVisibility();
-                
-                target.add(container);
-            }
-            
-        };
+        // add new link button
+        AjaxButton button =
+                new AjaxButton("addlink") {
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
+                        DataLinkInfo link = ri.getCatalog().getFactory().createDataLink();
+                        ;
+                        link.setType("text/plain");
+                        ri.getDataLinks().add(link);
+                        updateLinksVisibility();
+
+                        target.add(container);
+                    }
+                };
         add(button);
     }
 
@@ -129,19 +137,20 @@ public class DataLinkEditor extends Panel {
         table.setVisible(anyLink);
         noData.setVisible(!anyLink);
     }
-    
+
     public class UrlValidator implements IValidator<String> {
 
         @Override
         public void validate(IValidatable<String> validatable) {
             String url = validatable.getValue();
-            if (url != null )
-            {
+            if (url != null) {
                 try {
                     DataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    IValidationError err = new ValidationError("invalidDataLinkURL")
-                            .addKey("invalidDataLinkURL").setVariable("url", url);
+                    IValidationError err =
+                            new ValidationError("invalidDataLinkURL")
+                                    .addKey("invalidDataLinkURL")
+                                    .setVariable("url", url);
                     validatable.error(err);
                 }
             }

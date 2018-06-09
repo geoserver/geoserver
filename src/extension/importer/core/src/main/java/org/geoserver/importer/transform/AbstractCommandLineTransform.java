@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
@@ -26,11 +25,11 @@ import org.geoserver.importer.ImportTask;
 
 /**
  * Generic file translator getting a set of options, an input file, and an output file
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public abstract class AbstractCommandLineTransform extends AbstractTransform implements
-        PreTransform {
+public abstract class AbstractCommandLineTransform extends AbstractTransform
+        implements PreTransform {
 
     private static final long serialVersionUID = 5998049960852782644L;
 
@@ -42,16 +41,12 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
         this.options = options;
     }
 
-    /**
-     * @return the options
-     */
+    /** @return the options */
     public List<String> getOptions() {
         return options;
     }
 
-    /**
-     * @param options the options to set
-     */
+    /** @param options the options to set */
     public void setOptions(List<String> options) {
         this.options = options;
     }
@@ -76,7 +71,6 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
             substitutions.put("output", outputFile);
         }
 
-
         // setup the options
         CommandLine cmd = new CommandLine(executable);
         cmd.setSubstitutionMap(substitutions);
@@ -97,17 +91,28 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
                 executor.setStreamHandler(streamHandler);
                 try {
                     int result = executor.execute(cmd);
-                    
+
                     if (executor.isFailure(result)) {
-                        // toString call is routed to ByteArrayOutputStream, which does the right string
+                        // toString call is routed to ByteArrayOutputStream, which does the right
+                        // string
                         // conversion
-                        throw new IOException("Failed to execute command " + cmd.toString()
-                                + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                                + es.toString());
+                        throw new IOException(
+                                "Failed to execute command "
+                                        + cmd.toString()
+                                        + "\nStandard output is:\n"
+                                        + os.toString()
+                                        + "\nStandard error is:\n"
+                                        + es.toString());
                     }
                 } catch (Exception e) {
-                    throw new IOException("Failure to execute command " + cmd.toString() + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                            + es.toString(), e);
+                    throw new IOException(
+                            "Failure to execute command "
+                                    + cmd.toString()
+                                    + "\nStandard output is:\n"
+                                    + os.toString()
+                                    + "\nStandard error is:\n"
+                                    + es.toString(),
+                            e);
                 }
             }
 
@@ -152,9 +157,14 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
                 int result = executor.execute(cmd);
 
                 if (result != 0) {
-                    LOGGER.log(Level.SEVERE, "Failed to execute command " + cmd.toString()
-                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                            + es.toString());
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Failed to execute command "
+                                    + cmd.toString()
+                                    + "\nStandard output is:\n"
+                                    + os.toString()
+                                    + "\nStandard error is:\n"
+                                    + es.toString());
                     return false;
                 }
 
@@ -163,7 +173,8 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
                 return false;
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
+            LOGGER.log(
+                    Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
             return false;
         }
 
@@ -173,8 +184,6 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Returns the list of options to be passed the executable to test its availability and ability
      * to run. e.g. "--help"
-     * 
-     *
      */
     protected abstract List<String> getAvailabilityTestOptions();
 
@@ -201,18 +210,13 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Returns the name of all the files that should be transferred from input to output (sometimes
      * the output is made of several files)
-     * 
-     * @param data
      *
+     * @param data
      * @throws IOException
      */
     protected abstract List<String> getReplacementTargetNames(ImportData data) throws IOException;
 
-    /**
-     * Returns true if the command line manipulates the input file directly
-     * 
-     *
-     */
+    /** Returns true if the command line manipulates the input file directly */
     protected boolean isInline() {
         return false;
     }
@@ -220,8 +224,6 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Returns true if in the command line the output file comes after the input one. The default
      * implementation returns true
-     * 
-     *
      */
     protected boolean isOutputAfterInput() {
         return true;
@@ -229,18 +231,16 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
 
     /**
      * The command input file
-     * 
-     * @param data
      *
+     * @param data
      * @throws IOException
      */
     protected abstract File getInputFile(ImportData data) throws IOException;
 
     /**
      * The directory used for outputs, by default, a subdirectory of the input file parent
-     * 
-     * @param data
      *
+     * @param data
      * @throws IOException
      */
     protected File getOutputDirectory(ImportData data) throws IOException {
@@ -255,19 +255,14 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
         return tempFile;
     }
 
-    /**
-     * Implementors must provide the executable to be run
-     * 
-     *
-     */
+    /** Implementors must provide the executable to be run */
     protected abstract File getExecutable() throws IOException;
 
     /**
      * Locates and executable in the system path. On windows it will automatically append .exe to
      * the searched file name
-     * 
-     * @param name
      *
+     * @param name
      * @throws IOException
      */
     protected File getExecutableFromPath(String name) throws IOException {
@@ -296,7 +291,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
 
     /**
      * Output stream wrapper with a soft limit
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     static final class BoundedOutputStream extends CountingOutputStream {
@@ -339,7 +334,5 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
         public String toString() {
             return delegate.toString();
         }
-
     }
-
 }

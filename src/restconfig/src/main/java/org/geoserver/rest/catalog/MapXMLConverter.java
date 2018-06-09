@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -114,10 +113,10 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
     }
 
     /**
-     * Generate the JDOM element needed to represent an object and insert it into the parent element given.
-     * 
-     * @todo This method is recursive and could cause stack overflow errors for large input maps.
+     * Generate the JDOM element needed to represent an object and insert it into the parent element
+     * given.
      *
+     * @todo This method is recursive and could cause stack overflow errors for large input maps.
      * @param elem the parent Element into which to insert the created JDOM element
      * @param object the Object to be converted
      */
@@ -141,5 +140,4 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
             elem.addContent(object == null ? "" : object.toString());
         }
     }
-
 }

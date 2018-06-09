@@ -5,14 +5,10 @@
  */
 package org.geoserver.security;
 
-/**
- * Access limits to a style.
- */
-
+/** Access limits to a style. */
 public class StyleAccessLimits extends AccessLimits {
 
     public StyleAccessLimits(CatalogMode mode) {
         super(mode);
     }
-
 }

@@ -7,7 +7,6 @@ package org.geoserver.gwc;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Stack;
-
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
@@ -17,12 +16,12 @@ import org.geoserver.platform.ServiceException;
 
 /**
  * Makes sure that when nested requests occur, the events are balanced and use the right request,
- * one for the nested callbacks, and a separate one for the outer callback 
+ * one for the nested callbacks, and a separate one for the outer callback
  */
 final class BalancedRequestTester implements DispatcherCallback {
-    
+
     Stack<Request> requestStack = new Stack<>();
-    
+
     @Override
     public Request init(Request request) {
         requestStack.push(request);
@@ -48,8 +47,8 @@ final class BalancedRequestTester implements DispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(Request request, Operation operation, Object result,
-            Response response) {
+    public Response responseDispatched(
+            Request request, Operation operation, Object result, Response response) {
         assertEquals(request, requestStack.peek());
         return response;
     }

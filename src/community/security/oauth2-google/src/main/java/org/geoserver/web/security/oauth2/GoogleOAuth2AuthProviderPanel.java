@@ -5,7 +5,6 @@
 package org.geoserver.web.security.oauth2;
 
 import java.util.logging.Logger;
-
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -18,7 +17,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Configuration panel for {@link GeoServerOAuthAuthenticationFilter}.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GoogleOAuth2AuthProviderPanel

@@ -6,19 +6,15 @@
 package org.vfny.geoserver;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.config.ServiceInfo;
 import org.vfny.geoserver.util.Requests;
 
-
 /**
- * Defines a general Request type and provides accessor methods for universal
- * request information.
- * <p>
- * Also provides access to the HttpRequest that spawned this GeoServer Request.
- * This HttpRequest is most often used to lookup information stored in the
- * Web Container (such as the GeoServer Global information).
- * </p>
+ * Defines a general Request type and provides accessor methods for universal request information.
+ *
+ * <p>Also provides access to the HttpRequest that spawned this GeoServer Request. This HttpRequest
+ * is most often used to lookup information stored in the Web Container (such as the GeoServer
+ * Global information).
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
@@ -28,17 +24,14 @@ import org.vfny.geoserver.util.Requests;
  * @version $Id$
  * @deprecated implement {@link org.geoserver.ows.Request} instead
  */
-abstract public class Request {
-    /**
-     * HttpServletRequest responsible for generating this GeoServer Request.
-     */
+public abstract class Request {
+    /** HttpServletRequest responsible for generating this GeoServer Request. */
     protected HttpServletRequest httpServletRequest;
 
     /**
-     * The service type of the request.  In other words, is it a WMS
-     * or a WFS.  This is a standard element of a request.  It now has
-     * a practical purpose in GeoServer, as a GetCapabilities request
-     * can be WMS or WFS, this element tells which it is.
+     * The service type of the request. In other words, is it a WMS or a WFS. This is a standard
+     * element of a request. It now has a practical purpose in GeoServer, as a GetCapabilities
+     * request can be WMS or WFS, this element tells which it is.
      */
     protected String service;
 
@@ -49,41 +42,38 @@ abstract public class Request {
     protected String version = "";
 
     /** service reference */
-    //protected AbstractService serviceRef;
+    // protected AbstractService serviceRef;
     protected ServiceInfo serviceConfig;
-    
-    /** reference to the base Url that this request was called with.
-     * Note that this is a complete duplicate of info in the above HttpServletRequest
-     * object, and is mainly a forward-thinking field that's going to stick around when
-     * the above HttpServletRequest goes away.
+
+    /**
+     * reference to the base Url that this request was called with. Note that this is a complete
+     * duplicate of info in the above HttpServletRequest object, and is mainly a forward-thinking
+     * field that's going to stick around when the above HttpServletRequest goes away.
      */
     protected String baseUrl;
 
     /**
-      * ServiceType,RequestType,ServiceRef constructor.
-      *
-      * @param serviceType Name of hte service (example, WFS)
-      * @param requestType Name of the request (example, GetCapabilties)
-      * @param serviceRef The servlet for the request.
-      * 
-      */
-    protected Request(String service, String request,ServiceInfo serviceConfig) {
+     * ServiceType,RequestType,ServiceRef constructor.
+     *
+     * @param serviceType Name of hte service (example, WFS)
+     * @param requestType Name of the request (example, GetCapabilties)
+     * @param serviceRef The servlet for the request.
+     */
+    protected Request(String service, String request, ServiceInfo serviceConfig) {
         this.service = service;
         this.request = request;
         this.serviceConfig = serviceConfig;
     }
-    
-    /**
-     * Set the baseUrl that this request was called with.
-     */
+
+    /** Set the baseUrl that this request was called with. */
     public void setBaseUrl(String s) {
         baseUrl = s;
     }
-    
 
     /**
-     * Gets the base url that made this request.  This is used to return the
-     * referenced schemas and whatnot relative to the request.
+     * Gets the base url that made this request. This is used to return the referenced schemas and
+     * whatnot relative to the request.
+     *
      * @return The base portion of the url that the client used to make the request.
      */
     public String getBaseUrl() {
@@ -110,13 +100,12 @@ abstract public class Request {
 
     /**
      * Gets requested request type.
-     * <p>
-     * TODO: Could this bre renamed getType() for clarity?
-     * </p>
-     * <p>
-     * Um, no.  getType() is less clear.  getRequest makes sense because
-     * this is directly modeled off of the XML and KVP Requests that a
-     * wfs or wms makes, and they all contain an element called Request.
+     *
+     * <p>TODO: Could this bre renamed getType() for clarity?
+     *
+     * <p>Um, no. getType() is less clear. getRequest makes sense because this is directly modeled
+     * off of the XML and KVP Requests that a wfs or wms makes, and they all contain an element
+     * called Request.
      *
      * @return The name of the request.
      */
@@ -151,13 +140,11 @@ abstract public class Request {
         this.version = version;
     }
 
-    /**
-     * @return The service configuration.
-     */
+    /** @return The service configuration. */
     public ServiceInfo getServiceConfig() {
         return serviceConfig;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Request)) {
             return false;
@@ -165,19 +152,20 @@ abstract public class Request {
 
         Request req = (Request) o;
         boolean equals = true;
-        equals = ((request == null) ? (req.getRequest() == null) : request.equals(req.getRequest()))
-            && equals;
-        equals = ((version == null) ? (req.getVersion() == null) : version.equals(req.getVersion()))
-            && equals;
-        equals = ((service == null) ? (req.getService() == null) : service.equals(req.getService()))
-            && equals;
+        equals =
+                ((request == null) ? (req.getRequest() == null) : request.equals(req.getRequest()))
+                        && equals;
+        equals =
+                ((version == null) ? (req.getVersion() == null) : version.equals(req.getVersion()))
+                        && equals;
+        equals =
+                ((service == null) ? (req.getService() == null) : service.equals(req.getService()))
+                        && equals;
 
         return equals;
     }
 
-    /**
-     * Generate a hashCode based on this Request Object.
-     */
+    /** Generate a hashCode based on this Request Object. */
     public int hashCode() {
         int result = 17;
         result = (23 * result) + ((request == null) ? 0 : request.hashCode());
@@ -189,29 +177,26 @@ abstract public class Request {
 
     /**
      * Retrive the ServletRequest that generated this GeoServer request.
-     * <p>
-     * The ServletRequest is often used to:
-     * </p>
-         * <ul>
-         * <li>Access the Sesssion and WebContainer by execute opperations
-         *     </li>
-         * <li>Of special importance is the use of the ServletRequest to locate the GeoServer Application
-         *     </li>
-         * </p>
-         * <p>
-         * This method is called by AbstractServlet during the processing of a Request.
-         * </p>
-         * @return The HttpServletRequest responsible for generating this SerivceRequest
-         */
+     *
+     * <p>The ServletRequest is often used to:
+     *
+     * <ul>
+     *   <li>Access the Sesssion and WebContainer by execute opperations
+     *   <li>Of special importance is the use of the ServletRequest to locate the GeoServer
+     *       Application
+     *       <p>This method is called by AbstractServlet during the processing of a Request.
+     *
+     * @return The HttpServletRequest responsible for generating this SerivceRequest
+     */
     public HttpServletRequest getHttpServletRequest() throws ClassCastException {
         return httpServletRequest;
     }
 
     public String getRootDir() {
         throw new IllegalArgumentException(
-            "getRootDir -- functionality removed - please verify that its okay with geoserver_data_dir");
+                "getRootDir -- functionality removed - please verify that its okay with geoserver_data_dir");
 
-        //return httpServletRequest.getSession().getServletContext().getRealPath("/");
+        // return httpServletRequest.getSession().getServletContext().getRealPath("/");
     }
 
     /**
@@ -225,15 +210,14 @@ abstract public class Request {
 
     /**
      * Sets the servletRequest that generated this GeoServer request.
-     * <p>
-     * The ServletRequest is often used to:
-     * </p>
+     *
+     * <p>The ServletRequest is often used to:
+     *
      * <ul>
-     * <li>Access the Sesssion and WebContainer by execute opperations
-     *     </li>
-     * <li>Of special importance is the use of the ServletRequest to locate the GeoServer Application
-     *     </li>
-     * </p>
+     *   <li>Access the Sesssion and WebContainer by execute opperations
+     *   <li>Of special importance is the use of the ServletRequest to locate the GeoServer
+     *       Application
+     *
      * @param servletRequest The servletRequest to set.
      */
     public void setHttpServletRequest(HttpServletRequest servletRequest) {

@@ -19,15 +19,17 @@ public class GetResult {
 
     public Resource run(GetExecutionResultType request) {
         // otherwise check for a stored response
-        Resource output = resourceManager.getOutputResource(request.getExecutionId(),
-                request.getOutputId());
+        Resource output =
+                resourceManager.getOutputResource(request.getExecutionId(), request.getOutputId());
         if (output == null || output.getType() == Type.UNDEFINED) {
-            throw new WPSException("Unknown output " + request.getOutputId() + " for execution id "
-                    + request.getExecutionId()
-                    + ", either the execution was never submitted or too much time "
-                    + "elapsed since the process completed");
+            throw new WPSException(
+                    "Unknown output "
+                            + request.getOutputId()
+                            + " for execution id "
+                            + request.getExecutionId()
+                            + ", either the execution was never submitted or too much time "
+                            + "elapsed since the process completed");
         }
         return output;
     }
-
 }

@@ -6,13 +6,11 @@ package org.geoserver.monitor.auditlog;
 
 import static org.junit.Assert.*;
 
+import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.junit.Test;
-
-import freemarker.template.Configuration;
 
 public class AuditTemplateLoaderTest {
 
@@ -22,7 +20,7 @@ public class AuditTemplateLoaderTest {
         AuditTemplateLoader tloader = new AuditTemplateLoader(rloader);
         Configuration config = new Configuration();
         config.setTemplateLoader(tloader);
-        
+
         assertNotNull(config.getTemplate("header.ftl"));
         assertNotNull(config.getTemplate("content.ftl"));
         assertNotNull(config.getTemplate("footer.ftl"));

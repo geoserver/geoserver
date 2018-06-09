@@ -5,24 +5,21 @@
  */
 package org.geoserver.flow.controller;
 
+import com.google.common.base.Predicate;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.flow.ControlFlowCallback;
 import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.base.Predicate;
-
 /**
  * Base class for flow controllers using a single queue
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 public class SingleQueueFlowController implements FlowController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
@@ -37,7 +34,6 @@ public class SingleQueueFlowController implements FlowController {
         this.queueSize = queueSize;
         this.matcher = matcher;
         queue = new ArrayBlockingQueue<Request>(queueSize, true);
-
     }
 
     public int getPriority() {
@@ -54,19 +50,19 @@ public class SingleQueueFlowController implements FlowController {
         boolean retval = true;
         if (matcher.apply(request)) {
             try {
-                if(timeout > 0) {
+                if (timeout > 0) {
                     retval = queue.offer(request, timeout, TimeUnit.MILLISECONDS);
                 } else {
                     queue.put(request);
                 }
             } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING,
+                LOGGER.log(
+                        Level.WARNING,
                         "Unexpected interruption while blocking on the request queue");
             }
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(this + " queue size " + queue.size());
             }
-
         }
         return retval;
     }
@@ -74,13 +70,13 @@ public class SingleQueueFlowController implements FlowController {
     public Predicate<Request> getMatcher() {
         return matcher;
     }
-    
+
     /**
      * Returns the current queue size
+     *
      * @return
      */
     public int getRequestsInQueue() {
         return queue.size();
     }
-
 }

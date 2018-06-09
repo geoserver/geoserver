@@ -10,39 +10,38 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.geotools.util.Converters;
 
 /**
  * A map used to store metadata on catalog and configuration objects.
- * <p>
- * This map is used to convert values from the map to a specified type, via the 
- * {@link #get(String, Class)} method. Usage:
+ *
+ * <p>This map is used to convert values from the map to a specified type, via the {@link
+ * #get(String, Class)} method. Usage:
+ *
  * <pre>
  * MetadataMap map = new MetadataMap();
  * map.put( "one", "1");
- * 
+ *
  * map.get( "one" ) ==> "1"
  * map.get( "one", Integer.class) ==> 1
  * map.get( "one", Double.class ) ==> 1.0
  * </pre>
- * </p>
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class MetadataMap implements Map<String, Serializable>, Serializable {
 
     private static final long serialVersionUID = -3267986531863264568L;
     protected String id;
 
-    protected Map<String,Serializable> map;
+    protected Map<String, Serializable> map;
 
     public MetadataMap() {
         this(new HashMap());
     }
-    
+
     public MetadataMap(Map<String, Serializable> map) {
-        if ( !( map instanceof Serializable ) ) {
+        if (!(map instanceof Serializable)) {
             throw new IllegalArgumentException("map is not serializable");
         }
         this.map = map;
@@ -56,7 +55,6 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
         this.id = id;
     }
 
-
     public Map<String, Serializable> getMap() {
         return map;
     }
@@ -64,20 +62,20 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
     public void setMap(Map<String, Serializable> map) {
         this.map = map;
     }
-    
+
     public <T> T get(String key, Class<T> clazz) {
         Object obj = get(key);
-        if ( obj == null ) {
+        if (obj == null) {
             return null;
         }
-        
-        return Converters.convert( obj, clazz );
+
+        return Converters.convert(obj, clazz);
     }
-    
+
     public int size() {
         return map.size();
     }
-    
+
     public boolean isEmpty() {
         return map.isEmpty();
     }
@@ -93,7 +91,7 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
     public Serializable get(Object key) {
         return map.get(key);
     }
-    
+
     public Serializable put(String key, Serializable value) {
         return map.put(key, value);
     }
@@ -105,7 +103,7 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
     public Serializable remove(Object key) {
         return map.remove(key);
     }
-    
+
     public void clear() {
         map.clear();
     }

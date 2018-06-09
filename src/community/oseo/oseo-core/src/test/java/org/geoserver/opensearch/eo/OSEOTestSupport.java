@@ -13,12 +13,10 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -55,34 +53,40 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     static {
         final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
-            OS_SCHEMA = factory
-                    .newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
-            ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
+            OS_SCHEMA =
+                    factory.newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
+            ATOM_SCHEMA =
+                    factory.newSchema(
+                            OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }
     }
-    
+
     private static Schema getOsSchema() {
-        if(OS_SCHEMA == null) {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        if (OS_SCHEMA == null) {
+            final SchemaFactory factory =
+                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             try {
-                OS_SCHEMA = factory
-                        .newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
+                OS_SCHEMA =
+                        factory.newSchema(
+                                OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
             } catch (Exception e) {
                 throw new RuntimeException("Could not parse the OpenSearch schemas", e);
             }
-            
         }
-        
+
         return OS_SCHEMA;
     }
 
     private static Schema getAtomSchema() {
-        if(ATOM_SCHEMA == null) {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        if (ATOM_SCHEMA == null) {
+            final SchemaFactory factory =
+                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             try {
-                ATOM_SCHEMA = factory.newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
+                ATOM_SCHEMA =
+                        factory.newSchema(
+                                OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
             } catch (Exception e) {
                 throw new RuntimeException("Could not parse the OpenSearch schemas", e);
             }
@@ -90,7 +94,6 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         return ATOM_SCHEMA;
     }
 
-    
     protected List<Filter> getFilters() {
         return Collections.singletonList(new OSEOFilter());
     }
@@ -109,6 +112,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     /**
      * Allows subclasses to decide if to populate the granules table, or not
+     *
      * @return
      */
     protected boolean populateGranulesTable() {
@@ -117,7 +121,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     /**
      * Sets up a H2 based OpenSearchAccess and configures OpenSearch for EO to use it
-     * 
+     *
      * @param testData
      * @param cat
      * @param gs
@@ -125,7 +129,8 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
      * @throws IOException
      * @throws SQLException
      */
-    public static void setupBasicOpenSearch(SystemTestData testData, Catalog cat, GeoServer gs, boolean populateGranulesTable)
+    public static void setupBasicOpenSearch(
+            SystemTestData testData, Catalog cat, GeoServer gs, boolean populateGranulesTable)
             throws IOException, SQLException {
         // create the plain database
         DataStoreInfo jdbcDs = cat.getFactory().createDataStore();
@@ -175,15 +180,15 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     public void setupNamespaces() {
         this.namespaceContext = new SimpleNamespaceContext();
         namespaceContext.bindNamespaceUri("os", "http://a9.com/-/spec/opensearch/1.1/");
-        namespaceContext.bindNamespaceUri("param",
-                "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
+        namespaceContext.bindNamespaceUri(
+                "param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
         namespaceContext.bindNamespaceUri("at", "http://www.w3.org/2005/Atom");
         namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml");
         namespaceContext.bindNamespaceUri("georss", "http://www.georss.org/georss");
         namespaceContext.bindNamespaceUri("eo", OpenSearchAccess.EO_NAMESPACE);
         namespaceContext.bindNamespaceUri("geo", OpenSearchAccess.GEO_NAMESPACE);
         namespaceContext.bindNamespaceUri("gmi", "http://www.isotc211.org/2005/gmi");
-        namespaceContext.bindNamespaceUri("gmd", "http://www.isotc211.org/2005/gmd"); 
+        namespaceContext.bindNamespaceUri("gmd", "http://www.isotc211.org/2005/gmd");
         namespaceContext.bindNamespaceUri("gco", "http://www.isotc211.org/2005/gco");
         namespaceContext.bindNamespaceUri("time", "http://a9.com/-/opensearch/extensions/time/1.0");
         namespaceContext.bindNamespaceUri("owc", "http://www.opengis.net/owc/1.0");
@@ -206,7 +211,6 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         checkValidationErrors(d, getOsSchema());
     }
 
-
     protected void checkValidAtomFeed(Document d) throws SAXException, IOException {
         // TODO: we probably need to enrich this with EO specific elements check
         checkValidationErrors(d, getAtomSchema());
@@ -214,7 +218,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     /**
      * Checks the response is a RSS and
-     * 
+     *
      * @param path
      * @param i
      * @return
@@ -225,14 +229,16 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Returns the DOM after checking the status code is 200 and the returned mime type is the expected one
-     * 
+     * Returns the DOM after checking the status code is 200 and the returned mime type is the
+     * expected one
+     *
      * @param path
      * @param expectedMimeType
      * @return
      * @throws Exception
      */
-    protected Document getAsDOM(String path, int expectedStatusCode, String expectedMimeType) throws Exception {
+    protected Document getAsDOM(String path, int expectedStatusCode, String expectedMimeType)
+            throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals(expectedMimeType, response.getContentType());
         assertEquals(expectedStatusCode, response.getStatus());

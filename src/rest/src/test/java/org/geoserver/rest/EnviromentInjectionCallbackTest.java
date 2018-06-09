@@ -11,9 +11,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class EnviromentInjectionCallbackTest extends GeoServerSystemTestSupport {
 

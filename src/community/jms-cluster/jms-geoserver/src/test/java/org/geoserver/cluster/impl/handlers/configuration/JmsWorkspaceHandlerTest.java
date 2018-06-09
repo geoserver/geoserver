@@ -4,6 +4,11 @@
  */
 package org.geoserver.cluster.impl.handlers.configuration;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+
+import java.util.Collections;
+import java.util.List;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.cluster.impl.events.configuration.JMSEventType;
@@ -15,12 +20,6 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 public class JmsWorkspaceHandlerTest extends GeoServerSystemTestSupport {
 
@@ -85,7 +84,9 @@ public class JmsWorkspaceHandlerTest extends GeoServerSystemTestSupport {
         String oldSettingsTitle = settingsInfo.getTitle();
         settingsInfo.setTitle(newSettingsTitle);
         // create jms settings modify event
-        return new JMSSettingsModifyEvent(settingsInfo, Collections.singletonList("title"),
+        return new JMSSettingsModifyEvent(
+                settingsInfo,
+                Collections.singletonList("title"),
                 Collections.singletonList(oldSettingsTitle),
                 Collections.singletonList(newSettingsTitle),
                 JMSEventType.MODIFIED);

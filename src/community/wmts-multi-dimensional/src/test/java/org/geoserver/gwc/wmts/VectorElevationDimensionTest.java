@@ -4,8 +4,12 @@
  */
 package org.geoserver.gwc.wmts;
 
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+import java.util.List;
 import org.geoserver.catalog.*;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
@@ -13,13 +17,9 @@ import org.geoserver.gwc.wmts.dimensions.VectorElevationDimension;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-
 /**
- * This class contains tests that check that elevation dimensions values are correctly extracted from vector data.
+ * This class contains tests that check that elevation dimensions values are correctly extracted
+ * from vector data.
  */
 public class VectorElevationDimensionTest extends TestsSupport {
 
@@ -73,16 +73,12 @@ public class VectorElevationDimensionTest extends TestsSupport {
         assertThat(histogram.second, containsInAnyOrder(2, 0, 0, 0, 0, 0, 0, 0, 0, 1));
     }
 
-    /**
-     * Helper method that just returns the current layer info.
-     */
+    /** Helper method that just returns the current layer info. */
     private LayerInfo getLayerInfo() {
         return catalog.getLayerByName(VECTOR_ELEVATION.getLocalPart());
     }
 
-    /**
-     * Helper method that just returns the current vector info.
-     */
+    /** Helper method that just returns the current vector info. */
     private FeatureTypeInfo getVectorInfo() {
         LayerInfo layerInfo = getLayerInfo();
         assertThat(layerInfo.getResource(), instanceOf(FeatureTypeInfo.class));

@@ -10,17 +10,14 @@ import org.geotools.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
 
-/**
- * Property accessor for GeoServer ExecutionStatus beans
- * 
- */
+/** Property accessor for GeoServer ExecutionStatus beans */
 public class ExecutionStatusAccessorFactory implements PropertyAccessorFactory {
 
     private static final BeanPropertyAccessor INSTANCE = new BeanPropertyAccessor();
 
     @Override
-    public PropertyAccessor createPropertyAccessor(Class<?> type, String xpath, Class<?> target,
-            Hints hints) {
+    public PropertyAccessor createPropertyAccessor(
+            Class<?> type, String xpath, Class<?> target, Hints hints) {
         if (ExecutionStatus.class.isAssignableFrom(type)) {
             return INSTANCE;
         }

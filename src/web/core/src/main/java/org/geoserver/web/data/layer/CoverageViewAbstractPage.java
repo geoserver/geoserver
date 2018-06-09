@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.media.jai.ImageLayout;
-
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -38,7 +36,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 
 /**
  * Base page for {@link CoverageView} creation/editing
- * 
+ *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 @SuppressWarnings("serial")
@@ -47,7 +45,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     public static final String COVERAGESTORE = "storeName";
 
     public static final String WORKSPACE = "wsName";
-    
+
     static final String COVERAGE_VIEW_NAME = "COVERAGEVIEW_NAME";
 
     String storeId;
@@ -71,18 +69,25 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     CoverageViewEditor coverageEditor;
 
     public CoverageViewAbstractPage(PageParameters params) throws IOException {
-        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
+        this(
+                params.get(WORKSPACE).toOptionalString(),
+                params.get(COVERAGESTORE).toString(),
+                null,
+                null);
     }
 
-    public CoverageViewAbstractPage(String workspaceName, String storeName, String coverageName,
-            CoverageInfo coverageInfo) throws IOException {
-        storeId = getCatalog().getStoreByName(workspaceName, storeName, CoverageStoreInfo.class)
-                .getId();
+    public CoverageViewAbstractPage(
+            String workspaceName, String storeName, String coverageName, CoverageInfo coverageInfo)
+            throws IOException {
+        storeId =
+                getCatalog()
+                        .getStoreByName(workspaceName, storeName, CoverageStoreInfo.class)
+                        .getId();
         Catalog catalog = getCatalog();
         CoverageStoreInfo store = catalog.getStore(storeId, CoverageStoreInfo.class);
 
-        GridCoverage2DReader reader = (GridCoverage2DReader) catalog.getResourcePool()
-                .getGridCoverageReader(store, null);
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) catalog.getResourcePool().getGridCoverageReader(store, null);
         String[] coverageNames = reader.getGridCoverageNames();
         if (availableCoverages == null) {
             availableCoverages = new ArrayList<String>();
@@ -91,7 +96,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             ImageLayout layout = reader.getImageLayout(coverage);
             SampleModel sampleModel = layout.getSampleModel(null);
             final int numBands = sampleModel.getNumBands();
-            if(numBands == 1) {
+            if (numBands == 1) {
                 // simple syntax for simple case
                 availableCoverages.add(coverage);
             } else {
@@ -106,10 +111,14 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             newCoverage = false;
 
             // grab the coverage view
-            coverageViewInfo = coverageInfo != null ? coverageInfo : catalog.getResourceByStore(
-                    store, coverageName, CoverageInfo.class);
-            CoverageView coverageView = coverageViewInfo.getMetadata().get(
-                    CoverageView.COVERAGE_VIEW, CoverageView.class);
+            coverageViewInfo =
+                    coverageInfo != null
+                            ? coverageInfo
+                            : catalog.getResourceByStore(store, coverageName, CoverageInfo.class);
+            CoverageView coverageView =
+                    coverageViewInfo
+                            .getMetadata()
+                            .get(CoverageView.COVERAGE_VIEW, CoverageView.class);
             // the type can be still not saved
             if (coverageViewInfo != null) {
                 coverageInfoId = coverageViewInfo.getId();
@@ -136,39 +145,41 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         nameField.add(new CoverageViewNameValidator());
         form.add(nameField);
 
-        coverageEditor = new CoverageViewEditor("coverages", 
-                new PropertyModel<>(this,"selectedCoverages"), 
-                new PropertyModel<>(this, "outputBands"), 
-                availableCoverages);
+        coverageEditor =
+                new CoverageViewEditor(
+                        "coverages",
+                        new PropertyModel<>(this, "selectedCoverages"),
+                        new PropertyModel<>(this, "outputBands"),
+                        availableCoverages);
         form.add(coverageEditor);
 
         // save and cancel at the bottom of the page
-        form.add(new SubmitLink("save") {
-            @Override
-            public void onSubmit() {
-                onSave();
-            }
-        });
-        form.add(new Link<Void>("cancel") {
+        form.add(
+                new SubmitLink("save") {
+                    @Override
+                    public void onSubmit() {
+                        onSave();
+                    }
+                });
+        form.add(
+                new Link<Void>("cancel") {
 
-            @Override
-            public void onClick() {
-                onCancel();
-            }
-        });
+                    @Override
+                    public void onClick() {
+                        onCancel();
+                    }
+                });
     }
-
 
     protected CoverageView buildCoverageView() throws IOException {
         return new CoverageView(name, coverageEditor.currentOutputBands);
     }
 
     /**
-     * Data stores tend to return IOExceptions with no explanation, and the actual error coming from the db is in the cause. This method extracts the
-     * first not null message in the cause chain
-     * 
-     * @param t
+     * Data stores tend to return IOExceptions with no explanation, and the actual error coming from
+     * the db is in the cause. This method extracts the first not null message in the cause chain
      *
+     * @param t
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;
@@ -191,9 +202,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     protected abstract void onCancel();
 
-    /**
-     * Checks the {@link CoverageView} name is unique
-     */
+    /** Checks the {@link CoverageView} name is unique */
     class CoverageViewNameValidator implements IValidator<String> {
 
         @Override
@@ -203,15 +212,18 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             final CoverageStoreInfo store = getCatalog().getStore(storeId, CoverageStoreInfo.class);
             List<CoverageInfo> coverages = getCatalog().getCoveragesByCoverageStore(store);
             for (CoverageInfo curr : coverages) {
-                CoverageView currvc = curr.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
+                CoverageView currvc =
+                        curr.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
                 if (currvc != null) {
                     if (coverageInfoId == null || !coverageInfoId.equals(curr.getId())) {
                         if (currvc.getName().equals(vcName) && newCoverage) {
                             Map<String, Object> map = new HashMap<>();
                             map.put("name", vcName);
                             map.put("coverageName", curr.getName());
-                            IValidationError err = new ValidationError("duplicateCoverageViewName")
-                                    .addKey("duplicateCoverageViewName").setVariables(map);
+                            IValidationError err =
+                                    new ValidationError("duplicateCoverageViewName")
+                                            .addKey("duplicateCoverageViewName")
+                                            .setVariables(map);
                             validatable.error(err);
                             return;
                         }
@@ -233,5 +245,4 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     public void setSelectedCoverages(List<String> selectedCoverages) {
         this.selectedCoverages = selectedCoverages;
     }
-
 }

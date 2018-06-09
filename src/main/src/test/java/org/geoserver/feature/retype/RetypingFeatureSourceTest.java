@@ -16,9 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;

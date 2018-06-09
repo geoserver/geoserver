@@ -4,6 +4,16 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -16,20 +26,7 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.sqlite.MbtilesConfiguration;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-/**
- * Test for the BlobStorePage with the MBTiles blob store panel.
- */
+/** Test for the BlobStorePage with the MBTiles blob store panel. */
 public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
 
     @Test
@@ -49,7 +46,9 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible("blobConfigContainer:blobStoreForm");
 
         // we should have two types of blob stores available (file and mbtiles)
-        DropDownChoice typeOfBlobStore = (DropDownChoice) tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
+        DropDownChoice typeOfBlobStore =
+                (DropDownChoice)
+                        tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
         assertEquals(2, typeOfBlobStore.getChoices().size());
         assertEquals("File BlobStore", typeOfBlobStore.getChoices().get(0).toString());
         assertEquals("MBTiles BlobStore", typeOfBlobStore.getChoices().get(1).toString());
@@ -59,11 +58,13 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         // the blob store form should be visible now
         tester.assertVisible("blobConfigContainer:blobStoreForm");
         // and the form should be the file blob store one
-        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
+        tester.assertComponent(
+                "blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
         // let's select the mbtiles store
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
         // the form should be the mbtiles blob store one
-        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", MbtilesBlobStorePanel.class);
+        tester.assertComponent(
+                "blobConfigContainer:blobStoreForm:blobSpecificPanel", MbtilesBlobStorePanel.class);
     }
 
     @Test
@@ -81,15 +82,19 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         String storeId = UUID.randomUUID().toString();
         formTester.setValue("id", storeId);
         formTester.setValue("enabled", false);
-        formTester.setValue("blobSpecificPanel:rootDirectory:border:border_body:paramValue", "/tmp/gwc");
-        formTester.setValue("blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/tiles-{z}.sqlite");
+        formTester.setValue(
+                "blobSpecificPanel:rootDirectory:border:border_body:paramValue", "/tmp/gwc");
+        formTester.setValue(
+                "blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/tiles-{z}.sqlite");
         formTester.setValue("blobSpecificPanel:rowRangeCount", "1500");
         formTester.setValue("blobSpecificPanel:columnRangeCount", "500");
         formTester.setValue("blobSpecificPanel:poolSize", "2000");
         formTester.setValue("blobSpecificPanel:poolReaperIntervalMs", "1000");
         formTester.setValue("blobSpecificPanel:eagerDelete", "true");
         formTester.setValue("blobSpecificPanel:useCreateTime", "true");
-        formTester.setValue("blobSpecificPanel:mbtilesMetadataDirectory:border:border_body:paramValue", "/tmp/gwc/mbtilesMetadata");
+        formTester.setValue(
+                "blobSpecificPanel:mbtilesMetadataDirectory:border:border_body:paramValue",
+                "/tmp/gwc/mbtilesMetadata");
         // submit the form
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
@@ -131,14 +136,17 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         BlobStorePage page = new BlobStorePage(originalConfiguration);
         tester.startPage(page);
         tester.assertVisible("blobConfigContainer:blobStoreForm");
-        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", MbtilesBlobStorePanel.class);
+        tester.assertComponent(
+                "blobConfigContainer:blobStoreForm:blobSpecificPanel", MbtilesBlobStorePanel.class);
 
         // let's update some configuration values
         assertThat(findStore(storeId), notNullValue());
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         String updatedStoreId = UUID.randomUUID().toString();
         formTester.setValue("id", updatedStoreId);
-        formTester.setValue("blobSpecificPanel:templatePath", "{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite");
+        formTester.setValue(
+                "blobSpecificPanel:templatePath",
+                "{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite");
         // submit the changes
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
@@ -146,7 +154,9 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         assertThat(findStore(storeId), nullValue());
         MbtilesConfiguration configuration = findStore(updatedStoreId);
         assertThat(configuration, notNullValue());
-        assertThat(configuration.getTemplatePath(), is("{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite"));
+        assertThat(
+                configuration.getTemplatePath(),
+                is("{grid}/{layer}/{params}/{style}/tiles-{z}.sqlite"));
 
         // test that the store id updated was correctly propagated
         layer = GWC.get().getTileLayerByName("cite:Lakes");
@@ -156,13 +166,12 @@ public class MbtilesBlobStorePageTest extends GeoServerWicketTestSupport {
         GWC.get().removeBlobStores(Collections.singleton(updatedStoreId));
     }
 
-    /**
-     * Helper method that finds a GWC store by is id.
-     */
+    /** Helper method that finds a GWC store by is id. */
     private MbtilesConfiguration findStore(String storeId) {
         List<BlobStoreConfig> configurations = GWC.get().getBlobStores();
         for (BlobStoreConfig candidateConfiguration : configurations) {
-            if (candidateConfiguration instanceof MbtilesConfiguration && candidateConfiguration.getId().equals(storeId)) {
+            if (candidateConfiguration instanceof MbtilesConfiguration
+                    && candidateConfiguration.getId().equals(storeId)) {
                 return (MbtilesConfiguration) candidateConfiguration;
             }
         }

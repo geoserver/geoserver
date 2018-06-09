@@ -6,35 +6,32 @@
 package org.geoserver.inspire.wcs;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_SCHEMA;
 
-import org.geoserver.inspire.UniqueResourceIdentifier;
-import org.geoserver.inspire.UniqueResourceIdentifiers;
-
+import java.io.IOException;
+import java.util.List;
 import net.opengis.wcs20.GetCapabilitiesType;
-import org.geoserver.wcs.WCSInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.MetadataMap;
-
+import org.geoserver.inspire.UniqueResourceIdentifier;
+import org.geoserver.inspire.UniqueResourceIdentifiers;
+import org.geoserver.wcs.WCSInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
-import java.io.IOException;
-import java.util.List;
-
-public class WCSExtendedCapabilitiesProvider extends
-        org.geoserver.wcs2_0.response.WCSExtendedCapabilitiesProvider {
+public class WCSExtendedCapabilitiesProvider
+        extends org.geoserver.wcs2_0.response.WCSExtendedCapabilitiesProvider {
 
     @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
-        return new String[]{DLS_NAMESPACE, DLS_SCHEMA};
+        return new String[] {DLS_NAMESPACE, DLS_SCHEMA};
     }
 
     @Override
@@ -46,26 +43,32 @@ public class WCSExtendedCapabilitiesProvider extends
     }
 
     @Override
-    public void encodeExtendedOperations(Translator tx, WCSInfo wcs, GetCapabilitiesType request) throws IOException {
-        //INSPIRE has nothing to add to operations section
+    public void encodeExtendedOperations(Translator tx, WCSInfo wcs, GetCapabilitiesType request)
+            throws IOException {
+        // INSPIRE has nothing to add to operations section
     }
 
     @Override
-    public void encodeExtendedContents(Translator tx, WCSInfo wcs, List<CoverageInfo> coverages, GetCapabilitiesType request)
+    public void encodeExtendedContents(
+            Translator tx, WCSInfo wcs, List<CoverageInfo> coverages, GetCapabilitiesType request)
             throws IOException {
         MetadataMap serviceMetadata = wcs.getMetadata();
-        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities =
+                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
-        UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
-        //Don't create extended capabilities element if mandatory content not present
-        //or turned off
+        UniqueResourceIdentifiers ids =
+                (UniqueResourceIdentifiers)
+                        serviceMetadata.get(
+                                SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                                UniqueResourceIdentifiers.class);
+        // Don't create extended capabilities element if mandatory content not present
+        // or turned off
         if (metadataURL == null
                 || ids == null
                 || ids.isEmpty()
-                || createExtendedCapabilities != null
-                && !createExtendedCapabilities) {
+                || createExtendedCapabilities != null && !createExtendedCapabilities) {
             return;
         }
 
@@ -97,7 +100,9 @@ public class WCSExtendedCapabilitiesProvider extends
         tx.end("inspire_common:ResponseLanguage");
         for (UniqueResourceIdentifier id : ids) {
             if (id.getMetadataURL() != null) {
-                tx.start("inspire_dls:SpatialDataSetIdentifier", atts("metadataURL", id.getMetadataURL()));
+                tx.start(
+                        "inspire_dls:SpatialDataSetIdentifier",
+                        atts("metadataURL", id.getMetadataURL()));
             } else {
                 tx.start("inspire_dls:SpatialDataSetIdentifier");
             }
@@ -122,5 +127,4 @@ public class WCSExtendedCapabilitiesProvider extends
         }
         return attributes;
     }
-
 }

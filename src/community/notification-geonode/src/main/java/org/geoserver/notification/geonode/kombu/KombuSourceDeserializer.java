@@ -5,14 +5,13 @@
 
 package org.geoserver.notification.geonode.kombu;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import java.io.IOException;
 
 public class KombuSourceDeserializer extends StdDeserializer<KombuSource> {
 
@@ -23,8 +22,8 @@ public class KombuSourceDeserializer extends StdDeserializer<KombuSource> {
     }
 
     @Override
-    public KombuSource deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-            JsonProcessingException {
+    public KombuSource deserialize(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException {
         KombuSource ret = null;
         JsonNode node = jp.getCodec().readTree(jp);
         String type = node.get("type").asText();
@@ -59,5 +58,4 @@ public class KombuSourceDeserializer extends StdDeserializer<KombuSource> {
         }
         return ret;
     }
-
 }

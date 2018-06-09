@@ -15,12 +15,11 @@ public class NotificationPropertyAccessorFactory implements PropertyAccessorFact
     private static final NotificationPropertyAccessor INSTANCE = new NotificationPropertyAccessor();
 
     @Override
-    public PropertyAccessor createPropertyAccessor(Class<?> type, String xpath, Class<?> target,
-            Hints hints) {
+    public PropertyAccessor createPropertyAccessor(
+            Class<?> type, String xpath, Class<?> target, Hints hints) {
         if (Notification.class.isAssignableFrom(type)) {
             return INSTANCE;
         }
         return null;
     }
-
 }

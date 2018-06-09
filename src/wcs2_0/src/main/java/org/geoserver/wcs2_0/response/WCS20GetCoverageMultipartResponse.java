@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
@@ -17,11 +16,9 @@ import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.ExtensionType;
 import net.opengis.wcs20.GetCoverageType;
-
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -37,7 +34,7 @@ import org.vfny.geoserver.wcs.WcsException;
 /**
  * Returns a single coverage encoded in the specified output format (eventually the native one)
  * along with the XML describing the coverage, in a MIME multipart package
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class WCS20GetCoverageMultipartResponse extends Response {
@@ -46,12 +43,14 @@ public class WCS20GetCoverageMultipartResponse extends Response {
 
     EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
-    public WCS20GetCoverageMultipartResponse(CoverageResponseDelegateFinder responseFactory, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
-        super(GridCoverage.class);      
+    public WCS20GetCoverageMultipartResponse(
+            CoverageResponseDelegateFinder responseFactory,
+            EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+        super(GridCoverage.class);
         this.responseFactory = responseFactory;
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
     }
-    
+
     public String getPreferredDisposition(Object value, Operation operation) {
         return DISPOSITION_ATTACH;
     }
@@ -103,13 +102,22 @@ public class WCS20GetCoverageMultipartResponse extends Response {
         try {
             MimeMultipart multipart = new MimeMultipart();
             multipart.setSubType("related");
-            
-            String fileName = "/coverages/" + getCoverage.getCoverageId() + "." + delegate.getFileExtension(format);
-            
+
+            String fileName =
+                    "/coverages/"
+                            + getCoverage.getCoverageId()
+                            + "."
+                            + delegate.getFileExtension(format);
+
             // coverages xml structure, which is very close to the DescribeFeatureType output
             BodyPart coveragesPart = new MimeBodyPart();
-            FileReference reference = new FileReference(fileName, delegate.getMimeType(format), delegate.getConformanceClass(format));
-            final CoverageData coveragesData = new CoverageData(coverage, reference, envelopeDimensionsMapper);
+            FileReference reference =
+                    new FileReference(
+                            fileName,
+                            delegate.getMimeType(format),
+                            delegate.getConformanceClass(format));
+            final CoverageData coveragesData =
+                    new CoverageData(coverage, reference, envelopeDimensionsMapper);
             coveragesPart.setDataHandler(new DataHandler(coveragesData, "geoserver/coverages20"));
             coveragesPart.setHeader("Content-ID", "wcs");
             coveragesPart.setHeader("Content-Type", "application/gml+xml");
@@ -117,7 +125,8 @@ public class WCS20GetCoverageMultipartResponse extends Response {
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, format, encodingParameters);
+            CoverageEncoder encoder =
+                    new CoverageEncoder(delegate, coverage, format, encodingParameters);
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", fileName);
             coveragePart.setHeader("Content-Type", delegate.getMimeType(format));
@@ -138,26 +147,26 @@ public class WCS20GetCoverageMultipartResponse extends Response {
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        // the only thing that can open this format normally available on a desktop is a e-mail client
+        // the only thing that can open this format normally available on a desktop is a e-mail
+        // client
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         return getCoverage.getCoverageId() + ".eml";
     }
-    
+
     /**
-     * A special mime message that does not set any header other than the
-     * content type
-     * 
+     * A special mime message that does not set any header other than the content type
+     *
      * @author Andrea Aime - GeoSolutions
      */
-   private static class GeoServerMimeMessage extends MimeMessage {
-       public GeoServerMimeMessage() {
-           super((Session) null);
-       }
+    private static class GeoServerMimeMessage extends MimeMessage {
+        public GeoServerMimeMessage() {
+            super((Session) null);
+        }
 
-       @Override
-       protected void updateMessageID() throws MessagingException {
-           // it's just ugly to see ...
-           removeHeader("Message-ID");
-       }
-   }
+        @Override
+        protected void updateMessageID() throws MessagingException {
+            // it's just ugly to see ...
+            removeHeader("Message-ID");
+        }
+    }
 }

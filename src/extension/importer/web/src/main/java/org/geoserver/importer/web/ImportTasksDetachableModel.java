@@ -6,9 +6,7 @@
 package org.geoserver.importer.web;
 
 import java.util.List;
-
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 

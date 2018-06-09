@@ -13,7 +13,10 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.http.HttpInputMessage;
@@ -23,15 +26,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 /**
  * Convert Map to/from JSON.
- * @author jody
  *
+ * @author jody
  */
 @Component
 public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
@@ -73,9 +71,10 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
         obj.write(outWriter);
         outWriter.flush();
     }
-    
+
     /**
      * Convert to JSON representation.
+     *
      * @param obj
      * @return json representation
      */
@@ -108,5 +107,4 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
             return obj.toString();
         }
     }
-
 }

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.config.JAIInfo;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -26,7 +25,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Handles a GetMap request that spects a map in GIF format.
- * 
+ *
  * @author Simone Giannecchini
  * @author Didier Richard
  * @version $Id
@@ -39,28 +38,28 @@ public class PNGMapResponse extends RenderedImageMapResponse {
 
     private static final String MIME_TYPE_8BIT = "image/png; mode=8bit";
 
-    private static final String[] OUTPUT_FORMATS = { MIME_TYPE, MIME_TYPE_8BIT, "image/png8" };
+    private static final String[] OUTPUT_FORMATS = {MIME_TYPE, MIME_TYPE_8BIT, "image/png8"};
 
-    /**
-     * The two quantizers available for PNG images
-     */
+    /** The two quantizers available for PNG images */
     public enum QuantizeMethod {
-        Octree, MedianCut
+        Octree,
+        MedianCut
     };
 
     /**
      * Default capabilities for PNG format.
-     * 
+     *
      * <p>
+     *
      * <ol>
-     * <li>tiled = supported</li>
-     * <li>multipleValues = unsupported</li>
-     * <li>paletteSupported = supported</li>
-     * <li>transparency = supported</li>
+     *   <li>tiled = supported
+     *   <li>multipleValues = unsupported
+     *   <li>paletteSupported = supported
+     *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false,
-            true, true, null);
+    private static MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * @param format the format name as to be reported in the capabilities document
@@ -82,11 +81,12 @@ public class PNGMapResponse extends RenderedImageMapResponse {
 
     /**
      * Transforms the rendered image into the appropriate format, streaming to the output stream.
-     * 
+     *
      * @see RasterMapOutputFormat#formatImageOutputStream(RenderedImage, OutputStream)
      */
-    public void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-            WMSMapContent mapContent) throws ServiceException, IOException {
+    public void formatImageOutputStream(
+            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+            throws ServiceException, IOException {
         // /////////////////////////////////////////////////////////////////
         //
         // Reformatting this image for png
@@ -95,12 +95,12 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing png image ...");
         }
-        
+
         // check to see if we have to see a translucent or bitmask quantizer
         image = applyPalette(image, mapContent, "image/png8", true);
         float quality = (100 - wms.getPngCompression()) / 100.0f;
         JAIInfo.PngEncoderType encoder = wms.getPNGEncoderType();
-        if(encoder == JAIInfo.PngEncoderType.PNGJ) {
+        if (encoder == JAIInfo.PngEncoderType.PNGJ) {
             image = new PNGJWriter().writePNG(image, outStream, quality, mapContent);
             RasterCleaner.addImage(image);
         } else {
@@ -108,17 +108,18 @@ public class PNGMapResponse extends RenderedImageMapResponse {
             SampleModel sm = image.getSampleModel();
             int numBits = sm.getSampleSize(0);
             // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
-            boolean nativeAcceleration = PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
+            boolean nativeAcceleration =
+                    PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
             ImageWorker iw = new ImageWorker(image);
             iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, false);
-            RasterCleaner.addImage(iw.getRenderedImage());            
+            RasterCleaner.addImage(iw.getRenderedImage());
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing png image ... done!");
         }
     }
-    
+
     @Override
     public MapProducerCapabilities getCapabilities(String outputFormat) {
         return CAPABILITIES;

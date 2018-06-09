@@ -9,13 +9,12 @@ import net.opengis.wcs20.RangeIntervalType;
 import net.opengis.wcs20.RangeItemType;
 import net.opengis.wcs20.RangeSubsetType;
 import net.opengis.wcs20.Wcs20Factory;
-
 import org.geoserver.ows.KvpParser;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 
 /**
  * KVP parser for the WCS 2.0 {@link RangeSubsetType}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class RangeSubsetKvpParser extends KvpParser {
@@ -30,15 +29,15 @@ public class RangeSubsetKvpParser extends KvpParser {
 
         // remove space
         value = value.trim();
-        
+
         // minimal validation
-        if(value.matches(".*,\\s*,.*")) {
+        if (value.matches(".*,\\s*,.*")) {
             // two consequent commas
             throwInvalidSyntaxException();
-        } else if(value.startsWith(",") || value.endsWith(",")) {
+        } else if (value.startsWith(",") || value.endsWith(",")) {
             throwInvalidSyntaxException();
         }
-        
+
         String[] components = value.split("\\s*,\\s*");
         for (String component : components) {
             if (component.contains(":")) {
@@ -67,6 +66,7 @@ public class RangeSubsetKvpParser extends KvpParser {
     protected void throwInvalidSyntaxException() {
         throw new WCS20Exception(
                 "Invalid RangeSubset syntax, expecting a list of band names or band ranges (b1:b2)",
-                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax, "rangeSubset");
+                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
+                "rangeSubset");
     }
 }

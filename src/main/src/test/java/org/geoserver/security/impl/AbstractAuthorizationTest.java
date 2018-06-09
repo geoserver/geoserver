@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -61,7 +60,6 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-
 public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     private static final String NULL_STRING = (String) null;
@@ -73,7 +71,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected Authentication anonymous;
 
     protected Authentication milUser;
-    
+
     protected TestingAuthenticationToken root;
 
     protected Catalog catalog;
@@ -109,15 +107,15 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected CoverageStoreInfo arcGridStore;
 
     protected StyleInfo pointStyle;
-    
+
     protected StyleInfo lineStyle;
 
     protected LayerGroupInfo layerGroupGlobal;
 
     protected LayerGroupInfo layerGroupTopp;
-    
+
     protected LayerGroupInfo layerGroupWithSomeLockedLayer;
-    
+
     protected List<LayerInfo> layers;
 
     protected List<FeatureTypeInfo> featureTypes;
@@ -157,22 +155,41 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected FeatureTypeInfo cities;
 
     protected List<LayerGroupInfo> layerGroups;
-    
 
     @Before
     public void setUp() throws Exception {
-        rwUser = new TestingAuthenticationToken("rw", "supersecret", Arrays.asList(new GrantedAuthority[] {
-                new GeoServerRole("READER"), new GeoServerRole("WRITER") }));
-        roUser = new TestingAuthenticationToken("ro", "supersecret",
-                Arrays.asList( new GrantedAuthority[] { new GeoServerRole("READER") }));
+        rwUser =
+                new TestingAuthenticationToken(
+                        "rw",
+                        "supersecret",
+                        Arrays.asList(
+                                new GrantedAuthority[] {
+                                    new GeoServerRole("READER"), new GeoServerRole("WRITER")
+                                }));
+        roUser =
+                new TestingAuthenticationToken(
+                        "ro",
+                        "supersecret",
+                        Arrays.asList(new GrantedAuthority[] {new GeoServerRole("READER")}));
         anonymous = new TestingAuthenticationToken("anonymous", null);
-        milUser = new TestingAuthenticationToken("military", "supersecret",
-                Arrays.asList(new GrantedAuthority[] { new GeoServerRole("MILITARY") }));
-        root = new TestingAuthenticationToken("admin", "geoserver", Arrays.asList(new GrantedAuthority[] { new GeoServerRole(SecureTreeNode.ROOT_ROLE) }));
+        milUser =
+                new TestingAuthenticationToken(
+                        "military",
+                        "supersecret",
+                        Arrays.asList(new GrantedAuthority[] {new GeoServerRole("MILITARY")}));
+        root =
+                new TestingAuthenticationToken(
+                        "admin",
+                        "geoserver",
+                        Arrays.asList(
+                                new GrantedAuthority[] {
+                                    new GeoServerRole(SecureTreeNode.ROOT_ROLE)
+                                }));
 
         catalog = createNiceMock(Catalog.class);
-        expect(catalog.getWorkspace((String) anyObject())).andReturn(
-                createNiceMock(WorkspaceInfo.class)).anyTimes();
+        expect(catalog.getWorkspace((String) anyObject()))
+                .andReturn(createNiceMock(WorkspaceInfo.class))
+                .anyTimes();
         replay(catalog);
 
         toppWs = createNiceMock(WorkspaceInfo.class);
@@ -206,22 +223,44 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         // styles
         pointStyle = buildStyle("point", null);
         lineStyle = buildStyle("line", toppWs);
-        
+
         // layer groups
         layerGroupGlobal = buildLayerGroup("layerGroup", pointStyle, null, arcGridLayer);
         layerGroupTopp = buildLayerGroup("layerGroupTopp", lineStyle, toppWs, statesLayer);
-        layerGroupWithSomeLockedLayer = buildLayerGroup("layerGroupWithSomeLockedLayer", lineStyle, toppWs, statesLayer, roadsLayer);
-        
+        layerGroupWithSomeLockedLayer =
+                buildLayerGroup(
+                        "layerGroupWithSomeLockedLayer",
+                        lineStyle,
+                        toppWs,
+                        statesLayer,
+                        roadsLayer);
+
         // container groups for testing group security
-        namedTreeA = buildLayerGroup("namedTreeA", Mode.NAMED, null, statesLayer, roadsLayer, citiesLayer);
+        namedTreeA =
+                buildLayerGroup(
+                        "namedTreeA", Mode.NAMED, null, statesLayer, roadsLayer, citiesLayer);
         nestedContainerE = buildLayerGroup("nestedContainerE", Mode.CONTAINER, null, forestsLayer);
-        containerTreeB = buildLayerGroup("containerTreeB", Mode.CONTAINER, null, roadsLayer, landmarksLayer, nestedContainerE);
+        containerTreeB =
+                buildLayerGroup(
+                        "containerTreeB",
+                        Mode.CONTAINER,
+                        null,
+                        roadsLayer,
+                        landmarksLayer,
+                        nestedContainerE);
         singleGroupC = buildLayerGroup("singleGroupC", Mode.SINGLE, null, statesLayer, basesLayer);
         wsContainerD = buildLayerGroup("wsContainerD", Mode.CONTAINER, nurcWs, arcGridLayer);
 
-        layerGroups = Arrays.asList(layerGroupGlobal, layerGroupTopp, 
-                layerGroupWithSomeLockedLayer, namedTreeA, containerTreeB, singleGroupC, wsContainerD, nestedContainerE);
-
+        layerGroups =
+                Arrays.asList(
+                        layerGroupGlobal,
+                        layerGroupTopp,
+                        layerGroupWithSomeLockedLayer,
+                        namedTreeA,
+                        containerTreeB,
+                        singleGroupC,
+                        wsContainerD,
+                        nestedContainerE);
 
         // cascaded WMS layer
         cascadedLayer = buildLayer("cascaded", toppWs, WMSLayerInfo.class);
@@ -236,27 +275,32 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     public void cleanupRequestThreadLocal() throws Exception {
         Dispatcher.REQUEST.remove();
     }
-    
+
     protected void setupRequestThreadLocal(String service) {
         Request request = new Request();
         request.setService(service);
         Dispatcher.REQUEST.set(request);
     }
 
-    protected LayerInfo buildLayer(String name, WorkspaceInfo ws,
-            Class<? extends ResourceInfo> resourceClass) throws Exception {
+    protected LayerInfo buildLayer(
+            String name, WorkspaceInfo ws, Class<? extends ResourceInfo> resourceClass)
+            throws Exception {
         return buildLayer(name, ws, resourceClass, true);
     }
-    
-    protected LayerInfo buildLayer(String name, WorkspaceInfo ws,
-            Class<? extends ResourceInfo> resourceClass, boolean advertised) throws Exception {
-        
+
+    protected LayerInfo buildLayer(
+            String name,
+            WorkspaceInfo ws,
+            Class<? extends ResourceInfo> resourceClass,
+            boolean advertised)
+            throws Exception {
+
         FeatureStore fs = createNiceMock(FeatureStore.class);
         replay(fs);
-        
+
         DataStore dstore = createNiceMock(DataStore.class);
         replay(dstore);
-        
+
         StoreInfo store;
         if (resourceClass.equals(CoverageInfo.class)) {
             store = createNiceMock(CoverageStoreInfo.class);
@@ -266,7 +310,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
             store = createNiceMock(WMTSStoreInfo.class);
         } else {
             store = createNiceMock(DataStoreInfo.class);
-            expect((DataStore)((DataStoreInfo) store).getDataStore(null)).andReturn(dstore);
+            expect((DataStore) ((DataStoreInfo) store).getDataStore(null)).andReturn(dstore);
         }
         expect(store.getWorkspace()).andReturn(ws).anyTimes();
         replay(store);
@@ -285,8 +329,11 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
             expect(
-                    ((FeatureTypeInfo) resource).getFeatureSource((ProgressListener) anyObject(),
-                            (Hints) anyObject())).andReturn(fs).anyTimes();
+                            ((FeatureTypeInfo) resource)
+                                    .getFeatureSource(
+                                            (ProgressListener) anyObject(), (Hints) anyObject()))
+                    .andReturn(fs)
+                    .anyTimes();
         }
         if (!advertised) expect(resource.isAdvertised()).andReturn(advertised).anyTimes();
         expect(resource.getId()).andReturn(name + "-id").anyTimes();
@@ -307,39 +354,49 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected StyleInfo buildStyle(String name, WorkspaceInfo ws) {
         StyleInfo style = createNiceMock(StyleInfo.class);
         expect(style.getName()).andReturn(name).anyTimes();
-        expect(style.getFilename()).andReturn(name+".sld").anyTimes();
+        expect(style.getFilename()).andReturn(name + ".sld").anyTimes();
         expect(style.getWorkspace()).andReturn(ws).anyTimes();
         replay(style);
         return style;
     }
 
-    protected LayerGroupInfo buildLayerGroup(String name, StyleInfo style, WorkspaceInfo ws, LayerInfo... layer) {
+    protected LayerGroupInfo buildLayerGroup(
+            String name, StyleInfo style, WorkspaceInfo ws, LayerInfo... layer) {
         return buildLayerGroup(name, LayerGroupInfo.Mode.SINGLE, ws, layer);
     }
-    
-    protected LayerGroupInfo buildLayerGroup(String name, LayerGroupInfo.Mode type, WorkspaceInfo ws, PublishedInfo... contents) {
+
+    protected LayerGroupInfo buildLayerGroup(
+            String name, LayerGroupInfo.Mode type, WorkspaceInfo ws, PublishedInfo... contents) {
         LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
         expect(layerGroup.getName()).andReturn(name).anyTimes();
-        expect(layerGroup.prefixedName()).andReturn((ws != null ? ws.getName() + ":" : "") + name).anyTimes();
+        expect(layerGroup.prefixedName())
+                .andReturn((ws != null ? ws.getName() + ":" : "") + name)
+                .anyTimes();
         expect(layerGroup.getMode()).andReturn(type).anyTimes();
-        expect(layerGroup.getLayers()).andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents))).anyTimes();
+        expect(layerGroup.getLayers())
+                .andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents)))
+                .anyTimes();
         expect(layerGroup.getStyles()).andReturn(buildUniqueStylesForLayers(contents)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
-        expect(layerGroup.layers()).andAnswer(() -> new LayerGroupHelper(layerGroup).allLayers()).anyTimes();
-        expect(layerGroup.getId()).andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id").anyTimes(); 
+        expect(layerGroup.layers())
+                .andAnswer(() -> new LayerGroupHelper(layerGroup).allLayers())
+                .anyTimes();
+        expect(layerGroup.getId())
+                .andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id")
+                .anyTimes();
         replay(layerGroup);
         return layerGroup;
     }
 
     private List<StyleInfo> buildUniqueStylesForLayers(PublishedInfo[] contents) {
-        if(contents == null) {
+        if (contents == null) {
             return null;
         }
-        
+
         List<StyleInfo> result = new ArrayList<>();
         for (PublishedInfo pi : contents) {
-            if(pi instanceof LayerInfo) {
-                StyleInfo style = buildStyle(pi.prefixedName().replace(':',  '-') + "-style", null);
+            if (pi instanceof LayerInfo) {
+                StyleInfo style = buildStyle(pi.prefixedName().replace(':', '-') + "-style", null);
                 result.add(style);
             } else {
                 // group
@@ -349,27 +406,40 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         return result;
     }
 
-    protected LayerGroupInfo buildEOLayerGroup(String name, LayerInfo rootLayer, StyleInfo style, WorkspaceInfo ws, PublishedInfo... contents) {
+    protected LayerGroupInfo buildEOLayerGroup(
+            String name,
+            LayerInfo rootLayer,
+            StyleInfo style,
+            WorkspaceInfo ws,
+            PublishedInfo... contents) {
         LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
         expect(layerGroup.getName()).andReturn(name).anyTimes();
-        expect(layerGroup.prefixedName()).andReturn((ws != null ? ws.getName() + ":" : "") + name).anyTimes();
+        expect(layerGroup.prefixedName())
+                .andReturn((ws != null ? ws.getName() + ":" : "") + name)
+                .anyTimes();
         expect(layerGroup.getMode()).andReturn(Mode.EO).anyTimes();
         expect(layerGroup.getRootLayer()).andReturn(rootLayer).anyTimes();
-        expect(layerGroup.getLayers()).andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents))).anyTimes();
+        expect(layerGroup.getLayers())
+                .andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents)))
+                .anyTimes();
         expect(layerGroup.getStyles()).andReturn(Arrays.asList(style)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
-        expect(layerGroup.layers()).andAnswer(() -> new LayerGroupHelper(layerGroup).allLayers()).anyTimes();
-        expect(layerGroup.getId()).andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id").anyTimes(); 
+        expect(layerGroup.layers())
+                .andAnswer(() -> new LayerGroupHelper(layerGroup).allLayers())
+                .anyTimes();
+        expect(layerGroup.getId())
+                .andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id")
+                .anyTimes();
         replay(layerGroup);
         return layerGroup;
     }
-    
+
     protected ResourceAccessManager buildManager(String propertyFile) throws Exception {
         return buildManager(propertyFile, null);
     }
 
-    protected ResourceAccessManager buildManager(String propertyFile,
-            ResourceAccessManagerWrapper wrapper) throws Exception {
+    protected ResourceAccessManager buildManager(
+            String propertyFile, ResourceAccessManagerWrapper wrapper) throws Exception {
         ResourceAccessManager manager = buildAccessManager(propertyFile);
 
         if (wrapper != null) {
@@ -377,31 +447,39 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
             manager = wrapper;
         }
 
-        sc = new SecureCatalogImpl(catalog, manager) {
+        sc =
+                new SecureCatalogImpl(catalog, manager) {
 
-            @Override
-            protected boolean isAdmin(Authentication authentication) {
-                return false;
-            }
-
-        };
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
         GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
 
         return manager;
     }
 
-    protected DefaultResourceAccessManager buildAccessManager(String propertyFile) throws Exception {
+    protected DefaultResourceAccessManager buildAccessManager(String propertyFile)
+            throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
-        return new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props), catalog);
+        return new DefaultResourceAccessManager(
+                new MemoryDataAccessRuleDAO(catalog, props), catalog);
     }
-    
-    /**
-     * Sets up a mock catalog.
-     */
+
+    /** Sets up a mock catalog. */
     protected void populateCatalog() {
         // build resource collections
-        layers = Arrays.asList(statesLayer, roadsLayer, landmarksLayer, basesLayer, arcGridLayer, cascadedLayer, cascadedWmtsLayer);
+        layers =
+                Arrays.asList(
+                        statesLayer,
+                        roadsLayer,
+                        landmarksLayer,
+                        basesLayer,
+                        arcGridLayer,
+                        cascadedLayer,
+                        cascadedWmtsLayer);
         featureTypes = new ArrayList<>();
         coverages = new ArrayList<>();
         wmsLayers = new ArrayList<>();
@@ -409,14 +487,11 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         for (LayerInfo layer : layers) {
             if (layer.getResource() instanceof FeatureTypeInfo) {
                 featureTypes.add((FeatureTypeInfo) layer.getResource());
-            }
-            else if (layer.getResource() instanceof WMSLayerInfo) {
+            } else if (layer.getResource() instanceof WMSLayerInfo) {
                 wmsLayers.add((WMSLayerInfo) layer.getResource());
-            }
-            else if (layer.getResource() instanceof WMTSLayerInfo) {
+            } else if (layer.getResource() instanceof WMTSLayerInfo) {
                 wmtsLayers.add((WMTSLayerInfo) layer.getResource());
-            }
-            else {
+            } else {
                 coverages.add((CoverageInfo) layer.getResource());
             }
         }
@@ -424,39 +499,32 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         // prime the catalog
         catalog = createNiceMock(Catalog.class);
-        expect(catalog.getFeatureTypeByName("topp:states")).andReturn(states)
+        expect(catalog.getFeatureTypeByName("topp:states")).andReturn(states).anyTimes();
+        expect(catalog.getLayerByName("topp:cascaded")).andReturn(cascadedLayer).anyTimes();
+        expect(catalog.getResourceByName("topp:cascaded", WMSLayerInfo.class))
+                .andReturn(cascaded)
                 .anyTimes();
-        expect(catalog.getLayerByName("topp:cascaded")).andReturn(cascadedLayer)
+        expect(catalog.getLayerByName("topp:cascadedWmts")).andReturn(cascadedWmtsLayer).anyTimes();
+        expect(catalog.getResourceByName("topp:cascadedWmts", WMTSLayerInfo.class))
+                .andReturn(cascadedWmts)
                 .anyTimes();
-        expect(catalog.getResourceByName("topp:cascaded", WMSLayerInfo.class)).andReturn(cascaded)
+        expect(catalog.getResourceByName("topp:states", FeatureTypeInfo.class))
+                .andReturn(states)
                 .anyTimes();
-        expect(catalog.getLayerByName("topp:cascadedWmts")).andReturn(cascadedWmtsLayer)
-                .anyTimes();
-        expect(catalog.getResourceByName("topp:cascadedWmts", WMTSLayerInfo.class)).andReturn(cascadedWmts)
-                .anyTimes();
-        expect(catalog.getResourceByName("topp:states", FeatureTypeInfo.class)).andReturn(
-                states).anyTimes();
         expect(catalog.getLayerByName("topp:states")).andReturn(statesLayer).anyTimes();
-        expect(catalog.getCoverageByName("nurc:arcgrid")).andReturn(arcGrid)
+        expect(catalog.getCoverageByName("nurc:arcgrid")).andReturn(arcGrid).anyTimes();
+        expect(catalog.getResourceByName("nurc:arcgrid", CoverageInfo.class))
+                .andReturn(arcGrid)
                 .anyTimes();
-        expect(catalog.getResourceByName("nurc:arcgrid", CoverageInfo.class)).andReturn(
-                arcGrid).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:roads")).andReturn(roads)
-                .anyTimes();
-        expect(catalog.getFeatureTypeByName("nurc:cities")).andReturn(cities)
-        .anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:roads")).andReturn(roads).anyTimes();
+        expect(catalog.getFeatureTypeByName("nurc:cities")).andReturn(cities).anyTimes();
         expect(catalog.getLayerByName("topp:roads")).andReturn(roadsLayer).anyTimes();
         expect(catalog.getLayerByName("nurc:cities")).andReturn(citiesLayer).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:landmarks")).andReturn(
-                landmarks).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:bases")).andReturn(bases)
-                .anyTimes();
-        expect(catalog.getDataStoreByName("states")).andReturn(statesStore)
-                .anyTimes();
-        expect(catalog.getDataStoreByName("roads")).andReturn(roadsStore)
-                .anyTimes();
-        expect(catalog.getCoverageStoreByName("arcGrid")).andReturn(
-                arcGridStore).anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:landmarks")).andReturn(landmarks).anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:bases")).andReturn(bases).anyTimes();
+        expect(catalog.getDataStoreByName("states")).andReturn(statesStore).anyTimes();
+        expect(catalog.getDataStoreByName("roads")).andReturn(roadsStore).anyTimes();
+        expect(catalog.getCoverageStoreByName("arcGrid")).andReturn(arcGridStore).anyTimes();
         expect(catalog.getLayerByName("topp:landmarks")).andReturn(landmarksLayer).anyTimes();
         expect(catalog.getLayerByName("topp:bases")).andReturn(basesLayer).anyTimes();
         expect(catalog.getLayerByName("nurc:arc.grid")).andReturn(arcGridLayer).anyTimes();
@@ -473,51 +541,81 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getWorkspaceByName("topp")).andReturn(toppWs).anyTimes();
         expect(catalog.getWorkspaceByName("nurc")).andReturn(nurcWs).anyTimes();
         expect(catalog.getStyles()).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
-        expect(catalog.getStylesByWorkspace(toppWs)).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
-        expect(catalog.getStylesByWorkspace(nurcWs)).andReturn(Arrays.asList(pointStyle)).anyTimes();
+        expect(catalog.getStylesByWorkspace(toppWs))
+                .andReturn(Arrays.asList(pointStyle, lineStyle))
+                .anyTimes();
+        expect(catalog.getStylesByWorkspace(nurcWs))
+                .andReturn(Arrays.asList(pointStyle))
+                .anyTimes();
         expect(catalog.getLayerGroups()).andReturn(layerGroups).anyTimes();
         for (LayerGroupInfo lg : layerGroups) {
             expect(catalog.getLayerGroup(lg.getId())).andReturn(lg).anyTimes();
-            if(lg.getWorkspace() == null) {
+            if (lg.getWorkspace() == null) {
                 expect(catalog.getLayerGroupByName(lg.getName())).andReturn(lg).anyTimes();
-                expect(catalog.getLayerGroupByName(NULL_STRING, lg.getName())).andReturn(lg).anyTimes();
+                expect(catalog.getLayerGroupByName(NULL_STRING, lg.getName()))
+                        .andReturn(lg)
+                        .anyTimes();
             } else {
-                expect(catalog.getLayerGroupByName(lg.getWorkspace(), lg.getName())).andReturn(lg).anyTimes();
-                expect(catalog.getLayerGroupByName(lg.getWorkspace().getName(), lg.getName())).andReturn(lg).anyTimes();
+                expect(catalog.getLayerGroupByName(lg.getWorkspace(), lg.getName()))
+                        .andReturn(lg)
+                        .anyTimes();
+                expect(catalog.getLayerGroupByName(lg.getWorkspace().getName(), lg.getName()))
+                        .andReturn(lg)
+                        .anyTimes();
             }
         }
-        
-        expect(catalog.getLayerGroupsByWorkspace("topp")).andReturn(Arrays.asList(new LayerGroupInfo[] { layerGroupTopp, layerGroupWithSomeLockedLayer })).anyTimes();
-        expect(catalog.getLayerGroupsByWorkspace("nurc")).andReturn(Arrays.asList(layerGroupGlobal)).anyTimes();
-        expect(catalog.list(eq(LayerGroupInfo.class), anyObject(Filter.class))).andAnswer(() -> { 
-            List<LayerGroupInfo> groups = catalog.getLayerGroups();
-            Filter f = (Filter) EasyMock.getCurrentArguments()[1];
-            Iterator<LayerGroupInfo> it = groups.stream().filter(lg -> 
-            f.evaluate(lg)
-                    ).iterator();
-            return new CloseableIteratorAdapter<LayerGroupInfo>(it);
-        }).anyTimes();
+
+        expect(catalog.getLayerGroupsByWorkspace("topp"))
+                .andReturn(
+                        Arrays.asList(
+                                new LayerGroupInfo[] {
+                                    layerGroupTopp, layerGroupWithSomeLockedLayer
+                                }))
+                .anyTimes();
+        expect(catalog.getLayerGroupsByWorkspace("nurc"))
+                .andReturn(Arrays.asList(layerGroupGlobal))
+                .anyTimes();
+        expect(catalog.list(eq(LayerGroupInfo.class), anyObject(Filter.class)))
+                .andAnswer(
+                        () -> {
+                            List<LayerGroupInfo> groups = catalog.getLayerGroups();
+                            Filter f = (Filter) EasyMock.getCurrentArguments()[1];
+                            Iterator<LayerGroupInfo> it =
+                                    groups.stream().filter(lg -> f.evaluate(lg)).iterator();
+                            return new CloseableIteratorAdapter<LayerGroupInfo>(it);
+                        })
+                .anyTimes();
         replay(catalog);
 
         GeoServerExtensionsHelper.singleton("catalog", catalog);
     }
-    
+
     <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
         final Capture<Filter> cap = new Capture<Filter>();
-        expect(catalog.list(eq(clazz), capture(cap))).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
-            @Override
-            public CloseableIterator<T> answer() throws Throwable {
-                return makeCIterator(source, cap.getValue());
-            }
-        });
-        expect(catalog.list(eq(clazz), capture(cap), EasyMock.anyInt(), EasyMock.anyInt(), (SortBy)anyObject())).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
-            @Override
-            public CloseableIterator<T> answer() throws Throwable {
-                return makeCIterator(source, cap.getValue());
-            }
-        });
+        expect(catalog.list(eq(clazz), capture(cap)))
+                .andStubAnswer(
+                        new IAnswer<CloseableIterator<T>>() {
+                            @Override
+                            public CloseableIterator<T> answer() throws Throwable {
+                                return makeCIterator(source, cap.getValue());
+                            }
+                        });
+        expect(
+                        catalog.list(
+                                eq(clazz),
+                                capture(cap),
+                                EasyMock.anyInt(),
+                                EasyMock.anyInt(),
+                                (SortBy) anyObject()))
+                .andStubAnswer(
+                        new IAnswer<CloseableIterator<T>>() {
+                            @Override
+                            public CloseableIterator<T> answer() throws Throwable {
+                                return makeCIterator(source, cap.getValue());
+                            }
+                        });
     }
-    
+
     static <T> CloseableIterator<T> makeCIterator(List<T> source, Filter f) {
         return CloseableIteratorAdapter.filter(source.iterator(), f);
     }

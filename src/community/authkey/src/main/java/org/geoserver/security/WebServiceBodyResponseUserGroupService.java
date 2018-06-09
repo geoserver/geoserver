@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.event.UserGroupLoadedListener;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
@@ -29,17 +28,17 @@ import org.springframework.util.StringUtils;
 
 /**
  * Extracts Roles from the {@linkplain WebServiceAuthenticationKeyMapper} Response Body.
- * 
- * This {@linkplain GeoServerUserGroupService} can also be used to re-map Roles to internal Security Groups.
- * 
- * @author Alessio Fabiani, GeoSolutions S.A.S.
  *
+ * <p>This {@linkplain GeoServerUserGroupService} can also be used to re-map Roles to internal
+ * Security Groups.
+ *
+ * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSecurityService
         implements GeoServerUserGroupService {
 
-    static final SortedSet<GeoServerUser> emptyUserSet = Collections
-            .unmodifiableSortedSet(new TreeSet<GeoServerUser>());
+    static final SortedSet<GeoServerUser> emptyUserSet =
+            Collections.unmodifiableSortedSet(new TreeSet<GeoServerUser>());
 
     private boolean convertToUpperCase = true;
 
@@ -47,8 +46,8 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
     private static final String groupPrefix = "GROUP_";
 
-    protected Set<UserGroupLoadedListener> listeners = Collections
-            .synchronizedSet(new HashSet<UserGroupLoadedListener>());
+    protected Set<UserGroupLoadedListener> listeners =
+            Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
 
     protected String passwordEncoderName, passwordValidatorName;
 
@@ -56,8 +55,8 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     Pattern searchRolesRegex = null;
 
     // optional static list of available Groups from the webservice response
-    protected SortedSet<GeoServerUserGroup> availableGroups = Collections
-            .synchronizedSortedSet(new TreeSet<GeoServerUserGroup>());
+    protected SortedSet<GeoServerUserGroup> availableGroups =
+            Collections.synchronizedSortedSet(new TreeSet<GeoServerUserGroup>());
 
     private String roleServiceName;
 
@@ -72,7 +71,8 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-        WebServiceBodyResponseUserGroupServiceConfig webServiceBodyConfig = ((WebServiceBodyResponseUserGroupServiceConfig) config);
+        WebServiceBodyResponseUserGroupServiceConfig webServiceBodyConfig =
+                ((WebServiceBodyResponseUserGroupServiceConfig) config);
         passwordEncoderName = webServiceBodyConfig.getPasswordEncoderName();
         passwordValidatorName = webServiceBodyConfig.getPasswordPolicyName();
 
@@ -86,11 +86,12 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
         if (StringUtils.hasLength(webServiceBodyConfig.getAvailableGroups())) {
             for (String role : webServiceBodyConfig.getAvailableGroups().split(",")) {
-                availableGroups.add(new GeoServerUserGroup(
-                        (convertToUpperCase ? role.trim().toUpperCase() : role.trim())));
+                availableGroups.add(
+                        new GeoServerUserGroup(
+                                (convertToUpperCase ? role.trim().toUpperCase() : role.trim())));
             }
         }
-        
+
         if (StringUtils.hasLength(webServiceBodyConfig.getRoleServiceName())) {
             roleServiceName = webServiceBodyConfig.getRoleServiceName();
         } else {
@@ -99,17 +100,13 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         defaultSecurityService = null;
     }
 
-    /**
-     * Read only store.
-     */
+    /** Read only store. */
     @Override
     public boolean canCreateStore() {
         return false;
     }
 
-    /**
-     * Read only store.
-     */
+    /** Read only store. */
     @Override
     public GeoServerUserGroupStore createStore() throws IOException {
         return null; // read-only!
@@ -159,7 +156,8 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
                 }
             }
         } else {
-            LOGGER.log(Level.WARNING,
+            LOGGER.log(
+                    Level.WARNING,
                     "Error in WebServiceAuthenticationKeyMapper, cannot find any Role in response");
             authorities.add(GeoServerRole.ADMIN_ROLE);
         }
@@ -239,12 +237,14 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     @Override
     public GeoServerUserGroup createGroupObject(final String groupname, boolean isEnabled)
             throws IOException {
-        String theGroupName = (convertToUpperCase ? groupname.trim().toUpperCase()
-                : groupname.trim());
+        String theGroupName =
+                (convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim());
         if (!theGroupName.contains(groupPrefix)) {
             if (theGroupName.equals(GeoServerRole.ADMIN_ROLE.getAuthority())) {
-                theGroupName = GeoServerRole.GROUP_ADMIN_ROLE.getAuthority()
-                        .substring(rolePrefix.length());
+                theGroupName =
+                        GeoServerRole.GROUP_ADMIN_ROLE
+                                .getAuthority()
+                                .substring(rolePrefix.length());
             } else {
                 // remove standard role prefix
                 theGroupName = theGroupName.substring(rolePrefix.length());
@@ -300,30 +300,25 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         return passwordValidatorName;
     }
 
-    /**
-     * @return the roleServiceName
-     */
+    /** @return the roleServiceName */
     public String getRoleServiceName() {
         return roleServiceName;
     }
 
-    /**
-     * @param roleServiceName the roleServiceName to set
-     */
+    /** @param roleServiceName the roleServiceName to set */
     public void setRoleServiceName(String roleServiceName) {
         this.roleServiceName = roleServiceName;
     }
 
-    /**
-     * @return the defaultSecurityService
-     */
+    /** @return the defaultSecurityService */
     public GeoServerRoleService getDefaultSecurityService() {
         if (defaultSecurityService == null) {
             if (StringUtils.hasLength(roleServiceName)) {
                 try {
                     for (String roleService : securityManager.listRoleServices()) {
                         if (roleService.equals(roleServiceName)) {
-                            defaultSecurityService = securityManager.loadRoleService(roleServiceName);
+                            defaultSecurityService =
+                                    securityManager.loadRoleService(roleServiceName);
                             break;
                         }
                     }
@@ -339,9 +334,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         return defaultSecurityService;
     }
 
-    /**
-     * @param defaultSecurityService the defaultSecurityService to set
-     */
+    /** @param defaultSecurityService the defaultSecurityService to set */
     public void setDefaultSecurityService(GeoServerRoleService defaultSecurityService) {
         this.defaultSecurityService = defaultSecurityService;
     }
@@ -387,5 +380,4 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
             throws IOException {
         return 0;
     }
-
 }

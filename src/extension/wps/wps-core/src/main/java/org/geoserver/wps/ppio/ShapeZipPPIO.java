@@ -14,9 +14,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.servlet.ServletContext;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.IOUtils;
@@ -30,7 +28,7 @@ import org.geotools.feature.FeatureCollection;
 
 /**
  * Handles input and output of feature collections as zipped shapefiles
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class ShapeZipPPIO extends BinaryPPIO {
@@ -50,8 +48,9 @@ public class ShapeZipPPIO extends BinaryPPIO {
     }
 
     private Charset getCharset() {
-        final String charsetName = GeoServerExtensions.getProperty(
-                ShapeZipOutputFormat.GS_SHAPEFILE_CHARSET, (ServletContext) null);
+        final String charsetName =
+                GeoServerExtensions.getProperty(
+                        ShapeZipOutputFormat.GS_SHAPEFILE_CHARSET, (ServletContext) null);
         if (charsetName != null) {
             return Charset.forName(charsetName);
         } else {
@@ -114,12 +113,10 @@ public class ShapeZipPPIO extends BinaryPPIO {
             resources.addResource(new ShapefileResource(store, tempDir));
             return store.getFeatureSource().getFeatures();
         }
-
     }
-    
+
     @Override
     public String getFileExtension() {
         return "zip";
     }
-
 }

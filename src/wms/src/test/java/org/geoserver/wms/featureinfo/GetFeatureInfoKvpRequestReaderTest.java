@@ -7,7 +7,7 @@ package org.geoserver.wms.featureinfo;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
-
+import junit.framework.Test;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -22,25 +22,22 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 
-import junit.framework.Test;
-
 @SuppressWarnings("unchecked")
 public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     GetFeatureInfoKvpReader reader;
 
     Dispatcher dispatcher;
 
-    public static final String STATES_SLD = "<StyledLayerDescriptor version=\"1.0.0\">"
-            + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
-            + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
-            + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
-            + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
-            + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
-            + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
+    public static final String STATES_SLD =
+            "<StyledLayerDescriptor version=\"1.0.0\">"
+                    + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
+                    + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
+                    + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
+                    + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
+                    + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
+                    + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
+    /** This is a READ ONLY TEST so we can use one time setup */
     public static Test suite() {
         return new OneTimeTestSetup(new GetFeatureInfoKvpRequestReaderTest());
     }
@@ -88,7 +85,8 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
-        kvp.put("layers",
+        kvp.put(
+                "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
         WMS wms = new WMS(getGeoServer());
@@ -113,7 +111,8 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
     public void testSldBodyDisabled() throws Exception {
         HashMap kvp = new HashMap();
         kvp.put("sld_body", STATES_SLD);
-        kvp.put("layers",
+        kvp.put(
+                "layers",
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
         WMS wms = new WMS(getGeoServer());
@@ -134,5 +133,4 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         getGeoServer().add(oldInfo);
         assertTrue(error);
     }
-
 }

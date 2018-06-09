@@ -12,7 +12,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
@@ -27,9 +26,7 @@ import org.geotools.util.Version;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.EntityResolver;
 
-/**
- * Style handler for MBStyle
- */
+/** Style handler for MBStyle */
 public class MBStyleHandler extends StyleHandler {
 
     public static final String FORMAT = "mbstyle";
@@ -37,18 +34,29 @@ public class MBStyleHandler extends StyleHandler {
     public static final String MIME_TYPE = "application/vnd.geoserver.mbstyle+json";
 
     static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+
     static {
         try {
-            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(MBStyleHandler.class
-                    .getResourceAsStream("template_generic.json")));
-            TEMPLATES.put(StyleType.POINT, IOUtils.toString(MBStyleHandler.class
-                    .getResourceAsStream("template_point.json")));
-            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(MBStyleHandler.class
-                    .getResourceAsStream("template_polygon.json")));
-            TEMPLATES.put(StyleType.LINE, IOUtils.toString(MBStyleHandler.class
-                    .getResourceAsStream("template_line.json")));
-            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(MBStyleHandler.class
-                    .getResourceAsStream("template_raster.json")));
+            TEMPLATES.put(
+                    StyleType.GENERIC,
+                    IOUtils.toString(
+                            MBStyleHandler.class.getResourceAsStream("template_generic.json")));
+            TEMPLATES.put(
+                    StyleType.POINT,
+                    IOUtils.toString(
+                            MBStyleHandler.class.getResourceAsStream("template_point.json")));
+            TEMPLATES.put(
+                    StyleType.POLYGON,
+                    IOUtils.toString(
+                            MBStyleHandler.class.getResourceAsStream("template_polygon.json")));
+            TEMPLATES.put(
+                    StyleType.LINE,
+                    IOUtils.toString(
+                            MBStyleHandler.class.getResourceAsStream("template_line.json")));
+            TEMPLATES.put(
+                    StyleType.RASTER,
+                    IOUtils.toString(
+                            MBStyleHandler.class.getResourceAsStream("template_raster.json")));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -62,8 +70,12 @@ public class MBStyleHandler extends StyleHandler {
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, Version version,
-            ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
+    public StyledLayerDescriptor parse(
+            Object input,
+            Version version,
+            ResourceLocator resourceLocator,
+            EntityResolver entityResolver)
+            throws IOException {
         // see if we can use the style cache, some conversions are expensive.
         if (input instanceof File) {
             // convert to resource, to avoid code duplication
@@ -73,13 +85,15 @@ public class MBStyleHandler extends StyleHandler {
 
         if (input instanceof Resource) {
             Resource jsonResource = (Resource) input;
-            Resource sldResource = jsonResource.parent()
-                    .get(FilenameUtils.getBaseName(jsonResource.name()) + ".sld");
+            Resource sldResource =
+                    jsonResource
+                            .parent()
+                            .get(FilenameUtils.getBaseName(jsonResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > jsonResource.lastmodified()) {
                 // if sld resource exists, use it
-                return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
-                        entityResolver);
+                return sldHandler.parse(
+                        sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
             } else {
                 // otherwise convert and write the cache
                 try (Reader reader = toReader(input)) {
@@ -87,8 +101,8 @@ public class MBStyleHandler extends StyleHandler {
                     try (OutputStream fos = sldResource.out()) {
                         sldHandler.encode(sld, SLDHandler.VERSION_10, true, fos);
                     }
-                    return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
-                            entityResolver);
+                    return sldHandler.parse(
+                            sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
                 } catch (ParseException e) {
                     throw new IOException(e);
                 }
@@ -108,14 +122,15 @@ public class MBStyleHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty,
-            OutputStream output) throws IOException {
+    public void encode(
+            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+            throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {        
+            throws IOException {
         return MapBoxStyle.validate(toReader(input));
     }
 
@@ -139,7 +154,8 @@ public class MBStyleHandler extends StyleHandler {
         String template = TEMPLATES.get(type);
         String colorCode = Integer.toHexString(color.getRGB());
         colorCode = colorCode.substring(2, colorCode.length());
-        return template.replace("${colorName}", colorName).replace(
-                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
+        return template.replace("${colorName}", colorName)
+                .replace("${colorCode}", "#" + colorCode)
+                .replace("${layerName}", layerName);
     }
 }

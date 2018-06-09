@@ -7,9 +7,7 @@ package org.geoserver.rest.catalog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.resource.Resource;
@@ -24,11 +22,11 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
 
     static final Logger LOGGER = Logging.getLogger(AbstractStoreUploadController.class);
 
-    /**
-     * The ways a file upload can be achieved
-     */
+    /** The ways a file upload can be achieved */
     protected enum UploadMethod {
-        file(true), external(false), url(true);
+        file(true),
+        external(false),
+        url(true);
 
         boolean inline;
 
@@ -39,7 +37,6 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
         public boolean isInline() {
             return inline;
         }
-
     }
 
     public AbstractStoreUploadController(Catalog catalog) {
@@ -47,14 +44,18 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
     }
 
     /**
-     *
      * @param store
      * @param format
      * @param directory
-     *
      */
-    protected List<Resource> handleFileUpload(String store, String workspace, String filename, UploadMethod method,
-            String format, Resource directory, HttpServletRequest request) {
+    protected List<Resource> handleFileUpload(
+            String store,
+            String workspace,
+            String filename,
+            UploadMethod method,
+            String format,
+            Resource directory,
+            HttpServletRequest request) {
 
         List<Resource> files = new ArrayList<>();
 
@@ -68,24 +69,29 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
                 if (filename == null) {
                     filename = buildUploadedFilename(store, format);
                 }
-                uploadedFile = RESTUtils.handleBinUpload(filename, directory, cleanPreviousContents,
-                        request, workspace);
+                uploadedFile =
+                        RESTUtils.handleBinUpload(
+                                filename, directory, cleanPreviousContents, request, workspace);
             } else if (method == UploadMethod.url) {
-                uploadedFile = RESTUtils.handleURLUpload(buildUploadedFilename(store, format),
-                        workspace, directory, request);
+                uploadedFile =
+                        RESTUtils.handleURLUpload(
+                                buildUploadedFilename(store, format),
+                                workspace,
+                                directory,
+                                request);
             } else if (method == UploadMethod.external) {
                 uploadedFile = RESTUtils.handleEXTERNALUpload(request);
                 external = true;
             } else {
-                throw new RestException("Unrecognized file upload method: " + method,
-                        HttpStatus.BAD_REQUEST);
+                throw new RestException(
+                        "Unrecognized file upload method: " + method, HttpStatus.BAD_REQUEST);
             }
         } catch (Throwable t) {
             if (t instanceof RestException) {
                 throw (RestException) t;
             } else {
-                throw new RestException("Error while storing uploaded file:",
-                        HttpStatus.INTERNAL_SERVER_ERROR, t);
+                throw new RestException(
+                        "Error while storing uploaded file:", HttpStatus.INTERNAL_SERVER_ERROR, t);
             }
         }
 
@@ -93,12 +99,17 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
         if (RESTUtils.isZipMediaType(request)) {
             // rename to .zip if need be
             if (!uploadedFile.name().endsWith(".zip")) {
-                Resource newUploadedFile = uploadedFile.parent()
-                        .get(FilenameUtils.getBaseName(uploadedFile.path()) + ".zip");
+                Resource newUploadedFile =
+                        uploadedFile
+                                .parent()
+                                .get(FilenameUtils.getBaseName(uploadedFile.path()) + ".zip");
                 String oldFileName = uploadedFile.name();
                 if (!uploadedFile.renameTo(newUploadedFile)) {
-                    String errorMessage = "Error renaming zip file from " + oldFileName + " -> "
-                            + newUploadedFile.name();
+                    String errorMessage =
+                            "Error renaming zip file from "
+                                    + oldFileName
+                                    + " -> "
+                                    + newUploadedFile.name();
                     throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
                 uploadedFile = newUploadedFile;
@@ -106,8 +117,8 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
             // unzip the file
             try {
                 // Unzipping of the file and, if it is a POST request, filling of the File List
-                RESTUtils.unzipFile(uploadedFile, directory, workspace, store, request, files,
-                        external);
+                RESTUtils.unzipFile(
+                        uploadedFile, directory, workspace, store, request, files, external);
 
                 // look for the "primary" file
                 // TODO: do a better check
@@ -122,8 +133,8 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
             } catch (RestException e) {
                 throw e;
             } catch (Exception e) {
-                throw new RestException("Error occured unzipping file",
-                        HttpStatus.INTERNAL_SERVER_ERROR, e);
+                throw new RestException(
+                        "Error occured unzipping file", HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
         }
         // If the File List is empty then the uploaded file must be added
@@ -137,9 +148,7 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
         return files;
     }
 
-    /**
-     * Build name for an uploaded file.
-     */
+    /** Build name for an uploaded file. */
     private String buildUploadedFilename(String store, String format) {
         if ("h2".equalsIgnoreCase(format)) {
             return store + ".data.db";
@@ -149,18 +158,16 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
     }
 
     /**
-     * 
      * @param directory
      * @param format
-     *
      */
     protected Resource findPrimaryFile(Resource directory, String format) {
-        for (Resource f : Resources.list(directory,
-                new Resources.ExtensionFilter(format.toUpperCase()), true)) {
+        for (Resource f :
+                Resources.list(
+                        directory, new Resources.ExtensionFilter(format.toUpperCase()), true)) {
             // assume the first
             return f;
         }
         return null;
     }
-
 }

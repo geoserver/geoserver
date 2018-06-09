@@ -16,6 +16,5 @@ public class StatusPage extends AbstractStatusPage {
 
     protected void initUI() {
         super.initUI();
-
     }
 }

@@ -4,18 +4,16 @@
  */
 package org.geoserver.web.data.layer;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
 import org.apache.wicket.Component;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertNotNull;
-
 public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
-
 
     @Test
     public void testSqlViewManyParameters() throws IOException {
@@ -48,8 +46,8 @@ public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
         // print(tester.getLastRenderedPage(), true, true);
 
         // check we have item 50 (numbered 49) in the html output
-        Component component = tester.getComponentFromLastRenderedPage("form:parameters:listContainer:items:49");
+        Component component =
+                tester.getComponentFromLastRenderedPage("form:parameters:listContainer:items:49");
         assertNotNull(component);
     }
-
 }

@@ -6,18 +6,15 @@
 package org.geoserver.wcs2_0.kvp;
 
 import java.util.List;
-
 import net.opengis.wcs20.ScaleToSizeType;
 import net.opengis.wcs20.TargetAxisSizeType;
 import net.opengis.wcs20.Wcs20Factory;
-
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 
 /**
  * Parses the WCS 2.0 {@link ScaleToSizeType} from KVP
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class ScaleSizeKvpParser extends AbstractAxisValueKvpParser<TargetAxisSizeType> {
 
@@ -28,10 +25,10 @@ public class ScaleSizeKvpParser extends AbstractAxisValueKvpParser<TargetAxisSiz
     @Override
     public Object parse(String value) throws Exception {
         ScaleToSizeType sabf = Wcs20Factory.eINSTANCE.createScaleToSizeType();
-        
+
         List<TargetAxisSizeType> items = parseItem(value);
         sabf.getTargetAxisSize().addAll(items);
-        
+
         return sabf;
     }
 
@@ -50,13 +47,14 @@ public class ScaleSizeKvpParser extends AbstractAxisValueKvpParser<TargetAxisSiz
 
     @Override
     protected void throwInvalidSyntaxException(Exception e) {
-        WCS20Exception ex = new WCS20Exception(
-                "Invalid ScaleSize syntax, expecting a comma separate list of axisName(size)*",
-                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax, "scaleSize");
+        WCS20Exception ex =
+                new WCS20Exception(
+                        "Invalid ScaleSize syntax, expecting a comma separate list of axisName(size)*",
+                        WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
+                        "scaleSize");
         if (e != null) {
             ex.initCause(e);
         }
         throw ex;
-
     }
 }

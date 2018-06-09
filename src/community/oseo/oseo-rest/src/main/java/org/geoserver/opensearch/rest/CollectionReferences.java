@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 class CollectionReferences {
@@ -19,5 +18,4 @@ class CollectionReferences {
     public List<CollectionReference> getCollections() {
         return collections;
     }
-
 }

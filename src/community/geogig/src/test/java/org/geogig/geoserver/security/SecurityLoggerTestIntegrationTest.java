@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.config.LogEvent;
 import org.geogig.geoserver.config.LogEvent.Severity;
@@ -36,21 +35,16 @@ import org.w3c.dom.Document;
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSupport {
 
-    /**
-     * {@code /geogig/repos/<repoId>}
-     */
+    /** {@code /geogig/repos/<repoId>} */
     private String BASE_URL;
 
-    @Rule
-    public GeoGigTestData geogigData = new GeoGigTestData();
+    @Rule public GeoGigTestData geogigData = new GeoGigTestData();
 
     private LogStore logStore;
 
     private URI repoURL;
 
-    /**
-     * Override to avoid creating default geoserver test data
-     */
+    /** Override to avoid creating default geoserver test data */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // do nothing
@@ -60,13 +54,14 @@ public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSuppor
     public void before() throws Exception {
         // protected void onSetUp(SystemTestData testData) throws Exception {
 
-        geogigData.init()//
-                .config("user.name", "gabriel")//
-                .config("user.email", "gabriel@test.com")//
-                .createTypeTree("lines", "geom:LineString:srid=4326")//
-                .createTypeTree("points", "geom:Point:srid=4326")//
-                .add()//
-                .commit("created type trees")//
+        geogigData
+                .init() //
+                .config("user.name", "gabriel") //
+                .config("user.email", "gabriel@test.com") //
+                .createTypeTree("lines", "geom:LineString:srid=4326") //
+                .createTypeTree("points", "geom:Point:srid=4326") //
+                .add() //
+                .commit("created type trees") //
                 .get();
 
         RepositoryManager repositoryManager = RepositoryManager.get();
@@ -84,10 +79,10 @@ public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSuppor
         SecurityLogger logger = GeoServerExtensions.bean(SecurityLogger.class);
         assertNotNull(logger);
     }
-    
+
     @After
     public void after() {
-		RepositoryManager.close();
+        RepositoryManager.close();
     }
 
     private void login() throws Exception {

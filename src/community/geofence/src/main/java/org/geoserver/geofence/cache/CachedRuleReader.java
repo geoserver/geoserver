@@ -1,31 +1,36 @@
 /*
  *  Copyright (C) 2007 - 2015 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
- * 
+ *
  *  GPLv3 + Classpath exception
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.geoserver.geofence.cache;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheStats;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
@@ -34,20 +39,14 @@ import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.CacheStats;
-import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * A delegating {@link RuleReaderService} with caching capabilities.
- * <P/>
- * Cache eviction policy is LRU.<br/>
- * Cache coherence is handled by entry timeout.<br/>
- * <p/>
- * 
+ *
+ * <p>Cache eviction policy is LRU.<br>
+ * Cache coherence is handled by entry timeout.<br>
+ *
+ * <p>
+ *
  * @author ETj (etj at geo-solutions.it)
  */
 public class CachedRuleReader implements RuleReaderService {
@@ -64,9 +63,7 @@ public class CachedRuleReader implements RuleReaderService {
 
     private final GeoFenceConfigurationManager configurationManager;
 
-    /**
-     * Latest configuration used
-     */
+    /** Latest configuration used */
     private CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
     public CachedRuleReader(GeoFenceConfigurationManager configurationManager) {
@@ -79,7 +76,8 @@ public class CachedRuleReader implements RuleReaderService {
     /**
      * (Re)Init the cache, pulling the configuration from the configurationManager.
      *
-     * Please use {@link #getCacheInitParams() } to set the cache parameters before <code>init()</code>ting the cache
+     * <p>Please use {@link #getCacheInitParams() } to set the cache parameters before <code>init()
+     * </code>ting the cache
      */
     public final void init() {
 
@@ -91,15 +89,23 @@ public class CachedRuleReader implements RuleReaderService {
     }
 
     protected CacheBuilder getCacheBuilder() {
-        CacheBuilder builder = CacheBuilder.newBuilder().maximumSize(cacheConfiguration.getSize())
-                .refreshAfterWrite(cacheConfiguration.getRefreshMilliSec(), TimeUnit.MILLISECONDS) // reloadable after x time
-                .expireAfterWrite(cacheConfiguration.getExpireMilliSec(), TimeUnit.MILLISECONDS) // throw away entries too old
-                .recordStats();
+        CacheBuilder builder =
+                CacheBuilder.newBuilder()
+                        .maximumSize(cacheConfiguration.getSize())
+                        .refreshAfterWrite(
+                                cacheConfiguration.getRefreshMilliSec(),
+                                TimeUnit.MILLISECONDS) // reloadable after x time
+                        .expireAfterWrite(
+                                cacheConfiguration.getExpireMilliSec(),
+                                TimeUnit.MILLISECONDS) // throw away entries too old
+                        .recordStats();
         // .expireAfterAccess(timeoutMillis, TimeUnit.MILLISECONDS)
         // .removalListener(MY_LISTENER)
         // this should only be used while testing
         if (cacheConfiguration.getCustomTicker() != null) {
-            LOGGER.log(Level.SEVERE, "Setting a custom Ticker in the cache {0}",
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Setting a custom Ticker in the cache {0}",
                     cacheConfiguration.getCustomTicker().getClass().getName());
             builder.ticker(cacheConfiguration.getCustomTicker());
         }
@@ -110,8 +116,7 @@ public class CachedRuleReader implements RuleReaderService {
 
         @Override
         public AccessInfo load(RuleFilter filter) throws Exception {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Loading {0}", filter);
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
             return realRuleReaderService.getAccessInfo(clone);
@@ -120,8 +125,7 @@ public class CachedRuleReader implements RuleReaderService {
         @Override
         public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo)
                 throws Exception {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Reloading {0}", filter);
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading {0}", filter);
 
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
@@ -146,8 +150,7 @@ public class CachedRuleReader implements RuleReaderService {
 
         @Override
         public AccessInfo load(RuleFilter filter) throws Exception {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Loading {0}", filter);
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
             return realRuleReaderService.getAdminAuthorization(clone);
@@ -156,8 +159,7 @@ public class CachedRuleReader implements RuleReaderService {
         @Override
         public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo)
                 throws Exception {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Reloading {0}", filter);
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading {0}", filter);
 
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
@@ -175,8 +177,7 @@ public class CachedRuleReader implements RuleReaderService {
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
             AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
-            if (auth == null)
-                throw new NoAuthException("Can't auth user [" + user.getName() + "]");
+            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
             return auth;
         }
 
@@ -188,8 +189,7 @@ public class CachedRuleReader implements RuleReaderService {
 
             // this is a sync implementation
             AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
-            if (auth == null)
-                throw new NoAuthException("Can't auth user [" + user.getName() + "]");
+            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
             return Futures.immediateFuture(auth);
 
             // todo: we may want a asynchronous implementation
@@ -210,19 +210,32 @@ public class CachedRuleReader implements RuleReaderService {
      * @deprecated Use {@link #getAccessInfo(RuleFilter filter) }
      */
     @Override
-    public AccessInfo getAccessInfo(String userName, String profileName, String instanceName,
-            String sourceAddress, String service, String request, String workspace, String layer) {
+    public AccessInfo getAccessInfo(
+            String userName,
+            String profileName,
+            String instanceName,
+            String sourceAddress,
+            String service,
+            String request,
+            String workspace,
+            String layer) {
         LOGGER.severe("DEPRECATED METHODS ARE NOT CACHED");
-        return realRuleReaderService.getAccessInfo(userName, profileName, instanceName,
-                sourceAddress, service, request, workspace, layer);
+        return realRuleReaderService.getAccessInfo(
+                userName,
+                profileName,
+                instanceName,
+                sourceAddress,
+                service,
+                request,
+                workspace,
+                layer);
     }
 
     private AtomicLong dumpCnt = new AtomicLong(0);
 
     @Override
     public AccessInfo getAccessInfo(RuleFilter filter) {
-        if (LOGGER.isLoggable(Level.FINE))
-            LOGGER.log(Level.FINE, "Request for {0}", filter);
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Request for {0}", filter);
 
         if (LOGGER.isLoggable(Level.INFO))
             if (dumpCnt.incrementAndGet() % 10 == 0) {
@@ -262,12 +275,25 @@ public class CachedRuleReader implements RuleReaderService {
      * @deprecated Use {@link #getMatchingRules(RuleFilter filter) }
      */
     @Override
-    public List<ShortRule> getMatchingRules(String userName, String profileName,
-            String instanceName, String sourceAddress, String service, String request,
-            String workspace, String layer) {
+    public List<ShortRule> getMatchingRules(
+            String userName,
+            String profileName,
+            String instanceName,
+            String sourceAddress,
+            String service,
+            String request,
+            String workspace,
+            String layer) {
         LOGGER.severe("DEPRECATED METHODS ARE NOT CACHED");
-        return realRuleReaderService.getMatchingRules(userName, profileName, instanceName,
-                sourceAddress, service, request, workspace, layer);
+        return realRuleReaderService.getMatchingRules(
+                userName,
+                profileName,
+                instanceName,
+                sourceAddress,
+                service,
+                request,
+                workspace,
+                layer);
     }
 
     @Override
@@ -286,7 +312,6 @@ public class CachedRuleReader implements RuleReaderService {
             LOGGER.warning(ex.getMessage());
             return null;
         }
-
     }
 
     // --------------------------------------------------------------------------
@@ -322,17 +347,24 @@ public class CachedRuleReader implements RuleReaderService {
         return userCache.size();
     }
 
-    /**
-     * May be useful if an external peer doesn't want to use the guava dep.
-     */
+    /** May be useful if an external peer doesn't want to use the guava dep. */
     public String getStatsString() {
         return ruleCache.stats().toString();
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" + "Rule:" + ruleCache.stats() + " User:"
-                + userCache.stats() + " Auth:" + authCache.stats() + " " + cacheConfiguration + "]";
+        return getClass().getSimpleName()
+                + "["
+                + "Rule:"
+                + ruleCache.stats()
+                + " User:"
+                + userCache.stats()
+                + " Auth:"
+                + authCache.stats()
+                + " "
+                + cacheConfiguration
+                + "]";
     }
 
     protected static class NamePw {
@@ -340,8 +372,7 @@ public class CachedRuleReader implements RuleReaderService {
 
         private String pw;
 
-        public NamePw() {
-        }
+        public NamePw() {}
 
         public NamePw(String name, String pw) {
             this.name = name;
@@ -393,8 +424,7 @@ public class CachedRuleReader implements RuleReaderService {
 
     class NoAuthException extends Exception {
 
-        public NoAuthException() {
-        }
+        public NoAuthException() {}
 
         public NoAuthException(String message) {
             super(message);
@@ -407,6 +437,5 @@ public class CachedRuleReader implements RuleReaderService {
         public NoAuthException(Throwable cause) {
             super(cause);
         }
-
     }
 }

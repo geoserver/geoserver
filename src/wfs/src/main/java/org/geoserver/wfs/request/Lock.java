@@ -6,20 +6,17 @@
 package org.geoserver.wfs.request;
 
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import org.eclipse.emf.ecore.EObject;
 import org.opengis.filter.Filter;
 
 /**
  * Lock in a LockFeature request.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public abstract class Lock extends RequestObject {
-    
+
     protected Lock(EObject adaptee) {
         super(adaptee);
     }
@@ -35,7 +32,7 @@ public abstract class Lock extends RequestObject {
     }
 
     public static class WFS11 extends Lock {
-        
+
         public WFS11(EObject adaptee) {
             super(adaptee);
         }
@@ -45,13 +42,13 @@ public abstract class Lock extends RequestObject {
             return eGet(adaptee, "typeName", QName.class);
         }
     }
-    
+
     public static class WFS20 extends Lock {
 
         public WFS20(EObject adaptee) {
             super(adaptee);
         }
-     
+
         @Override
         public QName getTypeName() {
             List typeNames = eGet(adaptee, "typeNames", List.class);
@@ -60,7 +57,7 @@ public abstract class Lock extends RequestObject {
             }
             throw new IllegalArgumentException("Multiple type names on single lock not supported");
         }
-        
+
         @Override
         public void setTypeName(QName typeName) {
             List typeNames = eGet(adaptee, "typeNames", List.class);
@@ -68,5 +65,4 @@ public abstract class Lock extends RequestObject {
             typeNames.add(typeName);
         }
     }
-
 }

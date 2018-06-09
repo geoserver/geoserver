@@ -6,7 +6,6 @@
 package org.geoserver.web.admin;
 
 import java.io.IOException;
-
 import org.geoserver.security.AccessMode;
 
 public class AdminPrivilegeTest extends AbstractAdminPrivilegeTest {
@@ -19,5 +18,4 @@ public class AdminPrivilegeTest extends AbstractAdminPrivilegeTest {
         addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");
         addLayerAccessRule("sf", "*", AccessMode.ADMIN, "ROLE_SF_ADMIN");
     }
-
 }

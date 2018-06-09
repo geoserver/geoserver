@@ -7,7 +7,6 @@ package org.geoserver.importer.mosaic;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -15,12 +14,12 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
-import org.geotools.data.DataUtilities;
-import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geoserver.importer.GridFormat;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geotools.data.DataUtilities;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 
 public class MosaicFormat extends GridFormat {
 
@@ -29,7 +28,8 @@ public class MosaicFormat extends GridFormat {
     }
 
     @Override
-    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException {
+    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
+            throws IOException {
         MosaicIndex index = new MosaicIndex((Mosaic) data);
         index.write();
 
@@ -39,25 +39,26 @@ public class MosaicFormat extends GridFormat {
     }
 
     @Override
-    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException {
-        
+    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
+            throws IOException {
+
         List<ImportTask> tasks = super.list(data, catalog, monitor);
 
         Mosaic m = (Mosaic) data;
         if (m.getTimeMode() != TimeMode.NONE) {
-            //set up the time dimension object
+            // set up the time dimension object
             for (ImportTask task : tasks) {
                 DimensionInfo dim = new DimensionInfoImpl();
                 dim.setEnabled(true);
                 dim.setAttribute("time");
                 dim.setPresentation(DimensionPresentation.LIST);
-                dim.setUnits("ISO8601"); //TODO: is there an enumeration for this?
+                dim.setUnits("ISO8601"); // TODO: is there an enumeration for this?
 
                 ResourceInfo r = task.getLayer().getResource();
                 r.getMetadata().put(ResourceInfo.TIME, dim);
             }
         }
-        
+
         return tasks;
     }
 }

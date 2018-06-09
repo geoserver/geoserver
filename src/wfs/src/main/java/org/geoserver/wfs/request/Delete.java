@@ -7,13 +7,11 @@ package org.geoserver.wfs.request;
 
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.WfsFactory;
-
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.wfs.request.Insert.WFS11;
 
 /**
  * Delete element in a Transaction request.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public abstract class Delete extends TransactionElement {
@@ -35,11 +33,10 @@ public abstract class Delete extends TransactionElement {
             return de;
         }
     }
-    
+
     public static class WFS20 extends Delete {
         public WFS20(EObject adaptee) {
             super(adaptee);
         }
     }
-
 }

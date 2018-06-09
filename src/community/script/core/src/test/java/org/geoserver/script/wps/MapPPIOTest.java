@@ -1,12 +1,13 @@
 package org.geoserver.script.wps;
 
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -14,15 +15,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
-
-import static org.custommonkey.xmlunit.XMLAssert.*;
 
 public class MapPPIOTest {
 
@@ -63,12 +60,12 @@ public class MapPPIOTest {
 
     Document dom(InputStream input) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        
-        factory.setNamespaceAware( true );
-        factory.setValidating( false );
-       
+
+        factory.setNamespaceAware(true);
+        factory.setValidating(false);
+
         DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse( input );
+        return builder.parse(input);
     }
 
     void print(Document document, OutputStream output) {

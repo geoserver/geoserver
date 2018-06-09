@@ -8,7 +8,6 @@ package org.geoserver.web.data.store;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -25,45 +24,44 @@ import org.opengis.coverage.grid.GridCoverageReader;
 
 /**
  * Supports coverage store configuration
- * 
+ *
  * @author Andrea Aime
  */
 public class CoverageStoreEditPage extends AbstractCoverageStorePage {
-    
+
     public static final String STORE_NAME = "storeName";
     public static final String WS_NAME = "wsName";
-    
-    
-    /**
-     * Dialog to ask for save confirmation in case the store can't be reached
-     */
+
+    /** Dialog to ask for save confirmation in case the store can't be reached */
     private GeoServerDialog dialog;
-    
+
     /**
      * Uses a "name" parameter to locate the datastore
+     *
      * @param parameters
      */
     public CoverageStoreEditPage(PageParameters parameters) {
         String wsName = parameters.get(WS_NAME).toOptionalString();
         String storeName = parameters.get(STORE_NAME).toString();
         CoverageStoreInfo csi = getCatalog().getCoverageStoreByName(wsName, storeName);
-        
-        if(csi == null) {
-            getSession().error(
-                 new ParamResourceModel("CoverageStoreEditPage.notFound", this, storeName, wsName).getString()
-            );
+
+        if (csi == null) {
+            getSession()
+                    .error(
+                            new ParamResourceModel(
+                                            "CoverageStoreEditPage.notFound",
+                                            this,
+                                            storeName,
+                                            wsName)
+                                    .getString());
             doReturn(StorePage.class);
             return;
         }
-        
+
         initUI(csi);
     }
 
-    /**
-     * 
-     * @param storeId
-     *            the store id
-     */
+    /** @param storeId the store id */
     public CoverageStoreEditPage(final String storeId) throws IllegalArgumentException {
         Catalog catalog = getCatalog();
         CoverageStoreInfo store = catalog.getCoverageStore(storeId);
@@ -74,9 +72,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         initUI(store);
     }
 
-    /**
-     * Creates a new edit page directly from a store object.
-     */
+    /** Creates a new edit page directly from a store object. */
     public CoverageStoreEditPage(CoverageStoreInfo store) throws IllegalArgumentException {
         initUI(store);
     }
@@ -85,14 +81,17 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
     void initUI(CoverageStoreInfo store) {
         dialog = new GeoServerDialog("dialog");
         add(dialog);
-        
+
         super.initUI(store);
 
         if (store.getId() != null) {
-            //store id == null means the store is not part of catalog, forgo uniqueness check
+            // store id == null means the store is not part of catalog, forgo uniqueness check
             String workspaceId = store.getWorkspace().getId();
-            workspacePanel.getFormComponent().add(
-                    new CheckExistingResourcesInWorkspaceValidator(store.getId(), workspaceId));
+            workspacePanel
+                    .getFormComponent()
+                    .add(
+                            new CheckExistingResourcesInWorkspaceValidator(
+                                    store.getId(), workspaceId));
         }
     }
 
@@ -112,8 +111,11 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
         if (info.isEnabled()) {
             // store's enabled, make sure it works
-            LOGGER.finer("Store " + info.getName() + " is enabled, verifying factory availability "
-                    + "before saving it...");
+            LOGGER.finer(
+                    "Store "
+                            + info.getName()
+                            + " is enabled, verifying factory availability "
+                            + "before saving it...");
             AbstractGridFormat gridFormat = resourcePool.getGridCoverageFormat(info);
 
             if (gridFormat == null) {
@@ -123,9 +125,14 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             }
             try {
                 // get the reader through ResourcePool so it resolves relative URL's for us
-                GridCoverageReader reader = resourcePool.getGridCoverageReader(info, GeoTools.getDefaultHints());
-                LOGGER.info("Connection to store " + info.getName() + " validated. Got a "
-                        + reader.getClass().getName() + ". Saving store");
+                GridCoverageReader reader =
+                        resourcePool.getGridCoverageReader(info, GeoTools.getDefaultHints());
+                LOGGER.info(
+                        "Connection to store "
+                                + info.getName()
+                                + " validated. Got a "
+                                + reader.getClass().getName()
+                                + ". Saving store");
                 doSaveStore(info);
                 doReturn(StorePage.class);
             } catch (IOException e) {
@@ -141,46 +148,49 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
     }
 
     @SuppressWarnings("serial")
-    private void confirmSaveOnConnectionFailure(final CoverageStoreInfo info,
-            final AjaxRequestTarget requestTarget, final Exception error) {
+    private void confirmSaveOnConnectionFailure(
+            final CoverageStoreInfo info,
+            final AjaxRequestTarget requestTarget,
+            final Exception error) {
         final String exceptionMessage = error.getMessage();
 
-        dialog.showOkCancel(requestTarget, new GeoServerDialog.DialogDelegate() {
+        dialog.showOkCancel(
+                requestTarget,
+                new GeoServerDialog.DialogDelegate() {
 
-            boolean accepted = false;
+                    boolean accepted = false;
 
-            @Override
-            protected Component getContents(String id) {
-                return new StoreConnectionFailedInformationPanel(id, info.getName(),
-                        exceptionMessage);
-            }
+                    @Override
+                    protected Component getContents(String id) {
+                        return new StoreConnectionFailedInformationPanel(
+                                id, info.getName(), exceptionMessage);
+                    }
 
-            @Override
-            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                doSaveStore(info);
-                accepted = true;
-                return true;
-            }
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        doSaveStore(info);
+                        accepted = true;
+                        return true;
+                    }
 
-            @Override
-            protected boolean onCancel(AjaxRequestTarget target) {
-                return true;
-            }
+                    @Override
+                    protected boolean onCancel(AjaxRequestTarget target) {
+                        return true;
+                    }
 
-            @Override
-            public void onClose(AjaxRequestTarget target) {
-                if (accepted) {
-                    doReturn(StorePage.class);
-                }
-            }
-        });
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        if (accepted) {
+                            doReturn(StorePage.class);
+                        }
+                    }
+                });
     }
 
     /**
      * Performs the save of the store.
-     * <p>
-     * This method may be subclasses to provide custom save functionality.
-     * </p>
+     *
+     * <p>This method may be subclasses to provide custom save functionality.
      */
     protected void doSaveStore(final CoverageStoreInfo info) {
         try {
@@ -198,11 +208,11 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
             ResourcePool resourcePool = catalog.getResourcePool();
             resourcePool.clear(info);
-            
+
             // Cloning into "expandedStore" through the super class "clone" method
             CoverageStoreInfo expandedStore = resourcePool.clone(info, true);
             catalog.validate(expandedStore, false).throwIfInvalid();
-            
+
             catalog.save(info);
 
             for (CoverageInfo coverage : alreadyConfigured) {

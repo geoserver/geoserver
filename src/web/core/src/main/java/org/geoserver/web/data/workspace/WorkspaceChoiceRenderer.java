@@ -8,9 +8,7 @@ package org.geoserver.web.data.workspace;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.WorkspaceInfo;
 
-/**
- * Simple choice renderer for {@link WorkspaceInfo}
- */
+/** Simple choice renderer for {@link WorkspaceInfo} */
 public class WorkspaceChoiceRenderer extends ChoiceRenderer<WorkspaceInfo> {
 
     private static final long serialVersionUID = 9065816461497078542L;

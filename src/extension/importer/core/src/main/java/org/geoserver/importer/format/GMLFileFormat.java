@@ -4,6 +4,7 @@
  */
 package org.geoserver.importer.format;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -57,32 +57,35 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
  * Supports reading GML simple features from a file with ".gml" extension
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class GMLFileFormat extends VectorFormat {
 
-    private static final Class[] TYPE_GUESS_TARGETS = new Class[] { Integer.class, Long.class,
-            Double.class, Boolean.class, Date.class };
+    private static final Class[] TYPE_GUESS_TARGETS =
+            new Class[] {Integer.class, Long.class, Double.class, Boolean.class, Date.class};
 
-    private static final HashSet<Class> VALID_ATTRIBUTE_TYPES = new HashSet<>(Arrays.asList(
-            (Class) Geometry.class, Number.class, Date.class, Boolean.class, String.class));
+    private static final HashSet<Class> VALID_ATTRIBUTE_TYPES =
+            new HashSet<>(
+                    Arrays.asList(
+                            (Class) Geometry.class,
+                            Number.class,
+                            Date.class,
+                            Boolean.class,
+                            String.class));
 
-    private static final List<String> GML_ATTRIBUTES = Arrays.asList("name", "description",
-            "boundedBy", "location");
+    private static final List<String> GML_ATTRIBUTES =
+            Arrays.asList("name", "description", "boundedBy", "location");
 
-    private static final Map<Class, Class> TYPE_PROMOTIONS = new HashMap<Class, Class>() {
-        {
-            put(Integer.class, Long.class);
-            put(Long.class, Double.class);
-
-        }
-    };
+    private static final Map<Class, Class> TYPE_PROMOTIONS =
+            new HashMap<Class, Class>() {
+                {
+                    put(Integer.class, Long.class);
+                    put(Long.class, Double.class);
+                }
+            };
 
     private static final String GML_VERSION_KEY = "version";
 
@@ -90,8 +93,9 @@ public class GMLFileFormat extends VectorFormat {
 
     enum GMLVersion {
         // use the wfs configurations, as they contain the gml ones
-        GML2(new WFSConfiguration()), GML3(new org.geotools.wfs.v1_1.WFSConfiguration()), GML32(
-                new org.geotools.wfs.v2_0.WFSConfiguration());
+        GML2(new WFSConfiguration()),
+        GML3(new org.geotools.wfs.v1_1.WFSConfiguration()),
+        GML32(new org.geotools.wfs.v2_0.WFSConfiguration());
 
         Configuration configuration;
 
@@ -202,6 +206,7 @@ public class GMLFileFormat extends VectorFormat {
 
         return Collections.singletonList(task);
     }
+
     SimpleFeatureType getSchema(File file) throws IOException {
         // do we have a schema location?
         boolean hasSchema = false;
@@ -219,8 +224,9 @@ public class GMLFileFormat extends VectorFormat {
             parser.setInput(input);
             parser.nextTag();
 
-            String location = parser.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance",
-                    "schemaLocation");
+            String location =
+                    parser.getAttributeValue(
+                            "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
             hasSchema = location != null;
 
             String gmlNamespace = parser.getNamespace("gml");
@@ -254,7 +260,8 @@ public class GMLFileFormat extends VectorFormat {
         SimpleFeatureType result = null;
         try (FileInputStream fis = new FileInputStream(file)) {
             SimpleFeature sf = null;
-            PullParser parser = new PullParser(version.getConfiguration(), fis, SimpleFeature.class);
+            PullParser parser =
+                    new PullParser(version.getConfiguration(), fis, SimpleFeature.class);
             sf = (SimpleFeature) parser.parse();
             while (sf != null) {
                 if (hasSchema) {
@@ -264,8 +271,8 @@ public class GMLFileFormat extends VectorFormat {
                     if (result.getCoordinateReferenceSystem() == null) {
                         Geometry g = (Geometry) sf.getDefaultGeometry();
                         if (g != null && g.getUserData() instanceof CoordinateReferenceSystem) {
-                            CoordinateReferenceSystem crs = (CoordinateReferenceSystem) g
-                                    .getUserData();
+                            CoordinateReferenceSystem crs =
+                                    (CoordinateReferenceSystem) g.getUserData();
                             result = FeatureTypes.transform(result, crs);
                         }
                     }
@@ -334,8 +341,8 @@ public class GMLFileFormat extends VectorFormat {
         return result;
     }
 
-    private void updateSimpleTypeGuess(String name, Object value,
-            Map<String, AttributeDescriptor> guessedTypes) {
+    private void updateSimpleTypeGuess(
+            String name, Object value, Map<String, AttributeDescriptor> guessedTypes) {
         if (value == null) {
             return;
         }
@@ -404,7 +411,6 @@ public class GMLFileFormat extends VectorFormat {
                 AttributeDescriptor newDescriptor = typeBuilder.buildDescriptor(name);
                 guessedTypes.put(name, newDescriptor);
             }
-
         }
     }
 
@@ -430,5 +436,4 @@ public class GMLFileFormat extends VectorFormat {
         // no store support for GML
         return null;
     }
-
 }

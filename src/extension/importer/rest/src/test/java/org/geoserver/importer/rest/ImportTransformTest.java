@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.importer.ImportContext;
@@ -27,23 +29,19 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 public class ImportTransformTest extends ImporterTestSupport {
 
     DataStoreInfo store;
 
     ImportTask importTask;
-    
+
     private static String BASEPATH = RestBaseController.ROOT_PATH;
 
     /**
      * Create a test transform context: one import task with two transforms:
-     * 
-     * One ReprojectTransform and one IntegerFieldToDateTransform.
-     * 
+     *
+     * <p>One ReprojectTransform and one IntegerFieldToDateTransform.
+     *
      * @throws Exception
      */
     @Before
@@ -65,7 +63,7 @@ public class ImportTransformTest extends ImporterTestSupport {
     public void testGetTransforms() throws Exception {
         JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms");
         List<JSONObject> txs = parseTransformObjectsFromResponse(j);
-        
+
         assertEquals(2, txs.size());
         assertEquals("ReprojectTransform", txs.get(0).get("type"));
         assertEquals("IntegerFieldToDateTransform", txs.get(1).get("type"));
@@ -74,7 +72,7 @@ public class ImportTransformTest extends ImporterTestSupport {
     @Test
     public void testGetTransform() throws Exception {
         JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms/0");
-        
+
         assertTrue(j instanceof JSONObject);
         assertEquals("ReprojectTransform", ((JSONObject) j).get("type"));
     }
@@ -83,31 +81,30 @@ public class ImportTransformTest extends ImporterTestSupport {
     public void testGetTransformsExpandNone() throws Exception {
         JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms?expand=none");
         List<JSONObject> txs = parseTransformObjectsFromResponse(j);
-        
+
         assertEquals(2, txs.size());
         assertTrue(txs.get(0).containsKey("href"));
         assertTrue(txs.get(1).containsKey("href"));
-
     }
 
     @Test
     public void testPostTransform() throws Exception {
         String json = "{\"type\": \"ReprojectTransform\", \"target\": \"EPSG:3005\"}";
-        MockHttpServletResponse resp = postAsServletResponse(BASEPATH + "/imports/0/tasks/0/transforms",
-                json, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        BASEPATH + "/imports/0/tasks/0/transforms", json, "application/json");
 
         String location = resp.getHeader("Location");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // Make sure it was created
         assertEquals(3, importTask.getTransform().getTransforms().size());
-
     }
 
     @Test
     public void testDeleteTransform() throws Exception {
-        MockHttpServletResponse resp = deleteAsServletResponse(
-                BASEPATH + "/imports/0/tasks/0/transforms/0");
+        MockHttpServletResponse resp =
+                deleteAsServletResponse(BASEPATH + "/imports/0/tasks/0/transforms/0");
         assertEquals(HttpStatus.OK.value(), resp.getStatus());
 
         // Make sure it was deleted
@@ -118,8 +115,9 @@ public class ImportTransformTest extends ImporterTestSupport {
     public void testPutTransform() throws Exception {
         String json = "{\"type\": \"ReprojectTransform\", \"target\": \"EPSG:3005\"}";
 
-        MockHttpServletResponse resp = putAsServletResponse(
-                BASEPATH + "/imports/0/tasks/0/transforms/0", json, "application/json");
+        MockHttpServletResponse resp =
+                putAsServletResponse(
+                        BASEPATH + "/imports/0/tasks/0/transforms/0", json, "application/json");
 
         assertEquals(HttpStatus.OK.value(), resp.getStatus());
 
@@ -130,10 +128,11 @@ public class ImportTransformTest extends ImporterTestSupport {
     }
 
     /**
-     * Parses the transforms list out of a /transforms response (example below), asserting that the structure and types are as expected.
-     * 
+     * Parses the transforms list out of a /transforms response (example below), asserting that the
+     * structure and types are as expected.
+     *
      * <pre>
-     *  
+     *
      * {
      *     "transformChain": {
      *         "transforms": [
@@ -153,9 +152,9 @@ public class ImportTransformTest extends ImporterTestSupport {
      *     }
      * }
      * </pre>
-     * 
+     *
      * For the above example, this will check the structure and types and then return:
-     * 
+     *
      * <pre>
      * [
      *     {
@@ -171,7 +170,7 @@ public class ImportTransformTest extends ImporterTestSupport {
      *     }
      * ]
      * </pre>
-     * 
+     *
      * @param transformsResponse
      * @return
      */

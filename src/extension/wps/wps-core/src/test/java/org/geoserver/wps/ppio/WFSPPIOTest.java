@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
@@ -33,22 +32,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.type.AttributeDescriptor;
 
-/**
- * @author ian
- *
- */
-public class WFSPPIOTest extends WPSTestSupport{
+/** @author ian */
+public class WFSPPIOTest extends WPSTestSupport {
 
     private InputStream is;
+
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath*:/applicationContext-noargs.xml");
     }
+
     @Before
     public void prepareInputStream() throws IOException {
         GeoServerExtensions.bean(WPSResourceManager.class);
-        
+
         is = SystemTestData.class.getResourceAsStream("wfs.xml");
         assertNotNull(is);
     }
@@ -60,13 +58,13 @@ public class WFSPPIOTest extends WPSTestSupport{
 
     /**
      * Test method for {@link org.geoserver.wps.ppio.WFSPPIO#decode(java.io.InputStream)}.
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void testDecodeInputStream() throws Exception {
-        SimpleFeatureCollection rawTarget = (SimpleFeatureCollection) new WFSPPIO.WFS11()
-                .decode(is);
+        SimpleFeatureCollection rawTarget =
+                (SimpleFeatureCollection) new WFSPPIO.WFS11().decode(is);
 
         for (AttributeDescriptor ad : rawTarget.getSchema().getAttributeDescriptors()) {
             final String name = ad.getLocalName();
@@ -75,5 +73,4 @@ public class WFSPPIOTest extends WPSTestSupport{
             }
         }
     }
-
 }

@@ -1,26 +1,22 @@
 package org.geoserver.geofence;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.mock.web.MockHttpServletResponse;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.w3c.dom.Document;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class ServicesTest extends GeofenceBaseTest {
 
-    /**
-     * Enable the Spring Security auth filters, otherwise there will be no auth
-     */
+    /** Enable the Spring Security auth filters, otherwise there will be no auth */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections
-                .singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList(
+                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Test
@@ -54,8 +50,8 @@ public class ServicesTest extends GeofenceBaseTest {
         authenticate("cite", "cite");
 
         // try a getmap/reflector on a sf layer, should work
-        MockHttpServletResponse response = getAsServletResponse(
-                "wms/reflect?layers=" + getLayerId(MockData.BASIC_POLYGONS));
+        MockHttpServletResponse response =
+                getAsServletResponse("wms/reflect?layers=" + getLayerId(MockData.BASIC_POLYGONS));
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
 
@@ -65,8 +61,10 @@ public class ServicesTest extends GeofenceBaseTest {
         assertEquals("image/png", response.getContentType());
 
         // try a getfeature on a sf layer
-        response = getAsServletResponse("wfs?service=wfs&version=1.0.0&request=getfeature&typeName="
-                + getLayerId(MockData.GENERICENTITY));
+        response =
+                getAsServletResponse(
+                        "wfs?service=wfs&version=1.0.0&request=getfeature&typeName="
+                                + getLayerId(MockData.GENERICENTITY));
         assertEquals(200, response.getStatus());
         assertEquals("text/xml", response.getContentType());
         String content = response.getContentAsString();

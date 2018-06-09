@@ -58,5 +58,4 @@ public class KombuLayerInfo extends KombuPublishedInfo {
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
-
 }

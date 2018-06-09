@@ -4,21 +4,18 @@
  */
 package org.geoserver.opensearch.eo;
 
+import com.thoughtworks.xstream.XStream;
 import java.util.List;
-
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geotools.metadata.iso.identification.KeywordsImpl;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * Loads the OpenSearch EO configuration from XML
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
@@ -34,7 +31,8 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
     protected OSEOInfo createServiceFromScratch(GeoServer gs) {
         OSEOInfo oseo = new OSEOInfoImpl();
         oseo.setName("OSEO");
-        oseo.setAbstract("Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.");
+        oseo.setAbstract(
+                "Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.");
         oseo.setTitle("OpenSearch for Earth Observation");
         oseo.setMaximumRecordsPerPage(OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
         oseo.setRecordsPerPage(OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
@@ -52,7 +50,7 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
 
     /**
      * Sets up aliases and allowed types for the xstream persister
-     * 
+     *
      * @param xs
      */
     public static void initXStreamPersister(XStreamPersister xp) {
@@ -69,5 +67,4 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
         }
         return service;
     }
-
 }

@@ -7,9 +7,7 @@ package org.geoserver.opensearch.eo;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.response.RSSExceptionTransformer;
 import org.geoserver.ows.Request;
@@ -20,7 +18,7 @@ import org.geoserver.platform.ServiceException;
 /**
  * Returns exceptions as a RSS feed, as suggested in the OpenSearch EO developer guide at
  * http://www.opensearch.org/Documentation/Developer_how_to_guide
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class OSEOExceptionHandler extends ServiceExceptionHandler {
@@ -41,7 +39,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
 
         if (exception instanceof OWS20Exception) {
             OWS20Exception ex = (OWS20Exception) exception;
-            if(ex.getHttpCode() != null) {
+            if (ex.getHttpCode() != null) {
                 response.setStatus(ex.getHttpCode());
             } else {
                 response.setStatus(500);
@@ -51,10 +49,12 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
         }
 
         try {
-            new RSSExceptionTransformer(geoServer.getGlobal(), request).transform(exception,
-                    response.getOutputStream());
+            new RSSExceptionTransformer(geoServer.getGlobal(), request)
+                    .transform(exception, response.getOutputStream());
         } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
+            LOGGER.log(
+                    Level.INFO,
+                    "Problem writing exception information back to calling client:",
                     ex);
         } finally {
             try {
@@ -63,5 +63,4 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
             }
         }
     }
-
 }

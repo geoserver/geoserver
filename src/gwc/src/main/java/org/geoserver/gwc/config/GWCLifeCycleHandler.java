@@ -8,9 +8,7 @@ package org.geoserver.gwc.config;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.gwc.GWC;
 
-/**
- * GeoServer life cycle listener that reloads the gwc configuration
- */
+/** GeoServer life cycle listener that reloads the gwc configuration */
 public class GWCLifeCycleHandler implements GeoServerLifecycleHandler {
 
     public GWCLifeCycleHandler() {

@@ -4,17 +4,17 @@
  */
 package org.geoserver.rest;
 
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class CatalogReloadControllerTest extends GeoServerSystemTestSupport {
 
@@ -35,35 +35,36 @@ public class CatalogReloadControllerTest extends GeoServerSystemTestSupport {
     public synchronized void testPutReload() throws Exception {
         reset();
         MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH + "/reload", (String)null, null);
-        assertEquals( 200, response.getStatus() );
+                putAsServletResponse(ROOT_PATH + "/reload", (String) null, null);
+        assertEquals(200, response.getStatus());
         assertTrue(watcher.didReload);
         assertTrue(watcher.didReset);
     }
+
     @Test
     public synchronized void testPostReload() throws Exception {
         reset();
-        MockHttpServletResponse response =
-                postAsServletResponse(ROOT_PATH + "/reload", "", null);
-        assertEquals( 200, response.getStatus() );
+        MockHttpServletResponse response = postAsServletResponse(ROOT_PATH + "/reload", "", null);
+        assertEquals(200, response.getStatus());
         assertTrue(watcher.didReload);
         assertTrue(watcher.didReset);
     }
+
     @Test
     public synchronized void testPutReset() throws Exception {
         reset();
         MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH + "/reset", (String)null, null);
-        assertEquals( 200, response.getStatus() );
+                putAsServletResponse(ROOT_PATH + "/reset", (String) null, null);
+        assertEquals(200, response.getStatus());
         assertFalse(watcher.didReload);
         assertTrue(watcher.didReset);
     }
+
     @Test
     public synchronized void testPostReset() throws Exception {
         reset();
-        MockHttpServletResponse response =
-                postAsServletResponse(ROOT_PATH + "/reset", "", null);
-        assertEquals( 200, response.getStatus() );
+        MockHttpServletResponse response = postAsServletResponse(ROOT_PATH + "/reset", "", null);
+        assertEquals(200, response.getStatus());
         assertFalse(watcher.didReload);
         assertTrue(watcher.didReset);
     }
@@ -84,9 +85,9 @@ public class CatalogReloadControllerTest extends GeoServerSystemTestSupport {
         }
 
         @Override
-        public void onDispose() { }
+        public void onDispose() {}
 
         @Override
-        public void beforeReload() { }
+        public void beforeReload() {}
     }
 }

@@ -40,5 +40,4 @@ public class ReceiverService {
         latch.await(25000, TimeUnit.MILLISECONDS);
         return this.messages;
     }
-
 }

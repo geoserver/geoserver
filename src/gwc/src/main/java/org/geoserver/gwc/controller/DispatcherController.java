@@ -6,22 +6,18 @@
 
 package org.geoserver.gwc.controller;
 
-import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.controller.GeoWebCacheDispatcherController;
 
-
 public class DispatcherController extends GeoWebCacheDispatcherController {
-    
+
     public static final ThreadLocal<String> BASE_URL = new InheritableThreadLocal<String>();
-    
+
     @Override
-    public void handleRestApiRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    public void handleRestApiRequest(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         BASE_URL.set(ResponseUtils.baseURL(request));
         super.handleRestApiRequest(request, response);
     }

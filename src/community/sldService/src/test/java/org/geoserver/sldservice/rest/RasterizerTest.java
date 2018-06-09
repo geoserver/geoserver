@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
@@ -32,8 +31,9 @@ public class RasterizerTest extends SLDServiceBaseTest {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        appContext = new ClassPathXmlApplicationContext(
-                "classpath:**/sldservice-applicationContext.xml");
+        appContext =
+                new ClassPathXmlApplicationContext(
+                        "classpath:**/sldservice-applicationContext.xml");
         appContext.refresh();
         for (BeanFactoryPostProcessor postProcessor : appContext.getBeanFactoryPostProcessors()) {
             applicationContext.addBeanFactoryPostProcessor(postProcessor);
@@ -46,7 +46,7 @@ public class RasterizerTest extends SLDServiceBaseTest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.geoserver.test.GeoServerSystemTestSupport#onTearDown(org.geoserver.data.test.SystemTestData)
      */
     @Override
@@ -59,8 +59,8 @@ public class RasterizerTest extends SLDServiceBaseTest {
     public void testRasterizeWithNoParams() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("wcs:World");
         assertEquals("raster", l.getDefaultStyle().getName());
-        final String restPath = RestBaseController.ROOT_PATH + "/sldservice/wcs:World/"
-                + getServiceUrl() + ".xml";
+        final String restPath =
+                RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         // Randomly cannot find REST path
         if (response.getStatus() == 200) {
@@ -88,8 +88,8 @@ public class RasterizerTest extends SLDServiceBaseTest {
         return symbolizer.getColorMap();
     }
 
-    private void checkColorEntry(ColorMapEntry firstEntry, String color, String label,
-            String opacity) {
+    private void checkColorEntry(
+            ColorMapEntry firstEntry, String color, String label, String opacity) {
         assertEquals(color, firstEntry.getColor().toString());
         assertEquals(label, firstEntry.getLabel());
         assertEquals(opacity, firstEntry.getOpacity().toString());

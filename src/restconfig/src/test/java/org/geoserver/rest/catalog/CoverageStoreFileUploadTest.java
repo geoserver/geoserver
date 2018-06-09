@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.CatalogBuilder;
@@ -41,10 +40,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
@@ -52,66 +50,80 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     public void cleanup() throws IOException {
         // wipe out everything under "mosaic"
         CoverageInfo coverage = getCatalog().getResourceByName("mosaic", CoverageInfo.class);
-        if(coverage != null) {
-            removeStore(coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
+        if (coverage != null) {
+            removeStore(
+                    coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
         }
     }
-    
+
     @Test
     public void testWorldImageUploadZipped() throws Exception {
-        URL zip = getClass().getResource( "test-data/usa.zip" );
-        byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip) );
-        
-        MockHttpServletResponse response = 
-            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/sf/coveragestores/usa/file.worldimage", bytes, "application/zip");
-        assertEquals( 201, response.getStatus() );
-        
+        URL zip = getClass().getResource("test-data/usa.zip");
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/coveragestores/usa/file.worldimage",
+                        bytes,
+                        "application/zip");
+        assertEquals(201, response.getStatus());
+
         String content = response.getContentAsString();
-        Document d = dom( new ByteArrayInputStream( content.getBytes() ));
-        assertEquals( "coverageStore", d.getDocumentElement().getNodeName());
-        
+        Document d = dom(new ByteArrayInputStream(content.getBytes()));
+        assertEquals("coverageStore", d.getDocumentElement().getNodeName());
+
         CoverageStoreInfo cs = getCatalog().getCoverageStoreByName("sf", "usa");
         assertNotNull(cs);
         CoverageInfo ci = getCatalog().getCoverageByName("sf", "usa");
         assertNotNull(ci);
     }
-    
+
     @Test
     @Ignore
-    // fixing https://osgeo-org.atlassian.net/browse/GEOS-6845, re-enable when a proper fix for spaces in
+    // fixing https://osgeo-org.atlassian.net/browse/GEOS-6845, re-enable when a proper fix for
+    // spaces in
     // name has been made
     public void testUploadWithSpaces() throws Exception {
-        URL zip = getClass().getResource( "test-data/usa.zip" );
-        byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip) );
-        
-        MockHttpServletResponse response = 
-            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/store%20with%20spaces/file.worldimage", bytes, "application/zip");
+        URL zip = getClass().getResource("test-data/usa.zip");
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/store%20with%20spaces/file.worldimage",
+                        bytes,
+                        "application/zip");
         assertEquals(500, response.getStatus());
     }
-    
+
     @Test
     public void testUploadImageMosaic() throws Exception {
-        URL zip = MockData.class.getResource( "watertemp.zip" );
+        URL zip = MockData.class.getResource("watertemp.zip");
         InputStream is = null;
         byte[] bytes;
-        try  {
+        try {
             is = zip.openStream();
             bytes = IOUtils.toByteArray(is);
         } finally {
             IOUtils.closeQuietly(is);
         }
-        
-        MockHttpServletResponse response = 
-            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp/file.imagemosaic", bytes, "application/zip");
-        assertEquals( 201, response.getStatus() );
-        
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/watertemp/file.imagemosaic",
+                        bytes,
+                        "application/zip");
+        assertEquals(201, response.getStatus());
+
         // check the response contents
         String content = response.getContentAsString();
-        Document d = dom( new ByteArrayInputStream( content.getBytes() ));
-        
+        Document d = dom(new ByteArrayInputStream(content.getBytes()));
+
         XMLAssert.assertXpathEvaluatesTo("watertemp", "//coverageStore/name", d);
         XMLAssert.assertXpathEvaluatesTo("ImageMosaic", "//coverageStore/type", d);
-        
+
         // check the coverage is actually there
         CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("watertemp");
         assertNotNull(storeInfo);
@@ -119,90 +131,101 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNotNull(ci);
         assertEquals(storeInfo, ci.getStore());
     }
-    
+
     @Test
     public void testHarvestImageMosaic() throws Exception {
         // Upload of the Mosaic via REST
-        URL zip = MockData.class.getResource( "watertemp.zip" );
+        URL zip = MockData.class.getResource("watertemp.zip");
         InputStream is = null;
         byte[] bytes;
-        try  {
+        try {
             is = zip.openStream();
             bytes = IOUtils.toByteArray(is);
         } finally {
             IOUtils.closeQuietly(is);
         }
-        
-        MockHttpServletResponse response = 
-            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp2/file.imagemosaic", bytes, "application/zip");
-        assertEquals( 201, response.getStatus() );
-        
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/watertemp2/file.imagemosaic",
+                        bytes,
+                        "application/zip");
+        assertEquals(201, response.getStatus());
+
         // check the response contents
         String content = response.getContentAsString();
-        Document d = dom( new ByteArrayInputStream( content.getBytes() ));
-        
+        Document d = dom(new ByteArrayInputStream(content.getBytes()));
+
         XMLAssert.assertXpathEvaluatesTo("watertemp2", "//coverageStore/name", d);
         XMLAssert.assertXpathEvaluatesTo("ImageMosaic", "//coverageStore/type", d);
-        
+
         // check the coverage is actually there
         CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("watertemp2");
         assertNotNull(storeInfo);
         CoverageInfo ci = getCatalog().getCoverageByName("watertemp2");
         assertNotNull(ci);
         assertEquals(storeInfo, ci.getStore());
-        
+
         // Harvesting of the Mosaic
         URL zipHarvest = MockData.class.getResource("harvesting.zip");
         // Extract a Byte array from the zip file
         is = null;
-        try  {
+        try {
             is = zipHarvest.openStream();
             bytes = IOUtils.toByteArray(is);
         } finally {
             IOUtils.closeQuietly(is);
         }
         // Create the POST request
-        MockHttpServletRequest request = createRequest( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp2/file.imagemosaic" );
-        request.setMethod( "POST" );
-        request.setContentType("application/zip" );
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/watertemp2/file.imagemosaic");
+        request.setMethod("POST");
+        request.setContentType("application/zip");
         request.setContent(bytes);
         request.addHeader("Content-type", "application/zip");
         // Get The response
-        dispatch( request );
+        dispatch(request);
         // Get the Mosaic Reader
-        GridCoverageReader reader = storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
+        GridCoverageReader reader =
+                storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
         // Test if all the TIME DOMAINS are present
         String[] metadataNames = reader.getMetadataNames();
         assertNotNull(metadataNames);
         assertEquals("true", reader.getMetadataValue("HAS_TIME_DOMAIN"));
-        assertEquals("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z", 
+        assertEquals(
+                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
                 reader.getMetadataValue(metadataNames[0]));
     }
-    
+
     @Test
     public void testHarvestNotAllowedOnSimpleCoverageStore() throws Exception {
         // add bluemarble
         getTestData().addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
-        
+
         // Harvesting of the Mosaic
         URL zipHarvest = MockData.class.getResource("harvesting.zip");
         // Extract a Byte array from the zip file
         InputStream is = null;
         byte[] bytes;
-        try  {
+        try {
             is = zipHarvest.openStream();
             bytes = IOUtils.toByteArray(is);
         } finally {
             IOUtils.closeQuietly(is);
         }
         // Create the POST request
-        MockHttpServletRequest request = createRequest( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble" );
-        request.setMethod( "POST" );
-        request.setContentType("application/zip" );
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble");
+        request.setMethod("POST");
+        request.setContentType("application/zip");
         request.setContent(bytes);
         request.addHeader("Content-type", "application/zip");
         // Get The response
-        MockHttpServletResponse response = dispatch( request );
+        MockHttpServletResponse response = dispatch(request);
         // not allowed
         assertEquals(405, response.getStatus());
     }
@@ -220,9 +243,12 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             IOUtils.closeQuietly(is);
         }
 
-        MockHttpServletResponse response = putAsServletResponse(
-                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp3/file.imagemosaic", bytes,
-                "application/zip");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/watertemp3/file.imagemosaic",
+                        bytes,
+                        "application/zip");
         assertEquals(201, response.getStatus());
 
         // check the response contents
@@ -247,21 +273,26 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         Resource outputDirectory = Files.asResource(new File("./target/harvesting"));
         RESTUtils.unzipFile(newZip, outputDirectory);
         // Create the POST request
-        MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
         request.setMethod("POST");
         request.setContentType("text/plain");
-        request.setContent(("file:///" + outputDirectory.dir().getAbsolutePath()).getBytes("UTF-8"));
+        request.setContent(
+                ("file:///" + outputDirectory.dir().getAbsolutePath()).getBytes("UTF-8"));
         request.addHeader("Content-type", "text/plain");
         // Get The response
         dispatch(request);
         // Get the Mosaic Reader
-        GridCoverageReader reader = storeInfo.getGridCoverageReader(null,
-                GeoTools.getDefaultHints());
+        GridCoverageReader reader =
+                storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
         // Test if all the TIME DOMAINS are present
         String[] metadataNames = reader.getMetadataNames();
         assertNotNull(metadataNames);
         assertEquals("true", reader.getMetadataValue("HAS_TIME_DOMAIN"));
-        assertEquals("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
+        assertEquals(
+                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
                 reader.getMetadataValue(metadataNames[0]));
         // Removal of the temporary directory
         outputDirectory.delete();
@@ -299,8 +330,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         try {
             // Selection of the reader to use for the mosaic
-            reader = imageMosaicFormat.getReader(DataUtilities
-                    .fileToURL(Resources.find(mosaic)));
+            reader = imageMosaicFormat.getReader(DataUtilities.fileToURL(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);
@@ -324,7 +354,10 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                 IOUtils.closeQuietly(is);
             }
             // Create the POST request
-            MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp4/file.imagemosaic");
+            MockHttpServletRequest request =
+                    createRequest(
+                            RestBaseController.ROOT_PATH
+                                    + "/workspaces/gs/coveragestores/watertemp4/file.imagemosaic");
             request.setMethod("POST");
             request.setContentType("application/zip");
             request.setContent(bytes);
@@ -332,8 +365,9 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             // Get The response
             MockHttpServletResponse response = dispatch(request);
             // Get the Mosaic Reader
-            reader2 = (StructuredGridCoverage2DReader) storeInfo.getGridCoverageReader(null,
-                    GeoTools.getDefaultHints());
+            reader2 =
+                    (StructuredGridCoverage2DReader)
+                            storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
             // Test if all the TIME DOMAINS are present
             String[] metadataNames = reader2.getMetadataNames();
             assertNotNull(metadataNames);
@@ -361,7 +395,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             }
         }
     }
-    
+
     @Test
     public void testReHarvestSingleTiff() throws Exception {
         // Check if an already existing directory called "mosaic" is present
@@ -394,8 +428,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         try {
             // Selection of the reader to use for the mosaic
-            reader = imageMosaicFormat.getReader(DataUtilities
-                    .fileToURL(Resources.find(mosaic)));
+            reader = imageMosaicFormat.getReader(DataUtilities.fileToURL(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);
@@ -411,20 +444,25 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             URL zipHarvest = MockData.class.getResource("harvesting.zip");
             // Extract the first file as payload (the tiff)
             byte[] bytes = null;
-            try(ZipInputStream zis = new ZipInputStream(zipHarvest.openStream())) {
+            try (ZipInputStream zis = new ZipInputStream(zipHarvest.openStream())) {
                 ZipEntry entry;
-                while((entry = zis.getNextEntry()) != null) {
-                    if("NCOM_wattemp_000_20081102T0000000_12.tiff".equals(entry.getName())) {
+                while ((entry = zis.getNextEntry()) != null) {
+                    if ("NCOM_wattemp_000_20081102T0000000_12.tiff".equals(entry.getName())) {
                         bytes = IOUtils.toByteArray(zis);
                     }
                 }
-                if(bytes == null) {
-                    fail("Could not find the expected zip entry NCOM_wattemp_000_20081102T0000000_12.tiff");
+                if (bytes == null) {
+                    fail(
+                            "Could not find the expected zip entry NCOM_wattemp_000_20081102T0000000_12.tiff");
                 }
-            } 
-            reader2 = uploadGeotiffAndCheck(storeInfo, bytes, "NCOM_wattemp_000_20081102T0000000_12.tiff");
+            }
+            reader2 =
+                    uploadGeotiffAndCheck(
+                            storeInfo, bytes, "NCOM_wattemp_000_20081102T0000000_12.tiff");
             // now re-upload, used to blow up
-            reader2 = uploadGeotiffAndCheck(storeInfo, bytes, "NCOM_wattemp_000_20081102T0000000_12.tiff");
+            reader2 =
+                    uploadGeotiffAndCheck(
+                            storeInfo, bytes, "NCOM_wattemp_000_20081102T0000000_12.tiff");
             // Removal of all the data associated to the mosaic
             reader2.delete(true);
         } finally {
@@ -446,11 +484,15 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         }
     }
 
-    private StructuredGridCoverage2DReader uploadGeotiffAndCheck(CoverageStoreInfo storeInfo,
-            byte[] bytes, String filename) throws Exception {
+    private StructuredGridCoverage2DReader uploadGeotiffAndCheck(
+            CoverageStoreInfo storeInfo, byte[] bytes, String filename) throws Exception {
         StructuredGridCoverage2DReader reader2;
         // Create the POST request
-        MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename=" + filename);
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename="
+                                + filename);
         request.setMethod("POST");
         request.setContentType("image/tiff");
         request.setContent(bytes);
@@ -458,8 +500,9 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Get The response
         assertEquals(202, dispatch(request).getStatus());
         // Get the Mosaic Reader
-        reader2 = (StructuredGridCoverage2DReader) storeInfo.getGridCoverageReader(null,
-                GeoTools.getDefaultHints());
+        reader2 =
+                (StructuredGridCoverage2DReader)
+                        storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
         // Test if all the TIME DOMAINS are present
         String[] metadataNames = reader2.getMetadataNames();
         assertNotNull(metadataNames);
@@ -487,8 +530,9 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         return mosaic;
     }
 
-    private void configureCoverageInfo(CatalogBuilder builder, CoverageStoreInfo storeInfo,
-            GridCoverage2DReader reader) throws Exception {
+    private void configureCoverageInfo(
+            CatalogBuilder builder, CoverageStoreInfo storeInfo, GridCoverage2DReader reader)
+            throws Exception {
         // coverage read params
         final Map customParameters = new HashMap();
 

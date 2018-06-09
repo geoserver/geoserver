@@ -8,13 +8,13 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.stereotype.Component;
 
 /**
- * Delegate marshalling of xml request bodies to geogig DTO classes to the default spring xml marshaller.
+ * Delegate marshalling of xml request bodies to geogig DTO classes to the default spring xml
+ * marshaller.
  */
 @Component
 public class GeogigXmlMessageConverter extends AbstractDelegatingGeogigMessageConverter {
-    
+
     public GeogigXmlMessageConverter() {
         super(new Jaxb2RootElementHttpMessageConverter());
     }
-
 }

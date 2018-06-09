@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.Query;
@@ -50,7 +49,6 @@ class WritableDataView extends DefaultView implements SimpleFeatureStore {
     public void removeFeatures(Filter filter) throws IOException {
         Filter mixedFilter = mixFilter(filter);
         delegate.removeFeatures(mixedFilter);
-        
     }
 
     private Filter mixFilter(Filter filter) {
@@ -80,7 +78,6 @@ class WritableDataView extends DefaultView implements SimpleFeatureStore {
             throws IOException {
         Filter mixedFilter = mixFilter(filter);
         delegate.modifyFeatures(attributeName, attributeValue, mixedFilter);
-        
     }
 
     @Override
@@ -121,5 +118,4 @@ class WritableDataView extends DefaultView implements SimpleFeatureStore {
         Filter mixedFilter = mixFilter(filter);
         delegate.modifyFeatures(names, attributeValues, mixedFilter);
     }
-
 }

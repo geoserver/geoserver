@@ -5,11 +5,10 @@
 
 package org.geoserver.web.netcdf;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
-
-import com.thoughtworks.xstream.XStream;
 
 public class ExtraVariableXStreamInitializer implements XStreamPersisterInitializer {
 
@@ -19,5 +18,4 @@ public class ExtraVariableXStreamInitializer implements XStreamPersisterInitiali
         XStream xs = persister.getXStream();
         xs.alias("extraVariable", ExtraVariable.class);
     }
-
 }

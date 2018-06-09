@@ -6,8 +6,5 @@ package org.geoserver.cluster.impl.handlers.configuration;
 
 import org.geoserver.config.ServiceInfo;
 
-/**
- * Simple test service interface.
- */
-public interface JmsTestServiceInfo extends ServiceInfo {
-}
+/** Simple test service interface. */
+public interface JmsTestServiceInfo extends ServiceInfo {}

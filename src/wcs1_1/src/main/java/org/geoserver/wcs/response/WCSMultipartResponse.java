@@ -7,9 +7,7 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
 import java.util.HashMap;
-
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
@@ -17,9 +15,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
 import net.opengis.wcs11.GetCoverageType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.Response;
@@ -51,34 +47,36 @@ public class WCSMultipartResponse extends Response {
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         // javamail outputs multipart/mixed, but in our case we're producing multipart/related
-        return multipart.getContentType().replace("mixed", "related").replace("\n", "").replace("\r", "");
+        return multipart
+                .getContentType()
+                .replace("mixed", "related")
+                .replace("\n", "")
+                .replace("\r", "");
     }
 
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
         return DISPOSITION_ATTACH;
     }
-    
+
     public String getAttachmentFileName(Object value, Operation operation) {
         final GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         final String identifier = request.getIdentifier().getValue();
         return identifier.replace(':', '_') + ".eml";
-        
     }
-    
+
     @Override
     public boolean canHandle(Operation operation) {
         // this one can handle GetCoverage responses where store = false
-        if(!(operation.getParameters()[0] instanceof GetCoverageType))
-            return false;
-        
+        if (!(operation.getParameters()[0] instanceof GetCoverageType)) return false;
+
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         return !getCoverage.getOutput().isStore();
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         GridCoverage[] coverages = (GridCoverage[]) value;
 
         // grab the delegate for coverage encoding
@@ -106,7 +104,9 @@ public class WCSMultipartResponse extends Response {
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat, new HashMap<String, String>());
+            CoverageEncoder encoder =
+                    new CoverageEncoder(
+                            delegate, coverage, outputFormat, new HashMap<String, String>());
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", "<theCoverage>");
             coveragePart.setHeader("Content-Type", delegate.getMimeType(outputFormat));
@@ -126,9 +126,8 @@ public class WCSMultipartResponse extends Response {
     }
 
     /**
-     * A special mime message that does not set any header other than the
-     * content type
-     * 
+     * A special mime message that does not set any header other than the content type
+     *
      * @author Andrea Aime - TOPP
      */
     private static class GeoServerMimeMessage extends MimeMessage {
@@ -142,5 +141,4 @@ public class WCSMultipartResponse extends Response {
             removeHeader("Message-ID");
         }
     }
-
 }

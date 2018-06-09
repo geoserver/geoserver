@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
@@ -36,15 +35,14 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * Creates a List of Rule using different classification methods Sets up only filter not Symbolyzer Available Classification: Quantile,Unique Interval
- * & Equal Interval
+ * Creates a List of Rule using different classification methods Sets up only filter not Symbolyzer
+ * Available Classification: Quantile,Unique Interval & Equal Interval
  *
  * @author kappu
- *
  */
 public class RulesBuilder {
 
-    private final static Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
+    private static final Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
 
     private FilterFactory2 ff;
 
@@ -64,65 +62,77 @@ public class RulesBuilder {
      * @param features
      * @param property
      * @param classNumber
-     *
      */
-    public List<Rule> quantileClassification(FeatureCollection features, String property,
-            Class<?> propertyType, int classNumber, boolean open, boolean normalize) {
+    public List<Rule> quantileClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int classNumber,
+            boolean open,
+            boolean normalize) {
 
         FeatureType fType;
         Classifier groups = null;
         try {
-            final Function classify = ff.function("Quantile", ff.property(property),
-                    ff.literal(classNumber));
+            final Function classify =
+                    ff.function("Quantile", ff.property(property), ff.literal(classNumber));
             groups = (Classifier) classify.evaluate(features);
             if (groups instanceof RangedClassifier)
                 if (open)
-                    return openRangedRules((RangedClassifier) groups, property, propertyType,
-                            normalize);
+                    return openRangedRules(
+                            (RangedClassifier) groups, property, propertyType, normalize);
                 else
-                    return closedRangedRules((RangedClassifier) groups, property, propertyType,
-                            normalize);
+                    return closedRangedRules(
+                            (RangedClassifier) groups, property, propertyType, normalize);
             else if (groups instanceof ExplicitClassifier)
                 return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
-                        "Failed to build Quantile Classification" + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to build Quantile Classification" + e.getLocalizedMessage(),
+                        e);
         }
         return null;
     }
 
     /**
-     * Generate a List of rules using equal interval classification Sets up only filter not symbolizer
+     * Generate a List of rules using equal interval classification Sets up only filter not
+     * symbolizer
      *
      * @param features
      * @param property
      * @param classNumber
-     *
      */
-    public List<Rule> equalIntervalClassification(FeatureCollection features, String property,
-            Class<?> propertyType, int classNumber, boolean open, boolean normalize) {
+    public List<Rule> equalIntervalClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int classNumber,
+            boolean open,
+            boolean normalize) {
         Classifier groups = null;
         try {
 
-            final Function classify = ff.function("EqualInterval", ff.property(property),
-                    ff.literal(classNumber));
+            final Function classify =
+                    ff.function("EqualInterval", ff.property(property), ff.literal(classNumber));
             groups = (Classifier) classify.evaluate(features);
             // System.out.println(groups.getSize());
             if (groups instanceof RangedClassifier)
                 if (open)
-                    return openRangedRules((RangedClassifier) groups, property, propertyType,
-                            normalize);
+                    return openRangedRules(
+                            (RangedClassifier) groups, property, propertyType, normalize);
                 else
-                    return closedRangedRules((RangedClassifier) groups, property, propertyType,
-                            normalize);
+                    return closedRangedRules(
+                            (RangedClassifier) groups, property, propertyType, normalize);
             else if (groups instanceof ExplicitClassifier)
                 return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
+                LOGGER.log(
+                        Level.INFO,
                         "Failed to build EqualInterval Classification" + e.getLocalizedMessage(),
                         e);
         }
@@ -130,25 +140,29 @@ public class RulesBuilder {
     }
 
     /**
-     * Generate a List of rules using unique interval classification Sets up only filter not symbolizer
+     * Generate a List of rules using unique interval classification Sets up only filter not
+     * symbolizer
      *
      * @param features
      * @param property
-     *
      */
-    public List<Rule> uniqueIntervalClassification(FeatureCollection features, String property,
-            Class<?> propertyType, int intervals, boolean normalize)
+    public List<Rule> uniqueIntervalClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int intervals,
+            boolean normalize)
             throws IllegalArgumentException {
         Classifier groups = null;
         int classNumber = features.size();
         try {
-            final Function classify = ff.function("UniqueInterval", ff.property(property),
-                    ff.literal(classNumber));
+            final Function classify =
+                    ff.function("UniqueInterval", ff.property(property), ff.literal(classNumber));
             groups = (Classifier) classify.evaluate(features);
 
             if (groups instanceof RangedClassifier)
-                return this.closedRangedRules((RangedClassifier) groups, property, propertyType,
-                        normalize);
+                return this.closedRangedRules(
+                        (RangedClassifier) groups, property, propertyType, normalize);
             else if (groups instanceof ExplicitClassifier) {
                 ExplicitClassifier explicitGroups = (ExplicitClassifier) groups;
                 if (intervals > 0 && explicitGroups.getSize() > intervals) {
@@ -159,7 +173,8 @@ public class RulesBuilder {
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
+                LOGGER.log(
+                        Level.INFO,
                         "Failed to build UniqueInterval Classification" + e.getLocalizedMessage(),
                         e);
             if (e instanceof IllegalArgumentException) {
@@ -171,7 +186,7 @@ public class RulesBuilder {
 
     /**
      * Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor
-     * 
+     *
      * @param rules
      * @param fillRamp
      * @param reverseColors
@@ -195,20 +210,24 @@ public class RulesBuilder {
             while (it.hasNext() && colors.hasNext()) {
                 color = colors.next();
                 rule = it.next();
-                rule.setSymbolizers(new Symbolizer[] { sb.createPolygonSymbolizer(
-                        sb.createStroke(Color.BLACK, 1), sb.createFill(color)) });
+                rule.setSymbolizers(
+                        new Symbolizer[] {
+                            sb.createPolygonSymbolizer(
+                                    sb.createStroke(Color.BLACK, 1), sb.createFill(color))
+                        });
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
-                        "Failed to build polygon Symbolizer" + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to build polygon Symbolizer" + e.getLocalizedMessage(),
+                        e);
         }
-
     }
 
     /**
      * Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor
-     * 
+     *
      * @param rules
      * @param ramp
      */
@@ -233,22 +252,28 @@ public class RulesBuilder {
                 rule = it.next();
                 // sb.createStroke(Color.BLACK,1),
 
-                Mark mark = sb.createMark(StyleBuilder.MARK_CIRCLE, sb.createFill(color),
-                        sb.createStroke(color));
-                rule.setSymbolizers(new Symbolizer[] {
-                        sb.createPointSymbolizer(sb.createGraphic(null, mark, null)) });
+                Mark mark =
+                        sb.createMark(
+                                StyleBuilder.MARK_CIRCLE,
+                                sb.createFill(color),
+                                sb.createStroke(color));
+                rule.setSymbolizers(
+                        new Symbolizer[] {
+                            sb.createPointSymbolizer(sb.createGraphic(null, mark, null))
+                        });
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
-                        "Failed to build polygon Symbolizer" + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to build polygon Symbolizer" + e.getLocalizedMessage(),
+                        e);
         }
-
     }
 
     /**
      * Generate Line Symbolyzer for each rule in list Stroke color is choose from rampcolor
-     * 
+     *
      * @param rules
      * @param fillRamp
      * @param reverseColors
@@ -272,14 +297,13 @@ public class RulesBuilder {
             while (it.hasNext() && colors.hasNext()) {
                 color = colors.next();
                 rule = it.next();
-                rule.setSymbolizers(new Symbolizer[] { sb.createLineSymbolizer(color) });
+                rule.setSymbolizers(new Symbolizer[] {sb.createLineSymbolizer(color)});
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO, "Failed to build Line Symbolizer" + e.getLocalizedMessage(),
-                        e);
+                LOGGER.log(
+                        Level.INFO, "Failed to build Line Symbolizer" + e.getLocalizedMessage(), e);
         }
-
     }
 
     public StyleFactory getStyleFactory() {
@@ -288,13 +312,12 @@ public class RulesBuilder {
 
     /**
      * Generate Rules from Rangedclassifier groups build a List of rules
-     * 
+     *
      * @param groups
      * @param property
-     *
      */
-    private List<Rule> openRangedRules(RangedClassifier groups, String property,
-            Class<?> propertyType, boolean normalize) {
+    private List<Rule> openRangedRules(
+            RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
         Rule r;
         Filter f;
@@ -323,10 +346,15 @@ public class RulesBuilder {
                     r.setFilter(f);
                     list.add(r);
                 } else {
-                    f = ff.and(ff.greater(att, ff.literal(groups.getMin(i))),
-                            ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
-                    r.setTitle(" > " + ff.literal(groups.getMin(i)) + " AND <= "
-                            + ff.literal(groups.getMax(i)));
+                    f =
+                            ff.and(
+                                    ff.greater(att, ff.literal(groups.getMin(i))),
+                                    ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
+                    r.setTitle(
+                            " > "
+                                    + ff.literal(groups.getMin(i))
+                                    + " AND <= "
+                                    + ff.literal(groups.getMax(i)));
                     r.setFilter(f);
                     list.add(r);
                 }
@@ -347,16 +375,19 @@ public class RulesBuilder {
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
-                        "Failed to build Open Ranged rules" + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to build Open Ranged rules" + e.getLocalizedMessage(),
+                        e);
         }
         return null;
     }
 
-    private Expression normalizeProperty(PropertyName property, Class<?> propertyType,
-            boolean normalize) {
-        if (normalize && (Integer.class.isAssignableFrom(propertyType)
-                || Long.class.isAssignableFrom(propertyType))) {
+    private Expression normalizeProperty(
+            PropertyName property, Class<?> propertyType, boolean normalize) {
+        if (normalize
+                && (Integer.class.isAssignableFrom(propertyType)
+                        || Long.class.isAssignableFrom(propertyType))) {
             return ff.function("parseDouble", property);
         }
         return property;
@@ -364,13 +395,12 @@ public class RulesBuilder {
 
     /**
      * Generate Rules from Rangedclassifier groups build a List of rules
-     * 
+     *
      * @param groups
      * @param property
-     *
      */
-    private List<Rule> closedRangedRules(RangedClassifier groups, String property,
-            Class<?> propertyType, boolean normalize) {
+    private List<Rule> closedRangedRules(
+            RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
         Rule r;
         Filter f;
@@ -381,20 +411,24 @@ public class RulesBuilder {
             r = styleFactory.createRule();
             for (int i = 0; i < groups.getSize(); i++) {
                 r = styleFactory.createRule();
-                if (i > 0 && groups.getMax(i).equals(groups.getMax(i - 1)))
-                    continue;
+                if (i > 0 && groups.getMax(i).equals(groups.getMax(i - 1))) continue;
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = ff.equals(att, ff.literal(groups.getMin(i)));
                     r.setTitle(ff.literal(groups.getMin(i)).toString());
                     r.setFilter(f);
                     list.add(r);
                 } else {
-                    f = ff.and(
-                            i == 0 ? ff.greaterOrEqual(att, ff.literal(groups.getMin(i)))
-                                    : ff.greater(att, ff.literal(groups.getMin(i))),
-                            ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
-                    r.setTitle(" > " + ff.literal(groups.getMin(i)) + " AND <= "
-                            + ff.literal(groups.getMax(i)));
+                    f =
+                            ff.and(
+                                    i == 0
+                                            ? ff.greaterOrEqual(att, ff.literal(groups.getMin(i)))
+                                            : ff.greater(att, ff.literal(groups.getMin(i))),
+                                    ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
+                    r.setTitle(
+                            " > "
+                                    + ff.literal(groups.getMin(i))
+                                    + " AND <= "
+                                    + ff.literal(groups.getMax(i)));
                     r.setFilter(f);
                     list.add(r);
                 }
@@ -402,21 +436,22 @@ public class RulesBuilder {
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
-                        "Failed to build closed Ranged Rules" + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to build closed Ranged Rules" + e.getLocalizedMessage(),
+                        e);
         }
         return null;
     }
 
     /**
      * Generate Rules from Explicit classifier groups build a List of rules
-     * 
+     *
      * @param groups
      * @param property
-     *
      */
-    private List<Rule> explicitRules(ExplicitClassifier groups, String property,
-            Class<?> propertyType) {
+    private List<Rule> explicitRules(
+            ExplicitClassifier groups, String property, Class<?> propertyType) {
 
         Rule r;
         Filter f;
@@ -448,43 +483,49 @@ public class RulesBuilder {
             return list;
         } catch (CQLException e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO, "Failed to build explicit Rules" + e.getLocalizedMessage(),
-                        e);
+                LOGGER.log(
+                        Level.INFO, "Failed to build explicit Rules" + e.getLocalizedMessage(), e);
         }
         return null;
-
     }
 
     /**
-     * Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not symbolizer
+     * Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not
+     * symbolizer
      *
      * @param features
      * @param property
      * @param classNumber
-     *
      */
-    public List<Rule> jenksClassification(FeatureCollection features, String property,
-            Class<?> propertyType, int classNumber, boolean open, boolean normalize) {
+    public List<Rule> jenksClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int classNumber,
+            boolean open,
+            boolean normalize) {
         Classifier groups = null;
         try {
-            final Function classify = ff.function("Jenks", ff.property(property),
-                    ff.literal(classNumber));
+            final Function classify =
+                    ff.function("Jenks", ff.property(property), ff.literal(classNumber));
             groups = (Classifier) classify.evaluate(features);
             // System.out.println(groups.getSize());
             if (groups instanceof RangedClassifier)
                 if (open)
-                    return openRangedRules((RangedClassifier) groups, property, propertyType,
-                            normalize);
+                    return openRangedRules(
+                            (RangedClassifier) groups, property, propertyType, normalize);
                 else
-                    return closedRangedRules((RangedClassifier) groups, property, propertyType,
-                            normalize);
+                    return closedRangedRules(
+                            (RangedClassifier) groups, property, propertyType, normalize);
             else if (groups instanceof ExplicitClassifier)
                 return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO,
-                        "Failed to build Jenks classification" + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to build Jenks classification" + e.getLocalizedMessage(),
+                        e);
         }
         return null;
     }

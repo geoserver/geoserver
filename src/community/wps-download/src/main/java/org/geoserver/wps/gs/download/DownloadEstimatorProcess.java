@@ -5,9 +5,9 @@
  */
 package org.geoserver.wps.gs.download;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -24,14 +24,16 @@ import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * The DownloadEstimatorProcess is used for checking if the download request does not exceeds the defined limits.
- * 
+ * The DownloadEstimatorProcess is used for checking if the download request does not exceeds the
+ * defined limits.
+ *
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  */
-@DescribeProcess(title = "Estimator Process", description = "Checks if the input file does not exceed the limits")
+@DescribeProcess(
+    title = "Estimator Process",
+    description = "Checks if the input file does not exceed the limits"
+)
 public class DownloadEstimatorProcess implements GSProcess {
 
     /** The Constant LOGGER. */
@@ -56,8 +58,9 @@ public class DownloadEstimatorProcess implements GSProcess {
     }
 
     /**
-     * This process returns a boolean value which indicates if the requested download does not exceed the imposed limits, if present
-     * 
+     * This process returns a boolean value which indicates if the requested download does not
+     * exceed the imposed limits, if present
+     *
      * @param layerName the layer name
      * @param filter the filter
      * @param email the email
@@ -74,16 +77,44 @@ public class DownloadEstimatorProcess implements GSProcess {
      */
     @DescribeResult(name = "result", description = "Download Limits are respected or not!")
     public Boolean execute(
-            @DescribeParameter(name = "layerName", min = 1, description = "Original layer to download") String layerName,
-            @DescribeParameter(name = "filter", min = 0, description = "Optional Vectorial Filter") Filter filter,
-            @DescribeParameter(name = "targetCRS", min = 0, description = "Target CRS") CoordinateReferenceSystem targetCRS,
-            @DescribeParameter(name = "RoiCRS", min = 0, description = "Region Of Interest CRS") CoordinateReferenceSystem roiCRS,
-            @DescribeParameter(name = "ROI", min = 0, description = "Region Of Interest") Geometry roi,
-            @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI") Boolean clip,
-            @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
-            @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
-            @DescribeParameter(name = "selectedBands", description = "Band Selection Indices", min = 0) int[] bandIndices,
-            ProgressListener progressListener) throws Exception {
+            @DescribeParameter(
+                        name = "layerName",
+                        min = 1,
+                        description = "Original layer to download"
+                    )
+                    String layerName,
+            @DescribeParameter(name = "filter", min = 0, description = "Optional Vectorial Filter")
+                    Filter filter,
+            @DescribeParameter(name = "targetCRS", min = 0, description = "Target CRS")
+                    CoordinateReferenceSystem targetCRS,
+            @DescribeParameter(name = "RoiCRS", min = 0, description = "Region Of Interest CRS")
+                    CoordinateReferenceSystem roiCRS,
+            @DescribeParameter(name = "ROI", min = 0, description = "Region Of Interest")
+                    Geometry roi,
+            @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI")
+                    Boolean clip,
+            @DescribeParameter(
+                        name = "targetSizeX",
+                        min = 0,
+                        minValue = 1,
+                        description = "X Size of the Target Image (applies to raster data only)"
+                    )
+                    Integer targetSizeX,
+            @DescribeParameter(
+                        name = "targetSizeY",
+                        min = 0,
+                        minValue = 1,
+                        description = "Y Size of the Target Image (applies to raster data only)"
+                    )
+                    Integer targetSizeY,
+            @DescribeParameter(
+                        name = "selectedBands",
+                        description = "Band Selection Indices",
+                        min = 0
+                    )
+                    int[] bandIndices,
+            ProgressListener progressListener)
+            throws Exception {
 
         //
         // initial checks on mandatory params
@@ -120,21 +151,20 @@ public class DownloadEstimatorProcess implements GSProcess {
         if (layerInfo == null) {
             // could not find any layer ... abruptly interrupt the process
             throw new IllegalArgumentException("Unable to locate layer: " + layerName);
-
         }
         ResourceInfo resourceInfo = layerInfo.getResource();
         if (resourceInfo == null) {
-            // could not find any data store associated to the specified layer ... abruptly interrupt the process
-            throw new IllegalArgumentException("Unable to locate ResourceInfo for layer:"
-                    + layerName);
-
+            // could not find any data store associated to the specified layer ... abruptly
+            // interrupt the process
+            throw new IllegalArgumentException(
+                    "Unable to locate ResourceInfo for layer:" + layerName);
         }
 
         //
         // Get curent limits
         //
-        DownloadServiceConfiguration limits = downloadServiceConfigurationGenerator
-                .getConfiguration();
+        DownloadServiceConfiguration limits =
+                downloadServiceConfigurationGenerator.getConfiguration();
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Getting configuration limits");
         }
@@ -149,16 +179,25 @@ public class DownloadEstimatorProcess implements GSProcess {
             }
             final FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) resourceInfo;
 
-            return new VectorEstimator(limits).execute(featureTypeInfo, roi, clip, filter,
-                    targetCRS, progressListener);
+            return new VectorEstimator(limits)
+                    .execute(featureTypeInfo, roi, clip, filter, targetCRS, progressListener);
 
         } else if (resourceInfo instanceof CoverageInfo) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Working with Raster dataset");
             }
             final CoverageInfo coverage = (CoverageInfo) resourceInfo;
-            return new RasterEstimator(limits).execute(progressListener, coverage, roi, targetCRS,
-                    clip, filter, targetSizeX, targetSizeY, bandIndices);
+            return new RasterEstimator(limits)
+                    .execute(
+                            progressListener,
+                            coverage,
+                            roi,
+                            targetCRS,
+                            clip,
+                            filter,
+                            targetSizeX,
+                            targetSizeY,
+                            bandIndices);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -166,22 +205,22 @@ public class DownloadEstimatorProcess implements GSProcess {
         }
 
         // the requested layer is neither a featuretype nor a coverage --> error
-        final ProcessException ex = new ProcessException(
-                "Could not complete the Download Process: target resource is of Illegal type --> "
-                        + resourceInfo != null ? resourceInfo.getClass().getCanonicalName()
-                        : "null");
+        final ProcessException ex =
+                new ProcessException(
+                        "Could not complete the Download Process: target resource is of Illegal type --> "
+                                                + resourceInfo
+                                        != null
+                                ? resourceInfo.getClass().getCanonicalName()
+                                : "null");
 
         // Notify the listener if present
         if (progressListener != null) {
             progressListener.exceptionOccurred(ex);
         }
         throw ex;
-
     }
 
-    /**
-     * @return the {@link DownloadServiceConfiguration} containing the limits to check
-     */
+    /** @return the {@link DownloadServiceConfiguration} containing the limits to check */
     public DownloadServiceConfiguration getDownloadServiceConfiguration() {
         return downloadServiceConfigurationGenerator.getConfiguration();
     }

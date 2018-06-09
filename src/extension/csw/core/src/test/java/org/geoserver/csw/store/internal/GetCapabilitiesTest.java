@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -36,7 +35,7 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
     @Test
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
-        //print(dom);
+        // print(dom);
         checkValidationErrors(dom);
 
         // basic check on local name
@@ -46,8 +45,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
-                .getLength() > 0);
+        assertTrue(
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
+                        > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -62,7 +62,7 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
                 "1",
                 "count(//ows:Operation[@name='GetRecords']/ows:Constraint[@name='SupportedDublinCoreQueryables' and ows:Value = 'csw:AnyText'])",
                 dom);
-        
+
         // check we have BoundingBox among the queriables
         assertXpathEvaluatesTo(
                 "1",
@@ -74,7 +74,7 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
                 "1",
                 "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'dc:title'])",
                 dom);
-        
+
         // check we have Abstract among the domain property names
         assertXpathEvaluatesTo(
                 "1",
@@ -95,8 +95,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
-                .getLength() > 0);
+        assertTrue(
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
+                        > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -109,8 +110,10 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
 
     @Test
     public void testSections() throws Exception {
-        Document dom = getAsDOM(BASEPATH
-                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
         // print(dom);
         checkValidationErrors(dom);
 
@@ -126,9 +129,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // this one is mandatory, cannot be skipped
         assertEquals("1", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
 
-        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
-                .getLength() == 0);
+        assertTrue(
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
+                        == 0);
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
-
 }

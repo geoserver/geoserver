@@ -5,12 +5,11 @@
 package org.geoserver.csw;
 
 import java.io.Serializable;
-
 import org.geoserver.catalog.MetadataMap;
 
 /**
- * Simple class storing the DirectDownload settings such as links creation 
- * capability enabled and max download size.
+ * Simple class storing the DirectDownload settings such as links creation capability enabled and
+ * max download size.
  */
 public class DirectDownloadSettings implements Serializable {
 
@@ -28,8 +27,7 @@ public class DirectDownloadSettings implements Serializable {
         this.maxDownloadSize = that.maxDownloadSize;
     }
 
-    public DirectDownloadSettings() {
-    }
+    public DirectDownloadSettings() {}
 
     public boolean isDirectDownloadEnabled() {
         return directDownloadEnabled;
@@ -47,15 +45,14 @@ public class DirectDownloadSettings implements Serializable {
     public void setMaxDownloadSize(long maxDownloadSize) {
         this.maxDownloadSize = maxDownloadSize;
     }
-    
-    /** 
-     * Look for a {@link DirectDownloadSettings} instance in the provided metadataMap.
-     * If not available, look for the default object stored in {@link CSWInfo} metadataMap 
-     * as fallback (if provided)
-     *  
+
+    /**
+     * Look for a {@link DirectDownloadSettings} instance in the provided metadataMap. If not
+     * available, look for the default object stored in {@link CSWInfo} metadataMap as fallback (if
+     * provided)
+     *
      * @param map
      * @param csw
-     *
      */
     public static DirectDownloadSettings getSettingsFromMetadata(MetadataMap map, CSWInfo csw) {
         DirectDownloadSettings settings = null;

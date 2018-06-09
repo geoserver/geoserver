@@ -4,6 +4,15 @@
  */
 package org.geoserver.gwc.wmts;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.TimeZone;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -18,30 +27,27 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.dimension.RasterTimeDimensionDefaultValueTest;
 import org.geoserver.wms.dimension.VectorElevationDimensionDefaultValueTest;
 import org.junit.Before;
-import org.junit.Test;
 import org.opengis.filter.Filter;
-
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
-
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public abstract class TestsSupport extends WMSTestSupport {
 
-    protected static final QName RASTER_ELEVATION_TIME = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-    protected static final QName RASTER_ELEVATION = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-    protected static final QName RASTER_TIME = new QName(MockData.SF_URI, "watertemp_future_generated", MockData.SF_PREFIX);
-    protected static final QName RASTER_CUSTOM = new QName(MockData.SF_URI, "watertemp_custom", MockData.SF_PREFIX);
+    protected static final QName RASTER_ELEVATION_TIME =
+            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName RASTER_ELEVATION =
+            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName RASTER_TIME =
+            new QName(MockData.SF_URI, "watertemp_future_generated", MockData.SF_PREFIX);
+    protected static final QName RASTER_CUSTOM =
+            new QName(MockData.SF_URI, "watertemp_custom", MockData.SF_PREFIX);
 
-    protected static final QName VECTOR_ELEVATION_TIME = new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_ELEVATION = new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_TIME = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_CUSTOM = new QName(MockData.SF_URI, "TimeElevationCustom", MockData.SF_PREFIX);
+    protected static final QName VECTOR_ELEVATION_TIME =
+            new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName VECTOR_ELEVATION =
+            new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName VECTOR_TIME =
+            new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName VECTOR_CUSTOM =
+            new QName(MockData.SF_URI, "TimeElevationCustom", MockData.SF_PREFIX);
 
     protected WMS wms;
     protected Catalog catalog;
@@ -51,30 +57,51 @@ public abstract class TestsSupport extends WMSTestSupport {
         super.onSetUp(testData);
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         // raster with elevation dimension
-        testData.addRasterLayer(RASTER_ELEVATION, "/org/geoserver/wms/dimension/watertemp.zip",
-                null, Collections.emptyMap(), getClass(), getCatalog());
+        testData.addRasterLayer(
+                RASTER_ELEVATION,
+                "/org/geoserver/wms/dimension/watertemp.zip",
+                null,
+                Collections.emptyMap(),
+                getClass(),
+                getCatalog());
         // raster with time dimension
-        RasterTimeDimensionDefaultValueTest.prepareFutureCoverageData(RASTER_TIME,
-                this.getDataDirectory(), this.getCatalog());
+        RasterTimeDimensionDefaultValueTest.prepareFutureCoverageData(
+                RASTER_TIME, this.getDataDirectory(), this.getCatalog());
         // raster with custom dimension
-        testData.addRasterLayer(RASTER_CUSTOM, "/org/geoserver/wms/dimension/custwatertemp.zip",
-                null, Collections.emptyMap(), getClass(), getCatalog());
+        testData.addRasterLayer(
+                RASTER_CUSTOM,
+                "/org/geoserver/wms/dimension/custwatertemp.zip",
+                null,
+                Collections.emptyMap(),
+                getClass(),
+                getCatalog());
         // vector with elevation dimension
-        testData.addVectorLayer(VECTOR_ELEVATION, Collections.emptyMap(),
-                "/TimeElevationWithStartEnd.properties", this.getClass(), getCatalog());
+        testData.addVectorLayer(
+                VECTOR_ELEVATION,
+                Collections.emptyMap(),
+                "/TimeElevationWithStartEnd.properties",
+                this.getClass(),
+                getCatalog());
         // vector with time dimension
-        testData.addVectorLayer(VECTOR_TIME, Collections.emptyMap(),
-                "/TimeElevationWithStartEnd.properties", this.getClass(), getCatalog());
+        testData.addVectorLayer(
+                VECTOR_TIME,
+                Collections.emptyMap(),
+                "/TimeElevationWithStartEnd.properties",
+                this.getClass(),
+                getCatalog());
         // vector with custom dimension
-        testData.addVectorLayer(VECTOR_CUSTOM, Collections.emptyMap(),
-                "TimeElevationCustom.properties", VectorElevationDimensionDefaultValueTest.class, getCatalog());
+        testData.addVectorLayer(
+                VECTOR_CUSTOM,
+                Collections.emptyMap(),
+                "TimeElevationCustom.properties",
+                VectorElevationDimensionDefaultValueTest.class,
+                getCatalog());
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
         // invoke after setup callback
         afterSetup(testData);
     }
 
-    protected void afterSetup(SystemTestData testData) {
-    }
+    protected void afterSetup(SystemTestData testData) {}
 
     @Before
     public void setup() throws Exception {
@@ -84,29 +111,36 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     protected abstract Dimension buildDimension(DimensionInfo dimensionInfo);
 
-    protected void testDomainsValuesRepresentation(DimensionPresentation dimensionPresentation, String... expectedDomainValues) throws IOException {
+    protected void testDomainsValuesRepresentation(
+            DimensionPresentation dimensionPresentation, String... expectedDomainValues)
+            throws IOException {
         DimensionInfo dimensionInfo = createDimension(true, dimensionPresentation, null);
         Dimension dimension = buildDimension(dimensionInfo);
-        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE).second.second;
+        List<String> valuesAsStrings =
+                dimension.getDomainValuesAsStrings(Filter.INCLUDE).second.second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }
 
-    protected void testDefaultValueStrategy(DimensionDefaultValueSetting.Strategy strategy, String expectedDefaultValue) {
+    protected void testDefaultValueStrategy(
+            DimensionDefaultValueSetting.Strategy strategy, String expectedDefaultValue) {
         DimensionDefaultValueSetting defaultValueStrategy = new DimensionDefaultValueSetting();
         defaultValueStrategy.setStrategyType(strategy);
         testDefaultValueStrategy(defaultValueStrategy, expectedDefaultValue);
     }
 
-    protected void testDefaultValueStrategy(DimensionDefaultValueSetting defaultValueStrategy, String expectedDefaultValue) {
+    protected void testDefaultValueStrategy(
+            DimensionDefaultValueSetting defaultValueStrategy, String expectedDefaultValue) {
         DimensionInfo dimensionInfo = createDimension(true, null, defaultValueStrategy);
         Dimension dimension = buildDimension(dimensionInfo);
         String defaultValue = dimension.getDefaultValueAsString();
         assertThat(defaultValue, is(expectedDefaultValue));
     }
 
-    protected static DimensionInfo createDimension(boolean enable, DimensionPresentation presentation,
-                                                   DimensionDefaultValueSetting defaultValueStrategy) {
+    protected static DimensionInfo createDimension(
+            boolean enable,
+            DimensionPresentation presentation,
+            DimensionDefaultValueSetting defaultValueStrategy) {
         DimensionInfo dimension = new DimensionInfoImpl();
         dimension.setEnabled(enable);
         dimension.setPresentation(presentation);

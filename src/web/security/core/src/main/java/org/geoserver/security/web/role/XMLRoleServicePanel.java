@@ -13,7 +13,7 @@ import org.geoserver.security.xml.XMLRoleServiceConfig;
 
 /**
  * Configuration panel for {@link XMLRoleService}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class XMLRoleServicePanel extends RoleServicePanel<XMLRoleServiceConfig> {

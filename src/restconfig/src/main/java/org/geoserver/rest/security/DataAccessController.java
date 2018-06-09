@@ -6,7 +6,6 @@ package org.geoserver.rest.security;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DataAccessRule;
@@ -44,15 +43,16 @@ public class DataAccessController extends AbstractAclController {
 
         AccessMode accessMode = AccessMode.getByAlias(parts[2]);
 
-        return new DataAccessRule(parts[0], parts[1], accessMode,
-                parseRoles((String) entry.getValue()));
+        return new DataAccessRule(
+                parts[0], parts[1], accessMode, parseRoles((String) entry.getValue()));
     }
 
     @Override
     protected String validateRuleKey(String ruleKey) {
         String[] elements = parseElements(ruleKey);
         if (elements.length != 3) {
-            return "Invalid rule " + ruleKey
+            return "Invalid rule "
+                    + ruleKey
                     + ", the expected format is workspace.layer.mode=role1,role2,...";
         }
 
@@ -67,13 +67,16 @@ public class DataAccessController extends AbstractAclController {
 
         if (ANY.equals(workspace)) {
             if (!ANY.equals(layerName)) {
-                return "Invalid rule " + ruleKey + ", when namespace "
+                return "Invalid rule "
+                        + ruleKey
+                        + ", when namespace "
                         + "is * then also layer must be *.";
-
             }
         }
         if (mode == AccessMode.ADMIN && !ANY.equals(layerName)) {
-            return "Invalid rule " + ruleKey + ", admin (a) privileges may only be applied "
+            return "Invalid rule "
+                    + ruleKey
+                    + ", admin (a) privileges may only be applied "
                     + "globally to a workspace, layer must be *.";
         }
 
@@ -84,5 +87,4 @@ public class DataAccessController extends AbstractAclController {
     protected String getBasePath() {
         return "/security/acl/layers";
     }
-
 }

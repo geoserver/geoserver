@@ -6,6 +6,9 @@
 package org.geoserver.geopkg;
 
 import static org.geoserver.geopkg.GeoPkg.*;
+
+import com.google.common.collect.Sets;
+import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +16,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
@@ -39,15 +41,10 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.google.common.collect.Sets;
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
- * 
  * WMS GetMap Output Format for GeoPackage
- * 
- * @author Justin Deoliveira, Boundless
  *
+ * @author Justin Deoliveira, Boundless
  */
 public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
 
@@ -56,26 +53,32 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     public GeoPackageGetMapOutputFormat(WebMapService webMapService, WMS wms, GWC gwc) {
         super(MIME_TYPE, "." + EXTENSION, Sets.newHashSet(NAMES), webMapService, wms, gwc);
     }
-    
+
     private static class GeopackageWrapper implements TilesFile {
 
         GeoPackage geopkg;
 
         TileEntry e;
-        
+
         public GeopackageWrapper(GeoPackage geopkg, TileEntry e) throws IOException {
             this.geopkg = geopkg;
             this.e = e;
         }
 
-        public GeopackageWrapper() throws IOException {            
+        public GeopackageWrapper() throws IOException {
             this(new GeoPackage(), new TileEntry());
             geopkg.init();
         }
 
         @Override
-        public void setMetadata(String name, ReferencedEnvelope box, String imageFormat, int srid,
-                List<MapLayerInfo> mapLayers, int[] minmax, GridSubset gridSubset)
+        public void setMetadata(
+                String name,
+                ReferencedEnvelope box,
+                String imageFormat,
+                int srid,
+                List<MapLayerInfo> mapLayers,
+                int[] minmax,
+                GridSubset gridSubset)
                 throws IOException, ServiceException {
 
             e.setTableName(name);
@@ -84,7 +87,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
                 if (e.getIdentifier() == null) {
                     e.setIdentifier(r.getTitle());
                 }
-                if (e.getDescription() == null){
+                if (e.getDescription() == null) {
                     e.setDescription(r.getAbstract());
                 }
             }
@@ -114,7 +117,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             // figure out the actual bounds of the tiles to be renderered
             LOGGER.fine("Creating tile entry" + e.getTableName());
             geopkg.create(e);
-
         }
 
         @Override
@@ -153,40 +155,46 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         map.getRequest().getFormatOptions().put("flipy", "true");
         return super.produceMap(map);
     }
-   
+
     @Override
-    protected TilesFile createTilesFile() throws IOException{
-    	return new GeopackageWrapper();
+    protected TilesFile createTilesFile() throws IOException {
+        return new GeopackageWrapper();
     }
-    
+
     /**
      * Add tiles to an existing GeoPackage
-     * 
+     *
      * @param geopkg
      * @param map
      * @throws IOException
      */
-    public void addTiles(GeoPackage geopkg, TileEntry e, GetMapRequest req, String name) throws IOException{
-        addTiles(new GeopackageWrapper(geopkg,e), req, name);
+    public void addTiles(GeoPackage geopkg, TileEntry e, GetMapRequest req, String name)
+            throws IOException {
+        addTiles(new GeopackageWrapper(geopkg, e), req, name);
     }
-    
-    
+
     /**
-     * Special method to add tiles using Geopackage's own grid matrix system rather than GWC gridsubsets
-     * 
+     * Special method to add tiles using Geopackage's own grid matrix system rather than GWC
+     * gridsubsets
+     *
      * @param tiles
      * @param mapLayers
      * @param map
      * @throws IOException
      * @throws ServiceException
      */
-    public void addTiles(GeoPackage geopkg, TileEntry e, GetMapRequest request, List<TileMatrix> matrices, String name)
+    public void addTiles(
+            GeoPackage geopkg,
+            TileEntry e,
+            GetMapRequest request,
+            List<TileMatrix> matrices,
+            String name)
             throws IOException, ServiceException {
-                
-        List<MapLayerInfo> mapLayers = request.getLayers(); 
-        
-        SortedMap<Integer, TileMatrix> matrixSet = new TreeMap<Integer, TileMatrix>(); 
-        for (TileMatrix matrix : matrices){
+
+        List<MapLayerInfo> mapLayers = request.getLayers();
+
+        SortedMap<Integer, TileMatrix> matrixSet = new TreeMap<Integer, TileMatrix>();
+        for (TileMatrix matrix : matrices) {
             matrixSet.put(matrix.getZoomLevel(), matrix);
         }
 
@@ -199,19 +207,19 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
 
         // figure out the actual bounds of the tiles to be renderered
         ReferencedEnvelope bbox = bounds(request);
-        
-        //set metadata
+
+        // set metadata
         e.setTableName(name);
         e.setBounds(bbox);
         e.setSrid(srid(request));
         e.getTileMatricies().addAll(matrices);
         LOGGER.fine("Creating tile entry" + e.getTableName());
         geopkg.create(e);
-        
+
         GetMapRequest req = new GetMapRequest();
         OwsUtils.copy(request, req, GetMapRequest.class);
         req.setLayers(mapLayers);
-        
+
         Map formatOpts = req.getFormatOptions();
 
         Integer minZoom = null;
@@ -225,33 +233,38 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         } else if (formatOpts.containsKey("num_zooms")) {
             maxZoom = minZoom + Integer.parseInt(formatOpts.get("num_zooms").toString());
         }
-        
+
         if (minZoom != null || maxZoom != null) {
             matrixSet = matrixSet.subMap(minZoom, maxZoom);
         }
 
-        String imageFormat = formatOpts.containsKey("format") ? parseFormatFromOpts(formatOpts)
-                : findBestFormat(request);
-                
+        String imageFormat =
+                formatOpts.containsKey("format")
+                        ? parseFormatFromOpts(formatOpts)
+                        : findBestFormat(request);
+
         CoordinateReferenceSystem crs = getCoordinateReferenceSystem(request);
-        if (crs==null) {
+        if (crs == null) {
             String srs = getSRS(request);
             try {
                 crs = CRS.decode(srs);
             } catch (Exception ex) {
                 throw new ServiceException(ex);
-            } 
+            }
         }
-        double xSpan = crs.getCoordinateSystem().getAxis(0).getMaximumValue() - crs.getCoordinateSystem().getAxis(0).getMinimumValue();
-        double ySpan = crs.getCoordinateSystem().getAxis(1).getMaximumValue() - crs.getCoordinateSystem().getAxis(1).getMinimumValue();
+        double xSpan =
+                crs.getCoordinateSystem().getAxis(0).getMaximumValue()
+                        - crs.getCoordinateSystem().getAxis(0).getMinimumValue();
+        double ySpan =
+                crs.getCoordinateSystem().getAxis(1).getMaximumValue()
+                        - crs.getCoordinateSystem().getAxis(1).getMinimumValue();
         double xOffset = crs.getCoordinateSystem().getAxis(0).getMinimumValue();
         double yOffset = crs.getCoordinateSystem().getAxis(1).getMinimumValue();
-    
-        
+
         req.setFormat(imageFormat);
         req.setCrs(crs);
-        
-        //column and row bounds
+
+        // column and row bounds
         Integer minColumn = null, maxColumn = null, minRow = null, maxRow = null;
         if (formatOpts.containsKey("min_column")) {
             minColumn = Integer.parseInt(formatOpts.get("min_column").toString());
@@ -270,24 +283,29 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
 
             req.setWidth(matrix.getTileWidth());
             req.setHeight(matrix.getTileHeight());
-            
-            //long[] intersect = gridSubset.getCoverageIntersection(z, bbox);
+
+            // long[] intersect = gridSubset.getCoverageIntersection(z, bbox);
             double resX = xSpan / matrix.getMatrixWidth();
             double resY = ySpan / matrix.getMatrixHeight();
-            
-            long minX = Math.round(Math.floor((bbox.getMinX()-xOffset) / resX));
-            long minY = Math.round(Math.floor((bbox.getMinY()-yOffset) / resY));
-            long maxX = Math.round(Math.ceil((bbox.getMaxX()-xOffset) / resX));
-            long maxY = Math.round(Math.ceil((bbox.getMaxY()-yOffset) / resY));
-            
-            minX = minColumn == null? minX : Math.max(minColumn, minX);
-            maxX = maxColumn == null? maxX : Math.min(maxColumn, maxX);
-            minY = minRow == null? minY : Math.max(minRow, minY);
-            maxY = maxRow == null? maxY : Math.min(maxRow, maxY);
-            
+
+            long minX = Math.round(Math.floor((bbox.getMinX() - xOffset) / resX));
+            long minY = Math.round(Math.floor((bbox.getMinY() - yOffset) / resY));
+            long maxX = Math.round(Math.ceil((bbox.getMaxX() - xOffset) / resX));
+            long maxY = Math.round(Math.ceil((bbox.getMaxY() - yOffset) / resY));
+
+            minX = minColumn == null ? minX : Math.max(minColumn, minX);
+            maxX = maxColumn == null ? maxX : Math.min(maxColumn, maxX);
+            minY = minRow == null ? minY : Math.max(minRow, minY);
+            maxY = maxRow == null ? maxY : Math.min(maxRow, maxY);
+
             for (long x = minX; x < maxX; x++) {
                 for (long y = minY; y < maxY; y++) {
-                    req.setBbox(new Envelope( xOffset + x * resX , xOffset + (x+1) * resX, yOffset + y * resY, yOffset + (y+1) * resY));
+                    req.setBbox(
+                            new Envelope(
+                                    xOffset + x * resX,
+                                    xOffset + (x + 1) * resX,
+                                    yOffset + y * resY,
+                                    yOffset + (y + 1) * resY));
                     WebMap result = webMapService.getMap(req);
                     Tile t = new Tile();
                     t.setZoom(matrix.getZoomLevel());
@@ -301,5 +319,4 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             }
         }
     }
-
 }

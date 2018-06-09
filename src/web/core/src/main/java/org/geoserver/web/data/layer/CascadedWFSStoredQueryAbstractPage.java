@@ -11,14 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import net.opengis.wfs20.StoredQueryListItemType;
 import net.opengis.wfs20.TitleType;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -47,9 +44,9 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingExpressio
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.util.logging.Logging;
 
-
 /**
- * Page that controls the configuration for a single feature type based on a cascaded WFS Stored Query.
+ * Page that controls the configuration for a single feature type based on a cascaded WFS Stored
+ * Query.
  */
 public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecuredPage {
 
@@ -71,54 +68,69 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         this(params.get(WORKSPACE).toOptionalString(), params.get(DATASTORE).toString(), null);
     }
 
-    public CascadedWFSStoredQueryAbstractPage(String workspaceName, String storeName, String typeName)
-            throws IOException {
-        storeId = getCatalog().getStoreByName(workspaceName, storeName, DataStoreInfo.class)
-                .getId();
+    public CascadedWFSStoredQueryAbstractPage(
+            String workspaceName, String storeName, String typeName) throws IOException {
+        storeId =
+                getCatalog().getStoreByName(workspaceName, storeName, DataStoreInfo.class).getId();
 
-        Form<CascadedWFSStoredQueryAbstractPage> form = new Form<>("form", new CompoundPropertyModel<>(this));
+        Form<CascadedWFSStoredQueryAbstractPage> form =
+                new Form<>("form", new CompoundPropertyModel<>(this));
 
         form.add(getStoredQueryNameComponent());
 
         parameterProvider = new StoredQueryParameterAttributeProvider();
 
-        parameters = new GeoServerTablePanel<StoredQueryParameterAttribute>("parameters", parameterProvider) {
-            /** serialVersionUID */
-            private static final long serialVersionUID = 8282438267732625198L;
+        parameters =
+                new GeoServerTablePanel<StoredQueryParameterAttribute>(
+                        "parameters", parameterProvider) {
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = 8282438267732625198L;
 
-            @Override
-            protected Component getComponentForProperty(String id,
-                    final IModel<StoredQueryParameterAttribute> itemModel,
-                    Property<StoredQueryParameterAttribute> property) {
-                if (property == ATTR_MAPTYPE) {
-                    Fragment f = new Fragment(id, "parameterMappingType", CascadedWFSStoredQueryAbstractPage.this);
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id,
+                            final IModel<StoredQueryParameterAttribute> itemModel,
+                            Property<StoredQueryParameterAttribute> property) {
+                        if (property == ATTR_MAPTYPE) {
+                            Fragment f =
+                                    new Fragment(
+                                            id,
+                                            "parameterMappingType",
+                                            CascadedWFSStoredQueryAbstractPage.this);
 
-                    ArrayList<ParameterMappingType> choices = new ArrayList<ParameterMappingType>();
-                    for (ParameterMappingType pmt : ParameterMappingType.values()) {
-                        choices.add(pmt);
+                            ArrayList<ParameterMappingType> choices =
+                                    new ArrayList<ParameterMappingType>();
+                            for (ParameterMappingType pmt : ParameterMappingType.values()) {
+                                choices.add(pmt);
+                            }
+                            DropDownChoice<ParameterMappingType> choice =
+                                    new DropDownChoice<>(
+                                            "dropdown",
+                                            new PropertyModel<>(itemModel, "mappingType"),
+                                            choices,
+                                            new ParameterMappingTypeRenderer());
+
+                            f.add(choice);
+
+                            return f;
+
+                        } else if (property == ATTR_VALUE) {
+                            Fragment f =
+                                    new Fragment(
+                                            id,
+                                            "parameterMappingValue",
+                                            CascadedWFSStoredQueryAbstractPage.this);
+
+                            TextField<String> textField =
+                                    new TextField<>(
+                                            "text", new PropertyModel<>(itemModel, "value"));
+                            f.add(textField);
+
+                            return f;
+                        }
+                        return null;
                     }
-                    DropDownChoice<ParameterMappingType> choice =
-                            new DropDownChoice<>("dropdown",
-                                    new PropertyModel<>(itemModel, "mappingType"),
-                                    choices,
-                                    new ParameterMappingTypeRenderer());
-
-                    f.add(choice);
-
-                    return f;
-
-                } else
-                if (property == ATTR_VALUE) {
-                    Fragment f = new Fragment(id, "parameterMappingValue", CascadedWFSStoredQueryAbstractPage.this);
-
-                    TextField<String> textField = new TextField<>("text", new PropertyModel<>(itemModel, "value"));
-                    f.add(textField);
-
-                    return f;
-                }
-                return null;
-            }
-        };
+                };
         // just a plain table, no filters, no paging
         parameters.setFilterVisible(false);
         parameters.setSortable(false);
@@ -129,25 +141,27 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         add(form);
 
         // save and cancel at the bottom of the page
-        form.add(new SubmitLink("save") {
-            /** serialVersionUID */
-            private static final long serialVersionUID = 2540349398885832870L;
+        form.add(
+                new SubmitLink("save") {
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = 2540349398885832870L;
 
-            @Override
-            public void onSubmit() {
-                onSave();
-            }
-        });
-        form.add(new Link<Void>("cancel") {
+                    @Override
+                    public void onSubmit() {
+                        onSave();
+                    }
+                });
+        form.add(
+                new Link<Void>("cancel") {
 
-            /** serialVersionUID */
-            private static final long serialVersionUID = 451678049485016709L;
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = 451678049485016709L;
 
-            @Override
-            public void onClick() {
-                onCancel();
-            }
-        });
+                    @Override
+                    public void onClick() {
+                        onCancel();
+                    }
+                });
     }
 
     static StoredQueryConfiguration createStoredQueryConfiguration(
@@ -159,21 +173,21 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
             ParameterMapping mapping;
             String name = i.getParameterName();
             switch (i.getMappingType()) {
-            case BLOCKED:
-                mapping = new ParameterMappingBlockValue(name);
-                break;
-            case DEFAULT:
-                mapping = new ParameterMappingDefaultValue(name, false, i.getValue());
-                break;
-            case STATIC:
-                mapping = new ParameterMappingDefaultValue(name, true, i.getValue());
-                break;
-            case EXPRESSION_CQL:
-                mapping = new ParameterMappingExpressionValue(name, "CQL", i.getValue());
-                break;
-            case NONE:
-            default:
-                mapping = null;
+                case BLOCKED:
+                    mapping = new ParameterMappingBlockValue(name);
+                    break;
+                case DEFAULT:
+                    mapping = new ParameterMappingDefaultValue(name, false, i.getValue());
+                    break;
+                case STATIC:
+                    mapping = new ParameterMappingDefaultValue(name, true, i.getValue());
+                    break;
+                case EXPRESSION_CQL:
+                    mapping = new ParameterMappingExpressionValue(name, "CQL", i.getValue());
+                    break;
+                case NONE:
+                default:
+                    mapping = null;
             }
             if (mapping != null) {
                 ret.getStoredQueryParameterMappings().add(mapping);
@@ -182,20 +196,20 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         return ret;
     }
 
-    protected List<StoredQueryListItemType> listStoredQueries()  {
+    protected List<StoredQueryListItemType> listStoredQueries() {
         try {
             WFSDataStore contentStore = getContentDataStore();
             return contentStore.getStoredQueryListResponse().getStoredQuery();
-        } catch(IOException ie) {
+        } catch (IOException ie) {
             throw new RuntimeException("Uanble to list stored queries", ie);
         }
     }
 
     protected WFSDataStore getContentDataStore() throws IOException {
         DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
-        DataAccess<?,?> da = store.getDataStore(null);
+        DataAccess<?, ?> da = store.getDataStore(null);
 
-        return (WFSDataStore)da;
+        return (WFSDataStore) da;
     }
 
     public static String createStoredQueryTitle(StoredQueryListItemType object) {
@@ -219,12 +233,11 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         return ret.toString();
     }
 
-    /**
-     * Attribute model for how a single stored query parameter is supposed to be handled.
-     */
+    /** Attribute model for how a single stored query parameter is supposed to be handled. */
     public class StoredQueryParameterAttribute implements Serializable {
         /** serialVersionUID */
         private static final long serialVersionUID = -9213562985695412130L;
+
         private String parameterName;
         private String title;
         private QName type;
@@ -247,13 +260,11 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
             return type;
         }
 
-        public void setMappingType(ParameterMappingType mappingType)
-        {
+        public void setMappingType(ParameterMappingType mappingType) {
             this.mappingType = mappingType;
         }
 
-        public ParameterMappingType getMappingType()
-        {
+        public ParameterMappingType getMappingType() {
             return mappingType;
         }
 
@@ -278,10 +289,10 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
             final int prime = 37;
             int result = 1;
             result = prime * result + ((parameterName == null) ? 0 : parameterName.hashCode());
-            result = prime * result + ((title == null)         ? 0 : title.hashCode());
-            result = prime * result + ((type == null)          ? 0 : type.hashCode());
-            result = prime * result + ((mappingType == null)   ? 0 : mappingType.hashCode());
-            result = prime * result + ((value == null)         ? 0 : value.hashCode());
+            result = prime * result + ((title == null) ? 0 : title.hashCode());
+            result = prime * result + ((type == null) ? 0 : type.hashCode());
+            result = prime * result + ((mappingType == null) ? 0 : mappingType.hashCode());
+            result = prime * result + ((value == null) ? 0 : value.hashCode());
             return result;
         }
 
@@ -297,12 +308,9 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             StoredQueryParameterAttribute other = (StoredQueryParameterAttribute) obj;
             if (!nullSafeCompare(this.parameterName, other.parameterName)) {
                 return false;
@@ -326,11 +334,19 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         public String toString() {
             StringBuilder ret = new StringBuilder();
 
-            ret.append(getParameterName()).append(": ")
-                .append("title=").append(title).append(", ")
-                .append("type=").append(type).append(", ")
-                .append("mappingType=").append(mappingType).append(", ")
-                .append("value=").append(value);
+            ret.append(getParameterName())
+                    .append(": ")
+                    .append("title=")
+                    .append(title)
+                    .append(", ")
+                    .append("type=")
+                    .append(type)
+                    .append(", ")
+                    .append("mappingType=")
+                    .append(mappingType)
+                    .append(", ")
+                    .append("value=")
+                    .append(value);
 
             return ret.toString();
         }
@@ -355,14 +371,19 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         return ret;
     }
 
-    public abstract void populateStoredQueryParameterAttribute(String storedQueryId,
-            ParameterExpressionType pet, StoredQueryParameterAttribute attr);
+    public abstract void populateStoredQueryParameterAttribute(
+            String storedQueryId, ParameterExpressionType pet, StoredQueryParameterAttribute attr);
 
-    public static Property<StoredQueryParameterAttribute> ATTR_NAME    = new BeanProperty<StoredQueryParameterAttribute>("parameterName", "parameterName");
-    public static Property<StoredQueryParameterAttribute> ATTR_TITLE   = new BeanProperty<StoredQueryParameterAttribute>("title", "title");
-    public static Property<StoredQueryParameterAttribute> ATTR_TYPE    = new BeanProperty<StoredQueryParameterAttribute>("type", "type");
-    public static Property<StoredQueryParameterAttribute> ATTR_MAPTYPE = new BeanProperty<StoredQueryParameterAttribute>("mappingType", "mappingType");
-    public static Property<StoredQueryParameterAttribute> ATTR_VALUE   = new BeanProperty<StoredQueryParameterAttribute>("value", "value");
+    public static Property<StoredQueryParameterAttribute> ATTR_NAME =
+            new BeanProperty<StoredQueryParameterAttribute>("parameterName", "parameterName");
+    public static Property<StoredQueryParameterAttribute> ATTR_TITLE =
+            new BeanProperty<StoredQueryParameterAttribute>("title", "title");
+    public static Property<StoredQueryParameterAttribute> ATTR_TYPE =
+            new BeanProperty<StoredQueryParameterAttribute>("type", "type");
+    public static Property<StoredQueryParameterAttribute> ATTR_MAPTYPE =
+            new BeanProperty<StoredQueryParameterAttribute>("mappingType", "mappingType");
+    public static Property<StoredQueryParameterAttribute> ATTR_VALUE =
+            new BeanProperty<StoredQueryParameterAttribute>("value", "value");
 
     public enum ParameterMappingType {
         NONE,
@@ -378,7 +399,11 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
         @Override
         public Object getDisplayValue(ParameterMappingType object) {
-            return new StringResourceModel("ParameterMappingType."+object.toString(), CascadedWFSStoredQueryAbstractPage.this, null).getString();
+            return new StringResourceModel(
+                            "ParameterMappingType." + object.toString(),
+                            CascadedWFSStoredQueryAbstractPage.this,
+                            null)
+                    .getString();
         }
 
         @Override
@@ -387,10 +412,13 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         }
     }
 
-    public class StoredQueryParameterAttributeProvider extends GeoServerDataProvider<StoredQueryParameterAttribute> {
+    public class StoredQueryParameterAttributeProvider
+            extends GeoServerDataProvider<StoredQueryParameterAttribute> {
         /** serialVersionUID */
         private static final long serialVersionUID = 5295091510256421604L;
-        private List<StoredQueryParameterAttribute> items = new ArrayList<StoredQueryParameterAttribute>();
+
+        private List<StoredQueryParameterAttribute> items =
+                new ArrayList<StoredQueryParameterAttribute>();
 
         public void refreshItems(String storedQueryId) {
             items.clear();
@@ -400,7 +428,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
                 try {
                     WFSDataStore contentStore = getContentDataStore();
                     desc = contentStore.getStoredQueryDescriptionType(storedQueryId);
-                } catch(IOException ie) {
+                } catch (IOException ie) {
                     throw new RuntimeException("Unable to describe stored query", ie);
                 }
 

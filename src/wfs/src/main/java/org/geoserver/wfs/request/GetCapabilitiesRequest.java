@@ -7,16 +7,14 @@ package org.geoserver.wfs.request;
 
 import java.util.Arrays;
 import java.util.List;
-
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.wfs.GetCapabilitiesType;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**
  * WFS GetCapabilities request.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public abstract class GetCapabilitiesRequest extends RequestObject {
@@ -24,17 +22,16 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
     public static GetCapabilitiesRequest adapt(Object request) {
         if (request instanceof GetCapabilitiesType) {
             return new WFS11((EObject) request);
-        }
-        else if (request instanceof net.opengis.wfs20.GetCapabilitiesType) {
+        } else if (request instanceof net.opengis.wfs20.GetCapabilitiesType) {
             return new WFS20((EObject) request);
         }
         return null;
     }
-    
+
     protected GetCapabilitiesRequest(EObject adaptee) {
         super(adaptee);
     }
-    
+
     public String getUpdateSequence() {
         return eGet(adaptee, "updateSequence", String.class);
     }
@@ -56,11 +53,11 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
     public String getNamespace() {
         return eGet(adaptee, "namespace", String.class);
     }
-    
+
     public void setNamespace(String namespace) {
         eSet(adaptee, "namespace", namespace);
     }
-    
+
     protected abstract Object createAcceptedVersions();
 
     public static class WFS11 extends GetCapabilitiesRequest {
@@ -76,7 +73,7 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
     }
 
     public static class WFS20 extends GetCapabilitiesRequest {
-        
+
         public WFS20(EObject adaptee) {
             super(adaptee);
         }
@@ -86,5 +83,4 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
             return Ows11Factory.eINSTANCE.createAcceptVersionsType();
         }
     }
-
 }

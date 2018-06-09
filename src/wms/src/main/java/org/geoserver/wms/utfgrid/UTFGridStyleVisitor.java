@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.geotools.feature.FeatureCollection;
 import org.geotools.renderer.composite.BlendComposite.BlendingMode;
 import org.geotools.renderer.style.GraphicStyle2D;
@@ -30,34 +29,33 @@ import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
-import org.opengis.filter.Filter;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
-import org.opengis.style.Description;
 import org.opengis.style.GraphicalSymbol;
 
 /**
  * Prepares a style for a UTFGrid generation, in particular:
+ *
  * <ul>
- * <li>Removes all feature type styles with a transform function that is known not to return vector data
- * <li>
- * <li>Replaces all colors with the {@link UTFGridColorFunction}</li>
- * <li>Replaces all external graphics with an "equivalent" solid color mark (ideally this would be a black and white version of the external graphic,
- * with the same shape, but it's hard, so we use a square instead)</li>
- * <li>Removes all text symbolizers</li>
+ *   <li>Removes all feature type styles with a transform function that is known not to return
+ *       vector data
+ *   <li>
+ *   <li>Replaces all colors with the {@link UTFGridColorFunction}
+ *   <li>Replaces all external graphics with an "equivalent" solid color mark (ideally this would be
+ *       a black and white version of the external graphic, with the same shape, but it's hard, so
+ *       we use a square instead)
+ *   <li>Removes all text symbolizers
  * </ul>
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
 
     private UTFGridColorFunction colorFunction;
 
-    /**
-     * Potentially vector transformations (including ones with unknown return type)
-     */
+    /** Potentially vector transformations (including ones with unknown return type) */
     boolean vectorTransformations = false;
 
     boolean transformations = false;
@@ -74,7 +72,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         super.visit(style);
         Style copy = (Style) pages.pop();
         List<FeatureTypeStyle> featureTypeStyles = new ArrayList(copy.featureTypeStyles());
-        for (Iterator<FeatureTypeStyle> it = featureTypeStyles.iterator(); it.hasNext();) {
+        for (Iterator<FeatureTypeStyle> it = featureTypeStyles.iterator(); it.hasNext(); ) {
             FeatureTypeStyle fts = it.next();
             if (fts.rules().isEmpty()) {
                 it.remove();
@@ -93,7 +91,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
 
         // clean up empty rules
         List<Rule> rules = new ArrayList<>(copy.rules());
-        for (Iterator<Rule> it = rules.iterator(); it.hasNext();) {
+        for (Iterator<Rule> it = rules.iterator(); it.hasNext(); ) {
             Rule rule = it.next();
             if (rule.symbolizers().isEmpty()) {
                 it.remove();
@@ -131,7 +129,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         // clean up removed symbolizers
         Rule copy = (Rule) pages.pop();
         List<Symbolizer> symbolizers = new ArrayList(copy.symbolizers());
-        for (Iterator<Symbolizer> it = symbolizers.iterator(); it.hasNext();) {
+        for (Iterator<Symbolizer> it = symbolizers.iterator(); it.hasNext(); ) {
             Symbolizer symbolizer = it.next();
             if (symbolizer == null) {
                 it.remove();
@@ -144,9 +142,8 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
 
     /**
      * Returns the function return type, or {@link Object} if it could not be determined
-     * 
-     * @param f
      *
+     * @param f
      */
     Class getFunctionReturnType(Function f) {
         FunctionName name = f.getFunctionName();
@@ -173,15 +170,26 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
                 symbolsCopy.add(markCopy);
             } else if (gs instanceof ExternalGraphic) {
                 if (gr.getSize() != null && !Expression.NIL.equals(gr.getSize())) {
-                    Mark mark = sf.createMark(ff.literal("square"), null,
-                            sf.createFill(colorFunction), sizeCopy, Expression.NIL);
+                    Mark mark =
+                            sf.createMark(
+                                    ff.literal("square"),
+                                    null,
+                                    sf.createFill(colorFunction),
+                                    sizeCopy,
+                                    Expression.NIL);
                     symbolsCopy.add(mark);
                 } else {
-                    // it's using the default size, compute it if possible (might be using dynamic symbolizers...)
+                    // it's using the default size, compute it if possible (might be using dynamic
+                    // symbolizers...)
                     ExternalGraphic eg = (ExternalGraphic) gs;
                     Literal sizeExpression = estimateGraphicSize(eg);
-                    Mark mark = sf.createMark(ff.literal("square"), null,
-                            sf.createFill(colorFunction), sizeExpression, Expression.NIL);
+                    Mark mark =
+                            sf.createMark(
+                                    ff.literal("square"),
+                                    null,
+                                    sf.createFill(colorFunction),
+                                    sizeExpression,
+                                    Expression.NIL);
                     symbolsCopy.add(mark);
                 }
             }
@@ -205,8 +213,14 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
     }
 
     private Literal estimateGraphicSize(ExternalGraphic eg) {
-        Graphic testGraphic = sf.createGraphic(new ExternalGraphic[] { eg }, null, null,
-                LITERAL_ONE, Expression.NIL, ff.literal(0));
+        Graphic testGraphic =
+                sf.createGraphic(
+                        new ExternalGraphic[] {eg},
+                        null,
+                        null,
+                        LITERAL_ONE,
+                        Expression.NIL,
+                        ff.literal(0));
         PointSymbolizer testSymbolizer = sf.createPointSymbolizer(testGraphic, null);
         Style2D style = sldFactory.createStyle(null, testSymbolizer);
         int size = SLDStyleFactory.DEFAULT_MARK_SIZE;
@@ -285,5 +299,4 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
     public boolean hasTransformations() {
         return transformations;
     }
-
 }

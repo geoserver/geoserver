@@ -8,7 +8,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /*
  * provides VectorTileEncoder that doesn't do any clipping.
- * Our clipping system is "better" (more robust, faster, and maintainable here). 
+ * Our clipping system is "better" (more robust, faster, and maintainable here).
  */
 public class VectorTileEncoderNoClip extends VectorTileEncoder {
 

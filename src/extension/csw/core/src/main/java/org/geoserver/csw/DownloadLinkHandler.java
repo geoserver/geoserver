@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.CatalogInfo;
@@ -38,16 +37,13 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
 import org.geotools.util.logging.Logging;
 
-/**
- * Class delegated to setup direct download links for a {@link CatalogInfo} 
- * instance.
- */
+/** Class delegated to setup direct download links for a {@link CatalogInfo} instance. */
 public class DownloadLinkHandler {
 
     private static Set<String> STANDARD_DOMAINS;
-    public final static String RESOURCE_ID_PARAMETER = "resourceId";
-    public final static String FILE_PARAMETER = "file"; 
-    public final static String FILE_TEMPLATE = "${" + FILE_PARAMETER + "}";
+    public static final String RESOURCE_ID_PARAMETER = "resourceId";
+    public static final String FILE_PARAMETER = "file";
+    public static final String FILE_TEMPLATE = "${" + FILE_PARAMETER + "}";
 
     static final Logger LOGGER = Logging.getLogger(DownloadLinkHandler.class);
 
@@ -56,14 +52,13 @@ public class DownloadLinkHandler {
         STANDARD_DOMAINS.add(Utils.TIME_DOMAIN);
         STANDARD_DOMAINS.add(Utils.ELEVATION_DOMAIN);
         STANDARD_DOMAINS.add(Utils.BBOX);
-        
     }
-    
+
     /** An implementation of {@link CloseableIterator} for links creation */
     static class CloseableLinksIterator<T> implements CloseableIterator<String> {
 
         private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-        
+
         private SimpleDateFormat dateFormat = null;
 
         public CloseableLinksIterator(String baseLink, CloseableIterator<FileGroup> dataIterator) {
@@ -97,10 +92,11 @@ public class DownloadLinkHandler {
 
                 // Hash the file and setup the download link
                 String hashFile = hashFile(mainFile);
-                StringBuilder builder = new StringBuilder(baseLink.replace(FILE_TEMPLATE, hashFile));
+                StringBuilder builder =
+                        new StringBuilder(baseLink.replace(FILE_TEMPLATE, hashFile));
                 Map<String, Object> metadata = element.getMetadata();
                 if (metadata != null && !metadata.isEmpty()) {
-                    
+
                     Set<String> keys = metadata.keySet();
 
                     // Set bbox in the link
@@ -112,12 +108,12 @@ public class DownloadLinkHandler {
                     if (keys.contains(Utils.TIME_DOMAIN)) {
                         Object time = metadata.get(Utils.TIME_DOMAIN);
                         appendRangeToLink(Utils.TIME_DOMAIN, time, builder);
-                    }                    
+                    }
                     if (keys.contains(Utils.ELEVATION_DOMAIN)) {
                         Object elevation = metadata.get(Utils.ELEVATION_DOMAIN);
                         appendRangeToLink(Utils.ELEVATION_DOMAIN, elevation, builder);
                     }
-                    for (String key: keys) {
+                    for (String key : keys) {
                         if (!STANDARD_DOMAINS.contains(key)) {
                             Object additional = metadata.get(key);
                             appendRangeToLink(key, additional, builder);
@@ -126,16 +122,17 @@ public class DownloadLinkHandler {
                 }
                 return builder.toString();
             } catch (IOException e) {
-                throw new RuntimeException("Unable to encode the specified file:" + canonicalPath,
-                        e.getCause());
+                throw new RuntimeException(
+                        "Unable to encode the specified file:" + canonicalPath, e.getCause());
             } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException("Unable to encode the specified file:" + canonicalPath,
-                        e.getCause());
+                throw new RuntimeException(
+                        "Unable to encode the specified file:" + canonicalPath, e.getCause());
             }
         }
 
         /**
          * Append the BBOX parameter to the directDownload link
+         *
          * @param envelope
          * @param builder
          */
@@ -143,15 +140,21 @@ public class DownloadLinkHandler {
             if (envelope == null) {
                 throw new IllegalArgumentException("Envelope can't be null");
             }
-            builder.append("&").append(Utils.BBOX).append("=")
-            .append(envelope.getMinX()).append(",")
-            .append(envelope.getMinY()).append(",")
-            .append(envelope.getMaxX()).append(",")
-            .append(envelope.getMaxY());
+            builder.append("&")
+                    .append(Utils.BBOX)
+                    .append("=")
+                    .append(envelope.getMinX())
+                    .append(",")
+                    .append(envelope.getMinY())
+                    .append(",")
+                    .append(envelope.getMaxX())
+                    .append(",")
+                    .append(envelope.getMaxY());
         }
 
         /**
          * Append a coverage domain (time, elevation, custom) to the direct download link.
+         *
          * @param key the name of the parameter domain to be added
          * @param domain the value of the domain
          * @param builder the builder currently used for Link construction
@@ -167,16 +170,17 @@ public class DownloadLinkHandler {
                 }
                 DateRange dateRange = (DateRange) domain;
                 builder.append(dateFormat.format(dateRange.getMinValue()))
-                .append("/").append(dateFormat.format(dateRange.getMaxValue()));
+                        .append("/")
+                        .append(dateFormat.format(dateRange.getMaxValue()));
             } else if (domain instanceof NumberRange) {
                 NumberRange numberRange = (NumberRange) domain;
                 builder.append(numberRange.getMinValue())
-                .append("/").append(numberRange.getMaxValue());
+                        .append("/")
+                        .append(numberRange.getMaxValue());
             } else if (domain instanceof Range) {
                 // Generic range
                 Range range = (Range) domain;
-                builder.append(range.getMinValue())
-                .append("/").append(range.getMaxValue());
+                builder.append(range.getMinValue()).append("/").append(range.getMaxValue());
             } else {
                 throw new IllegalArgumentException("Domain " + domain + " isn't supported");
             }
@@ -189,15 +193,19 @@ public class DownloadLinkHandler {
     }
 
     /** Template download link to be updated with actual values */
-    protected static String LINK = "ows?service=CSW&version=${version}&request="
-            + "DirectDownload&" + RESOURCE_ID_PARAMETER + "=${nameSpace}:${layerName}&"
-            + FILE_PARAMETER + "=" + FILE_TEMPLATE;
+    protected static String LINK =
+            "ows?service=CSW&version=${version}&request="
+                    + "DirectDownload&"
+                    + RESOURCE_ID_PARAMETER
+                    + "=${nameSpace}:${layerName}&"
+                    + FILE_PARAMETER
+                    + "="
+                    + FILE_TEMPLATE;
 
     /**
      * Generate download links for the specified info object.
-     * 
-     * @param info
      *
+     * @param info
      */
     public CloseableIterator<String> generateDownloadLinks(CatalogInfo info) {
         Request request = Dispatcher.REQUEST.get();
@@ -222,46 +230,48 @@ public class DownloadLinkHandler {
             return linksFromCoverage(baseURL, (CoverageInfo) info);
         } else {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning("Download link for vectors isn't supported."
-                        + " Returning null");
+                LOGGER.warning("Download link for vectors isn't supported." + " Returning null");
             }
         }
         return null;
     }
 
     /**
-     * Return an {@link Iterator} containing {@link String}s representing
-     * the downloadLinks associated to the provided {@link CoverageInfo} object.
+     * Return an {@link Iterator} containing {@link String}s representing the downloadLinks
+     * associated to the provided {@link CoverageInfo} object.
      *
      * @param baseURL
      * @param coverageInfo
-     *
      */
-    protected CloseableIterator<String> linksFromCoverage(String baseURL, CoverageInfo coverageInfo) {
+    protected CloseableIterator<String> linksFromCoverage(
+            String baseURL, CoverageInfo coverageInfo) {
         GridCoverage2DReader reader;
         try {
-            reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null,
-                    GeoTools.getDefaultHints());
+            reader =
+                    (GridCoverage2DReader)
+                            coverageInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
             String name = DirectDownload.extractName(coverageInfo);
             if (reader == null) {
-                throw new IllegalArgumentException ("No reader available for the specified coverage: " + name);
+                throw new IllegalArgumentException(
+                        "No reader available for the specified coverage: " + name);
             }
             ResourceInfo resourceInfo = reader.getInfo(name);
             if (resourceInfo instanceof FileResourceInfo) {
                 FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
 
                 // Replace the template URL with proper values
-                String baseLink = baseURL
-                        .replace("${nameSpace}", coverageInfo.getNamespace().getName())
-                        .replace("${layerName}", coverageInfo.getName());
+                String baseLink =
+                        baseURL.replace("${nameSpace}", coverageInfo.getNamespace().getName())
+                                .replace("${layerName}", coverageInfo.getName());
 
-                CloseableIterator<org.geotools.data.FileGroupProvider.FileGroup> dataIterator = fileResourceInfo
-                        .getFiles(null);
+                CloseableIterator<org.geotools.data.FileGroupProvider.FileGroup> dataIterator =
+                        fileResourceInfo.getFiles(null);
                 return new CloseableLinksIterator(baseLink, dataIterator);
 
             } else {
-                throw new RuntimeException("Donwload links handler need to provide "
-                        + "download links to files. The ResourceInfo associated with the store should be a FileResourceInfo instance");
+                throw new RuntimeException(
+                        "Donwload links handler need to provide "
+                                + "download links to files. The ResourceInfo associated with the store should be a FileResourceInfo instance");
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to generate download links", e.getCause());
@@ -269,8 +279,8 @@ public class DownloadLinkHandler {
     }
 
     /**
-     * Return a SHA-1 based hash for the specified file, by appending the file's base name to the hashed full path. This allows to hide the underlying
-     * file system structure.
+     * Return a SHA-1 based hash for the specified file, by appending the file's base name to the
+     * hashed full path. This allows to hide the underlying file system structure.
      */
     public static String hashFile(File mainFile) throws IOException, NoSuchAlgorithmException {
         String canonicalPath = mainFile.getCanonicalPath();
@@ -282,10 +292,8 @@ public class DownloadLinkHandler {
     }
 
     /**
-     * Given a file download link, extract the link with no file references, used to 
-     * request the full layer download.
-     * 
-     *
+     * Given a file download link, extract the link with no file references, used to request the
+     * full layer download.
      */
     public String extractFullDownloadLink(String link) {
         int resourceIdIndex = link.indexOf(RESOURCE_ID_PARAMETER);

@@ -7,11 +7,10 @@ package org.geoserver.wfs;
 
 import java.util.Comparator;
 
-
 /**
  * Compares transaction plugins based on the priority field.
- * @author Administrator
  *
+ * @author Administrator
  */
 public class TransactionPluginComparator implements Comparator {
     public int compare(Object o1, Object o2) {

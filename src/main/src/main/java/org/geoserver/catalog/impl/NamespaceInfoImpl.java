@@ -16,11 +16,11 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     protected String prefix;
 
     protected String uri;
-    
+
     protected boolean _default;
 
     protected MetadataMap metadata = new MetadataMap();
-    
+
     public String getId() {
         return id;
     }
@@ -28,7 +28,7 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public boolean isDefault() {
         return _default;
     }
@@ -48,7 +48,7 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     public String getName() {
         return getPrefix();
     }
-    
+
     public String getURI() {
         return uri;
     }
@@ -60,19 +60,24 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     public MetadataMap getMetadata() {
         return metadata;
     }
-    
+
     public void setMetadata(MetadataMap metadata) {
         this.metadata = metadata;
     }
 
     public void accept(CatalogVisitor visitor) {
-        visitor.visit( this );
+        visitor.visit(this);
     }
-    
+
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(prefix).append(':')
-                .append(uri).append(']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(prefix)
+                .append(':')
+                .append(uri)
+                .append(']')
+                .toString();
     }
 
     public int hashCode() {
@@ -84,26 +89,21 @@ public class NamespaceInfoImpl implements NamespaceInfo {
     }
 
     public boolean equals(Object obj) {
-        if ( obj == null ) {
+        if (obj == null) {
             return false;
         }
-        if ( !( obj instanceof NamespaceInfo ) ) {
+        if (!(obj instanceof NamespaceInfo)) {
             return false;
         }
-        
+
         final NamespaceInfo other = (NamespaceInfo) obj;
         if (prefix == null) {
-            if (other.getPrefix() != null)
-                return false;
-        } else if (!prefix.equals(other.getPrefix()))
-            return false;
+            if (other.getPrefix() != null) return false;
+        } else if (!prefix.equals(other.getPrefix())) return false;
         if (uri == null) {
-            if (other.getURI() != null)
-                return false;
-        } else if (!uri.equals(other.getURI()))
-            return false;
-        
+            if (other.getURI() != null) return false;
+        } else if (!uri.equals(other.getURI())) return false;
+
         return true;
     }
-
 }

@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
@@ -30,14 +29,14 @@ import org.jdom.input.SAXBuilder;
 
 /**
  * The MapDecorationLayout class describes a set of overlays to be used to enhance a WMS response.
- * It maintains a collection of MapDecoration objects and the configuration associated with each, and
- * delegates the actual rendering operations to the decorations.
+ * It maintains a collection of MapDecoration objects and the configuration associated with each,
+ * and delegates the actual rendering operations to the decorations.
  *
- * @author David Winslow <dwinslow@opengeo.org> 
+ * @author David Winslow <dwinslow@opengeo.org>
  */
 public class MapDecorationLayout {
-    private static Logger LOGGER = 
-        org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
+    private static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
     /**
      * The Block class annotates a MapDecoration object with positioning and sizing information, and
@@ -45,22 +44,31 @@ public class MapDecorationLayout {
      */
     public static class Block {
         /**
-         * The Position enum encodes the 'affinity' attribute of decorations.  A decoration can be 
+         * The Position enum encodes the 'affinity' attribute of decorations. A decoration can be
          * anchored at either extreme or centered in the X and Y dimensions, independently, allowing
          * for nine possible Positions.
          */
         public static enum Position {
-            UL("top,left"), UC("top,center"), UR("top,right"), 
-            CL("center,left"), CC("center,center"), CR("center,right"), 
-            LL("bottom,left"), LC("bottom,center"), LR("bottom,right");
+            UL("top,left"),
+            UC("top,center"),
+            UR("top,right"),
+            CL("center,left"),
+            CC("center,center"),
+            CR("center,right"),
+            LL("bottom,left"),
+            LC("bottom,center"),
+            LR("bottom,right");
 
             private final String name;
 
-            Position(String name) { this.name = name; }
+            Position(String name) {
+                this.name = name;
+            }
 
             /**
-             * Decode a Position from a (presumably user-provided) string. 
-             * @param str the input String, expected to be in the format <vpos,hpos> with no 
+             * Decode a Position from a (presumably user-provided) string.
+             *
+             * @param str the input String, expected to be in the format <vpos,hpos> with no
              *     whitespace
              * @return the associated Position, or null if none can be found
              */
@@ -73,23 +81,21 @@ public class MapDecorationLayout {
             }
         }
         /**
-         * Given the configuration and the geometry of a particular WMS response, determine the 
+         * Given the configuration and the geometry of a particular WMS response, determine the
          * appropriate space into which a MapDecoration should draw itself.
-         * @param p the Position instance indicating the area of the image where the decoration is 
+         *
+         * @param p the Position instance indicating the area of the image where the decoration is
          *     anchored
          * @param container a Rectangle indicating the entire drawable area of the map image
-         * @param dim the requested size based on either configuration or feedback from the 
+         * @param dim the requested size based on either configuration or feedback from the
          *     MapDecoration
-         * @param o a Point whose x- and y-coordinates will be interpreted as x- and y-offsets for 
+         * @param o a Point whose x- and y-coordinates will be interpreted as x- and y-offsets for
          *     the MapDecoration
-         * @return A rectangle that is as close to the desired size and position without exceeding 
+         * @return A rectangle that is as close to the desired size and position without exceeding
          *     the container bounds
          */
         public static Rectangle findBounds(
-                Position p,
-                Rectangle container,
-                Dimension dim,
-                Point o) {
+                Position p, Rectangle container, Dimension dim, Point o) {
 
             if (p == null || container == null || dim == null || o == null) {
                 throw new ServiceException("Bad params for decoration sizing.");
@@ -120,7 +126,7 @@ public class MapDecorationLayout {
             }
 
             // adjust X coord
-            switch(p){
+            switch (p) {
                 case UL:
                 case CL:
                 case LL:
@@ -139,7 +145,7 @@ public class MapDecorationLayout {
                     x = (int) (container.getMaxX() - o.x - dim.width);
             }
 
-            // in the event that this block does not fit in the container, resize each dimension 
+            // in the event that this block does not fit in the container, resize each dimension
             // independently to fit (with space for the offset parameter)
             if ((dim.width + (2 * o.x)) > container.width) {
                 x = (int) container.getMinX() + o.x;
@@ -154,16 +160,12 @@ public class MapDecorationLayout {
             return new Rectangle(x, y, width, height);
         }
 
-        /**
-         * The MapDecoration that the Block will render
-         */
+        /** The MapDecoration that the Block will render */
         final MapDecoration decoration;
 
-        /**
-         * The Position at which the Block is anchored
-         */
+        /** The Position at which the Block is anchored */
         final Position position;
-        
+
         /**
          * The requested size, or null if the MapDecoration should be allowed to determine sizing
          */
@@ -177,9 +179,10 @@ public class MapDecorationLayout {
 
         /**
          * Create a Block with all needed information.
+         *
          * @param d the MapDecoration which the Block will render
          * @param p the Position to which the Block is anchored
-         * @param dim the Dimension of the user-requested size, or null if the MapDecoration should 
+         * @param dim the Dimension of the user-requested size, or null if the MapDecoration should
          *     determine its own size
          * @param o a Point indicating the offset (see {offset})
          */
@@ -197,20 +200,20 @@ public class MapDecorationLayout {
          * @param g2d the Graphics2D context into which the MapDecoration will be rendered
          * @param mapContent the WMSMapContext for the request being handled
          */
-        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception {
-            return (dimension != null) 
-                ? dimension 
-                : decoration.findOptimalSize(g2d, mapContent);
+        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent)
+                throws Exception {
+            return (dimension != null) ? dimension : decoration.findOptimalSize(g2d, mapContent);
         }
 
         /**
-         * Draw this Block.  Sizing and positioning will be handled by the findBounds method.
+         * Draw this Block. Sizing and positioning will be handled by the findBounds method.
+         *
          * @param g2d the Graphics2D context where the Block should be drawn
          * @param rect the current drawable area
          * @param mapContent the map context for the current map request
          */
-        public void paint(Graphics2D g2d, Rectangle rect, WMSMapContent mapContent) 
-        throws Exception {
+        public void paint(Graphics2D g2d, Rectangle rect, WMSMapContent mapContent)
+                throws Exception {
             Dimension desiredSize = findOptimalSize(g2d, mapContent);
 
             Rectangle box = findBounds(position, rect, desiredSize, offset);
@@ -222,23 +225,21 @@ public class MapDecorationLayout {
     }
 
     /**
-     * A container for the blocks in this layout.  Blocks contain the positioning information, so 
+     * A container for the blocks in this layout. Blocks contain the positioning information, so
      * this contains all the state for the layout.
      *
      * @see {Block}
      */
     private List<Block> blocks;
 
-    /**
-     * Create a new MapDecorationLayout with no decorations in it yet.
-     */
+    /** Create a new MapDecorationLayout with no decorations in it yet. */
     public MapDecorationLayout() {
         this.blocks = new ArrayList<Block>();
     }
 
     /**
-     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations specified 
-     * therein.
+     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations
+     * specified therein.
      *
      * @param f the File from which the layout should be read
      * @param tiled is this map metatiled?
@@ -246,24 +247,22 @@ public class MapDecorationLayout {
      * @throws Exception if the configuration is invalid or other errors occur while parsing
      */
     public static MapDecorationLayout fromFile(Resource f, boolean tiled) throws Exception {
-        MapDecorationLayout dl = tiled 
-            ? new MetatiledMapDecorationLayout()
-            : new MapDecorationLayout();
-        
+        MapDecorationLayout dl =
+                tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
+
         Document confFile = new SAXBuilder().build(f.file());
 
-        for (Element e : (List<Element>)confFile.getRootElement().getChildren("decoration")){
-            Map<String, String> m = new HashMap<String,String>();
-            for (Element option : (List<Element>)e.getChildren("option")){
+        for (Element e : (List<Element>) confFile.getRootElement().getChildren("decoration")) {
+            Map<String, String> m = new HashMap<String, String>();
+            for (Element option : (List<Element>) e.getChildren("option")) {
                 m.put(option.getAttributeValue("name"), option.getAttributeValue("value"));
             }
 
             MapDecoration decoration = getDecoration(e.getAttributeValue("type"));
             if (decoration == null) {
                 LOGGER.log(
-                    Level.WARNING,
-                    "Unknown decoration type: " + e.getAttributeValue("type") + " requested."
-                );
+                        Level.WARNING,
+                        "Unknown decoration type: " + e.getAttributeValue("type") + " requested.");
                 continue;
             }
             decoration.loadOptions(m);
@@ -272,27 +271,25 @@ public class MapDecorationLayout {
 
             if (pos == null) {
                 LOGGER.log(
-                    Level.WARNING,
-                    "Unknown affinity: " + e.getAttributeValue("affinity") + " requested."
-                );
+                        Level.WARNING,
+                        "Unknown affinity: " + e.getAttributeValue("affinity") + " requested.");
                 continue;
             }
 
             Dimension size = null;
 
             try {
-                if (e.getAttributeValue("size") != null 
+                if (e.getAttributeValue("size") != null
                         && !e.getAttributeValue("size").equalsIgnoreCase("auto")) {
                     String[] sizeArr = e.getAttributeValue("size").split(",");
 
                     size = new Dimension(Integer.valueOf(sizeArr[0]), Integer.valueOf(sizeArr[1]));
                 }
-            } catch (Exception exc){
+            } catch (Exception exc) {
                 LOGGER.log(
-                    Level.WARNING,
-                    "Couldn't interpret size parameter: "  + e.getAttributeValue("size"),
-                    e
-                );
+                        Level.WARNING,
+                        "Couldn't interpret size parameter: " + e.getAttributeValue("size"),
+                        e);
             }
 
             Point offset = null;
@@ -301,25 +298,19 @@ public class MapDecorationLayout {
                 offset = new Point(Integer.valueOf(offsetArr[0]), Integer.valueOf(offsetArr[1]));
             } catch (Exception exc) {
                 LOGGER.log(
-                    Level.WARNING,
-                    "Couldn't interpret size parameter: " + e.getAttributeValue("offset")
-                );
+                        Level.WARNING,
+                        "Couldn't interpret size parameter: " + e.getAttributeValue("offset"));
                 offset = new Point(0, 0);
             }
 
-            dl.addBlock(new Block(
-                decoration,
-                pos,
-                size,
-                offset
-            ));
+            dl.addBlock(new Block(decoration, pos, size, offset));
         }
 
         return dl;
     }
 
     /**
-     * Add a Block to the layout. 
+     * Add a Block to the layout.
      *
      * @see {Block}
      */
@@ -333,10 +324,9 @@ public class MapDecorationLayout {
      * @param g2d the Graphics2D context in which the Blocks will be rendered
      * @param paintArea the drawable area
      * @param mapContent the WMSMapContext for the current map request
-     *
      * @see {Block#paint}
      */
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) { 
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) {
         for (Block b : blocks) {
             try {
                 resetGraphics(g2d);
@@ -348,8 +338,9 @@ public class MapDecorationLayout {
     }
 
     /**
-     * Resets the graphics to most of its default values, making each block paint
-     * independent of what happened before the decoration layout was called, and from each other
+     * Resets the graphics to most of its default values, making each block paint independent of
+     * what happened before the decoration layout was called, and from each other
+     *
      * @param g2d
      */
     private void resetGraphics(Graphics2D g2d) {
@@ -359,12 +350,11 @@ public class MapDecorationLayout {
         g2d.setClip(null);
         g2d.setPaint(Color.WHITE);
         g2d.setStroke(new BasicStroke());
-
-        
     }
 
     /**
      * Find a MapDecoration plugin by name
+     *
      * @param name the name of the MapDecoration plugin to look up, case-sensitive
      * @return the corresponding MapDecoration, or null if none is available with the given name
      */
@@ -377,10 +367,8 @@ public class MapDecorationLayout {
 
         return null;
     }
-    
-    /**
-     * Returns true if the layout is not going to paint anything
-     */
+
+    /** Returns true if the layout is not going to paint anything */
     public boolean isEmpty() {
         return blocks.isEmpty();
     }
@@ -393,7 +381,7 @@ public class MapDecorationLayout {
 
         int r, g, b, a;
 
-        switch (input.length()){
+        switch (input.length()) {
             case 1:
             case 2:
                 return new Color(Integer.valueOf(input, 16));
@@ -419,10 +407,9 @@ public class MapDecorationLayout {
                 b = Integer.valueOf(input.substring(4, 6), 16);
                 a = Integer.valueOf(input.substring(6, 8), 16);
                 return new Color(r, g, b, a);
-            default: 
-                throw new RuntimeException("Couldn't decode color value: " + origInput 
-                    + " (" + input +")"
-                );
+            default:
+                throw new RuntimeException(
+                        "Couldn't decode color value: " + origInput + " (" + input + ")");
         }
     }
 }

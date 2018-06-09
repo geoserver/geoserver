@@ -5,20 +5,18 @@
 
 package org.geoserver.notification.common;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.rabbitmq.client.SaslConfig;
 import com.rabbitmq.client.SaslMechanism;
 import com.rabbitmq.client.impl.ExternalMechanism;
 import com.rabbitmq.client.impl.PlainMechanism;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Implementation to allow the ANONYMOUS auth mechanism
- * 
- * @author Xandros
  *
+ * @author Xandros
  */
 public class CustomSaslConfig implements SaslConfig {
     private final String[] mechanisms;
@@ -30,11 +28,11 @@ public class CustomSaslConfig implements SaslConfig {
     public static final CustomSaslConfig ANONYMOUS = new CustomSaslConfig("ANONYMOUS");
 
     public CustomSaslConfig() {
-        this.mechanisms = new String[] { "PLAIN", "EXTERNAL", "ANONYMOUS" };
+        this.mechanisms = new String[] {"PLAIN", "EXTERNAL", "ANONYMOUS"};
     }
 
     private CustomSaslConfig(String mechanism) {
-        this.mechanisms = new String[] { mechanism };
+        this.mechanisms = new String[] {mechanism};
     }
 
     @Override
@@ -54,5 +52,4 @@ public class CustomSaslConfig implements SaslConfig {
 
         return null;
     }
-
 }

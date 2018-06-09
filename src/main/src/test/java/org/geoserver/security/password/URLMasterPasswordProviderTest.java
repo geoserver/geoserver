@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.test.SystemTest;

@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
 import org.geoserver.wps.remote.RemoteServiceDescriptor;
@@ -24,15 +26,10 @@ import org.jivesoftware.smack.packet.Packet;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 /**
  * Listens for "REGISTER" messages from XMPP service channels and takes action accordingly.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class XMPPRegisterMessage implements XMPPMessage {
 
@@ -47,20 +44,19 @@ public class XMPPRegisterMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message,
-            Map<String, String> signalArgs) {
+    public void handleSignal(
+            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String serviceName[] = signalArgs.get("service").split("\\.");
 
-        if (serviceName.length <= 1)
-            return;
+        if (serviceName.length <= 1) return;
 
         final Name name = new NameImpl(serviceName[0], serviceName[1]);
 
         try {
             String serviceDescriptorString = URLDecoder.decode(signalArgs.get("message"), "UTF-8");
-            JSONObject serviceDescriptorJSON = (JSONObject) JSONSerializer
-                    .toJSON(serviceDescriptorString);
+            JSONObject serviceDescriptorJSON =
+                    (JSONObject) JSONSerializer.toJSON(serviceDescriptorString);
 
             final String title = (String) serviceDescriptorJSON.get("title");
             final String description = (String) serviceDescriptorJSON.get("description");
@@ -82,42 +78,62 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         final JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
                         final String className = (String) paramType.get("type");
 
-                        final ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(
-                                className, XMPPClient.class.getClassLoader(),
-                                paramType.get("default"));
+                        final ParameterTemplate paramTemplate =
+                                xmppClient.convertToJavaClass(
+                                        className,
+                                        XMPPClient.class.getClassLoader(),
+                                        paramType.get("default"));
 
                         final String choosenInputMimeTypeParam = paramName + "InputMimeType";
                         if (paramTemplate.getMeta() != null
                                 && paramTemplate.getMeta().get("mimeTypes") != null
                                 && (paramType.get("input_mime_type") instanceof String)) {
-                            paramTemplate.getMeta().put("chosenMimeType",
-                                    choosenInputMimeTypeParam);
+                            paramTemplate
+                                    .getMeta()
+                                    .put("chosenMimeType", choosenInputMimeTypeParam);
 
-                            final Parameter inputChoosenMimeTypeParam = new Parameter(
-                                    choosenInputMimeTypeParam, String.class, Text.text(""),
-                                    Text.text(""), false, 0, 1,
-                                    paramType.get("input_mime_type").toString(), null);
+                            final Parameter inputChoosenMimeTypeParam =
+                                    new Parameter(
+                                            choosenInputMimeTypeParam,
+                                            String.class,
+                                            Text.text(""),
+                                            Text.text(""),
+                                            false,
+                                            0,
+                                            1,
+                                            paramType.get("input_mime_type").toString(),
+                                            null);
                             inputs.put(choosenInputMimeTypeParam, inputChoosenMimeTypeParam);
                         }
-                        
-                        final InternationalString inputTitle = (paramType.get("title") != null
-                                && paramType.get("title") instanceof String
+
+                        final InternationalString inputTitle =
+                                (paramType.get("title") != null
+                                                && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
                                         : Text.text(paramName));
-                        final InternationalString inputDescription = (paramType
-                                .get("description") != null
-                                && paramType.get("description") instanceof String
+                        final InternationalString inputDescription =
+                                (paramType.get("description") != null
+                                                && paramType.get("description") instanceof String
                                         ? Text.text((String) paramType.get("description"))
                                         : Text.text(paramName));
 
-                        inputs.put(paramName,
-                                new Parameter(paramName, paramTemplate.getClazz(), inputTitle,
+                        inputs.put(
+                                paramName,
+                                new Parameter(
+                                        paramName,
+                                        paramTemplate.getClazz(),
+                                        inputTitle,
                                         inputDescription,
                                         paramType.get("min") == null
                                                 || (Integer) paramType.get("min") > 0,
-                                paramType.get("min") != null ? (Integer) paramType.get("min") : 1,
-                                paramType.get("max") != null ? (Integer) paramType.get("max") : -1,
-                                paramTemplate.getDefaultValue(), paramTemplate.getMeta()));
+                                        paramType.get("min") != null
+                                                ? (Integer) paramType.get("min")
+                                                : 1,
+                                        paramType.get("max") != null
+                                                ? (Integer) paramType.get("max")
+                                                : -1,
+                                        paramTemplate.getDefaultValue(),
+                                        paramTemplate.getMeta()));
                     }
                 }
             }
@@ -136,41 +152,62 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         final JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
                         final String className = (String) paramType.get("type");
 
-                        ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(className,
-                                XMPPClient.class.getClassLoader(), paramType.get("default"));
+                        ParameterTemplate paramTemplate =
+                                xmppClient.convertToJavaClass(
+                                        className,
+                                        XMPPClient.class.getClassLoader(),
+                                        paramType.get("default"));
 
                         final String choosenOutputMimeTypeParam = paramName + "OutputMimeType";
                         if (paramTemplate.getMeta() != null
                                 && paramTemplate.getMeta().get("mimeTypes") != null
                                 && (paramType.get("output_mime_type") instanceof String)) {
-                            paramTemplate.getMeta().put("chosenMimeType",
-                                    choosenOutputMimeTypeParam);
+                            paramTemplate
+                                    .getMeta()
+                                    .put("chosenMimeType", choosenOutputMimeTypeParam);
 
-                            final Parameter outputChoosenMimeTypeParam = new Parameter(
-                                    choosenOutputMimeTypeParam, String.class, Text.text(""),
-                                    Text.text(""), false, 0, 1,
-                                    paramType.get("output_mime_type").toString(), null);
+                            final Parameter outputChoosenMimeTypeParam =
+                                    new Parameter(
+                                            choosenOutputMimeTypeParam,
+                                            String.class,
+                                            Text.text(""),
+                                            Text.text(""),
+                                            false,
+                                            0,
+                                            1,
+                                            paramType.get("output_mime_type").toString(),
+                                            null);
                             outputs.put(choosenOutputMimeTypeParam, outputChoosenMimeTypeParam);
                         }
 
-                        final InternationalString outputTitle = (paramType.get("title") != null
-                                && paramType.get("title") instanceof String
+                        final InternationalString outputTitle =
+                                (paramType.get("title") != null
+                                                && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
                                         : Text.text(paramName));
-                        final InternationalString outputDescription = (paramType
-                                .get("description") != null
-                                && paramType.get("description") instanceof String
+                        final InternationalString outputDescription =
+                                (paramType.get("description") != null
+                                                && paramType.get("description") instanceof String
                                         ? Text.text((String) paramType.get("description"))
                                         : Text.text(paramName));
 
-                        outputs.put(paramName,
-                                new Parameter(paramName, paramTemplate.getClazz(), outputTitle,
+                        outputs.put(
+                                paramName,
+                                new Parameter(
+                                        paramName,
+                                        paramTemplate.getClazz(),
+                                        outputTitle,
                                         outputDescription,
                                         paramType.get("min") == null
                                                 || (Integer) paramType.get("min") > 0,
-                                paramType.get("min") != null ? (Integer) paramType.get("min") : 1,
-                                paramType.get("max") != null ? (Integer) paramType.get("max") : 0,
-                                paramTemplate.getDefaultValue(), paramTemplate.getMeta()));
+                                        paramType.get("min") != null
+                                                ? (Integer) paramType.get("min")
+                                                : 1,
+                                        paramType.get("max") != null
+                                                ? (Integer) paramType.get("max")
+                                                : 0,
+                                        paramTemplate.getDefaultValue(),
+                                        paramTemplate.getMeta()));
                     }
                 }
             }
@@ -179,15 +216,16 @@ public class XMPPRegisterMessage implements XMPPMessage {
             Map<String, Object> metadata = new HashMap<String, Object>();
             metadata.put("serviceJID", packet.getFrom());
             for (RemoteProcessFactoryListener listener : xmppClient.getRemoteFactoryListeners()) {
-                listener.registerProcess(new RemoteServiceDescriptor(name, title, description,
-                        inputs, outputs, metadata));
+                listener.registerProcess(
+                        new RemoteServiceDescriptor(
+                                name, title, description, inputs, outputs, metadata));
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
 
             // NOTIFY LISTENERS
-            final Set<RemoteProcessClientListener> remoteClientListeners = xmppClient
-                    .getRemoteClientListeners();
+            final Set<RemoteProcessClientListener> remoteClientListeners =
+                    xmppClient.getRemoteClientListeners();
             synchronized (remoteClientListeners) {
                 for (RemoteProcessClientListener listener : remoteClientListeners) {
 
@@ -200,7 +238,5 @@ public class XMPPRegisterMessage implements XMPPMessage {
                 }
             }
         }
-
     }
-
 }

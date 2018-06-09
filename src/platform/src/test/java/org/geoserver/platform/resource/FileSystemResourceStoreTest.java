@@ -4,15 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 public class FileSystemResourceStoreTest {
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void renameSameFileName() throws IOException, InterruptedException {

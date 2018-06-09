@@ -9,35 +9,38 @@ import static junit.framework.Assert.*;
 
 import org.geoserver.platform.ServiceException;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class GetRepositoryItemTest extends CSWSimpleTestSupport {
 
-    @Test 
+    @Test
     public void testGetMissingId() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRepositoryItem");
         checkOws10Exception(dom, ServiceException.MISSING_PARAMETER_VALUE, "id");
     }
 
-    @Test 
+    @Test
     public void testGetMissing() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(BASEPATH + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=foo");
-        assertEquals(404, response.getStatus());        
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        BASEPATH + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=foo");
+        assertEquals(404, response.getStatus());
     }
-    
-    @Test 
+
+    @Test
     public void testGetSingle() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(BASEPATH + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        BASEPATH
+                                + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         String content = response.getContentAsString();
         // System.out.println(content);
         assertEquals(200, response.getStatus());
         assertEquals("application/xml", response.getContentType());
-        
-        String expected = "This is a random comment that will show up only when fetching the repository item";
+
+        String expected =
+                "This is a random comment that will show up only when fetching the repository item";
         assertTrue(content.contains(expected));
     }
-    
-   
 }

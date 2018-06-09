@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.ogr.core.Format;
@@ -36,7 +35,8 @@ public class GdalFormatTest {
         Assume.assumeTrue(GdalTestUtil.isGdalAvailable());
 
         // the coverage response delegate
-        gdalCovRespDelegate = new GdalCoverageResponseDelegate(new GeoServerImpl(), new GdalWrapperFactory());
+        gdalCovRespDelegate =
+                new GdalCoverageResponseDelegate(new GeoServerImpl(), new GdalWrapperFactory());
         // add default formats
         for (Format format : GdalConfigurator.DEFAULT.getFormats()) {
             gdalCovRespDelegate.addFormat(format);
@@ -126,8 +126,7 @@ public class GdalFormatTest {
     private File prepareInput() throws IOException {
         File tempFile = File.createTempFile("gdal_wcs_", "_test_data");
         IOUtils.copy(getClass().getResourceAsStream(TEST_RESOURCE), new FileOutputStream(tempFile));
-        
+
         return tempFile;
     }
-
 }

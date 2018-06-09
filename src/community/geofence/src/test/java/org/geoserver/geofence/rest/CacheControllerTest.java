@@ -19,19 +19,18 @@
  */
 package org.geoserver.geofence.rest;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-/**
- * @author Emanuele Tajariol (etj at geo-solutions.it)
- */
+/** @author Emanuele Tajariol (etj at geo-solutions.it) */
 public class CacheControllerTest extends GeoServerSystemTestSupport {
 
     protected static Catalog catalog;
@@ -50,8 +49,8 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetInfo() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/geofence/ruleCache/info");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/ruleCache/info");
         assertEquals(200, response.getStatus());
         assertContentType(MediaType.TEXT_PLAIN_VALUE, response);
         String content = response.getContentAsString();
@@ -62,8 +61,8 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetInfoLegacy() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/ruleCache/info");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/ruleCache/info");
         assertEquals(200, response.getStatus());
         assertContentType(MediaType.TEXT_PLAIN_VALUE, response);
         String content = response.getContentAsString();
@@ -74,12 +73,12 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testInvalidate() throws Exception {
-        MockHttpServletResponse response = putAsServletResponse(
-                RestBaseController.ROOT_PATH + "/geofence/ruleCache/invalidate");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/geofence/ruleCache/invalidate");
         assertEquals(200, response.getStatus());
         assertContentType(MediaType.TEXT_PLAIN_VALUE, response);
         String content = response.getContentAsString();
         assertEquals("OK", content);
     }
-
 }

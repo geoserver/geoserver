@@ -12,28 +12,25 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-
 import org.geotools.data.DataUtilities;
 
 /**
- * 
  * Use a URI as a resource (only for reading, most operations are unsupported).
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public final class URIs {
-    
+
     private URIs() {}
-    
+
     static class ResourceAdaptor implements Resource {
-        
+
         private URL url;
-        
+
         public ResourceAdaptor(URL url) {
             this.url = url;
         }
-        
+
         public URL getURL() {
             return url;
         }
@@ -75,7 +72,7 @@ public final class URIs {
 
         @Override
         public OutputStream out() {
-            throw new UnsupportedOperationException(); 
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -122,15 +119,13 @@ public final class URIs {
         public boolean renameTo(Resource dest) {
             throw new UnsupportedOperationException();
         }
-        
     }
-    
-    public static Resource asResource(URI uri) throws MalformedURLException{
+
+    public static Resource asResource(URI uri) throws MalformedURLException {
         return new ResourceAdaptor(uri.toURL());
     }
-    
+
     public static Resource asResource(URL url) {
         return new ResourceAdaptor(url);
     }
-
 }

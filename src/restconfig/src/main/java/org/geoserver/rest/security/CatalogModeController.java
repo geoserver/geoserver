@@ -5,12 +5,11 @@
 package org.geoserver.rest.security;
 
 import java.util.Map;
-
-import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -24,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Allows retrieving and modifying the catalog mode
- */
+/** Allows retrieving and modifying the catalog mode */
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/catalog")
 public class CatalogModeController {
@@ -51,11 +48,14 @@ public class CatalogModeController {
         }
     }
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     @ResponseBody
     public NamedMap mapGet() throws Exception {
         checkUserIsAdmin();
@@ -66,11 +66,14 @@ public class CatalogModeController {
         return modeMap;
     }
 
-    @PutMapping(consumes = {
+    @PutMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     protected void mapPut(@RequestBody Map map) throws Exception {
         checkUserIsAdmin();
 
@@ -92,7 +95,5 @@ public class CatalogModeController {
 
         ruleDAO.setCatalogMode(modeValue);
         ruleDAO.storeRules();
-
     }
-
 }

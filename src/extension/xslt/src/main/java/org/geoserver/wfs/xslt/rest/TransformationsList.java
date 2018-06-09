@@ -1,8 +1,7 @@
 package org.geoserver.wfs.xslt.rest;
 
-import org.geoserver.wfs.xslt.config.TransformInfo;
-
 import java.util.List;
+import org.geoserver.wfs.xslt.config.TransformInfo;
 
 public final class TransformationsList {
 

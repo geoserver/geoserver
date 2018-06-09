@@ -70,17 +70,15 @@ public class ReadOnlyDataAccessTest extends SecureObjectsTest {
             ro.createSchema(null);
             fail("Should have failed with a security exception");
         } catch (Throwable e) {
-            if (SecurityUtils.isSecurityException(e)==false)
-                fail("Should have thrown a security exception...");            
+            if (SecurityUtils.isSecurityException(e) == false)
+                fail("Should have thrown a security exception...");
         }
         try {
             ro.updateSchema(null, null);
             fail("Should have failed with a security exception");
         } catch (Throwable e) {
-            if (SecurityUtils.isSecurityException(e)==false)
-                fail("Should have thrown a security exception...");            
-
+            if (SecurityUtils.isSecurityException(e) == false)
+                fail("Should have thrown a security exception...");
         }
     }
-
 }

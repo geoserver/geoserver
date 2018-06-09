@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
@@ -34,28 +33,32 @@ import org.geotools.styling.css.Stylesheet;
 import org.geotools.util.Version;
 import org.xml.sax.EntityResolver;
 
-/**
- * Style handler for geocss. Justin Deoliveira, Boundless
- */
+/** Style handler for geocss. Justin Deoliveira, Boundless */
 public class CssHandler extends StyleHandler {
 
     public static final String FORMAT = "css";
 
     public static final String MIME_TYPE = "application/vnd.geoserver.geocss+css";
-    
+
     static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+
     static {
         try {
-            TEMPLATES.put(StyleType.POINT, IOUtils.toString(CssHandler.class
-                    .getResourceAsStream("template_point.css")));
-            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(CssHandler.class
-                    .getResourceAsStream("template_polygon.css")));
-            TEMPLATES.put(StyleType.LINE, IOUtils.toString(CssHandler.class
-                    .getResourceAsStream("template_line.css")));
-            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(CssHandler.class
-                    .getResourceAsStream("template_raster.css")));
-            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(CssHandler.class
-                    .getResourceAsStream("template_generic.css")));
+            TEMPLATES.put(
+                    StyleType.POINT,
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_point.css")));
+            TEMPLATES.put(
+                    StyleType.POLYGON,
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_polygon.css")));
+            TEMPLATES.put(
+                    StyleType.LINE,
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_line.css")));
+            TEMPLATES.put(
+                    StyleType.RASTER,
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_raster.css")));
+            TEMPLATES.put(
+                    StyleType.GENERIC,
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_generic.css")));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the css style templates", e);
         }
@@ -73,8 +76,9 @@ public class CssHandler extends StyleHandler {
         String template = TEMPLATES.get(type);
         String colorCode = Integer.toHexString(color.getRGB());
         colorCode = colorCode.substring(2, colorCode.length());
-        return template.replace("${colorName}", colorName).replace(
-                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
+        return template.replace("${colorName}", colorName)
+                .replace("${colorCode}", "#" + colorCode)
+                .replace("${layerName}", layerName);
     }
 
     @Override
@@ -83,8 +87,12 @@ public class CssHandler extends StyleHandler {
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, Version version,
-            ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
+    public StyledLayerDescriptor parse(
+            Object input,
+            Version version,
+            ResourceLocator resourceLocator,
+            EntityResolver entityResolver)
+            throws IOException {
         // see if we can use the SLD cache, some conversions are expensive.
         if (input instanceof File) {
             // convert to resource, to avoid code duplication (the code for file would be very
@@ -95,15 +103,17 @@ public class CssHandler extends StyleHandler {
 
         if (input instanceof Resource) {
             Resource cssResource = (Resource) input;
-            Resource sldResource = cssResource.parent().get(
-                    FilenameUtils.getBaseName(cssResource.name()) + ".sld");
+            Resource sldResource =
+                    cssResource
+                            .parent()
+                            .get(FilenameUtils.getBaseName(cssResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > cssResource.lastmodified()) {
-                return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
-                        entityResolver);
+                return sldHandler.parse(
+                        sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
             } else {
                 // otherwise convert and write the cache
-                try(Reader reader = toReader(input)) {
+                try (Reader reader = toReader(input)) {
                     StyledLayerDescriptor sld = convertToSLD(reader);
                     try (OutputStream fos = sldResource.out()) {
                         sldHandler.encode(sld, SLDHandler.VERSION_10, true, fos);
@@ -111,11 +121,10 @@ public class CssHandler extends StyleHandler {
                     // be consistent, have the SLD always be generated from and SLD parse,
                     // different code paths could result in different defaults/results due
                     // to inconsistencies/bugs happening over time
-                    return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
-                            entityResolver);
+                    return sldHandler.parse(
+                            sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
                 }
             }
-
         }
 
         // in this case, just do a plain on the fly conversion
@@ -137,8 +146,9 @@ public class CssHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty,
-            OutputStream output) throws IOException {
+    public void encode(
+            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+            throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -153,7 +163,7 @@ public class CssHandler extends StyleHandler {
             return Arrays.asList(e);
         }
     }
-    
+
     @Override
     public String getCodeMirrorEditMode() {
         return "text/geocss";

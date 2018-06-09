@@ -14,7 +14,8 @@ public class GeoServerWicketServlet extends WicketServlet {
 
     @Override
     protected WicketFilter newWicketFilter() {
-        WicketFilter filter = new WicketFilter(GeoServerExtensions.bean(GeoServerApplication.class));
+        WicketFilter filter =
+                new WicketFilter(GeoServerExtensions.bean(GeoServerApplication.class));
         filter.setFilterPath("/web");
         return filter;
     }

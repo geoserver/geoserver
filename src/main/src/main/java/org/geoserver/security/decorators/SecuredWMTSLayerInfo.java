@@ -4,10 +4,8 @@
  */
 package org.geoserver.security.decorators;
 
-import org.geoserver.catalog.StoreInfo;
-
 import java.io.IOException;
-
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
@@ -18,7 +16,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * Wraps a {@link WMSLayerInfo} so that it will return secured layers and WMS stores
- * 
+ *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class SecuredWMTSLayerInfo extends DecoratingWMTSLayerInfo {
@@ -29,11 +27,11 @@ public class SecuredWMTSLayerInfo extends DecoratingWMTSLayerInfo {
         super(delegate);
         this.policy = policy;
     }
-    
+
     @Override
     public Layer getWMTSLayer(ProgressListener listener) throws IOException {
         Layer layer = super.getWMTSLayer(listener);
-        if(layer == null) {
+        if (layer == null) {
             return layer;
         } else {
             return new SecuredWMTSLayer(layer, policy);
@@ -48,6 +46,6 @@ public class SecuredWMTSLayerInfo extends DecoratingWMTSLayerInfo {
     @Override
     public void setStore(StoreInfo store) {
         // need to make sure the store isn't secured
-        super.setStore((StoreInfo)SecureCatalogImpl.unwrap(store));
+        super.setStore((StoreInfo) SecureCatalogImpl.unwrap(store));
     }
 }

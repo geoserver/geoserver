@@ -4,6 +4,9 @@
  */
 package org.geoserver.rest;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.geoserver.config.*;
@@ -16,19 +19,15 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
-
-public class SettingsControllerTest  extends CatalogRESTTestSupport {
+public class SettingsControllerTest extends CatalogRESTTestSupport {
 
     protected GeoServer geoServer;
-
 
     @Before
     public void init() {
         geoServer = getGeoServer();
 
-        //revert global settings
+        // revert global settings
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getJAI().setAllowInterpolation(false);
         global.getJAI().setMemoryThreshold(0.75d);
@@ -38,7 +37,7 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
         revertSettings(null);
 
-        //revert local settings
+        // revert local settings
         revertSettings("sf");
     }
 
@@ -66,7 +65,7 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
     @Test
     public void testGetContactAsJSON() throws Exception {
         initContact();
-        JSON json = getAsJSON(RestBaseController.ROOT_PATH+"/settings/contact.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/settings/contact.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject contactInfo = jsonObject.getJSONObject("contact");
@@ -77,13 +76,14 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertEquals("DC", contactInfo.get("addressState"));
         assertEquals("20001", contactInfo.get("addressPostalCode").toString());
         assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
-        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
+        assertEquals(
+                "info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
     @Test
     public void testGetContactAsXML() throws Exception {
         initContact();
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/settings/contact.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.xml");
         assertEquals("contact", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("United States", "/contact/addressCountry", dom);
         assertXpathEvaluatesTo("Washington", "/contact/addressCity", dom);
@@ -96,25 +96,27 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
     @Test
     public void testGetContactAsHTML() throws Exception {
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/settings/contact.html",200);
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.html", 200);
     }
 
     @Test
     public void testPutContactAsJSON() throws Exception {
         initContact();
-        String inputJson = "{'contact':{" +
-                "    'id':'contact'," +
-                "    'address':'500 Market Street'," +
-                "    'addressCity':'Philadelphia'," +
-                "    'addressCountry':'United States'," +
-                "    'addressPostalCode':'19106'," +
-                "    'addressState':'PA'," +
-                "    'addressDeliveryPoint':'The White House'," +
-                "    'addressElectronicMailAddress':'info@whitehouse.gov'}}";
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/settings/contact",
-                inputJson, "text/json");
+        String inputJson =
+                "{'contact':{"
+                        + "    'id':'contact',"
+                        + "    'address':'500 Market Street',"
+                        + "    'addressCity':'Philadelphia',"
+                        + "    'addressCountry':'United States',"
+                        + "    'addressPostalCode':'19106',"
+                        + "    'addressState':'PA',"
+                        + "    'addressDeliveryPoint':'The White House',"
+                        + "    'addressElectronicMailAddress':'info@whitehouse.gov'}}";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/settings/contact", inputJson, "text/json");
         assertEquals(200, response.getStatus());
-        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH+"/settings/contact.json");
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/settings/contact.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject contactInfo = jsonObject.getJSONObject("contact");
@@ -124,28 +126,32 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertEquals("PA", contactInfo.get("addressState"));
         assertEquals("19106", contactInfo.get("addressPostalCode").toString());
         assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
-        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
+        assertEquals(
+                "info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
     @Test
     public void testPutContactAsXML() throws Exception {
         initContact();
-        String xml = "<contact> <address>1600 Pennsylvania Avenue</address>"
-                + "<addressCity>Washington</addressCity>"
-                + "<addressCountry>United States</addressCountry>"
-                + "<addressPostalCode>20001</addressPostalCode>"
-                + "<addressDeliveryPoint>The White House</addressDeliveryPoint>"
-                + "<addressElectronicMailAddress>info@whitehouse.gov</addressElectronicMailAddress>"
-                + "<addressState>DC</addressState>" + "<addressType>Avenue</addressType>"
-                + "<contactEmail>chief.geographer@mail.com</contactEmail>"
-                + "<contactOrganization>GeoServer</contactOrganization>"
-                + "<contactPerson>ContactPerson</contactPerson>"
-                + "<contactPosition>Chief Geographer</contactPosition> </contact>";
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/settings/contact", xml,
-                "text/xml");
+        String xml =
+                "<contact> <address>1600 Pennsylvania Avenue</address>"
+                        + "<addressCity>Washington</addressCity>"
+                        + "<addressCountry>United States</addressCountry>"
+                        + "<addressPostalCode>20001</addressPostalCode>"
+                        + "<addressDeliveryPoint>The White House</addressDeliveryPoint>"
+                        + "<addressElectronicMailAddress>info@whitehouse.gov</addressElectronicMailAddress>"
+                        + "<addressState>DC</addressState>"
+                        + "<addressType>Avenue</addressType>"
+                        + "<contactEmail>chief.geographer@mail.com</contactEmail>"
+                        + "<contactOrganization>GeoServer</contactOrganization>"
+                        + "<contactPerson>ContactPerson</contactPerson>"
+                        + "<contactPosition>Chief Geographer</contactPosition> </contact>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/settings/contact", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/settings/contact.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings/contact.xml");
         assertEquals("contact", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("United States", "/contact/addressCountry", dom);
         assertXpathEvaluatesTo("1600 Pennsylvania Avenue", "/contact/address", dom);
@@ -155,12 +161,13 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Chief Geographer", "/contact/contactPosition", dom);
         assertXpathEvaluatesTo("ContactPerson", "/contact/contactPerson", dom);
         assertXpathEvaluatesTo("The White House", "/contact/addressDeliveryPoint", dom);
-        assertXpathEvaluatesTo("chief.geographer@mail.com", "/contact/addressElectronicMailAddress", dom);
+        assertXpathEvaluatesTo(
+                "chief.geographer@mail.com", "/contact/addressElectronicMailAddress", dom);
     }
 
     @Test
     public void testGetGlobalAsJSON() throws Exception {
-        JSON json = getAsJSON(RestBaseController.ROOT_PATH+"/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/settings.json");
         print(json);
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
@@ -184,12 +191,11 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
         JSONObject covInfo = global.getJSONObject("coverageAccess");
         assertEquals("UNBOUNDED", covInfo.get("queueType"));
-
     }
 
     @Test
     public void testGetGlobalAsXML() throws Exception {
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings.xml");
         assertEquals("global", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("UTF-8", "/global/settings/charset", dom);
         assertXpathEvaluatesTo("8", "/global/settings/numDecimals", dom);
@@ -198,28 +204,51 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/global/jai/allowInterpolation", dom);
         assertXpathEvaluatesTo("0.75", "/global/jai/memoryThreshold", dom);
         assertXpathEvaluatesTo("UNBOUNDED", "/global/coverageAccess/queueType", dom);
-
     }
 
     @Test
     public void testPutGlobalAsJSON() throws Exception {
-        String inputJson = "{'global': {" + "'settings':   {" + "'contact':     {"
-                + "'contactPerson': 'Claudius Ptolomaeus'" + "}," + "'charset': 'UTF-8',"
-                + "'numDecimals': '10'," + "'onlineResource': 'http://geoserver2.org',"
-                + "'verbose': 'false'," + "'verboseExceptions': 'false'" + "}," + "'jai':   {"
-                + "'allowInterpolation': 'false'," + "'recycling': 'true',"
-                + "'tilePriority': '5'," + "'tileThreads': '7'," + "'memoryCapacity': '0.5',"
-                + "'memoryThreshold': '0.75'," + "'imageIOCache': 'false',"
-                + "'pngAcceleration': 'true'," + "'jpegAcceleration': 'true',"
-                + "'allowNativeMosaic': 'false'" + "}," + "'coverageAccess':   {"
-                + "'maxPoolSize': '5'," + "'corePoolSize': '5'," + "'keepAliveTime': '30000',"
-                + "'queueType': 'UNBOUNDED'," + "'imageIOCacheThreshold': '10240'" + "},"
-                + "'updateSequence': '0'," + "'featureTypeCacheSize': '0',"
-                + "'globalServices': 'true'," + "'xmlPostRequestLogBufferSize': '2048'" + "}}";
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/settings/", inputJson,
-                "text/json");
+        String inputJson =
+                "{'global': {"
+                        + "'settings':   {"
+                        + "'contact':     {"
+                        + "'contactPerson': 'Claudius Ptolomaeus'"
+                        + "},"
+                        + "'charset': 'UTF-8',"
+                        + "'numDecimals': '10',"
+                        + "'onlineResource': 'http://geoserver2.org',"
+                        + "'verbose': 'false',"
+                        + "'verboseExceptions': 'false'"
+                        + "},"
+                        + "'jai':   {"
+                        + "'allowInterpolation': 'false',"
+                        + "'recycling': 'true',"
+                        + "'tilePriority': '5',"
+                        + "'tileThreads': '7',"
+                        + "'memoryCapacity': '0.5',"
+                        + "'memoryThreshold': '0.75',"
+                        + "'imageIOCache': 'false',"
+                        + "'pngAcceleration': 'true',"
+                        + "'jpegAcceleration': 'true',"
+                        + "'allowNativeMosaic': 'false'"
+                        + "},"
+                        + "'coverageAccess':   {"
+                        + "'maxPoolSize': '5',"
+                        + "'corePoolSize': '5',"
+                        + "'keepAliveTime': '30000',"
+                        + "'queueType': 'UNBOUNDED',"
+                        + "'imageIOCacheThreshold': '10240'"
+                        + "},"
+                        + "'updateSequence': '0',"
+                        + "'featureTypeCacheSize': '0',"
+                        + "'globalServices': 'true',"
+                        + "'xmlPostRequestLogBufferSize': '2048'"
+                        + "}}";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/settings/", inputJson, "text/json");
         assertEquals(200, response.getStatus());
-        JSON json = getAsJSON(RestBaseController.ROOT_PATH+"/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject global = jsonObject.getJSONObject("global");
@@ -248,34 +277,48 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
     @Test
     public void testGetGlobalAsHTML() throws Exception {
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/settings.html",200);
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings.html", 200);
     }
 
     @Test
     public void testPutGlobalAsXML() throws Exception {
-        String xml = "<global><settings>" + "<charset>UTF-8</charset>"
-                + "<numDecimals>10</numDecimals>"
-                + "<onlineResource>http://geoserver.org</onlineResource>"
-                + "<verbose>false</verbose>" + "<verboseExceptions>false</verboseExceptions>"
-                + "<contact><contactPerson>Justin Deoliveira</contactPerson></contact></settings>"
-                + "<jai>" + "<allowInterpolation>true</allowInterpolation>"
-                + "<recycling>false</recycling>" + "<tilePriority>5</tilePriority>"
-                + "<tileThreads>7</tileThreads>" + "<memoryCapacity>0.5</memoryCapacity>"
-                + "<memoryThreshold>0.85</memoryThreshold>" + "<imageIOCache>false</imageIOCache>"
-                + "<pngAcceleration>true</pngAcceleration>"
-                + "<jpegAcceleration>true</jpegAcceleration>"
-                + "<allowNativeMosaic>false</allowNativeMosaic>" + "</jai>" + "<coverageAccess>"
-                + "<maxPoolSize>10</maxPoolSize>" + "<corePoolSize>5</corePoolSize>"
-                + "<keepAliveTime>30000</keepAliveTime>" + "<queueType>UNBOUNDED</queueType>"
-                + "<imageIOCacheThreshold>10240</imageIOCacheThreshold>" + "</coverageAccess>"
-                + "<updateSequence>97</updateSequence>"
-                + "<featureTypeCacheSize>0</featureTypeCacheSize>"
-                + "<globalServices>false</globalServices>"
-                + "<xmlPostRequestLogBufferSize>2048</xmlPostRequestLogBufferSize>" + "</global>";
+        String xml =
+                "<global><settings>"
+                        + "<charset>UTF-8</charset>"
+                        + "<numDecimals>10</numDecimals>"
+                        + "<onlineResource>http://geoserver.org</onlineResource>"
+                        + "<verbose>false</verbose>"
+                        + "<verboseExceptions>false</verboseExceptions>"
+                        + "<contact><contactPerson>Justin Deoliveira</contactPerson></contact></settings>"
+                        + "<jai>"
+                        + "<allowInterpolation>true</allowInterpolation>"
+                        + "<recycling>false</recycling>"
+                        + "<tilePriority>5</tilePriority>"
+                        + "<tileThreads>7</tileThreads>"
+                        + "<memoryCapacity>0.5</memoryCapacity>"
+                        + "<memoryThreshold>0.85</memoryThreshold>"
+                        + "<imageIOCache>false</imageIOCache>"
+                        + "<pngAcceleration>true</pngAcceleration>"
+                        + "<jpegAcceleration>true</jpegAcceleration>"
+                        + "<allowNativeMosaic>false</allowNativeMosaic>"
+                        + "</jai>"
+                        + "<coverageAccess>"
+                        + "<maxPoolSize>10</maxPoolSize>"
+                        + "<corePoolSize>5</corePoolSize>"
+                        + "<keepAliveTime>30000</keepAliveTime>"
+                        + "<queueType>UNBOUNDED</queueType>"
+                        + "<imageIOCacheThreshold>10240</imageIOCacheThreshold>"
+                        + "</coverageAccess>"
+                        + "<updateSequence>97</updateSequence>"
+                        + "<featureTypeCacheSize>0</featureTypeCacheSize>"
+                        + "<globalServices>false</globalServices>"
+                        + "<xmlPostRequestLogBufferSize>2048</xmlPostRequestLogBufferSize>"
+                        + "</global>";
 
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/settings/", xml, "text/xml");
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/settings/", xml, "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/settings.xml");
         assertEquals("global", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("false", "/global/globalServices", dom);
         assertXpathEvaluatesTo("2048", "/global/xmlPostRequestLogBufferSize", dom);
@@ -290,7 +333,7 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
     @Test
     public void testGetLocalAsJSON() throws Exception {
-        JSON json = getAsJSON(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject settings = jsonObject.getJSONObject("settings");
@@ -304,12 +347,11 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         JSONObject contact = settings.getJSONObject("contact");
         assertNotNull(contact);
         assertEquals("Andrea Aime", contact.get("contactPerson"));
-
     }
 
     @Test
     public void testGetLocalAsXML() throws Exception {
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("sf", "/settings/workspace/name", dom);
         assertXpathEvaluatesTo("UTF-8", "/settings/charset", dom);
@@ -321,23 +363,27 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
     @Test
     public void testGetLocalAsHTML() throws Exception {
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.html",200);
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.html", 200);
     }
 
     @Test
     public void testCreateLocalAsJSON() throws Exception {
         GeoServer geoServer = getGeoServer();
         geoServer.remove(geoServer.getSettings(geoServer.getCatalog().getWorkspaceByName("sf")));
-        String json = "{'settings':{'workspace':{'name':'sf'},"
-                + "'contact':{'addressCity':'Alexandria','addressCountry':'Egypt','addressType':'Work',"
-                + "'contactEmail':'claudius.ptolomaeus@gmail.com','contactOrganization':'The ancient geographes INC',"
-                + "'contactPerson':'Claudius Ptolomaeus','contactPosition':'Chief geographer'},"
-                + "'charset':'UTF-8','numDecimals':10,'onlineResource':'http://geoserver.org',"
-                + "'proxyBaseUrl':'http://proxy.url','verbose':false,'verboseExceptions':'true'}}";
-        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
-                json, "text/json");
+        String json =
+                "{'settings':{'workspace':{'name':'sf'},"
+                        + "'contact':{'addressCity':'Alexandria','addressCountry':'Egypt','addressType':'Work',"
+                        + "'contactEmail':'claudius.ptolomaeus@gmail.com','contactOrganization':'The ancient geographes INC',"
+                        + "'contactPerson':'Claudius Ptolomaeus','contactPosition':'Chief geographer'},"
+                        + "'charset':'UTF-8','numDecimals':10,'onlineResource':'http://geoserver.org',"
+                        + "'proxyBaseUrl':'http://proxy.url','verbose':false,'verboseExceptions':'true'}}";
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/settings",
+                        json,
+                        "text/json");
         assertEquals(201, response.getStatus());
-        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.json");
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject settings = jsonObject.getJSONObject("settings");
@@ -353,30 +399,37 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertEquals("The ancient geographes INC", contact.get("contactOrganization"));
         assertEquals("Work", contact.get("addressType"));
         assertEquals("claudius.ptolomaeus@gmail.com", contact.get("contactEmail"));
-
     }
 
     @Test
     public void testCreateLocalAsXML() throws Exception {
         GeoServer geoServer = getGeoServer();
         geoServer.remove(geoServer.getSettings(geoServer.getCatalog().getWorkspaceByName("sf")));
-        String xml = "<settings>" + "<workspace><name>sf</name></workspace>" + "<contact>"
-                + "<addressCity>Alexandria</addressCity>"
-                + "<addressCountry>Egypt</addressCountry>" + "<addressType>Work</addressType>"
-                + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
-                + "<contactOrganization>The ancient geographes INC</contactOrganization>"
-                + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
-                + "<contactPosition>Chief geographer</contactPosition>" + "</contact>"
-                + "<charset>UTF-8</charset>" + "<numDecimals>8</numDecimals>"
-                + "<onlineResource>http://geoserver.org</onlineResource>"
-                + "<proxyBaseUrl>http://proxy.url</proxyBaseUrl>"
-                + "<verbose>false</verbose>" + "<verboseExceptions>false</verboseExceptions>"
-                + "</settings>";
-        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
-                xml, "text/xml");
+        String xml =
+                "<settings>"
+                        + "<workspace><name>sf</name></workspace>"
+                        + "<contact>"
+                        + "<addressCity>Alexandria</addressCity>"
+                        + "<addressCountry>Egypt</addressCountry>"
+                        + "<addressType>Work</addressType>"
+                        + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
+                        + "<contactOrganization>The ancient geographes INC</contactOrganization>"
+                        + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
+                        + "<contactPosition>Chief geographer</contactPosition>"
+                        + "</contact>"
+                        + "<charset>UTF-8</charset>"
+                        + "<numDecimals>8</numDecimals>"
+                        + "<onlineResource>http://geoserver.org</onlineResource>"
+                        + "<proxyBaseUrl>http://proxy.url</proxyBaseUrl>"
+                        + "<verbose>false</verbose>"
+                        + "<verboseExceptions>false</verboseExceptions>"
+                        + "</settings>";
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/settings", xml, "text/xml");
         assertEquals(201, response.getStatus());
 
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("sf", "/settings/workspace/name", dom);
         assertXpathEvaluatesTo("false", "/settings/verbose", dom);
@@ -384,9 +437,11 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("http://geoserver.org", "/settings/onlineResource", dom);
         assertXpathEvaluatesTo("http://proxy.url", "/settings/proxyBaseUrl", dom);
         assertXpathEvaluatesTo("Claudius Ptolomaeus", "/settings/contact/contactPerson", dom);
-        assertXpathEvaluatesTo("claudius.ptolomaeus@gmail.com", "/settings/contact/contactEmail", dom);
+        assertXpathEvaluatesTo(
+                "claudius.ptolomaeus@gmail.com", "/settings/contact/contactEmail", dom);
         assertXpathEvaluatesTo("Chief geographer", "/settings/contact/contactPosition", dom);
-        assertXpathEvaluatesTo("The ancient geographes INC", "/settings/contact/contactOrganization", dom);
+        assertXpathEvaluatesTo(
+                "The ancient geographes INC", "/settings/contact/contactOrganization", dom);
         assertXpathEvaluatesTo("Egypt", "/settings/contact/addressCountry", dom);
     }
 
@@ -394,40 +449,53 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
     public void testCreateLocalAlreadyExists() throws Exception {
         GeoServer geoServer = getGeoServer();
         geoServer.remove(geoServer.getSettings(geoServer.getCatalog().getWorkspaceByName("sf")));
-        String xml = "<settings>" + "<workspace><name>sf</name></workspace>" + "<contact>"
-                + "<addressCity>Alexandria</addressCity>"
-                + "<addressCountry>Egypt</addressCountry>" + "<addressType>Work</addressType>"
-                + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
-                + "<contactOrganization>The ancient geographes INC</contactOrganization>"
-                + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
-                + "<contactPosition>Chief geographer</contactPosition>" + "</contact>"
-                + "<charset>UTF-8</charset>" + "<numDecimals>8</numDecimals>"
-                + "<onlineResource>http://geoserver.org</onlineResource>"
-                + "<proxyBaseUrl>http://proxy.url</proxyBaseUrl>"
-                + "<verbose>false</verbose>" + "<verboseExceptions>false</verboseExceptions>"
-                + "</settings>";
-        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
-                xml, "text/xml");
+        String xml =
+                "<settings>"
+                        + "<workspace><name>sf</name></workspace>"
+                        + "<contact>"
+                        + "<addressCity>Alexandria</addressCity>"
+                        + "<addressCountry>Egypt</addressCountry>"
+                        + "<addressType>Work</addressType>"
+                        + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
+                        + "<contactOrganization>The ancient geographes INC</contactOrganization>"
+                        + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
+                        + "<contactPosition>Chief geographer</contactPosition>"
+                        + "</contact>"
+                        + "<charset>UTF-8</charset>"
+                        + "<numDecimals>8</numDecimals>"
+                        + "<onlineResource>http://geoserver.org</onlineResource>"
+                        + "<proxyBaseUrl>http://proxy.url</proxyBaseUrl>"
+                        + "<verbose>false</verbose>"
+                        + "<verboseExceptions>false</verboseExceptions>"
+                        + "</settings>";
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/settings", xml, "text/xml");
         assertEquals(201, response.getStatus());
 
-        response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
-                xml, "text/xml");
+        response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/settings", xml, "text/xml");
         assertEquals(500, response.getStatus());
     }
 
     @Test
     public void testPutLocalAsJSON() throws Exception {
-        String inputJson = "{'settings':{'workspace':{'name':'sf'},"
-                + "'contact':{'addressCity':'Cairo','addressCountry':'Egypt','addressType':'Work',"
-                + "'contactEmail':'claudius.ptolomaeus@gmail.com','contactOrganization':'The ancient geographes INC',"
-                + "'contactPerson':'Claudius Ptolomaeus','contactPosition':'Chief geographer'},"
-                + "'charset':'UTF-8','numDecimals':8,'onlineResource':'http://geoserver2.org',"
-                + "'proxyBaseUrl':'http://proxy2.url','verbose':true,'verboseExceptions':'true'}}";
+        String inputJson =
+                "{'settings':{'workspace':{'name':'sf'},"
+                        + "'contact':{'addressCity':'Cairo','addressCountry':'Egypt','addressType':'Work',"
+                        + "'contactEmail':'claudius.ptolomaeus@gmail.com','contactOrganization':'The ancient geographes INC',"
+                        + "'contactPerson':'Claudius Ptolomaeus','contactPosition':'Chief geographer'},"
+                        + "'charset':'UTF-8','numDecimals':8,'onlineResource':'http://geoserver2.org',"
+                        + "'proxyBaseUrl':'http://proxy2.url','verbose':true,'verboseExceptions':'true'}}";
 
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
-                inputJson, "text/json");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/settings",
+                        inputJson,
+                        "text/json");
         assertEquals(200, response.getStatus());
-        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.json");
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject settings = jsonObject.getJSONObject("settings");
@@ -448,22 +516,30 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
 
     @Test
     public void testPutLocalAsXML() throws Exception {
-        String xml = "<settings>" + "<workspace><name>sf</name></workspace>" + "<contact>"
-                + "<addressCity>Cairo</addressCity>"
-                + "<addressCountry>Egypt</addressCountry>" + "<addressType>Work</addressType>"
-                + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
-                + "<contactOrganization>The ancient geographes INC</contactOrganization>"
-                + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
-                + "<contactPosition>Chief geographer</contactPosition>" + "</contact>"
-                + "<charset>UTF-8</charset>" + "<numDecimals>10</numDecimals>"
-                + "<onlineResource>http://geoserver2.org</onlineResource>"
-                + "<proxyBaseUrl>http://proxy2.url</proxyBaseUrl>"
-                + "<verbose>true</verbose>" + "<verboseExceptions>true</verboseExceptions>"
-                + "</settings>";
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
-                xml, "text/xml");
+        String xml =
+                "<settings>"
+                        + "<workspace><name>sf</name></workspace>"
+                        + "<contact>"
+                        + "<addressCity>Cairo</addressCity>"
+                        + "<addressCountry>Egypt</addressCountry>"
+                        + "<addressType>Work</addressType>"
+                        + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
+                        + "<contactOrganization>The ancient geographes INC</contactOrganization>"
+                        + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
+                        + "<contactPosition>Chief geographer</contactPosition>"
+                        + "</contact>"
+                        + "<charset>UTF-8</charset>"
+                        + "<numDecimals>10</numDecimals>"
+                        + "<onlineResource>http://geoserver2.org</onlineResource>"
+                        + "<proxyBaseUrl>http://proxy2.url</proxyBaseUrl>"
+                        + "<verbose>true</verbose>"
+                        + "<verboseExceptions>true</verboseExceptions>"
+                        + "</settings>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("sf", "/settings/workspace/name", dom);
         assertXpathEvaluatesTo("true", "/settings/verbose", dom);
@@ -471,19 +547,24 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("http://geoserver2.org", "/settings/onlineResource", dom);
         assertXpathEvaluatesTo("http://proxy2.url", "/settings/proxyBaseUrl", dom);
         assertXpathEvaluatesTo("Claudius Ptolomaeus", "/settings/contact/contactPerson", dom);
-        assertXpathEvaluatesTo("claudius.ptolomaeus@gmail.com", "/settings/contact/contactEmail", dom);
+        assertXpathEvaluatesTo(
+                "claudius.ptolomaeus@gmail.com", "/settings/contact/contactEmail", dom);
         assertXpathEvaluatesTo("Chief geographer", "/settings/contact/contactPosition", dom);
-        assertXpathEvaluatesTo("The ancient geographes INC", "/settings/contact/contactOrganization", dom);
+        assertXpathEvaluatesTo(
+                "The ancient geographes INC", "/settings/contact/contactOrganization", dom);
         assertXpathEvaluatesTo("Cairo", "/settings/contact/addressCity", dom);
     }
 
     @Test
     public void testDeleteLocal() throws Exception {
-        JSON json = getAsJSON(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
-        assertEquals(200, deleteAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings").getStatus());
-        json = getAsJSON(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.json");
+        assertEquals(
+                200,
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/settings")
+                        .getStatus());
+        json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf/settings.json");
         JSONObject deletedJson = (JSONObject) json;
         assertNull(deletedJson.get("workspace"));
     }

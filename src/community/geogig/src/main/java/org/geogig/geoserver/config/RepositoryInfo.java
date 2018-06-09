@@ -6,15 +6,13 @@ package org.geogig.geoserver.config;
 
 import static com.google.common.base.Objects.equal;
 
-import java.io.File;
-import java.io.Serializable;
-import java.net.URI;
-
-import org.locationtech.geogig.repository.RepositoryResolver;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Throwables;
+import java.io.File;
+import java.io.Serializable;
+import java.net.URI;
+import org.locationtech.geogig.repository.RepositoryResolver;
 
 public class RepositoryInfo implements Serializable, Cloneable {
 
@@ -24,13 +22,13 @@ public class RepositoryInfo implements Serializable, Cloneable {
 
     /**
      * @deprecated field to support deserialization of old format when it only allowed file:
-     *             repositories
+     *     repositories
      */
     private String parentDirectory;
 
     /**
      * @deprecated field to support deserialization of old format when it only allowed file:
-     *             repositories
+     *     repositories
      */
     private String name;
 
@@ -144,8 +142,12 @@ public class RepositoryInfo implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return new StringBuilder("[id:").append(getId()).append(", URI:").append(getLocation())
-                .append("]").toString();
+        return new StringBuilder("[id:")
+                .append(getId())
+                .append(", URI:")
+                .append(getLocation())
+                .append("]")
+                .toString();
     }
 
     long getLastModified() {

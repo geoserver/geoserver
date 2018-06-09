@@ -6,20 +6,18 @@
 package org.geoserver.threadlocals;
 
 import java.util.Map;
-
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 
 /**
  * Transfers the LocalWorkspace management to another thread
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class LocalWorkspaceThreadLocalTransfer implements ThreadLocalTransfer {
 
     public static final String KEY = LocalWorkspace.class.getName() + "#threadLocal";
-    
+
     @Override
     public void collect(Map<String, Object> storage) {
         WorkspaceInfo wi = LocalWorkspace.get();
@@ -36,5 +34,4 @@ public class LocalWorkspaceThreadLocalTransfer implements ThreadLocalTransfer {
     public void cleanup() {
         LocalWorkspace.remove();
     }
-
 }

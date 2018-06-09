@@ -20,11 +20,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -44,27 +41,28 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
-
 public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
-    
-    static final Set<String> DEFAULT_STYLEs = new HashSet<String>() {{
-        add(StyleInfo.DEFAULT_POINT);
-        add(StyleInfo.DEFAULT_LINE);
-        add(StyleInfo.DEFAULT_GENERIC);
-        add(StyleInfo.DEFAULT_POLYGON);
-        add(StyleInfo.DEFAULT_RASTER);
-    }};
-    
+
+    static final Set<String> DEFAULT_STYLEs =
+            new HashSet<String>() {
+                {
+                    add(StyleInfo.DEFAULT_POINT);
+                    add(StyleInfo.DEFAULT_LINE);
+                    add(StyleInfo.DEFAULT_GENERIC);
+                    add(StyleInfo.DEFAULT_POLYGON);
+                    add(StyleInfo.DEFAULT_RASTER);
+                }
+            };
 
     protected Importer importer;
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        
+
         ImporterTestUtils.setComparisonTolerance();
 
         // init xmlunit
@@ -72,16 +70,16 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wms", "http://www.opengis.net/wms");
-        
+
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
-    
+
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // no pre-existing test data needed for the importer
         testData.setUpSecurity();
     }
-    
+
     @After
     public void cleanCatalog() throws IOException {
         for (StoreInfo s : getCatalog().getStores(StoreInfo.class)) {
@@ -89,12 +87,12 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         }
         for (StyleInfo s : getCatalog().getStyles()) {
             String styleName = s.getName();
-            if(!DEFAULT_STYLEs.contains(styleName)) {
+            if (!DEFAULT_STYLEs.contains(styleName)) {
                 removeStyle(null, styleName);
             }
         }
     }
-    
+
     @Before
     public void setupImporterField() {
         importer = (Importer) applicationContext.getBean("importer");
@@ -102,7 +100,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         MemoryImportStore store = (MemoryImportStore) importer.getStore();
         store.destroy();
     }
-    
+
     protected File tmpDir() throws Exception {
         return ImporterTestUtils.tmpDir();
     }
@@ -128,48 +126,49 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         assertNotNull(layer);
         assertNotNull(layer.getDefaultStyle());
         assertNotNull(layer.getResource().getProjectionPolicy());
-        
+
         if (layer.getType() == PublishedType.VECTOR) {
             FeatureTypeInfo featureType = (FeatureTypeInfo) layer.getResource();
             FeatureSource source = featureType.getFeatureSource(null, null);
             assertTrue(source.getCount(Query.ALL) > 0);
-            
-            //do a wfs request
-            Document dom = getAsDOM("wfs?request=getFeature&typename=" + featureType.getPrefixedName());
+
+            // do a wfs request
+            Document dom =
+                    getAsDOM("wfs?request=getFeature&typename=" + featureType.getPrefixedName());
             assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
             assertEquals(
-                source.getCount(Query.ALL), dom.getElementsByTagName(featureType.getPrefixedName()).getLength());
+                    source.getCount(Query.ALL),
+                    dom.getElementsByTagName(featureType.getPrefixedName()).getLength());
         }
 
-        //do a wms request
-        MockHttpServletResponse response = 
-            getAsServletResponse("wms/reflect?layers=" + layer.getResource().getPrefixedName());
+        // do a wms request
+        MockHttpServletResponse response =
+                getAsServletResponse("wms/reflect?layers=" + layer.getResource().getPrefixedName());
         assertEquals("image/png", response.getContentType());
     }
 
     protected DataStoreInfo createH2DataStore(String wsName, String dsName) {
-        //create a datastore to import into
+        // create a datastore to import into
         Catalog cat = getCatalog();
 
-        WorkspaceInfo ws = wsName != null ? cat.getWorkspaceByName(wsName) : cat.getDefaultWorkspace();
+        WorkspaceInfo ws =
+                wsName != null ? cat.getWorkspaceByName(wsName) : cat.getDefaultWorkspace();
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setWorkspace(ws);
         ds.setName(dsName);
         ds.setType("H2");
 
         Map params = new HashMap();
-        params.put("database", getTestData().getDataDirectoryRoot().getPath()+"/" + dsName);
+        params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/" + dsName);
         params.put("dbtype", "h2");
         ds.getConnectionParameters().putAll(params);
         ds.setEnabled(true);
         cat.add(ds);
-        
+
         return ds;
     }
-    
-    /**
-     * Adding special treatment for H2 databases, we want to also kill the db itself 
-     */
+
+    /** Adding special treatment for H2 databases, we want to also kill the db itself */
     @Override
     protected void removeStore(String workspaceName, String name) {
         Catalog cat = getCatalog();
@@ -177,58 +176,56 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         if (store == null) {
             return;
         }
-        
+
         // store the database location in case it's a H2 store
         Map<String, Serializable> params = store.getConnectionParameters();
         String databaseLocation = null;
-        if("h2".equals(params.get("dbtype"))) {
+        if ("h2".equals(params.get("dbtype"))) {
             databaseLocation = (String) params.get("database");
         }
 
         CascadeDeleteVisitor v = new CascadeDeleteVisitor(getCatalog());
         store.accept(v);
-        
+
         // clean up the database files if needed
-        if(databaseLocation != null) {
+        if (databaseLocation != null) {
             final File dbFile = new File(databaseLocation);
             File container = dbFile.getParentFile();
-            File[] dbFiles = container.listFiles(new FilenameFilter() {
-                
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.startsWith(dbFile.getName());
-                }
-            });
+            File[] dbFiles =
+                    container.listFiles(
+                            new FilenameFilter() {
+
+                                @Override
+                                public boolean accept(File dir, String name) {
+                                    return name.startsWith(dbFile.getName());
+                                }
+                            });
             for (File f : dbFiles) {
                 assertTrue("Failed to remove file " + f.getPath(), FileUtils.deleteQuietly(f));
             }
         }
-    
     }
-    
+
     private String createSRSJSON(String srs) {
-        return "{" + 
-                  "\"layer\":   {" + 
-                     "\"srs\": \"" + srs + "\"" +
-                   "}" + 
-              "}";
-        /*return "{" + 
-          "\"resource\": {" + 
-            "\"featureType\":   {" + 
+        return "{" + "\"layer\":   {" + "\"srs\": \"" + srs + "\"" + "}" + "}";
+        /*return "{" +
+          "\"resource\": {" +
+            "\"featureType\":   {" +
                "\"srs\": \"" + srs + "\"" +
-             "}" + 
-           "}" + 
+             "}" +
+           "}" +
         "}";*/
     }
-    
+
     protected MockHttpServletResponse setSRSRequest(String url, String srs) throws Exception {
         String srsRequest = createSRSJSON(srs);
         return putAsServletResponse(url, srsRequest, "application/json");
     }
-    
-    protected void assertErrorResponse(MockHttpServletResponse resp, String... errs) throws UnsupportedEncodingException {
+
+    protected void assertErrorResponse(MockHttpServletResponse resp, String... errs)
+            throws UnsupportedEncodingException {
         assertEquals(400, resp.getStatus());
-        //TODO: Implement JSON error response
+        // TODO: Implement JSON error response
         /*
         JSONObject json = JSONObject.fromObject(resp.getContentAsString());
         JSONArray errors = json.getJSONArray("errors");
@@ -255,13 +252,12 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         public JSONObjectBuilder() {
             super(new StringWriter());
         }
-        
+
         public JSONObject buildObject() {
-            return JSONObject.fromObject( ((StringWriter) writer).toString() );
+            return JSONObject.fromObject(((StringWriter) writer).toString());
         }
-        
     }
-    
+
     @Override
     protected boolean isMemoryCleanRequired() {
         return SystemUtils.IS_OS_WINDOWS;

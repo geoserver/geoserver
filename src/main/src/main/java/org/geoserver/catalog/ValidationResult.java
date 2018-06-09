@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * ValidationResult encapsulates the result of running Catalog::validate(),
- * accounting for the fact that there may be multiple validation errors.
+ * ValidationResult encapsulates the result of running Catalog::validate(), accounting for the fact
+ * that there may be multiple validation errors.
  */
 public class ValidationResult {
     private final List<RuntimeException> errorList;
@@ -28,10 +28,11 @@ public class ValidationResult {
     }
 
     public void throwIfInvalid() {
-        if (!isValid()){
+        if (!isValid()) {
             int n = errorList.size();
             String msg = errorList.get(0).getMessage();
-            throw new RuntimeException("Validation failed with " + n + " errors.  First error message is: " + msg);
+            throw new RuntimeException(
+                    "Validation failed with " + n + " errors.  First error message is: " + msg);
         }
     }
 }

@@ -5,10 +5,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.*;
 import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
@@ -17,19 +13,14 @@ import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.jdbcconfig.config.JDBCGeoServerFacade;
 import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wms.WMSXStreamLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.google.common.collect.Maps;
-import java.util.List;
 
 @RunWith(Parameterized.class)
 public class JDBCGeoServerLoaderTest {
@@ -37,18 +28,21 @@ public class JDBCGeoServerLoaderTest {
     JDBCConfigTestSupport testSupport;
 
     public JDBCGeoServerLoaderTest(JDBCConfigTestSupport.DBConfig dbConfig) {
-        testSupport = new JDBCConfigTestSupport(dbConfig) {
-            @Override
-            protected void configureAppContext(WebApplicationContext appContext) {
-                expect(appContext.getBeanNamesForType(XStreamServiceLoader.class))
-                    .andReturn(new String[]{"wmsLoader"}).anyTimes();
-                expect(appContext.getBeanNamesForType((Class)anyObject()))
-                    .andReturn(new String[]{}).anyTimes();
-                expect(appContext.getBean("wmsLoader"))
-                    .andReturn(new WMSXStreamLoader(getResourceLoader())).anyTimes();
-
-            }
-        };
+        testSupport =
+                new JDBCConfigTestSupport(dbConfig) {
+                    @Override
+                    protected void configureAppContext(WebApplicationContext appContext) {
+                        expect(appContext.getBeanNamesForType(XStreamServiceLoader.class))
+                                .andReturn(new String[] {"wmsLoader"})
+                                .anyTimes();
+                        expect(appContext.getBeanNamesForType((Class) anyObject()))
+                                .andReturn(new String[] {})
+                                .anyTimes();
+                        expect(appContext.getBean("wmsLoader"))
+                                .andReturn(new WMSXStreamLoader(getResourceLoader()))
+                                .anyTimes();
+                    }
+                };
     }
 
     @Parameters(name = "JDBCGeoServerLoaderTest-{0}")
@@ -74,12 +68,12 @@ public class JDBCGeoServerLoaderTest {
         expect(config.isImport()).andReturn(false).anyTimes();
         replay(config);
 
-        JDBCGeoServerLoader loader = 
-            new JDBCGeoServerLoader(testSupport.getResourceLoader(), config);
+        JDBCGeoServerLoader loader =
+                new JDBCGeoServerLoader(testSupport.getResourceLoader(), config);
         loader.setGeoServerFacade(new JDBCGeoServerFacade(testSupport.getDatabase()));
         loader.setApplicationContext(testSupport.getApplicationContext());
 
-        //create a mock and ensure a global, logging, and service config are set
+        // create a mock and ensure a global, logging, and service config are set
         GeoServerImpl geoServer = createNiceMock(GeoServerImpl.class);
         expect(geoServer.getFactory()).andReturn(new GeoServerFactoryImpl(geoServer)).anyTimes();
 
@@ -89,7 +83,7 @@ public class JDBCGeoServerLoaderTest {
         geoServer.setLogging((LoggingInfo) anyObject());
         expectLastCall().once();
 
-        geoServer.add((ServiceInfo)anyObject());
+        geoServer.add((ServiceInfo) anyObject());
         expectLastCall().once();
 
         replay(geoServer);

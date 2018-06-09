@@ -6,7 +6,6 @@ package org.geoserver.geofence.rest.xml;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,8 +17,7 @@ public class JaxbAdminRuleList {
 
     protected long count;
 
-    public JaxbAdminRuleList() {
-    }
+    public JaxbAdminRuleList() {}
 
     public JaxbAdminRuleList(long count) {
         this.count = count;

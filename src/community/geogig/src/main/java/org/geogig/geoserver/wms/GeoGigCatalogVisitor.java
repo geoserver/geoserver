@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.wms;
 
+import com.google.common.base.Optional;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.Catalog;
@@ -41,10 +41,9 @@ import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.repository.Repository;
 
-import com.google.common.base.Optional;
-
 /**
- * CatalogListener to ensure GeoGig indexes are created when Time or Elevation dimensions are enabled on GeoGig layers.
+ * CatalogListener to ensure GeoGig indexes are created when Time or Elevation dimensions are
+ * enabled on GeoGig layers.
  */
 public class GeoGigCatalogVisitor implements CatalogVisitor {
 
@@ -61,7 +60,7 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
             final String endAttribute = dimension.getEndAttribute();
             return new String[] {attribute, endAttribute};
         }
-        return new String[]{};
+        return new String[] {};
     }
 
     @Override
@@ -104,47 +103,60 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
         // do nothing
     }
 
-    private void createOrUpdateIndex(final LayerInfo geogigLayer, final @Nullable String head,
+    private void createOrUpdateIndex(
+            final LayerInfo geogigLayer,
+            final @Nullable String head,
             final String[] extraAttributes) {
         // schedule the index creation
-        final Future<Optional<ObjectId>> indexId = INDEX_SERVICE.submit(
-                new Callable<Optional<ObjectId>>() {
+        final Future<Optional<ObjectId>> indexId =
+                INDEX_SERVICE.submit(
+                        new Callable<Optional<ObjectId>>() {
 
-            @Override
-            public Optional<ObjectId> call() throws Exception {
-                RepositoryManager manager = RepositoryManager.get();
-                Repository findRepository = manager.findRepository(geogigLayer);
+                            @Override
+                            public Optional<ObjectId> call() throws Exception {
+                                RepositoryManager manager = RepositoryManager.get();
+                                Repository findRepository = manager.findRepository(geogigLayer);
 
-                String featureTreePath=geogigLayer.getResource().getNativeName();
-                
-                Optional<ObjectId> index = GeoGigDataStore.createOrUpdateIndex(findRepository, head,
-                                featureTreePath, extraAttributes);
-                
-                return index;
-            }
-        });
+                                String featureTreePath = geogigLayer.getResource().getNativeName();
+
+                                Optional<ObjectId> index =
+                                        GeoGigDataStore.createOrUpdateIndex(
+                                                findRepository,
+                                                head,
+                                                featureTreePath,
+                                                extraAttributes);
+
+                                return index;
+                            }
+                        });
         // handle the Future and generate an error log if the index create/update fails
-        FUTURE_SERVICE.submit(new Runnable() {
-            @Override
-            public void run() {
-                final String layerName = geogigLayer.getName();
-                try {
-                    Optional<ObjectId> objId = indexId.get();
-                    if (!objId.isPresent()) {
-                        LOGGER.log(Level.WARNING,
-                                "Index creation or update finished, but resulted in no Index on Layer: {0}",
-                                layerName);
+        FUTURE_SERVICE.submit(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        final String layerName = geogigLayer.getName();
+                        try {
+                            Optional<ObjectId> objId = indexId.get();
+                            if (!objId.isPresent()) {
+                                LOGGER.log(
+                                        Level.WARNING,
+                                        "Index creation or update finished, but resulted in no Index on Layer: {0}",
+                                        layerName);
+                            }
+                        } catch (ExecutionException eex) {
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Index could not be created or updated on Layer: " + layerName,
+                                    eex);
+                        } catch (InterruptedException iex) {
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Index may not have been created or updated on Layer: "
+                                            + layerName,
+                                    iex);
+                        }
                     }
-                } catch (ExecutionException eex) {
-                    LOGGER.log(Level.WARNING, "Index could not be created or updated on Layer: " +
-                            layerName, eex);
-                } catch (InterruptedException iex) {
-                    LOGGER.log(Level.WARNING,
-                            "Index may not have been created or updated on Layer: " +
-                                    layerName, iex);
-                }
-            }
-        });
+                });
     }
 
     @Override
@@ -156,31 +168,34 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
             final StoreInfo store = resource.getStore();
             // it's a GeoGig dataStore
             Map<String, Serializable> connectionParams = store.getConnectionParameters();
-            Serializable autoIndexingParam = connectionParams
-                    .get(GeoGigDataStoreFactory.AUTO_INDEXING.key);
-            
-            final boolean autoIndexing = autoIndexingParam != null && Boolean.TRUE.equals(
-                    Boolean.valueOf(autoIndexingParam.toString()));
+            Serializable autoIndexingParam =
+                    connectionParams.get(GeoGigDataStoreFactory.AUTO_INDEXING.key);
+
+            final boolean autoIndexing =
+                    autoIndexingParam != null
+                            && Boolean.TRUE.equals(Boolean.valueOf(autoIndexingParam.toString()));
 
             if (!autoIndexing) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(String.format(
-                            "GeoGig DataStore is not configured for automatic indexing."));
+                    LOGGER.fine(
+                            String.format(
+                                    "GeoGig DataStore is not configured for automatic indexing."));
                 }
                 // skip it
                 return;
             }
             String head = (String) connectionParams.get(GeoGigDataStoreFactory.HEAD.key);
             String branch = (String) connectionParams.get(GeoGigDataStoreFactory.BRANCH.key);
-            
-            String effectiveHead = head == null? branch:head;
-            
+
+            String effectiveHead = head == null ? branch : head;
+
             // get the metadata for the layer resource
             final MetadataMap metadata = resource.getMetadata();
             final String[] timeAttr = getAttribute(metadata, "time");
             final String[] elevationAttr = getAttribute(metadata, "elevation");
-            String[] dimensions = Stream.concat(Arrays.stream(timeAttr),
-                    Arrays.stream(elevationAttr)).toArray(String[]::new);
+            String[] dimensions =
+                    Stream.concat(Arrays.stream(timeAttr), Arrays.stream(elevationAttr))
+                            .toArray(String[]::new);
             // create the indexes
             createOrUpdateIndex(layer, effectiveHead, dimensions);
         }
@@ -200,5 +215,4 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
     public void visit(WMSLayerInfo wmsLayer) {
         // do nothing
     }
-
 }

@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -48,7 +47,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * 
  * @author Gabriel Roldan
  * @version $Id$
  */
@@ -69,8 +67,8 @@ public class GetCapabilitiesTransformerTest {
         }
 
         /**
-         * 
-         * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+         * @see
+         *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
          */
         public List<String> getVendorSpecificCapabilitiesChildDecls(
                 GetCapabilitiesRequest request) {
@@ -78,16 +76,14 @@ public class GetCapabilitiesTransformerTest {
         }
 
         public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
-                throws IOException {
-        }
+                throws IOException {}
 
         @Override
-        public void customizeRootCrsList(Set<String> srs) {
-        }
+        public void customizeRootCrsList(Set<String> srs) {}
 
         @Override
-        public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
-                NumberRange<Double> scaleDenominators) {
+        public NumberRange<Double> overrideScaleDenominators(
+                PublishedInfo layer, NumberRange<Double> scaleDenominators) {
             return null;
         }
     }
@@ -107,8 +103,8 @@ public class GetCapabilitiesTransformerTest {
         }
 
         /**
-         * 
-         * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+         * @see
+         *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
          */
         public List<String> getVendorSpecificCapabilitiesChildDecls(
                 GetCapabilitiesRequest request) {
@@ -127,19 +123,20 @@ public class GetCapabilitiesTransformerTest {
         public void customizeRootCrsList(Set<String> srs) {
             srs.clear();
             srs.add("EPSG:4326");
-            
         }
 
         @Override
-        public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
-                NumberRange<Double> scaleDenominators) {
+        public NumberRange<Double> overrideScaleDenominators(
+                PublishedInfo layer, NumberRange<Double> scaleDenominators) {
             return new NumberRange<Double>(Double.class, 0d, 1000d);
         }
     }
 
     private XpathEngine XPATH;
 
-    /** default base url to feed a GetCapabilitiesTransformer with for it to append the DTD location */
+    /**
+     * default base url to feed a GetCapabilitiesTransformer with for it to append the DTD location
+     */
     private static final String baseUrl = "http://localhost/geoserver";
 
     /** test map formats to feed a GetCapabilitiesTransformer with */
@@ -149,9 +146,9 @@ public class GetCapabilitiesTransformerTest {
     private static final Set<String> legendFormats = Collections.singleton("image/png");
 
     /**
-     * a mocked up {@link GeoServer} config, almost empty after setUp(), except for the
-     * {@link WMSInfo}, {@link GeoServerInfo} and empty {@link Catalog}, Specific tests should add
-     * content as needed
+     * a mocked up {@link GeoServer} config, almost empty after setUp(), except for the {@link
+     * WMSInfo}, {@link GeoServerInfo} and empty {@link Catalog}, Specific tests should add content
+     * as needed
      */
     private GeoServerImpl geosConfig;
 
@@ -215,8 +212,10 @@ public class GetCapabilitiesTransformerTest {
         String content = writer.getBuffer().toString();
 
         Assert.assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
-        String dtdDef = "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"" + baseUrl
-                + "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd\">";
+        String dtdDef =
+                "<!DOCTYPE WMT_MS_Capabilities SYSTEM \""
+                        + baseUrl
+                        + "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd\">";
         Assert.assertTrue(content.contains(dtdDef));
     }
 
@@ -280,30 +279,35 @@ public class GetCapabilitiesTransformerTest {
         assertXpathEvaluatesTo("k1", service + "/KeywordList/Keyword[1]", dom);
         assertXpathEvaluatesTo("k2", service + "/KeywordList/Keyword[2]", dom);
 
-        assertXpathEvaluatesTo(wmsInfo.getOnlineResource(), service + "/OnlineResource/@xlink:href", dom);
+        assertXpathEvaluatesTo(
+                wmsInfo.getOnlineResource(), service + "/OnlineResource/@xlink:href", dom);
 
-        assertXpathEvaluatesTo("contactPerson", service
-                + "/ContactInformation/ContactPersonPrimary/ContactPerson", dom);
-        assertXpathEvaluatesTo("contactOrganization", service
-                + "/ContactInformation/ContactPersonPrimary/ContactOrganization", dom);
-        assertXpathEvaluatesTo("contactPosition", service + "/ContactInformation/ContactPosition",
+        assertXpathEvaluatesTo(
+                "contactPerson",
+                service + "/ContactInformation/ContactPersonPrimary/ContactPerson",
                 dom);
-        assertXpathEvaluatesTo("address", service + "/ContactInformation/ContactAddress/Address",
+        assertXpathEvaluatesTo(
+                "contactOrganization",
+                service + "/ContactInformation/ContactPersonPrimary/ContactOrganization",
                 dom);
-        assertXpathEvaluatesTo("addressType", service
-                + "/ContactInformation/ContactAddress/AddressType", dom);
+        assertXpathEvaluatesTo(
+                "contactPosition", service + "/ContactInformation/ContactPosition", dom);
+        assertXpathEvaluatesTo(
+                "address", service + "/ContactInformation/ContactAddress/Address", dom);
+        assertXpathEvaluatesTo(
+                "addressType", service + "/ContactInformation/ContactAddress/AddressType", dom);
         assertXpathEvaluatesTo("city", service + "/ContactInformation/ContactAddress/City", dom);
-        assertXpathEvaluatesTo("state", service
-                + "/ContactInformation/ContactAddress/StateOrProvince", dom);
-        assertXpathEvaluatesTo("postCode", service + "/ContactInformation/ContactAddress/PostCode",
-                dom);
-        assertXpathEvaluatesTo("country", service + "/ContactInformation/ContactAddress/Country",
-                dom);
+        assertXpathEvaluatesTo(
+                "state", service + "/ContactInformation/ContactAddress/StateOrProvince", dom);
+        assertXpathEvaluatesTo(
+                "postCode", service + "/ContactInformation/ContactAddress/PostCode", dom);
+        assertXpathEvaluatesTo(
+                "country", service + "/ContactInformation/ContactAddress/Country", dom);
         assertXpathEvaluatesTo("voice", service + "/ContactInformation/ContactVoiceTelephone", dom);
-        assertXpathEvaluatesTo("fax", service + "/ContactInformation/ContactFacsimileTelephone",
-                dom);
-        assertXpathEvaluatesTo("email", service
-                + "/ContactInformation/ContactElectronicMailAddress", dom);
+        assertXpathEvaluatesTo(
+                "fax", service + "/ContactInformation/ContactFacsimileTelephone", dom);
+        assertXpathEvaluatesTo(
+                "email", service + "/ContactInformation/ContactElectronicMailAddress", dom);
 
         assertXpathEvaluatesTo("fees", service + "/Fees", dom);
         assertXpathEvaluatesTo("accessConstraints", service + "/AccessConstraints", dom);
@@ -317,8 +321,8 @@ public class GetCapabilitiesTransformerTest {
         Document dom = WMSTestSupport.transform(req, tr);
         final Set<String> supportedCodes = CRS.getSupportedCodes("EPSG");
         supportedCodes.addAll(CRS.getSupportedCodes("AUTO"));
-        NodeList allCrsCodes = XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS",
-                dom);
+        NodeList allCrsCodes =
+                XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
         assertEquals(supportedCodes.size() - 1 /* WGS84(DD) */, allCrsCodes.getLength());
     }
 
@@ -331,8 +335,8 @@ public class GetCapabilitiesTransformerTest {
         tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
-        NodeList limitedCrsCodes = XPATH.getMatchingNodes(
-                "/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
+        NodeList limitedCrsCodes =
+                XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
         assertEquals(2, limitedCrsCodes.getLength());
     }
 
@@ -341,8 +345,13 @@ public class GetCapabilitiesTransformerTest {
         ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
         GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats,
-                Collections.singletonList(vendorCapsProvider));
+        tr =
+                new GetCapabilitiesTransformer(
+                        wmsConfig,
+                        baseUrl,
+                        mapFormats,
+                        legendFormats,
+                        Collections.singletonList(vendorCapsProvider));
         tr.setIndentation(2);
         checkVendorSpecificCapsProviders(tr);
     }
@@ -353,8 +362,13 @@ public class GetCapabilitiesTransformerTest {
         ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
         GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats,
-                Arrays.asList(emptyCapsProvider, vendorCapsProvider));
+        tr =
+                new GetCapabilitiesTransformer(
+                        wmsConfig,
+                        baseUrl,
+                        mapFormats,
+                        legendFormats,
+                        Arrays.asList(emptyCapsProvider, vendorCapsProvider));
         tr.setIndentation(2);
         checkVendorSpecificCapsProviders(tr);
     }
@@ -363,14 +377,17 @@ public class GetCapabilitiesTransformerTest {
             throws Exception, XpathException {
         Document dom = WMSTestSupport.transform(req, tr);
         assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer/SRS)", dom);
-        assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer[SRS='EPSG:4326'])", dom);
+        assertXpathEvaluatesTo(
+                "1", "count(/WMT_MS_Capabilities/Capability/Layer[SRS='EPSG:4326'])", dom);
 
-        NodeList list = XPATH.getMatchingNodes(
-                "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement", dom);
+        NodeList list =
+                XPATH.getMatchingNodes(
+                        "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement",
+                        dom);
         assertEquals(1, list.getLength());
 
-        list = XPATH
-                .getMatchingNodes(
+        list =
+                XPATH.getMatchingNodes(
                         "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement/TestSubElement",
                         dom);
         assertEquals(1, list.getLength());

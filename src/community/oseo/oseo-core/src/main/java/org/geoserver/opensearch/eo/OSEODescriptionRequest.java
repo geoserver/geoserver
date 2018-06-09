@@ -10,13 +10,13 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * Description request for a 2 step search OpenSearch for EO. May have no parameters for collection
  * search, or a parent collection identifier for collection searches
- *  
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class OSEODescriptionRequest {
 
     String parentId;
-    
+
     transient String baseUrl;
 
     public String getParentId() {
@@ -26,7 +26,7 @@ public class OSEODescriptionRequest {
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
-    
+
     public String getBaseUrl() {
         return baseUrl;
     }

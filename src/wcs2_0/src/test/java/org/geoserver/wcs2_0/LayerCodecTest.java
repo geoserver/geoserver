@@ -2,10 +2,8 @@ package org.geoserver.wcs2_0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.List;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -16,15 +14,13 @@ import org.junit.Test;
 
 public class LayerCodecTest extends GeoServerSystemTestSupport {
 
-    /**
-     * Only setup coverages
-     */
+    /** Only setup coverages */
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
         testData.setUpWcs10RasterLayers();
     }
-    
+
     @Test
     public void testBasicKVP() throws Exception {
         {
@@ -62,7 +58,5 @@ public class LayerCodecTest extends GeoServerSystemTestSupport {
             assertNotNull(list);
             assertEquals(1, list.size());
         }
-
     }
-
 }

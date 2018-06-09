@@ -17,7 +17,7 @@ public class JDBCEditUserPageTest extends EditUserPageTest {
     };
 
     @Test
-    public void testFill() throws Exception{
+    public void testFill() throws Exception {
         doTestFill();
     }
 
@@ -44,5 +44,4 @@ public class JDBCEditUserPageTest extends EditUserPageTest {
     public String getUserGroupServiceName() {
         return "h2";
     }
-
 }

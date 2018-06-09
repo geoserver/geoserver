@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.geoserver.geofence.core.model.AdminRule;
 import org.geoserver.geofence.core.model.IPAddressRange;
-
 import org.geoserver.geofence.core.model.enums.AdminGrantType;
 
 @XmlRootElement(name = "AdminRule")
@@ -29,17 +28,15 @@ public class JaxbAdminRule {
 
     private String access;
 
-    public JaxbAdminRule() {
-
-    }
+    public JaxbAdminRule() {}
 
     public JaxbAdminRule(AdminRule rule) {
         id = rule.getId();
         priority = rule.getPriority();
         userName = rule.getUsername();
         roleName = rule.getRolename();
-        addressRange = rule.getAddressRange() == null ? null
-                : rule.getAddressRange().getCidrSignature();
+        addressRange =
+                rule.getAddressRange() == null ? null : rule.getAddressRange().getCidrSignature();
         workspace = rule.getWorkspace();
         access = rule.getAccess().toString();
     }
@@ -143,9 +140,7 @@ public class JaxbAdminRule {
     }
 
     protected static String convertAny(String s) {
-        if ("".equals(s) || "*".equals(s))
-            return null;
-        else
-            return s;
+        if ("".equals(s) || "*".equals(s)) return null;
+        else return s;
     }
 }

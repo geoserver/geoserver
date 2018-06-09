@@ -6,10 +6,8 @@
 package org.geoserver.wps;
 
 import java.util.Locale;
-
 import net.opengis.ows11.CodeType;
 import net.opengis.wps10.DescribeProcessType;
-
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.wps.process.GeoServerProcessors;
@@ -67,7 +65,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
             }
 
             public void encode(Object object) throws IllegalArgumentException {
-                this.request = (DescribeProcessType)object;
+                this.request = (DescribeProcessType) object;
 
                 if (null == this.request.getLanguage()) {
                     this.locale = new Locale("en-CA");
@@ -78,22 +76,29 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                 this.dataTransformer = new DataTransformer(request.getBaseUrl());
 
                 AttributesImpl attrs = new AttributesImpl();
-                attrs.addAttribute("", "xmlns:xsi", "xmlns:xsi", "", DescribeProcessTransformer.XSI_URI);
-                attrs.addAttribute("", "xmlns",     "xmlns",     "", DescribeProcessTransformer.WPS_URI);
-                attrs.addAttribute("", "xmlns:wps", "xmlns:wps", "", DescribeProcessTransformer.WPS_URI);
+                attrs.addAttribute(
+                        "", "xmlns:xsi", "xmlns:xsi", "", DescribeProcessTransformer.XSI_URI);
+                attrs.addAttribute("", "xmlns", "xmlns", "", DescribeProcessTransformer.WPS_URI);
+                attrs.addAttribute(
+                        "", "xmlns:wps", "xmlns:wps", "", DescribeProcessTransformer.WPS_URI);
                 attrs.addAttribute("", "xmlns:ows", "xmlns:ows", "", OWS.NAMESPACE);
-                attrs.addAttribute("", "version",   "version",   "", "1.0.0");
-                attrs.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "",
-                    "http://www.opengis.net/wps/1.0.0 ../wpsDescribeProcess_request.xsd");
+                attrs.addAttribute("", "version", "version", "", "1.0.0");
+                attrs.addAttribute(
+                        "",
+                        "xsi:schemaLocation",
+                        "xsi:schemaLocation",
+                        "",
+                        "http://www.opengis.net/wps/1.0.0 ../wpsDescribeProcess_request.xsd");
 
                 start("wps:ProcessDescriptions", attrs);
 
-                if (null == this.request.getIdentifier() || this.request.getIdentifier().isEmpty()) {
+                if (null == this.request.getIdentifier()
+                        || this.request.getIdentifier().isEmpty()) {
                     throw new WPSException("Invalid identifier", "No identifier present");
                 }
 
                 for (Object identifier : this.request.getIdentifier()) {
-                    CodeType ct = (CodeType) identifier; 
+                    CodeType ct = (CodeType) identifier;
                     this.processDescription(Ows11Util.name(ct));
                 }
 
@@ -101,7 +106,8 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
             }
 
             private void processDescription(Name identifier) {
-                if ("all".equalsIgnoreCase(identifier.getLocalPart()) && identifier.getNamespaceURI() == null) {
+                if ("all".equalsIgnoreCase(identifier.getLocalPart())
+                        && identifier.getNamespaceURI() == null) {
                     this.processDescriptionAll();
 
                     return;
@@ -122,15 +128,25 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
 
             private void processDescription(ProcessFactory pf, Name identifier) {
                 AttributesImpl attributes = new AttributesImpl();
-                attributes.addAttribute("", "wps:processVersion", "wps:processVersion", "", pf.getVersion(identifier));
-                attributes.addAttribute("", "statusSupported",    "statusSupported",    "", Boolean.toString(pf.supportsProgress(identifier)));
+                attributes.addAttribute(
+                        "",
+                        "wps:processVersion",
+                        "wps:processVersion",
+                        "",
+                        pf.getVersion(identifier));
+                attributes.addAttribute(
+                        "",
+                        "statusSupported",
+                        "statusSupported",
+                        "",
+                        Boolean.toString(pf.supportsProgress(identifier)));
 
                 start("ProcessDescription", attributes);
-                    element("ows:Identifier", identifier.getURI());
-                    element("ows:Title",      pf.getTitle(identifier).toString(this.locale));
-                    element("ows:Abstract",   pf.getDescription(identifier).toString(this.locale));
-                    this.dataInputs(pf, identifier);
-                    this.processOutputs(pf, identifier);
+                element("ows:Identifier", identifier.getURI());
+                element("ows:Title", pf.getTitle(identifier).toString(this.locale));
+                element("ows:Abstract", pf.getDescription(identifier).toString(this.locale));
+                this.dataInputs(pf, identifier);
+                this.processOutputs(pf, identifier);
                 end("ProcessDescription");
             }
 
@@ -147,7 +163,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
 
             private void dataInputs(ProcessFactory pf, Name processName) {
                 start("DataInputs");
-                for(Parameter<?> inputIdentifier : pf.getParameterInfo(processName).values()) {
+                for (Parameter<?> inputIdentifier : pf.getParameterInfo(processName).values()) {
                     AttributesImpl attributes = new AttributesImpl();
 
                     // WPS spec specifies non-negative for unlimited inputs, so -1 -> 0
@@ -156,21 +172,23 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                         maxOccurs = Integer.MAX_VALUE;
                     }
 
-                    attributes.addAttribute("", "minOccurs", "minOccurs", "", "" + inputIdentifier.minOccurs);
+                    attributes.addAttribute(
+                            "", "minOccurs", "minOccurs", "", "" + inputIdentifier.minOccurs);
                     attributes.addAttribute("", "maxOccurs", "maxOccurs", "", "" + maxOccurs);
 
                     start("Input", attributes);
-                        element("ows:Identifier", inputIdentifier.key);
-                        element("ows:Title",      inputIdentifier.title.toString(      this.locale));
-                        element("ows:Abstract",   inputIdentifier.description.toString(this.locale));
-                        Transmuter transmuter = this.dataTransformer.getDefaultTransmuter(inputIdentifier.type);
-                        if (transmuter instanceof ComplexTransmuter) {
-                            start("ComplexData");
-                                this.complexParameter((ComplexTransmuter)transmuter);
-                            end("ComplexData");
-                        } else {
-                            this.literalData((LiteralTransmuter)transmuter);
-                        }
+                    element("ows:Identifier", inputIdentifier.key);
+                    element("ows:Title", inputIdentifier.title.toString(this.locale));
+                    element("ows:Abstract", inputIdentifier.description.toString(this.locale));
+                    Transmuter transmuter =
+                            this.dataTransformer.getDefaultTransmuter(inputIdentifier.type);
+                    if (transmuter instanceof ComplexTransmuter) {
+                        start("ComplexData");
+                        this.complexParameter((ComplexTransmuter) transmuter);
+                        end("ComplexData");
+                    } else {
+                        this.literalData((LiteralTransmuter) transmuter);
+                    }
                     end("Input");
                 }
                 end("DataInputs");
@@ -180,17 +198,18 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                 start("ProcessOutputs");
                 for (Parameter<?> outputIdentifier : pf.getResultInfo(processName, null).values()) {
                     start("Output");
-                        element("ows:Identifier", outputIdentifier.key);
-                        element("ows:Title",      outputIdentifier.title.toString(      this.locale));
-                        element("ows:Abstract",   outputIdentifier.description.toString(this.locale));
-                        Transmuter transmuter = this.dataTransformer.getDefaultTransmuter(outputIdentifier.type);
-                        if (transmuter instanceof ComplexTransmuter) {
-                            start("ComplexOutput");
-                                this.complexParameter((ComplexTransmuter)transmuter);
-                            end("ComplexOutput");
-                        } else {
-                            this.literalData((LiteralTransmuter)transmuter);
-                        }
+                    element("ows:Identifier", outputIdentifier.key);
+                    element("ows:Title", outputIdentifier.title.toString(this.locale));
+                    element("ows:Abstract", outputIdentifier.description.toString(this.locale));
+                    Transmuter transmuter =
+                            this.dataTransformer.getDefaultTransmuter(outputIdentifier.type);
+                    if (transmuter instanceof ComplexTransmuter) {
+                        start("ComplexOutput");
+                        this.complexParameter((ComplexTransmuter) transmuter);
+                        end("ComplexOutput");
+                    } else {
+                        this.literalData((LiteralTransmuter) transmuter);
+                    }
                     end("Output");
                 }
                 end("ProcessOutputs");
@@ -198,27 +217,28 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
 
             private void literalData(LiteralTransmuter transmuter) {
                 AttributesImpl attributes = new AttributesImpl();
-                attributes.addAttribute("", "ows:reference", "ows:reference", "", transmuter.getEncodedType());
+                attributes.addAttribute(
+                        "", "ows:reference", "ows:reference", "", transmuter.getEncodedType());
 
                 start("LiteralData");
-                    start("ows:DataType", attributes);
-                    end("ows:DataType");
+                start("ows:DataType", attributes);
+                end("ows:DataType");
                 end("LiteralData");
             }
 
             private void complexParameter(ComplexTransmuter transmuter) {
                 start("Default");
-                    this.format(transmuter);    // In future, this should select the default format
+                this.format(transmuter); // In future, this should select the default format
                 end("Default");
                 start("Supported");
-                    this.format(transmuter);    // In future, this should iterate over all formats
+                this.format(transmuter); // In future, this should iterate over all formats
                 end("Supported");
             }
 
             private void format(ComplexTransmuter transmuter) {
                 start("Format");
-                    element("MimeType", transmuter.getMimeType());
-                    element("Schema",   transmuter.getSchema(this.request.getBaseUrl()));
+                element("MimeType", transmuter.getMimeType());
+                element("Schema", transmuter.getSchema(this.request.getBaseUrl()));
                 end("Format");
             }
         }

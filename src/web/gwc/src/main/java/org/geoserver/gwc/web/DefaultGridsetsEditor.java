@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -36,9 +35,8 @@ import org.geowebcache.grid.GridSetBroker;
 /**
  * Form component that edits the default {@link GWCConfig#getDefaultCachingGridSetIds() cached
  * gridsets} for {@link CachingOptionsPanel}.
- * 
+ *
  * @author groldan
- * 
  */
 class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
@@ -63,8 +61,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component nameLink(final String id, final GridSet gridSet) {
             Label label = new Label(id, gridSet.getName());
-            label.add(new AttributeModifier("title", new Model<String>(gridSet
-                    .getDescription())));
+            label.add(new AttributeModifier("title", new Model<String>(gridSet.getDescription())));
             return label;
         }
 
@@ -72,33 +69,34 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         protected Component actionLink(final String id, String gridSetName) {
 
             @SuppressWarnings("rawtypes")
-            Component removeLink = new ImageAjaxLink(id, GWCIconFactory.DELETE_ICON) {
-                private static final long serialVersionUID = 1L;
+            Component removeLink =
+                    new ImageAjaxLink(id, GWCIconFactory.DELETE_ICON) {
+                        private static final long serialVersionUID = 1L;
 
-                /**
-                 * Removes the selected item from the provider's model
-                 */
-                @Override
-                protected void onClick(AjaxRequestTarget target) {
-                    final String gridsetName = getDefaultModelObjectAsString();
-                    List<String> selection = DefaultGridsetsEditor.this.selection.getObject();
-                    selection.remove(gridsetName);
-                    List<String> choices = new ArrayList<String>(availableGridSets.getChoices());
-                    choices.add(gridsetName);
-                    Collections.sort(choices);
-                    availableGridSets.setChoices(choices);
-                    target.add(defaultGridsetsTable);
-                    target.add(availableGridSets);
-                }
-            };
+                        /** Removes the selected item from the provider's model */
+                        @Override
+                        protected void onClick(AjaxRequestTarget target) {
+                            final String gridsetName = getDefaultModelObjectAsString();
+                            List<String> selection =
+                                    DefaultGridsetsEditor.this.selection.getObject();
+                            selection.remove(gridsetName);
+                            List<String> choices =
+                                    new ArrayList<String>(availableGridSets.getChoices());
+                            choices.add(gridsetName);
+                            Collections.sort(choices);
+                            availableGridSets.setChoices(choices);
+                            target.add(defaultGridsetsTable);
+                            target.add(availableGridSets);
+                        }
+                    };
             removeLink.setDefaultModel(new Model<String>(gridSetName));
 
             return removeLink;
         }
 
         @Override
-        protected Component getComponentForProperty(String id, IModel<GridSet> itemModel,
-                Property<GridSet> property) {
+        protected Component getComponentForProperty(
+                String id, IModel<GridSet> itemModel, Property<GridSet> property) {
             // Property objects are package access, so we can't statically reference them here
             // see org.geoserver.gwc.web.gridset.ACTION_LINK
             final String propertyName = property.getName();
@@ -109,82 +107,86 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
             }
             return null;
         }
-
     }
 
     public DefaultGridsetsEditor(final String id, final IModel<Set<String>> model) {
         super(id, model);
         selection = new Model<ArrayList<String>>(new ArrayList<String>(model.getObject()));
 
-        GridSetTableProvider provider = new GridSetTableProvider() {
-            private static final long serialVersionUID = 1L;
+        GridSetTableProvider provider =
+                new GridSetTableProvider() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public List<GridSet> getItems() {
-                GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
-                List<String> list = selection.getObject();
-                List<GridSet> gridsets = new ArrayList<GridSet>(list.size());
-                for (String id : list) {
-                    GridSet gridSet = gridSetBroker.get(id);
-                    if (gridSet != null) {
-                        gridsets.add(gridSet);
+                    @Override
+                    public List<GridSet> getItems() {
+                        GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
+                        List<String> list = selection.getObject();
+                        List<GridSet> gridsets = new ArrayList<GridSet>(list.size());
+                        for (String id : list) {
+                            GridSet gridSet = gridSetBroker.get(id);
+                            if (gridSet != null) {
+                                gridsets.add(gridSet);
+                            }
+                        }
+                        return gridsets;
                     }
-                }
-                return gridsets;
-            }
-        };
+                };
 
         defaultGridsetsTable = new DefaultGridSetsTable("table", provider);
         add(defaultGridsetsTable);
 
-        IModel<List<String>> availableModel = new LoadableDetachableModel<List<String>>() {
-            private static final long serialVersionUID = 1L;
+        IModel<List<String>> availableModel =
+                new LoadableDetachableModel<List<String>>() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected List<String> load() {
-                List<String> gridSetNames = new ArrayList<String>(GWC.get().getGridSetBroker()
-                        .getNames());
-                for (String gsId : selection.getObject()) {
-                    gridSetNames.remove(gsId);
-                }
-                Collections.sort(gridSetNames);
-                return gridSetNames;
-            }
-        };
+                    @Override
+                    protected List<String> load() {
+                        List<String> gridSetNames =
+                                new ArrayList<String>(GWC.get().getGridSetBroker().getNames());
+                        for (String gsId : selection.getObject()) {
+                            gridSetNames.remove(gsId);
+                        }
+                        Collections.sort(gridSetNames);
+                        return gridSetNames;
+                    }
+                };
 
-        availableGridSets = new DropDownChoice<String>("availableGridsets", new Model<String>(),
-                availableModel);
+        availableGridSets =
+                new DropDownChoice<String>(
+                        "availableGridsets", new Model<String>(), availableModel);
         availableGridSets.setOutputMarkupId(true);
         add(availableGridSets);
 
-        GeoServerAjaxFormLink addGridsubsetLink = new GeoServerAjaxFormLink("addGridset") {
-            private static final long serialVersionUID = 1L;
+        GeoServerAjaxFormLink addGridsubsetLink =
+                new GeoServerAjaxFormLink("addGridset") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                availableGridSets.processInput();
+                    @Override
+                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                        availableGridSets.processInput();
 
-                final String selectedGridset = availableGridSets.getModelObject();
-                if (null == selectedGridset) {
-                    return;
-                }
+                        final String selectedGridset = availableGridSets.getModelObject();
+                        if (null == selectedGridset) {
+                            return;
+                        }
 
-                List<String> choices = new ArrayList<String>(availableGridSets.getChoices());
-                choices.remove(selectedGridset);
-                availableGridSets.setChoices(choices);
-                availableGridSets.setEnabled(!choices.isEmpty());
+                        List<String> choices =
+                                new ArrayList<String>(availableGridSets.getChoices());
+                        choices.remove(selectedGridset);
+                        availableGridSets.setChoices(choices);
+                        availableGridSets.setEnabled(!choices.isEmpty());
 
-                List<String> selectedIds = selection.getObject();
-                selectedIds.add(selectedGridset);
-                // Execute setPageable() in order to re-create the inner record list updated.
-                defaultGridsetsTable.setPageable(false);
-                target.add(defaultGridsetsTable);
-                target.add(availableGridSets);
-            }
-        };
+                        List<String> selectedIds = selection.getObject();
+                        selectedIds.add(selectedGridset);
+                        // Execute setPageable() in order to re-create the inner record list
+                        // updated.
+                        defaultGridsetsTable.setPageable(false);
+                        target.add(defaultGridsetsTable);
+                        target.add(availableGridSets);
+                    }
+                };
         addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
         add(addGridsubsetLink);
-
     }
 
     @Override
@@ -195,8 +197,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         setConvertedInput(convertedInput);
     }
 
-    /**
-     */
+    /** */
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();

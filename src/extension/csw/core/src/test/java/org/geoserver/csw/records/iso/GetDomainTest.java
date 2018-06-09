@@ -10,15 +10,15 @@ public class GetDomainTest extends MDTestSupport {
 
     @Test
     public void testGetDomain() throws Exception {
-        Document dom = getAsDOM("csw?service=csw&version=2.0.2&request=GetDomain&propertyName=Title");
+        Document dom =
+                getAsDOM("csw?service=csw&version=2.0.2&request=GetDomain&propertyName=Title");
         print(dom);
 
-        assertXpathEvaluatesTo("Title",
-                "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);
+        assertXpathEvaluatesTo(
+                "Title", "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);
         assertXpathEvaluatesTo("29", "count(//csw:Value)", dom);
         assertXpathExists("//csw:Value[.='AggregateGeoFeature']", dom);
         assertXpathExists("//csw:Value[.='BasicPolygons']", dom);
         assertXpathExists("//csw:Value[.='Bridges']", dom);
-
     }
 }

@@ -6,9 +6,9 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 
 /**
- * Adds a error message to the home page in case the current user is the administrator
- * and the disk quota store failed to load
- * 
+ * Adds a error message to the home page in case the current user is the administrator and the disk
+ * quota store failed to load
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DiskQuotaWarningProvider implements GeoServerHomePageContentProvider {
@@ -16,11 +16,11 @@ public class DiskQuotaWarningProvider implements GeoServerHomePageContentProvide
     @Override
     public Component getPageBodyComponent(String id) {
         GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
-        if (secMgr.checkAuthenticationForAdminRole() && DiskQuotaWarningPanel.getException() != null) {
+        if (secMgr.checkAuthenticationForAdminRole()
+                && DiskQuotaWarningPanel.getException() != null) {
             return new DiskQuotaWarningPanel(id);
         } else {
             return null;
         }
     }
-
 }

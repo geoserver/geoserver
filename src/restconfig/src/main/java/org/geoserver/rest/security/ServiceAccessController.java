@@ -6,7 +6,6 @@ package org.geoserver.rest.security;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.impl.ServiceAccessRule;
 import org.geoserver.security.impl.ServiceAccessRuleDAO;
@@ -42,13 +41,16 @@ public class ServiceAccessController extends AbstractAclController {
     protected String validateRuleKey(String ruleKey) {
         String[] elements = parseElements(ruleKey);
         if (elements.length != 2) {
-            return "Invalid rule " + ruleKey
+            return "Invalid rule "
+                    + ruleKey
                     + ", the expected format is service.method=role1,role2,...";
         }
 
         if (ANY.equals(elements[0])) {
             if (!ANY.equals(elements[1])) {
-                return "Invalid rule " + ruleKey + ", when namespace "
+                return "Invalid rule "
+                        + ruleKey
+                        + ", when namespace "
                         + "is * then also layer must be *.";
             }
         }
@@ -60,10 +62,9 @@ public class ServiceAccessController extends AbstractAclController {
         // regexp: ignore extra spaces, split on dot
         return path.split("\\s*\\.\\s*");
     }
-    
+
     @Override
     protected String getBasePath() {
         return "/security/acl/services";
     }
-
 }

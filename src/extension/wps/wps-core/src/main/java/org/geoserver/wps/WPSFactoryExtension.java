@@ -17,5 +17,4 @@ public class WPSFactoryExtension extends ServiceFactoryExtension<WPSInfo> {
     public <T> T create(Class<T> clazz) {
         return (T) new WPSInfoImpl();
     }
-
 }

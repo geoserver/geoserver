@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
-
 import org.geoserver.opensearch.eo.store.CollectionLayer;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
@@ -18,8 +17,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 
 /**
- * This one exists solely to have a converter that will care for the collection objects without hitting GeoServer own xstream converter, which is
- * generating an ugly output
+ * This one exists solely to have a converter that will care for the collection objects without
+ * hitting GeoServer own xstream converter, which is generating an ugly output
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -31,7 +30,7 @@ public class OseoJSONConverter extends BaseMessageConverter<Object> {
     public OseoJSONConverter() {
         super(MediaType.APPLICATION_JSON);
     }
-    
+
     @Override
     protected boolean supports(Class clazz) {
         return (OgcLinks.class.isAssignableFrom(clazz)

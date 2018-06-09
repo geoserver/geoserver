@@ -29,8 +29,8 @@ public class GeoFenceAuthProviderPanel
 
     private static final long serialVersionUID = 4454241105050831394L;
 
-    public GeoFenceAuthProviderPanel(String id,
-            IModel<GeoFenceAuthenticationProviderConfig> model) {
+    public GeoFenceAuthProviderPanel(
+            String id, IModel<GeoFenceAuthenticationProviderConfig> model) {
         super(id, model);
     }
 }

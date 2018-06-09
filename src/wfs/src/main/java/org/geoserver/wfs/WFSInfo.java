@@ -8,7 +8,6 @@ package org.geoserver.wfs;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.config.ServiceInfo;
 
 public interface WFSInfo extends ServiceInfo {
@@ -19,7 +18,7 @@ public interface WFSInfo extends ServiceInfo {
         V_20("2.0.0");
 
         org.geotools.util.Version version;
-        
+
         Version(String ver) {
             this.version = new org.geotools.util.Version(ver);
         }
@@ -28,14 +27,14 @@ public interface WFSInfo extends ServiceInfo {
             return version;
         }
 
-        static Version get( String v ) {
-            if ( v.startsWith( "1.0") ) {
+        static Version get(String v) {
+            if (v.startsWith("1.0")) {
                 return V_10;
             }
-            if ( v.startsWith( "1.1") ) {
+            if (v.startsWith("1.1")) {
                 return V_11;
             }
-            if ( v.startsWith( "2.0") ) {
+            if (v.startsWith("2.0")) {
                 return V_20;
             }
             return null;
@@ -60,7 +59,7 @@ public interface WFSInfo extends ServiceInfo {
             return V_20;
         }
     };
-    
+
     static enum Operation {
         GETCAPABILITIES {
             public int getCode() {
@@ -72,16 +71,16 @@ public interface WFSInfo extends ServiceInfo {
                 return 0;
             }
         },
-        GETFEATURE{
+        GETFEATURE {
             public int getCode() {
                 return 1;
             }
-        } ,
-        LOCKFEATURE{
+        },
+        LOCKFEATURE {
             public int getCode() {
                 return 2;
             }
-        } ,
+        },
         TRANSACTION_INSERT {
             public int getCode() {
                 return 4;
@@ -96,173 +95,156 @@ public interface WFSInfo extends ServiceInfo {
             public int getCode() {
                 return 16;
             }
-        }, 
+        },
         TRANSACTION_REPLACE {
             public int getCode() {
                 return 32;
             }
         };
-        
-        abstract public int getCode();
+
+        public abstract int getCode();
     }
-    
+
     static enum ServiceLevel {
         BASIC {
             public int getCode() {
                 return 1;
-            } 
+            }
+
             public List<Operation> getOps() {
                 return Arrays.asList(
-                    Operation.GETCAPABILITIES,Operation.DESCRIBEFEATURETYPE,
-                    Operation.GETFEATURE
-                );
+                        Operation.GETCAPABILITIES,
+                        Operation.DESCRIBEFEATURETYPE,
+                        Operation.GETFEATURE);
             }
-        }, 
+        },
         TRANSACTIONAL {
             public int getCode() {
                 return 15;
             }
+
             public List<Operation> getOps() {
                 return Arrays.asList(
-                    Operation.GETCAPABILITIES,Operation.DESCRIBEFEATURETYPE,
-                    Operation.GETFEATURE, Operation.TRANSACTION_INSERT, 
-                    Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE
-                );
+                        Operation.GETCAPABILITIES, Operation.DESCRIBEFEATURETYPE,
+                        Operation.GETFEATURE, Operation.TRANSACTION_INSERT,
+                        Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE);
             }
-        }, 
+        },
         COMPLETE {
             public int getCode() {
                 return 31;
             }
+
             public List<Operation> getOps() {
                 return Arrays.asList(
-                    Operation.GETCAPABILITIES,Operation.DESCRIBEFEATURETYPE,
-                    Operation.GETFEATURE, Operation.TRANSACTION_INSERT, 
-                    Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE,
-                    Operation.TRANSACTION_REPLACE, Operation.LOCKFEATURE
-                );
+                        Operation.GETCAPABILITIES, Operation.DESCRIBEFEATURETYPE,
+                        Operation.GETFEATURE, Operation.TRANSACTION_INSERT,
+                        Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE,
+                        Operation.TRANSACTION_REPLACE, Operation.LOCKFEATURE);
             }
         };
-        
-        abstract public int getCode();
-        abstract public List<Operation> getOps();
-        
+
+        public abstract int getCode();
+
+        public abstract List<Operation> getOps();
+
         boolean contains(ServiceLevel other) {
-            return getOps().containsAll( other.getOps() );
+            return getOps().containsAll(other.getOps());
         }
-    
-        static public ServiceLevel get( int code ) {
-            for ( ServiceLevel s : values() ) {
-                if ( s.getCode() == code ) {
+
+        public static ServiceLevel get(int code) {
+            for (ServiceLevel s : values()) {
+                if (s.getCode() == code) {
                     return s;
                 }
             }
-            
+
             return null;
         }
     };
-    
-    
-    
-    /**
-     * A map of wfs version to gml encoding configuration.
-     */
-    Map<Version,GMLInfo> getGML();
-    
+
+    /** A map of wfs version to gml encoding configuration. */
+    Map<Version, GMLInfo> getGML();
+
     /**
      * A global cap on the number of features to allow when processing a request.
-     * 
+     *
      * @uml.property name="maxFeatures"
      */
     int getMaxFeatures();
 
     /**
-     * Sets the global cap on the number of features to allow when processing a 
-     * request.
+     * Sets the global cap on the number of features to allow when processing a request.
+     *
      * @uml.property name="maxFeatures"
      */
     void setMaxFeatures(int maxFeatures);
-    
-    /**
-     * The level of service provided by the WFS.
-     */
+
+    /** The level of service provided by the WFS. */
     ServiceLevel getServiceLevel();
 
+    /** Sets the level of service provided by the WFS. */
+    void setServiceLevel(ServiceLevel serviceLevel);
+
     /**
-     * Sets the level of service provided by the WFS. 
-     */
-    void setServiceLevel( ServiceLevel serviceLevel );
-    
-    /**
-     * The flag which determines if gml:bounds elements should be encoded
-     * at the feature level in gml output.
+     * The flag which determines if gml:bounds elements should be encoded at the feature level in
+     * gml output.
      */
     boolean isFeatureBounding();
-    
+
     /**
-     * Sets the flag which determines if gml:bounds elements should be encoded
-     * at the feature level in gml output.
-     * 
+     * Sets the flag which determines if gml:bounds elements should be encoded at the feature level
+     * in gml output.
      */
-    void setFeatureBounding( boolean featureBounding);
-    
+    void setFeatureBounding(boolean featureBounding);
+
     /**
-     * Get the flag that determines the encoding of the WFS schemaLocation. 
-     * True if the WFS schemaLocation should refer to the canonical location,
-     * false if the WFS schemaLocation should refer to a copy served by GeoServer.
+     * Get the flag that determines the encoding of the WFS schemaLocation. True if the WFS
+     * schemaLocation should refer to the canonical location, false if the WFS schemaLocation should
+     * refer to a copy served by GeoServer.
      */
     boolean isCanonicalSchemaLocation();
 
     /**
-     * Set the flag that determines the encoding of the WFS schemaLocation. 
-     * True if the WFS schemaLocation should refer to the canonical location,
-     * false if the WFS schemaLocation should refer to a copy served by GeoServer.
+     * Set the flag that determines the encoding of the WFS schemaLocation. True if the WFS
+     * schemaLocation should refer to the canonical location, false if the WFS schemaLocation should
+     * refer to a copy served by GeoServer.
      */
     void setCanonicalSchemaLocation(boolean canonicalSchemaLocation);
 
     /**
-     * Get the flag that determines encoding of featureMember or featureMembers 
-     * True if the featureMember should be encoded 
-     * False if the featureMembers should be encoded
-     * 
+     * Get the flag that determines encoding of featureMember or featureMembers True if the
+     * featureMember should be encoded False if the featureMembers should be encoded
+     *
      * @return encodingFeatureMember
      */
     boolean isEncodeFeatureMember();
 
-    /**
-     * set the response encoding option, featureMembers or featureMember
-     */
+    /** set the response encoding option, featureMembers or featureMember */
     void setEncodeFeatureMember(boolean encodeFeatureMember);
-    
-    
+
     /**
-     * Get the flag that determines if WFS hit requests (counts) will ignore
-     * the maximum features limit for this server
+     * Get the flag that determines if WFS hit requests (counts) will ignore the maximum features
+     * limit for this server
+     *
      * @return hitsIgnoreMaxFeatures
-     */ 
-    boolean isHitsIgnoreMaxFeatures();
-    
-    /**
-     * Set the option to ignore the maximum feature limit for WFS hit counts
      */
+    boolean isHitsIgnoreMaxFeatures();
+
+    /** Set the option to ignore the maximum feature limit for WFS hit counts */
     void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures);
-    
+
     /**
-     * Get the maximum number of features to be displayed in a layer preview.
-     * Can be defined by the user. By default, 50.
+     * Get the maximum number of features to be displayed in a layer preview. Can be defined by the
+     * user. By default, 50.
+     *
      * @return maxNumberOfFeaturesForPreview
      */
     Integer getMaxNumberOfFeaturesForPreview();
-    
-    /**
-     * Set the maximum number of features to be displayed in a layer preview
-     */
-    void setMaxNumberOfFeaturesForPreview(Integer maxNumberOfFeaturesForPreview);
-    
-    /**
-     * The srs's that the WFS service will advertise in the capabilities document
-     */
-    List<String> getSRS();
 
-    
+    /** Set the maximum number of features to be displayed in a layer preview */
+    void setMaxNumberOfFeaturesForPreview(Integer maxNumberOfFeaturesForPreview);
+
+    /** The srs's that the WFS service will advertise in the capabilities document */
+    List<String> getSRS();
 }

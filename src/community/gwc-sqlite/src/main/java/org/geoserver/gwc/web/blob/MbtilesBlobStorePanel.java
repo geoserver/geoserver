@@ -6,7 +6,6 @@ package org.geoserver.gwc.web.blob;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -16,9 +15,7 @@ import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geowebcache.sqlite.MbtilesConfiguration;
 
-/**
- * Panel that contains the properties required to configure a MBTiles blob store.
- */
+/** Panel that contains the properties required to configure a MBTiles blob store. */
 public class MbtilesBlobStorePanel extends SqliteBlobStorePanel<MbtilesConfiguration> {
 
     public MbtilesBlobStorePanel(String id, IModel<MbtilesConfiguration> configurationModel) {
@@ -29,13 +26,28 @@ public class MbtilesBlobStorePanel extends SqliteBlobStorePanel<MbtilesConfigura
     protected void onInitialize() {
         super.onInitialize();
         // the directory that may contain user provided mbtiles metadata
-        DirectoryParamPanel directoryPanel = new DirectoryParamPanel("mbtilesMetadataDirectory", new PropertyModel<>(
-                getDefaultModel().getObject(), "mbtilesMetadataDirectory"), new ParamResourceModel("mbtilesMetadataDirectory",this), false);
+        DirectoryParamPanel directoryPanel =
+                new DirectoryParamPanel(
+                        "mbtilesMetadataDirectory",
+                        new PropertyModel<>(
+                                getDefaultModel().getObject(), "mbtilesMetadataDirectory"),
+                        new ParamResourceModel("mbtilesMetadataDirectory", this),
+                        false);
         add(directoryPanel);
-        directoryPanel.getFormComponent().setModel(new PropertyModel<>(getDefaultModel().getObject(), "mbtilesMetadataDirectory"));
-        directoryPanel.setFileFilter(new Model<>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
+        directoryPanel
+                .getFormComponent()
+                .setModel(
+                        new PropertyModel<>(
+                                getDefaultModel().getObject(), "mbtilesMetadataDirectory"));
+        directoryPanel.setFileFilter(
+                new Model<>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
         // controls the store executor concurrency (this is used to parallelize some operations)
-        add(new TextField<Integer>("executorConcurrency").setRequired(true).
-                add(new AttributeModifier("executorConcurrency", new ResourceModel("executorConcurrency"))));
+        add(
+                new TextField<Integer>("executorConcurrency")
+                        .setRequired(true)
+                        .add(
+                                new AttributeModifier(
+                                        "executorConcurrency",
+                                        new ResourceModel("executorConcurrency"))));
     }
 }

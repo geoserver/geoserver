@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AuthUser;
 import org.geoserver.security.GeoServerAuthenticationProvider;
@@ -42,14 +40,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * Authentication provider that delegates to GeoFence
- * 
+ *
  * @author ETj (etj at geo-solutions.it)
  */
 public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvider
         implements AuthenticationManager {
 
-    private final static Logger LOGGER = Logging
-            .getLogger(GeoFenceAuthenticationProvider.class.getName());
+    private static final Logger LOGGER =
+            Logging.getLogger(GeoFenceAuthenticationProvider.class.getName());
     // protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     private RuleReaderService ruleReaderService;
@@ -75,21 +73,24 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
         LOGGER.log(Level.FINE, "Auth request with {0}", authentication);
 
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken inTok = (UsernamePasswordAuthenticationToken) authentication;
+            UsernamePasswordAuthenticationToken inTok =
+                    (UsernamePasswordAuthenticationToken) authentication;
 
             AuthUser authUser = null;
             try {
-                authUser = ruleReaderService.authorize(inTok.getPrincipal().toString(),
-                        inTok.getCredentials().toString());
+                authUser =
+                        ruleReaderService.authorize(
+                                inTok.getPrincipal().toString(), inTok.getCredentials().toString());
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error in authenticating with GeoFence", e);
-                throw new AuthenticationException("Error in GeoFence communication", e) {
-                };
+                throw new AuthenticationException("Error in GeoFence communication", e) {};
             }
 
             if (authUser != null) {
-                LOGGER.log(Level.FINE, "User {0} authenticated: {1}",
-                        new Object[] { inTok.getPrincipal(), authUser });
+                LOGGER.log(
+                        Level.FINE,
+                        "User {0} authenticated: {1}",
+                        new Object[] {inTok.getPrincipal(), authUser});
 
                 List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
                 roles.addAll(inTok.getAuthorities());
@@ -99,13 +100,15 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
                     roles.add(new SimpleGrantedAuthority("ADMIN")); // needed for REST?!?
                 }
 
-                outTok = new UsernamePasswordAuthenticationToken(inTok.getPrincipal(),
-                        inTok.getCredentials(), roles);
+                outTok =
+                        new UsernamePasswordAuthenticationToken(
+                                inTok.getPrincipal(), inTok.getCredentials(), roles);
 
             } else { // authUser == null
                 if ("admin".equals(inTok.getPrincipal())
                         && "geoserver".equals(inTok.getCredentials())) {
-                    LOGGER.log(Level.FINE,
+                    LOGGER.log(
+                            Level.FINE,
                             "Default admin credentials NOT authenticated -- probably a frontend check");
                 } else {
                     LOGGER.log(Level.INFO, "User {0} NOT authenticated", inTok.getPrincipal());
@@ -121,5 +124,4 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
     public void setRuleReaderService(RuleReaderService ruleReaderService) {
         this.ruleReaderService = ruleReaderService;
     }
-
 }

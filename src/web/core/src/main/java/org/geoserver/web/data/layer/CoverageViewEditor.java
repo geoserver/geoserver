@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -28,15 +27,13 @@ import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 
-/**
- *
- */
+/** */
 @SuppressWarnings("serial")
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     IModel<List<String>> coverages;
     IModel<List<CoverageBand>> outputBands;
-    List<String> availableCoverages; 
+    List<String> availableCoverages;
     List<CoverageBand> currentOutputBands;
     ListMultipleChoice<String> coveragesChoice;
     CompositionType compositionType;
@@ -48,11 +45,14 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     /**
      * Creates a new editor.
-     * 
+     *
      * @param id
      * @param The module should return a non null collection of strings.
      */
-    public CoverageViewEditor(String id, final IModel<List<String>> inputCoverages, final IModel<List<CoverageBand>> bands,
+    public CoverageViewEditor(
+            String id,
+            final IModel<List<String>> inputCoverages,
+            final IModel<List<CoverageBand>> bands,
             List<String> availableCoverages) {
         super(id, inputCoverages);
         this.coverages = inputCoverages;
@@ -60,26 +60,32 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
         this.availableCoverages = availableCoverages;
 
-        coveragesChoice = new ListMultipleChoice<String>("coveragesChoice", new Model<>(),
-                new ArrayList<String>((List<String>) coverages.getObject()),
-                new ChoiceRenderer<String>() {
-                    @Override
-                    public Object getDisplayValue(String coverage) {
-                        return coverage;
-                    }
-                });
+        coveragesChoice =
+                new ListMultipleChoice<String>(
+                        "coveragesChoice",
+                        new Model<>(),
+                        new ArrayList<String>((List<String>) coverages.getObject()),
+                        new ChoiceRenderer<String>() {
+                            @Override
+                            public Object getDisplayValue(String coverage) {
+                                return coverage;
+                            }
+                        });
         coveragesChoice.setOutputMarkupId(true);
         add(coveragesChoice);
 
         new ArrayList<CoverageBand>();
-        outputBandsChoice = new ListMultipleChoice<CoverageBand>("outputBandsChoice", new Model<>(),
-                new ArrayList<CoverageBand>(outputBands.getObject()),
-                new ChoiceRenderer<CoverageBand>() {
-                    @Override
-                    public Object getDisplayValue(CoverageBand vcb) {
-                        return vcb.getDefinition();
-                    }
-                });
+        outputBandsChoice =
+                new ListMultipleChoice<CoverageBand>(
+                        "outputBandsChoice",
+                        new Model<>(),
+                        new ArrayList<CoverageBand>(outputBands.getObject()),
+                        new ChoiceRenderer<CoverageBand>() {
+                            @Override
+                            public Object getDisplayValue(CoverageBand vcb) {
+                                return vcb.getDefinition();
+                            }
+                        });
         outputBandsChoice.setOutputMarkupId(true);
         add(outputBandsChoice);
 
@@ -92,113 +98,128 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         // TODO: make this parametric on the CompositionType choice
         definition.setEnabled(false);
         // TODO Uncomment this row when it can be used
-        //add(definition);
+        // add(definition);
         compositionType = CompositionType.getDefault();
-        compositionChoice = new DropDownChoice<>("compositionType", new PropertyModel<>(this,
-                "compositionType"), Arrays.asList(CompositionType.BAND_SELECT), new CompositionTypeRenderer());
+        compositionChoice =
+                new DropDownChoice<>(
+                        "compositionType",
+                        new PropertyModel<>(this, "compositionType"),
+                        Arrays.asList(CompositionType.BAND_SELECT),
+                        new CompositionTypeRenderer());
 
         compositionChoice.setOutputMarkupId(true);
-        compositionChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = 1L;
+        compositionChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                compositionType = compositionChoice.getModelObject();
-                // TODO Uncomment these rows when they can be used
-                //definition.setEnabled(compositionType != CompositionType.BAND_SELECT);
-                //target.add(definition);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        compositionType = compositionChoice.getModelObject();
+                        // TODO Uncomment these rows when they can be used
+                        // definition.setEnabled(compositionType != CompositionType.BAND_SELECT);
+                        // target.add(definition);
+                    }
+                });
 
         // TODO Uncomment this row when it can be used
-        //add(compositionChoice);
+        // add(compositionChoice);
         add(addRemoveAllButton());
         add(addRemoveButton());
     }
 
     private AjaxButton addBandButton() {
-        AjaxButton button = new AjaxButton("addBand") {
+        AjaxButton button =
+                new AjaxButton("addBand") {
 
-            @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<String> selection = (List<String>) coveragesChoice.getModelObject();
-                compositionType = compositionChoice.getModelObject();
-                List<CoverageBand> bandsList = new ArrayList<CoverageBand>();
-                int i = currentOutputBands != null && !currentOutputBands.isEmpty() ? currentOutputBands.size() : 0;
-                for (Iterator<String> it = selection.iterator(); it.hasNext();) {
-                    String coverage = it.next();
+                    @Override
+                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        List<String> selection = (List<String>) coveragesChoice.getModelObject();
+                        compositionType = compositionChoice.getModelObject();
+                        List<CoverageBand> bandsList = new ArrayList<CoverageBand>();
+                        int i =
+                                currentOutputBands != null && !currentOutputBands.isEmpty()
+                                        ? currentOutputBands.size()
+                                        : 0;
+                        for (Iterator<String> it = selection.iterator(); it.hasNext(); ) {
+                            String coverage = it.next();
 
-                    final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
-                    String coverageName = coverage;
-                    String bandIndex = null;
-                    if (bandIndexChar != -1) {
-                        coverageName = coverage.substring(0, bandIndexChar);
-                        bandIndex = coverage.substring(bandIndexChar + 1, coverage.length());
+                            final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
+                            String coverageName = coverage;
+                            String bandIndex = null;
+                            if (bandIndexChar != -1) {
+                                coverageName = coverage.substring(0, bandIndexChar);
+                                bandIndex =
+                                        coverage.substring(bandIndexChar + 1, coverage.length());
+                            }
+                            CoverageBand band =
+                                    new CoverageBand(
+                                            Collections.singletonList(
+                                                    new InputCoverageBand(coverageName, bandIndex)),
+                                            coverage,
+                                            i++,
+                                            compositionType);
+                            bandsList.add(band);
+                        }
+                        currentOutputBands.addAll(bandsList);
+                        outputBandsChoice.setChoices(currentOutputBands);
+                        outputBandsChoice.modelChanged();
+                        coveragesChoice.setChoices(availableCoverages);
+                        coveragesChoice.modelChanged();
+
+                        // TODO: Reset choice
+                        target.add(coveragesChoice);
+                        target.add(outputBandsChoice);
                     }
-                    CoverageBand band = new CoverageBand(
-                            Collections.singletonList(new InputCoverageBand(coverageName, bandIndex)),
-                            coverage, i++, compositionType);
-                    bandsList.add(band);
-
-                }
-                currentOutputBands.addAll(bandsList);
-                outputBandsChoice.setChoices(currentOutputBands);
-                outputBandsChoice.modelChanged();
-                coveragesChoice.setChoices(availableCoverages);
-                coveragesChoice.modelChanged();
-
-                // TODO: Reset choice
-                target.add(coveragesChoice);
-                target.add(outputBandsChoice);
-            }
-        };
+                };
         return button;
     }
 
     private AjaxButton addRemoveAllButton() {
-        AjaxButton button = new AjaxButton("removeAllBands") {
+        AjaxButton button =
+                new AjaxButton("removeAllBands") {
 
-            @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<CoverageBand> outputBands = (List<CoverageBand>) outputBandsChoice
-                        .getModelObject();
-                outputBands.clear();
-                currentOutputBands.clear();
-                outputBandsChoice.setChoices(currentOutputBands);
-                outputBandsChoice.modelChanged();
+                    @Override
+                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        List<CoverageBand> outputBands =
+                                (List<CoverageBand>) outputBandsChoice.getModelObject();
+                        outputBands.clear();
+                        currentOutputBands.clear();
+                        outputBandsChoice.setChoices(currentOutputBands);
+                        outputBandsChoice.modelChanged();
 
-                // TODO: Reset choice
-                target.add(outputBandsChoice);
-            }
-        };
+                        // TODO: Reset choice
+                        target.add(outputBandsChoice);
+                    }
+                };
         return button;
     }
 
     private AjaxButton addRemoveButton() {
-        AjaxButton button = new AjaxButton("removeBands") {
+        AjaxButton button =
+                new AjaxButton("removeBands") {
 
-            @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    @Override
+                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 
-                List<CoverageBand> removedBands = (List<CoverageBand>) outputBandsChoice
-                        .getModel().getObject();
+                        List<CoverageBand> removedBands =
+                                (List<CoverageBand>) outputBandsChoice.getModel().getObject();
 
-                for (Object band : removedBands) {
-                    currentOutputBands.remove(band);
-                }
+                        for (Object band : removedBands) {
+                            currentOutputBands.remove(band);
+                        }
 
-                outputBandsChoice.setChoices(currentOutputBands);
-                outputBandsChoice.modelChanged();
+                        outputBandsChoice.setChoices(currentOutputBands);
+                        outputBandsChoice.modelChanged();
 
-                // TODO: Reset choice
-                target.add(outputBandsChoice);
-            }
-        };
+                        // TODO: Reset choice
+                        target.add(outputBandsChoice);
+                    }
+                };
         return button;
     }
 
     private class CompositionTypeRenderer extends ChoiceRenderer<CompositionType> {
-    
+
         public Object getDisplayValue(CompositionType object) {
             return object.displayValue();
         }
@@ -207,5 +228,4 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             return object.toValue();
         }
     }
-
 }

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-
 import org.apache.log4j.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -22,21 +21,21 @@ import org.opengis.feature.type.Name;
 
 /**
  * Implementation of {@link Repository}
- * 
- * The class makes a lookup in the GoeServer catalog.
- * 
- * If nothing is found, the class interprets the data source name as a file name or an URL for a
+ *
+ * <p>The class makes a lookup in the GoeServer catalog.
+ *
+ * <p>If nothing is found, the class interprets the data source name as a file name or an URL for a
  * property file containing the ds creation parameters
- * 
- * For shape files ending with .shp or SHP, the shape file could be passed as name
- * 
+ *
+ * <p>For shape files ending with .shp or SHP, the shape file could be passed as name
+ *
  * @author Christian Mueller
  */
 public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository {
 
     protected URL getURLForLocation(String location) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        File f = loader.url(location);        
+        File f = loader.url(location);
         URL url = null;
         if (f.exists()) {
             url = f.toURI().toURL();
@@ -50,8 +49,8 @@ public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository
     @Override
     public DataStore dataStore(Name name) {
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
-        DataStoreInfo info = catalog
-                .getDataStoreByName(name.getNamespaceURI(), name.getLocalPart());
+        DataStoreInfo info =
+                catalog.getDataStoreByName(name.getNamespaceURI(), name.getLocalPart());
         if (info != null) {
             try {
                 return (DataStore) info.getDataStore(null);
@@ -59,8 +58,8 @@ public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository
                 throw new RuntimeException(ex);
             }
         }
-        Logger.getLogger(this.getClass().getName()).info("Not in Geoserver catalog: "+name.toString());
+        Logger.getLogger(this.getClass().getName())
+                .info("Not in Geoserver catalog: " + name.toString());
         return super.dataStore(name);
     }
-
 }

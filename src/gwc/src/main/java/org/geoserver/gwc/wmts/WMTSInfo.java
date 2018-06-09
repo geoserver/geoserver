@@ -6,5 +6,4 @@ package org.geoserver.gwc.wmts;
 
 import org.geoserver.config.ServiceInfo;
 
-public interface WMTSInfo extends ServiceInfo {
-}
+public interface WMTSInfo extends ServiceInfo {}

@@ -7,7 +7,6 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.util.logging.Level;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.geoserver.catalog.Catalog;
@@ -22,7 +21,7 @@ import org.opengis.feature.type.FeatureType;
 
 /**
  * Provides a form to configure a new geotools {@link DataAccess}
- * 
+ *
  * @author Gabriel Roldan
  */
 public class DataAccessNewPage extends AbstractDataAccessPage {
@@ -31,12 +30,10 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
 
     /**
      * Creates a new datastore configuration page to create a new datastore of the given type
-     * 
-     * @param the
-     *            workspace to attach the new datastore to, like in {@link WorkspaceInfo#getId()}
-     * 
-     * @param dataStoreFactDisplayName
-     *            the type of datastore to create, given by its factory display name
+     *
+     * @param the workspace to attach the new datastore to, like in {@link WorkspaceInfo#getId()}
+     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display
+     *     name
      */
     public DataAccessNewPage(final String dataStoreFactDisplayName) {
         super();
@@ -72,23 +69,22 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     /**
      * Callback method called when the submit button have been pressed and the parameters validation
      * has succeed.
-     * 
-     * @param paramsForm
-     *            the form to report any error to
+     *
+     * @param paramsForm the form to report any error to
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
     @Override
     protected final void onSaveDataStore(final DataStoreInfo info, AjaxRequestTarget target)
             throws IllegalArgumentException {
-        if(!storeEditPanel.onSave()) {
+        if (!storeEditPanel.onSave()) {
             return;
         }
-        
+
         final Catalog catalog = getCatalog();
 
         // Cloning into "expandedStore" through the super class "clone" method
         DataStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
-        
+
         DataAccess<? extends FeatureType, ? extends Feature> dataStore;
         try {
             // REVISIT: this may need to be done after saving the DataStoreInfo
@@ -108,10 +104,10 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         try {
             // GeoServer Env substitution; validate first
             catalog.validate(savedStore, true).throwIfInvalid();
-            
+
             // save a copy, so if NewLayerPage fails we can keep on editing this one without being
             // proxied
-            
+
             // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
             savedStore = catalog.getResourcePool().clone(info, false);
             // ...and save
@@ -142,5 +138,4 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         }
         setResponsePage(newLayerPage);
     }
-
 }

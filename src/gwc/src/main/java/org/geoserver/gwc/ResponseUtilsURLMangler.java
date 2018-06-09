@@ -14,5 +14,4 @@ public class ResponseUtilsURLMangler implements URLMangler {
         String rest = cp + "/" + StringUtils.stripStart(path, "/");
         return ResponseUtils.buildURL(base, rest, null, URLType.RESOURCE);
     }
-
 }

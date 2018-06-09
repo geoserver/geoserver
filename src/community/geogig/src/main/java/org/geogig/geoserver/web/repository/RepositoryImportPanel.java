@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -52,8 +50,8 @@ import org.slf4j.LoggerFactory;
  * {@link DirectoryChooser} is configured to allow repository directories to be selected instead of
  * just the parent directory. As such, the repository name is not separately selected. The
  * differences also called for a slightly different way of wrapping the {@link RepositoryInfo} data
- * bean with a different data model, {@link ImportRepositoryFormModel} and
- * {@link ImportRepositoryFormBean}.
+ * bean with a different data model, {@link ImportRepositoryFormModel} and {@link
+ * ImportRepositoryFormBean}.
  */
 public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
 
@@ -74,117 +72,133 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
         // build the backing form model
         ImportRepositoryFormModel formModel = new ImportRepositoryFormModel(model);
         // add the dropdown to switch between configurations
-        dropdownPanel = new DropDownChoiceParamPanel("configChoicePanel", new DropDownModel(model),
-                new ResourceModel("RepositoryImportPanel.repositoryType",
-                        "Repository Type"), DropDownModel.CONFIG_LIST, true);
+        dropdownPanel =
+                new DropDownChoiceParamPanel(
+                        "configChoicePanel",
+                        new DropDownModel(model),
+                        new ResourceModel(
+                                "RepositoryImportPanel.repositoryType", "Repository Type"),
+                        DropDownModel.CONFIG_LIST,
+                        true);
         final DropDownChoice<Serializable> dropDownChoice = dropdownPanel.getFormComponent();
-        dropDownChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+        dropDownChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
 
-            private static final long serialVersionUID = 1L;
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                final String value = dropDownChoice.getModelObject().toString();
-                repoDirectoryComponent.setVisible(DropDownModel.DIRECTORY_CONFIG.equals(value));
-                pgPanel.setVisible(DropDownModel.PG_CONFIG.equals(value));
-                repoNamePanel.setVisible(DropDownModel.PG_CONFIG.equals(value));
-                target.add(settingsPanel);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        final String value = dropDownChoice.getModelObject().toString();
+                        repoDirectoryComponent.setVisible(
+                                DropDownModel.DIRECTORY_CONFIG.equals(value));
+                        pgPanel.setVisible(DropDownModel.PG_CONFIG.equals(value));
+                        repoNamePanel.setVisible(DropDownModel.PG_CONFIG.equals(value));
+                        target.add(settingsPanel);
+                    }
+                });
         add(dropdownPanel);
 
         settingsPanel = new WebMarkupContainer("settingsContainer");
         settingsPanel.setOutputMarkupId(true);
         add(settingsPanel);
 
-        repoNamePanel = new TextParamPanel("repositoryNamePanel", new PropertyModel(formModel,
-                "repoName"),
-                new ResourceModel("RepositoryImportPanel.repositoryName",
-                        "Repository Name"), true);
+        repoNamePanel =
+                new TextParamPanel(
+                        "repositoryNamePanel",
+                        new PropertyModel(formModel, "repoName"),
+                        new ResourceModel(
+                                "RepositoryImportPanel.repositoryName", "Repository Name"),
+                        true);
         repoNamePanel.setOutputMarkupId(true);
         repoNamePanel.getFormComponent().setOutputMarkupId(true);
-        repoNamePanel.setVisible(DropDownModel.PG_CONFIG.equals(dropDownChoice.getModelObject()
-                .toString()));
+        repoNamePanel.setVisible(
+                DropDownModel.PG_CONFIG.equals(dropDownChoice.getModelObject().toString()));
         settingsPanel.add(repoNamePanel);
 
         pgPanel = new PostgresConfigFormPanel("pgPanel", new PropertyModel<>(formModel, "pgBean"));
-        pgPanel.setVisible(DropDownModel.PG_CONFIG
-                .equals(dropDownChoice.getModelObject().toString()));
+        pgPanel.setVisible(
+                DropDownModel.PG_CONFIG.equals(dropDownChoice.getModelObject().toString()));
         settingsPanel.add(pgPanel);
 
         repoDirectoryComponent = new RepoDirectoryComponent("repoDirectoryPanel", formModel);
         repoDirectoryComponent.setOutputMarkupId(true);
-        repoDirectoryComponent
-                .setVisible(DropDownModel.DIRECTORY_CONFIG.equals(dropDownChoice.getModelObject()
-                        .toString()));
+        repoDirectoryComponent.setVisible(
+                DropDownModel.DIRECTORY_CONFIG.equals(dropDownChoice.getModelObject().toString()));
         settingsPanel.add(repoDirectoryComponent);
 
-        add(new IValidator<RepositoryInfo>() {
+        add(
+                new IValidator<RepositoryInfo>() {
 
-            private static final long serialVersionUID = 1L;
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void validate(IValidatable<RepositoryInfo> validatable) {
-                ValidationError error = new ValidationError();
-                RepositoryInfo repo = validatable.getValue();
-                // block duplicate names first
-                if (RepositoryManager.get().repoExistsByName(repo.getRepoName())) {
-                    error.addKey("errRepositoryNameExists");
-                    validatable.error(error);
-                    return;
-                }
-                final URI location = repo.getLocation();
-                // look for already configured repos
-                if (RepositoryManager.get().repoExistsByLocation(location)) {
-                    error.addKey("errRepositoryAlreadyConfigured");
-                    return;
-                }
-                if (error.getKeys().isEmpty()) {
-                    final RepositoryResolver resolver = RepositoryResolver.lookup(location);
-                    final String scheme = location.getScheme();
-                    if ("file".equals(scheme)) {
-                        File repoDir = new File(location);
-                        if (!repoDir.exists() || !repoDir.isDirectory()) {
-                            error.addKey("errRepositoryDirectoryDoesntExist");
+                    @Override
+                    public void validate(IValidatable<RepositoryInfo> validatable) {
+                        ValidationError error = new ValidationError();
+                        RepositoryInfo repo = validatable.getValue();
+                        // block duplicate names first
+                        if (RepositoryManager.get().repoExistsByName(repo.getRepoName())) {
+                            error.addKey("errRepositoryNameExists");
+                            validatable.error(error);
+                            return;
                         }
-                        if (!isGeogigDirectory(repoDir)) {
-                            error.addKey("notAGeogigRepository");
+                        final URI location = repo.getLocation();
+                        // look for already configured repos
+                        if (RepositoryManager.get().repoExistsByLocation(location)) {
+                            error.addKey("errRepositoryAlreadyConfigured");
+                            return;
                         }
-                    } else if ("postgresql".equals(scheme)) {
-                        try {
-                            if (!resolver.repoExists(location)) {
-                                error.addKey("errRepositoryDoesntExist");
+                        if (error.getKeys().isEmpty()) {
+                            final RepositoryResolver resolver = RepositoryResolver.lookup(location);
+                            final String scheme = location.getScheme();
+                            if ("file".equals(scheme)) {
+                                File repoDir = new File(location);
+                                if (!repoDir.exists() || !repoDir.isDirectory()) {
+                                    error.addKey("errRepositoryDirectoryDoesntExist");
+                                }
+                                if (!isGeogigDirectory(repoDir)) {
+                                    error.addKey("notAGeogigRepository");
+                                }
+                            } else if ("postgresql".equals(scheme)) {
+                                try {
+                                    if (!resolver.repoExists(location)) {
+                                        error.addKey("errRepositoryDoesntExist");
+                                    }
+                                } catch (Exception ex) {
+                                    // likely failed to connect
+                                    LOGGER.error("Failed to connect to PostgreSQL database", ex);
+                                    error.addKey("errCannotConnectToDatabase");
+                                    // find root cause
+                                    error.setVariable(
+                                            "message",
+                                            PostgresConnectionErrorHandler.getMessage(ex));
+                                }
                             }
-                        } catch (Exception ex) {
-                            // likely failed to connect
-                            LOGGER.error("Failed to connect to PostgreSQL database", ex);
-                            error.addKey("errCannotConnectToDatabase");
-                            // find root cause
-                            error.setVariable("message", PostgresConnectionErrorHandler.getMessage(
-                                    ex));
+                        }
+                        if (!error.getKeys().isEmpty()) {
+                            validatable.error(error);
                         }
                     }
-                }
-                if (!error.getKeys().isEmpty()) {
-                    validatable.error(error);
-                }
-            }
-        });
+                });
     }
 
     @Override
     public void convertInput() {
         RepositoryInfo repoInfo = getModelObject();
-        final String repoTypeChoice = dropdownPanel.getFormComponent().getConvertedInput()
-                .toString();
+        final String repoTypeChoice =
+                dropdownPanel.getFormComponent().getConvertedInput().toString();
         if (null != repoTypeChoice) {
             switch (repoTypeChoice) {
                 case DropDownModel.PG_CONFIG:
                     // PG config used
                     PostgresConfigBean bean = pgPanel.getConvertedInput();
                     // build a URI out of the config
-                    URI uri = bean.buildUriForRepo(repoNamePanel.getFormComponent()
-                            .getConvertedInput().toString().trim());
+                    URI uri =
+                            bean.buildUriForRepo(
+                                    repoNamePanel
+                                            .getFormComponent()
+                                            .getConvertedInput()
+                                            .toString()
+                                            .trim());
                     repoInfo.setLocation(uri);
                     break;
                 case DropDownModel.DIRECTORY_CONFIG:
@@ -195,8 +209,10 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
                     break;
                 default:
                     throw new IllegalStateException(
-                            String.format("Unknown repositry type '%s', expected one of %s, %s",
-                                    repoTypeChoice, DropDownModel.PG_CONFIG,
+                            String.format(
+                                    "Unknown repositry type '%s', expected one of %s, %s",
+                                    repoTypeChoice,
+                                    DropDownModel.PG_CONFIG,
                                     DropDownModel.DIRECTORY_CONFIG));
             }
         }
@@ -216,23 +232,24 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
             dialog = new ModalWindow("dialog");
             add(dialog);
 
-            repoDirectoryField = new TextField<>("repoDirectory", new PropertyModel<String>(model,
-                    "repoDirectory"));
+            repoDirectoryField =
+                    new TextField<>(
+                            "repoDirectory", new PropertyModel<String>(model, "repoDirectory"));
             repoDirectoryField.setRequired(true);
             repoDirectoryField.setOutputMarkupId(true);
 
-            IModel<String> labelModel = new ResourceModel(
-                    "RepositoryImportPanel.directoryLabel",
-                    "Repository Directory") {
+            IModel<String> labelModel =
+                    new ResourceModel(
+                            "RepositoryImportPanel.directoryLabel", "Repository Directory") {
 
-                private static final long serialVersionUID = 1L;
+                        private static final long serialVersionUID = 1L;
 
-                @Override
-                public String getObject() {
-                    String value = super.getObject();
-                    return value + " *";
-                }
-            };
+                        @Override
+                        public String getObject() {
+                            String value = super.getObject();
+                            return value + " *";
+                        }
+                    };
 
             Label directoryLabel = new Label("repoLabel", labelModel.getObject());
             add(directoryLabel);
@@ -270,35 +287,37 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
                     if (repoDir != null && !repoDir.trim().isEmpty()) {
                         repoDirFile = new File(repoDir);
                     }
-                    DirectoryChooser chooser = new DirectoryChooser(dialog.getContentId(),
-                            new Model<>(repoDirFile), true) {
+                    DirectoryChooser chooser =
+                            new DirectoryChooser(
+                                    dialog.getContentId(), new Model<>(repoDirFile), true) {
 
-                        private static final long serialVersionUID = 1L;
+                                private static final long serialVersionUID = 1L;
 
-                        @Override
-                        protected void geogigDirectoryClicked(File file, AjaxRequestTarget target) {
-                            repoDirectoryField.clearInput();
-                            repoDirectoryField.setModelObject(file.getAbsolutePath());
-                            target.add(repoDirectoryField);
-                            dialog.close(target);
-                        }
+                                @Override
+                                protected void geogigDirectoryClicked(
+                                        File file, AjaxRequestTarget target) {
+                                    repoDirectoryField.clearInput();
+                                    repoDirectoryField.setModelObject(file.getAbsolutePath());
+                                    target.add(repoDirectoryField);
+                                    dialog.close(target);
+                                }
 
-                        @Override
-                        protected void directorySelected(File file, AjaxRequestTarget target) {
-                            repoDirectoryField.clearInput();
-                            repoDirectoryField.setModelObject(file.getAbsolutePath());
-                            target.add(repoDirectoryField);
-                            dialog.close(target);
-                        }
-
-                    };
+                                @Override
+                                protected void directorySelected(
+                                        File file, AjaxRequestTarget target) {
+                                    repoDirectoryField.clearInput();
+                                    repoDirectoryField.setModelObject(file.getAbsolutePath());
+                                    target.add(repoDirectoryField);
+                                    dialog.close(target);
+                                }
+                            };
                     chooser.setFileTableHeight(null);
                     dialog.setContent(chooser);
-                    dialog.setTitle(new ResourceModel(
-                            "GeoGigDirectoryFormComponent.chooser.chooseParentTile"));
+                    dialog.setTitle(
+                            new ResourceModel(
+                                    "GeoGigDirectoryFormComponent.chooser.chooseParentTile"));
                     dialog.show(target);
                 }
-
             };
         }
     }

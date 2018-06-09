@@ -12,6 +12,8 @@ import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import java.io.IOException;
+import java.util.Collection;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
@@ -22,11 +24,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-import java.io.IOException;
-import java.util.Collection;
-
 /**
- * Converter to handle the serialization of lists of catalog resources, which need some special handling
+ * Converter to handle the serialization of lists of catalog resources, which need some special
+ * handling
  */
 public abstract class XStreamCatalogListConverter
         extends XStreamMessageConverter<RestListWrapper<?>> {
@@ -37,7 +37,7 @@ public abstract class XStreamCatalogListConverter
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return RestListWrapper.class.isAssignableFrom(clazz); // can write RestListWrapper 
+        return RestListWrapper.class.isAssignableFrom(clazz); // can write RestListWrapper
     }
 
     //
@@ -47,10 +47,11 @@ public abstract class XStreamCatalogListConverter
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
     }
-    
+
     @Override
-    public RestListWrapper<?> readInternal(Class<? extends RestListWrapper<?>> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    public RestListWrapper<?> readInternal(
+            Class<? extends RestListWrapper<?>> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
                 getClass().getName() + " does not support deserialization of catalog lists");
     }
@@ -75,65 +76,71 @@ public abstract class XStreamCatalogListConverter
         final String name = getItemName(xp, clazz);
         xstream.alias(name, clazz);
 
-        xstream.registerConverter(new CollectionConverter(xstream.getMapper()) {
-            @SuppressWarnings("rawtypes")
-            @Override
-            public boolean canConvert(Class type) {
-                return Collection.class.isAssignableFrom(type);
-            }
+        xstream.registerConverter(
+                new CollectionConverter(xstream.getMapper()) {
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    public boolean canConvert(Class type) {
+                        return Collection.class.isAssignableFrom(type);
+                    }
 
-            @Override
-            protected void writeItem(Object item, MarshallingContext context,
-                    HierarchicalStreamWriter writer) {
+                    @Override
+                    protected void writeItem(
+                            Object item,
+                            MarshallingContext context,
+                            HierarchicalStreamWriter writer) {
 
-                writer.startNode(name);
-                context.convertAnother(item);
-                writer.endNode();
-            }
-        });
-        xstream.registerConverter(new Converter() {
-            @SuppressWarnings("rawtypes")
-            public boolean canConvert(Class type) {
-                return clazz.isAssignableFrom(type);
-            }
+                        writer.startNode(name);
+                        context.convertAnother(item);
+                        writer.endNode();
+                    }
+                });
+        xstream.registerConverter(
+                new Converter() {
+                    @SuppressWarnings("rawtypes")
+                    public boolean canConvert(Class type) {
+                        return clazz.isAssignableFrom(type);
+                    }
 
-            public void marshal(Object source, HierarchicalStreamWriter writer,
-                    MarshallingContext context) {
+                    public void marshal(
+                            Object source,
+                            HierarchicalStreamWriter writer,
+                            MarshallingContext context) {
 
-                String ref;
-                if (OwsUtils.getter(clazz, "name", String.class) != null) {
-                    ref = (String) OwsUtils.get(source, "name");
-                } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
-                    ref = (String) OwsUtils.get(source, "id");
-                } else if (OwsUtils.getter(clazz, "id", Long.class) != null) {
-                    // For some reason Importer objects have Long ids so this catches that case
-                    ref = OwsUtils.get(source, "id").toString();
-                }
+                        String ref;
+                        if (OwsUtils.getter(clazz, "name", String.class) != null) {
+                            ref = (String) OwsUtils.get(source, "name");
+                        } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
+                            ref = (String) OwsUtils.get(source, "id");
+                        } else if (OwsUtils.getter(clazz, "id", Long.class) != null) {
+                            // For some reason Importer objects have Long ids so this catches that
+                            // case
+                            ref = OwsUtils.get(source, "id").toString();
+                        } else {
+                            throw new RuntimeException(
+                                    "Could not determine identifier for: " + clazz.getName());
+                        }
+                        writer.startNode("name");
+                        writer.setValue(ref);
+                        writer.endNode();
 
-                else {
-                    throw new RuntimeException(
-                            "Could not determine identifier for: " + clazz.getName());
-                }
-                writer.startNode("name");
-                writer.setValue(ref);
-                writer.endNode();
+                        encodeLink(encode(ref), writer);
+                    }
 
-                encodeLink(encode(ref), writer);
-            }
-
-            public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-                return null;
-            }
-        });
+                    public Object unmarshal(
+                            HierarchicalStreamReader reader, UnmarshallingContext context) {
+                        return null;
+                    }
+                });
     }
 
     /**
      * Template method to alias the type of the collection.
-     * <p>
-     * The default works with list, subclasses may override for instance to work with a Set.
-     * </p>
+     *
+     * <p>The default works with list, subclasses may override for instance to work with a Set.
      */
-    protected void aliasCollection(Object data, XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
+    protected void aliasCollection(
+            Object data, XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
         XStreamPersister xp = xpf.createXMLPersister();
         wrapper.configurePersister(xp, this);
         final String alias = getItemName(xp, clazz);
@@ -144,9 +151,7 @@ public abstract class XStreamCatalogListConverter
         return xp.getClassAliasingMapper().serializedClass(clazz);
     }
 
-    /**
-     * XML handling for catalog lists
-     */
+    /** XML handling for catalog lists */
     public static class XMLXStreamListConverter extends XStreamCatalogListConverter {
 
         public XMLXStreamListConverter() {
@@ -182,7 +187,7 @@ public abstract class XStreamCatalogListConverter
     public static class JSONXStreamListConverter extends XStreamCatalogListConverter {
 
         public JSONXStreamListConverter() {
-            super(MediaType.APPLICATION_JSON,XStreamJSONMessageConverter.TEXT_JSON);
+            super(MediaType.APPLICATION_JSON, XStreamJSONMessageConverter.TEXT_JSON);
         }
 
         @Override

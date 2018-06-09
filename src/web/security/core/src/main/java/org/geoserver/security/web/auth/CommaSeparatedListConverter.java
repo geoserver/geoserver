@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 
@@ -25,7 +24,8 @@ public class CommaSeparatedListConverter implements IConverter<List<String>> {
         String[] split = value.split("\\s*,\\s*");
         final ArrayList list = new ArrayList<>();
         // Need to return an implementation of List<String> that isn't private.
-        // Arrays.asList returns a private inner class inside Arrays that can't be added to the allowed XStream types.
+        // Arrays.asList returns a private inner class inside Arrays that can't be added to the
+        // allowed XStream types.
         for (String val : split) {
             list.add(val);
         }
@@ -36,5 +36,4 @@ public class CommaSeparatedListConverter implements IConverter<List<String>> {
     public String convertToString(List<String> value, Locale locale) {
         return value.stream().collect(Collectors.joining(", "));
     }
-
 }

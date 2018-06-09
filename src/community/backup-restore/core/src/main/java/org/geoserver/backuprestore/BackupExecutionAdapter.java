@@ -7,10 +7,10 @@ package org.geoserver.backuprestore;
 import org.springframework.batch.core.JobExecution;
 
 /**
- * Wraps a Spring Batch Backup {@link JobExecution} by adding specific {@link Backup} I/O parameters.
- * 
- * @author Alessio Fabiani, GeoSolutions
+ * Wraps a Spring Batch Backup {@link JobExecution} by adding specific {@link Backup} I/O
+ * parameters.
  *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class BackupExecutionAdapter extends AbstractExecutionAdapter {
 
@@ -20,18 +20,13 @@ public class BackupExecutionAdapter extends AbstractExecutionAdapter {
         super(jobExecution, totalNumberOfSteps);
     }
 
-    /**
-     * @return the overwrite
-     */
+    /** @return the overwrite */
     public boolean isOverwrite() {
         return overwrite;
     }
 
-    /**
-     * @param overwrite the overwrite to set
-     */
+    /** @param overwrite the overwrite to set */
     public void setOverwrite(boolean overwrite) {
         this.overwrite = overwrite;
     }
-
 }

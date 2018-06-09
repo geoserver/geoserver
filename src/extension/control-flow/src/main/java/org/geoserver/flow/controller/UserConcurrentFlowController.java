@@ -9,7 +9,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.flow.ControlFlowCallback;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
@@ -21,7 +20,7 @@ import org.geotools.util.logging.Logging;
  * many queues are accumulated a scan starts that purges all queues that are empty and have not been
  * touched within a given amount of time: the idea is that a past that time we're assuming the
  * client is no more working actively against the server and the queue can thus be removed.
- * 
+ *
  * @author Andrea Aime - OpenGeo
  * @author Juan Marin, OpenGeo
  */
@@ -29,32 +28,26 @@ public class UserConcurrentFlowController extends QueueController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
     /**
-     * Thread local holding the current request queue id TODO: consider having a user map in
-     * {@link Request} instead
+     * Thread local holding the current request queue id TODO: consider having a user map in {@link
+     * Request} instead
      */
     static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
 
     CookieKeyGenerator keyGenerator = new CookieKeyGenerator();
 
-    /**
-     * Last time we've performed a queue cleanup
-     */
+    /** Last time we've performed a queue cleanup */
     long lastCleanup = System.currentTimeMillis();
 
-    /**
-     * Number of queues at which we start looking for purging stale ones
-     */
+    /** Number of queues at which we start looking for purging stale ones */
     int maxQueues = 100;
 
-    /**
-     * Time it takes for an inactive queue to be considered stale
-     */
+    /** Time it takes for an inactive queue to be considered stale */
     int maxAge = 10000;
 
     /**
      * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
      * been accumulated and
-     * 
+     *
      * @param queueSize the maximum amount of per user concurrent requests
      */
     public UserConcurrentFlowController(int queueSize) {
@@ -63,7 +56,7 @@ public class UserConcurrentFlowController extends QueueController {
 
     /**
      * Builds a new {@link UserConcurrentFlowController}
-     * 
+     *
      * @param queueSize the maximum amount of per user concurrent requests
      * @param maxQueues the number of accumulated user queues that will trigger a queue cleanup
      * @param maxAge the max quiet time for an empty queue to be considered stale and removed
@@ -80,8 +73,7 @@ public class UserConcurrentFlowController extends QueueController {
         QUEUE_ID.remove();
         if (queueId != null) {
             BlockingQueue<Request> queue = queues.get(queueId);
-            if (queue != null)
-                queue.remove(request);
+            if (queue != null) queue.remove(request);
         }
     }
 
@@ -108,14 +100,25 @@ public class UserConcurrentFlowController extends QueueController {
                 queue.put(request);
             }
         } catch (InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Unexpected interruption while "
-                    + "blocking on the request queue");
+            LOGGER.log(
+                    Level.WARNING,
+                    "Unexpected interruption while " + "blocking on the request queue");
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("UserFlowController(" + queueSize + "," + queueId
-                    + ") queue size " + queue.size());
-            LOGGER.fine("UserFlowController(" + queueSize + "," + queueId
-                    + ") total queues " + queues.size());
+            LOGGER.fine(
+                    "UserFlowController("
+                            + queueSize
+                            + ","
+                            + queueId
+                            + ") queue size "
+                            + queue.size());
+            LOGGER.fine(
+                    "UserFlowController("
+                            + queueSize
+                            + ","
+                            + queueId
+                            + ") total queues "
+                            + queues.size());
         }
 
         // cleanup stale queues if necessary
@@ -132,13 +135,16 @@ public class UserConcurrentFlowController extends QueueController {
                 }
                 lastCleanup = now;
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("UserFlowController(" + queueSize + ") purged " + cleanupCount
-                            + " stale queues");
+                    LOGGER.fine(
+                            "UserFlowController("
+                                    + queueSize
+                                    + ") purged "
+                                    + cleanupCount
+                                    + " stale queues");
                 }
             }
         }
 
         return retval;
     }
-
 }

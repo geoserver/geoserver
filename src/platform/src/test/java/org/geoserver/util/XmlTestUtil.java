@@ -16,13 +16,11 @@ import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -36,34 +34,34 @@ import org.w3c.dom.NodeList;
 
 /**
  * An aid for XML related testing.
- * 
- * @author Kevin Smith, Boundless
  *
+ * @author Kevin Smith, Boundless
  */
 public class XmlTestUtil {
     private OutputStream showXML = null;
     private Map<String, String> namespaces = new HashMap<>();
     private org.custommonkey.xmlunit.NamespaceContext namespaceContext;
-    
-    
+
     private void regenerateContext() {
-        namespaceContext=new SimpleNamespaceContext(namespaces);
+        namespaceContext = new SimpleNamespaceContext(namespaces);
     }
-    
+
     public XmlTestUtil() {
         regenerateContext();
     }
-    
+
     /**
      * Set an output stream to print XML to when a matcher fails. Null to disable.
+     *
      * @param showXML
      */
     public void setShowXML(OutputStream showXML) {
         this.showXML = showXML;
     }
-    
+
     /**
      * Add a namespace to be used when resolving XPath expressions.
+     *
      * @param prefix
      * @param uri
      */
@@ -71,84 +69,93 @@ public class XmlTestUtil {
         namespaces.put(prefix, uri);
         regenerateContext();
     }
-    
+
     /**
-     * Match a document where one node matched the XPath expression, and it also matches the given matcher.
+     * Match a document where one node matched the XPath expression, and it also matches the given
+     * matcher.
+     *
      * @param xPath
      * @param matcher
-     *
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Matcher<Document> hasOneNode(final String xPath, final Matcher<? super Node> matcher) {
-        return hasNodes(xPath, (Matcher)contains(matcher));
+        return hasNodes(xPath, (Matcher) contains(matcher));
     }
     /**
      * Match a document where one node matches the XPath expression.
+     *
      * @param xPath
      * @param matcher
-     *
      */
     public Matcher<Document> hasOneNode(final String xPath) {
         return hasOneNode(xPath, any(Node.class));
-    }    
+    }
     /**
-     * Match a document at least one of the nodes matched by the given XPath expression matches the given matcher.
+     * Match a document at least one of the nodes matched by the given XPath expression matches the
+     * given matcher.
+     *
      * @param xPath
      * @param matcher
-     *
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Matcher<Document> hasNode(final String xPath, final Matcher<Node> matcher) {
         return hasNodes(xPath, (Matcher) hasItem(matcher));
     }
-    
+
     /**
      * Match a document at least one node matches the given XPath.
+     *
      * @param xPath
      * @param matcher
-     *
      */
     public Matcher<Document> hasNode(final String xPath) {
         return hasNode(xPath, any(Node.class));
     }
-    
+
     /**
-     * Match a document where the list of nodes selected by the given XPath expression also matches the given matcher.
+     * Match a document where the list of nodes selected by the given XPath expression also matches
+     * the given matcher.
+     *
      * @param xPath
      * @param matcher
-     *
      */
-    public Matcher<Document> hasNodes(final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
+    public Matcher<Document> hasNodes(
+            final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
         return new BaseMatcher<Document>() {
-            
+
             @Override
             public boolean matches(Object item) {
                 XpathEngine engine = XMLUnit.newXpathEngine();
                 engine.setNamespaceContext(namespaceContext);
                 try {
-                    List<Node> nodes = nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
+                    List<Node> nodes =
+                            nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
                     return matcher.matches(nodes);
                 } catch (XpathException e) {
                     return false;
                 }
             }
-            
+
             @Override
             public void describeTo(Description description) {
-                description.appendText("Document where the list of nodes matching ")
-                    .appendValue(xPath).appendText(" is ").appendDescriptionOf(matcher);
+                description
+                        .appendText("Document where the list of nodes matching ")
+                        .appendValue(xPath)
+                        .appendText(" is ")
+                        .appendDescriptionOf(matcher);
             }
-            
+
             @Override
             public void describeMismatch(Object item, Description description) {
                 XpathEngine engine = XMLUnit.newXpathEngine();
                 engine.setNamespaceContext(namespaceContext);
                 try {
-                    List<Node> nodes = nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
-                    
+                    List<Node> nodes =
+                            nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
+
                     matcher.describeMismatch(nodes, description);
-                    
-                    if(showXML != null) {
+
+                    if (showXML != null) {
                         printDom((Document) item, showXML);
                     }
                 } catch (XpathException e) {
@@ -160,27 +167,28 @@ public class XmlTestUtil {
 
     /**
      * Make a Java List out of a DOM NodeList.
-     * @param nl
      *
+     * @param nl
      */
     public static List<Node> nodeCollection(final NodeList nl) {
         return new AbstractList<Node>() {
-            
+
             @Override
             public Node get(int index) {
                 return nl.item(index);
             }
-            
+
             @Override
             public int size() {
                 return nl.getLength();
             }
-            
         };
     }
-    
+
     /**
-     * Print a DOM tree to an output stream or if there is an exception while doing so, print the stack trace.
+     * Print a DOM tree to an output stream or if there is an exception while doing so, print the
+     * stack trace.
+     *
      * @param dom
      * @param os
      */
@@ -196,5 +204,4 @@ public class XmlTestUtil {
             e.printStackTrace(w);
         }
     }
-    
 }

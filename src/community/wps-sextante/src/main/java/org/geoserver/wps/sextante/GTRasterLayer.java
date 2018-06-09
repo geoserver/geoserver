@@ -5,282 +5,229 @@
  */
 package org.geoserver.wps.sextante;
 
+import es.unex.sextante.core.AnalysisExtent;
+import es.unex.sextante.dataObjects.AbstractRasterLayer;
+import es.unex.sextante.outputs.FileOutputChannel;
+import es.unex.sextante.outputs.IOutputChannel;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
-
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
-
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.coverage.grid.io.AbstractGridCoverageWriter;
-import org.geotools.gce.arcgrid.ArcGridWriter;
-import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import es.unex.sextante.core.AnalysisExtent;
-import es.unex.sextante.dataObjects.AbstractRasterLayer;
-import es.unex.sextante.outputs.FileOutputChannel;
-import es.unex.sextante.outputs.IOutputChannel;
+public class GTRasterLayer extends AbstractRasterLayer {
 
-public class GTRasterLayer
-         extends
-            AbstractRasterLayer {
+    private CoordinateReferenceSystem m_CRS;
+    private String m_sFilename;
+    private String m_sName = "";
+    private PlanarImage m_image;
+    private AnalysisExtent m_LayerExtent;
+    private double m_dNoDataValue;
+    private Object m_BaseDataObject;
 
-   private CoordinateReferenceSystem m_CRS;
-   private String                    m_sFilename;
-   private String                    m_sName = "";
-   private PlanarImage               m_image;
-   private AnalysisExtent            m_LayerExtent;
-   private double                    m_dNoDataValue;
-   private Object                    m_BaseDataObject;
+    public void create(
+            final String name,
+            final String filename,
+            final AnalysisExtent ge,
+            final int dataType,
+            final int numBands,
+            Object crs,
+            final double defaultNoDataValue) {
 
+        if (!(crs instanceof CoordinateReferenceSystem) || (crs == null)) {
+            crs = DefaultGeographicCRS.WGS84;
+        }
 
-   public void create(final String name,
-                      final String filename,
-                      final AnalysisExtent ge,
-                      final int dataType,
-                      final int numBands,
-                      Object crs,
-                      final double defaultNoDataValue) {
+        m_CRS = (CoordinateReferenceSystem) crs;
 
-      if (!(crs instanceof CoordinateReferenceSystem) || (crs == null)) {
-         crs = DefaultGeographicCRS.WGS84;
-      }
+        final Raster m_Raster =
+                RasterFactory.createBandedRaster(dataType, ge.getNX(), ge.getNY(), numBands, null);
 
-      m_CRS = (CoordinateReferenceSystem) crs;
+        double width = ge.getXMax() - ge.getXMin();
+        double height = ge.getYMax() - ge.getYMin();
+        final Envelope envelope =
+                new Envelope2D(
+                        (CoordinateReferenceSystem) crs, ge.getXMin(), ge.getYMin(), width, height);
 
-      final Raster m_Raster = RasterFactory.createBandedRaster(dataType, ge.getNX(), ge.getNY(), numBands, null);
-      
-      double width  = ge.getXMax() - ge.getXMin(); 
-      double height = ge.getYMax() - ge.getYMin();
-      final Envelope envelope = new Envelope2D((CoordinateReferenceSystem) crs, ge.getXMin(), ge.getYMin(), width, height);
-      
-      final GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-      final GridCoverage2D gc = factory.create(name, (WritableRaster) m_Raster, envelope, null, null, null, null, null);
-      m_BaseDataObject = gc;
-      m_sName = name;
-      m_sFilename = filename;
-      m_LayerExtent = ge;
-      m_image = (PlanarImage) gc.getRenderedImage();
-      m_dNoDataValue = defaultNoDataValue;
-      initNoData((GridCoverage2D) m_BaseDataObject);
+        final GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
+        final GridCoverage2D gc =
+                factory.create(
+                        name, (WritableRaster) m_Raster, envelope, null, null, null, null, null);
+        m_BaseDataObject = gc;
+        m_sName = name;
+        m_sFilename = filename;
+        m_LayerExtent = ge;
+        m_image = (PlanarImage) gc.getRenderedImage();
+        m_dNoDataValue = defaultNoDataValue;
+        initNoData((GridCoverage2D) m_BaseDataObject);
+    }
 
-   }
-
-
-   private void initNoData(final GridCoverage2D gc) {
-      final Object value = gc.getProperty("GC_NODATA");
-      if ((value != null) && (value instanceof Number)) {
-         m_dNoDataValue = ((Number) value).doubleValue();
-         return;
-      }
-      else {
-         final GridSampleDimension[] dimList = gc.getSampleDimensions();
-         double[] noDataList;
-         for (int i = 0; i < dimList.length; i++) {
-            noDataList = dimList[i].getNoDataValues();
-            if ((noDataList != null) && (noDataList.length > 0)) {
-               m_dNoDataValue = noDataList[0];
-               return;
+    private void initNoData(final GridCoverage2D gc) {
+        final Object value = gc.getProperty("GC_NODATA");
+        if ((value != null) && (value instanceof Number)) {
+            m_dNoDataValue = ((Number) value).doubleValue();
+            return;
+        } else {
+            final GridSampleDimension[] dimList = gc.getSampleDimensions();
+            double[] noDataList;
+            for (int i = 0; i < dimList.length; i++) {
+                noDataList = dimList[i].getNoDataValues();
+                if ((noDataList != null) && (noDataList.length > 0)) {
+                    m_dNoDataValue = noDataList[0];
+                    return;
+                }
             }
-         }
-      }
-      // ensure we got a sensible result, because some GridCoverage2D are not able to provide no-data values
-      //setNoDataValue(CommandLineData.getDefaultNoData());
-   }
+        }
+        // ensure we got a sensible result, because some GridCoverage2D are not able to provide
+        // no-data values
+        // setNoDataValue(CommandLineData.getDefaultNoData());
+    }
 
+    public void create(final Object obj) {
 
-   public void create(final Object obj) {
+        if (obj instanceof GridCoverage2D) {
+            m_BaseDataObject = obj;
+            final GridCoverage2D gc = ((GridCoverage2D) obj);
+            m_CRS = gc.getCoordinateReferenceSystem();
+            final Envelope2D env = gc.getEnvelope2D();
+            m_LayerExtent = new AnalysisExtent();
+            m_LayerExtent.setCellSize(
+                    (env.getMaxX() - env.getMinX()) / gc.getRenderedImage().getWidth());
+            m_LayerExtent.setXRange(env.getMinX(), env.getMaxX(), true);
+            m_LayerExtent.setYRange(env.getMinY(), env.getMaxY(), true);
+            m_image = (PlanarImage) gc.getRenderedImage();
+            m_sName = gc.getName().toString();
+            m_dNoDataValue =
+                    -99999; // -> Default value in 'OutputFactory::getDefaultNoDataValue()'.
+            initNoData(gc);
+        }
+    }
 
-      if (obj instanceof GridCoverage2D) {
-         m_BaseDataObject = obj;
-         final GridCoverage2D gc = ((GridCoverage2D) obj);
-         m_CRS = gc.getCoordinateReferenceSystem();
-         final Envelope2D env = gc.getEnvelope2D();
-         m_LayerExtent = new AnalysisExtent();
-         m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX()) / gc.getRenderedImage().getWidth());
-         m_LayerExtent.setXRange(env.getMinX(), env.getMaxX(), true);
-         m_LayerExtent.setYRange(env.getMinY(), env.getMaxY(), true);
-         m_image = (PlanarImage) gc.getRenderedImage();
-         m_sName = gc.getName().toString();
-         m_dNoDataValue = -99999; //-> Default value in 'OutputFactory::getDefaultNoDataValue()'. 
-         initNoData(gc);
-      }
+    public int getBandsCount() {
 
-   }
+        if (m_BaseDataObject != null) {
+            final GridCoverage2D gc = (GridCoverage2D) m_BaseDataObject;
+            return gc.getNumSampleDimensions();
+        } else {
+            return 0;
+        }
+    }
 
+    public double getCellValueInLayerCoords(final int x, final int y, final int band) {
 
-   public int getBandsCount() {
-
-      if (m_BaseDataObject != null) {
-         final GridCoverage2D gc = (GridCoverage2D) m_BaseDataObject;
-         return gc.getNumSampleDimensions();
-      }
-      else {
-         return 0;
-      }
-
-   }
-
-
-   public double getCellValueInLayerCoords(final int x,
-                                           final int y,
-                                           final int band) {
-
-      try {
-         if (m_image != null) {
-            return getTile(x, y).getSampleDouble(x, y, band);
-         }
-         else {
+        try {
+            if (m_image != null) {
+                return getTile(x, y).getSampleDouble(x, y, band);
+            } else {
+                return getNoDataValue();
+            }
+        } catch (final Exception e) {
             return getNoDataValue();
-         }
-      }
-      catch (final Exception e) {
-         return getNoDataValue();
-      }
+        }
+    }
 
-   }
+    public int getDataType() {
 
+        if (m_image != null) {
+            return m_image.getTile(0, 0).getDataBuffer().getDataType();
+        } else {
+            return DataBuffer.TYPE_DOUBLE;
+        }
+    }
 
-   public int getDataType() {
+    public double getLayerCellSize() {
 
-      if (m_image != null) {
-         return m_image.getTile(0, 0).getDataBuffer().getDataType();
-      }
-      else {
-         return DataBuffer.TYPE_DOUBLE;
-      }
+        if (m_LayerExtent != null) {
+            return m_LayerExtent.getCellSize();
+        } else {
+            return 0;
+        }
+    }
 
-   }
+    public AnalysisExtent getLayerGridExtent() {
 
+        return m_LayerExtent;
+    }
 
-   public double getLayerCellSize() {
+    public double getNoDataValue() {
 
-      if (m_LayerExtent != null) {
-         return m_LayerExtent.getCellSize();
-      }
-      else {
-         return 0;
-      }
+        return m_dNoDataValue;
+    }
 
-   }
+    public void setCellValue(final int x, final int y, final int band, final double value) {
 
+        if (isInWindow(x, y)) {
+            final Raster raster = getTile(x, y);
+            if (raster instanceof WritableRaster) {
+                ((WritableRaster) raster).setSample(x, y, band, value);
+            }
+        }
+    }
 
-   public AnalysisExtent getLayerGridExtent() {
+    public void setNoDataValue(final double noDataValue) {
 
-      return m_LayerExtent;
+        m_dNoDataValue = noDataValue;
+    }
 
-   }
+    public Object getCRS() {
 
+        return m_CRS;
+    }
 
-   public double getNoDataValue() {
+    public Rectangle2D getFullExtent() {
 
-      return m_dNoDataValue;
+        if (m_BaseDataObject != null) {
+            final GridCoverage2D gc = (GridCoverage2D) m_BaseDataObject;
+            return new Envelope2D(gc.getEnvelope());
+        } else {
+            return null;
+        }
+    }
 
-   }
+    public void open() {}
 
+    public void close() {}
 
-   public void setCellValue(final int x,
-                            final int y,
-                            final int band,
-                            final double value) {
+    public void postProcess() {}
 
-      if (isInWindow(x, y)) {
-         final Raster raster = getTile(x, y);
-         if (raster instanceof WritableRaster) {
-            ((WritableRaster) raster).setSample(x, y, band, value);
-         }
-      }
+    public IOutputChannel getOutputChannel() {
 
-   }
+        return new FileOutputChannel(m_sFilename);
+    }
 
+    public String getName() {
 
-   public void setNoDataValue(final double noDataValue) {
+        return m_sName;
+    }
 
-      m_dNoDataValue = noDataValue;
+    public void setName(final String sName) {
 
-   }
+        m_sName = sName;
+    }
 
+    private Raster getTile(final int x, final int y) {
+        return m_image.getTile(m_image.XToTileX(x), m_image.YToTileY(y));
+    }
 
-   public Object getCRS() {
+    @Override
+    public void free() {
 
-      return m_CRS;
+        ((GridCoverage2D) m_BaseDataObject).dispose(true);
+        m_BaseDataObject = null;
+    }
 
-   }
+    @Override
+    public Object getBaseDataObject() {
 
-
-   public Rectangle2D getFullExtent() {
-
-      if (m_BaseDataObject != null) {
-         final GridCoverage2D gc = (GridCoverage2D) m_BaseDataObject;
-         return new Envelope2D(gc.getEnvelope());
-      }
-      else {
-         return null;
-      }
-
-   }
-
-
-   public void open() {}
-
-
-   public void close() {}
-
-
-   public void postProcess() {}
-
-
-   public IOutputChannel getOutputChannel() {
-
-      return new FileOutputChannel(m_sFilename);
-
-   }
-
-
-   public String getName() {
-
-      return m_sName;
-
-   }
-
-
-   public void setName(final String sName) {
-
-      m_sName = sName;
-
-   }
-
-
-   private Raster getTile(final int x,
-                          final int y) {
-      return m_image.getTile(m_image.XToTileX(x), m_image.YToTileY(y));
-
-   }
-
-
-   @Override
-   public void free() {
-
-      ((GridCoverage2D) m_BaseDataObject).dispose(true);
-      m_BaseDataObject = null;
-
-   }
-
-
-   @Override
-   public Object getBaseDataObject() {
-
-      return m_BaseDataObject;
-
-   }
+        return m_BaseDataObject;
+    }
 }

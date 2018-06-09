@@ -4,13 +4,6 @@
  */
 package org.geoserver.catalog;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.geoserver.platform.ServiceException;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,13 +13,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.ServiceException;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.StyledLayer;
+import org.geotools.styling.StyledLayerDescriptor;
 
-/**
- * Utility for renaming named layers and styles in style groups
- */
+/** Utility for renaming named layers and styles in style groups */
 public class SLDNamedLayerRenameHelper {
 
-    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
+    protected static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
 
     protected boolean applied = false;
     protected boolean skipErrors = false;
@@ -42,7 +40,6 @@ public class SLDNamedLayerRenameHelper {
     }
 
     /**
-     *
      * @param catalog
      * @param skipErrors Skip styles that throw an exception when visited
      */
@@ -52,17 +49,19 @@ public class SLDNamedLayerRenameHelper {
     }
 
     /**
-     * Given a {@link StyleInfo}, {@link LayerInfo}, or {@link LayerGroupInfo} that has been renamed but not yet
-     * committed to the catalog, get the list of styles that would be affected by this rename, and optionally apply this
-     * rename to those styles.
+     * Given a {@link StyleInfo}, {@link LayerInfo}, or {@link LayerGroupInfo} that has been renamed
+     * but not yet committed to the catalog, get the list of styles that would be affected by this
+     * rename, and optionally apply this rename to those styles.
      *
      * @param catalog
-     * @param updatedInfo The {@link StyleInfo}, {@link LayerInfo}, or {@link LayerGroupInfo} that has been renamed
+     * @param updatedInfo The {@link StyleInfo}, {@link LayerInfo}, or {@link LayerGroupInfo} that
+     *     has been renamed
      * @param doRename should the styles which have been found be renamed
      * @return List of styles to be renamed / which have been renamed
      * @throws IOException, UnsupportedOperationException
      */
-    public static List<StyleInfo> getOrUpdateStylesToRename(Catalog catalog, CatalogInfo updatedInfo, boolean doRename) throws IOException {
+    public static List<StyleInfo> getOrUpdateStylesToRename(
+            Catalog catalog, CatalogInfo updatedInfo, boolean doRename) throws IOException {
         CatalogInfo oldInfo;
         String oldName = "";
         String newName = "";
@@ -105,14 +104,15 @@ public class SLDNamedLayerRenameHelper {
     }
 
     /**
-     * Visit each style in the catalog and determine if any of them contain NamedLayers or NamedStyles with the
-     * registered names that would need to be renamed. Optionally, apply these renames.
+     * Visit each style in the catalog and determine if any of them contain NamedLayers or
+     * NamedStyles with the registered names that would need to be renamed. Optionally, apply these
+     * renames.
      *
      * @param doRename Should the registered renames be applied
      * @return List of styles to be renamed / which have been renamed
      * @throws IOException, UnsupportedOperationException
      */
-    public List<StyleInfo> visitStyles(boolean doRename) throws IOException{
+    public List<StyleInfo> visitStyles(boolean doRename) throws IOException {
         List<StyleInfo> stylesToUpdate = new ArrayList<>();
         for (StyleInfo style : catalog.getStyles()) {
             SLDNamedLayerRenameVisitor visitor = new SLDNamedLayerRenameVisitor(catalog, doRename);
@@ -128,7 +128,7 @@ public class SLDNamedLayerRenameHelper {
                 }
             } catch (IOException | ServiceException e) {
                 if (skipErrors) {
-                    LOGGER.log(Level.INFO, "Skipping style '"+style.getName()+"'.", e);
+                    LOGGER.log(Level.INFO, "Skipping style '" + style.getName() + "'.", e);
                 } else {
                     throw e;
                 }
@@ -144,8 +144,10 @@ public class SLDNamedLayerRenameHelper {
         backup.setWorkspace(s.getWorkspace());
 
         // find a unique name for the style
-        String name = findUniqueStyleName(s.getWorkspace() == null ? null : s.getWorkspace().getName(),
-                s.getName()+"_BACKUP");
+        String name =
+                findUniqueStyleName(
+                        s.getWorkspace() == null ? null : s.getWorkspace().getName(),
+                        s.getName() + "_BACKUP");
         backup.setName(name);
 
         // update it's file name
@@ -153,7 +155,8 @@ public class SLDNamedLayerRenameHelper {
 
         // copy over the style contents
         try (BufferedReader reader = catalog.getResourcePool().readStyle(s)) {
-            catalog.getResourcePool().writeStyle(backup, new ByteArrayInputStream(IOUtils.toByteArray(reader)));
+            catalog.getResourcePool()
+                    .writeStyle(backup, new ByteArrayInputStream(IOUtils.toByteArray(reader)));
         }
         return backup;
     }
@@ -176,9 +179,9 @@ public class SLDNamedLayerRenameHelper {
 
     private class SLDNamedLayerRenameVisitor extends GeoServerSLDVisitorAdapter {
 
-        //Should the named layers in the styles be renamed when they are visited
+        // Should the named layers in the styles be renamed when they are visited
         boolean doRename = false;
-        //Are there any named layers in this sld that will need to be renamed (set by visitor)
+        // Are there any named layers in this sld that will need to be renamed (set by visitor)
         boolean needsRename = false;
 
         public SLDNamedLayerRenameVisitor(Catalog catalog, boolean doRename) {

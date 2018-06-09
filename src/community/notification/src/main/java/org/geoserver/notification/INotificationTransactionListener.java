@@ -12,5 +12,4 @@ public interface INotificationTransactionListener extends TransactionPlugin {
     void setMessageMultiplexer(MessageMultiplexer messageMultiplexer);
 
     MessageMultiplexer getMessageMultiplexer();
-
 }

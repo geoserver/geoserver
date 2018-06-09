@@ -9,7 +9,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.List;
-
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -30,8 +29,8 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         target.add(auth);
     }
 
-    private void addIdentifier(final String authName, final String id,
-            List<LayerIdentifierInfo> target) {
+    private void addIdentifier(
+            final String authName, final String id, List<LayerIdentifierInfo> target) {
         LayerIdentifierInfo identifier = new LayerIdentifier();
         identifier.setAuthority(authName);
         identifier.setIdentifier(id);
@@ -65,14 +64,19 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
 
         assertXpathExists(
                 "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']", doc);
-        assertXpathEvaluatesTo("rootId1",
-                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']", doc);
+        assertXpathEvaluatesTo(
+                "rootId1",
+                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']",
+                doc);
 
         assertXpathExists(
                 "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']", doc);
-        assertXpathEvaluatesTo("rootId2",
-                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']", doc);
+        assertXpathEvaluatesTo(
+                "rootId2",
+                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']",
+                doc);
     }
+
     @Test
     public void testLayer() throws Exception {
 
@@ -83,19 +87,25 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         getCatalog().save(layer);
 
         String layerName = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
-        Document doc = getAsDOM(
-                "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
-                true);
+        Document doc =
+                getAsDOM(
+                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
+                        true);
 
-        assertXpathExists("//Layer[Name='" + layerName + "']/AuthorityURL[@name = 'layerAuth1']",
+        assertXpathExists(
+                "//Layer[Name='" + layerName + "']/AuthorityURL[@name = 'layerAuth1']", doc);
+        assertXpathEvaluatesTo(
+                "http://geoserver/wms/auth1",
+                "//Layer[Name='"
+                        + layerName
+                        + "']/AuthorityURL[@name = 'layerAuth1']/OnlineResource/@xlink:href",
                 doc);
-        assertXpathEvaluatesTo("http://geoserver/wms/auth1", "//Layer[Name='" + layerName
-                + "']/AuthorityURL[@name = 'layerAuth1']/OnlineResource/@xlink:href", doc);
 
         assertXpathExists(
                 "//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']", doc);
-        assertXpathEvaluatesTo("layerId1", "//Layer[Name='" + layerName 
-                + "']/Identifier[@authority = 'layerAuth1']", doc);
+        assertXpathEvaluatesTo(
+                "layerId1",
+                "//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']",
+                doc);
     }
-
 }

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -21,46 +20,50 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 
 /**
- * Internal Catalog Store that automatically loads mappings from mapping files in GeoServer Data Directory.
- * 
- * @author Niels Charlier
+ * Internal Catalog Store that automatically loads mappings from mapping files in GeoServer Data
+ * Directory.
  *
+ * @author Niels Charlier
  */
 public class GeoServerInternalCatalogStore extends InternalCatalogStore {
-    
+
     protected static final Logger LOGGER = Logging.getLogger(GeoServerInternalCatalogStore.class);
-    
-    protected Map<String, PropertyFileWatcher> watchers = new HashMap<String, PropertyFileWatcher>();
-    
+
+    protected Map<String, PropertyFileWatcher> watchers =
+            new HashMap<String, PropertyFileWatcher>();
+
     /**
      * Get Mapping, update from file if changed
-     * 
+     *
      * @param typeName
      * @return the mapping
      */
     public CatalogStoreMapping getMapping(String typeName) {
-        
+
         PropertyFileWatcher watcher = watchers.get(typeName);
-        
-        if (watcher!=null && watcher.isModified()  ) {
+
+        if (watcher != null && watcher.isModified()) {
             try {
-                addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));
+                addMapping(
+                        typeName,
+                        CatalogStoreMapping.parse(
+                                new HashMap<String, String>((Map) watcher.getProperties())));
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, e.toString());
             }
         }
-        
-        return super.getMapping( typeName);
+
+        return super.getMapping(typeName);
     }
 
     /**
      * Create GeoServerInternalCatalogStore
-     * 
+     *
      * @param geoserver
      * @throws IOException
      */
     public GeoServerInternalCatalogStore(GeoServer geoserver) throws IOException {
-        super( geoserver.getCatalog());
+        super(geoserver.getCatalog());
         GeoServerResourceLoader loader = geoserver.getCatalog().getResourceLoader();
         Resource dir = loader.get("csw");
         for (Name name : descriptorByType.keySet()) {
@@ -69,13 +72,16 @@ public class GeoServerInternalCatalogStore extends InternalCatalogStore {
 
             PropertyFileWatcher watcher = new PropertyFileWatcher(f);
             watchers.put(typeName, watcher);
-            
-            if (!Resources.exists(f)) {           
-                IOUtils.copy(getClass().getResourceAsStream(typeName + ".default.properties"),f.out());
+
+            if (!Resources.exists(f)) {
+                IOUtils.copy(
+                        getClass().getResourceAsStream(typeName + ".default.properties"), f.out());
             }
-            
-            addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));
+
+            addMapping(
+                    typeName,
+                    CatalogStoreMapping.parse(
+                            new HashMap<String, String>((Map) watcher.getProperties())));
         }
-    }       
-    
+    }
 }

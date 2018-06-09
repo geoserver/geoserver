@@ -12,8 +12,6 @@ package org.geoserver.wps.transmute;
  * @author Lucas Reed, Refractions Research Inc
  */
 public interface Transmuter {
-    /**
-     * Returns the Java type the transmuter decodes to
-     */
+    /** Returns the Java type the transmuter decodes to */
     Class<?> getType();
 }

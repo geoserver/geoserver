@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -33,7 +32,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -70,9 +68,8 @@ import org.xml.sax.SAXParseException;
 
 /**
  * Base support class for wcs tests.
- * 
+ *
  * @author Andrea Aime, GeoSolutions
- * 
  */
 @SuppressWarnings("serial")
 public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
@@ -81,89 +78,129 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static final boolean IS_WINDOWS;
 
     protected static final Schema WCS20_SCHEMA;
-    
+
     List<GridCoverage> coverages = new ArrayList<GridCoverage>();
-    
-    protected final static String VERSION = WCS20Const.CUR_VERSION;
-    
-    protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX); 
+
+    protected static final String VERSION = WCS20Const.CUR_VERSION;
+
+    protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX);
 
     /**
      * Small value for comparaison of sample values. Since most grid coverage implementations in
-     * Geotools 2 store geophysics values as {@code float} numbers, this {@code EPS} value must
-     * be of the order of {@code float} relative precision, not {@code double}.
+     * Geotools 2 store geophysics values as {@code float} numbers, this {@code EPS} value must be
+     * of the order of {@code float} relative precision, not {@code double}.
      */
     static final float EPS = 1E-5f;
 
     static {
-        final Map<String, String> namespaceMap = new HashMap<String, String>() {
-            {
-                put("http://www.opengis.net/wcs/2.0", "./src/main/resources/schemas/wcs/2.0/");
-                put("http://www.opengis.net/gmlcov/1.0", "./src/main/resources/schemas/gmlcov/1.0/");
-                put("http://www.opengis.net/gml/3.2", "./src/main/resources/schemas/gml/3.2.1/");
-                put("http://www.w3.org/1999/xlink", "./src/test/resources/schemas/xlink/");
-                put("http://www.w3.org/XML/1998/namespace", "./src/test/resources/schemas/xml/");
-                put("http://www.isotc211.org/2005/gmd", "./src/main/resources/schemas/iso/19139/20070417/gmd/");
-                put("http://www.isotc211.org/2005/gco", "./src/main/resources/schemas/iso/19139/20070417/gco/");
-                put("http://www.isotc211.org/2005/gss", "./src/main/resources/schemas/iso/19139/20070417/gss/");
-                put("http://www.isotc211.org/2005/gts", "./src/main/resources/schemas/iso/19139/20070417/gts/");
-                put("http://www.isotc211.org/2005/gsr", "./src/main/resources/schemas/iso/19139/20070417/gsr/");
-                put("http://www.opengis.net/swe/2.0", "./src/main/resources/schemas/sweCommon/2.0/");
-                put("http://www.opengis.net/ows/2.0", "./src/main/resources/schemas/ows/2.0/");
-            }
-        };
+        final Map<String, String> namespaceMap =
+                new HashMap<String, String>() {
+                    {
+                        put(
+                                "http://www.opengis.net/wcs/2.0",
+                                "./src/main/resources/schemas/wcs/2.0/");
+                        put(
+                                "http://www.opengis.net/gmlcov/1.0",
+                                "./src/main/resources/schemas/gmlcov/1.0/");
+                        put(
+                                "http://www.opengis.net/gml/3.2",
+                                "./src/main/resources/schemas/gml/3.2.1/");
+                        put("http://www.w3.org/1999/xlink", "./src/test/resources/schemas/xlink/");
+                        put(
+                                "http://www.w3.org/XML/1998/namespace",
+                                "./src/test/resources/schemas/xml/");
+                        put(
+                                "http://www.isotc211.org/2005/gmd",
+                                "./src/main/resources/schemas/iso/19139/20070417/gmd/");
+                        put(
+                                "http://www.isotc211.org/2005/gco",
+                                "./src/main/resources/schemas/iso/19139/20070417/gco/");
+                        put(
+                                "http://www.isotc211.org/2005/gss",
+                                "./src/main/resources/schemas/iso/19139/20070417/gss/");
+                        put(
+                                "http://www.isotc211.org/2005/gts",
+                                "./src/main/resources/schemas/iso/19139/20070417/gts/");
+                        put(
+                                "http://www.isotc211.org/2005/gsr",
+                                "./src/main/resources/schemas/iso/19139/20070417/gsr/");
+                        put(
+                                "http://www.opengis.net/swe/2.0",
+                                "./src/main/resources/schemas/sweCommon/2.0/");
+                        put(
+                                "http://www.opengis.net/ows/2.0",
+                                "./src/main/resources/schemas/ows/2.0/");
+                    }
+                };
 
         try {
-            final SchemaFactory factory = SchemaFactory
-                    .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            
-            factory.setResourceResolver(new LSResourceResolver() {
-                
-                DOMImplementationLS dom;
-                
-                {
-                    try {
-                        // ok, this is ugly.. the only way I've found to create an InputLS without
-                        // having to really implement every bit of it is to create a DOMImplementationLS
-                        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance(); 
-                        builderFactory.setNamespaceAware( true );
-                       
-                        DocumentBuilder builder = builderFactory.newDocumentBuilder();
-                        // fake xml to parse
-                        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
-                        dom = (DOMImplementationLS) builder.parse(new ByteArrayInputStream(xml.getBytes())).getImplementation();
-                    } catch(Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                
-                @Override
-                public LSInput resolveResource(String type, String namespaceURI, String publicId,
-                        String systemId, String baseURI) {
-                    
-                    String localPosition = namespaceMap.get(namespaceURI);
-                    if (localPosition != null) {
-                        try {
-                            if (systemId.contains("/")) {
-                                systemId = systemId.substring(systemId.lastIndexOf("/") + 1);
+            final SchemaFactory factory =
+                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+            factory.setResourceResolver(
+                    new LSResourceResolver() {
+
+                        DOMImplementationLS dom;
+
+                        {
+                            try {
+                                // ok, this is ugly.. the only way I've found to create an InputLS
+                                // without
+                                // having to really implement every bit of it is to create a
+                                // DOMImplementationLS
+                                DocumentBuilderFactory builderFactory =
+                                        DocumentBuilderFactory.newInstance();
+                                builderFactory.setNamespaceAware(true);
+
+                                DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                                // fake xml to parse
+                                String xml =
+                                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
+                                dom =
+                                        (DOMImplementationLS)
+                                                builder.parse(
+                                                                new ByteArrayInputStream(
+                                                                        xml.getBytes()))
+                                                        .getImplementation();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
                             }
-                            File file = new File(localPosition + systemId);
-                            if (file.exists()) {
-                                URL url = DataUtilities.fileToURL(file);
-                                systemId = url.toURI().toASCIIString();
-                                LSInput input = dom.createLSInput();
-                                input.setPublicId(publicId);
-                                input.setSystemId(systemId);
-                                return input;
+                        }
+
+                        @Override
+                        public LSInput resolveResource(
+                                String type,
+                                String namespaceURI,
+                                String publicId,
+                                String systemId,
+                                String baseURI) {
+
+                            String localPosition = namespaceMap.get(namespaceURI);
+                            if (localPosition != null) {
+                                try {
+                                    if (systemId.contains("/")) {
+                                        systemId =
+                                                systemId.substring(systemId.lastIndexOf("/") + 1);
+                                    }
+                                    File file = new File(localPosition + systemId);
+                                    if (file.exists()) {
+                                        URL url = DataUtilities.fileToURL(file);
+                                        systemId = url.toURI().toASCIIString();
+                                        LSInput input = dom.createLSInput();
+                                        input.setPublicId(publicId);
+                                        input.setSystemId(systemId);
+                                        return input;
+                                    }
+                                } catch (Exception e) {
+                                    return null;
+                                }
                             }
-                        } catch (Exception e) {
                             return null;
                         }
-                    }
-                    return null;
-                }
-            });
-            WCS20_SCHEMA = factory.newSchema(WCSTestSupport.class.getResource("/schemas/wcs/2.0/wcsAll.xsd"));
+                    });
+            WCS20_SCHEMA =
+                    factory.newSchema(
+                            WCSTestSupport.class.getResource("/schemas/wcs/2.0/wcsAll.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 2.0 schemas", e);
         }
@@ -176,16 +213,12 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         IS_WINDOWS = windows;
     }
 
-    /**
-     * @return The global wcs instance from the application context.
-     */
+    /** @return The global wcs instance from the application context. */
     protected WCSInfo getWCS() {
         return getGeoServer().getService(WCSInfo.class);
     }
 
-    /**
-     * Only setup coverages
-     */
+    /** Only setup coverages */
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
@@ -212,7 +245,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wcsgs", "http://www.geoserver.org/wcsgs/2.0");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
-
     }
 
     @Override
@@ -222,7 +254,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     /**
      * Validates a document against the
-     * 
+     *
      * @param dom
      * @param configuration
      */
@@ -233,21 +265,22 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext();) {
+            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
                 SAXParseException ex = (SAXParseException) e.next();
-                System.out.println(ex.getLineNumber() + "," + ex.getColumnNumber() + " -"
-                        + ex.toString());
+                System.out.println(
+                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }
     }
-    
+
     /**
      * Marks the coverage to be cleaned when the test ends
+     *
      * @param coverage
      */
     protected void scheduleForCleaning(GridCoverage coverage) {
-        if(coverage != null) {
+        if (coverage != null) {
             coverages.add(coverage);
         }
     }
@@ -261,31 +294,48 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected void checkFullCapabilitiesDocument(Document dom) throws Exception {
         checkValidationErrors(dom, WCS20_SCHEMA);
-        
+
         // TODO: check all the layers are here, the profiles, and so on
-        
+
         // check that we have the crs extension
-        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])", dom);
-        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[wcscrs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])", dom);
-        
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])",
+                dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//wcs:ServiceMetadata/wcs:Extension[wcscrs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])",
+                dom);
+
         // check the interpolation extension
-        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation'])", dom);
-        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor'])", dom);
-        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/linear'])", dom);
-        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])", dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation'])",
+                dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor'])",
+                dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/linear'])",
+                dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])",
+                dom);
     }
 
     /**
      * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
      * with attribute number whose value is the specified tag value.
-     * 
+     *
      * @param tag DOCUMENT ME!
-     * 
      * @return DOCUMENT ME!
      */
     protected IIOMetadataNode getTiffField(Node rootNode, final int tag) {
         Node node = rootNode.getFirstChild();
-        if (node != null){
+        if (node != null) {
             node = node.getFirstChild();
             for (; node != null; node = node.getNextSibling()) {
                 Node number = node.getAttributes().getNamedItem(GeoTiffConstants.NUMBER_ATTRIBUTE);
@@ -312,25 +362,33 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Compares the envelopes of two coverages for equality using the smallest
-     * scale factor of their "grid to world" transform as the tolerance.
+     * Compares the envelopes of two coverages for equality using the smallest scale factor of their
+     * "grid to world" transform as the tolerance.
      *
      * @param expected The coverage having the expected envelope.
-     * @param actual   The coverage having the actual envelope.
+     * @param actual The coverage having the actual envelope.
      */
     protected static void assertEnvelopeEquals(Coverage expected, Coverage actual) {
         final double scaleA = getScale(expected);
         final double scaleB = getScale(actual);
-    
-        assertEnvelopeEquals((GeneralEnvelope)expected.getEnvelope(),scaleA,(GeneralEnvelope)actual.getEnvelope(),scaleB);
+
+        assertEnvelopeEquals(
+                (GeneralEnvelope) expected.getEnvelope(),
+                scaleA,
+                (GeneralEnvelope) actual.getEnvelope(),
+                scaleB);
     }
 
-    protected static void assertEnvelopeEquals(GeneralEnvelope expected,double scaleExpected, GeneralEnvelope actual,double scaleActual) {
+    protected static void assertEnvelopeEquals(
+            GeneralEnvelope expected,
+            double scaleExpected,
+            GeneralEnvelope actual,
+            double scaleActual) {
         final double tolerance;
         if (scaleExpected <= scaleActual) {
-            tolerance = scaleExpected*1E-1;
+            tolerance = scaleExpected * 1E-1;
         } else if (!Double.isNaN(scaleActual)) {
-            tolerance = scaleActual*1E-1;
+            tolerance = scaleActual * 1E-1;
         } else {
             tolerance = EPS;
         }
@@ -338,13 +396,13 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null}
-     * if none. Note that the returned instance may be an immutable one, not necessarly the
-     * default Java2D implementation.
+     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null} if none.
+     * Note that the returned instance may be an immutable one, not necessarly the default Java2D
+     * implementation.
      *
-     * @param  coverage The coverage for which to get the "grid to CRS" affine transform.
-     * @return The "grid to CRS" affine transform of the given coverage, or {@code null}
-     *         if none or if the transform is not affine.
+     * @param coverage The coverage for which to get the "grid to CRS" affine transform.
+     * @return The "grid to CRS" affine transform of the given coverage, or {@code null} if none or
+     *     if the transform is not affine.
      */
     protected static AffineTransform getAffineTransform(final Coverage coverage) {
         if (coverage instanceof GridCoverage) {
@@ -367,23 +425,23 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     /**
      * Returns the scale of the "grid to CRS" transform, or {@link Double#NaN} if unknown.
      *
-     * @param  coverage The coverage for which to get the "grid to CRS" scale, or {@code null}.
+     * @param coverage The coverage for which to get the "grid to CRS" scale, or {@code null}.
      * @return The "grid to CRS" scale, or {@code NaN} if none or if the transform is not affine.
      */
     protected static double getScale(final Coverage coverage) {
         final AffineTransform gridToCRS = getAffineTransform(coverage);
         return (gridToCRS != null) ? XAffineTransform.getScale(gridToCRS) : Double.NaN;
     }
-    
+
     /**
      * Parses a multipart message from the response
-     * @param response
      *
+     * @param response
      * @throws MessagingException
      * @throws IOException
      */
-    protected Multipart getMultipart(MockHttpServletResponse response) throws MessagingException,
-            IOException {
+    protected Multipart getMultipart(MockHttpServletResponse response)
+            throws MessagingException, IOException {
         MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
@@ -391,51 +449,60 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     /**
      * Configures the specified dimension for a coverage
-     * 
+     *
      * @param coverageName
      * @param metadataKey
      * @param presentation
      * @param resolution
      */
-    protected void setupRasterDimension(String coverageName, String metadataKey, DimensionPresentation presentation, Double resolution) {
+    protected void setupRasterDimension(
+            String coverageName,
+            String metadataKey,
+            DimensionPresentation presentation,
+            Double resolution) {
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setPresentation(presentation);
-        if(resolution != null) {
+        if (resolution != null) {
             di.setResolution(new BigDecimal(resolution));
         }
         info.getMetadata().put(metadataKey, di);
         getCatalog().save(info);
     }
-    
+
     /**
      * Configures the specified dimension for a coverage
-     * 
+     *
      * @param coverageName
      * @param metadataKey
      * @param presentation
      * @param resolution
      * @param unitSymbol
      */
-    protected void setupRasterDimension(String coverageName, String metadataKey, DimensionPresentation presentation, Double resolution, String unitSymbol) {
+    protected void setupRasterDimension(
+            String coverageName,
+            String metadataKey,
+            DimensionPresentation presentation,
+            Double resolution,
+            String unitSymbol) {
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setPresentation(presentation);
-        if(resolution != null) {
+        if (resolution != null) {
             di.setResolution(new BigDecimal(resolution));
         }
-        if(unitSymbol != null) {
+        if (unitSymbol != null) {
             di.setUnitSymbol(unitSymbol);
         }
         info.getMetadata().put(metadataKey, di);
         getCatalog().save(info);
     }
-    
+
     /**
      * Clears dimension information from the specified coverage
-     * 
+     *
      * @param coverageName
      * @param metadataKey
      * @param presentation
@@ -447,5 +514,4 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         info.getMetadata().remove(ResourceInfo.ELEVATION);
         getCatalog().save(info);
     }
-    
 }

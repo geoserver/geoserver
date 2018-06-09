@@ -1,10 +1,12 @@
 package org.geoserver.kml.builder;
 
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.LookAt;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.platform.ServiceException;
@@ -19,10 +21,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-import de.micromata.opengis.kml.v_2_2_0.LookAt;
 
 public abstract class AbstractNetworkLinkBuilder {
 
@@ -40,18 +38,20 @@ public abstract class AbstractNetworkLinkBuilder {
         Document document = kml.createAndSetDocument();
         Map formatOptions = context.getRequest().getFormatOptions();
         String kmltitle = (String) formatOptions.get("kmltitle");
-        if(kmltitle == null) {
+        if (kmltitle == null) {
             kmltitle = context.getMapContent().getTitle();
         }
         document.setName(kmltitle);
-        
+
         // get the callbacks for the document and let them loose
         List<KmlDecorator> decorators = context.getDecoratorsForClass(Document.class);
         for (KmlDecorator decorator : decorators) {
             document = (Document) decorator.decorate(document, context);
             if (document == null) {
-                throw new ServiceException("Coding error in decorator " + decorator
-                        + ", document objects cannot be set to null");
+                throw new ServiceException(
+                        "Coding error in decorator "
+                                + decorator
+                                + ", document objects cannot be set to null");
             }
         }
 
@@ -64,10 +64,12 @@ public abstract class AbstractNetworkLinkBuilder {
 
     /**
      * @return the aggregated bounds for all the requested layers, taking into account whether the
-     *         whole layer or filtered bounds is used for each layer
+     *     whole layer or filtered bounds is used for each layer
      */
-    protected ReferencedEnvelope computePerLayerQueryBounds(final WMSMapContent context,
-            final List<ReferencedEnvelope> target, final LookAt lookAt) {
+    protected ReferencedEnvelope computePerLayerQueryBounds(
+            final WMSMapContent context,
+            final List<ReferencedEnvelope> target,
+            final LookAt lookAt) {
 
         // no need to compute queried bounds if request explicitly specified the view area
         final boolean computeQueryBounds = lookAt == null;
@@ -90,8 +92,9 @@ public abstract class AbstractNetworkLinkBuilder {
             ReferencedEnvelope layerLatLongBbox;
             layerLatLongBbox = computeLayerBounds(Layer, layerInfo, computeQueryBounds);
             try {
-                layerLatLongBbox = layerLatLongBbox.transform(
-                        aggregatedBounds.getCoordinateReferenceSystem(), true);
+                layerLatLongBbox =
+                        layerLatLongBbox.transform(
+                                aggregatedBounds.getCoordinateReferenceSystem(), true);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -102,8 +105,8 @@ public abstract class AbstractNetworkLinkBuilder {
     }
 
     @SuppressWarnings("rawtypes")
-    protected ReferencedEnvelope computeLayerBounds(Layer layer, MapLayerInfo layerInfo,
-            boolean computeQueryBounds) {
+    protected ReferencedEnvelope computeLayerBounds(
+            Layer layer, MapLayerInfo layerInfo, boolean computeQueryBounds) {
 
         final Query layerQuery = layer.getQuery();
         // make sure if layer is going to be filtered, the resulting bounds are obtained instead of
@@ -125,10 +128,12 @@ public abstract class AbstractNetworkLinkBuilder {
                 layerLatLongBbox = features.getBounds();
                 layerLatLongBbox = layerLatLongBbox.transform(targetCRS, true);
             } catch (Exception e) {
-                LOGGER.info("Error computing bounds for " + featureSource.getName() + " with "
-                        + layerQuery);
+                LOGGER.info(
+                        "Error computing bounds for "
+                                + featureSource.getName()
+                                + " with "
+                                + layerQuery);
             }
-
         }
         if (layerLatLongBbox == null) {
             try {

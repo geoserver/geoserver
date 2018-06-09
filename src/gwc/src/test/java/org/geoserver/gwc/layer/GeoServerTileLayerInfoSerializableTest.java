@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.config.GWCConfig;
@@ -41,9 +40,8 @@ import org.junit.rules.TemporaryFolder;
 
 public class GeoServerTileLayerInfoSerializableTest {
 
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
-    
+    @Rule public TemporaryFolder temp = new TemporaryFolder();
+
     private GeoServerTileLayerInfo info;
 
     private GWCConfig defaults;
@@ -57,47 +55,51 @@ public class GeoServerTileLayerInfoSerializableTest {
         defaultVectorInfo = TileLayerInfoUtil.create(defaults);
         defaultVectorInfo.getMimeFormats().clear();
         defaultVectorInfo.getMimeFormats().addAll(defaults.getDefaultVectorCacheFormats());
-        
-        
     }
-    
+
     <T> Matcher<T> sameProperty(T expected, String property) throws Exception {
         return sameProperty(expected, property, Matchers::is);
     }
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher) throws Exception {
-        Object value = Arrays.stream(
-                    Introspector.getBeanInfo(expected.getClass()).getPropertyDescriptors())
-                .filter(p->p.getName().equals(property))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("bean expected lacks the property "+property))
-                .getReadMethod()
-                .invoke(expected);
-        return hasProperty(property, (Matcher<?>)((Function)valueMatcher).apply(value));
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher)
+            throws Exception {
+        Object value =
+                Arrays.stream(
+                                Introspector.getBeanInfo(expected.getClass())
+                                        .getPropertyDescriptors())
+                        .filter(p -> p.getName().equals(property))
+                        .findAny()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "bean expected lacks the property " + property))
+                        .getReadMethod()
+                        .invoke(expected);
+        return hasProperty(property, (Matcher<?>) ((Function) valueMatcher).apply(value));
     }
-    
+
     private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) throws Exception {
-        
+
         File f = temp.newFile();
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(f))) {
             out.writeObject(info);
         }
         GeoServerTileLayerInfo unmarshalled;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f));){
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f)); ) {
             unmarshalled = (GeoServerTileLayerInfo) in.readObject();
         }
-        
+
         assertThat(unmarshalled, notNullValue());
-        
-        assertThat(unmarshalled, sameProperty(info ,"enabled"));
-        assertThat(unmarshalled, sameProperty(info ,"autoCacheStyles"));
-        
-        assertThat(unmarshalled, sameProperty(info ,"gutter"));
-        assertThat(unmarshalled, sameProperty(info ,"metaTilingX"));
-        assertThat(unmarshalled, sameProperty(info ,"metaTilingY"));
-        assertThat(unmarshalled, sameProperty(info ,"gridSubsets"));
-        assertThat(unmarshalled, sameProperty(info ,"mimeFormats"));
+
+        assertThat(unmarshalled, sameProperty(info, "enabled"));
+        assertThat(unmarshalled, sameProperty(info, "autoCacheStyles"));
+
+        assertThat(unmarshalled, sameProperty(info, "gutter"));
+        assertThat(unmarshalled, sameProperty(info, "metaTilingX"));
+        assertThat(unmarshalled, sameProperty(info, "metaTilingY"));
+        assertThat(unmarshalled, sameProperty(info, "gridSubsets"));
+        assertThat(unmarshalled, sameProperty(info, "mimeFormats"));
         assertThat(unmarshalled, sameProperty(info, "parameterFilters"));
         assertThat(unmarshalled, equalTo(info));
 
@@ -109,7 +111,7 @@ public class GeoServerTileLayerInfoSerializableTest {
     @Test
     public void testMarshallingDefaults() throws Exception {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfo layerInfo = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         testMarshaling(info);
     }
@@ -117,7 +119,7 @@ public class GeoServerTileLayerInfoSerializableTest {
     @Test
     public void testMarshallingBlobStoreId() throws Exception {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfo layerInfo = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         info.setBlobStoreId("myBlobStore");
         GeoServerTileLayerInfo unmarshalled = testMarshaling(info);
@@ -211,5 +213,4 @@ public class GeoServerTileLayerInfoSerializableTest {
         info.getParameterFilters().add(strParam2);
         testMarshaling(info);
     }
-
 }

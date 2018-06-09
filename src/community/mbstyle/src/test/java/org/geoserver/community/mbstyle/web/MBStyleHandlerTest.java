@@ -1,5 +1,10 @@
 package org.geoserver.community.mbstyle.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.*;
+import java.nio.file.Files;
 import org.geoserver.catalog.*;
 import org.geoserver.community.mbstyle.MBStyleHandler;
 import org.geoserver.data.test.MockData;
@@ -7,24 +12,20 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.styling.*;
 import org.junit.Test;
 
-import java.io.*;
-import java.nio.file.Files;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testParseThroughStyles() throws IOException {
-        String mbstyle = "{\"layers\": [{\n" +
-                "    \"type\": \"line\",\n" +
-                "    \"paint\": {\n" +
-                "        \"line-color\": \"#0099ff\",\n" +
-                "        \"line-width\": 10,\n" +
-                "    }\n" +
-                "}]}";
-        StyledLayerDescriptor sld = Styles.handler(MBStyleHandler.FORMAT).parse(mbstyle, null, null, null);
+        String mbstyle =
+                "{\"layers\": [{\n"
+                        + "    \"type\": \"line\",\n"
+                        + "    \"paint\": {\n"
+                        + "        \"line-color\": \"#0099ff\",\n"
+                        + "        \"line-width\": 10,\n"
+                        + "    }\n"
+                        + "}]}";
+        StyledLayerDescriptor sld =
+                Styles.handler(MBStyleHandler.FORMAT).parse(mbstyle, null, null, null);
         assertNotNull(sld);
 
         LineSymbolizer ls = SLD.lineSymbolizer(Styles.style(sld));
@@ -45,8 +46,9 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
         catalog.add(lg);
 
-        StyledLayerDescriptor sld = Styles.handler(MBStyleHandler.FORMAT).parse(getClass()
-                .getResourceAsStream("citeGroup.json"), null, null, null);
+        StyledLayerDescriptor sld =
+                Styles.handler(MBStyleHandler.FORMAT)
+                        .parse(getClass().getResourceAsStream("citeGroup.json"), null, null, null);
 
         assertEquals(4, sld.getStyledLayers().length);
 
@@ -55,7 +57,8 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
         OutputStream fout = new FileOutputStream(sldFile);
         sldHandler.encode(sld, SLDHandler.VERSION_10, true, fout);
 
-        StyledLayerDescriptor sld2 = sldHandler.parse(new FileInputStream(sldFile), SLDHandler.VERSION_10, null, null);
+        StyledLayerDescriptor sld2 =
+                sldHandler.parse(new FileInputStream(sldFile), SLDHandler.VERSION_10, null, null);
         assertEquals(4, sld2.getStyledLayers().length);
     }
 }

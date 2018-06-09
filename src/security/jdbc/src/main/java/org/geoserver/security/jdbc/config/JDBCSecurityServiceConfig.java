@@ -9,8 +9,8 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
- * Extension of {@link SecurityNamedServiceConfig} in which the underlying config is stored in 
- * a database accessible via JDBC.
+ * Extension of {@link SecurityNamedServiceConfig} in which the underlying config is stored in a
+ * database accessible via JDBC.
  *
  * @author christian
  */
@@ -28,8 +28,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
     private String password;
     private boolean creatingTables;
 
-    public JDBCSecurityServiceConfig() {
-    }
+    public JDBCSecurityServiceConfig() {}
 
     public JDBCSecurityServiceConfig(JDBCSecurityServiceConfig other) {
         super(other);
@@ -44,17 +43,16 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
     }
 
     /**
-     * Flag controlling whether to connect through JNDI or through creation of a direct connection. 
-     * <p>
-     * If set {@link #getJndiName()} is used to obtain the connection.
-     * </p>
+     * Flag controlling whether to connect through JNDI or through creation of a direct connection.
+     *
+     * <p>If set {@link #getJndiName()} is used to obtain the connection.
      */
     public boolean isJndi() {
         return jndi;
     }
 
     /**
-     * Set flag controlling whether to connect through JNDI or through creation of a direct 
+     * Set flag controlling whether to connect through JNDI or through creation of a direct
      * connection.
      */
     public void setJndi(boolean jndi) {
@@ -63,148 +61,114 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
 
     /**
      * Name of JNDI resource for database connection.
-     * <p>
-     * Used if {@link #isJndi()} is set.
-     * </p>
+     *
+     * <p>Used if {@link #isJndi()} is set.
      */
     public String getJndiName() {
         return jndiName;
     }
 
-    /**
-     * Sets name of JNDI resource for database connection.
-     */
+    /** Sets name of JNDI resource for database connection. */
     public void setJndiName(String jndiName) {
         this.jndiName = jndiName;
     }
 
-    /**
-     * File name of property file containing DDL statements.
-     */
+    /** File name of property file containing DDL statements. */
     public String getPropertyFileNameDDL() {
         return propertyFileNameDDL;
     }
 
-    /**
-     * Sets file name of property file containing DDL statements.
-     */
-    public void setPropertyFileNameDDL (String propertyFileNameDDL) {
+    /** Sets file name of property file containing DDL statements. */
+    public void setPropertyFileNameDDL(String propertyFileNameDDL) {
         this.propertyFileNameDDL = propertyFileNameDDL;
     }
 
-    /**
-     * File name of property file containing DML statements.
-     */
+    /** File name of property file containing DML statements. */
     public String getPropertyFileNameDML() {
         return propertyFileNameDML;
     }
 
-    /**
-     * Sets file name of property file containing DML statements.
-     */
-    public void setPropertyFileNameDML (String propertyFileNameDML) {
+    /** Sets file name of property file containing DML statements. */
+    public void setPropertyFileNameDML(String propertyFileNameDML) {
         this.propertyFileNameDML = propertyFileNameDML;
     }
 
     /**
      * The JDBC driver class name.
-     * <p>
-     * Used only if {@link #isJndi()} is false.
-     * </p>
+     *
+     * <p>Used only if {@link #isJndi()} is false.
      */
     public String getDriverClassName() {
         return driverClassName;
     }
 
-    /**
-     * Sets the JDBC driver class name.
-     * 
-     */
+    /** Sets the JDBC driver class name. */
     public void setDriverClassName(String driverClassName) {
         this.driverClassName = driverClassName;
     }
 
     /**
-     * The JDBC url with which to obtain a database connection with.  
-     * <p>
-     * Used only if {@link #isJndi()} is false.
-     * </p>
+     * The JDBC url with which to obtain a database connection with.
+     *
+     * <p>Used only if {@link #isJndi()} is false.
      */
     public String getConnectURL() {
         return connectURL;
     }
 
-    /**
-     * The JDBC url with which to obtain a database connection with.
-     */
+    /** The JDBC url with which to obtain a database connection with. */
     public void setConnectURL(String connectURL) {
         this.connectURL = connectURL;
     }
 
     /**
      * The database user name.
-     * <p>
-     * Used only if {@link #isJndi()} is false.
-     * </p>
+     *
+     * <p>Used only if {@link #isJndi()} is false.
      */
     public String getUserName() {
         return userName;
     }
 
-    /**
-     * Sets the database user name.
-     */
+    /** Sets the database user name. */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
     /**
-     * /**
-     * The database password.
-     * <p>
-     * Used only if {@link #isJndi()} is false.
-     * </p>
+     * /** The database password.
+     *
+     * <p>Used only if {@link #isJndi()} is false.
      */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * Sets the database password.
-     */
+    /** Sets the database password. */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-     * Indicates if the tables are created behind the scenes
-     * 
-     *
-     */
+    /** Indicates if the tables are created behind the scenes */
     public boolean isCreatingTables() {
         return creatingTables;
     }
 
-    
     /**
      * set table creation flag
-     * 
+     *
      * @param creatingTables
      */
     public void setCreatingTables(boolean creatingTables) {
         this.creatingTables = creatingTables;
     }
 
-    /**
-     * Helper method to determine if the backing database is mysql. 
-     */
+    /** Helper method to determine if the backing database is mysql. */
     protected boolean isMySQL() {
         return "com.mysql.jdbc.Driver".equals(driverClassName);
     }
 
-    /**
-     * Initializes the DDL and DML property files based on the database type. 
-     */
+    /** Initializes the DDL and DML property files based on the database type. */
     public void initBeforeSave() {
         if (propertyFileNameDDL == null) {
             propertyFileNameDDL = isMySQL() ? defaultDDLFilenameMySQL() : defaultDDLFilename();
@@ -215,23 +179,15 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
         }
     }
 
-    /**
-     * return the default filename for the DDL file.
-     */
+    /** return the default filename for the DDL file. */
     protected abstract String defaultDDLFilename();
 
-    /**
-     * return the default filename for the DDL file on MySQL.
-     */
+    /** return the default filename for the DDL file on MySQL. */
     protected abstract String defaultDDLFilenameMySQL();
 
-    /**
-     * return the default filename for the DML file.
-     */
+    /** return the default filename for the DML file. */
     protected abstract String defaultDMLFilename();
 
-    /**
-     * return the default filename for the DML file on MySQL.
-     */
+    /** return the default filename for the DML file on MySQL. */
     protected abstract String defaultDMLFilenameMySQL();
 }

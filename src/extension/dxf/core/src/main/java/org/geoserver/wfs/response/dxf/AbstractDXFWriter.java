@@ -16,17 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.wfs.response.dxf.util.JulianDate;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+
 /**
- * Basic, abstract implementation of DXFWriter.
- * Implements a common base of export functions useful for
- * any implementations (groups, tables, etc.). 
- * @author Mauro Bartolomeoli, mbarto@infosia.it
+ * Basic, abstract implementation of DXFWriter. Implements a common base of export functions useful
+ * for any implementations (groups, tables, etc.).
  *
+ * @author Mauro Bartolomeoli, mbarto@infosia.it
  */
 public abstract class AbstractDXFWriter implements DXFWriter {
     // physical writer onto which the dxf will be written
@@ -59,10 +58,10 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     // array of cyclically used colors (specified as autocad color indexes)
     // each color is assigned to a layer until there are elements
     // available, then they are reused again
-    protected int[] colors = new int[] { 7, 1, 2, 3, 4, 5, 6, 8, 9 };
+    protected int[] colors = new int[] {7, 1, 2, 3, 4, 5, 6, 8, 9};
 
     // array of cyclically used line types
-    protected LineType[] lineTypes = new LineType[] { new LineType("CONTINUOUS", "Solid line") };
+    protected LineType[] lineTypes = new LineType[] {new LineType("CONTINUOUS", "Solid line")};
 
     // current layer color (index in the colors array)
     private int colorPos = 0;
@@ -92,30 +91,27 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Create a new instance of the writer, using the given underlying writer.
-     * 
+     *
      * @param writer
      */
     public abstract DXFWriter newInstance(Writer writer);
 
     /**
      * Verifies if the writer supports the request dxf version.
-     * 
+     *
      * @param version
      */
     public boolean supportsVersion(String version) {
-        if (version == null)
-            return true;
+        if (version == null) return true;
         return false;
     }
 
-    public AbstractDXFWriter() {
-
-    }
+    public AbstractDXFWriter() {}
 
     /**
      * Full constructor. Needs a writer, to write the dxf out. It permits to specify an encoding for
      * the dxf.
-     * 
+     *
      * @param writer
      * @param encoding
      */
@@ -125,12 +121,11 @@ public abstract class AbstractDXFWriter implements DXFWriter {
         handles.put("VPort", 41); // max 5 vports
         handles.put("Layer", 46); // max 154 layers
         handles.put("BlockRecord", 200); // max 299800 blocks
-        handles.put("Block", 300000); 
-        handles.put("Geometry", 700000); // max 395075 geometries  
-        
+        handles.put("Block", 300000);
+        handles.put("Geometry", 700000); // max 395075 geometries
+
         this.writer = writer;
-        if (encoding != null)
-            this.encoding = encoding;
+        if (encoding != null) this.encoding = encoding;
         // initialize number formats
         format = NumberFormat.getInstance(Locale.US);
         // this may not be enough for latlon. At the equator, 0.01° approx. 1100 m
@@ -151,7 +146,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Simple constructor. Needs a writer, to write the dxf out.
-     * 
+     *
      * @param writer
      * @param encoding
      */
@@ -160,9 +155,8 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Performs the actual writing.
-     * Override it in the actual implementation class.
-     * 
+     * Performs the actual writing. Override it in the actual implementation class.
+     *
      * @param featureList
      * @param version
      * @throws IOException
@@ -171,9 +165,8 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Extracts and cache the global ReferenceEnvelope for the given feature list.
-     * 
-     * @param featureList
      *
+     * @param featureList
      */
     protected ReferencedEnvelope getEnvelope(List featureList) {
         if (e == null) {
@@ -191,7 +184,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Normalizes an envelope to get a usable viewport.
-     * 
+     *
      * @param e2
      */
     private ReferencedEnvelope normalizeEnvelope(ReferencedEnvelope pEnv) {
@@ -212,7 +205,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /**
      * Writes the simplest dxf object, a group, composed of a numeric code and a value. The value
      * type can be interpreted looking at the code.
-     * 
+     *
      * @param code
      * @param value
      * @throws IOException
@@ -224,7 +217,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes the End of file group.
-     * 
+     *
      * @throws IOException
      */
     protected void writeEof() throws IOException {
@@ -233,7 +226,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a start (section, etc.) group.
-     * 
+     *
      * @param entity
      * @throws IOException
      */
@@ -242,28 +235,26 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Loads a static section from a resource/file.
-     * Some parts of the dxf can be really static, so it's
-     * easier to load them from files.
-     * 
+     * Loads a static section from a resource/file. Some parts of the dxf can be really static, so
+     * it's easier to load them from files.
+     *
      * @param resource
      * @throws IOException
      */
     protected void loadFromResource(String resource) throws IOException {
-        final InputStream tpl = this.getClass().getClassLoader().getResourceAsStream(
-                resource + ".dxf");
+        final InputStream tpl =
+                this.getClass().getClassLoader().getResourceAsStream(resource + ".dxf");
 
         if (tpl != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(tpl));
             String line = null;
-            while ((line = reader.readLine()) != null)
-                writer.write(line + EOL);
+            while ((line = reader.readLine()) != null) writer.write(line + EOL);
         }
     }
 
     /**
      * Writes a section start.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -274,7 +265,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a section end.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -284,7 +275,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a table start.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -295,7 +286,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a table end.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -306,7 +297,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /**
      * Writes an handle of the given type. The type is used to generate handles in different numeric
      * spaces, for different entities.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -319,7 +310,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /**
      * Gets a new handle of the given type. The type is used to generate handles in different
      * numeric spaces, for different entities.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -333,16 +324,14 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Gets a name for the layer represented by the given collection.
-     * 
-     * @param coll
      *
+     * @param coll
      */
     protected String getLayerName(FeatureCollection coll) {
         String name = getCachedName(coll.hashCode() + "");
         if (name == null) {
             name = layerNames[layerCounter];
-            if (name.equals(""))
-                name = "LAYER" + layerCounter;
+            if (name.equals("")) name = "LAYER" + layerCounter;
             layerCounter++;
             storeCachedName(coll.hashCode() + "", name);
         }
@@ -352,56 +341,50 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Store a layer name for future use.
+     *
      * @param id
      * @param name
      */
     private void storeCachedName(String id, String name) {
         cachedNames.put(id, name);
-
     }
 
     /**
      * Gets a stored layer name.
-     * @param id
      *
+     * @param id
      */
     private String getCachedName(String id) {
         return cachedNames.get(id);
     }
 
     /**
-     * Assign a color to the collection, cycling through
-     * the available color list.
-     * @param coll
+     * Assign a color to the collection, cycling through the available color list.
      *
+     * @param coll
      */
     protected int getColor(FeatureCollection coll) {
         int color = colors[colorPos];
-        if (colorPos < (colors.length - 1))
-            colorPos++;
-        else
-            colorPos = 0;
+        if (colorPos < (colors.length - 1)) colorPos++;
+        else colorPos = 0;
         return color;
     }
 
     /**
-     * Assign a line type to the collection, cycling through
-     * the available line types list.
-     * @param coll
+     * Assign a line type to the collection, cycling through the available line types list.
      *
+     * @param coll
      */
     protected int getLineType(FeatureCollection coll) {
         int ltype = ltypePos;
-        if (ltypePos < (lineTypes.length - 1))
-            ltypePos++;
-        else
-            ltypePos = 0;
+        if (ltypePos < (lineTypes.length - 1)) ltypePos++;
+        else ltypePos = 0;
         return ltype;
     }
 
     /**
      * Writes a layer group.
-     * 
+     *
      * @param layer
      * @throws IOException
      */
@@ -411,7 +394,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes an xref path group.
-     * 
+     *
      * @param path
      * @throws IOException
      */
@@ -423,30 +406,28 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Writes a geometry start, for the given geometry name (line, etc.). The geometry belongs to
      * the given layer and has an owner handle. The geometry is assigned a line type and color, if
      * specified.
-     * 
+     *
      * @param geometryName
      * @param layer
      * @param ownerHandle
      * @throws IOException
      */
-    protected void writeGeometryStart(String geometryName, String layer, String ownerHandle,
-            int lineType, int color) throws IOException {
+    protected void writeGeometryStart(
+            String geometryName, String layer, String ownerHandle, int lineType, int color)
+            throws IOException {
         writeGroup(0, geometryName);
         writeHandle("Geometry");
-        if (ownerHandle != null)
-            writeOwnerHandle(ownerHandle);
+        if (ownerHandle != null) writeOwnerHandle(ownerHandle);
         writeSubClass("AcDbEntity");
         writeLayer(layer);
-        if (lineType != -1)
-            writeLineType(lineType);
-        if (color != -1)
-            writeColor(7);
+        if (lineType != -1) writeLineType(lineType);
+        if (color != -1) writeColor(7);
     }
 
     /**
      * Writes a geometry start, for the given geometry name (line, etc.). The geometry belongs to
      * the given layer and has an owner handle. The geometry is assigned layer line type and color.
-     * 
+     *
      * @param geometryName
      * @param layer
      * @param ownerHandle
@@ -459,29 +440,27 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a color group.
-     * 
+     *
      * @param color
      * @throws IOException
      */
     protected void writeColor(int color) throws IOException {
         writeIntegerGroup(62, color);
-
     }
 
     /**
      * Writes a line type group.
-     * 
+     *
      * @param lineType
      * @throws IOException
      */
     protected void writeLineType(int lineType) throws IOException {
         writeGroup(6, lineTypes[lineType].getName());
-
     }
 
     /**
      * Writes an owner handle group (assigns an owner to the object via its handle).
-     * 
+     *
      * @param handle
      * @throws IOException
      */
@@ -491,7 +470,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a subclass marker group.
-     * 
+     *
      * @param subclass
      * @throws IOException
      */
@@ -501,7 +480,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a size (number of following objects) group.
-     * 
+     *
      * @param size
      * @throws IOException
      */
@@ -511,7 +490,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a name group.
-     * 
+     *
      * @param name
      * @throws IOException
      */
@@ -521,7 +500,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes an header variable.
-     * 
+     *
      * @param varName
      * @throws IOException
      */
@@ -531,7 +510,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a group having an integer value.
-     * 
+     *
      * @param code
      * @param value
      * @throws IOException
@@ -547,7 +526,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /**
      * Writes a point with the given coordinates. Use NaN to exclude a coordinate (tipically z) from
      * output. Uses the standard (10,20,30) codes.
-     * 
+     *
      * @param x
      * @param y
      * @param z
@@ -560,7 +539,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /**
      * Writes a point with the given coordinates. Use NaN to exclude a coordinate (tipically z) from
      * output. Uses the codes given by baseCode (baseCode,baseCode+10,baseCode+20)
-     * 
+     *
      * @param x
      * @param y
      * @param z
@@ -569,14 +548,12 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     protected void writePoint(int baseCode, double x, double y, double z) throws IOException {
         writeDoubleGroup(baseCode, x);
         writeDoubleGroup(baseCode + 10, y);
-        if (!Double.isNaN(z))
-            writeDoubleGroup(baseCode + 20, z);
-
+        if (!Double.isNaN(z)) writeDoubleGroup(baseCode + 20, z);
     }
 
     /**
      * Writes a group having a double value.
-     * 
+     *
      * @param code
      * @param value
      * @throws IOException
@@ -587,7 +564,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a group having a double value.
-     * 
+     *
      * @param code
      * @param value
      * @throws IOException
@@ -598,18 +575,15 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Writes a group representing a date in julian format.
-     * 
+     *
      * @param dt
      * @throws IOException
      */
     protected void writeJulianDate(Date dt) throws IOException {
         writeGroup(40, dateFormat.format(JulianDate.toJulian(dt)));
-
     }
 
-    /**
-     * Configure an option (usually got as a format option).
-     */
+    /** Configure an option (usually got as a format option). */
     public void setOption(String optionName, Object optionValue) {
         if (optionName.equalsIgnoreCase("geometryasblock")) {
             setGeometryAsBlock(((Boolean) optionValue).booleanValue());
@@ -627,7 +601,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
     /**
      * Sets the "write attributes to file" flag.
-     * 
+     *
      * @param writeAttributes
      */
     private void setWriteAttributes(boolean writeAttributes) {
@@ -636,7 +610,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Sets the "all geometries as blocks" flag.
-     * 
+     *
      * @param geometryAsBlock
      */
     public void setGeometryAsBlock(boolean geometryAsBlock) {
@@ -645,7 +619,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Set custom array of colors to assign to written layers.
-     * 
+     *
      * @param colors
      */
     public void setColors(int[] colors) {
@@ -654,7 +628,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Set custom array of line types to assign to written layers.
-     * 
+     *
      * @param colors
      */
     public void setLineTypes(LineType[] lineTypes) {
@@ -663,6 +637,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /**
      * Set list of names to be used for layers.
+     *
      * @param layerNames
      */
     public void setLayerNames(String[] layerNames) {

@@ -5,7 +5,6 @@
 package org.geoserver.wms.ncwms;
 
 import java.util.Map;
-
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Service;
@@ -17,8 +16,8 @@ import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 
 /**
- * Integrates the ncWMS extension parameters into the env approach normally chosen by GeoServer to add dynamic parameters (the ones used by the
- * colormap rendering transformation)
+ * Integrates the ncWMS extension parameters into the env approach normally chosen by GeoServer to
+ * add dynamic parameters (the ones used by the colormap rendering transformation)
  */
 public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
 
@@ -63,9 +62,11 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
             if ((value == null && str != null && !str.trim().isEmpty())
                     || (value != null && (value < 0 || value > 100))) {
                 throw new ServiceException(
-                        "Expected a int value between 0 and 100 for OPACITY but found '" + str
+                        "Expected a int value between 0 and 100 for OPACITY but found '"
+                                + str
                                 + "' instead",
-                        ServiceException.INVALID_PARAMETER_VALUE, "OPACITY");
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "OPACITY");
             }
             EnvFunction.setLocalValue(PaletteParser.OPACITY, value / 100f);
         }
@@ -75,21 +76,22 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
             if ((animate == null && str != null && !str.trim().isEmpty())) {
                 throw new ServiceException(
                         "Expected a boolean value for ANIMATION but found '" + str + "' instead",
-                        ServiceException.INVALID_PARAMETER_VALUE, "ANIMATION");
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "ANIMATION");
             }
             if (animate) {
                 String format = (String) rawKvp.get("format");
                 if (!gifResponse.getOutputFormats().contains(format)) {
                     throw new ServiceException(
                             "Animation is supported only with image/gif output format",
-                            ServiceException.INVALID_PARAMETER_VALUE, "format");
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            "format");
                 } else if (!GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED.equals(format)) {
                     // switch to animated mode
                     rawKvp.put("format", GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
                     kvp.put("format", GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
                 }
             }
-
         }
         mapParameter(kvp, rawKvp, NUMCOLORBANDS, PaletteParser.NUMCOLORS, Integer.class);
         mapParameter(kvp, rawKvp, BELOWMINCOLOR, PaletteParser.COLOR_BEFORE, String.class);
@@ -100,18 +102,29 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
     }
 
     /**
-     * Maps a parameter needing at most a simple type conversion from the kvp map to the env function
+     * Maps a parameter needing at most a simple type conversion from the kvp map to the env
+     * function
      */
-    private void mapParameter(Map kvp, Map rawKvp, String ncWmsParameter, String paletteParameter,
+    private void mapParameter(
+            Map kvp,
+            Map rawKvp,
+            String ncWmsParameter,
+            String paletteParameter,
             Class targetClass) {
         if (kvp.containsKey(ncWmsParameter)) {
             String str = (String) rawKvp.get(ncWmsParameter);
             Object value = Converters.convert(str, targetClass);
             if (value == null && str != null && !str.trim().isEmpty()) {
                 throw new ServiceException(
-                        "Expected a value of type " + targetClass.getSimpleName() + " for "
-                                + ncWmsParameter + " but found '" + str + "' instead",
-                        ServiceException.INVALID_PARAMETER_VALUE, ncWmsParameter);
+                        "Expected a value of type "
+                                + targetClass.getSimpleName()
+                                + " for "
+                                + ncWmsParameter
+                                + " but found '"
+                                + str
+                                + "' instead",
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        ncWmsParameter);
             }
             EnvFunction.setLocalValue(paletteParameter, value);
         }
@@ -123,7 +136,8 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
             throw new ServiceException(
                     COLORSCALERANGE
                             + " must be specified as 'min,max' where min and max are numbers",
-                    ServiceException.INVALID_PARAMETER_VALUE, COLORSCALERANGE);
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    COLORSCALERANGE);
         }
         double min = parseDouble(elements[0], COLORSCALERANGE);
         double max = parseDouble(elements[1], COLORSCALERANGE);
@@ -134,8 +148,10 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
         try {
             return Double.parseDouble(element);
         } catch (NumberFormatException e) {
-            throw new ServiceException("Expected a number but got '" + element + "'",
-                    ServiceException.INVALID_PARAMETER_VALUE, locator);
+            throw new ServiceException(
+                    "Expected a number but got '" + element + "'",
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    locator);
         }
     }
 }

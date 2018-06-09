@@ -7,12 +7,16 @@ package org.geoserver.geopkg;
 
 import static org.geoserver.geopkg.GeoPkg.*;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -25,36 +29,25 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.NameImpl;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
- * 
  * WFS GetFeature OutputFormat for GeoPackage
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
-    
-    public final static String PROPERTY_INDEXED = "geopackage.wfs.indexed";
+
+    public static final String PROPERTY_INDEXED = "geopackage.wfs.indexed";
 
     public GeoPackageGetFeatureOutputFormat(GeoServer gs) {
         super(gs, Sets.union(Sets.newHashSet(MIME_TYPE), Sets.newHashSet(NAMES)));
     }
 
     @Override
-    public String getMimeType(Object value, Operation operation)
-            throws ServiceException {
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
         return MIME_TYPE;
     }
 
@@ -77,29 +70,37 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
     public String getAttachmentFileName(Object value, Operation operation) {
         GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
 
-        return Joiner.on("_").join(Iterables.transform(req.getQueries(), new Function<Query,String>() {
-            @Override
-            public String apply(Query input) {
-                return input.getTypeNames().get(0).getLocalPart();
-            }
-        })) + "." + EXTENSION;
+        return Joiner.on("_")
+                        .join(
+                                Iterables.transform(
+                                        req.getQueries(),
+                                        new Function<Query, String>() {
+                                            @Override
+                                            public String apply(Query input) {
+                                                return input.getTypeNames().get(0).getLocalPart();
+                                            }
+                                        }))
+                + "."
+                + EXTENSION;
     }
 
     @Override
-    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
-            Operation getFeature) throws IOException, ServiceException {
+    protected void write(
+            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+            throws IOException, ServiceException {
 
         GeoPackage geopkg = new GeoPackage();
-        
-        for (FeatureCollection collection: featureCollection.getFeatures()) {
-            
+
+        for (FeatureCollection collection : featureCollection.getFeatures()) {
+
             FeatureEntry e = new FeatureEntry();
-            
-            if (! (collection instanceof SimpleFeatureCollection)) {
-                throw new ServiceException("GeoPackage OutputFormat does not support Complex Features.");
+
+            if (!(collection instanceof SimpleFeatureCollection)) {
+                throw new ServiceException(
+                        "GeoPackage OutputFormat does not support Complex Features.");
             }
 
-            SimpleFeatureCollection features = (SimpleFeatureCollection)  collection;
+            SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
             FeatureTypeInfo meta = lookupFeatureType(features);
             if (meta != null) {
                 // initialize entry metadata
@@ -108,18 +109,18 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             }
 
             geopkg.add(e, features);
-            
+
             if ("true".equals(System.getProperty(PROPERTY_INDEXED))) {
                 geopkg.createSpatialIndex(e);
             }
         }
-        
+
         geopkg.close();
-        
-        //write to output and delete temporary file
+
+        // write to output and delete temporary file
         InputStream temp = new FileInputStream(geopkg.getFile());
         IOUtils.copy(temp, output);
-        output.flush();        
+        output.flush();
         temp.close();
         geopkg.getFile().delete();
     }
@@ -134,8 +135,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             }
 
             LOGGER.fine("Unable to load feature type metadata for: " + featureType.getName());
-        }
-        else {
+        } else {
             LOGGER.fine("No feature type for collection, unable to load metadata");
         }
 

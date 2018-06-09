@@ -5,13 +5,13 @@
 
 package org.geoserver.wms.ncwms;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -20,7 +20,6 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.LayerIdentifier;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -34,11 +33,9 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
-
 /**
- * Implements the methods of the NcWMS service which are not included on the WMS standard. For the moment, only GetTimeSeries method is supported.
+ * Implements the methods of the NcWMS service which are not included on the WMS standard. For the
+ * moment, only GetTimeSeries method is supported.
  */
 public class NcWmsService {
 
@@ -48,9 +45,7 @@ public class NcWmsService {
 
     private WMS wms;
 
-    /**
-     * Simple helper to enforce rendering timeout
-     */
+    /** Simple helper to enforce rendering timeout */
     private static class CountdownClock {
         long end;
 
@@ -67,8 +62,9 @@ public class NcWmsService {
             if (maxRenderingTime > 0 && System.currentTimeMillis() > end) {
                 throw new ServiceException(
                         "This request used more time than allowed and has been forcefully stopped. "
-                                + "Max rendering time is " + (maxRenderingTime / 1000.0) + "s");
-
+                                + "Max rendering time is "
+                                + (maxRenderingTime / 1000.0)
+                                + "s");
             }
         }
     }
@@ -85,14 +81,17 @@ public class NcWmsService {
             }
         }
 
-        throw new ServiceException("Could not find any identifier that can handle layer "
-                + layer.getLayerInfo().prefixedName() + " among these identifiers: " + identifiers);
+        throw new ServiceException(
+                "Could not find any identifier that can handle layer "
+                        + layer.getLayerInfo().prefixedName()
+                        + " among these identifiers: "
+                        + identifiers);
     }
 
     /**
-     * Implements the GetTimeSeries method, which can retrieve a time series of values on a certain point, using a syntax similar to the
-     * GetFeatureInfo operation.
-     * 
+     * Implements the GetTimeSeries method, which can retrieve a time series of values on a certain
+     * point, using a syntax similar to the GetFeatureInfo operation.
+     *
      * @param request
      * @return
      */
@@ -135,27 +134,30 @@ public class NcWmsService {
         int maxRenderingTime = wms.getMaxRenderingTime(request.getGetMapRequest());
         CountdownClock countdownClock = new CountdownClock(maxRenderingTime);
         LayerIdentifier identifier = getLayerIdentifier(layer);
-        SimpleFeatureBuilder featureBuilder = getResultFeatureBuilder(layer.getName(),
-                buildTypeDescription(layer));
+        SimpleFeatureBuilder featureBuilder =
+                getResultFeatureBuilder(layer.getName(), buildTypeDescription(layer));
         try {
             // Get available dates, then perform an identify operation per each date in the range
-            TreeSet availableDates = wms.queryCoverageTimes(coverage, queryRange,
-                    Query.DEFAULT_MAX);
-            ListFeatureCollection features = new ListFeatureCollection(featureBuilder.getFeatureType());
+            TreeSet availableDates =
+                    wms.queryCoverageTimes(coverage, queryRange, Query.DEFAULT_MAX);
+            ListFeatureCollection features =
+                    new ListFeatureCollection(featureBuilder.getFeatureType());
             for (Object d : availableDates) {
                 // check timeout
                 countdownClock.checkTimeout();
-                
+
                 // run query
                 Date date = (Date) d;
                 DateRange currentDate = new DateRange(date, date);
                 request.getGetMapRequest().getTime().remove(0);
                 request.getGetMapRequest().getTime().add(currentDate);
-                FeatureInfoRequestParameters requestParams = new FeatureInfoRequestParameters(request);
-                List<FeatureCollection> identifiedCollections = identifier.identify(requestParams, 1);
-                
+                FeatureInfoRequestParameters requestParams =
+                        new FeatureInfoRequestParameters(request);
+                List<FeatureCollection> identifiedCollections =
+                        identifier.identify(requestParams, 1);
+
                 // collect the data
-                if(identifiedCollections != null) {
+                if (identifiedCollections != null) {
                     for (FeatureCollection c : identifiedCollections) {
                         try (FeatureIterator featIter = c.features()) {
                             if (featIter.hasNext()) { // no need to loop, we just want one value
@@ -187,11 +189,15 @@ public class NcWmsService {
 
     public String buildTypeDescription(MapLayerInfo layer) {
         String name = layer.getName();
-        if (layer.getCoverage() != null && layer.getCoverage().getDimensions().size() == 1
+        if (layer.getCoverage() != null
+                && layer.getCoverage().getDimensions().size() == 1
                 && layer.getCoverage().getDimensions().get(0).getName() != null
                 && layer.getCoverage().getDimensions().get(0).getUnit() != null) {
-            name = layer.getCoverage().getDimensions().get(0).getName() + " ("
-                    + layer.getCoverage().getDimensions().get(0).getUnit() + ")";
+            name =
+                    layer.getCoverage().getDimensions().get(0).getName()
+                            + " ("
+                            + layer.getCoverage().getDimensions().get(0).getUnit()
+                            + ")";
         }
         return name;
     }
@@ -213,5 +219,4 @@ public class NcWmsService {
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
         return featureBuilder;
     }
-
 }

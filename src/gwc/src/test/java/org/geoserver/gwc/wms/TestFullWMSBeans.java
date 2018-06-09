@@ -6,7 +6,6 @@
 package org.geoserver.gwc.wms;
 
 import java.util.List;
-
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.io.ImageDecoderContainer;
 import org.geowebcache.io.ImageDecoderImpl;
@@ -16,10 +15,10 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Test class ensuring that the GWC beans stored in the geowebcache-wmsservice-context.xml file are correctly loaded.
- * 
+ * Test class ensuring that the GWC beans stored in the geowebcache-wmsservice-context.xml file are
+ * correctly loaded.
+ *
  * @author Nicola Lagomarsini geosolutions
- * 
  */
 public class TestFullWMSBeans extends GeoServerSystemTestSupport {
 

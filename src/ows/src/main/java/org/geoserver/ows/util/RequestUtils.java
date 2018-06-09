@@ -14,40 +14,39 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
-
 
 /**
  * Utility class performing operations related to http requests.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
- * TODO: this class needs to be merged with org.vfny.geoserver.Requests.
+ *     <p>TODO: this class needs to be merged with org.vfny.geoserver.Requests.
  */
 public class RequestUtils {
-    
 
     /**
-     * Pulls out the base url ( from the client point of view ), from the
-     * given request object.
+     * Pulls out the base url ( from the client point of view ), from the given request object.
      *
      * @return A String of the form "&lt;scheme&gt;://&lt;server&gt;:&lt;port&gt;/&lt;context&gt;/"
      * @deprecated Use {@link ResponseUtils#baseURL(HttpServletRequest)} instead
      */
     public static String baseURL(HttpServletRequest req) {
         StringBuffer sb = new StringBuffer(req.getScheme());
-        sb.append("://").append(req.getServerName()).append(":").append(req.getServerPort())
-                .append(req.getContextPath()).append("/");
+        sb.append("://")
+                .append(req.getServerName())
+                .append(":")
+                .append(req.getServerPort())
+                .append(req.getContextPath())
+                .append("/");
         return sb.toString();
     }
-    
+
     /**
-     * Pulls out the first IP address from the X-Forwarded-For request header
-     * if it was provided; otherwise just gets the client IP address.
+     * Pulls out the first IP address from the X-Forwarded-For request header if it was provided;
+     * otherwise just gets the client IP address.
+     *
      * @return the IP address of the client that sent the request
      */
     public static String getRemoteAddr(HttpServletRequest req) {
@@ -59,140 +58,144 @@ public class RequestUtils {
             return req.getRemoteAddr();
         }
     }
-    
+
     /**
-     * Given a list of provided versions, and a list of accepted versions, this method will
-     * return the negotiated version to be used for response according to the pre OWS 1.1 specifications,
+     * Given a list of provided versions, and a list of accepted versions, this method will return
+     * the negotiated version to be used for response according to the pre OWS 1.1 specifications,
      * that is, WMS 1.1, WMS 1.3, WFS 1.0, WFS 1.1 and WCS 1.0
+     *
      * @param providedList a non null, non empty list of provided versions (in "x.y.z" format)
      * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" format)
      * @return the negotiated version to be used for response
      */
     public static String getVersionPreOws(List<String> providedList, List<String> acceptedList) {
-        //first figure out which versions are provided
+        // first figure out which versions are provided
         TreeSet<Version> provided = new TreeSet<Version>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
-        
+
         // if no accept list provided, we return the biggest
-        if(acceptedList == null || acceptedList.isEmpty())
-            return provided.last().toString();
-    
-        //next figure out what the client accepts (and check they are good version numbers)
+        if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
+
+        // next figure out what the client accepts (and check they are good version numbers)
         TreeSet<Version> accepted = new TreeSet<Version>();
         for (String v : acceptedList) {
             checkVersionNumber(v, null);
-            
+
             accepted.add(new Version(v));
         }
-    
+
         // prune out those not provided
-        for (Iterator<Version> v = accepted.iterator(); v.hasNext();) {
+        for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
             Version version = (Version) v.next();
-    
+
             if (!provided.contains(version)) {
                 v.remove();
             }
         }
-    
+
         // lookup a matching version
         String version = null;
         if (!accepted.isEmpty()) {
-            //return the highest version provided
+            // return the highest version provided
             version = ((Version) accepted.last()).toString();
         } else {
             for (String v : acceptedList) {
                 accepted.add(new Version(v));
             }
-    
-            //if highest accepted less then lowest provided, send lowest
+
+            // if highest accepted less then lowest provided, send lowest
             if ((accepted.last()).compareTo(provided.first()) < 0) {
                 version = (provided.first()).toString();
             }
-    
-            //if lowest accepted is greater then highest provided, send highest
+
+            // if lowest accepted is greater then highest provided, send highest
             if ((accepted.first()).compareTo(provided.last()) > 0) {
                 version = (provided.last()).toString();
             }
-    
+
             if (version == null) {
-                //go through from lowest to highest, and return highest provided 
+                // go through from lowest to highest, and return highest provided
                 // that is less than the highest accepted
                 Iterator<Version> v = provided.iterator();
                 Version last = v.next();
-    
-                for (; v.hasNext();) {
+
+                for (; v.hasNext(); ) {
                     Version current = v.next();
-    
+
                     if (current.compareTo(accepted.last()) > 0) {
                         break;
                     }
-    
+
                     last = current;
                 }
-    
+
                 version = last.toString();
             }
         }
-        
+
         return version;
     }
-    
+
     /**
-     * Given a list of provided versions, and a list of accepted versions, this method will
-     * return the negotiated version to be used for response according to the OWS 1.1 specification
-     * (at the time of writing, only WCS 1.1.1 is using it)
+     * Given a list of provided versions, and a list of accepted versions, this method will return
+     * the negotiated version to be used for response according to the OWS 1.1 specification (at the
+     * time of writing, only WCS 1.1.1 is using it)
+     *
      * @param providedList a non null, non empty list of provided versions (in "x.y.z" format)
      * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" format)
      * @return the negotiated version to be used for response
      */
     public static String getVersionOws11(List<String> providedList, List<String> acceptedList) {
-        //first figure out which versions are provided
+        // first figure out which versions are provided
         TreeSet<Version> provided = new TreeSet<Version>();
         for (String v : providedList) {
             provided.add(new Version(v));
         }
-        
+
         // if no accept list provided, we return the biggest supported version
-        if(acceptedList == null || acceptedList.isEmpty())
-            return provided.last().toString();
-            
-    
+        if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
+
         // next figure out what the client accepts (and check they are good version numbers)
         List<Version> accepted = new ArrayList<Version>();
         for (String v : acceptedList) {
             checkVersionNumber(v, "AcceptVersions");
-            
+
             accepted.add(new Version(v));
         }
-    
-        // from the specification "The server, upon receiving a GetCapabilities request, shall scan 
+
+        // from the specification "The server, upon receiving a GetCapabilities request, shall scan
         // through this list and find the first version number that it supports"
         Version negotiated = null;
-        for (Iterator<Version> v = accepted.iterator(); v.hasNext();) {
+        for (Iterator<Version> v = accepted.iterator(); v.hasNext(); ) {
             Version version = (Version) v.next();
-    
+
             if (provided.contains(version)) {
                 negotiated = version;
                 break;
             }
         }
-        
-        // from the spec: "If the list does not contain any version numbers that the server 
-        // supports, the server shall return an Exception with 
+
+        // from the spec: "If the list does not contain any version numbers that the server
+        // supports, the server shall return an Exception with
         // exceptionCode="VersionNegotiationFailed"
-        if(negotiated == null)
-            throw new ServiceException("Could not find any matching version " 
-                    + acceptedList + " in supported list: " + acceptedList, "VersionNegotiationFailed");
-        
+        if (negotiated == null)
+            throw new ServiceException(
+                    "Could not find any matching version "
+                            + acceptedList
+                            + " in supported list: "
+                            + acceptedList,
+                    "VersionNegotiationFailed");
+
         return negotiated.toString();
     }
 
     /**
      * Checks the validity of a version number (the specification version numbers, three dot
-     * separated integers between 0 and 99). Throws a ServiceException if the version number
-     * is not valid.
+     * separated integers between 0 and 99). Throws a ServiceException if the version number is not
+     * valid.
+     *
      * @param v the version number (in string format)
      * @param locator The locator for the service exception (may be null)
      */
@@ -204,60 +207,57 @@ public class RequestUtils {
     }
 
     /**
-     * Wraps an xml input xstream in a buffered reader specifying a lookahead that can be used
-     * to preparse some of the xml document, resetting it back to its original state for actual 
+     * Wraps an xml input xstream in a buffered reader specifying a lookahead that can be used to
+     * preparse some of the xml document, resetting it back to its original state for actual
      * parsing.
-     * 
+     *
      * @param stream The original xml stream.
-     * @param xmlLookahead The number of bytes to support for parse. If more than this number of 
-     *   bytes are preparsed the stream can not be properly reset.
-     *     
+     * @param xmlLookahead The number of bytes to support for parse. If more than this number of
+     *     bytes are preparsed the stream can not be properly reset.
      * @return The buffered reader.
      */
-    public static BufferedReader getBufferedXMLReader(InputStream stream, int xmlLookahead) 
-        throws IOException {
-        
-        //create a buffer so we can reset the input stream
+    public static BufferedReader getBufferedXMLReader(InputStream stream, int xmlLookahead)
+            throws IOException {
+
+        // create a buffer so we can reset the input stream
         BufferedInputStream input = new BufferedInputStream(stream);
         input.mark(xmlLookahead);
 
-        //create object to hold encoding info
+        // create object to hold encoding info
         EncodingInfo encoding = new EncodingInfo();
 
-        //call this method to set the encoding info
+        // call this method to set the encoding info
         XmlCharsetDetector.getCharsetAwareReader(input, encoding);
 
-        //call this method to create the reader
+        // call this method to create the reader
         Reader reader = XmlCharsetDetector.createReader(input, encoding);
 
-        //rest the input
+        // rest the input
         input.reset();
-        
+
         return getBufferedXMLReader(reader, xmlLookahead);
     }
-    
+
     /**
-     * Wraps an xml reader in a buffered reader specifying a lookahead that can be used
-     * to preparse some of the xml document, resetting it back to its original state for actual 
-     * parsing.
-     * 
+     * Wraps an xml reader in a buffered reader specifying a lookahead that can be used to preparse
+     * some of the xml document, resetting it back to its original state for actual parsing.
+     *
      * @param reader The original xml reader.
-     * @param xmlLookahead The number of bytes to support for parse. If more than this number of 
-     *   bytes are preparsed the stream can not be properly reset.
-     *     
+     * @param xmlLookahead The number of bytes to support for parse. If more than this number of
+     *     bytes are preparsed the stream can not be properly reset.
      * @return The buffered reader.
      */
-    public static BufferedReader getBufferedXMLReader(Reader reader, int xmlLookahead) 
-        throws IOException {
-        //ensure the reader is a buffered reader
-        
+    public static BufferedReader getBufferedXMLReader(Reader reader, int xmlLookahead)
+            throws IOException {
+        // ensure the reader is a buffered reader
+
         if (!(reader instanceof BufferedReader)) {
             reader = new BufferedReader(reader);
         }
 
-        //mark the input stream
+        // mark the input stream
         reader.mark(xmlLookahead);
-        
+
         return (BufferedReader) reader;
     }
 }

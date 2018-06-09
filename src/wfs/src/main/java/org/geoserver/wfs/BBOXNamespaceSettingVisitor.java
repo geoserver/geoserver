@@ -7,10 +7,9 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This is to set namespace context to handle complex attributes in the bbox filter.
- * 
+ *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-
 public class BBOXNamespaceSettingVisitor extends DuplicatingFilterVisitor {
 
     private NamespaceSupport nsContext;
@@ -34,5 +33,4 @@ public class BBOXNamespaceSettingVisitor extends DuplicatingFilterVisitor {
         }
         return filter;
     }
-
 }

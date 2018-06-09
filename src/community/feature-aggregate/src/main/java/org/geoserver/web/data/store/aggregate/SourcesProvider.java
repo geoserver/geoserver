@@ -9,34 +9,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.opengis.feature.type.Name;
 
 class SourcesProvider extends GeoServerDataProvider<Map.Entry<Name, String>> {
     private static final long serialVersionUID = -2886801617500717930L;
 
-    public static Property<Map.Entry<Name, String>> NAME = new AbstractProperty<Map.Entry<Name, String>>(
-            "store") {
+    public static Property<Map.Entry<Name, String>> NAME =
+            new AbstractProperty<Map.Entry<Name, String>>("store") {
 
-        private static final long serialVersionUID = -4599279831041684940L;
+                private static final long serialVersionUID = -4599279831041684940L;
 
-        @Override
-        public Object getPropertyValue(Entry<Name, String> item) {
-            return item.getKey();
-        }
-    };
+                @Override
+                public Object getPropertyValue(Entry<Name, String> item) {
+                    return item.getKey();
+                }
+            };
 
-    public static Property<Map.Entry<Name, String>> TYPE = new AbstractProperty<Map.Entry<Name, String>>(
-            "type") {
+    public static Property<Map.Entry<Name, String>> TYPE =
+            new AbstractProperty<Map.Entry<Name, String>>("type") {
 
-        private static final long serialVersionUID = -2038898684200579478L;
+                private static final long serialVersionUID = -2038898684200579478L;
 
-        @Override
-        public Object getPropertyValue(Map.Entry<Name, String> item) {
-            return item.getValue();
-        }
-    };
+                @Override
+                public Object getPropertyValue(Map.Entry<Name, String> item) {
+                    return item.getValue();
+                }
+            };
 
     static List<Property<Entry<Name, String>>> PROPERTIES = Arrays.asList(NAME, TYPE);
 
@@ -55,5 +54,4 @@ class SourcesProvider extends GeoServerDataProvider<Map.Entry<Name, String>> {
     protected List<Property<Map.Entry<Name, String>>> getProperties() {
         return PROPERTIES;
     }
-
 }

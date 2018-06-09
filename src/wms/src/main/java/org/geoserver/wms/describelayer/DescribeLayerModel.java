@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DescribeLayerRequest;
@@ -24,7 +23,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * DescribeLayerModel the model object used to handle a DescribeLayer response
- * 
+ *
  * @author carlo cancellieri - Geosolutions
  */
 public class DescribeLayerModel {
@@ -68,7 +67,8 @@ public class DescribeLayerModel {
                 // non vector nor raster layer, LayerDescription will not contain these
                 // attributes
                 if (LOGGER.isLoggable(Level.WARNING))
-                    LOGGER.warning("Non vector nor raster layer, LayerDescription will not contain these attributes");
+                    LOGGER.warning(
+                            "Non vector nor raster layer, LayerDescription will not contain these attributes");
             }
 
             final LayerDescription layerDesc = new LayerDescription();
@@ -79,7 +79,6 @@ public class DescribeLayerModel {
             // populate
             layerDescriptions.add(layerDesc);
         }
-
     }
 
     public List<LayerDescription> getLayerDescriptions() {
@@ -89,5 +88,4 @@ public class DescribeLayerModel {
     public String getVersion() {
         return version;
     }
-
 }

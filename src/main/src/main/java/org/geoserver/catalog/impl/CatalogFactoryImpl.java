@@ -31,11 +31,11 @@ import org.geoserver.catalog.WorkspaceInfo;
 public class CatalogFactoryImpl implements CatalogFactory {
 
     Catalog catalog;
-    
-    public CatalogFactoryImpl( Catalog catalog ) {
+
+    public CatalogFactoryImpl(Catalog catalog) {
         this.catalog = catalog;
     }
-    
+
     public CoverageInfo createCoverage() {
         return new CoverageInfoImpl(catalog);
     }
@@ -51,11 +51,11 @@ public class CatalogFactoryImpl implements CatalogFactory {
     public DataStoreInfo createDataStore() {
         return new DataStoreInfoImpl(catalog);
     }
-    
+
     public WMSStoreInfo createWebMapServer() {
         return new WMSStoreInfoImpl(catalog);
     }
-    
+
     @Override
     public WMTSStoreInfo createWebMapTileServer() {
         return (WMTSStoreInfo) new WMTSStoreInfoImpl(catalog);
@@ -68,7 +68,7 @@ public class CatalogFactoryImpl implements CatalogFactory {
     public FeatureTypeInfo createFeatureType() {
         return new FeatureTypeInfoImpl(catalog);
     }
-    
+
     public WMSLayerInfo createWMSLayer() {
         return new WMSLayerInfoImpl(catalog);
     }
@@ -81,23 +81,23 @@ public class CatalogFactoryImpl implements CatalogFactory {
     public AttributionInfo createAttribution() {
         return new AttributionInfoImpl();
     }
-    
+
     public LayerInfo createLayer() {
         return new LayerInfoImpl();
     }
-    
+
     public MapInfo createMap() {
         return new MapInfoImpl();
     }
-    
+
     public LayerGroupInfo createLayerGroup() {
         return new LayerGroupInfoImpl();
     }
-    
+
     public LegendInfo createLegend() {
         return new LegendInfoImpl();
     }
-    
+
     public MetadataLinkInfo createMetadataLink() {
         return new MetadataLinkInfoImpl();
     }
@@ -109,7 +109,7 @@ public class CatalogFactoryImpl implements CatalogFactory {
     public NamespaceInfo createNamespace() {
         return new NamespaceInfoImpl();
     }
-    
+
     public WorkspaceInfo createWorkspace() {
         return new WorkspaceInfoImpl();
     }

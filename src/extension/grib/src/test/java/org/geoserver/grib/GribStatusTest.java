@@ -7,7 +7,6 @@ package org.geoserver.grib;
 
 import static org.junit.Assert.assertTrue;
 
-import org.geoserver.grib.GribStatus;
 import org.junit.Test;
 
 public class GribStatusTest {

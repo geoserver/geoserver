@@ -2,7 +2,6 @@ package org.geoserver.backuprestore.tasklet;
 
 import java.io.IOException;
 import java.util.Arrays;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.backuprestore.utils.BackupUtils;
@@ -17,27 +16,29 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
-/**
- * Final step of the backup: creating the final zip file
- */
+/** Final step of the backup: creating the final zip file */
 public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
 
-    public FinalizeBackupTasklet(Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
+    public FinalizeBackupTasklet(
+            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         super(backupFacade, xStreamPersisterFactory);
     }
 
     @Override
-    protected void initialize(StepExecution stepExecution) {
-
-    }
+    protected void initialize(StepExecution stepExecution) {}
 
     @Override
-    RepeatStatus doExecute(StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
-        throws Exception {
+    RepeatStatus doExecute(
+            StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
+            throws Exception {
 
-        BackupExecutionAdapter backupExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
-        boolean bestEffort = Boolean.parseBoolean(
-            jobExecution.getJobParameters().getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+        BackupExecutionAdapter backupExecution =
+                backupFacade.getBackupExecutions().get(jobExecution.getId());
+        boolean bestEffort =
+                Boolean.parseBoolean(
+                        jobExecution
+                                .getJobParameters()
+                                .getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
 
         final Long executionId = jobExecution.getId();
 
@@ -46,7 +47,8 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
         if (jobExecution.getStatus() != BatchStatus.STOPPED) {
             try {
                 JobParameters jobParameters = backupExecution.getJobParameters();
-                Resource sourceFolder = Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
+                Resource sourceFolder =
+                        Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
                 BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
             } catch (IOException e) {
                 LOGGER.severe("Backup failed while creating final ");
@@ -56,7 +58,6 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
                 } else {
                     backupExecution.addWarningExceptions(Arrays.asList(e));
                 }
-
             }
         }
 

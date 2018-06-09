@@ -6,22 +6,20 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.BaseRequestType;
 import net.opengis.wfs.WfsFactory;
-
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.EMFUtils;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:BaseRequestType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType abstract="true" name="BaseRequestType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -80,6 +78,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class BaseRequestTypeBinding extends AbstractComplexBinding {
@@ -89,14 +88,13 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.BASEREQUESTTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -107,17 +105,17 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        //this binding needs to be executed after the child
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        // this binding needs to be executed after the child
         EObject request = (EObject) value;
 
-        //&lt;xsd:attribute default="WFS" name="service" type="ows:ServiceType" use="optional"&gt;
+        // &lt;xsd:attribute default="WFS" name="service" type="ows:ServiceType" use="optional"&gt;
         if (node.hasAttribute("service")) {
             String service = (String) node.getAttributeValue("service");
 
@@ -130,7 +128,7 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
             EMFUtils.set(request, "service", "WFS");
         }
 
-        //&lt;xsd:attribute default="1.1.0" name="version" type="xsd:string" use="optional"&gt;
+        // &lt;xsd:attribute default="1.1.0" name="version" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("version")) {
             String version = (String) node.getAttributeValue("version");
 
@@ -143,7 +141,7 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
             EMFUtils.set(request, "version", "1.1.0");
         }
 
-        //&lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;
+        // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("handle")) {
             EMFUtils.set(request, "handle", node.getAttributeValue("handle"));
         }

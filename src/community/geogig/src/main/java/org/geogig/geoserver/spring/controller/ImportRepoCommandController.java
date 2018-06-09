@@ -17,9 +17,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static org.springframework.web.bind.annotation.RequestMethod.TRACE;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geogig.geoserver.spring.dto.RepositoryImportRepo;
 import org.geogig.geoserver.spring.service.ImportRepoService;
 import org.locationtech.geogig.repository.RepositoryConnectionException;
@@ -36,32 +38,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-/**
- * Controller for importing an existing repository.
- */
+/** Controller for importing an existing repository. */
 @RestController
-@RequestMapping(path = GEOGIG_ROUTE_PREFIX + "/" + BASE_REPOSITORY_ROUTE + "/{repoName}/importExistingRepo",
-        produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+@RequestMapping(
+    path = GEOGIG_ROUTE_PREFIX + "/" + BASE_REPOSITORY_ROUTE + "/{repoName}/importExistingRepo",
+    produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+)
 public class ImportRepoCommandController extends AbstractController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportRepoCommandController.class);
 
-    @Autowired
-    private ImportRepoService importRepoService;
-    
+    @Autowired private ImportRepoService importRepoService;
+
     @RequestMapping(method = {GET, PUT, DELETE, PATCH, TRACE, OPTIONS})
     public void catchAll() {
         // if we hit this controller, it's a 405
         supportedMethods(Sets.newHashSet(POST.toString()));
     }
-    
+
     @PostMapping
-    public void importRepositoryNoBody(@PathVariable(name = "repoName") String repoName,
-            HttpServletRequest request, HttpServletResponse response)
+    public void importRepositoryNoBody(
+            @PathVariable(name = "repoName") String repoName,
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws RepositoryConnectionException {
         RepositoryImportRepo repo = importRepo(request, repoName);
         encode(repo, request, response);
@@ -69,20 +68,22 @@ public class ImportRepoCommandController extends AbstractController {
 
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})
     public void importRepositoryFromJsonOrXml(
-            @PathVariable(name = "repoName")String repoName,
+            @PathVariable(name = "repoName") String repoName,
             @RequestBody InitRequest requestBody,
-            HttpServletRequest request, HttpServletResponse response)
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws RepositoryConnectionException {
-        
+
         RepositoryImportRepo repo = importRepo(request, repoName, requestBody);
         encode(repo, request, response);
     }
 
     @PostMapping(consumes = {APPLICATION_FORM_URLENCODED_VALUE})
     public void importRepositoryFromForm(
-            @PathVariable(name = "repoName")String repoName,
+            @PathVariable(name = "repoName") String repoName,
             @RequestBody MultiValueMap<String, String> requestBody,
-            HttpServletRequest request, HttpServletResponse response)
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws RepositoryConnectionException {
         RepositoryImportRepo repo = importRepo(request, repoName, requestBody);
         encode(repo, request, response);
@@ -92,31 +93,35 @@ public class ImportRepoCommandController extends AbstractController {
             throws RepositoryConnectionException {
         Optional<RepositoryProvider> repoProvider = getRepoProvider(request);
         if (repoProvider.isPresent()) {
-            return importRepoService.importRepository(repoProvider.get(), repoName,
-                    Maps.newHashMap());
+            return importRepoService.importRepository(
+                    repoProvider.get(), repoName, Maps.newHashMap());
         } else {
             throw NO_PROVIDER;
         }
     }
 
-    private RepositoryImportRepo importRepo(HttpServletRequest request, String repoName,
-            InitRequest requestBody)
+    private RepositoryImportRepo importRepo(
+            HttpServletRequest request, String repoName, InitRequest requestBody)
             throws RepositoryConnectionException {
         Optional<RepositoryProvider> repoProvider = getRepoProvider(request);
         if (repoProvider.isPresent()) {
-            return importRepoService.importRepository(repoProvider.get(), repoName,
+            return importRepoService.importRepository(
+                    repoProvider.get(),
+                    repoName,
                     (requestBody == null) ? Maps.newHashMap() : requestBody.getParameters());
         } else {
             throw NO_PROVIDER;
         }
     }
 
-    private RepositoryImportRepo importRepo(HttpServletRequest request, String repoName,
-            MultiValueMap<String, String> requestBody)
+    private RepositoryImportRepo importRepo(
+            HttpServletRequest request, String repoName, MultiValueMap<String, String> requestBody)
             throws RepositoryConnectionException {
         Optional<RepositoryProvider> repoProvider = getRepoProvider(request);
         if (repoProvider.isPresent()) {
-            return importRepoService.importRepository(repoProvider.get(), repoName,
+            return importRepoService.importRepository(
+                    repoProvider.get(),
+                    repoName,
                     (requestBody == null) ? Maps.newHashMap() : requestBody.toSingleValueMap());
         } else {
             throw NO_PROVIDER;
@@ -127,6 +132,4 @@ public class ImportRepoCommandController extends AbstractController {
     protected Logger getLogger() {
         return LOGGER;
     }
-
 }
-

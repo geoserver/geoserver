@@ -13,18 +13,19 @@ import org.geotools.util.Range;
 
 /**
  * A default value strategy which always return the same fixed value.
- *  
+ *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
 public class FixedValueStrategyImpl extends AbstractDefaultValueSelectionStrategy {
 
     private Object value;
     private String fixedCapabilitiesValue;
-    
+
     /**
-     * Constructs a 
+     * Constructs a
+     *
      * @param value
-     * @param fixedCapabilitiesValue 
+     * @param fixedCapabilitiesValue
      */
     public FixedValueStrategyImpl(Object value) {
         this.value = value;
@@ -36,11 +37,11 @@ public class FixedValueStrategyImpl extends AbstractDefaultValueSelectionStrateg
     }
 
     @Override
-    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class clz) {
-        if(value instanceof Range) {
+    public Object getDefaultValue(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
+        if (value instanceof Range) {
             Range r = (Range) value;
-            if(clz.isAssignableFrom(r.getElementClass())) {
+            if (clz.isAssignableFrom(r.getElementClass())) {
                 return r;
             } else {
                 Comparable min = (Comparable) Converters.convert(r.getMinValue(), clz);
@@ -51,14 +52,14 @@ public class FixedValueStrategyImpl extends AbstractDefaultValueSelectionStrateg
             return Converters.convert(this.value, clz);
         }
     }
-    
+
     @Override
-    public String getCapabilitiesRepresentation(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
-        if (fixedCapabilitiesValue != null){
+    public String getCapabilitiesRepresentation(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
+        if (fixedCapabilitiesValue != null) {
             return this.fixedCapabilitiesValue;
         } else {
             return super.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
         }
     }
-
 }

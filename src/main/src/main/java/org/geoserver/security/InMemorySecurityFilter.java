@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Filter function that returns true if a certain object can or cannot be showed to the current user
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class InMemorySecurityFilter extends InternalVolatileFunction {
@@ -28,15 +28,14 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
 
     /**
      * Returns a filter that will check if the object passed to it can be accessed by the user
-     * 
+     *
      * @param resourceAccesssManager
      * @param user
-     *
      */
-    public static Filter buildUserAccessFilter(ResourceAccessManager resourceAccesssManager,
-            Authentication user) {
-        org.opengis.filter.expression.Function visible = new InMemorySecurityFilter(
-                resourceAccesssManager, user);
+    public static Filter buildUserAccessFilter(
+            ResourceAccessManager resourceAccesssManager, Authentication user) {
+        org.opengis.filter.expression.Function visible =
+                new InMemorySecurityFilter(resourceAccesssManager, user);
 
         FilterFactory factory = Predicates.factory;
 
@@ -46,7 +45,8 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
         return filter;
     }
 
-    public InMemorySecurityFilter(ResourceAccessManager resourceAccesssManager, Authentication user) {
+    public InMemorySecurityFilter(
+            ResourceAccessManager resourceAccesssManager, Authentication user) {
         super();
         this.resourceAccesssManager = resourceAccesssManager;
         this.user = user;
@@ -66,11 +66,12 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
         if (info instanceof NamespaceInfo) {
             info = getCatalog().getWorkspaceByName(((NamespaceInfo) info).getPrefix());
         }
-        WrapperPolicy policy = getSecurityWrapper().buildWrapperPolicy(resourceAccesssManager,
-                user, info, MixedModeBehavior.HIDE);
+        WrapperPolicy policy =
+                getSecurityWrapper()
+                        .buildWrapperPolicy(
+                                resourceAccesssManager, user, info, MixedModeBehavior.HIDE);
         AccessLevel accessLevel = policy.getAccessLevel();
         boolean visible = !AccessLevel.HIDDEN.equals(accessLevel);
         return Boolean.valueOf(visible);
     }
-
 }

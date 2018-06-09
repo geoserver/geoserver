@@ -7,12 +7,9 @@ package org.geoserver.csw.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import net.opengis.cat.csw20.GetDomainType;
 import net.opengis.cat.csw20.RequestBaseType;
-
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
@@ -22,7 +19,7 @@ import org.geoserver.platform.ServiceException;
 
 /**
  * Encodes domain values responses
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWGetDomainResponse extends Response {
@@ -50,8 +47,8 @@ public class CSWGetDomainResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         CloseableIterator<String> result = (CloseableIterator<String>) value;
         RequestBaseType request = (RequestBaseType) operation.getParameters()[0];
         CSWInfo csw = gs.getService(CSWInfo.class);
@@ -61,21 +58,23 @@ public class CSWGetDomainResponse extends Response {
 
     /**
      * Actually encodes the response into a set of records
-     * 
+     *
      * @param output
      * @param result
      * @param request
      * @param csw
      */
-    protected void transformResponse(OutputStream output, CloseableIterator<String> result,
-            RequestBaseType request, CSWInfo csw) {
-        CSWDomainValuesTransformer transformer = new CSWDomainValuesTransformer(request,
-                csw.isCanonicalSchemaLocation());
+    protected void transformResponse(
+            OutputStream output,
+            CloseableIterator<String> result,
+            RequestBaseType request,
+            CSWInfo csw) {
+        CSWDomainValuesTransformer transformer =
+                new CSWDomainValuesTransformer(request, csw.isCanonicalSchemaLocation());
         try {
             transformer.transform(result, output);
         } catch (TransformerException e) {
             throw new ServiceException(e);
         }
     }
-
 }

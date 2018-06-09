@@ -11,10 +11,10 @@ import org.geowebcache.GeoWebCacheException;
 
 /**
  * Adapter allowing GeoWebCache to make use of {@link org.geoserver.platform.resource.LockProvider}.
- * 
- * This implementation is provided to allow GeoWebCache to make use of the global lock provider
+ *
+ * <p>This implementation is provided to allow GeoWebCache to make use of the global lock provider
  * used for ResourceStore.
- * 
+ *
  * @author Jody Garnett (Boundless)
  */
 public class GeoServerLockProvider implements org.geowebcache.locks.LockProvider {
@@ -35,6 +35,7 @@ public class GeoServerLockProvider implements org.geowebcache.locks.LockProvider
                     throw new GeoWebCacheException(trouble);
                 }
             }
+
             @Override
             public String toString() {
                 return lock.toString();
@@ -49,5 +50,4 @@ public class GeoServerLockProvider implements org.geowebcache.locks.LockProvider
     public void setDelegate(LockProvider delegate) {
         this.delegate = delegate;
     }
-
 }

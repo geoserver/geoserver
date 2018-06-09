@@ -4,6 +4,13 @@
  */
 package org.geoserver.gwc.wmts;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -21,12 +28,10 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.resources.CRSUtilities;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.Conveyor;
 import org.geowebcache.grid.GridSubset;
-import org.geowebcache.grid.SRS;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
@@ -36,21 +41,13 @@ import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * WMTS extension that provides the necessary metadata and operations
- * for handling multidimensional requests.
+ * WMTS extension that provides the necessary metadata and operations for handling multidimensional
+ * requests.
  */
 public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
-    private final static Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
+    private static final Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
 
@@ -59,7 +56,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     private final WMS wms;
     private final Catalog catalog;
 
-    public MultiDimensionalExtension(WMS wms, Catalog catalog, TileLayerDispatcher tileLayerDispatcher) {
+    public MultiDimensionalExtension(
+            WMS wms, Catalog catalog, TileLayerDispatcher tileLayerDispatcher) {
         this.wms = wms;
         this.catalog = catalog;
         this.tileLayerDispatcher = tileLayerDispatcher;
@@ -79,8 +77,9 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     }
 
     @Override
-    public Conveyor getConveyor(HttpServletRequest request, HttpServletResponse response,
-                                StorageBroker storageBroker) throws GeoWebCacheException, OWSException {
+    public Conveyor getConveyor(
+            HttpServletRequest request, HttpServletResponse response, StorageBroker storageBroker)
+            throws GeoWebCacheException, OWSException {
         // parse the request parameters converting string raw values to java objects
         KvpMap parameters = KvpUtils.normalize(request.getParameterMap());
         KvpUtils.parse(parameters);
@@ -100,8 +99,12 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                 try {
                     executeDescribeDomainsOperation(conveyor);
                 } catch (Exception exception) {
-                    LOGGER.log(Level.SEVERE, "Error executing describe domains operation.", exception);
-                    throw new OWSException(500, "NoApplicableCode", "",
+                    LOGGER.log(
+                            Level.SEVERE, "Error executing describe domains operation.", exception);
+                    throw new OWSException(
+                            500,
+                            "NoApplicableCode",
+                            "",
                             "Error executing describe domains operation:" + exception.getMessage());
                 }
                 break;
@@ -110,7 +113,10 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                     executeGetHistogramOperation(conveyor);
                 } catch (Exception exception) {
                     LOGGER.log(Level.SEVERE, "Error executing get histogram operation.", exception);
-                    throw new OWSException(500, "NoApplicableCode", "",
+                    throw new OWSException(
+                            500,
+                            "NoApplicableCode",
+                            "",
                             "Error executing get histogram operation:" + exception.getMessage());
                 }
                 break;
@@ -119,7 +125,10 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                     executeGetFeatureOperation(conveyor);
                 } catch (Exception exception) {
                     LOGGER.log(Level.SEVERE, "Error executing get feature operation.", exception);
-                    throw new OWSException(500, "NoApplicableCode", "",
+                    throw new OWSException(
+                            500,
+                            "NoApplicableCode",
+                            "",
                             "Error executing get feature operation:" + exception.getMessage());
                 }
                 break;
@@ -156,10 +165,12 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             GridSubset gridSubset = tileLayer.getGridSubset(providedTileMatrixSet);
             if (gridSubset == null) {
                 // the provided tile matrix set is not supported by this layer
-                throw new RuntimeException(String.format("Unknown grid set '%s'.", providedTileMatrixSet));
+                throw new RuntimeException(
+                        String.format("Unknown grid set '%s'.", providedTileMatrixSet));
             }
             // set bounding box crs base on tile matrix tile set srs
-            boundingBox = new ReferencedEnvelope(boundingBox, CRS.decode(gridSubset.getSRS().toString()));
+            boundingBox =
+                    new ReferencedEnvelope(boundingBox, CRS.decode(gridSubset.getSRS().toString()));
         }
         // add any domain provided restriction and set the bounding box
         Filter filter = Filter.INCLUDE;
@@ -170,7 +181,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             filter = filterFactory.and(filter, dimension.getFilter());
         }
         // encode the domains
-        return new Domains(dimensions, layerInfo, boundingBox, SimplifyingFilterVisitor.simplify(filter));
+        return new Domains(
+                dimensions, layerInfo, boundingBox, SimplifyingFilterVisitor.simplify(filter));
     }
 
     private void executeDescribeDomainsOperation(SimpleConveyor conveyor) throws Exception {
@@ -223,9 +235,11 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     }
 
     /**
-     * Helper method that will encode a layer dimensions, if the layer dimension are NULL or empty nothing will be done.
+     * Helper method that will encode a layer dimensions, if the layer dimension are NULL or empty
+     * nothing will be done.
      */
-    private void encodeLayerDimensions(XMLBuilder xml, List<Dimension> dimensions) throws IOException {
+    private void encodeLayerDimensions(XMLBuilder xml, List<Dimension> dimensions)
+            throws IOException {
         for (Dimension dimension : dimensions) {
             // encode each dimension as top element
             encodeLayerDimension(xml, dimension);
@@ -233,8 +247,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     }
 
     /**
-     * Helper method that will encode a dimension, if the dimension is NULL nothing will be done. All optional attributes
-     * that are NULL will be ignored.
+     * Helper method that will encode a dimension, if the dimension is NULL nothing will be done.
+     * All optional attributes that are NULL will be ignored.
      */
     private void encodeLayerDimension(XMLBuilder xml, Dimension dimension) throws IOException {
         xml.indentElement("Dimension");

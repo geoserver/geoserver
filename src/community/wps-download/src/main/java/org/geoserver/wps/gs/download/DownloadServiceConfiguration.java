@@ -7,9 +7,8 @@ package org.geoserver.wps.gs.download;
 
 /**
  * Bean that includes the configurations parameters for the download service
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions
- * 
  */
 public class DownloadServiceConfiguration {
 
@@ -52,8 +51,12 @@ public class DownloadServiceConfiguration {
     private int compressionLevel = DEFAULT_COMPRESSION_LEVEL;
 
     /** Constructor: */
-    public DownloadServiceConfiguration(long maxFeatures, long rasterSizeLimits, long writeLimits,
-            long hardOutputLimit, int compressionLevel) {
+    public DownloadServiceConfiguration(
+            long maxFeatures,
+            long rasterSizeLimits,
+            long writeLimits,
+            long hardOutputLimit,
+            int compressionLevel) {
         this.maxFeatures = maxFeatures;
         this.rasterSizeLimits = rasterSizeLimits;
         this.writeLimits = writeLimits;
@@ -63,8 +66,12 @@ public class DownloadServiceConfiguration {
 
     /** Default constructor */
     public DownloadServiceConfiguration() {
-        this(DEFAULT_MAX_FEATURES, DEFAULT_RASTER_SIZE_LIMITS, DEFAULT_WRITE_LIMITS,
-                DEFAULT_HARD_OUTPUT_LIMITS, DEFAULT_COMPRESSION_LEVEL);
+        this(
+                DEFAULT_MAX_FEATURES,
+                DEFAULT_RASTER_SIZE_LIMITS,
+                DEFAULT_WRITE_LIMITS,
+                DEFAULT_HARD_OUTPUT_LIMITS,
+                DEFAULT_COMPRESSION_LEVEL);
     }
 
     public long getMaxFeatures() {
@@ -89,9 +96,16 @@ public class DownloadServiceConfiguration {
 
     @Override
     public String toString() {
-        return "DownloadServiceConfiguration [maxFeatures=" + maxFeatures + ", rasterSizeLimits="
-                + rasterSizeLimits + ", writeLimits=" + writeLimits + ", hardOutputLimit="
-                + hardOutputLimit + ", compressionLevel=" + compressionLevel + "]";
+        return "DownloadServiceConfiguration [maxFeatures="
+                + maxFeatures
+                + ", rasterSizeLimits="
+                + rasterSizeLimits
+                + ", writeLimits="
+                + writeLimits
+                + ", hardOutputLimit="
+                + hardOutputLimit
+                + ", compressionLevel="
+                + compressionLevel
+                + "]";
     }
-
 }

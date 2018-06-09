@@ -5,17 +5,16 @@
  */
 package org.geoserver.wps.ppio;
 
-import org.geotools.data.Parameter;
-import org.junit.Test;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+import org.geotools.data.Parameter;
+import org.junit.Test;
+
 public class EnumPPIOTest {
-    
+
     @Test
     public void test() throws Exception {
         EnumPPIO ppio = new EnumPPIO(TestEnum.class);
@@ -26,8 +25,7 @@ public class EnumPPIOTest {
         try {
             ppio.decode("BAZ");
             fail("Invalid value should have thrown an exception");
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
         }
     }
 
@@ -48,6 +46,7 @@ public class EnumPPIOTest {
     }
 
     enum TestEnum {
-        FOO, BAR
+        FOO,
+        BAR
     }
 }

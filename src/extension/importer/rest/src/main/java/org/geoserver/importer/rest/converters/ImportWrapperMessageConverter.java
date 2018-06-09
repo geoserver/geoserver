@@ -6,7 +6,6 @@ package org.geoserver.importer.rest.converters;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.ImportWrapper;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
@@ -20,8 +19,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * {@link BaseMessageConverter} implementation for writing {@link ImportWrapper} objects.
- * <p>
- * This converter is willing to write JSON directly, or output JSON as HTML for visual inspection.
+ *
+ * <p>This converter is willing to write JSON directly, or output JSON as HTML for visual
+ * inspection.
  */
 @Component
 public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWrapper> {
@@ -30,8 +30,7 @@ public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWr
 
     @Autowired
     public ImportWrapperMessageConverter(Importer importer) {
-        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON,
-                MediaType.TEXT_HTML);
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON, MediaType.TEXT_HTML);
         this.importer = importer;
     }
 
@@ -77,11 +76,11 @@ public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWr
         outputWriter.write("</pre></body></html>");
     }
 
-    private void writeJSON(ImportWrapper wrapper, OutputStreamWriter outputWriter) throws IOException {
+    private void writeJSON(ImportWrapper wrapper, OutputStreamWriter outputWriter)
+            throws IOException {
         FlushableJSONBuilder json = new FlushableJSONBuilder(outputWriter);
         ImportJSONWriter writer = new ImportJSONWriter(importer);
 
         wrapper.write(outputWriter, json, writer);
     }
-
 }

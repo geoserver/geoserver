@@ -8,11 +8,10 @@ package org.geoserver.ows.kvp;
 import org.geoserver.ows.KvpParser;
 import org.geotools.xml.impl.DatatypeConverterImpl;
 
-
 /**
  * Parses double kvp's of the form 'key=&lt;boolean&gt;'.
- * 
- *  @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
+ *
+ * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class BooleanKvpParser extends KvpParser {
     /**
@@ -25,6 +24,7 @@ public class BooleanKvpParser extends KvpParser {
     }
 
     public Object parse(String value) throws Exception {
-        return Boolean.valueOf(DatatypeConverterImpl.getInstance().parseBoolean(value.toLowerCase()));
+        return Boolean.valueOf(
+                DatatypeConverterImpl.getInstance().parseBoolean(value.toLowerCase()));
     }
 }

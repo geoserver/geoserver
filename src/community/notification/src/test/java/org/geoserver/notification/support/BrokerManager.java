@@ -5,14 +5,14 @@
 
 package org.geoserver.notification.support;
 
+import com.google.common.io.Files;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
 
-import com.google.common.io.Files;
-
 public class BrokerManager {
-    private static final String INITIAL_ANONYMOUS_CONFIG_PATH = "src/test/resources/qpid-anonymous-config.json";
-    
+    private static final String INITIAL_ANONYMOUS_CONFIG_PATH =
+            "src/test/resources/qpid-anonymous-config.json";
+
     private static final String INITIAL_CONFIG_PATH = "src/test/resources/qpid-config.json";
 
     private static final String PWD_PATH = "src/test/resources/passwd.properties";
@@ -25,7 +25,7 @@ public class BrokerManager {
         final BrokerOptions brokerOptions = new BrokerOptions();
         brokerOptions.setConfigProperty("qpid.amqp_port", PORT);
         String cfg = INITIAL_ANONYMOUS_CONFIG_PATH;
-        if(!isAnonymous){
+        if (!isAnonymous) {
             cfg = INITIAL_CONFIG_PATH;
             brokerOptions.setConfigProperty("qpid.pass_file", PWD_PATH);
         }

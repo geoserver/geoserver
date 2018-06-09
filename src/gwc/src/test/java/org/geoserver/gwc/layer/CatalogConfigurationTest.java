@@ -28,6 +28,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +39,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import com.google.common.collect.Iterators;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -52,13 +54,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-
 /**
  * Test class for the GWCCatalogListener
- * 
+ *
  * @author groldan
  */
 public class CatalogConfigurationTest {
@@ -72,9 +70,7 @@ public class CatalogConfigurationTest {
     private CatalogConfiguration config;
 
     private LayerInfo layer1, layer2, layerWithNoTileLayer;
-
     private LayerGroupInfo group1, group2, groupWithNoTileLayer;
-
     private GeoServerTileLayerInfo layerInfo1, layerInfo2, groupInfo1, groupInfo2;
 
     private GWC mockMediator;
@@ -91,15 +87,15 @@ public class CatalogConfigurationTest {
         defaults.setCacheLayersByDefault(false);
         defaults.setCacheNonDefaultStyles(true);
 
-        layer1 = mockLayer("layer1", "test", new String[]{}, PublishedType.RASTER);
-        layer2 = mockLayer("layer2", "test", new String[]{}, PublishedType.RASTER);
-        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, PublishedType.RASTER);
-
+        layer1 = mockLayer("layer1", "test", new String[] {}, PublishedType.RASTER);
+        layer2 = mockLayer("layer2", "test", new String[] {}, PublishedType.RASTER);
+        layerWithNoTileLayer =
+                mockLayer("layerWithNoTileLayer", new String[] {}, PublishedType.RASTER);
 
         group1 = mockGroup("group1", layer1, layer2);
         group2 = mockGroup("group2", layer2, layer1);
-        groupWithNoTileLayer = mockGroup("groupWithNoTileLayer", layerWithNoTileLayer, layer1,
-                layer2);
+        groupWithNoTileLayer =
+                mockGroup("groupWithNoTileLayer", layerWithNoTileLayer, layer1, layer2);
 
         // set tile layer settings to layer1, layer2, group1, and group2
         layerInfo1 = TileLayerInfoUtil.loadOrCreate(layer1, defaults);
@@ -109,7 +105,7 @@ public class CatalogConfigurationTest {
         layerInfo2 = TileLayerInfoUtil.loadOrCreate(layer2, defaults);
         layerInfo2.setMetaTilingX(2);
         layerInfo2.setMetaTilingY(2);
-        
+
         groupInfo1 = TileLayerInfoUtil.loadOrCreate(group1, defaults);
         groupInfo1.setMetaTilingX(3);
         groupInfo1.setMetaTilingY(3);
@@ -128,26 +124,32 @@ public class CatalogConfigurationTest {
         when(catalog.getLayerGroup(group2.getId())).thenReturn(group2);
 
         // catalog returns the three layer groups, two with tile layer and one without
-        when(catalog.getLayerGroups()).thenReturn(
-                ImmutableList.of(group1, groupWithNoTileLayer, group2));
+        when(catalog.getLayerGroups())
+                .thenReturn(ImmutableList.of(group1, groupWithNoTileLayer, group2));
         when(catalog.getLayerByName(eq(tileLayerName(layer1)))).thenReturn(layer1);
         when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);
-        when(catalog.getLayerByName(eq(tileLayerName(layerWithNoTileLayer)))).thenReturn(
-                layerWithNoTileLayer);
+        when(catalog.getLayerByName(eq(tileLayerName(layerWithNoTileLayer))))
+                .thenReturn(layerWithNoTileLayer);
 
         when(catalog.getLayerGroupByName(eq(tileLayerName(group1)))).thenReturn(group1);
         when(catalog.getLayerGroupByName(eq(tileLayerName(group2)))).thenReturn(group2);
-        when(catalog.getLayerGroupByName(eq(tileLayerName(groupWithNoTileLayer)))).thenReturn(
-                groupWithNoTileLayer);
+        when(catalog.getLayerGroupByName(eq(tileLayerName(groupWithNoTileLayer))))
+                .thenReturn(groupWithNoTileLayer);
 
         gridSetBroker = new GridSetBroker(true, true);
 
-        Set<String> layerNames = ImmutableSet.of(tileLayerName(layer1), tileLayerName(layer2),
-                tileLayerName(group1), tileLayerName(group2));
+        Set<String> layerNames =
+                ImmutableSet.of(
+                        tileLayerName(layer1),
+                        tileLayerName(layer2),
+                        tileLayerName(group1),
+                        tileLayerName(group2));
 
         tileLayerCatalog = mock(TileLayerCatalog.class);
-        when(tileLayerCatalog.getLayerIds()).thenReturn(
-                ImmutableSet.of(layer1.getId(), layer2.getId(), group1.getId(), group2.getId()));
+        when(tileLayerCatalog.getLayerIds())
+                .thenReturn(
+                        ImmutableSet.of(
+                                layer1.getId(), layer2.getId(), group1.getId(), group2.getId()));
         when(tileLayerCatalog.getLayerNames()).thenReturn(layerNames);
 
         when(tileLayerCatalog.getLayerById(layer1.getId())).thenReturn(layerInfo1);
@@ -183,35 +185,45 @@ public class CatalogConfigurationTest {
         GWC.set(null);
     }
 
-    @Test public void testGoofyMethods() {
+    @Test
+    public void testGoofyMethods() {
         assertEquals("GeoServer Catalog Configuration", config.getIdentifier());
         assertNull(config.getServiceInformation());
         assertTrue(config.isRuntimeStatsEnabled());
     }
 
-    @Test public void testInitialize() {
+    @Test
+    public void testInitialize() {
         assertEquals(4, config.initialize(gridSetBroker));
     }
 
-    @Test public void testGetTileLayerCount() {
+    @Test
+    public void testGetTileLayerCount() {
         assertEquals(4, config.getTileLayerCount());
     }
 
-    @Test public void testGetTileLayerNames() {
-        Set<String> expected = ImmutableSet.of(tileLayerName(layer1), tileLayerName(layer2),
-                tileLayerName(group1), tileLayerName(group2));
+    @Test
+    public void testGetTileLayerNames() {
+        Set<String> expected =
+                ImmutableSet.of(
+                        tileLayerName(layer1),
+                        tileLayerName(layer2),
+                        tileLayerName(group1),
+                        tileLayerName(group2));
 
         Set<String> actual = config.getTileLayerNames();
 
         assertEquals(expected, actual);
     }
 
-    @Test public void testGetLayers() {
+    @Test
+    public void testGetLayers() {
         Iterable<GeoServerTileLayer> layers = config.getLayers();
         testGetLayers(layers);
     }
 
-    @Test public void testDeprecatedGetTileLayers() {
+    @Test
+    public void testDeprecatedGetTileLayers() {
         @SuppressWarnings("deprecation")
         List<GeoServerTileLayer> layers = config.getTileLayers();
         testGetLayers(layers);
@@ -222,8 +234,8 @@ public class CatalogConfigurationTest {
         assertEquals(3, catalog.getLayerGroups().size());
         assertEquals(4, Iterables.size(layers));
 
-        Set<GeoServerTileLayerInfo> expected = ImmutableSet.of(layerInfo1, layerInfo2, groupInfo1,
-                groupInfo2);
+        Set<GeoServerTileLayerInfo> expected =
+                ImmutableSet.of(layerInfo1, layerInfo2, groupInfo1, groupInfo2);
         Set<GeoServerTileLayerInfo> actual = new HashSet<GeoServerTileLayerInfo>();
 
         for (GeoServerTileLayer layer : layers) {
@@ -233,7 +245,8 @@ public class CatalogConfigurationTest {
         assertEquals(expected, actual);
     }
 
-    @Test public void testGetTileLayer() {
+    @Test
+    public void testGetTileLayer() {
         String layerName = tileLayerName(layerWithNoTileLayer);
         assertNull(config.getTileLayer(layerName));
         assertNull(config.getTileLayer(tileLayerName(groupWithNoTileLayer)));
@@ -246,7 +259,8 @@ public class CatalogConfigurationTest {
         assertNull(config.getTileLayer("anythingElse"));
     }
 
-    @Test public void testModifyLayer() {
+    @Test
+    public void testModifyLayer() {
         try {
             config.modifyLayer(null);
             fail("expected precondition exception");
@@ -296,7 +310,8 @@ public class CatalogConfigurationTest {
         assertFalse(config.getTileLayerNames().contains(origName));
     }
 
-    @Test public void testRemoveLayer() {
+    @Test
+    public void testRemoveLayer() {
         try {
             config.removeLayer(null);
             fail("expected precondition violation exception");
@@ -327,7 +342,8 @@ public class CatalogConfigurationTest {
         assertEquals(initialCount - 2, config.getTileLayerCount());
     }
 
-    @Test public void testSaveRename() {
+    @Test
+    public void testSaveRename() {
 
         GeoServerTileLayerInfo originalState = layerInfo1;
 
@@ -348,7 +364,8 @@ public class CatalogConfigurationTest {
         verify(mockMediator, times(1)).layerRenamed(eq(layerInfo1.getName()), eq("newName"));
     }
 
-    @Test public void testSave() {
+    @Test
+    public void testSave() {
         // add a pending delete
         when(tileLayerCatalog.delete(eq(layerInfo2.getId()))).thenReturn(layerInfo2);
         assertTrue(config.removeLayer(layerInfo2.getName()));
@@ -356,8 +373,9 @@ public class CatalogConfigurationTest {
         // and a failed one at save
         when(tileLayerCatalog.delete(eq(groupInfo1.getId()))).thenReturn(groupInfo1);
         assertTrue(config.removeLayer(groupInfo1.getName()));
-        doThrow(new IllegalArgumentException("failedDelete")).when(tileLayerCatalog).delete(
-                eq(group1.getId()));
+        doThrow(new IllegalArgumentException("failedDelete"))
+                .when(tileLayerCatalog)
+                .delete(eq(group1.getId()));
 
         // add two pending modifications
         GeoServerTileLayerInfo forceState1 = TileLayerInfoUtil.loadOrCreate(layer1, defaults);
@@ -369,20 +387,22 @@ public class CatalogConfigurationTest {
         config.modifyLayer(new GeoServerTileLayer(layer1, gridSetBroker, forceState1));
         config.modifyLayer(new GeoServerTileLayer(group2, gridSetBroker, forceState2));
         // make this last one fail
-        doThrow(new IllegalArgumentException("failedSave")).when(tileLayerCatalog).save(
-                eq(forceState2));
+        doThrow(new IllegalArgumentException("failedSave"))
+                .when(tileLayerCatalog)
+                .save(eq(forceState2));
 
         verify(mockMediator, times(1)).layerRemoved(layerInfo2.getName());
         verify(mockMediator, never()).layerRenamed(anyString(), anyString());
 
-        GeoServerTileLayerInfo addedState1 = TileLayerInfoUtil.loadOrCreate(layerWithNoTileLayer,
-                defaults);
+        GeoServerTileLayerInfo addedState1 =
+                TileLayerInfoUtil.loadOrCreate(layerWithNoTileLayer, defaults);
         config.addLayer(new GeoServerTileLayer(layerWithNoTileLayer, gridSetBroker, addedState1));
-        doThrow(new IllegalArgumentException("callback exception")).when(mockMediator).layerAdded(
-                eq(addedState1.getName()));
+        doThrow(new IllegalArgumentException("callback exception"))
+                .when(mockMediator)
+                .layerAdded(eq(addedState1.getName()));
 
-        GeoServerTileLayerInfo addedState2 = TileLayerInfoUtil.loadOrCreate(groupWithNoTileLayer,
-                defaults);
+        GeoServerTileLayerInfo addedState2 =
+                TileLayerInfoUtil.loadOrCreate(groupWithNoTileLayer, defaults);
         config.addLayer(new GeoServerTileLayer(groupWithNoTileLayer, gridSetBroker, addedState2));
 
         config.save();
@@ -401,19 +421,24 @@ public class CatalogConfigurationTest {
         verify(mockMediator, times(1)).layerAdded(eq(addedState2.getName()));
     }
 
-    @Test public void testCanSave() {
+    @Test
+    public void testCanSave() {
         // Create mock layer not transient and ensure that the Layer cannot be saved
         GeoServerTileLayer l = mock(GeoServerTileLayer.class);
         when(l.isTransientLayer()).thenReturn(true);
         assertFalse(config.canSave(l));
     }
 
-    @Test  public void testNoGeometry() throws Exception {
-        org.opengis.feature.type.FeatureType featureTypeWithNoGeometry = mock(org.opengis.feature.type.FeatureType.class);
+    @Test
+    public void testNoGeometry() throws Exception {
+        org.opengis.feature.type.FeatureType featureTypeWithNoGeometry =
+                mock(org.opengis.feature.type.FeatureType.class);
         when(featureTypeWithNoGeometry.getGeometryDescriptor()).thenReturn(null);
-        org.geoserver.catalog.FeatureTypeInfo resourceWithNoGeometry = mock(org.geoserver.catalog.FeatureTypeInfo.class);
+        org.geoserver.catalog.FeatureTypeInfo resourceWithNoGeometry =
+                mock(org.geoserver.catalog.FeatureTypeInfo.class);
         when(resourceWithNoGeometry.getFeatureType()).thenReturn(featureTypeWithNoGeometry);
-        LayerInfo layerWithNoGeometry = mockLayer("layerWithNoGeometry", new String[]{}, PublishedType.VECTOR);
+        LayerInfo layerWithNoGeometry =
+                mockLayer("layerWithNoGeometry", new String[] {}, PublishedType.VECTOR);
         layerWithNoGeometry.setResource(resourceWithNoGeometry);
         GeoServerTileLayer tl = mock(GeoServerTileLayer.class);
         GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
@@ -424,40 +449,42 @@ public class CatalogConfigurationTest {
         when(tl.getInfo()).thenReturn(info);
         when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
         when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);
-        when(catalog.getLayerByName(eq(tileLayerName(layerWithNoGeometry)))).thenReturn(
-                layerWithNoGeometry);
-        
+        when(catalog.getLayerByName(eq(tileLayerName(layerWithNoGeometry))))
+                .thenReturn(layerWithNoGeometry);
+
         config.addLayer(tl);
         config.save();
-        
+
         verify(this.tileLayerCatalog, never()).save(info);
     }
-    
+
     @Test
     public void testConfigurationDeadlock() throws Exception {
         // to make it reproducible with some reliability on my machine
-        // 100000 loops need to be attempted. With the fix it works, but runs for 
+        // 100000 loops need to be attempted. With the fix it works, but runs for
         // a minute and a half, so not suitable for actual builds.
-        // For in-build tests I've thus settled down for 1000 loops instead 
+        // For in-build tests I've thus settled down for 1000 loops instead
         final int LOOPS = 1000;
         ExecutorService service = Executors.newFixedThreadPool(8);
-        Runnable reloader = new Runnable() {
-            
-            @Override
-            public void run() {
-                config.initialize(gridSetBroker);
-            }
-        };
-        Runnable tileLayerFetcher = new Runnable() {
-            
-            @Override
-            public void run() {
-                config.getTileLayer(layer1.getName());
-                config.getTileLayer(layer2.getName());
-                config.getTileLayer(group1.getName());
-                config.getTileLayer(group2.getName());
-            }
-        };
+        Runnable reloader =
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        config.initialize(gridSetBroker);
+                    }
+                };
+        Runnable tileLayerFetcher =
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        config.getTileLayer(layer1.getName());
+                        config.getTileLayer(layer2.getName());
+                        config.getTileLayer(group1.getName());
+                        config.getTileLayer(group2.getName());
+                    }
+                };
         try {
             List<Future<?>> futures = new ArrayList<>();
             for (int i = 0; i < LOOPS; i++) {

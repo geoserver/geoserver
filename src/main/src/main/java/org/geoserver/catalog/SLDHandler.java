@@ -17,9 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.xml.transform.TransformerException;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
 import org.geotools.data.DataUtilities;
@@ -45,18 +43,16 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * SLD style handler.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class SLDHandler extends StyleHandler {
 
     static Logger LOGGER = Logging.getLogger(SLDHandler.class);
 
     /**
-     * number of bytes to "look ahead" when pre parsing xml document.
-     * TODO: make this configurable, and possibley link it to the same value
-     * used by the ows dispatcher.
+     * number of bytes to "look ahead" when pre parsing xml document. TODO: make this configurable,
+     * and possibley link it to the same value used by the ows dispatcher.
      */
     static int XML_LOOKAHEAD = 8192;
 
@@ -67,20 +63,26 @@ public class SLDHandler extends StyleHandler {
 
     public static final String MIMETYPE_10 = "application/vnd.ogc.sld+xml";
     public static final String MIMETYPE_11 = "application/vnd.ogc.se+xml";
-    
+
     static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+
     static {
         try {
-            TEMPLATES.put(StyleType.POINT, IOUtils.toString(SLDHandler.class
-                    .getResourceAsStream("template_point.sld")));
-            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(SLDHandler.class
-                    .getResourceAsStream("template_polygon.sld")));
-            TEMPLATES.put(StyleType.LINE, IOUtils.toString(SLDHandler.class
-                    .getResourceAsStream("template_line.sld")));
-            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(SLDHandler.class
-                    .getResourceAsStream("template_raster.sld")));
-            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(SLDHandler.class
-                    .getResourceAsStream("template_generic.sld")));
+            TEMPLATES.put(
+                    StyleType.POINT,
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_point.sld")));
+            TEMPLATES.put(
+                    StyleType.POLYGON,
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_polygon.sld")));
+            TEMPLATES.put(
+                    StyleType.LINE,
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_line.sld")));
+            TEMPLATES.put(
+                    StyleType.RASTER,
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_raster.sld")));
+            TEMPLATES.put(
+                    StyleType.GENERIC,
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_generic.sld")));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -105,9 +107,9 @@ public class SLDHandler extends StyleHandler {
         String template = TEMPLATES.get(type);
         String colorCode = Integer.toHexString(color.getRGB());
         colorCode = colorCode.substring(2, colorCode.length());
-        return template.replace("${colorName}", colorName).replace(
-                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
-        
+        return template.replace("${colorName}", colorName)
+                .replace("${colorCode}", "#" + colorCode)
+                .replace("${layerName}", layerName);
     }
 
     @Override
@@ -127,7 +129,12 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
+    public StyledLayerDescriptor parse(
+            Object input,
+            Version version,
+            ResourceLocator resourceLocator,
+            EntityResolver entityResolver)
+            throws IOException {
         if (version == null) {
             Object[] versionAndReader = getVersionAndReader(input);
             version = (Version) versionAndReader[0];
@@ -136,27 +143,27 @@ public class SLDHandler extends StyleHandler {
 
         if (VERSION_11.compareTo(version) == 0) {
             return parse11(input, resourceLocator, entityResolver);
-        }
-        else {
+        } else {
             return parse10(input, resourceLocator, entityResolver);
         }
     }
 
-    StyledLayerDescriptor parse10(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
-        throws IOException {
+    StyledLayerDescriptor parse10(
+            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
+            throws IOException {
 
         Reader reader = null;
         try {
             // we need to close the reader if we grab one, but if it's a file it has
             // to stay as such to allow relative resource resolution during the parse
-            if(!(input instanceof File)) {
+            if (!(input instanceof File)) {
                 reader = toReader(input);
                 input = reader;
             }
             SLDParser p = createSld10Parser(input, resourceLocator, entityResolver);
             StyledLayerDescriptor sld = p.parseSLD();
             if (sld.getStyledLayers().length == 0) {
-                //most likely a style that is not a valid sld, try to actually parse out a
+                // most likely a style that is not a valid sld, try to actually parse out a
                 // style and then wrap it in an sld
                 Style[] style = p.readDOM();
                 if (style.length > 0) {
@@ -167,29 +174,29 @@ public class SLDHandler extends StyleHandler {
             }
             return sld;
         } finally {
-           IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(reader);
         }
     }
 
-    StyledLayerDescriptor parse11(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
-        throws IOException {
+    StyledLayerDescriptor parse11(
+            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
+            throws IOException {
         Parser parser = createSld11Parser(input, resourceLocator, entityResolver);
-        try(Reader reader = toReader(input)) {
+        try (Reader reader = toReader(input)) {
             parser.setEntityResolver(entityResolver);
             return (StyledLayerDescriptor) parser.parse(reader);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
 
-    SLDParser createSld10Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
-        throws IOException {
+    SLDParser createSld10Parser(
+            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
+            throws IOException {
         SLDParser parser;
         if (input instanceof File) {
             parser = new SLDParser(styleFactory, (File) input);
-        }
-        else {
+        } else {
             parser = new SLDParser(styleFactory, toReader(input));
         }
 
@@ -202,7 +209,8 @@ public class SLDHandler extends StyleHandler {
         return parser;
     }
 
-    Parser createSld11Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver) {
+    Parser createSld11Parser(
+            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver) {
         if (resourceLocator == null && input instanceof File) {
             // setup for resolution of relative paths
             final java.net.URL surl = DataUtilities.fileToURL((File) input);
@@ -214,13 +222,14 @@ public class SLDHandler extends StyleHandler {
         final ResourceLocator locator = resourceLocator;
         SLDConfiguration sld;
         if (locator != null) {
-            sld = new SLDConfiguration() {
-                protected void configureContext(org.picocontainer.MutablePicoContainer container) {
-                    container.registerComponentInstance(ResourceLocator.class, locator);
-                };
-            };
-        }
-        else {
+            sld =
+                    new SLDConfiguration() {
+                        protected void configureContext(
+                                org.picocontainer.MutablePicoContainer container) {
+                            container.registerComponentInstance(ResourceLocator.class, locator);
+                        };
+                    };
+        } else {
             sld = new SLDConfiguration();
         }
 
@@ -232,37 +241,39 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
+    public void encode(
+            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+            throws IOException {
         if (version != null && VERSION_11.compareTo(version) == 0) {
             encode11(sld, pretty, output);
-        }
-        else {
+        } else {
             encode10(sld, pretty, output);
         }
     }
 
     void encode10(StyledLayerDescriptor sld, boolean pretty, OutputStream output)
-        throws IOException {
+            throws IOException {
         SLDTransformer tx = new SLDTransformer();
         if (pretty) {
             tx.setIndentation(2);
         }
         try {
-            tx.transform( sld, output );
-        }
-        catch (TransformerException e) {
+            tx.transform(sld, output);
+        } catch (TransformerException e) {
             throw (IOException) new IOException("Error writing style").initCause(e);
         }
     }
 
-    void encode11(StyledLayerDescriptor sld, boolean pretty, OutputStream output) throws IOException {
+    void encode11(StyledLayerDescriptor sld, boolean pretty, OutputStream output)
+            throws IOException {
         Encoder e = new Encoder(new SLDConfiguration());
         e.setIndenting(pretty);
         e.encode(sld, SLD.StyledLayerDescriptor, output);
     }
 
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
+            throws IOException {
         if (version == null) {
             Object[] versionAndReader = getVersionAndReader(input);
             version = (Version) versionAndReader[0];
@@ -271,14 +282,13 @@ public class SLDHandler extends StyleHandler {
 
         if (version != null && VERSION_11.compareTo(version) == 0) {
             return validate11(input, entityResolver);
-        }
-        else {
+        } else {
             return validate10(input, entityResolver);
         }
     }
 
     List<Exception> validate10(Object input, EntityResolver entityResolver) throws IOException {
-        try(Reader reader = toReader(input)) {
+        try (Reader reader = toReader(input)) {
             final SLDValidator validator = new SLDValidator();
             validator.setEntityResolver(entityResolver);
             return validator.validateSLD(new InputSource(reader));
@@ -290,7 +300,7 @@ public class SLDHandler extends StyleHandler {
         try (Reader reader = toReader(input)) {
             p.validate(reader);
             return p.getValidationErrors();
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
@@ -301,17 +311,14 @@ public class SLDHandler extends StyleHandler {
         return (Version) versionAndReader[0];
     }
 
-    /**
-     * Helper method for finding which style handler/version to use from the actual content.
-     */
+    /** Helper method for finding which style handler/version to use from the actual content. */
     Object[] getVersionAndReader(Object input) throws IOException {
-        //need to determine version of sld from actual content
+        // need to determine version of sld from actual content
         BufferedReader reader = null;
 
         if (input instanceof InputStream) {
             reader = RequestUtils.getBufferedXMLReader((InputStream) input, XML_LOOKAHEAD);
-        }
-        else {
+        } else {
             reader = RequestUtils.getBufferedXMLReader(toReader(input), XML_LOOKAHEAD);
         }
 
@@ -321,12 +328,12 @@ public class SLDHandler extends StyleHandler {
 
         String version;
         try {
-            //create stream parser
+            // create stream parser
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
-            //parse root element
+            // parse root element
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(reader);
             parser.nextTag();
@@ -339,12 +346,11 @@ public class SLDHandler extends StyleHandler {
             }
 
             parser.setInput(null);
-        }
-        catch (XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             throw (IOException) new IOException("Error parsing content").initCause(e);
         }
 
-        //reset input stream
+        // reset input stream
         reader.reset();
 
         if (version == null) {
@@ -352,6 +358,6 @@ public class SLDHandler extends StyleHandler {
             version = "1.0.0";
         }
 
-        return new Object[]{new Version(version), reader};
+        return new Object[] {new Version(version), reader};
     }
 }

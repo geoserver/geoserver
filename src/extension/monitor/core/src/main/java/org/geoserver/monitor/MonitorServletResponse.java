@@ -7,7 +7,6 @@ package org.geoserver.monitor;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -16,19 +15,19 @@ public class MonitorServletResponse extends HttpServletResponseWrapper {
 
     MonitorOutputStream output;
     int status = 200;
-    
+
     public MonitorServletResponse(HttpServletResponse response) {
         super(response);
     }
-    
+
     public long getContentLength() {
         if (output == null) {
             return 0;
         }
-        
+
         return output.getBytesWritten();
     }
-    
+
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
         if (output == null) {
@@ -36,23 +35,22 @@ public class MonitorServletResponse extends HttpServletResponseWrapper {
         }
         return output;
     }
-    
+
     @Override
     public void setStatus(int sc) {
         this.status = sc;
         super.setStatus(sc);
     }
-    
+
     @Override
     public void setStatus(int sc, String sm) {
         this.status = sc;
         super.setStatus(sc, sm);
     }
-    
+
     public int getStatus() {
         return status;
     }
-    
 
     static class MonitorOutputStream extends ServletOutputStream {
 

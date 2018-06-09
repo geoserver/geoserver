@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo.kvp;
 
 import java.util.Map;
-
 import org.geoserver.opensearch.eo.MetadataRequest;
 import org.geoserver.platform.OWS20Exception;
 
@@ -40,10 +39,12 @@ public class MetadataRequestKvpReader extends AbstractProductRequestKvpReader {
             request.setHttpAccept(expectedMime);
         } else if (!expectedMime.equals(request.getHttpAccept())) {
             throw new OWS20Exception(
-                    "Unexpected value for httpAccept '" + request.getHttpAccept()
-                            + "', in this context it must be " + expectedMime,
-                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "httpAccept");
+                    "Unexpected value for httpAccept '"
+                            + request.getHttpAccept()
+                            + "', in this context it must be "
+                            + expectedMime,
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue,
+                    "httpAccept");
         }
-
     }
 }

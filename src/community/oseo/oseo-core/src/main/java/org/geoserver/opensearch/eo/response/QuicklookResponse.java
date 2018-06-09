@@ -6,17 +6,15 @@ package org.geoserver.opensearch.eo.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
-import org.geoserver.opensearch.eo.MetadataResults;
 import org.geoserver.opensearch.eo.QuicklookResults;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Writes out metadata in the requested format. Trusts that the steps before (kvp parsing, request processing) have verified the requested mime type
- * makes sense
+ * Writes out metadata in the requested format. Trusts that the steps before (kvp parsing, request
+ * processing) have verified the requested mime type makes sense
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -49,5 +47,4 @@ public class QuicklookResponse extends Response {
         }
         return results.getRequest().getId().toLowerCase() + "." + extension;
     }
-
 }

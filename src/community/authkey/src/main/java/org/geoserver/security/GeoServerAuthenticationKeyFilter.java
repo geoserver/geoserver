@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.logging.Level;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AuthenticationCachingFilter;
@@ -26,8 +24,6 @@ import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
-import org.geoserver.security.impl.GeoServerUserGroup;
-import org.geoserver.security.impl.RoleCalculator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,15 +33,15 @@ import org.springframework.util.StringUtils;
 
 /**
  * Filter extending {@link GeoServerSecurityFilter}.
- * 
- * The encoded user name is passed as an URL parameter named {@link #authKeyParamName}.
- * 
- * The real user name is retrieved by querying an {@link AuthenticationKeyMapper} object stored in {@link #authKeyMapperName}
- * 
- * This filter needs a {@link GeoServerUserGroupService} for authentication
- * 
- * @author christian
  *
+ * <p>The encoded user name is passed as an URL parameter named {@link #authKeyParamName}.
+ *
+ * <p>The real user name is retrieved by querying an {@link AuthenticationKeyMapper} object stored
+ * in {@link #authKeyMapperName}
+ *
+ * <p>This filter needs a {@link GeoServerUserGroupService} for authentication
+ *
+ * @author christian
  */
 public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         implements AuthenticationCachingFilter, GeoServerAuthenticationFilter {
@@ -72,7 +68,6 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         mapper.setUserGroupServiceName(userGroupServiceName);
         mapper.setSecurityManager(getSecurityManager());
         mapper.configureMapper(authConfig.getMapperParameters());
-
     }
 
     @Override
@@ -90,12 +85,13 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response, cacheKey);
 
-            Authentication postAuthentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
+            Authentication postAuthentication =
+                    SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,
-                            postAuthentication);
+                    getSecurityManager()
+                            .getAuthenticationCache()
+                            .put(getName(), cacheKey, postAuthentication);
                 }
             }
         }
@@ -129,17 +125,18 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
     }
 
     /**
-     * Try to authenticate and adds {@link GeoServerRole#AUTHENTICATED_ROLE} Does NOT authenticate {@link GeoServerUser#ROOT_USERNAME}
-     * 
+     * Try to authenticate and adds {@link GeoServerRole#AUTHENTICATED_ROLE} Does NOT authenticate
+     * {@link GeoServerUser#ROOT_USERNAME}
+     *
      * @param request
      * @param response
      * @param authkey
      */
-    protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response,
-            String authKey) throws IOException {
+    protected void doAuthenticate(
+            HttpServletRequest request, HttpServletResponse response, String authKey)
+            throws IOException {
 
-        if (authKey == null)
-            return;
+        if (authKey == null) return;
 
         GeoServerUser user = mapper.getUser(authKey);
         if (user == null) {
@@ -161,28 +158,26 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 
-        KeyAuthenticationToken result = new KeyAuthenticationToken(authKey, authKeyParamName, user,
-                roles);
-        
+        KeyAuthenticationToken result =
+                new KeyAuthenticationToken(authKey, authKeyParamName, user, roles);
+
         SecurityContextHolder.getContext().setAuthentication(result);
     }
 
     public String getAuthKey(HttpServletRequest req) {
         String authKey = getAuthKeyParamValue(req);
-        if (StringUtils.hasLength(authKey) == false)
-            return null;
+        if (StringUtils.hasLength(authKey) == false) return null;
         return authKey;
     }
 
     /**
      * Extracts authkey value from the request.
-     * 
-     * @param req
      *
+     * @param req
      */
     private String getAuthKeyParamValue(HttpServletRequest req) {
         String keyParamName = getAuthKeyParamName();
-        for (Enumeration<String> a = req.getParameterNames(); a.hasMoreElements();) {
+        for (Enumeration<String> a = req.getParameterNames(); a.hasMoreElements(); ) {
             String paramName = a.nextElement();
 
             if (keyParamName.equalsIgnoreCase(paramName)) {
@@ -193,25 +188,19 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         return null;
     }
 
-    /**
-     * The cache key is the authentication key (global identifier)
-     */
+    /** The cache key is the authentication key (global identifier) */
     @Override
     public String getCacheKey(HttpServletRequest req) {
         return getAuthKey(req);
     }
 
-    /**
-     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
-     */
+    /** @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml() */
     @Override
     public boolean applicableForHtml() {
         return true;
     }
 
-    /**
-     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
-     */
+    /** @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices() */
     @Override
     public boolean applicableForServices() {
         return true;
@@ -219,15 +208,12 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
 
     protected boolean cacheAuthentication(Authentication auth, HttpServletRequest request) {
         // only cache if no HTTP session is available
-        if (request.getSession(false) != null)
-            return false;
+        if (request.getSession(false) != null) return false;
 
         return true;
-
     }
 
     public AuthenticationKeyMapper getMapper() {
         return mapper;
     }
-
 }

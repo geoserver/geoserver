@@ -5,8 +5,8 @@
  */
 package org.geoserver.kml;
 
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 import java.io.OutputStream;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -17,19 +17,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.geoserver.platform.ServiceException;
-
-import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
  * Encodes a KML object onto an output stream
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class KMLEncoder {
-    
+
     private JAXBContext context;
 
     private Templates templates;
@@ -54,7 +50,7 @@ public class KMLEncoder {
         } catch (JAXBException | TransformerException e) {
             throw new ServiceException(e);
         } finally {
-            if(context != null) {
+            if (context != null) {
                 context.closeIterators();
             }
         }

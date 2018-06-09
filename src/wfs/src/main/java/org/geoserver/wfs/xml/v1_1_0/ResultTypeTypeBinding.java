@@ -6,19 +6,17 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractSimpleBinding;
 import org.geotools.xml.InstanceComponent;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:ResultTypeType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:simpleType name="ResultTypeType"&gt;
  *      &lt;xsd:restriction base="xsd:string"&gt;
@@ -48,6 +46,7 @@ import org.geotools.xml.InstanceComponent;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class ResultTypeTypeBinding extends AbstractSimpleBinding {
@@ -57,14 +56,13 @@ public class ResultTypeTypeBinding extends AbstractSimpleBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.RESULTTYPETYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -75,13 +73,13 @@ public class ResultTypeTypeBinding extends AbstractSimpleBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(InstanceComponent instance, Object value)
-        throws Exception {
+    public Object parse(InstanceComponent instance, Object value) throws Exception {
         if ("results".equals(value)) {
             return ResultTypeType.RESULTS_LITERAL;
         }

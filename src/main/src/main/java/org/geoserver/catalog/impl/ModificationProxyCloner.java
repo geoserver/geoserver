@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import com.thoughtworks.xstream.XStream;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -22,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -31,59 +31,65 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geotools.util.logging.Logging;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
  * Utility class used to wrap/clone objects and collections by various strategies:
+ *
  * <ul>
- * <li>Avoid cloning ModificationProxy proxies, as well as any CatalogInfo object</li>
- * <li>Avoid cloning at all well known objects that are known to be immutable (several classes in
- * java.lang)</li>
- * <li>Wrap in ModificatinoProxy any object that is a CatalogInfo</li>
- * <li>Using {@link Cloneable} if available</li>
- * <li>Using copy constructors if available</li>
- * <li>Falling back on XStream serialization if the above fails
- * 
+ *   <li>Avoid cloning ModificationProxy proxies, as well as any CatalogInfo object
+ *   <li>Avoid cloning at all well known objects that are known to be immutable (several classes in
+ *       java.lang)
+ *   <li>Wrap in ModificatinoProxy any object that is a CatalogInfo
+ *   <li>Using {@link Cloneable} if available
+ *   <li>Using copy constructors if available
+ *   <li>Falling back on XStream serialization if the above fails
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 class ModificationProxyCloner {
 
-    private static final XStreamPersisterFactory XSTREAM_PERSISTER_FACTORY = new XStreamPersisterFactory();
+    private static final XStreamPersisterFactory XSTREAM_PERSISTER_FACTORY =
+            new XStreamPersisterFactory();
 
     static final Logger LOGGER = Logging.getLogger(ModificationProxyCloner.class);
-    
-    static final Map<Class, Class> CATALOGINFO_INTERFACE_CACHE = new ConcurrentHashMap<Class, Class>();
+
+    static final Map<Class, Class> CATALOGINFO_INTERFACE_CACHE =
+            new ConcurrentHashMap<Class, Class>();
 
     /**
      * Best effort object cloning utility, tries different lightweight strategies, then falls back
      * on copy by XStream serialization (we use that one as we have a number of hooks to avoid deep
      * copying the catalog, and re-attaching to it, in there)
-     * 
-     * @param source
      *
+     * @param source
      */
     static <T> T clone(T source) {
         // null?
         if (source == null) {
             return null;
         }
-        
+
         // already a modification proxy?
-        if(ModificationProxy.handler(source) != null) {
+        if (ModificationProxy.handler(source) != null) {
             return source;
         }
-        
+
         // is it a catalog info?
-        if(source instanceof CatalogInfo) {
+        if (source instanceof CatalogInfo) {
             // mumble... shouldn't we wrap this one in a modification proxy object?
-            return (T) ModificationProxy.create(source, getDeepestCatalogInfoInterface((CatalogInfo) source));
+            return (T)
+                    ModificationProxy.create(
+                            source, getDeepestCatalogInfoInterface((CatalogInfo) source));
         }
 
         // if a known immutable?
-        if (source instanceof String || source instanceof Byte || source instanceof Short
-                || source instanceof Integer || source instanceof Float || source instanceof Double
-                || source instanceof BigInteger || source instanceof BigDecimal) {
+        if (source instanceof String
+                || source instanceof Byte
+                || source instanceof Short
+                || source instanceof Integer
+                || source instanceof Float
+                || source instanceof Double
+                || source instanceof BigInteger
+                || source instanceof BigDecimal) {
             return (T) source;
         }
 
@@ -93,7 +99,8 @@ class ModificationProxyCloner {
                 // methodutils does not seem to work against "clone()"...
                 // return (T) MethodUtils.invokeExactMethod(source, "clone", null, null);
                 Method method = source.getClass().getDeclaredMethod("clone");
-                if(Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0) {
+                if (Modifier.isPublic(method.getModifiers())
+                        && method.getParameterTypes().length == 0) {
                     return (T) method.invoke(source);
                 }
             }
@@ -105,20 +112,21 @@ class ModificationProxyCloner {
         }
 
         // does it have a copy constructor?
-        Constructor copyConstructor = ConstructorUtils.getAccessibleConstructor(source.getClass(),
-                source.getClass());
+        Constructor copyConstructor =
+                ConstructorUtils.getAccessibleConstructor(source.getClass(), source.getClass());
         if (copyConstructor != null) {
             try {
                 return (T) copyConstructor.newInstance(source);
             } catch (Exception e) {
-                LOGGER.log(Level.FINE,
-                        "Source has a copy constructor, but it failed, skipping to XStream", e);
+                LOGGER.log(
+                        Level.FINE,
+                        "Source has a copy constructor, but it failed, skipping to XStream",
+                        e);
             }
         }
-        
 
-        if(source instanceof Serializable) {
-            return (T) cloneSerializable((Serializable)source);
+        if (source instanceof Serializable) {
+            return (T) cloneSerializable((Serializable) source);
         } else {
             XStreamPersister persister = XSTREAM_PERSISTER_FACTORY.createXMLPersister();
             XStream xs = persister.getXStream();
@@ -132,7 +140,7 @@ class ModificationProxyCloner {
         byte[] bytes = SerializationUtils.serialize(source);
         try {
             ObjectInputStream input =
-                new ModProxyObjectInputStream(new ByteArrayInputStream(bytes));
+                    new ModProxyObjectInputStream(new ByteArrayInputStream(bytes));
             return (T) input.readObject();
         } catch (Exception e) {
             throw new RuntimeException("Error cloning serializable object", e);
@@ -142,52 +150,51 @@ class ModificationProxyCloner {
     static Class getDeepestCatalogInfoInterface(CatalogInfo object) {
         Class<? extends CatalogInfo> sourceClass = object.getClass();
         Class result = CATALOGINFO_INTERFACE_CACHE.get(sourceClass);
-        if(result == null) {
+        if (result == null) {
             List<Class<?>> interfaces = ClassUtils.getAllInterfaces(sourceClass);
             // collect only CatalogInfo related interfaces
             List<Class> cis = new ArrayList<Class>();
             for (Class clazz : interfaces) {
-                if(CatalogInfo.class.isAssignableFrom(clazz)) {
+                if (CatalogInfo.class.isAssignableFrom(clazz)) {
                     cis.add(clazz);
                 }
             }
-            if(cis.size() == 0) {
+            if (cis.size() == 0) {
                 result = null;
-            } else if(cis.size() == 1) {
+            } else if (cis.size() == 1) {
                 result = cis.get(0);
             } else {
-                Collections.sort(cis, new Comparator<Class>() {
-        
-                    @Override
-                    public int compare(Class c1, Class c2) {
-                        if(c1.isAssignableFrom(c2)) {
-                            return 1;
-                        } else if(c2.isAssignableFrom(c1)) {
-                            return -1;
-                        } else {
-                            return 0;
-                        }
-                    }
-                });
-            
+                Collections.sort(
+                        cis,
+                        new Comparator<Class>() {
+
+                            @Override
+                            public int compare(Class c1, Class c2) {
+                                if (c1.isAssignableFrom(c2)) {
+                                    return 1;
+                                } else if (c2.isAssignableFrom(c1)) {
+                                    return -1;
+                                } else {
+                                    return 0;
+                                }
+                            }
+                        });
+
                 result = cis.get(0);
             }
-            
+
             CATALOGINFO_INTERFACE_CACHE.put(sourceClass, result);
         }
-        
+
         return result;
-        
-        
     }
 
     /**
      * Shallow or deep copies the provided collection
-     * 
+     *
      * @param source
      * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
-     *        contain the exact same objects as the source
-     *
+     *     contain the exact same objects as the source
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
@@ -201,7 +208,7 @@ class ModificationProxyCloner {
         try {
             copy = source.getClass().newInstance();
         } catch (InstantiationException e) {
-            //we'll just pick something
+            // we'll just pick something
             if (source instanceof Set) {
                 copy = new HashSet<T>();
             } else {
@@ -222,14 +229,12 @@ class ModificationProxyCloner {
 
     /**
      * Shallow or deep copies the provided collection
-     * 
+     *
      * @param <K>
      * @param <V>
-     * 
      * @param source
      * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
-     *        contain the exact same objects as the source
-     *
+     *     contain the exact same objects as the source
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
@@ -253,9 +258,7 @@ class ModificationProxyCloner {
         return copy;
     }
 
-    /**
-     * Custom object output stream used to ensure a stable class loader used.
-     */
+    /** Custom object output stream used to ensure a stable class loader used. */
     static class ModProxyObjectInputStream extends ObjectInputStream {
 
         ClassLoader classLoader;
@@ -266,7 +269,8 @@ class ModificationProxyCloner {
         }
 
         @Override
-        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        protected Class<?> resolveClass(ObjectStreamClass desc)
+                throws IOException, ClassNotFoundException {
             String name = desc.getName();
             try {
                 return Class.forName(name, false, classLoader);

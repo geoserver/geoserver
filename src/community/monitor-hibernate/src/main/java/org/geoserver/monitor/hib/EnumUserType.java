@@ -11,13 +11,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Properties;
-
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.EnhancedUserType;
 import org.hibernate.usertype.ParameterizedType;
 
 /**
  * EnumUserType coming from https://www.hibernate.org/272.html
+ *
  * @author Gavin King
  */
 public class EnumUserType implements EnhancedUserType, ParameterizedType {
@@ -81,7 +81,7 @@ public class EnumUserType implements EnhancedUserType, ParameterizedType {
     }
 
     public int[] sqlTypes() {
-        return new int[] { Types.VARCHAR };
+        return new int[] {Types.VARCHAR};
     }
 
     public Object fromXMLString(String xmlValue) {

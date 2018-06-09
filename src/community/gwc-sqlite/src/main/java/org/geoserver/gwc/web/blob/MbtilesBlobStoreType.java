@@ -8,9 +8,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geowebcache.sqlite.MbtilesConfiguration;
 
-/**
- * Defines the MBTiles blob store.
- */
+/** Defines the MBTiles blob store. */
 public class MbtilesBlobStoreType implements BlobStoreType<MbtilesConfiguration> {
 
     @Override

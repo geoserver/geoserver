@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -29,9 +28,8 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Maintains state about an import.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ImportContext implements Serializable {
 
@@ -46,21 +44,13 @@ public class ImportContext implements Serializable {
          * while planning for an asynchronous initialization
          */
         INIT,
-        /**
-         * Context init failed
-         */
+        /** Context init failed */
         INIT_ERROR,
-        /**
-         * Context ready to be started
-         */
+        /** Context ready to be started */
         PENDING,
-        /**
-         * Import is running
-         */
+        /** Import is running */
         RUNNING,
-        /**
-         * Import is complete
-         */
+        /** Import is complete */
         COMPLETE;
     }
 
@@ -70,62 +60,41 @@ public class ImportContext implements Serializable {
     /** state */
     State state = State.PENDING;
 
-    /**
-     * data source
-     */
+    /** data source */
     ImportData data;
 
-    /**
-     * target workspace for the import 
-     */
+    /** target workspace for the import */
     WorkspaceInfo targetWorkspace;
 
-    /**
-     * target store of the import
-     */
+    /** target store of the import */
     StoreInfo targetStore;
 
-    /** 
-     * import tasks
-     */
+    /** import tasks */
     List<ImportTask> tasks = new ArrayList<ImportTask>();
 
-    /**
-     * The default transformations that will be applied on task creation
-     */
+    /** The default transformations that will be applied on task creation */
     List<ImportTransform> defaultTransforms = new ArrayList<>();
 
-    /** 
-     * id generator for task 
-     */
+    /** id generator for task */
     int taskid = 0;
 
-    /**
-     * date import was created
-     */
+    /** date import was created */
     Date created;
 
-    /**
-     * date import was finished
-     */
+    /** date import was finished */
     Date updated;
 
-    /**
-     * credentials of creator
-     */
+    /** credentials of creator */
     String user;
 
-    /** 
-     * flag to control whether imported files (indirect) should be archived after import
-     * JD: this used to be true by default, now false since by default importing a shapefile
-     * directly from the local file system would result in the shapefile, and its parent directory 
-     * being deleted
+    /**
+     * flag to control whether imported files (indirect) should be archived after import JD: this
+     * used to be true by default, now false since by default importing a shapefile directly from
+     * the local file system would result in the shapefile, and its parent directory being deleted
      */
     boolean archive = false;
 
-    /**
-     * Used for error messages
-     */
+    /** Used for error messages */
     String message;
 
     volatile ProgressMonitor progress;
@@ -240,8 +209,6 @@ public class ImportContext implements Serializable {
     /**
      * Returns a live list with the default transform, can be modified directly to add/remove the
      * default transforms
-     * 
-     *
      */
     public List<ImportTransform> getDefaultTransforms() {
         return defaultTransforms;
@@ -258,16 +225,17 @@ public class ImportContext implements Serializable {
         } else {
             newState = State.COMPLETE;
         }
-     O: for (ImportTask task : tasks) {
-            switch(task.getState()) {
-            case COMPLETE:
-                continue;
-            case RUNNING:
-                newState = State.RUNNING;
-                break O;
-            default: 
-                newState = State.PENDING;
-                break O;
+        O:
+        for (ImportTask task : tasks) {
+            switch (task.getState()) {
+                case COMPLETE:
+                    continue;
+                case RUNNING:
+                    newState = State.RUNNING;
+                    break O;
+                default:
+                    newState = State.PENDING;
+                    break O;
             }
         }
         state = newState;
@@ -329,18 +297,13 @@ public class ImportContext implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         ImportContext other = (ImportContext) obj;
         if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
+            if (other.id != null) return false;
+        } else if (!id.equals(other.id)) return false;
         return true;
     }
 
@@ -356,7 +319,7 @@ public class ImportContext implements Serializable {
 
     /**
      * Returns the current context message, if any
-     * 
+     *
      * @return the message
      */
     public String getMessage() {
@@ -365,11 +328,10 @@ public class ImportContext implements Serializable {
 
     /**
      * Sets the context message
-     * 
+     *
      * @param message the message to set
      */
     public void setMessage(String message) {
         this.message = message;
     }
 }
-    

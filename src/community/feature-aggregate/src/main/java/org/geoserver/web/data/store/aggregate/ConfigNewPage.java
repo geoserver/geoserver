@@ -7,7 +7,6 @@ package org.geoserver.web.data.store.aggregate;
 
 import org.geotools.data.aggregate.AggregateTypeConfiguration;
 
-
 public class ConfigNewPage extends AbstractConfigPage {
 
     private static final long serialVersionUID = 4059243636202134036L;
@@ -22,5 +21,4 @@ public class ConfigNewPage extends AbstractConfigPage {
         master.addConfiguration(configModel.getObject());
         return true;
     }
-
 }

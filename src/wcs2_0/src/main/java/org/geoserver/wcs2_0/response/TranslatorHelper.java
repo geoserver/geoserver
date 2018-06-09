@@ -1,7 +1,6 @@
 package org.geoserver.wcs2_0.response;
 
 import java.util.Enumeration;
-
 import org.geoserver.platform.ServiceException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -9,15 +8,14 @@ import org.xml.sax.helpers.NamespaceSupport;
 /**
  * A helper object factoring out common methods used in Translators, we might want to add these to
  * TranslatorSupport later
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 class TranslatorHelper {
 
     /**
      * Register all namespaces as xmlns:xxx attributes for the top level element of a xml document
-     * 
+     *
      * @param ns
      * @param attributes
      */
@@ -37,37 +35,41 @@ class TranslatorHelper {
             attributes.addAttribute("", prefixDef, prefixDef, "", uri);
         }
     }
-    
+
     /**
      * Adds together two sets of schema locations
+     *
      * @param locations1
      * @param locations2
-     *
      */
     String[] append(String[] locations1, String[] locations2) {
         String[] result = new String[locations1.length + locations2.length];
         System.arraycopy(locations1, 0, result, 0, locations1.length);
         System.arraycopy(locations2, 0, result, locations1.length, locations2.length);
-        
+
         return result;
     }
 
     /**
      * Builds the schema locations from the provided namespace/location list
-     * @param schemaLocations
      *
+     * @param schemaLocations
      */
     String buildSchemaLocation(String... schemaLocations) {
         StringBuilder schemaLocation = new StringBuilder();
         try {
             for (int i = 0; i < schemaLocations.length - 1; i += 2) {
                 schemaLocation.append(" ");
-                schemaLocation.append(schemaLocations[i]).append(" ")
+                schemaLocation
+                        .append(schemaLocations[i])
+                        .append(" ")
                         .append(schemaLocations[i + 1]);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ServiceException("Extended capabilities provider returned improper "
-                    + "set of namespace,location pairs from getSchemaLocations()", e);
+            throw new ServiceException(
+                    "Extended capabilities provider returned improper "
+                            + "set of namespace,location pairs from getSchemaLocations()",
+                    e);
         }
 
         return schemaLocation.toString();

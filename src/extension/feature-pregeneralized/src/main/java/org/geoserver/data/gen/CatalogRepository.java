@@ -9,13 +9,11 @@ import org.geotools.data.Repository;
 
 /**
  * @author Christian Mueller
- * 
- * Repository implementation using the geoserver catalog
- * 
+ *     <p>Repository implementation using the geoserver catalog
  * @deprecated use {@link org.geoserver.catalog.CatalogRepository}
  */
-public class CatalogRepository extends org.geoserver.catalog.CatalogRepository implements Repository {
+public class CatalogRepository extends org.geoserver.catalog.CatalogRepository
+        implements Repository {
 
-    public CatalogRepository() {
-    }
+    public CatalogRepository() {}
 }

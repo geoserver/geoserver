@@ -5,18 +5,17 @@
  */
 package org.geoserver.wfs.response;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.ogr.core.AbstractToolConfigurator;
 import org.geoserver.ogr.core.ToolConfiguration;
 import org.geoserver.ogr.core.ToolWrapperFactory;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * Loads the ogr2ogr.xml configuration file and configures the output format accordingly.
  *
  * <p>Also keeps tabs on the configuration file, reloading the file as needed.
- * @author Administrator
  *
+ * @author Administrator
  */
 public class Ogr2OgrConfigurator extends AbstractToolConfigurator {
 
@@ -34,18 +33,15 @@ public class Ogr2OgrConfigurator extends AbstractToolConfigurator {
         return OgrConfiguration.DEFAULT;
     }
 
-    /**
-     * Ensures compatibility with old style configuration files.
-     */
+    /** Ensures compatibility with old style configuration files. */
     @Override
     protected XStream buildXStream() {
         XStream xstream = super.buildXStream();
         // setup OGR-specific aliases
         xstream.alias("OgrConfiguration", OgrConfiguration.class);
         xstream.alias("Format", OgrFormat.class);
-	xstream.allowTypes(new Class[] { OgrConfiguration.class, OgrFormat.class });
+        xstream.allowTypes(new Class[] {OgrConfiguration.class, OgrFormat.class});
 
         return xstream;
     }
-
 }

@@ -8,6 +8,9 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Throwables.propagate;
 import static com.google.common.base.Throwables.propagateIfInstanceOf;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,7 +18,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -23,23 +25,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.geoserver.config.AsynchResourceIterator;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resources.ExtensionFilter;
-import org.geoserver.util.Filter;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.storage.blobstore.file.FilePathUtils;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
-import com.thoughtworks.xstream.XStream;
 
 public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
@@ -49,9 +44,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private Map<String, GeoServerTileLayerInfo> layersById;
 
-    /**
-     * View of layer ids by name
-     */
+    /** View of layer ids by name */
     private Map<String, String> layersByName;
 
     private final XStream serializer;
@@ -62,11 +55,13 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private volatile boolean initialized;
 
-    public DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader,
-            XMLConfiguration xmlPersisterFactory) throws IOException {
-        this(resourceLoader,
-                xmlPersisterFactory.getConfiguredXStreamWithContext(new SecureXStream(),
-                Context.PERSIST));
+    public DefaultTileLayerCatalog(
+            GeoServerResourceLoader resourceLoader, XMLConfiguration xmlPersisterFactory)
+            throws IOException {
+        this(
+                resourceLoader,
+                xmlPersisterFactory.getConfiguredXStreamWithContext(
+                        new SecureXStream(), Context.PERSIST));
     }
 
     DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader, XStream configuredXstream)
@@ -83,7 +78,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         this.serializer = configuredXstream;
         this.serializer.allowTypeHierarchy(GeoServerTileLayerInfo.class);
         this.serializer.allowTypeHierarchy(SortedSet.class);
-
     }
 
     @Override
@@ -102,25 +96,32 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
         LOGGER.info("GeoServer TileLayer store base directory is: " + baseDir.path());
         LOGGER.info("Loading tile layers from " + baseDir.path());
-        
+
         ExtensionFilter xmlFilter = new Resources.ExtensionFilter("XML");
-        baseDir.list().parallelStream().filter(r -> xmlFilter.accept(r)).forEach(res -> {
-            GeoServerTileLayerInfoImpl info;
-            try {
-                info = depersist(res);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error depersisting tile layer information from file "
-                        + res.name(), e);
-                return;
-            }
+        baseDir.list()
+                .parallelStream()
+                .filter(r -> xmlFilter.accept(r))
+                .forEach(
+                        res -> {
+                            GeoServerTileLayerInfoImpl info;
+                            try {
+                                info = depersist(res);
+                            } catch (Exception e) {
+                                LOGGER.log(
+                                        Level.SEVERE,
+                                        "Error depersisting tile layer information from file "
+                                                + res.name(),
+                                        e);
+                                return;
+                            }
 
-            layersByName.put(info.getName(), info.getId());
-            layersById.put(info.getId(), info);
+                            layersByName.put(info.getName(), info.getId());
+                            layersById.put(info.getId(), info);
 
-            if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
-            }
-        });
+                            if (LOGGER.isLoggable(Level.FINER)) {
+                                LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
+                            }
+                        });
         this.initialized = true;
     }
 
@@ -203,8 +204,12 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             if (oldValue == null) {
                 final String duplicateNameId = layersByName.get(newValue.getName());
                 if (null != duplicateNameId) {
-                    throw new IllegalArgumentException("TileLayer with same name already exists: "
-                            + newValue.getName() + ": <" + duplicateNameId + ">");
+                    throw new IllegalArgumentException(
+                            "TileLayer with same name already exists: "
+                                    + newValue.getName()
+                                    + ": <"
+                                    + duplicateNameId
+                                    + ">");
                 }
             } else {
                 layersByName.remove(oldValue.getName());
@@ -250,8 +255,10 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         try {
             depersist(tmp);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Persisted version of tile layer " + real.getName()
-                    + " can't be loaded back", e);
+            LOGGER.log(
+                    Level.WARNING,
+                    "Persisted version of tile layer " + real.getName() + " can't be loaded back",
+                    e);
             propagateIfInstanceOf(e, IOException.class);
             throw propagate(e);
         }
@@ -280,16 +287,17 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             LOGGER.fine("Depersisting GeoServerTileLayerInfo from " + res.path());
         }
         GeoServerTileLayerInfoImpl info;
-        try(Reader reader = new InputStreamReader(new ByteArrayInputStream(res.getContents()), "UTF-8")) {
+        try (Reader reader =
+                new InputStreamReader(new ByteArrayInputStream(res.getContents()), "UTF-8")) {
             info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
         }
 
         return info;
     }
-    
+
     private GeoServerTileLayerInfoImpl depersist(final byte[] contents) throws IOException {
         GeoServerTileLayerInfoImpl info;
-        try(Reader reader = new InputStreamReader(new ByteArrayInputStream(contents), "UTF-8")) {
+        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(contents), "UTF-8")) {
             info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
         }
 
@@ -298,8 +306,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private void rename(Resource source, Resource dest) throws IOException {
         // same resource? Do nothing
-        if (source.equals(dest))
-            return;
+        if (source.equals(dest)) return;
 
         // different resource
         boolean win = System.getProperty("os.name").startsWith("Windows");
@@ -326,5 +333,4 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         checkInitialized();
         return layersById.get(layerId).getName();
     }
-
 }

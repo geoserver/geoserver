@@ -5,9 +5,9 @@
  */
 package org.geoserver.catalog.impl;
 
+import com.google.common.base.Function;
 import java.util.Collection;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogFactory;
@@ -25,8 +25,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.ValidationResult;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
@@ -35,20 +35,18 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
-import com.google.common.base.Function;
-
-
 /**
  * Base class for Catalog wrappers that need to filter catalog items.
- * 
+ *
  * @author Davide Savazzi - GeoSolutions
  */
-public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog> implements Catalog {
+public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
+        implements Catalog {
 
     public AbstractFilteredCatalog(Catalog catalog) {
         super(catalog);
     }
-    
+
     public String getId() {
         return delegate.getId();
     }
@@ -68,11 +66,11 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public CoverageInfo getCoverageByName(NamespaceInfo ns, String name) {
         return (CoverageInfo) checkAccess(delegate.getCoverageByName(ns, name));
     }
-    
+
     public CoverageInfo getCoverageByName(Name name) {
         return (CoverageInfo) checkAccess(delegate.getCoverageByName(name));
     }
-    
+
     public CoverageInfo getCoverageByName(String name) {
         return (CoverageInfo) checkAccess(delegate.getCoverageByName(name));
     }
@@ -84,21 +82,19 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public List<CoverageInfo> getCoveragesByNamespace(NamespaceInfo namespace) {
         return filterResources(delegate.getCoveragesByNamespace(namespace));
     }
-    
-    public List<CoverageInfo> getCoveragesByCoverageStore(
-            CoverageStoreInfo store) {
+
+    public List<CoverageInfo> getCoveragesByCoverageStore(CoverageStoreInfo store) {
         return filterResources(delegate.getCoveragesByCoverageStore(store));
     }
-    
-    public CoverageInfo getCoverageByCoverageStore(
-            CoverageStoreInfo coverageStore, String name) {
+
+    public CoverageInfo getCoverageByCoverageStore(CoverageStoreInfo coverageStore, String name) {
         return checkAccess(delegate.getCoverageByCoverageStore(coverageStore, name));
     }
 
     public List<CoverageInfo> getCoveragesByStore(CoverageStoreInfo store) {
         return filterResources(delegate.getCoveragesByStore(store));
     }
-    
+
     public CoverageStoreInfo getCoverageStore(String id) {
         return checkAccess(delegate.getCoverageStore(id));
     }
@@ -106,24 +102,20 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public CoverageStoreInfo getCoverageStoreByName(String name) {
         return checkAccess(delegate.getCoverageStoreByName(name));
     }
-    
-    public CoverageStoreInfo getCoverageStoreByName(String workspaceName,
-            String name) {
-        return checkAccess(delegate.getCoverageStoreByName(workspaceName,name));
+
+    public CoverageStoreInfo getCoverageStoreByName(String workspaceName, String name) {
+        return checkAccess(delegate.getCoverageStoreByName(workspaceName, name));
     }
-    
-    public CoverageStoreInfo getCoverageStoreByName(WorkspaceInfo workspace,
-            String name) {
-        return checkAccess(delegate.getCoverageStoreByName(workspace,name));
+
+    public CoverageStoreInfo getCoverageStoreByName(WorkspaceInfo workspace, String name) {
+        return checkAccess(delegate.getCoverageStoreByName(workspace, name));
     }
-    
-    public List<CoverageStoreInfo> getCoverageStoresByWorkspace(
-            String workspaceName) {
+
+    public List<CoverageStoreInfo> getCoverageStoresByWorkspace(String workspaceName) {
         return filterStores(delegate.getCoverageStoresByWorkspace(workspaceName));
     }
-    
-    public List<CoverageStoreInfo> getCoverageStoresByWorkspace(
-            WorkspaceInfo workspace) {
+
+    public List<CoverageStoreInfo> getCoverageStoresByWorkspace(WorkspaceInfo workspace) {
         return filterStores(delegate.getCoverageStoresByWorkspace(workspace));
     }
 
@@ -138,15 +130,15 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public DataStoreInfo getDataStoreByName(String name) {
         return checkAccess(delegate.getDataStoreByName(name));
     }
-    
+
     public DataStoreInfo getDataStoreByName(String workspaceName, String name) {
-        return checkAccess(delegate.getDataStoreByName(workspaceName,name));
+        return checkAccess(delegate.getDataStoreByName(workspaceName, name));
     }
-    
+
     public DataStoreInfo getDataStoreByName(WorkspaceInfo workspace, String name) {
-        return checkAccess(delegate.getDataStoreByName(workspace,name)) ;
+        return checkAccess(delegate.getDataStoreByName(workspace, name));
     }
-    
+
     public List<DataStoreInfo> getDataStoresByWorkspace(String workspaceName) {
         return filterStores(delegate.getDataStoresByWorkspace(workspaceName));
     }
@@ -174,15 +166,15 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public FeatureTypeInfo getFeatureTypeByName(String ns, String name) {
         return checkAccess(delegate.getFeatureTypeByName(ns, name));
     }
-    
+
     public FeatureTypeInfo getFeatureTypeByName(NamespaceInfo ns, String name) {
-        return checkAccess(delegate.getFeatureTypeByName(ns,name));
+        return checkAccess(delegate.getFeatureTypeByName(ns, name));
     }
 
     public FeatureTypeInfo getFeatureTypeByName(Name name) {
         return checkAccess(delegate.getFeatureTypeByName(name));
     }
-    
+
     public FeatureTypeInfo getFeatureTypeByName(String name) {
         return checkAccess(delegate.getFeatureTypeByName(name));
     }
@@ -195,24 +187,20 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return filterResources(delegate.getFeatureTypesByNamespace(namespace));
     }
 
-    /**
-     * @deprecated
-     */
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore,
-            String name) {
-        return checkAccess(delegate.getFeatureTypeByStore(dataStore , name));
+    /** @deprecated */
+    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
+        return checkAccess(delegate.getFeatureTypeByStore(dataStore, name));
     }
-    public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore,
-            String name) {
-        return checkAccess(delegate.getFeatureTypeByDataStore(dataStore , name));
+
+    public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
+        return checkAccess(delegate.getFeatureTypeByDataStore(dataStore, name));
     }
-    
-    /**
-     * @deprecated
-     */    
+
+    /** @deprecated */
     public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
         return filterResources(delegate.getFeatureTypesByStore(store));
     }
+
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {
         return filterResources(delegate.getFeatureTypesByDataStore(store));
     }
@@ -224,7 +212,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public LayerInfo getLayerByName(String name) {
         return checkAccess(delegate.getLayerByName(name));
     }
-    
+
     public LayerInfo getLayerByName(Name name) {
         return checkAccess(delegate.getLayerByName(name));
     }
@@ -241,8 +229,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return checkAccess(delegate.getLayerGroupByName(workspaceName, name));
     }
 
-    public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace,
-            String name) {
+    public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name) {
         return checkAccess(delegate.getLayerGroupByName(workspace, name));
     }
 
@@ -254,8 +241,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return filterGroups(delegate.getLayerGroupsByWorkspace(workspaceName));
     }
 
-    public List<LayerGroupInfo> getLayerGroupsByWorkspace(
-            WorkspaceInfo workspace) {
+    public List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace) {
         return filterGroups(delegate.getLayerGroupsByWorkspace(workspace));
     }
 
@@ -266,7 +252,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public List<LayerInfo> getLayers(ResourceInfo resource) {
         return filterLayers(delegate.getLayers(resource));
     }
-    
+
     public List<LayerInfo> getLayers(StyleInfo style) {
         return filterLayers(delegate.getLayers(style));
     }
@@ -294,14 +280,14 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public <T extends ResourceInfo> T getResourceByName(Name name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(name, clazz));
     }
-    
+
     public <T extends ResourceInfo> T getResourceByName(String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(name, clazz));
     }
 
-    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns,
-            String name, Class<T> clazz) {
-        return checkAccess(delegate.getResourceByName(ns, name, clazz)) ;
+    public <T extends ResourceInfo> T getResourceByName(
+            NamespaceInfo ns, String name, Class<T> clazz) {
+        return checkAccess(delegate.getResourceByName(ns, name, clazz));
     }
 
     public <T extends ResourceInfo> T getResourceByName(String ns, String name, Class<T> clazz) {
@@ -312,8 +298,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return filterResources(delegate.getResources(clazz));
     }
 
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            NamespaceInfo namespace, Class<T> clazz) {
         return filterResources(delegate.getResourcesByNamespace(namespace, clazz));
     }
 
@@ -321,14 +307,13 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
             String namespace, Class<T> clazz) {
         return filterResources(delegate.getResourcesByNamespace(namespace, clazz));
     }
-    
-    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store,
-            String name, Class<T> clazz) {
+
+    public <T extends ResourceInfo> T getResourceByStore(
+            StoreInfo store, String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByStore(store, name, clazz));
     }
-    
-    public <T extends ResourceInfo> List<T> getResourcesByStore(
-            StoreInfo store, Class<T> clazz) {
+
+    public <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz) {
         return filterResources(delegate.getResourcesByStore(store, clazz));
     }
 
@@ -340,13 +325,13 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return checkAccess(delegate.getStoreByName(name, clazz));
     }
 
-    public <T extends StoreInfo> T getStoreByName(String workspaceName,
-            String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(
+            String workspaceName, String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(workspaceName, name, clazz));
     }
-    
-    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace,
-            String name, Class<T> clazz) {
+
+    public <T extends StoreInfo> T getStoreByName(
+            WorkspaceInfo workspace, String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(workspace, name, clazz));
     }
 
@@ -356,11 +341,11 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     public <T extends StoreInfo> List<T> getStoresByWorkspace(
             String workspaceName, Class<T> clazz) {
-        return filterStores(delegate.getStoresByWorkspace(workspaceName , clazz));
+        return filterStores(delegate.getStoresByWorkspace(workspaceName, clazz));
     }
 
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace,
-            Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(
+            WorkspaceInfo workspace, Class<T> clazz) {
         return filterStores(delegate.getStoresByWorkspace(workspace, clazz));
     }
 
@@ -405,92 +390,64 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     /**
-     * Given a {@link FeatureTypeInfo}, returns it back if the user
-     * can access it in write mode, makes it read only if the user can access it
-     * in read only mode, returns null otherwise
-     *
+     * Given a {@link FeatureTypeInfo}, returns it back if the user can access it in write mode,
+     * makes it read only if the user can access it in read only mode, returns null otherwise
      */
     protected abstract <T extends ResourceInfo> T checkAccess(T info);
 
     /**
      * Given a {@link StyleInfo}, returns it back if the user can access it.
-     * 
+     *
      * @return <code>null</code> if the user can't acess the style, otherwise the original style.
      */
     protected abstract StyleInfo checkAccess(StyleInfo style);
 
     /**
-     * Given a store, returns it back if the user can access its
-     * workspace in read mode, null otherwise
-     *
+     * Given a store, returns it back if the user can access its workspace in read mode, null
+     * otherwise
      */
     protected abstract <T extends StoreInfo> T checkAccess(T store);
 
-    /**
-     * Given a layer, returns it back if the user can access it, null
-     * otherwise
-     *
-     */
+    /** Given a layer, returns it back if the user can access it, null otherwise */
     protected abstract LayerInfo checkAccess(LayerInfo layer);
 
-    /**
-     * Given a layer group, returns it back if the user can access
-     * it, null otherwise
-     *
-     */
+    /** Given a layer group, returns it back if the user can access it, null otherwise */
     protected abstract LayerGroupInfo checkAccess(LayerGroupInfo group);
 
-    /**
-     * Given a namespace, returns it back if the user can access it,
-     * null otherwise
-     *
-     */
+    /** Given a namespace, returns it back if the user can access it, null otherwise */
     protected abstract <T extends NamespaceInfo> T checkAccess(T ns);
 
-    /**
-     * Given a workspace, returns it back if the user can access it,
-     * null otherwise
-     *
-     */
+    /** Given a workspace, returns it back if the user can access it, null otherwise */
     protected abstract <T extends WorkspaceInfo> T checkAccess(T ws);
 
     /**
-     * Given a list of resources, returns a copy of it containing only the
-     * resources the user can access
-     * 
-     * @param resources
-     * 
+     * Given a list of resources, returns a copy of it containing only the resources the user can
+     * access
      *
+     * @param resources
      */
     protected abstract <T extends ResourceInfo> List<T> filterResources(List<T> resources);
 
     /**
-     * Given a list of stores, returns a copy of it containing only the
-     * resources the user can access
-     * 
-     * @param resources
-     * 
+     * Given a list of stores, returns a copy of it containing only the resources the user can
+     * access
      *
+     * @param resources
      */
     protected abstract <T extends StoreInfo> List<T> filterStores(List<T> resources);
 
     /**
-     * Given a list of layer groups, returns a copy of it containing only the
-     * groups the user can access
-     * 
-     * @param groups
-     * 
+     * Given a list of layer groups, returns a copy of it containing only the groups the user can
+     * access
      *
+     * @param groups
      */
     protected abstract List<LayerGroupInfo> filterGroups(List<LayerGroupInfo> groups);
 
     /**
-     * Given a list of layers, returns a copy of it containing only the layers
-     * the user can access
-     * 
-     * @param layers
-     * 
+     * Given a list of layers, returns a copy of it containing only the layers the user can access
      *
+     * @param layers
      */
     protected abstract List<LayerInfo> filterLayers(List<LayerInfo> layers);
 
@@ -500,25 +457,21 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     protected abstract List<StyleInfo> filterStyles(List<StyleInfo> styles);
 
     /**
-     * Given a list of namespaces, returns a copy of it containing only the
-     * namespaces the user can access
-     * 
-     * @param namespaces
-     * 
+     * Given a list of namespaces, returns a copy of it containing only the namespaces the user can
+     * access
      *
+     * @param namespaces
      */
     protected abstract <T extends NamespaceInfo> List<T> filterNamespaces(List<T> namespaces);
 
     /**
-     * Given a list of workspaces, returns a copy of it containing only the
-     * workspaces the user can access
-     * 
-     * @param namespaces
-     * 
+     * Given a list of workspaces, returns a copy of it containing only the workspaces the user can
+     * access
      *
+     * @param namespaces
      */
     protected abstract <T extends WorkspaceInfo> List<T> filterWorkspaces(List<T> workspaces);
-    
+
     // -------------------------------------------------------------------
     // PURE DELEGATING METHODS
     // (MapInfo being here since its role in the grand scheme of things
@@ -548,23 +501,23 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public LayerGroupInfo detach(LayerGroupInfo layerGroup) {
         return delegate.detach(layerGroup);
     }
-    
+
     public void add(LayerInfo layer) {
         delegate.add(layer);
     }
 
     public LayerInfo detach(LayerInfo layer) {
         return delegate.detach(layer);
-    }    
-    
+    }
+
     public ValidationResult validate(LayerInfo layer, boolean isNew) {
         return delegate.validate(layer, isNew);
     }
-    
+
     public void add(MapInfo map) {
         delegate.add(map);
     }
-    
+
     public MapInfo detach(MapInfo map) {
         return delegate.detach(map);
     }
@@ -592,7 +545,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public <T extends ResourceInfo> T detach(T resource) {
         return delegate.detach(resource);
     }
-    
+
     public void add(StoreInfo store) {
         delegate.add(store);
     }
@@ -600,7 +553,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public ValidationResult validate(StoreInfo store, boolean isNew) {
         return delegate.validate(store, isNew);
     }
-    
+
     public <T extends StoreInfo> T detach(T store) {
         return delegate.detach(store);
     }
@@ -628,7 +581,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public WorkspaceInfo detach(WorkspaceInfo workspace) {
         return delegate.detach(workspace);
     }
-    
+
     public void addListener(CatalogListener listener) {
         delegate.addListener(listener);
     }
@@ -640,7 +593,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public CatalogFacade getFacade() {
         return delegate.getFacade();
     }
-    
+
     public CatalogFactory getFactory() {
         return delegate.getFactory();
     }
@@ -652,22 +605,22 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public void fireAdded(CatalogInfo object) {
         delegate.fireAdded(object);
     }
-    
+
     @SuppressWarnings("rawtypes")
-    public void fireModified(CatalogInfo object, List<String> propertyNames, List oldValues,
-            List newValues) {
+    public void fireModified(
+            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
-    
-    public void firePostModified(CatalogInfo object, List<String> propertyNames, List oldValues,
-            List newValues) {
+
+    public void firePostModified(
+            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
-    
+
     public void fireRemoved(CatalogInfo object) {
         delegate.fireRemoved(object);
     }
-    
+
     // TODO: why is resource pool being exposed???
     public ResourcePool getResourcePool() {
         return delegate.getResourcePool();
@@ -682,7 +635,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     public StyleInfo getStyleByName(String workspaceName, String name) {
-        return checkAccess(delegate.getStyleByName(workspaceName, name)); 
+        return checkAccess(delegate.getStyleByName(workspaceName, name));
     }
 
     public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
@@ -780,15 +733,15 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     public void setResourcePool(ResourcePool resourcePool) {
         delegate.setResourcePool(resourcePool);
     }
-    
+
     public GeoServerResourceLoader getResourceLoader() {
         return delegate.getResourceLoader();
     }
-    
+
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
         delegate.setResourceLoader(resourceLoader);
     }
-    
+
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
@@ -823,8 +776,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
-            Integer offset, Integer count, SortBy sortBy) {
+    public <T extends CatalogInfo> CloseableIterator<T> list(
+            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
 
         Filter securityFilter = securityFilter(of, filter);
 
@@ -841,7 +794,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     /**
      * @return a Function that applies a security wrapper over the catalog object given to it as
-     *         input
+     *     input
      */
     private <T extends CatalogInfo> Function<T, T> securityWrapper(final Class<T> forClass) {
         return new Function<T, T>() {
@@ -857,14 +810,14 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     /**
      * Returns a predicate that checks whether the current user has access to a given object of type
      * {@code infoType}.
-     * 
+     *
      * @return a catalog Predicate that evaluates if an object of the required type is accessible
      */
-    protected abstract <T extends CatalogInfo> Filter securityFilter(final Class<T> infoType,
-            final Filter filter);
+    protected abstract <T extends CatalogInfo> Filter securityFilter(
+            final Class<T> infoType, final Filter filter);
 
     @SuppressWarnings("rawtypes")
     public void removeListeners(Class listenerClass) {
         delegate.removeListeners(listenerClass);
-    } 
+    }
 }

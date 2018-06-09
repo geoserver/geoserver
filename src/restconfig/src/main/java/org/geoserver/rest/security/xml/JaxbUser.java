@@ -5,65 +5,63 @@
 package org.geoserver.rest.security.xml;
 
 import java.io.IOException;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerUser;
 
-@XmlRootElement(name="user")
+@XmlRootElement(name = "user")
 public class JaxbUser {
-	
-	protected String userName;
-	protected String password;
-	protected Boolean enabled;
 
-	public JaxbUser() {	}
+    protected String userName;
+    protected String password;
+    protected Boolean enabled;
 
-	public JaxbUser( GeoServerUser user ) {
-		this.userName = user.getUsername();
-		this.enabled = new Boolean(user.isEnabled());
-	}
+    public JaxbUser() {}
 
-	@XmlElement
-	public String getUserName() {
-		return userName;
-	}
+    public JaxbUser(GeoServerUser user) {
+        this.userName = user.getUsername();
+        this.enabled = new Boolean(user.isEnabled());
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    @XmlElement
+    public String getUserName() {
+        return userName;
+    }
 
-	@XmlElement
-	public String getPassword() {
-		return password;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setPassword(String passwd) {
-		this.password = passwd;
- 	}
+    @XmlElement
+    public String getPassword() {
+        return password;
+    }
 
-	@XmlElement
- 	public Boolean isEnabled() {
-		return enabled;
-	}
+    public void setPassword(String passwd) {
+        this.password = passwd;
+    }
 
-	public void setEnabled(Boolean enabled) {
-        	this.enabled = enabled;
-	}
+    @XmlElement
+    public Boolean isEnabled() {
+        return enabled;
+    }
 
-	public GeoServerUser toUser(GeoServerUserGroupService service) throws IOException {
-		return service.createUserObject(userName, password, enabled);
-	}
-	
-	public GeoServerUser toUser(GeoServerUser user) {
-		if (password != null) {
-			user.setPassword(password);
-		}
-		if (enabled != null) {
-			user.setEnabled(enabled);
-		}
-		return user;
-	}
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public GeoServerUser toUser(GeoServerUserGroupService service) throws IOException {
+        return service.createUserObject(userName, password, enabled);
+    }
+
+    public GeoServerUser toUser(GeoServerUser user) {
+        if (password != null) {
+            user.setPassword(password);
+        }
+        if (enabled != null) {
+            user.setEnabled(enabled);
+        }
+        return user;
+    }
 }

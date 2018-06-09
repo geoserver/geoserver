@@ -12,23 +12,25 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 /**
- * Spring beans implementing this interface will be invoked during backup / restore jobs.
- * Class {@link GenericTaskletUtils} provide utilities methods for implementing this type
- * of handlers.
+ * Spring beans implementing this interface will be invoked during backup / restore jobs. Class
+ * {@link GenericTaskletUtils} provide utilities methods for implementing this type of handlers.
  */
 public interface GenericTaskletHandler {
 
     /**
-     * This method is invoked for each run, which means that this may be invoked multiple
-     * times for continuable handlers.
+     * This method is invoked for each run, which means that this may be invoked multiple times for
+     * continuable handlers.
      */
     void initialize(StepExecution stepExecution, BackupRestoreItem context);
 
     /**
-     * This method should do a restore or backup depending on the job context. Class
-     * {@link GenericTaskletUtils} provide utilities methods that can be used to
-     * retrieve the current type of job and input or output directories.
+     * This method should do a restore or backup depending on the job context. Class {@link
+     * GenericTaskletUtils} provide utilities methods that can be used to retrieve the current type
+     * of job and input or output directories.
      */
-    RepeatStatus handle(StepContribution contribution, ChunkContext chunkContext,
-                        JobExecution jobExecution, BackupRestoreItem context);
+    RepeatStatus handle(
+            StepContribution contribution,
+            ChunkContext chunkContext,
+            JobExecution jobExecution,
+            BackupRestoreItem context);
 }

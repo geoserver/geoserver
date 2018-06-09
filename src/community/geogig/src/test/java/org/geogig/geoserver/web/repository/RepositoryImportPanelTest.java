@@ -6,11 +6,11 @@ package org.geogig.geoserver.web.repository;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextField;
@@ -26,11 +26,7 @@ import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Repository;
 
-import com.google.common.collect.Lists;
-
-/**
- *
- */
+/** */
 public class RepositoryImportPanelTest extends CommonPanelTest {
 
     private static final String FORM_PREFIX = "panel:repoForm:";
@@ -78,9 +74,11 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
         FeedbackPanel c = (FeedbackPanel) tester.getComponentFromLastRenderedPage(FEEDBACK);
         List<FeedbackMessage> list = c.getFeedbackMessagesModel().getObject();
         // by default, 3 required fields will be emtpy: repo name, database and password
-        List<String> expectedMsgs = Lists.newArrayList("Field 'Repository Name' is required.",
-                "Field 'Database Name' is required.",
-                "Field 'Password' is required.");
+        List<String> expectedMsgs =
+                Lists.newArrayList(
+                        "Field 'Repository Name' is required.",
+                        "Field 'Database Name' is required.",
+                        "Field 'Password' is required.");
         assertFeedbackMessages(list, expectedMsgs);
     }
 
@@ -111,8 +109,16 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
         Repository repo = RepositoryManager.get().createRepo(hints);
         assertNotNull(repo);
         repo.command(InitOp.class).call();
-        repo.command(ConfigOp.class).setAction(ConfigOp.ConfigAction.CONFIG_SET).setName("user.name").setValue("TestUser").call();
-        repo.command(ConfigOp.class).setAction(ConfigOp.ConfigAction.CONFIG_SET).setName("user.email").setValue("test@user.com").call();
+        repo.command(ConfigOp.class)
+                .setAction(ConfigOp.ConfigAction.CONFIG_SET)
+                .setName("user.name")
+                .setValue("TestUser")
+                .call();
+        repo.command(ConfigOp.class)
+                .setAction(ConfigOp.ConfigAction.CONFIG_SET)
+                .setName("user.email")
+                .setValue("test@user.com")
+                .call();
         repo.close();
         return new File(repo.getLocation()).getParentFile();
     }
@@ -128,9 +134,11 @@ public class RepositoryImportPanelTest extends CommonPanelTest {
         // get the form
         FormTester formTester = tester.newFormTester(getFrom());
         // and a directory
-        TextField parentDirectory = (TextField) tester.getComponentFromLastRenderedPage(
-                SETTINGS_PREFIX +
-                "repoDirectoryPanel:wrapper:wrapper_body:repoDirectory");
+        TextField parentDirectory =
+                (TextField)
+                        tester.getComponentFromLastRenderedPage(
+                                SETTINGS_PREFIX
+                                        + "repoDirectoryPanel:wrapper:wrapper_body:repoDirectory");
         formTester.setValue(parentDirectory, repoDir.getCanonicalPath());
         // click the Save button
         tester.executeAjaxEvent(IMPORT_LINK, "click");

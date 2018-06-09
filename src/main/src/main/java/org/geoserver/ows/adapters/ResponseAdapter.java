@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
@@ -18,15 +17,13 @@ import org.geoserver.platform.ServiceException;
 import org.vfny.geoserver.Request;
 import org.vfny.geoserver.Response;
 
-
 /**
  * Wraps an old style {@link Response} in a new {@link org.geoserver.ows.Response}.
- * <p>
- * The class binding (see {@link #getBinding()} ), is the implementation of
- * {@link Response} which will delegated to.
- * </p>
- * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  *
+ * <p>The class binding (see {@link #getBinding()} ), is the implementation of {@link Response}
+ * which will delegated to.
+ *
+ * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class ResponseAdapter extends org.geoserver.ows.Response {
     GeoServer gs;
@@ -37,46 +34,44 @@ public class ResponseAdapter extends org.geoserver.ows.Response {
         this.gs = gs;
     }
 
-    public String getMimeType(Object value, Operation operation)
-        throws ServiceException {
-        //get the delegate
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        // get the delegate
         Response delegate = (Response) value;
 
-        //get the requst object from the operation
+        // get the requst object from the operation
         Request request = (Request) OwsUtils.parameter(operation.getParameters(), Request.class);
 
-        //the old contract specifies that execute must be called before 
+        // the old contract specifies that execute must be called before
         // get content type
         delegate.execute(request);
 
-        //return the content type
+        // return the content type
         return delegate.getContentType(gs);
     }
 
     public void write(Object value, OutputStream output, Operation operation)
-        throws IOException, ServiceException {
-        //get the delegate
+            throws IOException, ServiceException {
+        // get the delegate
         Response delegate = (Response) value;
 
-        //write the response
+        // write the response
         delegate.writeTo(output);
     }
-    
+
     public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
         Response delegate = (Response) value;
         HashMap map = new HashMap();
-        if ( delegate.getContentDisposition() != null ) {
-            map.put( "Content-Disposition", delegate.getContentDisposition() );
+        if (delegate.getContentDisposition() != null) {
+            map.put("Content-Disposition", delegate.getContentDisposition());
         }
-        
+
         HashMap m = delegate.getResponseHeaders();
-        if ( m != null && !m.isEmpty() ) {
-            map.putAll( m );
+        if (m != null && !m.isEmpty()) {
+            map.putAll(m);
         }
-        
-        if(map == null || map.isEmpty())
-            return null;
-        
+
+        if (map == null || map.isEmpty()) return null;
+
         String[][] headers = new String[map.size()][2];
         List keys = new ArrayList(map.keySet());
         for (int i = 0; i < headers.length; i++) {
@@ -88,6 +83,7 @@ public class ResponseAdapter extends org.geoserver.ows.Response {
 
     /**
      * Backwards compatibility for adapter - dispatcher will ignore.
+     *
      * @param value
      * @param operation
      * @return null
@@ -96,5 +92,4 @@ public class ResponseAdapter extends org.geoserver.ows.Response {
     public String getAttachmentFileName(Object value, Operation operation) {
         return null;
     }
-    
 }

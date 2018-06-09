@@ -6,33 +6,31 @@
 package org.geoserver.web.util;
 
 import java.util.Map;
-
 import org.apache.wicket.model.IChainingModel;
 import org.apache.wicket.model.IModel;
 
 /**
  * A model which backs onto an underlying map.
- * <p>
- * The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel} except for
- * that expressions map to keys of a map rather than java bean property names.
- * </p>
- * @author Justin Deoliveira, The Open Planning Project
  *
+ * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel}
+ * except for that expressions map to keys of a map rather than java bean property names.
+ *
+ * @author Justin Deoliveira, The Open Planning Project
  */
 public class MapModel<T> implements IModel<T>, IChainingModel<T> {
     private static final long serialVersionUID = 3122822158252376260L;
-    IModel<? extends Map<String,?>> model;
+    IModel<? extends Map<String, ?>> model;
     String expression;
-    
-    public MapModel( Map<String,? extends Object> map, String expression ) {
+
+    public MapModel(Map<String, ? extends Object> map, String expression) {
         this(new MapWrappingModel(map), expression);
     }
-    
-    public MapModel(IModel<? extends Map<String,? extends Object>> model, String expression){
+
+    public MapModel(IModel<? extends Map<String, ? extends Object>> model, String expression) {
         this.model = model;
         this.expression = expression;
     }
-    
+
     @SuppressWarnings("unchecked")
     public T getObject() {
         return (T) model.getObject().get(expression);
@@ -46,13 +44,13 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
     public void detach() {
         model.detach();
     }
-    
-    private static class MapWrappingModel implements IModel<Map<String,?>>{
+
+    private static class MapWrappingModel implements IModel<Map<String, ?>> {
         private static final long serialVersionUID = -1474150801738143281L;
-        
-        private Map<String,?> myMap;
-        
-        public MapWrappingModel(Map<String,?> m){
+
+        private Map<String, ?> myMap;
+
+        public MapWrappingModel(Map<String, ?> m) {
             myMap = m;
         }
 
@@ -60,20 +58,14 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
             return myMap;
         }
 
-        public void setObject(Map<String,?> arg0) {
-        }
+        public void setObject(Map<String, ?> arg0) {}
 
-        public void detach() {
-        }
-        
+        public void detach() {}
     }
 
     public IModel<?> getChainedModel() {
         return null;
     }
 
-    public void setChainedModel(IModel<?> arg0) {
-        
-    }
-
+    public void setChainedModel(IModel<?> arg0) {}
 }

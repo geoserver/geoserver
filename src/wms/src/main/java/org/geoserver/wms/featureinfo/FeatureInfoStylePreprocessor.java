@@ -5,12 +5,18 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.wms.SymbolizerFilteringVisitor;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
@@ -31,18 +37,10 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * Removes text symbolizers, makes sure lines and polygons are painted at least with a solid color
  * to ensure we match even when hitting in spaces between dashes or spaced fills
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
@@ -104,7 +102,8 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
 
     private boolean isStaticTransparentFill(Fill fill) {
         if (fill.getOpacity() instanceof Literal) {
-            // weird case of people setting opacity to 0. In case the opacity is really attribute driven,
+            // weird case of people setting opacity to 0. In case the opacity is really attribute
+            // driven,
             // we'll leave it be
             Double staticOpacity = fill.getOpacity().evaluate(null, Double.class);
             if (staticOpacity == null || staticOpacity == 0) {
@@ -122,44 +121,42 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         addStrokeSymbolizerIfNecessary(stroke);
         addGeometryExpression(line.getGeometry(), geometriesOnLineSymbolizer);
     }
-    
+
     @Override
     public void visit(PointSymbolizer ps) {
         super.visit(ps);
         addGeometryExpression(ps.getGeometry(), geometriesOnPointSymbolizer);
     }
 
-    private void addGeometryExpression(Expression geometry,
-            Set<Expression> expressions) {
-        if(isDefaultGeometry(geometry)) {
+    private void addGeometryExpression(Expression geometry, Set<Expression> expressions) {
+        if (isDefaultGeometry(geometry)) {
             expressions.add(defaultGeometryExpression);
         } else {
             expressions.add(geometry);
         }
-        
     }
 
     private boolean isDefaultGeometry(Expression geometry) {
-        if(geometry == null) {
+        if (geometry == null) {
             return true;
-        } 
-        
-        if(!(geometry instanceof PropertyName)) {
+        }
+
+        if (!(geometry instanceof PropertyName)) {
             return false;
         }
-        
+
         PropertyName pn = (PropertyName) geometry;
-        if("".equals(pn.getPropertyName())) {
+        if ("".equals(pn.getPropertyName())) {
             return true;
         }
-        
+
         GeometryDescriptor gd = schema.getGeometryDescriptor();
-        if(gd == null) {
+        if (gd == null) {
             return false;
         }
         return gd.getLocalName().equals(pn.getPropertyName());
     }
-    
+
     @Override
     public void visit(Style style) {
         super.visit(style);
@@ -169,7 +166,8 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         List<FeatureTypeStyle> reduced = new ArrayList<FeatureTypeStyle>();
         FeatureTypeStyle current = null;
         for (FeatureTypeStyle fts : featureTypeStyles) {
-            if(current == null || !sameTranformation(current.getTransformation(), fts.getTransformation())) {
+            if (current == null
+                    || !sameTranformation(current.getTransformation(), fts.getTransformation())) {
                 current = fts;
                 reduced.add(current);
             } else {
@@ -177,9 +175,9 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
                 // would result in the feature being returned twice, since we cannot
                 // assume feature ids to be stable either
                 current.rules().addAll(fts.rules());
-            } 
+            }
         }
-        
+
         // replace
         copy.featureTypeStyles().clear();
         copy.featureTypeStyles().addAll(reduced);
@@ -193,7 +191,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
     public void visit(FeatureTypeStyle fts) {
         extraRules.clear();
         super.visit(fts);
-        if(extraRules.size() > 0) {
+        if (extraRules.size() > 0) {
             FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
             copy.rules().addAll(extraRules);
         }
@@ -219,18 +217,23 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         for (Expression geom : geometriesOnLineSymbolizer) {
             Object result = geom.evaluate(schema);
             Class geometryType = getTargetGeometryType(result);
-             if(Polygon.class.isAssignableFrom(geometryType) ||
-                     MultiPolygon.class.isAssignableFrom(geometryType)) {
-                 // we know it's a polygon type, but there is no polygon symbolizer, add one
-                 // in the current rule
-                 copy.symbolizers().add(sb.createPolygonSymbolizer());
-             } else if(geometryType.equals(Geometry.class)) {
-                 // dynamic, we need to add an extra rule then to paint as polygon
-                 // only if the actual geometry is a polygon type
-                RuleImpl extra = buildDynamicGeometryRule(copy, geom, sb.createPolygonSymbolizer(),
-                        "Polygon", "MultiPolygon");
-                 extraRules.add(extra);
-             }
+            if (Polygon.class.isAssignableFrom(geometryType)
+                    || MultiPolygon.class.isAssignableFrom(geometryType)) {
+                // we know it's a polygon type, but there is no polygon symbolizer, add one
+                // in the current rule
+                copy.symbolizers().add(sb.createPolygonSymbolizer());
+            } else if (geometryType.equals(Geometry.class)) {
+                // dynamic, we need to add an extra rule then to paint as polygon
+                // only if the actual geometry is a polygon type
+                RuleImpl extra =
+                        buildDynamicGeometryRule(
+                                copy,
+                                geom,
+                                sb.createPolygonSymbolizer(),
+                                "Polygon",
+                                "MultiPolygon");
+                extraRules.add(extra);
+            }
         }
         // check all the geometries that are on text, but not on any other symbolizer (pure labels)
         // that we won't hit otherwise
@@ -252,30 +255,44 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
             } else {
                 // ouch, it's a generic geometry... now this is going to be painful, we have to
                 // build a dynamic symbolizer for each possible geometry type
-                RuleImpl extra = buildDynamicGeometryRule(copy, geom, sb.createPolygonSymbolizer(),
-                        "Polygon", "MultiPolygon");
+                RuleImpl extra =
+                        buildDynamicGeometryRule(
+                                copy,
+                                geom,
+                                sb.createPolygonSymbolizer(),
+                                "Polygon",
+                                "MultiPolygon");
                 extraRules.add(extra);
-                extra = buildDynamicGeometryRule(copy, geom, sb.createLineSymbolizer(),
-                        "LineString", "LinearRing", "MultiLineString");
+                extra =
+                        buildDynamicGeometryRule(
+                                copy,
+                                geom,
+                                sb.createLineSymbolizer(),
+                                "LineString",
+                                "LinearRing",
+                                "MultiLineString");
                 extraRules.add(extra);
-                extra = buildDynamicGeometryRule(copy, geom, sb.createPointSymbolizer(), "Point",
-                        "MultiPoint");
+                extra =
+                        buildDynamicGeometryRule(
+                                copy, geom, sb.createPointSymbolizer(), "Point", "MultiPoint");
                 extraRules.add(extra);
             }
         }
     }
 
-    private RuleImpl buildDynamicGeometryRule(Rule base, Expression geom, Symbolizer symbolizer,
-            String... geometryTypes) {
+    private RuleImpl buildDynamicGeometryRule(
+            Rule base, Expression geom, Symbolizer symbolizer, String... geometryTypes) {
         List<Filter> typeChecks = new ArrayList<>();
         for (String geometryType : geometryTypes) {
-            typeChecks.add(ff.equal(ff.function("geometryType", geom), ff.literal(geometryType),
-                    false));
+            typeChecks.add(
+                    ff.equal(ff.function("geometryType", geom), ff.literal(geometryType), false));
         }
         Filter geomCheck = ff.or(typeChecks);
         Filter ruleFilter = base.getFilter();
-        Filter filter = ruleFilter == null || ruleFilter == Filter.INCLUDE ? geomCheck : ff.and(
-                geomCheck, ruleFilter);
+        Filter filter =
+                ruleFilter == null || ruleFilter == Filter.INCLUDE
+                        ? geomCheck
+                        : ff.and(geomCheck, ruleFilter);
         RuleImpl extra = new RuleImpl(base);
         extra.setFilter(filter);
         extra.symbolizers().clear();

@@ -6,10 +6,22 @@
 
 package org.geoserver.wps;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -24,20 +36,6 @@ import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.opengis.feature.type.Name;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
-import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
-import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
-import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Service loader for the Web Processing Service
@@ -78,17 +76,21 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         xs.registerConverter(new NameConverter());
         ClassAliasingMapper mapper = new ClassAliasingMapper(xs.getMapper());
         mapper.addClassAlias("role", String.class);
-        xs.registerLocalConverter(ProcessGroupInfoImpl.class, "roles", new CollectionConverter(
-                mapper));
+        xs.registerLocalConverter(
+                ProcessGroupInfoImpl.class, "roles", new CollectionConverter(mapper));
         xs.registerLocalConverter(ProcessInfoImpl.class, "roles", new CollectionConverter(mapper));
-        xs.registerLocalConverter(ProcessInfoImpl.class, "validators",
+        xs.registerLocalConverter(
+                ProcessInfoImpl.class,
+                "validators",
                 new XStreamPersister.MultimapConverter(mapper));
         xs.alias("maxSizeValidator", MaxSizeValidator.class);
         xs.alias("maxMultiplicityValidator", MultiplicityValidator.class);
         xs.alias("rangeValidator", NumberRangeValidator.class);
-        xs.registerLocalConverter(NumberRangeValidator.class, "range",
+        xs.registerLocalConverter(
+                NumberRangeValidator.class,
+                "range",
                 new NumberRangeConverter(xs.getMapper(), xs.getReflectionProvider()));
-        
+
         xs.allowTypeHierarchy(ProcessGroupInfo.class);
         xs.allowTypeHierarchy(WPSInputValidator.class);
     }
@@ -136,8 +138,8 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                             ((ProcessInfoImpl) pi).setRoles(new ArrayList<String>());
                         }
                         if (pi.getValidators() == null) {
-                            Multimap<String, WPSInputValidator> validators = ArrayListMultimap
-                                    .create();
+                            Multimap<String, WPSInputValidator> validators =
+                                    ArrayListMultimap.create();
                             ((ProcessInfoImpl) pi).setValidators(validators);
                         }
                         if (pi.getMetadata() == null) {
@@ -154,10 +156,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         return service;
     }
 
-    /**
-     * Converter for {@link Name}
-     *
-     */
+    /** Converter for {@link Name} */
     public static class NameConverter extends AbstractSingleValueConverter {
 
         @Override
@@ -182,7 +181,6 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 return new NameImpl(prefix, local);
             }
         }
-
     }
 
     /**
@@ -202,10 +200,10 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
-                UnmarshallingContext context) {
-            ProcessGroupInfo converted = (ProcessGroupInfo) super.doUnmarshal(result, reader,
-                    context);
+        public Object doUnmarshal(
+                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+            ProcessGroupInfo converted =
+                    (ProcessGroupInfo) super.doUnmarshal(result, reader, context);
 
             if (converted.getFilteredProcesses() != null) {
                 List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
@@ -228,7 +226,6 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
 
             return converted;
         }
-
     }
 
     public static class NumberRangeConverter extends ReflectionConverter {
@@ -243,8 +240,8 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
+        public void marshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             NumberRange<?> range = (NumberRange<?>) source;
             writer.startNode("minValue");
             writer.setValue(String.valueOf(range.getMinValue()));
@@ -275,7 +272,5 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             NumberRange<Double> range = new NumberRange<>(Double.class, min, max);
             return range;
         }
-
     }
-
 }

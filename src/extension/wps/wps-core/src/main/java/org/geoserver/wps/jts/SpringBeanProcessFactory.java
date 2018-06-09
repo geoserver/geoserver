@@ -14,7 +14,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.FactoryIteratorProvider;
 import org.geotools.feature.NameImpl;
@@ -42,8 +41,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * {@link DescribeProcess}, {@link DescribeParameter} and {@link DescribeResult}. Each bean will
  * have a "execute" method taking the process parameters as arguments and returning the results
  */
-public class SpringBeanProcessFactory extends org.geotools.process.factory.AnnotationDrivenProcessFactory implements
-        ApplicationContextAware, ApplicationListener {
+public class SpringBeanProcessFactory
+        extends org.geotools.process.factory.AnnotationDrivenProcessFactory
+        implements ApplicationContextAware, ApplicationListener {
 
     Map<String, Class> classMap;
 
@@ -60,27 +60,28 @@ public class SpringBeanProcessFactory extends org.geotools.process.factory.Annot
         this.markerInterface = markerInterface;
 
         // create an iterator that will register this factory into SPI
-        iterator = new FactoryIteratorProvider() {
+        iterator =
+                new FactoryIteratorProvider() {
 
-            public <T> Iterator<T> iterator(Class<T> category) {
-                if (ProcessFactory.class.isAssignableFrom(category)) {
-                    return (Iterator<T>) Collections.singletonList(SpringBeanProcessFactory.this)
-                            .iterator();
-                } else {
-                    return null;
-                }
-            }
-        };
-        
+                    public <T> Iterator<T> iterator(Class<T> category) {
+                        if (ProcessFactory.class.isAssignableFrom(category)) {
+                            return (Iterator<T>)
+                                    Collections.singletonList(SpringBeanProcessFactory.this)
+                                            .iterator();
+                        } else {
+                            return null;
+                        }
+                    }
+                };
+
         // register the new process and make the process function factory lookup again the processes
         Processors.addProcessFactory(this);
-        for(FunctionFactory ff : CommonFactoryFinder.getFunctionFactories(null)) {
-            if(ff instanceof ProcessFunctionFactory) {
+        for (FunctionFactory ff : CommonFactoryFinder.getFunctionFactories(null)) {
+            if (ff instanceof ProcessFunctionFactory) {
                 ProcessFunctionFactory pff = (ProcessFunctionFactory) ff;
                 pff.clear();
             }
         }
-
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -100,7 +101,6 @@ public class SpringBeanProcessFactory extends org.geotools.process.factory.Annot
             classMap.put(name, c);
             beanMap.put(name, beanName);
         }
-
     }
 
     @Override
@@ -119,15 +119,15 @@ public class SpringBeanProcessFactory extends org.geotools.process.factory.Annot
         Method lastExecute = null;
         if (c != null) {
             for (Method m : c.getMethods()) {
-                if(m.getName().equals("execute")) {
-                    if(lastExecute != null) {
+                if (m.getName().equals("execute")) {
+                    if (lastExecute != null) {
                         lastExecute = m;
                     }
                     // if annotated return immediately, otherwise keep it aside
-                    if(m.getAnnotation(DescribeResult.class) != null 
+                    if (m.getAnnotation(DescribeResult.class) != null
                             || m.getAnnotation(DescribeResults.class) != null) {
                         return m;
-                    } 
+                    }
                 }
             }
         }

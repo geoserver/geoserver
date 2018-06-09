@@ -6,13 +6,10 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.net.URI;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.IdentifierGenerationOptionType;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.wfs.WFSException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -26,12 +23,12 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.picocontainer.MutablePicoContainer;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:InsertElementType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="InsertElementType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -119,6 +116,7 @@ import org.picocontainer.MutablePicoContainer;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
@@ -128,14 +126,13 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.INSERTELEMENTTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -145,63 +142,66 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         return InsertElementType.class;
     }
 
-    public void initializeChildContext(ElementInstance childInstance, Node node, MutablePicoContainer context) {
-        //if an srsName is set for this geometry, put it in the context for 
+    public void initializeChildContext(
+            ElementInstance childInstance, Node node, MutablePicoContainer context) {
+        // if an srsName is set for this geometry, put it in the context for
         // children, so they can use it as well
-        if ( node.hasAttribute("srsName") ) {
+        if (node.hasAttribute("srsName")) {
             try {
                 CoordinateReferenceSystem crs = GML2ParsingUtils.crs(node);
-                if ( crs != null ) {
+                if (crs != null) {
                     context.registerComponentInstance(CoordinateReferenceSystem.class, crs);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new WFSException(e, "InvalidParameterValue");
             }
         }
     }
-    
+
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
     @SuppressWarnings("unchecked")
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         InsertElementType insertElement = wfsfactory.createInsertElementType();
 
-        //&lt;xsd:choice&gt;
+        // &lt;xsd:choice&gt;
         //   &lt;xsd:element ref="gml:_FeatureCollection"/&gt;
         //   &lt;xsd:sequence&gt;
         //       &lt;xsd:element maxOccurs="unbounded" ref="gml:_Feature"/&gt;
         //   &lt;/xsd:sequence&gt;
-        //&lt;/xsd:choice&gt;
+        // &lt;/xsd:choice&gt;
         if (node.hasChild(FeatureCollection.class)) {
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) node.getChildValue(FeatureCollection.class);
+            SimpleFeatureCollection fc =
+                    (SimpleFeatureCollection) node.getChildValue(FeatureCollection.class);
             insertElement.getFeature().addAll(DataUtilities.list(fc));
         } else if (node.hasChild(SimpleFeature.class)) {
             insertElement.getFeature().addAll(node.getChildValues(SimpleFeature.class));
         }
 
-        //&lt;xsd:attribute default="GenerateNew" name="idgen"
+        // &lt;xsd:attribute default="GenerateNew" name="idgen"
         //		type="wfs:IdentifierGenerationOptionType" use="optional"&gt;
         if (node.hasAttribute("idgen")) {
-            insertElement.setIdgen((IdentifierGenerationOptionType) node.getAttributeValue("idgen"));
+            insertElement.setIdgen(
+                    (IdentifierGenerationOptionType) node.getAttributeValue("idgen"));
         }
 
-        //&lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;
+        // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("handle")) {
             insertElement.setHandle((String) node.getAttributeValue("handle"));
         }
 
-        //&lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
+        // &lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
         //		 name="inputFormat" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("inputFormat")) {
             insertElement.setInputFormat((String) node.getAttributeValue("inputFormat"));
         }
 
-        //&lt;xsd:attribute name="srsName" type="xsd:anyURI" use="optional"&gt;
+        // &lt;xsd:attribute name="srsName" type="xsd:anyURI" use="optional"&gt;
         if (node.hasAttribute("srsName")) {
             insertElement.setSrsName((URI) node.getAttributeValue("srsName"));
         }
@@ -209,8 +209,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         return insertElement;
     }
 
-    public Object getProperty(Object object, QName name)
-        throws Exception {
+    public Object getProperty(Object object, QName name) throws Exception {
         InsertElementType insert = (InsertElementType) object;
 
         if (GML._Feature.equals(name)) {

@@ -13,14 +13,12 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
@@ -34,37 +32,34 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 /**
- * Security filter to extract user credentials (username and password)
- * from Request Headers.
- * It is quite flexible through the capability to extract username and password
- * from the same or different request headers, using regular expressions to capture
- * them in a structured header content.  
- * 
+ * Security filter to extract user credentials (username and password) from Request Headers. It is
+ * quite flexible through the capability to extract username and password from the same or different
+ * request headers, using regular expressions to capture them in a structured header content.
+ *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
- *
  */
-public class GeoServerCredentialsFromRequestHeaderFilter extends
-        GeoServerSecurityFilter implements AuthenticationCachingFilter,
-        GeoServerAuthenticationFilter {
+public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecurityFilter
+        implements AuthenticationCachingFilter, GeoServerAuthenticationFilter {
 
     private String userNameHeaderName;
     private String passwordHeaderName;
     private Pattern userNameRegex;
     private Pattern passwordRegex;
     private boolean decodeURI = true;
-    
+
     private MessageDigest digest;
-    
+
     protected AuthenticationEntryPoint aep;
-    
+
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
         aep = new Http403ForbiddenEntryPoint();
 
-        CredentialsFromRequestHeaderFilterConfig authConfig = (CredentialsFromRequestHeaderFilterConfig) config;
+        CredentialsFromRequestHeaderFilterConfig authConfig =
+                (CredentialsFromRequestHeaderFilterConfig) config;
 
         userNameHeaderName = authConfig.getUserNameHeaderName();
         passwordHeaderName = authConfig.getPasswordHeaderName();
@@ -80,7 +75,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
             throw new IllegalStateException("No MD5 algorithm available!");
         }
     }
-    
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -89,12 +84,13 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
 
-            Authentication postAuthentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
+            Authentication postAuthentication =
+                    SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,
-                            postAuthentication);
+                    getSecurityManager()
+                            .getAuthenticationCache()
+                            .put(getName(), cacheKey, postAuthentication);
                 }
             }
         }
@@ -102,14 +98,13 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
         request.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, aep);
         chain.doFilter(request, response);
     }
-    
+
     /**
-     * Parse an header string to extract the credential. The regular expression must contain a group, that will represent the credential to be
-     * extracted.
-     * 
+     * Parse an header string to extract the credential. The regular expression must contain a
+     * group, that will represent the credential to be extracted.
+     *
      * @param header the String to parse
      * @param pattern the pattern to use. This must contain one group
-     *
      */
     private String parseHeader(String header, Pattern pattern) {
         Matcher m = pattern.matcher(header);
@@ -120,13 +115,11 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
             return null;
         }
     }
-    
+
     /**
-     * Try to authenticate.
-     * If credentials are found in the configured header(s),
-     * then authentication is delegated to the AuthenticationProvider
-     * chain.
-     * 
+     * Try to authenticate. If credentials are found in the configured header(s), then
+     * authentication is delegated to the AuthenticationProvider chain.
+     *
      * @param request
      * @param response
      */
@@ -150,8 +143,8 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
             pw = java.net.URLDecoder.decode(pw, "UTF-8");
         }
 
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(us,
-                pw, new ArrayList<GrantedAuthority>());
+        UsernamePasswordAuthenticationToken result =
+                new UsernamePasswordAuthenticationToken(us, pw, new ArrayList<GrantedAuthority>());
         Authentication auth = null;
         try {
             auth = getSecurityManager().authenticationManager().authenticate(result);
@@ -170,26 +163,25 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
 
         response.addHeader("X-GeoServer-Auth-User", us);
 
-        UsernamePasswordAuthenticationToken newResult = new UsernamePasswordAuthenticationToken(
-                auth.getPrincipal(), auth.getCredentials(), roles);
+        UsernamePasswordAuthenticationToken newResult =
+                new UsernamePasswordAuthenticationToken(
+                        auth.getPrincipal(), auth.getCredentials(), roles);
         newResult.setDetails(auth.getDetails());
         // Set the authentication with the roles injected
         SecurityContextHolder.getContext().setAuthentication(newResult);
     }
-    
+
     @Override
     public boolean applicableForHtml() {
         return true;
     }
-    
+
     @Override
     public boolean applicableForServices() {
         return true;
     }
-    
-    /**
-     * The cache key is the concatenation of the headers' values (global identifier)
-     */
+
+    /** The cache key is the concatenation of the headers' values (global identifier) */
     @Override
     public String getCacheKey(HttpServletRequest req) {
         String usHeader = req.getHeader(userNameHeaderName);
@@ -227,13 +219,11 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
         buff.append(digestString);
         return buff.toString();
     }
-    
+
     protected boolean cacheAuthentication(Authentication auth, HttpServletRequest request) {
         // only cache if no HTTP session is available
-        if (request.getSession(false) != null)
-            return false;
+        if (request.getSession(false) != null) return false;
 
         return true;
-
     }
 }

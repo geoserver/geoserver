@@ -4,23 +4,24 @@
  */
 package org.geogig.geoserver.spring.config;
 
-import org.geoserver.filters.GeoServerFilter;
-import org.springframework.web.multipart.support.MultipartFilter;
-
+import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.geoserver.filters.GeoServerFilter;
+import org.springframework.web.multipart.support.MultipartFilter;
 
-public class GeogigMultipartFilter  extends MultipartFilter implements GeoServerFilter {
+public class GeogigMultipartFilter extends MultipartFilter implements GeoServerFilter {
 
     public GeogigMultipartFilter() {
         setMultipartResolverBeanName(GeogigSpringConfig.FILTER_MULTIPART_RESOLVER_NAME);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String path = request.getRequestURI();
         if (path.startsWith("/geoserver/geogig")) {
             super.doFilterInternal(request, response, filterChain);

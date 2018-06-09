@@ -23,7 +23,6 @@ package org.geoserver.backuprestore.reader;
 
 import java.util.Arrays;
 import java.util.Comparator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.backuprestore.Backup;
@@ -41,14 +40,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Reads items from multiple resources sequentially - resource list is given by {@link #setResources(Resource[])}, the actual reading is delegated to
- * {@link #setDelegate(ResourceAwareItemReaderItemStream)}.
- * 
- * Input resources are ordered using {@link #setComparator(Comparator)} to make sure resource ordering is preserved between job runs in restart
- * scenario.
- * 
- * Code based on original {@link MultiResourceItemReader} by Robert Kasanicky and Lucas Ward.
- * 
+ * Reads items from multiple resources sequentially - resource list is given by {@link
+ * #setResources(Resource[])}, the actual reading is delegated to {@link
+ * #setDelegate(ResourceAwareItemReaderItemStream)}.
+ *
+ * <p>Input resources are ordered using {@link #setComparator(Comparator)} to make sure resource
+ * ordering is preserved between job runs in restart scenario.
+ *
+ * <p>Code based on original {@link MultiResourceItemReader} by Robert Kasanicky and Lucas Ward.
+ *
  * @author Robert Kasanicky
  * @author Lucas Ward
  * @author Alessio Fabiani, GeoSolutions
@@ -72,8 +72,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
     private boolean strict = false;
 
-    public CatalogMultiResourceItemReader(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
+    public CatalogMultiResourceItemReader(
+            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         super(clazz, backupFacade, xStreamPersisterFactory);
     }
 
@@ -82,30 +82,26 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * In strict mode the reader will throw an exception on {@link #open(org.springframework.batch.item.ExecutionContext)} if there are no resources
-     * to read.
-     * 
+     * In strict mode the reader will throw an exception on {@link
+     * #open(org.springframework.batch.item.ExecutionContext)} if there are no resources to read.
+     *
      * @param strict false by default
      */
     public void setStrict(boolean strict) {
         this.strict = strict;
     }
 
-    private Comparator<Resource> comparator = new Comparator<Resource>() {
+    private Comparator<Resource> comparator =
+            new Comparator<Resource>() {
 
-        /**
-         * Compares resource filenames.
-         */
-        @Override
-        public int compare(Resource r1, Resource r2) {
-            return r1.getFilename().compareTo(r2.getFilename());
-        }
+                /** Compares resource filenames. */
+                @Override
+                public int compare(Resource r1, Resource r2) {
+                    return r1.getFilename().compareTo(r2.getFilename());
+                }
+            };
 
-    };
-
-    /**
-     * Reads the next item, jumping to next resource if necessary.
-     */
+    /** Reads the next item, jumping to next resource if necessary. */
     @Override
     public T read() throws Exception, UnexpectedInputException, ParseException {
 
@@ -125,8 +121,9 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * Use the delegate to read the next item, jump to next resource if current one is exhausted. Items are appended to the buffer.
-     * 
+     * Use the delegate to read the next item, jump to next resource if current one is exhausted.
+     * Items are appended to the buffer.
+     *
      * @return next item from input
      */
     private T readNextItem() throws Exception {
@@ -160,7 +157,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * Close the {@link #setDelegate(ResourceAwareItemReaderItemStream)} reader and reset instance variable values.
+     * Close the {@link #setDelegate(ResourceAwareItemReaderItemStream)} reader and reset instance
+     * variable values.
      */
     @Override
     public void close() throws ItemStreamException {
@@ -174,7 +172,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * Figure out which resource to start with in case of restart, open the delegate and restore delegate's position in the resource.
+     * Figure out which resource to start with in case of restart, open the delegate and restore
+     * delegate's position in the resource.
      */
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
@@ -211,9 +210,7 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         }
     }
 
-    /**
-     * Store the current resource index and position in the resource.
-     */
+    /** Store the current resource index and position in the resource. */
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
         super.update(executionContext);
@@ -223,17 +220,15 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         }
     }
 
-    /**
-     * @param delegate reads items from single {@link Resource}.
-     */
+    /** @param delegate reads items from single {@link Resource}. */
     public void setDelegate(CatalogReader<T> delegate) {
         this.delegate = delegate;
     }
 
     /**
-     * Set the boolean indicating whether or not state should be saved in the provided {@link ExecutionContext} during the {@link ItemStream} call to
-     * update.
-     * 
+     * Set the boolean indicating whether or not state should be saved in the provided {@link
+     * ExecutionContext} during the {@link ItemStream} call to update.
+     *
      * @param saveState
      */
     public void setSaveState(boolean saveState) {
@@ -241,15 +236,14 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * @param comparator used to order the injected resources, by default compares {@link Resource#getFilename()} values.
+     * @param comparator used to order the injected resources, by default compares {@link
+     *     Resource#getFilename()} values.
      */
     public void setComparator(Comparator<Resource> comparator) {
         this.comparator = comparator;
     }
 
-    /**
-     * @param resources input resources
-     */
+    /** @param resources input resources */
     public void setResources(Resource[] resources) {
         Assert.notNull(resources, "The resources must not be null");
         this.resources = Arrays.asList(resources).toArray(new Resource[resources.length]);
@@ -263,12 +257,10 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     @Override
-    public void setResource(Resource resource) {
-    }
+    public void setResource(Resource resource) {}
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-    }
+    public void afterPropertiesSet() throws Exception {}
 
     @Override
     protected T doRead() throws Exception {
@@ -276,11 +268,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     @Override
-    protected void doOpen() throws Exception {
-    }
+    protected void doOpen() throws Exception {}
 
     @Override
-    protected void doClose() throws Exception {
-    }
-
+    protected void doClose() throws Exception {}
 }

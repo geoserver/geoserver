@@ -12,5 +12,4 @@ public class SqlServerRoleServiceTest extends JDBCRoleServiceTest {
     protected String getFixtureId() {
         return "sqlserver";
     }
-
 }

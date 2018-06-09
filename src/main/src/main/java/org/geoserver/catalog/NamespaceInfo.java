@@ -5,71 +5,61 @@
  */
 package org.geoserver.catalog;
 
-
 /**
  * Application schema namespace.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
  */
 public interface NamespaceInfo extends CatalogInfo {
 
     /**
      * The prefix of the namespace.
-     * <p>
-     * This prefix is unique among all namespace instances and can be used to
-     * identify a particular namespace.
-     * </p>
-     * 
+     *
+     * <p>This prefix is unique among all namespace instances and can be used to identify a
+     * particular namespace.
+     *
      * @uml.property name="prefix"
      */
     String getPrefix();
 
     /**
      * Sets the prefix of the namespace.
-     * 
+     *
      * @uml.property name="prefix"
      */
     void setPrefix(String prefix);
-    
-    /**
-     * Returns the prefix of the namespace.  
-     */
+
+    /** Returns the prefix of the namespace. */
     String getName();
 
     /**
      * The uri of the namespace.
-     * <p>
-     * This uri is unique among all namespace instances and can be used to
-     * identify a particular namespace.
-     * </p>
-     * 
+     *
+     * <p>This uri is unique among all namespace instances and can be used to identify a particular
+     * namespace.
+     *
      * @uml.property name="uRI"
      */
     String getURI();
 
     /**
      * Sets the uri of the namespace.
-     * 
+     *
      * @uml.property name="uRI"
      */
     void setURI(String uri);
-    
+
     /**
      * A persistent map of metadata.
-     * <p>
-     * Data in this map is intended to be persisted. Common case of use is to
-     * have services associate various bits of data with a particular namespace.
-     * </p>
-     * 
+     *
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services
+     * associate various bits of data with a particular namespace.
      */
     MetadataMap getMetadata();
-    
-    /**
-     * Two namespace objects are considred equal if they have the same "prefix"
-     * and "uri".
-     */
+
+    /** Two namespace objects are considred equal if they have the same "prefix" and "uri". */
     boolean equals(Object obj);
-    
+
     // /**
     // * The resources which fall into this namespace.
     // * @uml.property name="resources"
@@ -78,12 +68,12 @@ public interface NamespaceInfo extends CatalogInfo {
     // inverse="namespace:org.geoserver.catalog.ResourceInfo"
     // */
     // Iterator/*<ResourceInfo>*/ resources();
-    //	
+    //
     // /**
     // * Adds a resource to the namespace.
     // */
     // void add( ResourceInfo resource );
-    //	
+    //
     // /**
     // * Removes a resource from the namespace.
     // */

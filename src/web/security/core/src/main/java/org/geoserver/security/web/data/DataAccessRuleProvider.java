@@ -7,22 +7,19 @@ package org.geoserver.security.web.data;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
-/**
- * Page listing the rules contained in the layers.properties file
- */
+/** Page listing the rules contained in the layers.properties file */
 @SuppressWarnings("serial")
 public class DataAccessRuleProvider extends GeoServerDataProvider<DataAccessRule> {
 
-    public static final Property<DataAccessRule> RULEKEY = new BeanProperty<DataAccessRule>("key",
-            "key");
+    public static final Property<DataAccessRule> RULEKEY =
+            new BeanProperty<DataAccessRule>("key", "key");
 
-    public static final Property<DataAccessRule> ROLES = new BeanProperty<DataAccessRule>("roles",
-            "value");
+    public static final Property<DataAccessRule> ROLES =
+            new BeanProperty<DataAccessRule>("roles", "value");
 
     @Override
     protected List<DataAccessRule> getItems() {
@@ -33,5 +30,4 @@ public class DataAccessRuleProvider extends GeoServerDataProvider<DataAccessRule
     protected List<Property<DataAccessRule>> getProperties() {
         return Arrays.asList(RULEKEY, ROLES);
     }
-
 }

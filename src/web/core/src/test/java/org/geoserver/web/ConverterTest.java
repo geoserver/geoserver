@@ -8,7 +8,6 @@ package org.geoserver.web;
 import static org.junit.Assert.*;
 
 import java.util.Locale;
-
 import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.util.convert.IConverter;
 import org.junit.Test;

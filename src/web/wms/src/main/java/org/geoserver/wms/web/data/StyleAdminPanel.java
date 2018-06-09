@@ -17,9 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -71,43 +69,43 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /**
- * Style page tab for displaying editing the style metadata.
- * Includes style upload and generation functionality.
- * Delegates to {@link ExternalGraphicPanel} for editing the legend.
+ * Style page tab for displaying editing the style metadata. Includes style upload and generation
+ * functionality. Delegates to {@link ExternalGraphicPanel} for editing the legend.
  */
 public class StyleAdminPanel extends StyleEditTabPanel {
     private static final long serialVersionUID = -2443344473474977026L;
     private static final Logger LOGGER = Logging.getLogger(StyleAdminPanel.class);
 
     protected TextField<String> nameTextField;
-    
+
     protected DropDownChoice<WorkspaceInfo> wsChoice;
-    
+
     protected DropDownChoice<String> formatChoice;
     protected MarkupContainer formatReadOnlyMessage;
-    
+
     protected WebMarkupContainer legendContainer;
     protected ExternalGraphicPanel legendPanel;
     protected Image legendImg;
-    
+
     protected DropDownChoice<StyleType> templates;
     protected AjaxSubmitLink generateLink;
-    
+
     protected DropDownChoice<StyleInfo> styles;
     protected AjaxSubmitLink copyLink;
-    
+
     protected FileUploadField fileUploadField;
     protected AjaxSubmitLink uploadLink;
-    
+
     transient BufferedImage legendImage;
-    
+
     public StyleAdminPanel(String id, AbstractStylePage parent) {
         super(id, parent);
         initUI(parent.getStyleModel());
-        
+
         if (stylePage instanceof StyleEditPage) {
-            //global styles only editable by full admin
-            if (!stylePage.isAuthenticatedAsAdmin() && parent.getStyleInfo().getWorkspace() == null) {
+            // global styles only editable by full admin
+            if (!stylePage.isAuthenticatedAsAdmin()
+                    && parent.getStyleInfo().getWorkspace() == null) {
                 nameTextField.setEnabled(false);
                 uploadLink.setEnabled(false);
             }
@@ -120,87 +118,105 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             formatReadOnlyMessage.setVisible(true);
         }
     }
-    
+
     public void initUI(CompoundPropertyModel<StyleInfo> styleModel) {
-        
+
         StyleInfo style = getStylePage().getStyleInfo();
-        
+
         IModel<String> nameBinding = styleModel.bind("name");
-        
+
         add(nameTextField = new TextField<String>("name", nameBinding));
         nameTextField.setRequired(true);
-        
+
         IModel<WorkspaceInfo> wsBinding = styleModel.bind("workspace");
-        wsChoice = 
-            new DropDownChoice<WorkspaceInfo>("workspace", wsBinding, new WorkspacesModel(), new WorkspaceChoiceRenderer());
+        wsChoice =
+                new DropDownChoice<WorkspaceInfo>(
+                        "workspace",
+                        wsBinding,
+                        new WorkspacesModel(),
+                        new WorkspaceChoiceRenderer());
         wsChoice.setNullValid(true);
         if (!stylePage.isAuthenticatedAsAdmin()) {
             wsChoice.setNullValid(false);
             wsChoice.setRequired(true);
         }
 
-        //when editing a default style, disallow changing the name
+        // when editing a default style, disallow changing the name
         if (StylePage.isDefaultStyle(style)) {
-            nameTextField.add(new IValidator<String>() {
-                String originalName = style.getName();
-                @Override public void validate(IValidatable<String> validatable) {
-                    if (originalName != null && !originalName.equals(validatable.getValue())) {
-                        ValidationError error = new ValidationError();
-                        error.setMessage( "Can't change the name of default styles." );
-                        error.addKey("editDefaultStyleNameDisallowed");
-                        validatable.error(error);
-                    }
-                }
-            });
-            wsChoice.add((IValidator<WorkspaceInfo>) validatable -> {
-                if (validatable.getValue() != null) {
-                    ValidationError error = new ValidationError();
-                    error.setMessage( "Can't change the workspace of default styles." );
-                    error.addKey("editDefaultStyleWorkspaceDisallowed");
-                    validatable.error(error);
-                }
-            });
+            nameTextField.add(
+                    new IValidator<String>() {
+                        String originalName = style.getName();
+
+                        @Override
+                        public void validate(IValidatable<String> validatable) {
+                            if (originalName != null
+                                    && !originalName.equals(validatable.getValue())) {
+                                ValidationError error = new ValidationError();
+                                error.setMessage("Can't change the name of default styles.");
+                                error.addKey("editDefaultStyleNameDisallowed");
+                                validatable.error(error);
+                            }
+                        }
+                    });
+            wsChoice.add(
+                    (IValidator<WorkspaceInfo>)
+                            validatable -> {
+                                if (validatable.getValue() != null) {
+                                    ValidationError error = new ValidationError();
+                                    error.setMessage(
+                                            "Can't change the workspace of default styles.");
+                                    error.addKey("editDefaultStyleWorkspaceDisallowed");
+                                    validatable.error(error);
+                                }
+                            });
         }
 
         add(wsChoice);
-        
-        //disable the workspace toggle on edit if not admin (can only be set upon creation)
+
+        // disable the workspace toggle on edit if not admin (can only be set upon creation)
         if (stylePage instanceof StyleEditPage && !stylePage.isAuthenticatedAsAdmin()) {
             wsChoice.setEnabled(false);
         }
 
         IModel<String> formatBinding = styleModel.bind("format");
-        formatChoice = new DropDownChoice<String>("format", formatBinding, new StyleFormatsModel(), 
-                new ChoiceRenderer<String>() {
+        formatChoice =
+                new DropDownChoice<String>(
+                        "format",
+                        formatBinding,
+                        new StyleFormatsModel(),
+                        new ChoiceRenderer<String>() {
 
-            private static final long serialVersionUID = 2064887235303504013L;
+                            private static final long serialVersionUID = 2064887235303504013L;
 
-            @Override
-            public String getIdValue(String object, int index) {
-                return object;
-            }
+                            @Override
+                            public String getIdValue(String object, int index) {
+                                return object;
+                            }
 
-            @Override
-            public Object getDisplayValue(String object) {
-                return Styles.handler(object).getName();
-            }
-        });
-        formatChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+                            @Override
+                            public Object getDisplayValue(String object) {
+                                return Styles.handler(object).getName();
+                            }
+                        });
+        formatChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
 
-            private static final long serialVersionUID = -8372146231225388561L;
+                    private static final long serialVersionUID = -8372146231225388561L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.appendJavaScript(String.format(
-                    "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", stylePage.styleHandler().getCodeMirrorEditMode()));
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.appendJavaScript(
+                                String.format(
+                                        "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
+                                        stylePage.styleHandler().getCodeMirrorEditMode()));
+                    }
+                });
         add(formatChoice);
 
         formatReadOnlyMessage = new WebMarkupContainer("formatReadOnly", new Model<String>());
         formatReadOnlyMessage.setVisible(false);
         add(formatReadOnlyMessage);
-        // add the Legend fields        
+        // add the Legend fields
         legendPanel = new ExternalGraphicPanel("legendPanel", styleModel, stylePage.styleForm);
         legendPanel.setOutputMarkupId(true);
         add(legendPanel);
@@ -209,87 +225,110 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 stylePage.setRawStyle(stylePage.readFile(style));
             } catch (IOException e) {
                 // ouch, the style file is gone! Register a generic error message
-                Session.get().error(new ParamResourceModel("styleNotFound", this, style.getFilename()).getString());
+                Session.get()
+                        .error(
+                                new ParamResourceModel("styleNotFound", this, style.getFilename())
+                                        .getString());
             }
         }
-        
+
         // style generation functionality
-        templates = new DropDownChoice<StyleType>("templates", new Model<StyleType>(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
+        templates =
+                new DropDownChoice<StyleType>(
+                        "templates",
+                        new Model<StyleType>(),
+                        new StyleTypeModel(),
+                        new StyleTypeChoiceRenderer());
         templates.setOutputMarkupId(true);
-        templates.add(new AjaxFormComponentUpdatingBehavior("change") {
+        templates.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
 
-            private static final long serialVersionUID = -6649152103570059645L;
+                    private static final long serialVersionUID = -6649152103570059645L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                templates.validate();
-                generateLink.setEnabled(templates.getConvertedInput() != null);
-                target.add(generateLink);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        templates.validate();
+                        generateLink.setEnabled(templates.getConvertedInput() != null);
+                        target.add(generateLink);
+                    }
+                });
         add(templates);
         generateLink = generateLink();
         generateLink.setEnabled(false);
         add(generateLink);
 
         // style copy functionality
-        styles = new DropDownChoice<StyleInfo>("existingStyles", new Model<StyleInfo>(), new StylesModel(), new StyleChoiceRenderer());
+        styles =
+                new DropDownChoice<StyleInfo>(
+                        "existingStyles",
+                        new Model<StyleInfo>(),
+                        new StylesModel(),
+                        new StyleChoiceRenderer());
         styles.setOutputMarkupId(true);
-        styles.add(new AjaxFormComponentUpdatingBehavior("change") {
+        styles.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
 
-            private static final long serialVersionUID = 8098121930876372129L;
+                    private static final long serialVersionUID = 8098121930876372129L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                styles.validate();
-                copyLink.setEnabled(styles.getConvertedInput() != null);
-                target.add(copyLink);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        styles.validate();
+                        copyLink.setEnabled(styles.getConvertedInput() != null);
+                        target.add(copyLink);
+                    }
+                });
         add(styles);
         copyLink = copyLink();
         copyLink.setEnabled(false);
         add(copyLink);
 
         uploadLink = uploadLink();
-        //uploadLink.setEnabled(false);
+        // uploadLink.setEnabled(false);
         add(uploadLink);
 
         fileUploadField = new FileUploadField("filename");
-        //Explicitly set model so this doesn't use the form model
+        // Explicitly set model so this doesn't use the form model
         fileUploadField.setDefaultModel(new Model<String>(""));
         add(fileUploadField);
-        
+
         add(previewLink());
 
         legendContainer = new WebMarkupContainer("legendContainer");
         legendContainer.setOutputMarkupId(true);
         add(legendContainer);
-        this.legendImg = new Image("legendImg", new AbstractResource() {
+        this.legendImg =
+                new Image(
+                        "legendImg",
+                        new AbstractResource() {
 
-            private static final long serialVersionUID = -6932528694575832606L;
+                            private static final long serialVersionUID = -6932528694575832606L;
 
-            @Override
-            protected ResourceResponse newResourceResponse(Attributes attributes) {
-                ResourceResponse rr = new ResourceResponse();
-                rr.setContentType("image/png");
-                rr.setWriteCallback(new WriteCallback() {
-                    @Override
-                    public void writeData(Attributes attributes) throws IOException {
-                        ImageIO.write(legendImage, "PNG", attributes.getResponse().getOutputStream());
-                    }
-                });
-                return rr;
-            }});
+                            @Override
+                            protected ResourceResponse newResourceResponse(Attributes attributes) {
+                                ResourceResponse rr = new ResourceResponse();
+                                rr.setContentType("image/png");
+                                rr.setWriteCallback(
+                                        new WriteCallback() {
+                                            @Override
+                                            public void writeData(Attributes attributes)
+                                                    throws IOException {
+                                                ImageIO.write(
+                                                        legendImage,
+                                                        "PNG",
+                                                        attributes.getResponse().getOutputStream());
+                                            }
+                                        });
+                                return rr;
+                            }
+                        });
         legendContainer.add(this.legendImg);
         this.legendImg.setVisible(false);
         this.legendImg.setOutputMarkupId(true);
     }
 
     /**
-     * Clears validation messages from form input elements.
-     * Called when it is necessary to submit the form without needing to show validation, 
-     * such as when you are generating a new style
+     * Clears validation messages from form input elements. Called when it is necessary to submit
+     * the form without needing to show validation, such as when you are generating a new style
      */
     protected void clearFeedbackMessages() {
         nameTextField.getFeedbackMessages().clear();
@@ -297,6 +336,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         formatChoice.getFeedbackMessages().clear();
         stylePage.editor.getFeedbackMessages().clear();
     }
+
     protected Component previewLink() {
         return new GeoServerAjaxFormLink("preview", stylePage.styleForm) {
 
@@ -309,10 +349,10 @@ public class StyleAdminPanel extends StyleEditTabPanel {
 
                 clearFeedbackMessages();
                 legendImg.setVisible(false);
-                
+
                 // Generate the legend
-                
-                //Try External Legend
+
+                // Try External Legend
                 URLConnection conn = legendPanel.getExternalGraphic(target, form);
                 String onlineResource = legendPanel.getOnlineResource();
                 if (onlineResource != null && !onlineResource.isEmpty()) {
@@ -321,30 +361,37 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                             legendImage = ImageIO.read(conn.getInputStream());
                             legendImg.setVisible(true);
                         } catch (IOException e) {
-                            LOGGER.log(Level.WARNING, "Failed to render external legend graphic", e);
+                            LOGGER.log(
+                                    Level.WARNING, "Failed to render external legend graphic", e);
                             legendContainer.error("Failed to render external legend graphic");
                         }
                     }
                 } else {
-                    //No external legend, use generated legend
-                    GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class, stylePage.getGeoServerApplication().getApplicationContext());
+                    // No external legend, use generated legend
+                    GeoServerDataDirectory dd =
+                            GeoServerExtensions.bean(
+                                    GeoServerDataDirectory.class,
+                                    stylePage.getGeoServerApplication().getApplicationContext());
                     StyleInfo si = new StyleInfoImpl(stylePage.getCatalog());
                     String format = stylePage.getStyleInfo().getFormat();
                     si.setFormat(format);
                     String styleName = "tmp" + UUID.randomUUID().toString();
-                    String styleFileName = styleName + '.' + Styles.handler(si.getFormat()).getFileExtension();
+                    String styleFileName =
+                            styleName + '.' + Styles.handler(si.getFormat()).getFileExtension();
                     si.setFilename(styleFileName);
                     si.setName(styleName);
                     si.setWorkspace(stylePage.styleModel.getObject().getWorkspace());
                     Resource styleResource = null;
                     try {
                         styleResource = dd.style(si);
-                        try(OutputStream os = styleResource.out()) {
+                        try (OutputStream os = styleResource.out()) {
                             IOUtils.write(stylePage.editor.getInput(), os);
                         }
-                        // guess the version, the style in the editor might be using one that's different from the
+                        // guess the version, the style in the editor might be using one that's
+                        // different from the
                         // the one in the
-                        Version version = Styles.handler(format).version(stylePage.editor.getInput());
+                        Version version =
+                                Styles.handler(format).version(stylePage.editor.getInput());
                         si.setFormatVersion(version);
                         Style style = dd.parsedStyle(si);
                         if (style != null) {
@@ -356,7 +403,8 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                             legendOptions.put("forceLabels", "on");
                             legendOptions.put("fontAntiAliasing", "true");
                             request.setLegendOptions(legendOptions);
-                            BufferedImageLegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
+                            BufferedImageLegendGraphicBuilder builder =
+                                    new BufferedImageLegendGraphicBuilder();
                             legendImage = builder.buildLegendGraphic(request);
                             legendImg.setVisible(true);
                         }
@@ -364,10 +412,11 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         throw new WicketRuntimeException(e);
                     } catch (Exception e) {
                         legendImg.setVisible(false);
-                        legendContainer.error("Failed to build legend preview. Check to see if the style is valid.");
+                        legendContainer.error(
+                                "Failed to build legend preview. Check to see if the style is valid.");
                         LOGGER.log(Level.WARNING, "Failed to build legend preview", e);
                     } finally {
-                        if(styleResource != null) {
+                        if (styleResource != null) {
                             styleResource.delete();
                         }
                     }
@@ -382,6 +431,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             }
         };
     }
+
     protected AjaxSubmitLink generateLink() {
         return new ConfirmOverwriteSubmitLink("generate") {
 
@@ -401,11 +451,16 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     try {
                         // same here, force validation or the field won't be updated
                         stylePage.editor.reset();
-                        stylePage.setRawStyle(new StringReader(styleGen.generateStyle(
-                                stylePage.styleHandler(), template, getStylePage().getStyleInfo().getName())));
-                        target.appendJavaScript(String.format(
-                                "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", 
-                                stylePage.styleHandler().getCodeMirrorEditMode()));
+                        stylePage.setRawStyle(
+                                new StringReader(
+                                        styleGen.generateStyle(
+                                                stylePage.styleHandler(),
+                                                template,
+                                                getStylePage().getStyleInfo().getName())));
+                        target.appendJavaScript(
+                                String.format(
+                                        "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
+                                        stylePage.styleHandler().getCodeMirrorEditMode()));
                         clearFeedbackMessages();
                     } catch (Exception e) {
                         clearFeedbackMessages();
@@ -413,12 +468,13 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         stylePage.error("Errors occurred generating the style");
                         LOGGER.log(Level.WARNING, "Errors occured generating the style", e);
                     }
-                    
+
                     target.add(stylePage);
                 }
             }
         };
     }
+
     protected AjaxSubmitLink copyLink() {
         return new ConfirmOverwriteSubmitLink("copy") {
 
@@ -436,20 +492,26 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         stylePage.editor.reset();
                         stylePage.setRawStyle(stylePage.readFile(style));
                         stylePage.getStyleInfo().setFormat(style.getFormat());
-                        target.appendJavaScript(String.format(
-                                "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", 
-                                stylePage.styleHandler().getCodeMirrorEditMode()));
+                        target.appendJavaScript(
+                                String.format(
+                                        "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
+                                        stylePage.styleHandler().getCodeMirrorEditMode()));
                         clearFeedbackMessages();
                     } catch (Exception e) {
                         clearFeedbackMessages();
-                        stylePage.error("Errors occurred loading the '" + style.getName() + "' style");
-                        LOGGER.log(Level.WARNING, "Errors occurred loading the '" + style.getName() + "' style", e);
+                        stylePage.error(
+                                "Errors occurred loading the '" + style.getName() + "' style");
+                        LOGGER.log(
+                                Level.WARNING,
+                                "Errors occurred loading the '" + style.getName() + "' style",
+                                e);
                     }
                     target.add(stylePage);
                 }
             }
         };
     }
+
     AjaxSubmitLink uploadLink() {
         return new ConfirmOverwriteSubmitLink("upload", stylePage.styleForm) {
 
@@ -466,25 +528,38 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 try {
                     IOUtils.copy(upload.getInputStream(), bout);
                     stylePage.editor.reset();
-                    stylePage.setRawStyle(new InputStreamReader(new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
-                    target.appendJavaScript(String.format(
-                            "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", 
-                            stylePage.styleHandler().getCodeMirrorEditMode()));
+                    stylePage.setRawStyle(
+                            new InputStreamReader(
+                                    new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
+                    target.appendJavaScript(
+                            String.format(
+                                    "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
+                                    stylePage.styleHandler().getCodeMirrorEditMode()));
                     clearFeedbackMessages();
                 } catch (IOException e) {
                     throw new WicketRuntimeException(e);
                 } catch (Exception e) {
                     clearFeedbackMessages();
-                    stylePage.error("Errors occurred uploading the '" + upload.getClientFileName() + "' style");
-                    LOGGER.log(Level.WARNING, "Errors occurred uploading the '" + upload.getClientFileName() + "' style", e);
+                    stylePage.error(
+                            "Errors occurred uploading the '"
+                                    + upload.getClientFileName()
+                                    + "' style");
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Errors occurred uploading the '"
+                                    + upload.getClientFileName()
+                                    + "' style",
+                            e);
                 }
 
                 // update the style object
                 StyleInfo s = getStylePage().getStyleInfo();
                 if (s.getName() == null || "".equals(s.getName().trim())) {
                     // set it
-                    nameTextField.setModelValue(new String[] {ResponseUtils.stripExtension(upload
-                            .getClientFileName())});
+                    nameTextField.setModelValue(
+                            new String[] {
+                                ResponseUtils.stripExtension(upload.getClientFileName())
+                            });
                     nameTextField.modelChanged();
                 }
                 target.add(stylePage);
@@ -499,29 +574,40 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         public ConfirmOverwriteSubmitLink(String id) {
             super(id);
         }
+
         public ConfirmOverwriteSubmitLink(String id, Form<?> form) {
             super(id, form);
         }
+
         @Override
         protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
             super.updateAjaxAttributes(attributes);
-            attributes.getAjaxCallListeners().add(new AjaxCallListener() {
-                /** serialVersionUID */
-                private static final long serialVersionUID = 8637613472102572505L;
+            attributes
+                    .getAjaxCallListeners()
+                    .add(
+                            new AjaxCallListener() {
+                                /** serialVersionUID */
+                                private static final long serialVersionUID = 8637613472102572505L;
 
-                @Override
-                public CharSequence getPrecondition(Component component) {
-                    CharSequence message = new ParamResourceModel("confirmOverwrite", stylePage)
-                            .getString();
-                    message = JavaScriptUtils.escapeQuotes(message);
-                    return "var val = attrs.event.view.document.gsEditors ? "
-                            + "attrs.event.view.document.gsEditors." + stylePage.editor.getTextAreaMarkupId() + ".getValue() : "
-                            + "attrs.event.view.document.getElementById(\"" + stylePage.editor.getTextAreaMarkupId() + "\").value; "
-                            + "if(val != '' &&"
-                            + "!confirm('"
-                            + message + "')) return false;";
-                }
-            });
+                                @Override
+                                public CharSequence getPrecondition(Component component) {
+                                    CharSequence message =
+                                            new ParamResourceModel("confirmOverwrite", stylePage)
+                                                    .getString();
+                                    message = JavaScriptUtils.escapeQuotes(message);
+                                    return "var val = attrs.event.view.document.gsEditors ? "
+                                            + "attrs.event.view.document.gsEditors."
+                                            + stylePage.editor.getTextAreaMarkupId()
+                                            + ".getValue() : "
+                                            + "attrs.event.view.document.getElementById(\""
+                                            + stylePage.editor.getTextAreaMarkupId()
+                                            + "\").value; "
+                                            + "if(val != '' &&"
+                                            + "!confirm('"
+                                            + message
+                                            + "')) return false;";
+                                }
+                            });
         }
 
         @Override

@@ -6,6 +6,18 @@
  */
 package org.geoserver.sldservice.rest;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,9 +25,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.transform.TransformerException;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -51,33 +64,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.xml.XMLSerializer;
-
-/**
- * ClassifierController.
- */
+/** ClassifierController. */
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/sldservice")
 public class ClassifierController extends AbstractCatalogController {
     private static final Logger LOGGER = Logging.getLogger(ClassifierController.class);
 
-    final private RulesBuilder builder = new RulesBuilder();
+    private final RulesBuilder builder = new RulesBuilder();
 
     @Autowired
     public ClassifierController(@Qualifier("catalog") Catalog catalog) {
@@ -86,7 +80,7 @@ public class ClassifierController extends AbstractCatalogController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.geoserver.rest.RestBaseController#configurePersister(org.geoserver.config.util.XStreamPersister,
      * org.geoserver.rest.converters.XStreamMessageConverter)
      */
@@ -95,16 +89,18 @@ public class ClassifierController extends AbstractCatalogController {
         XStream xstream = persister.getXStream();
         xstream.alias("Rules", RulesList.class);
         xstream.registerConverter(new RulesListConverter());
-        xstream.allowTypes(new Class[] { RulesList.class });
+        xstream.allowTypes(new Class[] {RulesList.class});
     }
 
     /**
-     * final String layerName = (String) attributes.get("layer"); final String property = form.getFirstValue("attribute"); final String method =
-     * form.getFirstValue("method", "equalInterval"); final String intervals = form.getFirstValue("intervals", "2"); final String intervalsForUnique =
-     * form.getFirstValue("intervals", "-1"); final String open = form.getFirstValue("open", "false"); final String colorRamp =
-     * form.getFirstValue("ramp", "red"); final boolean reverse = Boolean.parseBoolean(form.getFirstValue("reverse")); final boolean normalize =
-     * Boolean.parseBoolean(form.getFirstValue("normalize"));
-     * 
+     * final String layerName = (String) attributes.get("layer"); final String property =
+     * form.getFirstValue("attribute"); final String method = form.getFirstValue("method",
+     * "equalInterval"); final String intervals = form.getFirstValue("intervals", "2"); final String
+     * intervalsForUnique = form.getFirstValue("intervals", "-1"); final String open =
+     * form.getFirstValue("open", "false"); final String colorRamp = form.getFirstValue("ramp",
+     * "red"); final boolean reverse = Boolean.parseBoolean(form.getFirstValue("reverse")); final
+     * boolean normalize = Boolean.parseBoolean(form.getFirstValue("normalize"));
+     *
      * @param layerName
      * @param property
      * @param method
@@ -116,31 +112,53 @@ public class ClassifierController extends AbstractCatalogController {
      * @param normalize
      * @return
      */
-    @GetMapping(path = "/{layerName}/classify", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public Object classify(@PathVariable String layerName,
+    @GetMapping(
+        path = "/{layerName}/classify",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
+    public Object classify(
+            @PathVariable String layerName,
             @RequestParam(value = "attribute", required = false) String property,
-            @RequestParam(value = "method", required = false, defaultValue = "equalInterval") String method,
-            @RequestParam(value = "intervals", required = false, defaultValue = "2") String intervals,
-            @RequestParam(value = "intervalsForUnique", required = false, defaultValue = "-1") String intervalsForUnique,
+            @RequestParam(value = "method", required = false, defaultValue = "equalInterval")
+                    String method,
+            @RequestParam(value = "intervals", required = false, defaultValue = "2")
+                    String intervals,
+            @RequestParam(value = "intervalsForUnique", required = false, defaultValue = "-1")
+                    String intervalsForUnique,
             @RequestParam(value = "open", required = false, defaultValue = "false") String open,
             @RequestParam(value = "ramp", required = false, defaultValue = "red") String colorRamp,
             @RequestParam(value = "startColor", required = false) String startColor,
             @RequestParam(value = "endColor", required = false) String endColor,
             @RequestParam(value = "midColor", required = false) String midColor,
-            @RequestParam(value = "reverse", required = false, defaultValue = "false") Boolean reverse,
-            @RequestParam(value = "normalize", required = false, defaultValue = "false") Boolean normalize) {
+            @RequestParam(value = "reverse", required = false, defaultValue = "false")
+                    Boolean reverse,
+            @RequestParam(value = "normalize", required = false, defaultValue = "false")
+                    Boolean normalize) {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
         if (layerInfo == null) {
             throw new ResourceNotFoundException("No such layer: " + layerName);
         }
         if (layerInfo != null && layerInfo.getResource() instanceof FeatureTypeInfo) {
-            final List<Rule> rules = this.generateClassifiedSLD(layerName, property, method,
-                    intervals, intervalsForUnique, open, colorRamp, startColor, endColor, midColor,
-                    reverse, normalize);
+            final List<Rule> rules =
+                    this.generateClassifiedSLD(
+                            layerName,
+                            property,
+                            method,
+                            intervals,
+                            intervalsForUnique,
+                            open,
+                            colorRamp,
+                            startColor,
+                            endColor,
+                            midColor,
+                            reverse,
+                            normalize);
             RulesList jsonRules = null;
-            if (rules != null)
-                jsonRules = generateRulesList(layerName, rules);
+            if (rules != null) jsonRules = generateRulesList(layerName, rules);
 
             if (jsonRules != null) {
                 return wrapObject(jsonRules, RulesList.class);
@@ -157,7 +175,6 @@ public class ClassifierController extends AbstractCatalogController {
     }
 
     /**
-     * 
      * @param layer
      * @param rules
      * @return
@@ -172,7 +189,6 @@ public class ClassifierController extends AbstractCatalogController {
     }
 
     /**
-     * 
      * @param rule
      * @return a string with json Rule representation
      */
@@ -190,7 +206,8 @@ public class ClassifierController extends AbstractCatalogController {
             ruleSz = (JSONObject) xmlS.read(xmlRule);
         } catch (TransformerException e) {
             if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE,
+                LOGGER.log(
+                        Level.FINE,
                         "Exception occurred while transformin the Rule " + e.getLocalizedMessage(),
                         e);
         }
@@ -199,7 +216,6 @@ public class ClassifierController extends AbstractCatalogController {
     }
 
     /**
-     * 
      * @param layerName
      * @param property
      * @param method
@@ -211,9 +227,18 @@ public class ClassifierController extends AbstractCatalogController {
      * @param normalize
      * @return
      */
-    private List<Rule> generateClassifiedSLD(String layerName, String property, String method,
-            String intervals, String intervalsForUnique, String open, String colorRamp,
-            String startColor, String endColor, String midColor, Boolean reverse,
+    private List<Rule> generateClassifiedSLD(
+            String layerName,
+            String property,
+            String method,
+            String intervals,
+            String intervalsForUnique,
+            String open,
+            String colorRamp,
+            String startColor,
+            String endColor,
+            String midColor,
+            Boolean reverse,
             Boolean normalize) {
         /* Looks in attribute map if there is the featureType param */
         if (property != null && property.length() > 0) {
@@ -225,60 +250,75 @@ public class ClassifierController extends AbstractCatalogController {
                     /* Check if it's feature type or coverage */
                     if (obj instanceof FeatureTypeInfo) {
                         final FeatureType ftType = ((FeatureTypeInfo) obj).getFeatureType();
-                        final FeatureCollection ftCollection = ((FeatureTypeInfo) obj)
-                                .getFeatureSource(new NullProgressListener(), null).getFeatures();
+                        final FeatureCollection ftCollection =
+                                ((FeatureTypeInfo) obj)
+                                        .getFeatureSource(new NullProgressListener(), null)
+                                        .getFeatures();
                         List<Rule> rules = null;
-                        Class<?> propertyType = ftType.getDescriptor(property).getType()
-                                .getBinding();
+                        Class<?> propertyType =
+                                ftType.getDescriptor(property).getType().getBinding();
                         if ("equalInterval".equals(method)) {
-                            rules = builder.equalIntervalClassification(ftCollection, property,
-                                    propertyType, Integer.parseInt(intervals),
-                                    Boolean.parseBoolean(open), normalize);
+                            rules =
+                                    builder.equalIntervalClassification(
+                                            ftCollection,
+                                            property,
+                                            propertyType,
+                                            Integer.parseInt(intervals),
+                                            Boolean.parseBoolean(open),
+                                            normalize);
                         } else if ("uniqueInterval".equals(method)) {
-                            rules = builder.uniqueIntervalClassification(ftCollection, property,
-                                    propertyType, Integer.parseInt(intervalsForUnique), normalize);
+                            rules =
+                                    builder.uniqueIntervalClassification(
+                                            ftCollection,
+                                            property,
+                                            propertyType,
+                                            Integer.parseInt(intervalsForUnique),
+                                            normalize);
                         } else if ("quantile".equals(method)) {
-                            rules = builder.quantileClassification(ftCollection, property,
-                                    propertyType, Integer.parseInt(intervals),
-                                    Boolean.parseBoolean(open), normalize);
+                            rules =
+                                    builder.quantileClassification(
+                                            ftCollection,
+                                            property,
+                                            propertyType,
+                                            Integer.parseInt(intervals),
+                                            Boolean.parseBoolean(open),
+                                            normalize);
                         } else if ("jenks".equals(method)) {
-                            rules = builder.jenksClassification(ftCollection, property,
-                                    propertyType, Integer.parseInt(intervals),
-                                    Boolean.parseBoolean(open), normalize);
+                            rules =
+                                    builder.jenksClassification(
+                                            ftCollection,
+                                            property,
+                                            propertyType,
+                                            Integer.parseInt(intervals),
+                                            Boolean.parseBoolean(open),
+                                            normalize);
                         }
 
                         if (colorRamp != null && colorRamp.length() > 0) {
                             ColorRamp ramp = null;
-                            if (colorRamp.equalsIgnoreCase("random"))
-                                ramp = new RandomColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("red"))
-                                ramp = new RedColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("blue"))
-                                ramp = new BlueColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("jet"))
-                                ramp = new JetColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("gray"))
-                                ramp = new GrayColorRamp();
+                            if (colorRamp.equalsIgnoreCase("random")) ramp = new RandomColorRamp();
+                            else if (colorRamp.equalsIgnoreCase("red")) ramp = new RedColorRamp();
+                            else if (colorRamp.equalsIgnoreCase("blue")) ramp = new BlueColorRamp();
+                            else if (colorRamp.equalsIgnoreCase("jet")) ramp = new JetColorRamp();
+                            else if (colorRamp.equalsIgnoreCase("gray")) ramp = new GrayColorRamp();
                             else if (colorRamp.equalsIgnoreCase("custom")) {
-                                Color startColorDecoded = (startColor != null
-                                        ? Color.decode(startColor)
-                                        : null);
-                                Color endColorDecoded = (endColor != null ? Color.decode(endColor)
-                                        : null);
-                                Color midColorDecoded = (midColor != null ? Color.decode(midColor)
-                                        : null);
+                                Color startColorDecoded =
+                                        (startColor != null ? Color.decode(startColor) : null);
+                                Color endColorDecoded =
+                                        (endColor != null ? Color.decode(endColor) : null);
+                                Color midColorDecoded =
+                                        (midColor != null ? Color.decode(midColor) : null);
                                 if (startColorDecoded != null && endColorDecoded != null) {
                                     CustomColorRamp tramp = new CustomColorRamp();
                                     tramp.setStartColor(startColorDecoded);
                                     tramp.setEndColor(endColorDecoded);
-                                    if (midColorDecoded != null)
-                                        tramp.setMid(midColorDecoded);
+                                    if (midColorDecoded != null) tramp.setMid(midColorDecoded);
                                     ramp = tramp;
                                 }
                             }
 
-                            final Class geomT = ftType.getGeometryDescriptor().getType()
-                                    .getBinding();
+                            final Class geomT =
+                                    ftType.getGeometryDescriptor().getType().getBinding();
 
                             /*
                              * Line Symbolizer
@@ -307,23 +347,23 @@ public class ClassifierController extends AbstractCatalogController {
                 }
             } catch (NoSuchElementException e) {
                 if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(Level.FINE,
-                            "The following exception has occurred " + e.getLocalizedMessage(), e);
+                    LOGGER.log(
+                            Level.FINE,
+                            "The following exception has occurred " + e.getLocalizedMessage(),
+                            e);
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(Level.FINE,
-                            "The following exception has occurred " + e.getLocalizedMessage(), e);
+                    LOGGER.log(
+                            Level.FINE,
+                            "The following exception has occurred " + e.getLocalizedMessage(),
+                            e);
             }
         }
 
         return null;
     }
 
-    /**
-     * 
-     * @author Fabiani
-     * 
-     */
+    /** @author Fabiani */
     public class RulesList {
         private String layerName;
 
@@ -341,26 +381,18 @@ public class ClassifierController extends AbstractCatalogController {
             return rules;
         }
 
-        /**
-         * @param layerName the layerName to set
-         */
+        /** @param layerName the layerName to set */
         public void setLayerName(String layerName) {
             this.layerName = layerName;
         }
 
-        /**
-         * @return the layerName
-         */
+        /** @return the layerName */
         public String getLayerName() {
             return layerName;
         }
     }
 
-    /**
-     * 
-     * @author Fabiani
-     * 
-     */
+    /** @author Fabiani */
     public class RulesListConverter implements Converter {
 
         /**
@@ -371,11 +403,12 @@ public class ClassifierController extends AbstractCatalogController {
         }
 
         /**
-         * @see com.thoughtworks.xstream.converters.Converter#marshal(java.lang.Object , com.thoughtworks.xstream.io.HierarchicalStreamWriter,
-         *      com.thoughtworks.xstream.converters.MarshallingContext)
+         * @see com.thoughtworks.xstream.converters.Converter#marshal(java.lang.Object ,
+         *     com.thoughtworks.xstream.io.HierarchicalStreamWriter,
+         *     com.thoughtworks.xstream.converters.MarshallingContext)
          */
-        public void marshal(Object value, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
+        public void marshal(
+                Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
             RulesList obj = (RulesList) value;
 
             for (JSONObject rule : obj.getRules()) {
@@ -414,10 +447,9 @@ public class ClassifierController extends AbstractCatalogController {
                     if (child instanceof JSONObject) {
                         for (Object key : ((JSONObject) child).keySet()) {
                             if (((JSONObject) child).get(key) instanceof String)
-                                writer.addAttribute((String) key,
-                                        (String) ((JSONObject) child).get(key));
-                            else
-                                writeChild(writer, ((JSONObject) child).get(key));
+                                writer.addAttribute(
+                                        (String) key, (String) ((JSONObject) child).get(key));
+                            else writeChild(writer, ((JSONObject) child).get(key));
                         }
 
                     } else {
@@ -442,14 +474,12 @@ public class ClassifierController extends AbstractCatalogController {
         }
 
         /**
-         * 
          * @see com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks.xstream.io.
-         *      HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
+         *     HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
          */
         public Object unmarshal(HierarchicalStreamReader arg0, UnmarshallingContext arg1) {
             // TODO Auto-generated method stub
             return null;
         }
-
     }
 }

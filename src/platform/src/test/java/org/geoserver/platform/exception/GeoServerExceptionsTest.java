@@ -8,7 +8,6 @@ package org.geoserver.platform.exception;
 import static junit.framework.Assert.assertEquals;
 
 import java.util.Locale;
-
 import org.junit.Test;
 
 public class GeoServerExceptionsTest {
@@ -44,55 +43,54 @@ public class GeoServerExceptionsTest {
         Locale.setDefault(Locale.FRENCH);
         try {
             assertEquals("bonjour", GeoServerExceptions.localize(new TestException().id("hi")));
-        }
-        finally {
+        } finally {
             Locale.setDefault(old);
         }
     }
 
-//    class TestResourceBundleLoader implements ResourceBundleLoader {
-//
-//        Map<String,Map<String,Properties>> keys;
-//
-//        TestResourceBundleLoader() {
-//            keys = new HashMap();
-//
-//            Properties p = new Properties();
-//            p.put("TestException.hi", "hello");
-//            p.put("TestException.hey", "hello {0}");
-//
-//            Map map = new HashMap();
-//            map.put(TestException.class.getSimpleName(), p);
-//            keys.put(Locale.ENGLISH.getLanguage(), map);
-//            
-//            p = new Properties();
-//            p.put("TestException.hi", "bonjour");
-//            p.put("TestException.hey", "bonjour {0}");
-//
-//            map = new HashMap();
-//            map.put(TestException.class.getSimpleName(), p);
-//            keys.put(Locale.FRENCH.getLanguage(), map);
-//        }
-//
-//        @Override
-//        public ResourceBundle load(String baseName, Locale locale,
-//                ClassLoader classLoader) throws IOException {
-//            
-//            Map<String,Properties> map = keys.get(locale.getLanguage());
-//            if (map == null) {
-//                return null;
-//            }
-//
-//            Properties p = map.get(baseName);
-//            if (p == null) {
-//                return null;
-//            }
-//
-//            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-//            p.store(bout, null);
-//
-//            return new PropertyResourceBundle(new ByteArrayInputStream(bout.toByteArray()));
-//        }
-//    
-//    }
+    //    class TestResourceBundleLoader implements ResourceBundleLoader {
+    //
+    //        Map<String,Map<String,Properties>> keys;
+    //
+    //        TestResourceBundleLoader() {
+    //            keys = new HashMap();
+    //
+    //            Properties p = new Properties();
+    //            p.put("TestException.hi", "hello");
+    //            p.put("TestException.hey", "hello {0}");
+    //
+    //            Map map = new HashMap();
+    //            map.put(TestException.class.getSimpleName(), p);
+    //            keys.put(Locale.ENGLISH.getLanguage(), map);
+    //
+    //            p = new Properties();
+    //            p.put("TestException.hi", "bonjour");
+    //            p.put("TestException.hey", "bonjour {0}");
+    //
+    //            map = new HashMap();
+    //            map.put(TestException.class.getSimpleName(), p);
+    //            keys.put(Locale.FRENCH.getLanguage(), map);
+    //        }
+    //
+    //        @Override
+    //        public ResourceBundle load(String baseName, Locale locale,
+    //                ClassLoader classLoader) throws IOException {
+    //
+    //            Map<String,Properties> map = keys.get(locale.getLanguage());
+    //            if (map == null) {
+    //                return null;
+    //            }
+    //
+    //            Properties p = map.get(baseName);
+    //            if (p == null) {
+    //                return null;
+    //            }
+    //
+    //            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    //            p.store(bout, null);
+    //
+    //            return new PropertyResourceBundle(new ByteArrayInputStream(bout.toByteArray()));
+    //        }
+    //
+    //    }
 }

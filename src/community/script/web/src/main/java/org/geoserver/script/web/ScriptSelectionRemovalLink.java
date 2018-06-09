@@ -6,7 +6,6 @@
 package org.geoserver.script.web;
 
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -25,8 +24,8 @@ public class ScriptSelectionRemovalLink extends AjaxLink<Object> {
 
     GeoServerDialog dialog;
 
-    public ScriptSelectionRemovalLink(String id, GeoServerTablePanel<Script> tablePanel,
-            GeoServerDialog dialog) {
+    public ScriptSelectionRemovalLink(
+            String id, GeoServerTablePanel<Script> tablePanel, GeoServerDialog dialog) {
         super(id);
         this.tablePanel = tablePanel;
         this.dialog = dialog;
@@ -36,47 +35,47 @@ public class ScriptSelectionRemovalLink extends AjaxLink<Object> {
     public void onClick(AjaxRequestTarget target) {
         // see if the user selected anything
         final List<Script> selection = tablePanel.getSelection();
-        if (selection.size() == 0)
-            return;
+        if (selection.size() == 0) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed
-        dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
-            private static final long serialVersionUID = 9062725459934129182L;
+        dialog.showOkCancel(
+                target,
+                new GeoServerDialog.DialogDelegate() {
+                    private static final long serialVersionUID = 9062725459934129182L;
 
-            protected Component getContents(String id) {
-                // show a confirmation panel for all the objects we have to remove
-                return new Label(id, "Do you want to delete these scripts?");
-            }
-
-            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                for (Script script : selection) {
-                    Resource file = script.getResource();
-                    file.delete();
-                    if (script.getType().equalsIgnoreCase(ScriptType.APP.getLabel())) {
-                        file.parent().delete();
+                    protected Component getContents(String id) {
+                        // show a confirmation panel for all the objects we have to remove
+                        return new Label(id, "Do you want to delete these scripts?");
                     }
-                }
 
-                // the deletion will have changed what we see in the page
-                // so better clear out the selection
-                tablePanel.clearSelection();
-                return true;
-            }
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        for (Script script : selection) {
+                            Resource file = script.getResource();
+                            file.delete();
+                            if (script.getType().equalsIgnoreCase(ScriptType.APP.getLabel())) {
+                                file.parent().delete();
+                            }
+                        }
 
-            @Override
-            public void onClose(AjaxRequestTarget target) {
-                // if the selection has been cleared out it's sign a deletion
-                // occurred, so refresh the table
-                if (tablePanel.getSelection().size() == 0) {
-                    setEnabled(false);
-                    target.add(ScriptSelectionRemovalLink.this);
-                    target.add(tablePanel);
-                }
-            }
+                        // the deletion will have changed what we see in the page
+                        // so better clear out the selection
+                        tablePanel.clearSelection();
+                        return true;
+                    }
 
-        });
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        // if the selection has been cleared out it's sign a deletion
+                        // occurred, so refresh the table
+                        if (tablePanel.getSelection().size() == 0) {
+                            setEnabled(false);
+                            target.add(ScriptSelectionRemovalLink.this);
+                            target.add(tablePanel);
+                        }
+                    }
+                });
     }
 }

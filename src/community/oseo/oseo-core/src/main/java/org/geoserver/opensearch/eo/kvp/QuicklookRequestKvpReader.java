@@ -16,5 +16,4 @@ public class QuicklookRequestKvpReader extends AbstractProductRequestKvpReader {
     public QuicklookRequestKvpReader() {
         super(QuicklookRequest.class, true);
     }
-
 }

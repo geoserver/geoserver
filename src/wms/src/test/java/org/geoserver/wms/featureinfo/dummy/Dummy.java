@@ -5,6 +5,4 @@
  */
 package org.geoserver.wms.featureinfo.dummy;
 
-public class Dummy {
-
-}
+public class Dummy {}

@@ -5,12 +5,11 @@
 package org.geoserver.web.security.oauth2;
 
 import java.util.logging.Logger;
-
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.GeoNodeOAuth2FilterConfig;
+import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
@@ -18,7 +17,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Configuration panel for {@link GeoServerOAuthAuthenticationFilter}.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GeoNodeOAuth2AuthProviderPanel

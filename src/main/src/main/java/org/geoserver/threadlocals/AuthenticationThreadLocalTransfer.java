@@ -7,16 +7,14 @@
 package org.geoserver.threadlocals;
 
 import java.util.Map;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Moves the Spring Authentication thread local to another thread
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class AuthenticationThreadLocalTransfer implements ThreadLocalTransfer {
 
@@ -40,5 +38,4 @@ public class AuthenticationThreadLocalTransfer implements ThreadLocalTransfer {
     public void cleanup() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-
 }

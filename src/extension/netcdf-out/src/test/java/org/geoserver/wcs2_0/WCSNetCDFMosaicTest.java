@@ -20,9 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -57,7 +55,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
@@ -67,29 +64,36 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
-@TestSetup(run=TestSetupFrequency.ONCE)
+@TestSetup(run = TestSetupFrequency.ONCE)
 public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     private static final double DELTA = 1E-6;
     private static final double PACKED_FILL_VALUE = -32768d;
     private static final String ORIGINAL_UNIT = "km";
     private static final String CANONICAL_UNIT = "m";
-    private final static double ORIGINAL_FILL_VALUE = -9999.0d;
-    private final static double ORIGINAL_PIXEL_VALUE = 9219.328d;
+    private static final double ORIGINAL_FILL_VALUE = -9999.0d;
+    private static final double ORIGINAL_PIXEL_VALUE = 9219.328d;
 
-    public static QName LATLONMOSAIC = new QName(CiteTestData.WCS_URI, "2DLatLonCoverage", CiteTestData.WCS_PREFIX);
-    public static QName DUMMYMOSAIC = new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
-    public static QName VISIBILITYCF = new QName(CiteTestData.WCS_URI, "visibilityCF", CiteTestData.WCS_PREFIX);
-    public static QName VISIBILITYPACKED = new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
-    public static QName VISIBILITYCOMPRESSED = new QName(CiteTestData.WCS_URI, "visibilityCompressed", CiteTestData.WCS_PREFIX);
-    public static QName VISIBILITYCFPACKED = new QName(CiteTestData.WCS_URI, "visibilityCFPacked", CiteTestData.WCS_PREFIX);
-    public static QName TEMPERATURE_SURFACE = new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
+    public static QName LATLONMOSAIC =
+            new QName(CiteTestData.WCS_URI, "2DLatLonCoverage", CiteTestData.WCS_PREFIX);
+    public static QName DUMMYMOSAIC =
+            new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYCF =
+            new QName(CiteTestData.WCS_URI, "visibilityCF", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYPACKED =
+            new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYCOMPRESSED =
+            new QName(CiteTestData.WCS_URI, "visibilityCompressed", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYCFPACKED =
+            new QName(CiteTestData.WCS_URI, "visibilityCFPacked", CiteTestData.WCS_PREFIX);
+    public static QName TEMPERATURE_SURFACE =
+            new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
 
-    private final static String STANDARD_NAME = "visibility_in_air";
-    private final static Section NETCDF_SECTION;
+    private static final String STANDARD_NAME = "visibility_in_air";
+    private static final Section NETCDF_SECTION;
     private CoverageView coverageView = null;
 
-    static{
+    static {
         System.setProperty("org.geotools.referencing.forceXY", "true");
         final List<Range> ranges = new LinkedList<Range>();
         ranges.add(new Range(1));
@@ -132,31 +136,49 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         }
 
         super.onSetUp(testData);
-        testData.addRasterLayer(LATLONMOSAIC, "2DLatLonCoverage.zip", null, null, this.getClass(), getCatalog());
-        setupRasterDimension(getLayerId(LATLONMOSAIC), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(getLayerId(LATLONMOSAIC), ResourceInfo.CUSTOM_DIMENSION_PREFIX + "BANDS", DimensionPresentation.LIST, null);
+        testData.addRasterLayer(
+                LATLONMOSAIC, "2DLatLonCoverage.zip", null, null, this.getClass(), getCatalog());
+        setupRasterDimension(
+                getLayerId(LATLONMOSAIC), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(
+                getLayerId(LATLONMOSAIC),
+                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "BANDS",
+                DimensionPresentation.LIST,
+                null);
 
         testData.addRasterLayer(DUMMYMOSAIC, "gom.zip", null, null, this.getClass(), getCatalog());
 
         createCoverageView();
         addViewToCatalog();
 
-        testData.addRasterLayer(VISIBILITYCF, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(
+                VISIBILITYCF, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCF);
 
-        testData.addRasterLayer(VISIBILITYPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(
+                VISIBILITYPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYPACKED);
 
-        testData.addRasterLayer(VISIBILITYCFPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(
+                VISIBILITYCFPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCFPACKED);
 
-        testData.addRasterLayer(VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(
+                VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCOMPRESSED);
 
-        testData.addRasterLayer(TEMPERATURE_SURFACE, "Temperature_surface.zip", null, null,
-                this.getClass(), getCatalog());
-        setupRasterDimension(getLayerId(TEMPERATURE_SURFACE), ResourceInfo.TIME,
-                DimensionPresentation.LIST, null);
+        testData.addRasterLayer(
+                TEMPERATURE_SURFACE,
+                "Temperature_surface.zip",
+                null,
+                null,
+                this.getClass(),
+                getCatalog());
+        setupRasterDimension(
+                getLayerId(TEMPERATURE_SURFACE),
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null);
         configureTemperatureSurface();
     }
 
@@ -173,7 +195,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         boolean isCompressed = layerName.contains("COMPRESSED");
         // Update the UnitOfMeasure to km and noData to -9999
         CoverageDimensionInfo dimension = info.getDimensions().get(0);
-        String originalUnit = ORIGINAL_UNIT; 
+        String originalUnit = ORIGINAL_UNIT;
         dimension.setUnit(originalUnit);
 
         List<Double> nullValues = dimension.getNullValues();
@@ -207,17 +229,20 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestCoverage() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
         assertNotNull(response);
-        GridCoverage2D lastResult = applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
+        GridCoverage2D lastResult =
+                applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
         assertTrue(lastResult instanceof GranuleStack);
         GranuleStack stack = (GranuleStack) lastResult;
 
-        //we expect a single granule which covers the entire mosaic
-        for(GridCoverage2D c : stack.getGranules()){
-            assertEquals(30., c.getEnvelope2D().getHeight(),0.001);
-            assertEquals(45., c.getEnvelope2D().getWidth(),0.001);
+        // we expect a single granule which covers the entire mosaic
+        for (GridCoverage2D c : stack.getGranules()) {
+            assertEquals(30., c.getEnvelope2D().getHeight(), 0.001);
+            assertEquals(45., c.getEnvelope2D().getWidth(), 0.001);
         }
         assertEquals(1, stack.getGranules().size());
     }
@@ -230,11 +255,13 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         getGeoServer().save(wcsInfo);
         try {
             // http response from the request inside the string
-            MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
-                    + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                    + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
             assertNotNull(response);
-            GridCoverage2D lastResult = applicationContext.getBean(WCSResponseInterceptor.class)
-                    .getLastResult();
+            GridCoverage2D lastResult =
+                    applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
             assertTrue(lastResult instanceof GranuleStack);
             GranuleStack stack = (GranuleStack) lastResult;
 
@@ -255,8 +282,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestCoverageView() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__dummyView&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__dummyView&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
         assertNotNull(response);
 
         assertEquals("application/x-netcdf", response.getContentType());
@@ -282,11 +311,14 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         }
 
         // http response from the request inside the string
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__dummyView&format=application/x-netcdf4&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__dummyView&format=application/x-netcdf4&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
         assertNotNull(response);
 
-        assertEquals((isNC4Available ? "application/x-netcdf4" : "application/xml"),
+        assertEquals(
+                (isNC4Available ? "application/x-netcdf4" : "application/xml"),
                 response.getContentType());
         if (isNC4Available) {
             byte[] netcdfOut = getBinary(response);
@@ -306,8 +338,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         CoverageInfo info = getCatalog().getCoverageByName(new NameImpl("wcs", "visibilityCF"));
         assertTrue(info.getDimensions().get(0).getUnit().equalsIgnoreCase(ORIGINAL_UNIT));
 
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__visibilityCF&format=application/x-netcdf");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__visibilityCF&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outCF.nc", new File("./target"));
@@ -352,11 +386,14 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         }
 
         // http response from the request inside the string
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__visibilityCompressed&format=application/x-netcdf4");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__visibilityCompressed&format=application/x-netcdf4");
         assertNotNull(response);
 
-        assertEquals((isNC4Available ? "application/x-netcdf4" : "application/xml"),
+        assertEquals(
+                (isNC4Available ? "application/x-netcdf4" : "application/xml"),
                 response.getContentType());
 
         if (isNC4Available) {
@@ -382,8 +419,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestNetCDFDataPacking() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__visibilityPacked&format=application/x-netcdf");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__visibilityPacked&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outPK.nc", new File("./target"));
@@ -397,16 +436,16 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         String unit = var.getUnitsString();
         assertEquals(ORIGINAL_UNIT, unit);
 
-        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE); 
+        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
         assertNotNull(fillValue);
 
         // There is dataPacking, therefore, fillValue should have been changed
         assertEquals(PACKED_FILL_VALUE, fillValue.getNumericValue().doubleValue(), 1E-6);
 
-        Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET); 
+        Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET);
         assertNotNull(addOffsetAttr);
 
-        Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR); 
+        Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR);
         assertNotNull(scaleFactorAttr);
         double scaleFactor = scaleFactorAttr.getNumericValue().doubleValue();
         double addOffset = addOffsetAttr.getNumericValue().doubleValue();
@@ -417,7 +456,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         // Data has been packed to short
 
         double packedData = (ORIGINAL_PIXEL_VALUE - addOffset) / scaleFactor;
-        assertEquals((short)(packedData + 0.5), data , DELTA);
+        assertEquals((short) (packedData + 0.5), data, DELTA);
 
         dataset.close();
     }
@@ -426,8 +465,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestNetCDFCFDataPacking() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__visibilityCFPacked&format=application/x-netcdf");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__visibilityCFPacked&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outCFPK.nc", new File("./target"));
@@ -441,10 +482,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         String unit = var.getUnitsString();
         assertEquals(CANONICAL_UNIT, unit);
 
-        Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET); 
+        Attribute addOffsetAttr = var.findAttribute(DataPacking.ADD_OFFSET);
         assertNotNull(addOffsetAttr);
 
-        Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR); 
+        Attribute scaleFactorAttr = var.findAttribute(DataPacking.SCALE_FACTOR);
         assertNotNull(scaleFactorAttr);
         double scaleFactor = scaleFactorAttr.getNumericValue().doubleValue();
         double addOffset = addOffsetAttr.getNumericValue().doubleValue();
@@ -456,9 +497,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
         // Going from original unit to canonical, then packing
         double packedData = ((ORIGINAL_PIXEL_VALUE * 1000) - addOffset) / scaleFactor;
-        assertEquals((short)(packedData + 0.5), data , DELTA);
+        assertEquals((short) (packedData + 0.5), data, DELTA);
 
-        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE); 
+        Attribute fillValue = var.findAttribute(NetCDFUtilities.FILL_VALUE);
         assertNotNull(fillValue);
         // There is dataPacking, therefore, fillValue should have been changed
         assertEquals(PACKED_FILL_VALUE, fillValue.getNumericValue().doubleValue(), DELTA);
@@ -470,7 +511,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
         dataset.close();
     }
-    
+
     private void addViewToCatalog() throws Exception {
         final Catalog cat = getCatalog();
         final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName(DUMMYMOSAIC.getLocalPart());
@@ -478,8 +519,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo = coverageView.createCoverageInfo("dummyView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD","false");
+        final CoverageInfo coverageInfo =
+                coverageView.createCoverageInfo("dummyView", storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
         cat.add(layerInfo);
@@ -488,27 +530,27 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     private void createCoverageView() throws Exception {
         final InputCoverageBand band1 = new InputCoverageBand("NO2", "0");
-        final CoverageBand outputBand1 = new CoverageBand(Collections.singletonList(band1),
-                "NO2@0", 0, CompositionType.BAND_SELECT);
+        final CoverageBand outputBand1 =
+                new CoverageBand(
+                        Collections.singletonList(band1), "NO2@0", 0, CompositionType.BAND_SELECT);
 
         final InputCoverageBand band2 = new InputCoverageBand("BrO", "0");
-        final CoverageBand outputBand2 = new CoverageBand(Collections.singletonList(band2),
-                "BrO@0", 1, CompositionType.BAND_SELECT);
+        final CoverageBand outputBand2 =
+                new CoverageBand(
+                        Collections.singletonList(band2), "BrO@0", 1, CompositionType.BAND_SELECT);
         final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
         coverageBands.add(outputBand1);
         coverageBands.add(outputBand2);
         coverageView = new CoverageView("dummyView", coverageBands);
     }
 
-    /**
-     * Configure NetCDF output settings for <code>Temperature_surface</code>.
-     */
+    /** Configure NetCDF output settings for <code>Temperature_surface</code>. */
     private void configureTemperatureSurface() {
         NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
         container.setCopyAttributes(true);
         List<VariableAttribute> variableAttributes = new ArrayList<VariableAttribute>();
-        variableAttributes
-                .add(new VariableAttribute("test-variable-attribute", "Test Variable Attribute"));
+        variableAttributes.add(
+                new VariableAttribute("test-variable-attribute", "Test Variable Attribute"));
         variableAttributes.add(new VariableAttribute("Grib2_Parameter_Category", "Test Category"));
         container.setVariableAttributes(variableAttributes);
         List<ExtraVariable> extraVariables = new ArrayList<ExtraVariable>();
@@ -526,7 +568,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different types, for NetCDF-3 output.
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global
+     * attributes of different types, for NetCDF-3 output.
      */
     @Test
     public void testExtraVariablesNetcdf3() throws Exception {
@@ -534,7 +577,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different types, for NetCDF-4 output.
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global
+     * attributes of different types, for NetCDF-4 output.
      */
     @Test
     public void testExtraVariablesNetcdf4() throws Exception {
@@ -543,20 +587,24 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Check <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different type.
-     * 
+     * Check <code>Temperature_surface</code> extra variables, variable attributes, and global
+     * attributes of different type.
+     *
      * @param format the output format MIME type
      */
     private void checkExtraVariables(String format) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                "wcs?service=WCS&version=2.0.1&request=GetCoverage"
-                        + "&coverageid=wcs__Temperature_surface&format=" + format);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?service=WCS&version=2.0.1&request=GetCoverage"
+                                + "&coverageid=wcs__Temperature_surface&format="
+                                + format);
         assertNotNull(response);
         assertEquals(200, response.getStatus());
         assertEquals(format, response.getContentType());
         byte[] responseBytes = getBinary(response);
-        File file = File.createTempFile("extra-variable-", "-wcs__Temperature_surface.nc",
-                new File("./target"));
+        File file =
+                File.createTempFile(
+                        "extra-variable-", "-wcs__Temperature_surface.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
         try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
@@ -577,10 +625,13 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals(timeDim, timeVar.getDimensions().get(0));
             assertEquals("time", timeVar.findAttribute("long_name").getStringValue());
             assertEquals("time", timeVar.findAttribute("description").getStringValue());
-            assertEquals("seconds since 1970-01-01 00:00:00 UTC",
+            assertEquals(
+                    "seconds since 1970-01-01 00:00:00 UTC",
                     timeVar.findAttribute("units").getStringValue());
-            assertArrayEquals(new double[] { 1461664800, 1461708000 },
-                    (double[]) timeVar.read().copyTo1DJavaArray(), (double) DELTA);
+            assertArrayEquals(
+                    new double[] {1461664800, 1461708000},
+                    (double[]) timeVar.read().copyTo1DJavaArray(),
+                    (double) DELTA);
             Variable rlonVar = dataset.findVariable("rlon");
             assertNotNull(rlonVar);
             assertEquals(1, rlonVar.getDimensions().size());
@@ -588,8 +639,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
             assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
-            assertArrayEquals(new float[] { -30, -20, -10, 0, 10, 20, 30 },
-                    (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
+            assertArrayEquals(
+                    new float[] {-30, -20, -10, 0, 10, 20, 30},
+                    (float[]) rlonVar.read().copyTo1DJavaArray(),
+                    (float) DELTA);
             Variable rlatVar = dataset.findVariable("rlat");
             assertNotNull(rlatVar);
             assertEquals(1, rlatVar.getDimensions().size());
@@ -597,86 +650,116 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals("grid_latitude", rlatVar.findAttribute("long_name").getStringValue());
             assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
-            assertArrayEquals(new float[] { -20, -10, 0, 10, 20 },
-                    (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
+            assertArrayEquals(
+                    new float[] {-20, -10, 0, 10, 20},
+                    (float[]) rlatVar.read().copyTo1DJavaArray(),
+                    (float) DELTA);
             // check projection variable
             Variable projVar = dataset.findVariable("rotated_latitude_longitude");
             assertNotNull(projVar);
-            assertEquals("rotated_latitude_longitude",
+            assertEquals(
+                    "rotated_latitude_longitude",
                     projVar.findAttribute("grid_mapping_name").getStringValue());
-            assertEquals(74.0, projVar.findAttribute("grid_north_pole_longitude").getNumericValue()
-                    .doubleValue(), DELTA);
-            assertEquals(36.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue()
-                    .doubleValue(), DELTA);
+            assertEquals(
+                    74.0,
+                    projVar.findAttribute("grid_north_pole_longitude")
+                            .getNumericValue()
+                            .doubleValue(),
+                    DELTA);
+            assertEquals(
+                    36.0,
+                    projVar.findAttribute("grid_north_pole_latitude")
+                            .getNumericValue()
+                            .doubleValue(),
+                    DELTA);
             // check data variable
             Variable tempVar = dataset.findVariable("Temperature_surface");
             assertNotNull(tempVar);
-            assertEquals("rotated_latitude_longitude",
+            assertEquals(
+                    "rotated_latitude_longitude",
                     tempVar.findAttribute("grid_mapping").getStringValue());
             assertEquals("K", tempVar.findAttribute("units").getStringValue());
             assertEquals(3, tempVar.getDimensions().size());
             assertEquals(timeDim, tempVar.getDimensions().get(0));
             assertEquals(rlatDim, tempVar.getDimensions().get(1));
             assertEquals(rlonDim, tempVar.getDimensions().get(2));
-            assertArrayEquals(new float[] { 300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298,
-                    297, 296, 295, 298, 299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298,
-                    297, 296, 297, 298, 299, 300, 299, 298, 301, 300, 299, 298, 297, 296, 295, 300,
-                    301, 300, 299, 298, 297, 296, 299, 300, 301, 300, 299, 298, 297, 298, 299, 300,
-                    301, 300, 299, 298, 297, 298, 299, 300, 301, 300, 299 },
-                    (float[]) tempVar.read().copyTo1DJavaArray(), (float) DELTA);
+            assertArrayEquals(
+                    new float[] {
+                        300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298, 297, 296, 295, 298,
+                        299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298, 297, 296, 297,
+                        298, 299, 300, 299, 298, 301, 300, 299, 298, 297, 296, 295, 300, 301, 300,
+                        299, 298, 297, 296, 299, 300, 301, 300, 299, 298, 297, 298, 299, 300, 301,
+                        300, 299, 298, 297, 298, 299, 300, 301, 300, 299
+                    },
+                    (float[]) tempVar.read().copyTo1DJavaArray(),
+                    (float) DELTA);
             // some attributes expected to copied from source variable
             assertEquals("TMP", tempVar.findAttribute("abbreviation").getStringValue());
-            assertEquals("Forecast",
+            assertEquals(
+                    "Forecast",
                     tempVar.findAttribute("Grib2_Generating_Process_Type").getStringValue());
             // should not be copied from source variable as in the blacklist
             assertNull(tempVar.findAttribute("coordinates"));
             // test that copied variable attributes can be overwritten
-            assertEquals("Test Category",
+            assertEquals(
+                    "Test Category",
                     tempVar.findAttribute("Grib2_Parameter_Category").getStringValue());
             // test that a new variable attribute can be added
-            assertEquals("Test Variable Attribute",
+            assertEquals(
+                    "Test Variable Attribute",
                     tempVar.findAttribute("test-variable-attribute").getStringValue());
             // extra variable copied from source with dimensions "time"
             Variable reftimeVar = dataset.findVariable("forecast_reference_time");
             assertEquals(1, reftimeVar.getDimensions().size());
             assertEquals(timeDim, reftimeVar.getDimensions().get(0));
-            assertEquals("Hour since 2016-04-25T22:00:00Z",
+            assertEquals(
+                    "Hour since 2016-04-25T22:00:00Z",
                     reftimeVar.findAttribute("units").getStringValue());
-            assertEquals("forecast_reference_time",
+            assertEquals(
+                    "forecast_reference_time",
                     reftimeVar.findAttribute("standard_name").getStringValue());
-            assertEquals("GRIB reference time",
-                    reftimeVar.findAttribute("long_name").getStringValue());
-            assertArrayEquals(new double[] { 6, 3 },
-                    (double[]) reftimeVar.read().copyTo1DJavaArray(), (double) DELTA);
+            assertEquals(
+                    "GRIB reference time", reftimeVar.findAttribute("long_name").getStringValue());
+            assertArrayEquals(
+                    new double[] {6, 3},
+                    (double[]) reftimeVar.read().copyTo1DJavaArray(),
+                    (double) DELTA);
             // scalar extra variable copied from source with dimensions ""
             Variable scalarReftimeVar = dataset.findVariable("scalar_forecast_reference_time");
             assertEquals(0, scalarReftimeVar.getDimensions().size());
-            assertEquals("Hour since 2016-04-25T22:00:00Z",
+            assertEquals(
+                    "Hour since 2016-04-25T22:00:00Z",
                     scalarReftimeVar.findAttribute("units").getStringValue());
-            assertEquals("forecast_reference_time",
+            assertEquals(
+                    "forecast_reference_time",
                     scalarReftimeVar.findAttribute("standard_name").getStringValue());
-            assertEquals("GRIB reference time",
+            assertEquals(
+                    "GRIB reference time",
                     scalarReftimeVar.findAttribute("long_name").getStringValue());
             double t = scalarReftimeVar.read().getDouble(0);
             // the value is nondeterministic because it depends
             // on which of two granules is used as the sample
             assertTrue(t == 6 || t == 3);
             // string global attribute
-            assertEquals("Test Global Attribute",
+            assertEquals(
+                    "Test Global Attribute",
                     dataset.findGlobalAttribute("test-global-attribute").getStringValue());
             // integer global attribute
-            assertEquals(DataType.INT,
+            assertEquals(
+                    DataType.INT,
                     dataset.findGlobalAttribute("test-global-attribute-integer").getDataType());
-            assertEquals(42,
+            assertEquals(
+                    42,
                     dataset.findGlobalAttribute("test-global-attribute-integer").getNumericValue());
             // double global attribute
-            assertEquals(DataType.DOUBLE,
+            assertEquals(
+                    DataType.DOUBLE,
                     dataset.findGlobalAttribute("test-global-attribute-double").getDataType());
-            assertEquals(1.5,
+            assertEquals(
+                    1.5,
                     dataset.findGlobalAttribute("test-global-attribute-double").getNumericValue());
         } finally {
             FileUtils.deleteQuietly(file);
         }
     }
-
 }

@@ -5,6 +5,12 @@
  */
 package org.geoserver.gwc.layer;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -16,23 +22,15 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.rest.exception.RestException;
 import org.springframework.http.HttpStatus;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-
 /**
  * GWC xml configuration {@link XMLConfigurationProvider contributor} so that GWC knows how to
  * marshal and unmarshal {@link GeoServerTileLayer} instances for its REST API.
- * <p>
- * Note this provider is different than {@link GWCGeoServerConfigurationProvider}, which is used to
- * save the configuration objects. In contrast, this one is used only for the GWC REST API, as it
+ *
+ * <p>Note this provider is different than {@link GWCGeoServerConfigurationProvider}, which is used
+ * to save the configuration objects. In contrast, this one is used only for the GWC REST API, as it
  * doesn't distinguish betwee {@link TileLayer} objects and tile layer configuration objects (as the
  * GWC/GeoServer integration does with {@link GeoServerTileLayer} and {@link GeoServerTileLayerInfo}
  * ).
- * 
  */
 public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigurationProvider {
 
@@ -49,13 +47,13 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
         xs.processAnnotations(StyleParameterFilter.class);
         xs.registerConverter(new RESTConverterHelper());
         xs.addDefaultImplementation(GeoServerTileLayerInfoImpl.class, GeoServerTileLayerInfo.class);
-        
+
         // Omit the values cached from the backing layer.  They are only needed for the
         // persisted config file.
         xs.omitField(StyleParameterFilter.class, "availableStyles");
         xs.omitField(StyleParameterFilter.class, "defaultStyle");
-        
-        // Omit autoCacheStyles as it is no longer needed.  
+
+        // Omit autoCacheStyles as it is no longer needed.
         // It'd be better to read it but not write it, but blocking it from REST is good enough and
         // a lot easier to get XStream to do.
         // TODO Remove this
@@ -63,10 +61,7 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
         return xs;
     }
 
-    /**
-     * @author groldan
-     * 
-     */
+    /** @author groldan */
     private final class RESTConverterHelper implements Converter {
         @Override
         public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
@@ -74,13 +69,13 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
         }
 
         @Override
-        public GeoServerTileLayer unmarshal(HierarchicalStreamReader reader,
-                UnmarshallingContext context) {
+        public GeoServerTileLayer unmarshal(
+                HierarchicalStreamReader reader, UnmarshallingContext context) {
 
             Object current = new GeoServerTileLayerInfoImpl();
             Class<?> type = GeoServerTileLayerInfo.class;
-            GeoServerTileLayerInfo info = (GeoServerTileLayerInfo) context.convertAnother(current,
-                    type);
+            GeoServerTileLayerInfo info =
+                    (GeoServerTileLayerInfo) context.convertAnother(current, type);
             String id = info.getId();
             String name = info.getName();
             if (id != null && id.length() == 0) {
@@ -89,10 +84,8 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
             if (name != null && name.length() == 0) {
                 name = null;
             }
-            if (name == null) {// name is mandatory
-                throw new RestException(
-                        "Layer name not provided",
-                        HttpStatus.BAD_REQUEST);
+            if (name == null) { // name is mandatory
+                throw new RestException("Layer name not provided", HttpStatus.BAD_REQUEST);
             }
             LayerInfo layer = null;
             LayerGroupInfo layerGroup = null;
@@ -119,13 +112,18 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
             }
 
             final String actualId = layer != null ? layer.getId() : layerGroup.getId();
-            final String actualName = layer != null ? GWC.tileLayerName(layer) : GWC
-                    .tileLayerName(layerGroup);
+            final String actualName =
+                    layer != null ? GWC.tileLayerName(layer) : GWC.tileLayerName(layerGroup);
 
             if (id != null && !name.equals(actualName)) {
                 throw new RestException(
-                        "Layer with id '" + id + "' found but name does not match: '" + name
-                                + "'/'" + actualName + "'",
+                        "Layer with id '"
+                                + id
+                                + "' found but name does not match: '"
+                                + name
+                                + "'/'"
+                                + actualName
+                                + "'",
                         HttpStatus.BAD_REQUEST);
             }
 
@@ -143,7 +141,9 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
         }
 
         @Override
-        public void marshal(/* GeoServerTileLayer */Object source, HierarchicalStreamWriter writer,
+        public void marshal(
+                /* GeoServerTileLayer */ Object source,
+                HierarchicalStreamWriter writer,
                 MarshallingContext context) {
             GeoServerTileLayer tileLayer = (GeoServerTileLayer) source;
             GeoServerTileLayerInfo info = tileLayer.getInfo();
@@ -153,6 +153,6 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
 
     @Override
     public boolean appliesTo(Context ctxt) {
-        return Context.REST==ctxt;
+        return Context.REST == ctxt;
     }
 }

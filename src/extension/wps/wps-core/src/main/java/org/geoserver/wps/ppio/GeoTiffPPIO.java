@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wcs.responses.GeoTiffWriterHelper;
 import org.geoserver.wps.WPSException;
@@ -22,10 +21,9 @@ import org.geotools.process.ProcessException;
 
 /**
  * Decodes/encodes a GeoTIFF file
- * 
+ *
  * @author Andrea Aime - OpenGeo
  * @author Simone Giannecchini, GeoSolutions
- * 
  */
 public class GeoTiffPPIO extends BinaryPPIO {
 
@@ -71,5 +69,4 @@ public class GeoTiffPPIO extends BinaryPPIO {
     public String getFileExtension() {
         return "tiff";
     }
-
 }

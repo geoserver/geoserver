@@ -6,7 +6,6 @@
 package org.geoserver.security.password;
 
 import java.io.IOException;
-
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.MasterPasswordProvider;
 
@@ -18,8 +17,7 @@ public final class TestMasterPasswordProvider extends MasterPasswordProvider {
     }
 
     @Override
-    protected void doSetMasterPassword(char[] passwd) throws Exception {
-    }
+    protected void doSetMasterPassword(char[] passwd) throws Exception {}
 
     public static class Provider extends GeoServerSecurityProvider {
         @Override

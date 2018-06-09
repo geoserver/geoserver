@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
@@ -24,15 +23,12 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.styling.Style;
 import org.junit.Before;
-import org.opengis.feature.type.Name;
-
 import org.springframework.mock.web.MockHttpServletRequest;
-
 
 public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /**
-     * request reader to test against, initialized by default with all parameters from
-     * <code>requiredParameters</code> and <code>optionalParameters</code>
+     * request reader to test against, initialized by default with all parameters from <code>
+     * requiredParameters</code> and <code>optionalParameters</code>
      */
     GetLegendGraphicKvpReader requestReader;
 
@@ -51,29 +47,28 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /** mock config object */
     WMS wms;
 
-  
-
     /**
      * Remainder:
+     *
      * <ul>
-     * <li>VERSION/Required
-     * <li>REQUEST/Required
-     * <li>LAYER/Required
-     * <li>FORMAT/Required
-     * <li>STYLE/Optional
-     * <li>FEATURETYPE/Optional
-     * <li>RULE/Optional
-     * <li>SCALE/Optional
-     * <li>SLD/Optional
-     * <li>SLD_BODY/Optional
-     * <li>WIDTH/Optional
-     * <li>HEIGHT/Optional
-     * <li>LANGUAGE/Optional
-     * <li>EXCEPTIONS/Optional
+     *   <li>VERSION/Required
+     *   <li>REQUEST/Required
+     *   <li>LAYER/Required
+     *   <li>FORMAT/Required
+     *   <li>STYLE/Optional
+     *   <li>FEATURETYPE/Optional
+     *   <li>RULE/Optional
+     *   <li>SCALE/Optional
+     *   <li>SLD/Optional
+     *   <li>SLD_BODY/Optional
+     *   <li>WIDTH/Optional
+     *   <li>HEIGHT/Optional
+     *   <li>LANGUAGE/Optional
+     *   <li>EXCEPTIONS/Optional
      * </ul>
      */
     @Before
-    public void setParameters() throws Exception { 
+    public void setParameters() throws Exception {
         requiredParameters = new HashMap<String, String>();
         requiredParameters.put("VERSION", "1.0.0");
         requiredParameters.put("REQUEST", "GetLegendGraphic");
@@ -101,12 +96,9 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /**
      * This test ensures that when a SLD parameter has been passed that refers to a SLD document
      * with multiple styles, the required one is choosed based on the LAYER parameter.
-     * <p>
-     * This is the case where a remote SLD document is used in "library" mode.
-     * </p>
-     * 
+     *
+     * <p>This is the case where a remote SLD document is used in "library" mode.
      */
-    
     @org.junit.Test
     public void testRemoteSLDMultipleStyles() throws Exception {
         final URL remoteSldUrl = getClass().getResource("MultipleStyles.sld");
@@ -115,8 +107,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         this.allParameters.put("LAYER", "cite:Ponds");
         this.allParameters.put("STYLE", "Ponds");
 
-        GetLegendGraphicRequest request = requestReader.read(new GetLegendGraphicRequest(),
-                allParameters, allParameters);
+        GetLegendGraphicRequest request =
+                requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
         Style selectedStyle = request.getStyles().get(0);
@@ -133,30 +125,31 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         assertNotNull(selectedStyle);
         assertEquals("Lakes", selectedStyle.getName());
     }
-    
+
     @org.junit.Test
     public void testMissingLayerParameter() throws Exception {
         requiredParameters.remove("LAYER");
         try {
-            requestReader.read(new GetLegendGraphicRequest(), requiredParameters,
-                    requiredParameters);
+            requestReader.read(
+                    new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
             fail("Expected ServiceException");
         } catch (ServiceException e) {
             assertEquals("LayerNotDefined", e.getCode());
         }
     }
-    
+
     @org.junit.Test
     public void testMissingFormatParameter() throws Exception {
         requiredParameters.remove("FORMAT");
         try {
-            requestReader.read(new GetLegendGraphicRequest(), requiredParameters,
-                    requiredParameters);
+            requestReader.read(
+                    new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
             fail("Expected ServiceException");
         } catch (ServiceException e) {
             assertEquals("MissingFormat", e.getCode());
         }
     }
+
     @org.junit.Test
     public void testStrictParameter() throws Exception {
         GetLegendGraphicRequest request;
@@ -170,56 +163,68 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
         assertFalse(request.isStrict());
     }
-    
+
     @org.junit.Test
     public void testLayerGroup() throws Exception {
         GetLegendGraphicRequest request;
-        
-        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+
+        request =
+                requestReader.read(
+                        new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertTrue(request.getLayers().size() == 1);
-        
+
         requiredParameters.put("LAYER", NATURE_GROUP);
-        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        request =
+                requestReader.read(
+                        new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertTrue(request.getLayers().size() > 1);
     }
-    
+
     @org.junit.Test
     public void testLanguage() throws Exception {
         GetLegendGraphicRequest request;
-        
-        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+
+        request =
+                requestReader.read(
+                        new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertNull(request.getLocale());
-        
+
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
         assertEquals(Locale.ENGLISH, request.getLocale());
     }
-    
+
     @org.junit.Test
     public void testStylesForLayerGroup() throws Exception {
         GetLegendGraphicRequest request;
-               
+
         requiredParameters.put("LAYER", NATURE_GROUP);
         requiredParameters.put("STYLE", "style1,style2");
-        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        request =
+                requestReader.read(
+                        new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertTrue(request.getStyles().size() == 2);
     }
-    
+
     @org.junit.Test
     public void testRulesForLayerGroup() throws Exception {
         GetLegendGraphicRequest request;
-               
+
         requiredParameters.put("LAYER", NATURE_GROUP);
         requiredParameters.put("RULE", "rule1,rule2");
-        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        request =
+                requestReader.read(
+                        new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertTrue(request.getRules().size() == 2);
     }
-    
+
     @org.junit.Test
     public void testLabelsForLayerGroup() throws Exception {
         GetLegendGraphicRequest request;
-               
+
         requiredParameters.put("LAYER", NATURE_GROUP);
-        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertNotNull(request.getTitle(new NameImpl("http://www.opengis.net/cite","Lakes")));
+        request =
+                requestReader.read(
+                        new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertNotNull(request.getTitle(new NameImpl("http://www.opengis.net/cite", "Lakes")));
     }
 }

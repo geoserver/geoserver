@@ -5,18 +5,16 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 
 public class TemplateControllerTest extends CatalogRESTTestSupport {
 
@@ -59,13 +57,13 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
 
         // PUT
         put(path, content).close();
-        String list = getIndexAsString(path,null);
-        if(!list.contains(htmlIndexToken)){
-            assertTrue("list "+path, list.contains(htmlIndexToken));
+        String list = getIndexAsString(path, null);
+        if (!list.contains(htmlIndexToken)) {
+            assertTrue("list " + path, list.contains(htmlIndexToken));
         }
-        assertTrue("list "+path,getIndexAsString(path, "html").contains(htmlIndexToken));
-        assertTrue("list "+path,getIndexAsString(path, "xml").contains(xmlIndexToken));
-        assertTrue("list "+path,getIndexAsString(path, "json").contains(jsonIndexToken));
+        assertTrue("list " + path, getIndexAsString(path, "html").contains(htmlIndexToken));
+        assertTrue("list " + path, getIndexAsString(path, "xml").contains(xmlIndexToken));
+        assertTrue("list " + path, getIndexAsString(path, "json").contains(jsonIndexToken));
 
         // GET
         assertEquals(content, getAsString(path).trim());
@@ -83,35 +81,41 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetPutGetDeleteGet() throws Exception {
-        String path = ROOT_PATH+"/templates/my_template.ftl";
+        String path = ROOT_PATH + "/templates/my_template.ftl";
         testGetPutGetDeleteGet(path, "hello world");
     }
 
     private List<String> getAllPaths() {
         List<String> paths = new ArrayList<>();
 
-        paths.add(ROOT_PATH+"/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH+"/templates/anotherTemplate.ftl");
+        paths.add(ROOT_PATH + "/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/templates/anotherTemplate.ftl");
 
-        paths.add(ROOT_PATH+"/workspaces/topp/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH+"/workspaces/topp/templates/anotherTemplate.ftl");
-
-        paths.add(ROOT_PATH+"/workspaces/topp/datastores/states_shapefile/templates/aTemplate.ftl");
-        paths.add(
-                ROOT_PATH+"/workspaces/topp/datastores/states_shapefile/templates/anotherTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/topp/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/topp/templates/anotherTemplate.ftl");
 
         paths.add(
-                ROOT_PATH+"/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/aTemplate.ftl");
+                ROOT_PATH + "/workspaces/topp/datastores/states_shapefile/templates/aTemplate.ftl");
         paths.add(
-                ROOT_PATH+"/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/anotherTemplate.ftl");
-
-        paths.add(ROOT_PATH+"/workspaces/wcs/coveragestores/DEM/templates/aTemplate.ftl");
-        paths.add(ROOT_PATH+"/workspaces/wcs/coveragestores/DEM/templates/anotherTemplate.ftl");
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/templates/anotherTemplate.ftl");
 
         paths.add(
-                ROOT_PATH+"/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/aTemplate.ftl");
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/aTemplate.ftl");
         paths.add(
-                ROOT_PATH+"/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/anotherTemplate.ftl");
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/anotherTemplate.ftl");
+
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/aTemplate.ftl");
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/anotherTemplate.ftl");
+
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/aTemplate.ftl");
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/anotherTemplate.ftl");
 
         return paths;
     }
@@ -125,9 +129,10 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
     }
 
     void assertNotFound(String path) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(path+"?quietOnNotFound=true");
+        MockHttpServletResponse response = getAsServletResponse(path + "?quietOnNotFound=true");
         assertEquals("404 expected for '" + path + "'", 404, response.getStatus());
     }
+
     @Test
     public void testAllPaths() throws Exception {
         String contentHeader = "hello path ";
@@ -157,8 +162,8 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testUpdate() throws Exception {
-        String fooTemplate = ROOT_PATH+"/templates/foo.ftl";
-        String barTemplate = ROOT_PATH+"/templates/bar.ftl";
+        String fooTemplate = ROOT_PATH + "/templates/foo.ftl";
+        String barTemplate = ROOT_PATH + "/templates/bar.ftl";
 
         String fooContent = "hello foo - longer than bar";
         String barContent = "hello bar";

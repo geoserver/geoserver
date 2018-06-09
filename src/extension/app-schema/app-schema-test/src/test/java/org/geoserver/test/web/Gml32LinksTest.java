@@ -6,7 +6,6 @@
 package org.geoserver.test.web;
 
 import java.util.Arrays;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.Gsml30MockData;
 import org.junit.Test;
@@ -14,7 +13,9 @@ import org.junit.Test;
 public class Gml32LinksTest extends AbstractMapPreviewPageTest {
 
     public Gml32LinksTest() {
-        super(Arrays.asList("http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml32&amp;maxFeatures=50"));
+        super(
+                Arrays.asList(
+                        "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml32&amp;maxFeatures=50"));
     }
 
     @Override
@@ -26,5 +27,4 @@ public class Gml32LinksTest extends AbstractMapPreviewPageTest {
     public void testGml32Links() {
         super.testAppSchemaGmlLinks();
     }
-
 }

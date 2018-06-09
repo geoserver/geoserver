@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts;
 
+import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureTypeInfo;
 import org.geotools.data.FeatureSource;
@@ -15,11 +16,7 @@ import org.geotools.feature.SchemaException;
 import org.opengis.filter.Filter;
 import org.opengis.util.ProgressListener;
 
-import java.io.IOException;
-
-/**
- * Utility class that returns a feature collection wrapped with a filter.
- */
+/** Utility class that returns a feature collection wrapped with a filter. */
 public class FilteredFeatureType extends DecoratingFeatureTypeInfo {
 
     private final Filter filter;
@@ -30,14 +27,17 @@ public class FilteredFeatureType extends DecoratingFeatureTypeInfo {
     }
 
     @Override
-    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) throws IOException {
+    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints)
+            throws IOException {
         FeatureSource featureSource = super.getFeatureSource(listener, hints);
         if (!(featureSource instanceof SimpleFeatureSource)) {
-            throw new IllegalStateException("Cannot apply dynamic dimension restrictions to complex features.");
+            throw new IllegalStateException(
+                    "Cannot apply dynamic dimension restrictions to complex features.");
         }
         SimpleFeatureSource simpleSource = (SimpleFeatureSource) featureSource;
         try {
-            return new DefaultView(simpleSource, new Query(simpleSource.getSchema().getTypeName(), filter));
+            return new DefaultView(
+                    simpleSource, new Query(simpleSource.getSchema().getTypeName(), filter));
         } catch (SchemaException exception) {
             throw new IOException("Failed to restrict the domain.", exception);
         }

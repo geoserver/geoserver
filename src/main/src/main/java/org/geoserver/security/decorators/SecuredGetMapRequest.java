@@ -7,14 +7,12 @@ package org.geoserver.security.decorators;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
-
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
@@ -29,31 +27,30 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.ows.ServiceException;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
 
 /**
  * Wraps a GetMap request enforcing map limits for each of the layers
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SecuredGetMapRequest implements GetMapRequest {
     static final Logger LOGGER = Logging.getLogger(SecuredGetMapRequest.class);
-    
+
     GetMapRequest delegate;
     List<Layer> layers = new ArrayList<Layer>();
     List<String> styles = new ArrayList<String>();
-    
+
     // we should add layers to the delegate only once, also if
     // getFinalURL is called many times
-    boolean layersAddedToDelegate = false; 
+    boolean layersAddedToDelegate = false;
 
     public SecuredGetMapRequest(GetMapRequest delegate) {
         this.delegate = delegate;
     }
 
-
     public void addLayer(Layer layer, String styleName) {
         layers.add(layer);
-        if(styleName != null) {
+        if (styleName != null) {
             styles.add(styleName);
         } else {
             styles.add("");
@@ -62,7 +59,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
 
     public void addLayer(Layer layer, StyleImpl style) {
         layers.add(layer);
-        if(style != null && style.getName() != null) {
+        if (style != null && style.getName() != null) {
             styles.add(style.getName());
         } else {
             styles.add("");
@@ -75,73 +72,76 @@ public class SecuredGetMapRequest implements GetMapRequest {
     }
 
     public void addLayer(String layerName, String styleName) {
-        throw new UnsupportedOperationException("The secured implementation only supports adding layers using Layer and StyleImpl objects");
+        throw new UnsupportedOperationException(
+                "The secured implementation only supports adding layers using Layer and StyleImpl objects");
     }
 
     public void addLayer(String layerName, StyleImpl style) {
-        throw new UnsupportedOperationException("The secured implementation only supports adding layers using Layer and StyleImpl objects");
+        throw new UnsupportedOperationException(
+                "The secured implementation only supports adding layers using Layer and StyleImpl objects");
     }
-    
+
     public URL getFinalURL() {
         String encodedFilter = buildCQLFilter();
-        if(encodedFilter != null) {
+        if (encodedFilter != null) {
             delegate.setProperty("CQL_FILTER", encodedFilter);
         }
-        
+
         return delegate.getFinalURL();
     }
 
     /**
      * Checks security and build the eventual CQL filter to cascade
-     * @param layerFilters
      *
+     * @param layerFilters
      */
     public String buildCQLFilter() {
         List<Filter> layerFilters = new ArrayList<Filter>();
         // scan and check the layers
         boolean layerFiltersFound = false;
-        for(int i = 0; i < layers.size(); i++) {
+        for (int i = 0; i < layers.size(); i++) {
             Layer layer = layers.get(i);
-            if(layer instanceof SecuredWMSLayer) {
+            if (layer instanceof SecuredWMSLayer) {
                 SecuredWMSLayer secured = (SecuredWMSLayer) layer;
                 final WrapperPolicy policy = secured.getPolicy();
-                if(policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
+                if (policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
                     SecureCatalogImpl.unauthorizedAccess(layer.getName());
                 }
                 // collect read filters
-                if(policy.getLimits() instanceof WMSAccessLimits) {
+                if (policy.getLimits() instanceof WMSAccessLimits) {
                     WMSAccessLimits limits = (WMSAccessLimits) policy.getLimits();
                     layerFilters.add(limits.getReadFilter());
                     layerFiltersFound |= limits.getReadFilter() != null;
-                    
-                    if(limits.getRasterFilter() != null) {
+
+                    if (limits.getRasterFilter() != null) {
                         /*
-                         * To implement this we'd have to change the code in 
+                         * To implement this we'd have to change the code in
                          * SecuredWebMapServer.issueRequest(GetMapRequest) to parse the image,
                          * apply a crop, and encode it back.
                          * Also, if there are multiple layers in the request we'd have to group
                          * them by same raster filter, issue separate request in a format that
                          * supports transparency, crop, merge them back
                          */
-                        LOGGER.severe("Sorry, raster filters for cascaded wms layers " +
-                        		"have not been implemented yet");
+                        LOGGER.severe(
+                                "Sorry, raster filters for cascaded wms layers "
+                                        + "have not been implemented yet");
                     }
                 }
-                
+
                 if (!layersAddedToDelegate) {
                     // add into the request
                     delegate.addLayer(layer, styles.get(i));
                 }
             }
         }
-        
+
         // do we have filters? If so encode as cql hoping to find a GeoServer on the other side
         // TODO: handle eventual original CQL filters
         String encodedFilter = null;
-        if(layerFiltersFound) {
+        if (layerFiltersFound) {
             StringBuilder sb = new StringBuilder();
             for (Filter filter : layerFilters) {
-                if(filter != null) {
+                if (filter != null) {
                     sb.append(CQL.toCQL(filter));
                 }
                 sb.append(";");
@@ -150,13 +150,12 @@ public class SecuredGetMapRequest implements GetMapRequest {
             sb.setLength(sb.length() - 1);
             encodedFilter = ResponseUtils.urlEncode(sb.toString());
         }
-        
+
         layersAddedToDelegate = true;
-        
+
         return encodedFilter;
     }
 
-    
     // -----------------------------------------------------------------------------------------
     // Purely delegated methods
     // -----------------------------------------------------------------------------------------
@@ -249,11 +248,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
         delegate.setVersion(version);
     }
 
-    public Response createResponse(HTTPResponse response)
-            throws ServiceException, IOException {
+    public Response createResponse(HTTPResponse response) throws ServiceException, IOException {
         return delegate.createResponse(response);
     }
-    
-    
-   
 }

@@ -4,16 +4,14 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import java.io.Serializable;
+import static org.junit.Assert.assertNotNull;
 
+import com.google.common.cache.Cache;
+import java.io.Serializable;
 import org.geoserver.catalog.Info;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.cache.Cache;
-
-import static org.junit.Assert.assertNotNull;
 
 public class HzCacheProviderTest {
 

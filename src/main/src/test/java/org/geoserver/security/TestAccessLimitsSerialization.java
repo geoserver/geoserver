@@ -5,23 +5,20 @@
  */
 package org.geoserver.security;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import junit.framework.TestCase;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geotools.factory.CommonFactoryFinder;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
-
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class TestAccessLimitsSerialization extends TestCase {
 
@@ -45,7 +42,8 @@ public class TestAccessLimitsSerialization extends TestCase {
     }
 
     public void testSerializeWorkspaceAccessLimits() throws Exception {
-        WorkspaceAccessLimits limits = new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
+        WorkspaceAccessLimits limits =
+                new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
 
         testObjectSerialization(limits);
     }
@@ -65,8 +63,8 @@ public class TestAccessLimitsSerialization extends TestCase {
     public void testVectorAccessLimits() throws Exception {
         List<PropertyName> properties = new ArrayList<PropertyName>();
         properties.add(ff.property("test"));
-        VectorAccessLimits limits = new VectorAccessLimits(CatalogMode.MIXED, properties, filter,
-                properties, filter);
+        VectorAccessLimits limits =
+                new VectorAccessLimits(CatalogMode.MIXED, properties, filter, properties, filter);
 
         testObjectSerialization(limits);
     }
@@ -90,5 +88,4 @@ public class TestAccessLimitsSerialization extends TestCase {
         assertNotSame(object, clone);
         assertEquals(object, clone);
     }
-
 }

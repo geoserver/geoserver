@@ -12,7 +12,7 @@ import org.geoserver.config.GeoServer;
 
 /**
  * Excel 97-2003 WFS output format
- * 
+ *
  * @author Shane StClair, Axiom Consulting, shane@axiomalaska.com
  */
 public class Excel97OutputFormat extends ExcelOutputFormat {
@@ -21,7 +21,7 @@ public class Excel97OutputFormat extends ExcelOutputFormat {
     /**
      * Constructor setting the format type as "excel" in addition to file extension, mime type, and
      * row and column limits
-     * 
+     *
      * @param gs
      */
     public Excel97OutputFormat(GeoServer gs) {
@@ -32,9 +32,7 @@ public class Excel97OutputFormat extends ExcelOutputFormat {
         mimeType = "application/msexcel";
     }
 
-    /**
-     * Returns a new HSSFWorkbook workbook
-     */
+    /** Returns a new HSSFWorkbook workbook */
     @Override
     protected Workbook getNewWorkbook() {
         return new HSSFWorkbook();

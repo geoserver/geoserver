@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-
 public class RESTMonitorCallbackTest extends GeoServerSystemTestSupport {
 
     static Monitor monitor;
@@ -40,49 +39,49 @@ public class RESTMonitorCallbackTest extends GeoServerSystemTestSupport {
     RESTMonitorCallback callback;
     RequestData data;
     static Catalog catalog;
-    
-    static public Filter parseFilter(String cql) {
+
+    public static Filter parseFilter(String cql) {
         try {
             return CQL.toFilter(cql);
-        } catch (CQLException ex){
+        } catch (CQLException ex) {
             throw new IllegalArgumentException(ex);
         }
     }
 
-    
     @BeforeClass
     public static void setUpData() throws Exception {
         MonitorDAO dao = new MemoryMonitorDAO();
         new MonitorTestData(dao).setup();
-        
-        MonitorConfig mc = new MonitorConfig() {
-            
-            @Override
-            public MonitorDAO createDAO() {
-                MonitorDAO dao = new MemoryMonitorDAO();
-                try {
-                    new MonitorTestData(dao).setup();
-                    return dao;
-                } catch (java.text.ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            
-            @Override
-            public BboxMode getBboxMode() {
-                return BboxMode.FULL;
-            }
-        };
-        
+
+        MonitorConfig mc =
+                new MonitorConfig() {
+
+                    @Override
+                    public MonitorDAO createDAO() {
+                        MonitorDAO dao = new MemoryMonitorDAO();
+                        try {
+                            new MonitorTestData(dao).setup();
+                            return dao;
+                        } catch (java.text.ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public BboxMode getBboxMode() {
+                        return BboxMode.FULL;
+                    }
+                };
+
         GeoServer gs = createMock(GeoServer.class);
         monitor = new Monitor(mc);
         monitor.setServer(gs);
-        
-        catalog=new CatalogImpl();
-        
+
+        catalog = new CatalogImpl();
+
         expect(gs.getCatalog()).andStubReturn(catalog);
         replay(gs);
-        
+
         NamespaceInfo ns = catalog.getFactory().createNamespace();
         ns.setPrefix("acme");
         ns.setURI("http://acme.org");
@@ -100,29 +99,27 @@ public class RESTMonitorCallbackTest extends GeoServerSystemTestSupport {
         ftBar.setNamespace(ns);
         ftBar.setStore(ds);
         catalog.add(ftBar);
-        
     }
-    
+
     @Before
     public void setUp() throws Exception {
         callback = new RESTMonitorCallback(monitor);
         data = monitor.start();
     }
-    
+
     public void tearDown() throws Exception {
         monitor.complete();
     }
-    
+
     @Test
     public void testURLEncodedRequestPathInfo() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/layers/foo");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/layers/foo");
         assertEquals(404, response.getStatus());
 
         assertEquals("foo", data.getResources().get(1));
 
-        response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/layers/acme:foo");
+        response = getAsServletResponse(RestBaseController.ROOT_PATH + "/layers/acme:foo");
         assertEquals(404, response.getStatus());
 
         assertEquals("acme:foo", data.getResources().get(2));

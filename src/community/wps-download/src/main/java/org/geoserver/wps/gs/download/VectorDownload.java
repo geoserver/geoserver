@@ -5,12 +5,12 @@
  */
 package org.geoserver.wps.gs.download;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.resource.Resource;
@@ -35,14 +35,11 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * The class that does the real work of checking if we are exceeeding the download limits for vector data. Also this class writes the features in the
- * output file.
- * 
+ * The class that does the real work of checking if we are exceeeding the download limits for vector
+ * data. Also this class writes the features in the output file.
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
- * 
  */
 class VectorDownload {
 
@@ -58,11 +55,14 @@ class VectorDownload {
 
     /**
      * Constructor, takes a {@link DownloadServiceConfiguration} and a {@link WPSResourceManager}.
-     * 
-     * @param limits the {@link DownloadServiceConfiguration} to check for not exceeding the download limits.
+     *
+     * @param limits the {@link DownloadServiceConfiguration} to check for not exceeding the
+     *     download limits.
      * @param resourceManager the {@link WPSResourceManager} to handle generated resources
      */
-    public VectorDownload(DownloadServiceConfiguration limits, WPSResourceManager resourceManager,
+    public VectorDownload(
+            DownloadServiceConfiguration limits,
+            WPSResourceManager resourceManager,
             ApplicationContext context) {
         this.limits = limits;
         this.resourceManager = resourceManager;
@@ -70,16 +70,17 @@ class VectorDownload {
     }
 
     /**
-     * Extract vector data to a file, given the provided mime-type. This method does the following operations:
+     * Extract vector data to a file, given the provided mime-type. This method does the following
+     * operations:
+     *
      * <ul>
-     * <li>Reads and filter the features (if needed)</li>
-     * <li>Reprojects the features (if needed)</li>
-     * <li>Clips the features (if needed)</li>
-     * <li>Writes the result</li>
-     * <li>Cleanup the generated coverages</li>
+     *   <li>Reads and filter the features (if needed)
+     *   <li>Reprojects the features (if needed)
+     *   <li>Clips the features (if needed)
+     *   <li>Writes the result
+     *   <li>Cleanup the generated coverages
      * </ul>
-     * 
-     * 
+     *
      * @param resourceInfo the {@link FeatureTypeInfo} to download from
      * @param mimeType the mme-type for the requested output format
      * @param roi the {@link Geometry} for the clip/intersection
@@ -89,9 +90,15 @@ class VectorDownload {
      * @param progressListener
      * @return a file, given the provided mime-type.
      */
-    public Resource execute(FeatureTypeInfo resourceInfo, String mimeType, Geometry roi, boolean clip,
-            Filter filter, CoordinateReferenceSystem targetCRS,
-            final ProgressListener progressListener) throws Exception {
+    public Resource execute(
+            FeatureTypeInfo resourceInfo,
+            String mimeType,
+            Geometry roi,
+            boolean clip,
+            Filter filter,
+            CoordinateReferenceSystem targetCRS,
+            final ProgressListener progressListener)
+            throws Exception {
 
         // prepare native CRS
         CoordinateReferenceSystem nativeCRS = DownloadUtilities.getNativeCRS(resourceInfo);
@@ -118,8 +125,9 @@ class VectorDownload {
         //
 
         // access feature source and collection of features
-        final SimpleFeatureSource featureSource = (SimpleFeatureSource) resourceInfo
-                .getFeatureSource(null, GeoTools.getDefaultHints());
+        final SimpleFeatureSource featureSource =
+                (SimpleFeatureSource)
+                        resourceInfo.getFeatureSource(null, GeoTools.getDefaultHints());
 
         // basic filter preparation
         Filter ra = Filter.INCLUDE;
@@ -136,12 +144,13 @@ class VectorDownload {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Adding Geometry filter with ROI");
             }
-            final String dataGeomName = featureSource.getSchema().getGeometryDescriptor()
-                    .getLocalName();
-            final Intersects intersectionFilter = FeatureUtilities.DEFAULT_FILTER_FACTORY
-                    .intersects(FeatureUtilities.DEFAULT_FILTER_FACTORY.property(dataGeomName),
-                            FeatureUtilities.DEFAULT_FILTER_FACTORY.literal(roiManager
-                                    .getSafeRoiInNativeCRS()));
+            final String dataGeomName =
+                    featureSource.getSchema().getGeometryDescriptor().getLocalName();
+            final Intersects intersectionFilter =
+                    FeatureUtilities.DEFAULT_FILTER_FACTORY.intersects(
+                            FeatureUtilities.DEFAULT_FILTER_FACTORY.property(dataGeomName),
+                            FeatureUtilities.DEFAULT_FILTER_FACTORY.literal(
+                                    roiManager.getSafeRoiInNativeCRS()));
             ra = FeatureUtilities.DEFAULT_FILTER_FACTORY.and(ra, intersectionFilter);
         }
 
@@ -168,7 +177,8 @@ class VectorDownload {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Reprojecting features");
                 }
-                reprojectedFeatures = new ReprojectingFeatureCollection(originalFeatures, targetCRS);
+                reprojectedFeatures =
+                        new ReprojectingFeatureCollection(originalFeatures, targetCRS);
             } else {
                 reprojectedFeatures = originalFeatures;
                 DownloadUtilities.checkIsEmptyFeatureCollection(reprojectedFeatures);
@@ -188,9 +198,10 @@ class VectorDownload {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Clipping features");
             }
-            final ClipProcess clipProcess = new ClipProcess();// TODO avoid unnecessary creation
-            clippedFeatures = clipProcess.execute(reprojectedFeatures,
-                    roiManager.getSafeRoiInTargetCRS(), true);
+            final ClipProcess clipProcess = new ClipProcess(); // TODO avoid unnecessary creation
+            clippedFeatures =
+                    clipProcess.execute(
+                            reprojectedFeatures, roiManager.getSafeRoiInTargetCRS(), true);
 
             // checks
             DownloadUtilities.checkIsEmptyFeatureCollection(clippedFeatures);
@@ -203,27 +214,31 @@ class VectorDownload {
         //
         // writing the output, making sure it is a zip
         return writeVectorOutput(clippedFeatures, resourceInfo.getName(), mimeType);
-
     }
 
     /**
      * Write vector output with the provided PPIO. It returns the {@link File} it writes to.
-     * 
+     *
      * @param features {@link SimpleFeatureCollection} containing the features to write
      * @param name name of the feature source
      * @param mimeType mimetype of the result
      * @return a {@link File} containing the written features
      */
-    private Resource writeVectorOutput(final SimpleFeatureCollection features, final String name,
-            final String mimeType) throws Exception {
+    private Resource writeVectorOutput(
+            final SimpleFeatureCollection features, final String name, final String mimeType)
+            throws Exception {
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing features");
         }
         // Search a proper PPIO
-        ProcessParameterIO ppio_ = DownloadUtilities.find(new Parameter<SimpleFeatureCollection>(
-"fakeParam", SimpleFeatureCollection.class),
-                context, mimeType, false);
+        ProcessParameterIO ppio_ =
+                DownloadUtilities.find(
+                        new Parameter<SimpleFeatureCollection>(
+                                "fakeParam", SimpleFeatureCollection.class),
+                        context,
+                        mimeType,
+                        false);
         if (ppio_ == null) {
             throw new ProcessException("Don't know how to encode in mime type " + mimeType);
         } else if (!(ppio_ instanceof ComplexPPIO)) {
@@ -262,19 +277,21 @@ class VectorDownload {
         try {
 
             // If limits are configured we must create an OutputStream that checks limits
-            final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
-                    output.out());
+            final BufferedOutputStream bufferedOutputStream =
+                    new BufferedOutputStream(output.out());
             if (limit > DownloadServiceConfiguration.NO_LIMIT) {
-                os = new LimitedOutputStream(bufferedOutputStream, limit) {
+                os =
+                        new LimitedOutputStream(bufferedOutputStream, limit) {
 
-                    @Override
-                    protected void raiseError(long pSizeMax, long pCount) throws IOException {
-                        IOException ioe = new IOException(
-                                "Download Exceeded the maximum HARD allowed size!");
-                        throw ioe;
-                    }
-
-                };
+                            @Override
+                            protected void raiseError(long pSizeMax, long pCount)
+                                    throws IOException {
+                                IOException ioe =
+                                        new IOException(
+                                                "Download Exceeded the maximum HARD allowed size!");
+                                throw ioe;
+                            }
+                        };
 
             } else {
                 os = bufferedOutputStream;
@@ -296,6 +313,5 @@ class VectorDownload {
 
         // return
         return output;
-
     }
 }

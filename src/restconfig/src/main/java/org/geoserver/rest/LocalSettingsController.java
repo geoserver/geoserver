@@ -5,6 +5,8 @@
 package org.geoserver.rest;
 
 import freemarker.template.ObjectWrapper;
+import java.lang.reflect.Type;
+import java.util.Collections;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.*;
@@ -22,13 +24,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Type;
-import java.util.Collections;
-
 /**
  * Local Settings controller
  *
- * Provides access to workspace-specific settings
+ * <p>Provides access to workspace-specific settings
  */
 @RestController
 @ControllerAdvice
@@ -40,10 +39,13 @@ public class LocalSettingsController extends AbstractGeoServerController {
         super(geoServer);
     }
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE })
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public RestWrapper<SettingsInfo> localSettingsGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
@@ -55,13 +57,17 @@ public class LocalSettingsController extends AbstractGeoServerController {
         return wrapObject(settingsInfo, SettingsInfo.class);
     }
 
-    @PostMapping(consumes = {
+    @PostMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     @ResponseStatus(HttpStatus.CREATED)
-    public String localSettingsCreate(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+    public String localSettingsCreate(
+            @PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         String name = "";
         if (workspaceName != null) {
             Catalog catalog = geoServer.getCatalog();
@@ -74,12 +80,16 @@ public class LocalSettingsController extends AbstractGeoServerController {
         return name;
     }
 
-    @PutMapping(consumes = {
+    @PutMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
-    public void localSettingsPut(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+            MediaType.TEXT_XML_VALUE
+        }
+    )
+    public void localSettingsPut(
+            @PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo original = geoServer.getSettings(workspaceInfo);
@@ -105,7 +115,10 @@ public class LocalSettingsController extends AbstractGeoServerController {
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return SettingsInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -124,5 +137,4 @@ public class LocalSettingsController extends AbstractGeoServerController {
         persister.setHideFeatureTypeAttributes();
         persister.getXStream().alias("contact", ContactInfo.class);
     }
-
 }

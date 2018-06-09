@@ -11,11 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.XlinkPropertyNameType;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.request.Query;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
@@ -30,16 +27,15 @@ import org.opengis.filter.sort.SortBy;
  * or field names (such conflicts might cause issues down the road). In case of conflicts, the class
  * will create/alter the aliases to avoid them, and modify filters and property name selection
  * accordingly
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class AliasedQuery extends Query {
 
     /**
      * Renames property names following an alias rename map
-     * 
-     * @author Andrea Aime - GeoSolutions
      *
+     * @author Andrea Aime - GeoSolutions
      */
     class AliasRenameVisitor extends DuplicatingFilterVisitor {
 
@@ -55,17 +51,15 @@ class AliasedQuery extends Query {
             String renamed = rename(renameMap, name);
             return ff.property(renamed);
         }
-
     }
 
     /**
      * Checks the aliases in the query are present, and not in conflict with feature type names or
      * field names (such conflicts might cause issues down the road). In case of conflicts a new
      * Query object will be returned in which the conflicts have been resolved.
-     * 
+     *
      * @param metas
      * @param query
-     *
      * @throws IOException
      */
     static Query fixAliases(List<FeatureTypeInfo> metas, Query query) throws IOException {
@@ -127,8 +121,8 @@ class AliasedQuery extends Query {
         this.aliases = aliases;
         if (originalAliases != null && !originalAliases.isEmpty()) {
             Map<String, String> renameMap = buildRenameMap(originalAliases, aliases);
-            this.filter = (Filter) query.getFilter()
-                    .accept(new AliasRenameVisitor(renameMap), null);
+            this.filter =
+                    (Filter) query.getFilter().accept(new AliasRenameVisitor(renameMap), null);
             if (query.getPropertyNames() != null) {
                 this.propertyNames = new ArrayList<>();
                 for (String name : query.getPropertyNames()) {
@@ -141,7 +135,8 @@ class AliasedQuery extends Query {
         }
     }
 
-    private Map<String, String> buildRenameMap(List<String> originalAliases, List<String> newAliases) {
+    private Map<String, String> buildRenameMap(
+            List<String> originalAliases, List<String> newAliases) {
         Map<String, String> map = new HashMap<String, String>();
         for (int i = 0; i < originalAliases.size(); i++) {
             String a1 = originalAliases.get(i);
@@ -162,7 +157,6 @@ class AliasedQuery extends Query {
             if (renamed != null) {
                 name = renamed + name.substring(idx);
             }
-
         }
         return name;
     }
@@ -196,5 +190,4 @@ class AliasedQuery extends Query {
     public List<XlinkPropertyNameType> getXlinkPropertyNames() {
         return delegate.getXlinkPropertyNames();
     }
-
 }

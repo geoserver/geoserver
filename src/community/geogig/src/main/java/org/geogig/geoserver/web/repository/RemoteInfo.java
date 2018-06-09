@@ -6,21 +6,15 @@ package org.geogig.geoserver.web.repository;
 
 import static com.google.common.base.Objects.equal;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
 import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.repository.Remote;
 
-import com.google.common.base.Objects;
-
-/**
- * A {@link Remote} representation for the presentation layer
- *
- */
+/** A {@link Remote} representation for the presentation layer */
 public class RemoteInfo implements Serializable {
 
     private static final long serialVersionUID = 242699247252608741L;
@@ -38,7 +32,9 @@ public class RemoteInfo implements Serializable {
             return true;
         }
         RemoteInfo r = (RemoteInfo) o;
-        return equal(name, r.name) && equal(URL, r.URL) && equal(userName, r.userName)
+        return equal(name, r.name)
+                && equal(URL, r.URL)
+                && equal(userName, r.userName)
                 && equal(password, r.password);
     }
 
@@ -90,8 +86,9 @@ public class RemoteInfo implements Serializable {
         String fetch = "+" + Ref.HEADS_PREFIX + "*:" + Ref.REMOTES_PREFIX + name + "/*";
         boolean mapped = false;
         String mappedBranch = null;
-        Remote r = new Remote(name, fetchurl, pushurl, fetch, mapped, mappedBranch, userName,
-                password);
+        Remote r =
+                new Remote(
+                        name, fetchurl, pushurl, fetch, mapped, mappedBranch, userName, password);
         return r;
     }
 

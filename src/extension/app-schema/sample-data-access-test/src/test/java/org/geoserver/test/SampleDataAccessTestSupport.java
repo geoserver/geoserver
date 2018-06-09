@@ -6,13 +6,12 @@
 
 package org.geoserver.test;
 
-import org.geoserver.data.test.TestData;
 import org.geotools.data.SampleDataAccess;
 
 /**
  * Abstract base class for test cases that test integration of {@link SampleDataAccess} with
  * GeoServer.
- * 
+ *
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
 public abstract class SampleDataAccessTestSupport extends GeoServerSystemTestSupport {
@@ -21,5 +20,4 @@ public abstract class SampleDataAccessTestSupport extends GeoServerSystemTestSup
     protected SampleDataAccessMockData createTestData() throws Exception {
         return new SampleDataAccessMockData();
     }
-
 }

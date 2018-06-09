@@ -6,21 +6,19 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:GetCapabilitiesType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="GetCapabilitiesType"&gt;       &lt;xsd:annotation&gt;
  *              &lt;xsd:documentation&gt;             This type defines the
@@ -35,17 +33,14 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
-    /**
-     * Wfs factory
-     */
+    /** Wfs factory */
     WfsFactory wfsFactory;
 
-    /**
-     * Ows Factory
-     */
+    /** Ows Factory */
     Ows10Factory owsFactory;
 
     public GetCapabilitiesTypeBinding(WfsFactory wfsFactory, Ows10Factory owsFactory) {
@@ -53,14 +48,13 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
         this.owsFactory = owsFactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.GETCAPABILITIESTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -71,13 +65,13 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetCapabilitiesType getCapabilities = wfsFactory.createGetCapabilitiesType();
         getCapabilities.setAcceptVersions(owsFactory.createAcceptVersionsType());
 

@@ -1,7 +1,6 @@
 package org.geoserver.security.onelogin.test;
 
 import java.io.InputStream;
-
 import org.opensaml.common.SAMLObject;
 import org.opensaml.saml2.binding.decoding.HTTPRedirectDeflateDecoder;
 
@@ -12,5 +11,4 @@ public class StringSamlDecoder extends HTTPRedirectDeflateDecoder {
         SAMLObject samlMessage = (SAMLObject) unmarshallMessage(samlMessageIns);
         return samlMessage;
     }
-
 }

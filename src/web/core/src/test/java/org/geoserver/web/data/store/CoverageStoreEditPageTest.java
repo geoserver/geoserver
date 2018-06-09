@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -35,19 +34,23 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     @Before
     public void init() throws IOException {
         login();
-        
-        coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(),
-                CoverageStoreInfo.class);
-        if(coverageStore == null) {
-        	// revert the bluemable modified change
+
+        coverageStore =
+                getCatalog()
+                        .getStoreByName(
+                                MockData.TASMANIA_BM.getLocalPart(), CoverageStoreInfo.class);
+        if (coverageStore == null) {
+            // revert the bluemable modified change
             Catalog cat = getCatalog();
             CoverageStoreInfo c = cat.getCoverageStoreByName("BlueMarbleModified");
             if (c != null) {
                 c.setName("BlueMarble");
                 cat.save(c);
             }
-            coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(),
-                    CoverageStoreInfo.class);
+            coverageStore =
+                    getCatalog()
+                            .getStoreByName(
+                                    MockData.TASMANIA_BM.getLocalPart(), CoverageStoreInfo.class);
         }
         tester.startPage(new CoverageStoreEditPage(coverageStore.getId()));
     }
@@ -58,7 +61,8 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertLabel("rasterStoreForm:storeType", "GeoTIFF");
-        tester.assertModelValue("rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
+        tester.assertModelValue(
+                "rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
     }
 
     @Test
@@ -81,7 +85,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("rasterStoreForm:save");
 
         tester.assertRenderedPage(CoverageStoreEditPage.class);
-        tester.assertErrorMessages(new String[] { "Field 'Data Source Name' is required." });
+        tester.assertErrorMessages(new String[] {"Field 'Data Source Name' is required."});
     }
 
     /**
@@ -94,7 +98,8 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
-        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:border_body:paramValue";
+        final String wsDropdownPath =
+                "rasterStoreForm:workspacePanel:border:border_body:paramValue";
 
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.WCS_PREFIX));
 
@@ -123,7 +128,9 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         assertTrue(resourcesByStore.size() > 0);
 
         for (CoverageInfo cv : resourcesByStore) {
-            assertEquals("Namespace for " + cv.getName() + " was not updated", workspace.getName(),
+            assertEquals(
+                    "Namespace for " + cv.getName() + " was not updated",
+                    workspace.getName(),
                     cv.getNamespace().getPrefix());
         }
     }
@@ -138,13 +145,13 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         try {
             tester.startPage(new CoverageStoreEditPage(store));
             tester.assertNoErrorMessage();
-            
+
             FormTester form = tester.newFormTester("rasterStoreForm");
             form.setValue("namePanel:border:border_body:paramValue", "foo");
             form.submit();
             tester.clickLink("rasterStoreForm:save");
             tester.assertNoErrorMessage();
-    
+
             assertNotNull(store.getId());
             assertEquals("foo", store.getName());
             assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
@@ -153,18 +160,18 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
             catalog.remove(store);
         }
     }
-    
+
     @Test
     public void testCoverageStoreEdit() throws Exception {
         final Catalog catalog = getCatalog();
         CoverageStoreInfo store = catalog.getFactory().createCoverageStore();
         new CatalogBuilder(catalog).updateCoverageStore(store, coverageStore);
         assertNull(store.getId());
-        
+
         try {
             tester.startPage(new CoverageStoreEditPage(store));
             tester.assertNoErrorMessage();
-            
+
             FormTester form = tester.newFormTester("rasterStoreForm");
             form.setValue("namePanel:border:border_body:paramValue", "foo");
             form.submit();
@@ -177,7 +184,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
             assertNotNull(expandedStore.getId());
             assertNotNull(expandedStore.getCatalog());
-            
+
             catalog.validate(expandedStore, false).throwIfInvalid();
         } finally {
             catalog.remove(store);

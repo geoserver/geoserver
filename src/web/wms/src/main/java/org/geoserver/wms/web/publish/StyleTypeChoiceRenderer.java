@@ -17,5 +17,4 @@ public class StyleTypeChoiceRenderer extends ChoiceRenderer<StyleType> {
     public String getIdValue(StyleType object, int index) {
         return object.toString();
     }
-
 }

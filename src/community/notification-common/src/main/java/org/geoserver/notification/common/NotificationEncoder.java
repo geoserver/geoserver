@@ -5,14 +5,12 @@
 
 package org.geoserver.notification.common;
 
-/**
- * Encodes a notification into some payload format
- */
+/** Encodes a notification into some payload format */
 public interface NotificationEncoder {
 
     /**
      * Transforms notification into byte stream payload
-     * 
+     *
      * @throws Exception
      */
     public byte[] encode(Notification notification) throws Exception;

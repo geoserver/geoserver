@@ -4,10 +4,11 @@
  */
 package org.geoserver.filter.function;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryComponentFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
@@ -25,12 +26,9 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryComponentFilter;
-
 /**
  * Queries a GeoServer layer and extracts the value(s) of an attribute TODO: add sorting
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class QueryFunction extends FunctionImpl {
@@ -38,11 +36,16 @@ public class QueryFunction extends FunctionImpl {
     Catalog catalog;
 
     int maxResults;
-    
+
     boolean single;
 
-    public QueryFunction(Name name, Catalog catalog, List<Expression> args, Literal fallback,
-            boolean single, int maxResults) {
+    public QueryFunction(
+            Name name,
+            Catalog catalog,
+            List<Expression> args,
+            Literal fallback,
+            boolean single,
+            int maxResults) {
         this.catalog = catalog;
         this.maxResults = maxResults;
         this.single = single;
@@ -51,7 +54,7 @@ public class QueryFunction extends FunctionImpl {
         setName(name.getLocalPart());
         setFallbackValue(fallback);
         setParameters(args);
-        
+
         if (args.size() < 3 || args.size() > 4) {
             throw new IllegalArgumentException(
                     "QuerySingle function requires 3 or 4 arguments (feature type qualified name, "
@@ -71,24 +74,25 @@ public class QueryFunction extends FunctionImpl {
             }
             FeatureTypeInfo ft = catalog.getFeatureTypeByName(layerName);
             if (ft == null) {
-                throw new IllegalArgumentException("Could not find vector layer " + layerName
-                        + " in the GeoServer catalog");
+                throw new IllegalArgumentException(
+                        "Could not find vector layer " + layerName + " in the GeoServer catalog");
             }
 
             // extract and check the attribute
             String attribute = getParameters().get(1).evaluate(object, String.class);
             if (attribute == null) {
-                throw new IllegalArgumentException("The second argument of the query "
-                        + "function should be the attribute name");
+                throw new IllegalArgumentException(
+                        "The second argument of the query "
+                                + "function should be the attribute name");
             }
             CoordinateReferenceSystem crs = null;
             PropertyDescriptor ad = ft.getFeatureType().getDescriptor(attribute);
             if (ad == null) {
-                throw new IllegalArgumentException("Attribute " + attribute
-                        + " could not be found in layer " + layerName);
-            } else if(ad instanceof GeometryDescriptor) {
+                throw new IllegalArgumentException(
+                        "Attribute " + attribute + " could not be found in layer " + layerName);
+            } else if (ad instanceof GeometryDescriptor) {
                 crs = ((GeometryDescriptor) ad).getCoordinateReferenceSystem();
-                if(crs == null) {
+                if (crs == null) {
                     crs = ft.getCRS();
                 }
             }
@@ -96,19 +100,22 @@ public class QueryFunction extends FunctionImpl {
             // extract and check the filter
             String cql = getParameters().get(2).evaluate(object, String.class);
             if (cql == null) {
-                throw new IllegalArgumentException("The third argument of the query "
-                        + "function should be a valid (E)CQL filter");
+                throw new IllegalArgumentException(
+                        "The third argument of the query "
+                                + "function should be a valid (E)CQL filter");
             }
             Filter filter;
             try {
                 filter = (Filter) ECQL.toFilter(cql);
             } catch (Exception e) {
-                throw new IllegalArgumentException("The third argument of the query "
-                        + "function should be a valid (E)CQL filter", e);
+                throw new IllegalArgumentException(
+                        "The third argument of the query "
+                                + "function should be a valid (E)CQL filter",
+                        e);
             }
 
             // perform the query
-            Query query = new Query(null, filter, new String[] { attribute });
+            Query query = new Query(null, filter, new String[] {attribute});
             // .. just enough to judge if we went beyond the limit
             query.setMaxFeatures(maxResults + 1);
             FeatureSource fs = ft.getFeatureSource(null, null);
@@ -117,7 +124,7 @@ public class QueryFunction extends FunctionImpl {
             while (fi.hasNext()) {
                 Feature f = fi.next();
                 Object value = f.getProperty(attribute).getValue();
-                if(value instanceof Geometry && crs != null) {
+                if (value instanceof Geometry && crs != null) {
                     // if the crs is not associated with the geometry do so, this
                     // way other code will get to know the crs (e.g. for reprojection purposes)
                     Geometry geom = (Geometry) value;
@@ -130,8 +137,12 @@ public class QueryFunction extends FunctionImpl {
                 return null;
             }
             if (maxResults > 0 && results.size() > maxResults && !single) {
-                throw new IllegalStateException("The query in " + getName() + " returns too many "
-                        + "features, the limit is " + maxResults);
+                throw new IllegalStateException(
+                        "The query in "
+                                + getName()
+                                + " returns too many "
+                                + "features, the limit is "
+                                + maxResults);
             }
             if (maxResults == 1) {
                 return results.get(0);
@@ -146,26 +157,23 @@ public class QueryFunction extends FunctionImpl {
                 fi.close();
             }
         }
-
     }
-    
+
     /**
      * Applies the CRS to all geometry components
-     * @author aaime
      *
+     * @author aaime
      */
     static final class GeometryCRSFilter implements GeometryComponentFilter {
         CoordinateReferenceSystem crs;
-        
+
         public GeometryCRSFilter(CoordinateReferenceSystem crs) {
             this.crs = crs;
         }
-        
+
         @Override
         public void filter(Geometry g) {
             g.setUserData(crs);
-
         }
     }
-
 }

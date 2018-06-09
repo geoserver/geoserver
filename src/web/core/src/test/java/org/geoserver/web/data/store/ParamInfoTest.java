@@ -11,8 +11,17 @@ public class ParamInfoTest {
 
     @Test
     public void testTitle() {
-        Param param = new Param("abc", String.class, new SimpleInternationalString("the title"),
-                new SimpleInternationalString("the description"), true, 1, 1, null, null);
+        Param param =
+                new Param(
+                        "abc",
+                        String.class,
+                        new SimpleInternationalString("the title"),
+                        new SimpleInternationalString("the description"),
+                        true,
+                        1,
+                        1,
+                        null,
+                        null);
         ParamInfo pi = new ParamInfo(param);
         assertEquals("the title", pi.getTitle());
     }

@@ -11,6 +11,6 @@ public class PyFunctionTest extends ScriptFunctionTest {
 
     @Override
     protected String getExtension() {
-        return "py"; 
+        return "py";
     }
 }

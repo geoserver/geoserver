@@ -12,9 +12,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 /**
  * Hibernate utility class.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class HibUtil {
 
@@ -23,28 +22,29 @@ public class HibUtil {
             if (TransactionSynchronizationManager.isSynchronizationActive()) {
                 try {
                     TransactionSynchronizationManager.unbindResource(sessionFactory);
+                } catch (IllegalStateException e) {
                 }
-                catch(IllegalStateException e) {}
                 TransactionSynchronizationManager.clearSynchronization();
             }
         }
-        
+
         setUpSession(sessionFactory);
     }
+
     public static void setUpSession(SessionFactory sessionFactory) {
         Session session = sessionFactory.openSession();
-        
+
         TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
         TransactionSynchronizationManager.initSynchronization();
     }
-    
+
     public static void tearDownSession(SessionFactory sessionFactory, Throwable error) {
         Session session = sessionFactory.getCurrentSession();
-        
+
         if (session.isOpen()) {
             session.close();
         }
-        
+
         TransactionSynchronizationManager.unbindResource(sessionFactory);
         TransactionSynchronizationManager.clearSynchronization();
     }

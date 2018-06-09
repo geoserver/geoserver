@@ -8,7 +8,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
 /**
- * Uses JDBCOpenSearchAccess.SOURCE_ATTRIBUTE to locate the source attribute name of a given mapped property name
+ * Uses JDBCOpenSearchAccess.SOURCE_ATTRIBUTE to locate the source attribute name of a given mapped
+ * property name
  *
  * @author Andrea Aime - GeoSolutions
  */

@@ -5,6 +5,8 @@
 package org.geoserver.gwc.wmts;
 
 import com.vividsolutions.jts.geom.*;
+import java.util.List;
+import javax.xml.namespace.QName;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.wms.WMS;
@@ -18,12 +20,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
-import javax.xml.namespace.QName;
-import java.util.List;
-
-/**
- * XML transformer for the get feature operation.
- */
+/** XML transformer for the get feature operation. */
 class FeaturesTransformer extends TransformerBase {
 
     public FeaturesTransformer(WMS wms) {
@@ -45,14 +42,18 @@ class FeaturesTransformer extends TransformerBase {
         @Override
         public void encode(Object object) throws IllegalArgumentException {
             if (!(object instanceof Domains)) {
-                throw new IllegalArgumentException("Expected domains info but instead got: " + object.getClass().getCanonicalName());
+                throw new IllegalArgumentException(
+                        "Expected domains info but instead got: "
+                                + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
-            Attributes nameSpaces = createAttributes(new String[]{
-                    "xmlns:xs", "http://www.w3.org/2001/XMLSchema",
-                    "xmlns:gml", "http://www.opengis.net/gml",
-                    "xmlns:wmts", "http://www.opengis.net/wmts/1.0"
-            });
+            Attributes nameSpaces =
+                    createAttributes(
+                            new String[] {
+                                "xmlns:xs", "http://www.w3.org/2001/XMLSchema",
+                                "xmlns:gml", "http://www.opengis.net/gml",
+                                "xmlns:wmts", "http://www.opengis.net/wmts/1.0"
+                            });
             start("wmts:FeatureCollection", nameSpaces);
             FeatureIterator iterator = domains.getFeatureCollection().features();
             try {
@@ -66,17 +67,14 @@ class FeaturesTransformer extends TransformerBase {
             end("wmts:FeatureCollection");
         }
 
-        /**
-         * Encodes a feature in the XML.
-         */
+        /** Encodes a feature in the XML. */
         private void handleFeature(SimpleFeature feature, List<Dimension> dimensions) {
-            Attributes attributes = createAttributes(new String[]{
-                    "gml:id", feature.getID()
-            });
+            Attributes attributes = createAttributes(new String[] {"gml:id", feature.getID()});
             start("wmts:feature", attributes);
             start("wmts:footprint");
             // encode the geometry
-            GeometryDescriptor geometryDescriptor = feature.getFeatureType().getGeometryDescriptor();
+            GeometryDescriptor geometryDescriptor =
+                    feature.getFeatureType().getGeometryDescriptor();
             Geometry geometry = (Geometry) feature.getAttribute(geometryDescriptor.getName());
             handleGeometry(geometry);
             // encode the dimensions
@@ -87,9 +85,7 @@ class FeaturesTransformer extends TransformerBase {
             end("wmts:feature");
         }
 
-        /**
-         * Encodes a Geometry in GML.
-         */
+        /** Encodes a Geometry in GML. */
         private void handleGeometry(Geometry geometry) {
             try {
                 QName elementName = org.geotools.gml2.GML._Geometry;
@@ -109,19 +105,17 @@ class FeaturesTransformer extends TransformerBase {
                 Encoder encoder = new Encoder(new GMLConfiguration());
                 encoder.encode(geometry, elementName, contentHandler);
             } catch (Exception exception) {
-                throw new RuntimeException("Cannot transform the specified geometry in GML.", exception);
+                throw new RuntimeException(
+                        "Cannot transform the specified geometry in GML.", exception);
             }
             ;
         }
 
-        /**
-         * Encodes a dimension extracting the dimension value from the feature.
-         */
+        /** Encodes a dimension extracting the dimension value from the feature. */
         private void handleDimension(SimpleFeature feature, Dimension dimension) {
             Object value = feature.getAttribute(dimension.getAttributes().first);
-            Attributes attributes = createAttributes(new String[]{
-                    "name", dimension.getDimensionName()
-            });
+            Attributes attributes =
+                    createAttributes(new String[] {"name", dimension.getDimensionName()});
             element("wmts:dimension", DimensionsUtils.formatDomainValue(value), attributes);
         }
     }

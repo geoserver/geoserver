@@ -26,5 +26,4 @@ public class ImportTaskModel extends LoadableDetachableModel<ImportTask> {
     protected ImportTask load() {
         return ImporterWebUtils.importer().getContext(context).task(id);
     }
-
 }

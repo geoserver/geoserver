@@ -5,10 +5,9 @@
  */
 package org.geoserver.catalog.event.impl;
 
-import org.geoserver.catalog.event.CatalogPostModifyEvent;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
 
 public class CatalogPostModifyEventImpl extends CatalogEventImpl implements CatalogPostModifyEvent {
 

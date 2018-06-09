@@ -4,14 +4,12 @@
  */
 package org.geoserver.wms.topojson;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public abstract class TopoGeom {
 
@@ -161,5 +159,4 @@ public abstract class TopoGeom {
             return "GeometryCollection";
         }
     }
-
 }

@@ -8,7 +8,6 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.DataLinkInfo;
@@ -30,11 +29,12 @@ import org.opengis.util.ProgressListener;
 /**
  * Delegates every method to the delegate wms layer info. Subclasses will override selected methods
  * to perform their "decoration" job
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> implements WMSLayerInfo {
-    
+public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
+        implements WMSLayerInfo {
+
     public DecoratingWMSLayerInfo(WMSLayerInfo delegate) {
         super(delegate);
     }
@@ -225,11 +225,9 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
     public boolean isAdvertised() {
         return delegate.isAdvertised();
     }
-    
+
     @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
     }
-
-
 }

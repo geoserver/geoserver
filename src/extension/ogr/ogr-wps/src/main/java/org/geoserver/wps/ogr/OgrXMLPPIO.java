@@ -9,13 +9,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.response.Ogr2OgrOutputFormat;
 import org.geoserver.wps.ppio.XMLPPIO;
@@ -24,10 +21,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-/**
- * Process XML output parameter using ogr2ogr process
- */
-
+/** Process XML output parameter using ogr2ogr process */
 public class OgrXMLPPIO extends XMLPPIO {
 
     private Ogr2OgrOutputFormat ogr2OgrOutputFormat;
@@ -36,9 +30,15 @@ public class OgrXMLPPIO extends XMLPPIO {
 
     private String fileExtension;
 
-    public OgrXMLPPIO(String mimeType, String fileExtension,
-            Ogr2OgrOutputFormat ogr2OgrOutputFormat, Operation operation) {
-        super(FeatureCollectionType.class, FeatureCollection.class, mimeType,
+    public OgrXMLPPIO(
+            String mimeType,
+            String fileExtension,
+            Ogr2OgrOutputFormat ogr2OgrOutputFormat,
+            Operation operation) {
+        super(
+                FeatureCollectionType.class,
+                FeatureCollection.class,
+                mimeType,
                 org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION);
         this.fileExtension = fileExtension;
         this.ogr2OgrOutputFormat = ogr2OgrOutputFormat;
@@ -75,12 +75,10 @@ public class OgrXMLPPIO extends XMLPPIO {
         XMLReader parser = saxParser.getXMLReader();
         parser.setContentHandler(handler);
         parser.parse(new InputSource(bis));
-
     }
 
     @Override
     public Object decode(InputStream input) throws Exception {
         return null;
     }
-
 }

@@ -8,9 +8,7 @@ package org.geoserver.ows.kvp;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import javax.xml.XMLConstants;
-
 import org.geoserver.ows.FlatKvpParser;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.ServiceException;
@@ -18,11 +16,10 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Parses a list of namespace declarations of the form {@code
- * <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> } into a
- * {@link NamespaceSupport}.
- * 
+ * <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> } into a {@link
+ * NamespaceSupport}.
+ *
  * @author groldan
- * 
  */
 public class NamespaceKvpParser extends KvpParser {
 
@@ -31,10 +28,8 @@ public class NamespaceKvpParser extends KvpParser {
     }
 
     /**
-     * @param value
-     *            a list of namespace declarations of the form {@code
-     *            <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> }
-     *
+     * @param value a list of namespace declarations of the form {@code
+     *     <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> }
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -48,8 +43,12 @@ public class NamespaceKvpParser extends KvpParser {
         for (String decl : decls) {
             decl = decl.trim();
             if (!decl.startsWith("xmlns(") || !decl.endsWith(")")) {
-                throw new ServiceException("Illegal namespace declaration, "
-                        + "should be of the form xmlns(<prefix>=<ns uri>): " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
+                throw new ServiceException(
+                        "Illegal namespace declaration, "
+                                + "should be of the form xmlns(<prefix>=<ns uri>): "
+                                + decl,
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        getKey());
             }
             decl = decl.substring("xmlns(".length());
             decl = decl.substring(0, decl.length() - 1);
@@ -61,14 +60,21 @@ public class NamespaceKvpParser extends KvpParser {
                 prefix = parts[0];
                 uri = parts[1];
             } else {
-                throw new ServiceException("Illegal namespace declaration, "
-                        + "should be of the form prefix=<namespace uri>: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
+                throw new ServiceException(
+                        "Illegal namespace declaration, "
+                                + "should be of the form prefix=<namespace uri>: "
+                                + decl,
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        getKey());
             }
 
             try {
                 new URI(uri);
             } catch (URISyntaxException e) {
-                throw new ServiceException("Illegal namespace declaration: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
+                throw new ServiceException(
+                        "Illegal namespace declaration: " + decl,
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        getKey());
             }
             ctx.declarePrefix(prefix, uri);
         }

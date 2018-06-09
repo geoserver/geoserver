@@ -6,7 +6,6 @@
 package org.geoserver.rest;
 
 import javax.servlet.http.HttpServletResponse;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Function;

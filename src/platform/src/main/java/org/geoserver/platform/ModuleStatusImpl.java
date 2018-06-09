@@ -9,13 +9,13 @@ import java.util.Optional;
 
 /**
  * Bean used to register module installation in applicationContext.xml.
- * <p>
- * Bean completly defined by applicationContext.xml - no dynamic content.
- * 
+ *
+ * <p>Bean completly defined by applicationContext.xml - no dynamic content.
+ *
  * <pre>
  * &lt!-- code example needed --&gt;>
  * </pre>
- * 
+ *
  * @author Morgan Thompson - Boundless
  */
 public class ModuleStatusImpl implements ModuleStatus, Serializable {
@@ -39,8 +39,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
 
     private boolean isAvailable;
 
-    public ModuleStatusImpl() {
-    }
+    public ModuleStatusImpl() {}
 
     public ModuleStatusImpl(ModuleStatus status) {
         this.module = status.getModule();
@@ -60,16 +59,12 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.isEnabled = true;
     }
 
-    /**
-     * @return the machine readable name
-     */
+    /** @return the machine readable name */
     public String getModule() {
         return module;
     }
 
-    /**
-     * @param module the module name to set
-     */
+    /** @param module the module name to set */
     public void setModule(String module) {
         this.module = module;
     }
@@ -78,37 +73,27 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         return Optional.ofNullable(component);
     }
 
-    /**
-     * @param component the component to set
-     */
+    /** @param component the component to set */
     public void setComponent(String component) {
         this.component = component;
     }
 
-    /**
-     * @return the name
-     */
+    /** @return the name */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    /** @param name the name to set */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the version
-     */
+    /** @return the version */
     public Optional<String> getVersion() {
         return Optional.ofNullable(version);
     }
 
-    /**
-     * @param version the version to set
-     */
+    /** @param version the version to set */
     public void setVersion(String version) {
         this.version = version;
     }
@@ -151,7 +136,12 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
 
     @Override
     public String toString() {
-        return "ModuleStatusImpl [module=" + module + ", component=" + component + ", version="
-                + version + "]";
+        return "ModuleStatusImpl [module="
+                + module
+                + ", component="
+                + component
+                + ", version="
+                + version
+                + "]";
     }
 }

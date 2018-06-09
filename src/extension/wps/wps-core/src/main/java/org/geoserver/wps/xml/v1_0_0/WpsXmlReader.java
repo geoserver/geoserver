@@ -10,9 +10,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.WPSException;
@@ -33,7 +31,10 @@ public class WpsXmlReader extends XmlRequestReader {
 
     private EntityResolverProvider resolverProvider;
 
-    public WpsXmlReader(String element, String version, WPSConfiguration configuration,
+    public WpsXmlReader(
+            String element,
+            String version,
+            WPSConfiguration configuration,
             EntityResolverProvider resolverProvider) {
         super(new QName(org.geotools.wps.WPS.NAMESPACE, element), new Version("1.0.0"), "wps");
         this.configuration = configuration;
@@ -49,15 +50,15 @@ public class WpsXmlReader extends XmlRequestReader {
         Object parsed;
         try {
             parsed = parser.parse(reader);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new WPSException("Could not parse XML request.", e);
         }
 
         if (!parser.getValidationErrors().isEmpty()) {
             WPSException exception = new WPSException("Invalid request", "InvalidParameterValue");
 
-            for(Exception error : (List<Exception>)parser.getValidationErrors()) {
-                LOGGER.warning( error.getLocalizedMessage() );
+            for (Exception error : (List<Exception>) parser.getValidationErrors()) {
+                LOGGER.warning(error.getLocalizedMessage());
                 exception.getExceptionText().add(error.getLocalizedMessage());
             }
         }

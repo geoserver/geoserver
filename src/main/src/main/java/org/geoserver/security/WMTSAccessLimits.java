@@ -4,33 +4,26 @@
  */
 package org.geoserver.security;
 
-import org.opengis.filter.Filter;
-
 import com.vividsolutions.jts.geom.MultiPolygon;
+import org.opengis.filter.Filter;
 
 /**
  * Describes access limits on a cascaded WMTS layer
- * 
+ *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class WMTSAccessLimits extends DataAccessLimits {
     private static final long serialVersionUID = -6566842877723378894L;
 
-    /**
-     * ROI on the returned images
-     */
+    /** ROI on the returned images */
     MultiPolygon rasterFilter;
 
     /**
      * Builds a WMTS limits
-     * 
-     * @param rasterFilter
-     *            Used as a ROI on the returned data
-     * @param readFilter
-     *            generic filtering
-     * @param allowFeatureInfo
-     *            unused
      *
+     * @param rasterFilter Used as a ROI on the returned data
+     * @param readFilter generic filtering
+     * @param allowFeatureInfo unused
      * @deprecated use the 2 argument constructor
      */
     public WMTSAccessLimits(CatalogMode mode, Filter readFilter, MultiPolygon rasterFilter) {
@@ -38,19 +31,14 @@ public class WMTSAccessLimits extends DataAccessLimits {
         this.rasterFilter = rasterFilter;
     }
 
-    /**
-     * Acts as a ROI on the returned images
-     * 
-     *
-     */
+    /** Acts as a ROI on the returned images */
     public MultiPolygon getRasterFilter() {
         return rasterFilter;
     }
 
     @Override
     public String toString() {
-        return "WMTSAccessLimits [rasterFilter="
-                + rasterFilter + ", mode=" + mode + "]";
+        return "WMTSAccessLimits [rasterFilter=" + rasterFilter + ", mode=" + mode + "]";
     }
 
     @Override
@@ -63,18 +51,13 @@ public class WMTSAccessLimits extends DataAccessLimits {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (getClass() != obj.getClass()) return false;
         WMTSAccessLimits other = (WMTSAccessLimits) obj;
         if (rasterFilter == null) {
-            if (other.rasterFilter != null)
-                return false;
-        } else if (!rasterFilter.equals(other.rasterFilter))
-            return false;
+            if (other.rasterFilter != null) return false;
+        } else if (!rasterFilter.equals(other.rasterFilter)) return false;
         return true;
     }
 }

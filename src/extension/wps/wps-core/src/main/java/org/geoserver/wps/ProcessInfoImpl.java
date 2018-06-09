@@ -4,15 +4,13 @@
  */
 package org.geoserver.wps;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wps.validator.WPSInputValidator;
 import org.opengis.feature.type.Name;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class ProcessInfoImpl implements ProcessInfo {
 
@@ -96,50 +94,45 @@ public class ProcessInfoImpl implements ProcessInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         ProcessInfoImpl other = (ProcessInfoImpl) obj;
         if (enabled == null) {
-            if (other.enabled != null)
-                return false;
-        } else if (!enabled.equals(other.enabled))
-            return false;
+            if (other.enabled != null) return false;
+        } else if (!enabled.equals(other.enabled)) return false;
         if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
+            if (other.id != null) return false;
+        } else if (!id.equals(other.id)) return false;
         if (metadata == null) {
-            if (other.metadata != null)
-                return false;
-        } else if (!metadata.equals(other.metadata))
-            return false;
+            if (other.metadata != null) return false;
+        } else if (!metadata.equals(other.metadata)) return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
         if (roles == null) {
-            if (other.roles != null)
-                return false;
-        } else if (!roles.equals(other.roles))
-            return false;
+            if (other.roles != null) return false;
+        } else if (!roles.equals(other.roles)) return false;
         if (validators == null) {
-            if (other.validators != null)
-                return false;
-        } else if (!validators.equals(other.validators))
-            return false;
+            if (other.validators != null) return false;
+        } else if (!validators.equals(other.validators)) return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "ProcessInfoImpl [enabled=" + enabled + ", roles=" + roles + ", name=" + name
-                + ", id=" + id + ", validators=" + validators + ", metadata=" + metadata + "]";
+        return "ProcessInfoImpl [enabled="
+                + enabled
+                + ", roles="
+                + roles
+                + ", name="
+                + name
+                + ", id="
+                + id
+                + ", validators="
+                + validators
+                + ", metadata="
+                + metadata
+                + "]";
     }
-
 }

@@ -8,7 +8,6 @@ package org.geoserver.wps.web;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
@@ -19,7 +18,7 @@ import org.opengis.feature.type.Name;
 
 /**
  * A single output parameter, along with the chosen output mime type and the output inclusion flag
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
@@ -62,8 +61,8 @@ class OutputParameter implements Serializable {
     }
 
     List<ProcessParameterIO> getProcessParameterIO() {
-        return ProcessParameterIO.findAll(getParameter(), GeoServerApplication.get()
-                .getApplicationContext());
+        return ProcessParameterIO.findAll(
+                getParameter(), GeoServerApplication.get().getApplicationContext());
     }
 
     ProcessFactory getProcessFactory() {
@@ -73,5 +72,4 @@ class OutputParameter implements Serializable {
     Parameter<?> getParameter() {
         return getProcessFactory().getResultInfo(processName, null).get(paramName);
     }
-
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -26,8 +25,8 @@ public final class SSLUtilities {
             keystore.load(keyStoreInputStream, null);
 
             // add to known keystore
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            TrustManagerFactory trustManagerFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keystore);
 
             // default SSL connections are initialized with the keystore above

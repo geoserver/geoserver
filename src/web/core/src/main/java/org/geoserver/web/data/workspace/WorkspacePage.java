@@ -25,69 +25,73 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 
-/**
- * Lists available workspaces, links to them, allows for addition and removal
- */
+/** Lists available workspaces, links to them, allows for addition and removal */
 public class WorkspacePage extends GeoServerSecuredPage {
     private static final long serialVersionUID = 3084639304127909774L;
     WorkspaceProvider provider = new WorkspaceProvider();
     GeoServerTablePanel<WorkspaceInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
-    
+
     public WorkspacePage() {
         // the middle table
-        add(table = new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
-            private static final long serialVersionUID = 8028081894753417294L;
+        add(
+                table =
+                        new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
+                            private static final long serialVersionUID = 8028081894753417294L;
 
-            @Override
-            protected Component getComponentForProperty(String id, IModel<WorkspaceInfo> itemModel,
-                    Property<WorkspaceInfo> property) {
-                if ( property == NAME ) {
-                    return workspaceLink(id, itemModel);
-                } else if (property == DEFAULT) {
-                    if(getCatalog().getDefaultWorkspace().equals(itemModel.getObject()))
-                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                    else
-                        return new Label(id, "");
-                }
-                
-                throw new IllegalArgumentException("No such property "+ property.getName());
-            }
-            
-            @Override
-            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                removal.setEnabled(table.getSelection().size() > 0);
-                target.add(removal);    
-            }
-        });
+                            @Override
+                            protected Component getComponentForProperty(
+                                    String id,
+                                    IModel<WorkspaceInfo> itemModel,
+                                    Property<WorkspaceInfo> property) {
+                                if (property == NAME) {
+                                    return workspaceLink(id, itemModel);
+                                } else if (property == DEFAULT) {
+                                    if (getCatalog()
+                                            .getDefaultWorkspace()
+                                            .equals(itemModel.getObject()))
+                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                                    else return new Label(id, "");
+                                }
+
+                                throw new IllegalArgumentException(
+                                        "No such property " + property.getName());
+                            }
+
+                            @Override
+                            protected void onSelectionUpdate(AjaxRequestTarget target) {
+                                removal.setEnabled(table.getSelection().size() > 0);
+                                target.add(removal);
+                            }
+                        });
         table.setOutputMarkupId(true);
-        
+
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
     }
-    
+
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
-        
+
         // the add button
         header.add(new BookmarkablePageLink<WorkspaceNewPage>("addNew", WorkspaceNewPage.class));
-        
+
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));
         removal.setOutputMarkupId(true);
         removal.setEnabled(false);
 
-        //check for full admin, we don't allow workspace admins to add new workspaces
+        // check for full admin, we don't allow workspace admins to add new workspaces
         header.setEnabled(isAuthenticatedAsAdmin());
         return header;
     }
-    
+
     Component workspaceLink(String id, final IModel<WorkspaceInfo> itemModel) {
         IModel<?> nameModel = NAME.getModel(itemModel);
-        return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, nameModel,
-                "name", (String) nameModel.getObject());
+        return new SimpleBookmarkableLink(
+                id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
     }
 
     @Override

@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
 import org.geotools.data.Query;
@@ -26,7 +25,7 @@ import org.opengis.filter.sort.SortOrder;
 
 /**
  * Base class for status store tests
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractProcessStoreTest {
@@ -65,15 +64,12 @@ public abstract class AbstractProcessStoreTest {
 
     /**
      * Builds the status store for this test
-     * 
      *
-     * @throws IOException 
+     * @throws IOException
      */
     protected abstract ProcessStatusStore buildStore() throws IOException;
 
-    /**
-     * Puts all the test statuses in the store
-     */
+    /** Puts all the test statuses in the store */
     protected void fillStore() {
         store.save(s1);
         store.save(s2);
@@ -101,7 +97,7 @@ public abstract class AbstractProcessStoreTest {
         checkFiltered(store, query("phase = 'RUNNING'", 1, 1, asc("progress")), s4);
         checkFiltered(store, query("phase = 'RUNNING'", 0, 1, desc("progress")), s4);
         checkFiltered(store, query("phase = 'RUNNING'", 1, 1, desc("progress")), s3);
-        
+
         // force a post filter
         String lowercaseRunning = "strToLowerCase(phase) = 'running'";
         checkFiltered(store, query(lowercaseRunning), s3, s4);
@@ -128,8 +124,9 @@ public abstract class AbstractProcessStoreTest {
         return FF.sort(propertyName, SortOrder.DESCENDING);
     }
 
-    protected void checkFiltered(ProcessStatusStore store, Query query, ExecutionStatus... statuses) {
-         List<ExecutionStatus> filtered = store.list(query);
+    protected void checkFiltered(
+            ProcessStatusStore store, Query query, ExecutionStatus... statuses) {
+        List<ExecutionStatus> filtered = store.list(query);
         checkContains(filtered, statuses);
     }
 
@@ -171,8 +168,7 @@ public abstract class AbstractProcessStoreTest {
         store.save(status);
         List<ExecutionStatus> statuses = store.list(Query.ALL);
         assertEquals(1, statuses.size());
-        assertEquals("incorrect status",status, statuses.get(0));
+        assertEquals("incorrect status", status, statuses.get(0));
         assertNotSame(status, statuses.get(0));
     }
-
 }

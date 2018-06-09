@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -24,15 +23,15 @@ public class OpenSearchAccessProvider {
     public OpenSearchAccessProvider(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
-    
+
     public OSEOInfo getService() {
         return this.geoServer.getService(OSEOInfo.class);
     }
-    
+
     /**
-     * Returns the OpenSearchAccess configured in {@link OSEOInfo}, or throws a service exception
-     * in case of mis-configuration
-     * 
+     * Returns the OpenSearchAccess configured in {@link OSEOInfo}, or throws a service exception in
+     * case of mis-configuration
+     *
      * @return
      * @throws IOException
      */
@@ -43,28 +42,31 @@ public class OpenSearchAccessProvider {
 
         DataAccess result = dataStore.getDataStore(null);
         if (result == null) {
-            throw new OWS20Exception("Failed to locate OpenSearch data access with identifier "
-                    + openSearchAccessStoreId
-                    + ", please correct the configuration in the OpenSearch for EO panel");
+            throw new OWS20Exception(
+                    "Failed to locate OpenSearch data access with identifier "
+                            + openSearchAccessStoreId
+                            + ", please correct the configuration in the OpenSearch for EO panel");
         } else if (!(result instanceof OpenSearchAccess)) {
-            throw new OWS20Exception("Data access with identifier " + openSearchAccessStoreId
-                    + " does not point to a valid OpenSearchDataAccess, "
-                    + "please correct the configuration in the OpenSearch for EO panel");
+            throw new OWS20Exception(
+                    "Data access with identifier "
+                            + openSearchAccessStoreId
+                            + " does not point to a valid OpenSearchDataAccess, "
+                            + "please correct the configuration in the OpenSearch for EO panel");
         }
 
         return (OpenSearchAccess) result;
     }
-    
+
     public DataStoreInfo getDataStoreInfo() throws IOException {
         OSEOInfo service = getService();
         String openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
         if (openSearchAccessStoreId == null) {
-            throw new OWS20Exception("OpenSearchAccess is not configured in the"
-                    + " OpenSearch for EO panel, please do so");
+            throw new OWS20Exception(
+                    "OpenSearchAccess is not configured in the"
+                            + " OpenSearch for EO panel, please do so");
         }
         DataStoreInfo dataStore = this.geoServer.getCatalog().getDataStore(openSearchAccessStoreId);
-        
+
         return dataStore;
     }
-
 }

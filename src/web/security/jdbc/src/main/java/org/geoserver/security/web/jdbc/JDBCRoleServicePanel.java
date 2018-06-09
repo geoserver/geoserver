@@ -14,7 +14,7 @@ import org.geoserver.security.web.role.RoleServicePanel;
 
 /**
  * Configuration panel for {@link JDBCRoleService}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class JDBCRoleServicePanel extends RoleServicePanel<JDBCRoleServiceConfig> {

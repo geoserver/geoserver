@@ -6,9 +6,9 @@
 package org.geoserver.csw.response;
 
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+
 import net.opengis.cat.csw20.GetDomainType;
 import net.opengis.cat.csw20.RequestBaseType;
-
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
@@ -19,10 +19,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Encodes a CloseableIterator<String> containing domain values into the specified
- * XML Domain Response
- * 
- * 
+ * Encodes a CloseableIterator<String> containing domain values into the specified XML Domain
+ * Response
+ *
  * @author Alessio Fabiani - GeoSolutions
  */
 public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
@@ -37,7 +36,7 @@ public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
     public Translator createTranslator(ContentHandler handler) {
         return new CSWDomainValueTranslator(handler);
     }
-    
+
     @Override
     public boolean canHandleRespose(CSWRecordsResult response) {
         return true;
@@ -72,37 +71,39 @@ public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
             AttributesImpl domainValuesElementAtts = new AttributesImpl();
             addAttribute(domainValuesElementAtts, "type", "csw:Record");
             start(domainValuesElement, domainValuesElementAtts);
-            
-            if (((GetDomainType)request).getParameterName() != null && !((GetDomainType)request).getParameterName().isEmpty()) {
-                String parameterNameElement = "csw:ParameterName";
-                element(parameterNameElement, ((GetDomainType)request).getParameterName());
-            } else if (((GetDomainType)request).getPropertyName() != null && !((GetDomainType)request).getPropertyName().isEmpty()) {
-                String propertyNameElement = "csw:PropertyName";
-                element(propertyNameElement, ((GetDomainType)request).getPropertyName());
-            }
 
+            if (((GetDomainType) request).getParameterName() != null
+                    && !((GetDomainType) request).getParameterName().isEmpty()) {
+                String parameterNameElement = "csw:ParameterName";
+                element(parameterNameElement, ((GetDomainType) request).getParameterName());
+            } else if (((GetDomainType) request).getPropertyName() != null
+                    && !((GetDomainType) request).getPropertyName().isEmpty()) {
+                String propertyNameElement = "csw:PropertyName";
+                element(propertyNameElement, ((GetDomainType) request).getPropertyName());
+            }
 
             String valuesElementType = "csw:ListOfValues";
             start(valuesElementType);
-            
-            while (response.hasNext())
-            {
+
+            while (response.hasNext()) {
                 String value = response.next();
                 element("csw:Value", value);
             }
-            
+
             end(valuesElementType);
-            
+
             end(domainValuesElement);
             end("csw:GetDomainResponse");
-
         }
-
     }
 
     public void addAttribute(AttributesImpl attributes, String name, Object value) {
         if (value != null) {
-            attributes.addAttribute("", name, name, "",
+            attributes.addAttribute(
+                    "",
+                    name,
+                    name,
+                    "",
                     value instanceof String ? (String) value : String.valueOf(value));
         }
     }

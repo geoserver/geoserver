@@ -4,6 +4,17 @@
  */
 package org.geoserver.importer.rest;
 
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
@@ -36,21 +47,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/imports/{id}/tasks", produces = {
-        MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
+@RequestMapping(
+    path = RestBaseController.ROOT_PATH + "/imports/{id}/tasks",
+    produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE}
+)
 public class ImportTaskController extends ImportBaseController {
 
     static final Logger LOGGER = Logging.getLogger(ImportTaskController.class);
@@ -61,8 +62,10 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     @GetMapping
-    public ImportWrapper tasksGet(@PathVariable Long id, @RequestParam(required=false) String expand) {
-        return (writer, builder, converter) -> converter.tasks(builder,context(id).getTasks(), true, converter.expand(expand, 0));
+    public ImportWrapper tasksGet(
+            @PathVariable Long id, @RequestParam(required = false) String expand) {
+        return (writer, builder, converter) ->
+                converter.tasks(builder, context(id).getTasks(), true, converter.expand(expand, 0));
     }
 
     @GetMapping(path = "/{taskId}")
@@ -92,35 +95,52 @@ public class ImportTaskController extends ImportBaseController {
         } catch (JSONException jex) {
             throw new RestException("Internal Error", HttpStatus.INTERNAL_SERVER_ERROR, jex);
         }
-        return (writer,builder,converter) -> writer.write(progress.toString());
+        return (writer, builder, converter) -> writer.write(progress.toString());
     }
 
     @GetMapping(path = "/{taskId}/target")
-    public ImportWrapper targetGet(@PathVariable Long id, @PathVariable Integer taskId, @RequestParam(required=false) String expand) {
+    public ImportWrapper targetGet(
+            @PathVariable Long id,
+            @PathVariable Integer taskId,
+            @RequestParam(required = false) String expand) {
         final ImportTask task = task(id, taskId);
         if (task.getStore() == null) {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
         }
-        return (writer, builder, converter) -> converter.store(builder,task.getStore(), task, true, converter.expand(expand, 1));
-
+        return (writer, builder, converter) ->
+                converter.store(builder, task.getStore(), task, true, converter.expand(expand, 1));
     }
 
     @GetMapping(path = "/{taskId}/layer")
-    public ImportWrapper layersGet(@PathVariable Long id, @PathVariable Integer taskId, @RequestParam(required=false) String expand) {
+    public ImportWrapper layersGet(
+            @PathVariable Long id,
+            @PathVariable Integer taskId,
+            @RequestParam(required = false) String expand) {
         ImportTask task = task(id, taskId);
-        return (writer, builder, converter) -> converter.layer(builder,task, true, converter.expand(expand, 1));
+        return (writer, builder, converter) ->
+                converter.layer(builder, task, true, converter.expand(expand, 1));
     }
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public Object taskPost(@PathVariable Long id, @RequestParam(required=false) String expand, HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping(
+        consumes = {
+            MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_FORM_URLENCODED_VALUE
+        }
+    )
+    public Object taskPost(
+            @PathVariable Long id,
+            @RequestParam(required = false) String expand,
+            HttpServletRequest request,
+            HttpServletResponse response) {
         ImportData data = null;
 
         LOGGER.info("Handling POST of " + request.getContentType());
-        //file posted from form
+        // file posted from form
         MediaType mimeType = MediaType.valueOf(request.getContentType());
         if (request.getContentType().startsWith(MediaType.MULTIPART_FORM_DATA_VALUE)) {
             data = handleMultiPartFormUpload(request, context(id));
-        } else if (request.getContentType().startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+        } else if (request.getContentType()
+                .startsWith(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
             try {
                 data = handleFormPost(request);
             } catch (IOException | ServletException e) {
@@ -132,22 +152,25 @@ public class ImportTaskController extends ImportBaseController {
             throw new RestException("Unsupported POST", HttpStatus.FORBIDDEN);
         }
 
-        //Construct response
+        // Construct response
         return acceptData(data, context(id), response, expand);
     }
 
-    @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE})
+    @PutMapping(
+        path = "/{taskId}",
+        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE}
+    )
     public ImportWrapper taskPut(
             @PathVariable Long id,
             @PathVariable Integer taskId,
-            HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        return (writer, builder, converter) -> handleTaskPut(id, taskId, request, response, converter);
+        return (writer, builder, converter) ->
+                handleTaskPut(id, taskId, request, response, converter);
     }
 
-    /**
-     * Workaround to support regular response content type when file extension is in path
-     */
+    /** Workaround to support regular response content type when file extension is in path */
     @Configuration
     static class ImportTaskControllerConfiguration {
         @Bean
@@ -167,9 +190,10 @@ public class ImportTaskController extends ImportBaseController {
     @PutMapping(path = "/{taskId:.+}")
     public Object taskPutFile(
             @PathVariable Long id,
-            @PathVariable(name="taskId") Object filename,
-            @RequestParam(required=false) String expand,
-            HttpServletRequest request, HttpServletResponse response) {
+            @PathVariable(name = "taskId") Object filename,
+            @RequestParam(required = false) String expand,
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         ImportContext context = context(id);
         return acceptData(handleFileUpload(context, filename, request), context, response, expand);
@@ -178,9 +202,7 @@ public class ImportTaskController extends ImportBaseController {
     @PutMapping(path = "/{taskId}/target")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void targetPut(
-            @PathVariable Long id,
-            @PathVariable Integer taskId,
-            @RequestBody StoreInfo store) {
+            @PathVariable Long id, @PathVariable Integer taskId, @RequestBody StoreInfo store) {
 
         if (store == null) {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
@@ -192,13 +214,17 @@ public class ImportTaskController extends ImportBaseController {
 
     @PutMapping(path = "/{taskId}/layer")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ImportWrapper layerPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestParam(required=false) String expand, @RequestBody LayerInfo layer) {
+    public ImportWrapper layerPut(
+            @PathVariable Long id,
+            @PathVariable Integer taskId,
+            @RequestParam(required = false) String expand,
+            @RequestBody LayerInfo layer) {
         ImportTask task = task(id, taskId);
 
         return (writer, builder, converter) -> {
             updateLayer(task, layer, importer, converter);
             importer.changed(task);
-            converter.task(builder,task, true, converter.expand(expand, 1));
+            converter.task(builder, task, true, converter.expand(expand, 1));
         };
     }
 
@@ -210,7 +236,8 @@ public class ImportTaskController extends ImportBaseController {
         importer.changed(task.getContext());
     }
 
-    public Object acceptData(ImportData data, ImportContext context, HttpServletResponse response, String expand) {
+    public Object acceptData(
+            ImportData data, ImportContext context, HttpServletResponse response, String expand) {
         List<ImportTask> newTasks = null;
         try {
             newTasks = importer.update(context, data);
@@ -223,24 +250,30 @@ public class ImportTaskController extends ImportBaseController {
             final List<ImportTask> result = newTasks;
             if (newTasks.size() == 1) {
                 long taskId = newTasks.get(0).getId();
-                response.setHeader("Location", RequestInfo.get().servletURI(String.format("/imports/%d/tasks/%d", context.getId(), taskId)));
+                response.setHeader(
+                        "Location",
+                        RequestInfo.get()
+                                .servletURI(
+                                        String.format(
+                                                "/imports/%d/tasks/%d", context.getId(), taskId)));
             }
             response.setStatus(HttpStatus.CREATED.value());
 
-            return (ImportWrapper) (writer, builder,converter) -> {
-                if (result.size() == 1) {
-                    converter.task(builder,result.get(0), true, converter.expand(expand, 1));
-                }
-                else {
-                    converter.tasks(builder,result, true, converter.expand(expand, 0));
-                }
-            };
+            return (ImportWrapper)
+                    (writer, builder, converter) -> {
+                        if (result.size() == 1) {
+                            converter.task(
+                                    builder, result.get(0), true, converter.expand(expand, 1));
+                        } else {
+                            converter.tasks(builder, result, true, converter.expand(expand, 0));
+                        }
+                    };
         }
         return "";
     }
 
-    public ImportData handleFormPost(HttpServletRequest request) throws IOException, ServletException {
-
+    public ImportData handleFormPost(HttpServletRequest request)
+            throws IOException, ServletException {
 
         String url = IOUtils.toString(request.getPart("url").getInputStream(), encoding);
         if (url == null) {
@@ -279,7 +312,7 @@ public class ImportTaskController extends ImportBaseController {
     public ImportData handleMultiPartFormUpload(HttpServletRequest request, ImportContext context) {
         DiskFileItemFactory factory = new DiskFileItemFactory();
         // @revisit - this appears to be causing OOME
-        //factory.setSizeThreshold(102400000);
+        // factory.setSizeThreshold(102400000);
 
         ServletFileUpload upload = new ServletFileUpload(factory);
         List<FileItem> items = null;
@@ -289,10 +322,10 @@ public class ImportTaskController extends ImportBaseController {
             throw new RestException("File upload failed", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
 
-        //look for a directory to hold the files
+        // look for a directory to hold the files
         Directory directory = findOrCreateDirectory(context);
 
-        //unpack all the files
+        // unpack all the files
         for (FileItem item : items) {
             if (item.getName() == null) {
                 continue;
@@ -300,21 +333,28 @@ public class ImportTaskController extends ImportBaseController {
             try {
                 directory.accept(item);
             } catch (Exception ex) {
-                throw new RestException("Error writing file " + item.getName(), HttpStatus.INTERNAL_SERVER_ERROR, ex);
+                throw new RestException(
+                        "Error writing file " + item.getName(),
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ex);
             }
         }
         return directory;
     }
 
-
-
-    void handleTaskPut(Long id, Integer taskId, HttpServletRequest request, HttpServletResponse response, ImportJSONWriter converter) {
+    void handleTaskPut(
+            Long id,
+            Integer taskId,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            ImportJSONWriter converter) {
         ImportTask orig = task(id, taskId);
         ImportTask task;
         try {
             ImportJSONReader reader = new ImportJSONReader(importer);
             task = reader.task(request.getInputStream());
-//            task = new ImportContextJSONConverterReader(importer,request.getInputStream()).task();
+            //            task = new
+            // ImportContextJSONConverterReader(importer,request.getInputStream()).task();
         } catch (ValidationException | IOException ve) {
             LOGGER.log(Level.WARNING, null, ve);
             throw converter.badRequest(ve.getMessage());
@@ -322,12 +362,12 @@ public class ImportTaskController extends ImportBaseController {
 
         boolean change = false;
         if (task.getStore() != null) {
-            //JD: moved to TaskTargetResource, but handle here for backward compatability
+            // JD: moved to TaskTargetResource, but handle here for backward compatability
             updateStoreInfo(orig, task.getStore(), importer);
             change = true;
         }
         if (task.getData() != null) {
-            //TODO: move this to data endpoint
+            // TODO: move this to data endpoint
             orig.getData().setCharsetEncoding(task.getData().getCharsetEncoding());
             change = true;
         }
@@ -338,7 +378,7 @@ public class ImportTaskController extends ImportBaseController {
 
         if (task.getLayer() != null) {
             change = true;
-            //now handled by LayerResource, but handle here for backwards compatability
+            // now handled by LayerResource, but handle here for backwards compatability
             updateLayer(orig, task.getLayer(), importer, converter);
         }
 
@@ -368,25 +408,26 @@ public class ImportTaskController extends ImportBaseController {
         }
     }
 
-    private ImportData handleFileUpload(ImportContext context, Object taskId, HttpServletRequest request) {
+    private ImportData handleFileUpload(
+            ImportContext context, Object taskId, HttpServletRequest request) {
         Directory directory = findOrCreateDirectory(context);
         try {
-            directory.accept(taskId.toString(),request.getInputStream());
+            directory.accept(taskId.toString(), request.getInputStream());
         } catch (IOException e) {
-            throw new RestException("Error unpacking file",
-                    HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new RestException("Error unpacking file", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
 
         return directory;
     }
 
-    static void updateLayer(ImportTask orig, LayerInfo l, Importer importer, ImportJSONWriter converter) {
-        //update the original layer and resource from the new
+    static void updateLayer(
+            ImportTask orig, LayerInfo l, Importer importer, ImportJSONWriter converter) {
+        // update the original layer and resource from the new
 
         ResourceInfo r = l.getResource();
 
-        //TODO: this is not thread safe, clone the object before overwriting it
-        //save the existing resource, which will be overwritten below,
+        // TODO: this is not thread safe, clone the object before overwriting it
+        // save the existing resource, which will be overwritten below,
         ResourceInfo resource = orig.getLayer().getResource();
 
         if (r != null) {
@@ -430,7 +471,8 @@ public class ImportTaskController extends ImportBaseController {
                 LOGGER.warning(msg + " in PUT request");
                 throw converter.badRequest(msg);
             } catch (FactoryException ex) {
-                throw new RestException("Error with referencing", HttpStatus.INTERNAL_SERVER_ERROR,ex);
+                throw new RestException(
+                        "Error with referencing", HttpStatus.INTERNAL_SERVER_ERROR, ex);
             }
             // make this the specified native if none exists
             // useful for csv or other files
@@ -439,11 +481,10 @@ public class ImportTaskController extends ImportBaseController {
             }
             resource.setSRS(srs);
         }
-
     }
 
     static void updateStoreInfo(ImportTask task, StoreInfo update, Importer importer) {
-        //handle three cases here:
+        // handle three cases here:
         // 1. current task store is null -> set the update as the new store
         // 2. update is reference to an existing store -> set the update as the new store
         // 3. update is a partial change to the current store -> update the current
@@ -452,60 +493,56 @@ public class ImportTaskController extends ImportBaseController {
 
         StoreInfo orig = task.getStore();
 
-        //check if the update is referencing an existing store
+        // check if the update is referencing an existing store
         StoreInfo existing = null;
         if (update.getName() != null) {
             Catalog cat = importer.getCatalog();
             if (update.getWorkspace() != null) {
-                existing = cat.getStoreByName(
-                        update.getWorkspace(), update.getName(), StoreInfo.class);
-            }
-            else {
+                existing =
+                        cat.getStoreByName(
+                                update.getWorkspace(), update.getName(), StoreInfo.class);
+            } else {
                 existing = importer.getCatalog().getStoreByName(update.getName(), StoreInfo.class);
             }
             if (existing == null) {
                 throw new RestException("Unable to find referenced store", HttpStatus.BAD_REQUEST);
             }
             if (!existing.isEnabled()) {
-                throw new RestException("Proposed target store is not enabled", HttpStatus.BAD_REQUEST);
+                throw new RestException(
+                        "Proposed target store is not enabled", HttpStatus.BAD_REQUEST);
             }
         }
 
         if (existing != null) {
-            //JD: not sure why we do this, rather than just task.setStore(existing);
+            // JD: not sure why we do this, rather than just task.setStore(existing);
             CatalogBuilder cb = new CatalogBuilder(importer.getCatalog());
 
             StoreInfo clone;
             if (existing instanceof DataStoreInfo) {
                 clone = cb.buildDataStore(existing.getName());
                 cb.updateDataStore((DataStoreInfo) clone, (DataStoreInfo) existing);
-            }
-            else if (existing instanceof CoverageStoreInfo) {
+            } else if (existing instanceof CoverageStoreInfo) {
                 clone = cb.buildCoverageStore(existing.getName());
                 cb.updateCoverageStore((CoverageStoreInfo) clone, (CoverageStoreInfo) existing);
-            }
-            else {
+            } else {
                 throw new RestException(
-                        "Unable to handle existing store: " + update, HttpStatus.INTERNAL_SERVER_ERROR);
+                        "Unable to handle existing store: " + update,
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             ((StoreInfoImpl) clone).setId(existing.getId());
             task.setStore(clone);
             task.setDirect(false);
-        }
-        else if (orig == null){
+        } else if (orig == null) {
             task.setStore(update);
-        }
-        else {
-            //update the original
+        } else {
+            // update the original
             CatalogBuilder cb = new CatalogBuilder(importer.getCatalog());
             if (orig instanceof DataStoreInfo) {
-                cb.updateDataStore((DataStoreInfo)orig, (DataStoreInfo)update);
-            }
-            else if (orig instanceof CoverageStoreInfo) {
-                cb.updateCoverageStore((CoverageStoreInfo)orig, (CoverageStoreInfo)update);
-            }
-            else {
+                cb.updateDataStore((DataStoreInfo) orig, (DataStoreInfo) update);
+            } else if (orig instanceof CoverageStoreInfo) {
+                cb.updateCoverageStore((CoverageStoreInfo) orig, (CoverageStoreInfo) update);
+            } else {
                 throw new RestException(
                         "Unable to update store with " + update, HttpStatus.INTERNAL_SERVER_ERROR);
             }

@@ -5,14 +5,14 @@
  */
 package org.geoserver.inspire;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.config.ServiceInfo;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_NAMESPACE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.geoserver.catalog.MetadataMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -24,7 +24,8 @@ public class InspireTestSupport {
         }
     }
 
-    public static void assertSchemaLocationContains(String schemaLocation, String namespace, String url) {
+    public static void assertSchemaLocationContains(
+            String schemaLocation, String namespace, String url) {
         assertTrue(schemaLocation.contains(namespace));
 
         String[] schemaLocationParts = schemaLocation.split("\\s+");
@@ -35,16 +36,21 @@ public class InspireTestSupport {
         }
     }
 
-    public static void assertInspireCommonScenario1Response(final Element extendedCapabilities,
-            final String metadataUrl, final String mediaType, final String language) {
+    public static void assertInspireCommonScenario1Response(
+            final Element extendedCapabilities,
+            final String metadataUrl,
+            final String mediaType,
+            final String language) {
 
-        NodeList nodeList = extendedCapabilities.getElementsByTagNameNS(COMMON_NAMESPACE, "MetadataUrl");
+        NodeList nodeList =
+                extendedCapabilities.getElementsByTagNameNS(COMMON_NAMESPACE, "MetadataUrl");
         assertEquals("Number of MetadataUrl elements", 1, nodeList.getLength());
         final Element mdUrl = (Element) nodeList.item(0);
 
         assertInspireMetadataUrlResponse(mdUrl, metadataUrl, mediaType);
 
-        nodeList = extendedCapabilities.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages");
+        nodeList =
+                extendedCapabilities.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages");
         assertEquals("Number of SupportedLanguages elements", 1, nodeList.getLength());
         final Element suppLangs = (Element) nodeList.item(0);
 
@@ -55,21 +61,23 @@ public class InspireTestSupport {
         nodeList = defLang.getElementsByTagNameNS(COMMON_NAMESPACE, "Language");
         assertEquals("Number of DefaultLanguage/Language elements", 1, nodeList.getLength());
         final Element defLangVal = (Element) nodeList.item(0);
-        assertEquals("DefaultLanguage/Language", language, defLangVal.getFirstChild().getNodeValue());
+        assertEquals(
+                "DefaultLanguage/Language", language, defLangVal.getFirstChild().getNodeValue());
 
-        nodeList = extendedCapabilities.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage");
+        nodeList =
+                extendedCapabilities.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage");
         assertEquals("Number of ResponseLanguage elements", 1, nodeList.getLength());
         final Element respLang = (Element) nodeList.item(0);
 
         nodeList = respLang.getElementsByTagNameNS(COMMON_NAMESPACE, "Language");
         assertEquals("Number of ResponseLanguage/Language elements", 1, nodeList.getLength());
         final Element respLangVal = (Element) nodeList.item(0);
-        assertEquals("ResponseLanguage/Language", language, respLangVal.getFirstChild().getNodeValue());
-
+        assertEquals(
+                "ResponseLanguage/Language", language, respLangVal.getFirstChild().getNodeValue());
     }
 
-    public static void assertInspireMetadataUrlResponse(final Element mdUrl,
-            final String metadataUrl, final String mediaType) {
+    public static void assertInspireMetadataUrlResponse(
+            final Element mdUrl, final String metadataUrl, final String mediaType) {
 
         NodeList nodeList = mdUrl.getElementsByTagNameNS(COMMON_NAMESPACE, "URL");
         assertEquals("Number of URL elements", 1, nodeList.getLength());
@@ -81,18 +89,26 @@ public class InspireTestSupport {
             assertEquals("Number of MediaType elements", 0, nodeList.getLength());
         } else {
             assertEquals("Number of MediaType elements", 1, nodeList.getLength());
-            assertEquals("MediaType", mediaType, ((Element) nodeList.item(0)).getFirstChild().getNodeValue());
+            assertEquals(
+                    "MediaType",
+                    mediaType,
+                    ((Element) nodeList.item(0)).getFirstChild().getNodeValue());
         }
-
     }
 
     public static void assertInspireDownloadSpatialDataSetIdentifierResponse(
             final Element extendedCapabilities, final UniqueResourceIdentifiers ids) {
 
-        final NodeList spatialDataSetIdentifiers = extendedCapabilities.getElementsByTagNameNS(DLS_NAMESPACE, "SpatialDataSetIdentifier");
-        assertEquals("Number of SpatialDataSetIdentifer elements", ids.size(), spatialDataSetIdentifiers.getLength());
+        final NodeList spatialDataSetIdentifiers =
+                extendedCapabilities.getElementsByTagNameNS(
+                        DLS_NAMESPACE, "SpatialDataSetIdentifier");
+        assertEquals(
+                "Number of SpatialDataSetIdentifer elements",
+                ids.size(),
+                spatialDataSetIdentifiers.getLength());
 
-        final Map<String, UniqueResourceIdentifier> idMap = new HashMap<String, UniqueResourceIdentifier>();
+        final Map<String, UniqueResourceIdentifier> idMap =
+                new HashMap<String, UniqueResourceIdentifier>();
 
         for (UniqueResourceIdentifier id : ids) {
             idMap.put(id.getCode(), id);
@@ -107,22 +123,31 @@ public class InspireTestSupport {
             nodeList = sdi.getElementsByTagNameNS(COMMON_NAMESPACE, "Namespace");
             String expectedNamespace = idMap.get(code).getNamespace();
             if (expectedNamespace == null) {
-                assertEquals("Number of Namespace elements for identifier with code " + code,
-                        0, nodeList.getLength());
+                assertEquals(
+                        "Number of Namespace elements for identifier with code " + code,
+                        0,
+                        nodeList.getLength());
             } else {
-                assertEquals("Number of Namespace elements for identifier with code " + code,
-                        1, nodeList.getLength());
-                String actualNamespace = ((Element) nodeList.item(0)).getFirstChild().getNodeValue();
-                assertEquals("Namespace for identifier with code " + code,
-                        expectedNamespace, actualNamespace);
+                assertEquals(
+                        "Number of Namespace elements for identifier with code " + code,
+                        1,
+                        nodeList.getLength());
+                String actualNamespace =
+                        ((Element) nodeList.item(0)).getFirstChild().getNodeValue();
+                assertEquals(
+                        "Namespace for identifier with code " + code,
+                        expectedNamespace,
+                        actualNamespace);
             }
             String expectedMetadataUrl = idMap.get(code).getMetadataURL();
             String actualMetadataUrl = sdi.getAttribute("metadataURL");
             if (expectedMetadataUrl == null) {
                 expectedMetadataUrl = "";
             }
-            assertEquals("metadataURL attribute for identifer with code" + code,
-                    expectedMetadataUrl, actualMetadataUrl);
+            assertEquals(
+                    "metadataURL attribute for identifer with code" + code,
+                    expectedMetadataUrl,
+                    actualMetadataUrl);
         }
     }
 }

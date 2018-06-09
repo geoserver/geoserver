@@ -10,17 +10,14 @@ import org.geotools.referencing.CRS;
 
 /**
  * Store a minimal information about {@link ReferencedEnvelope}:
- * 
+ *
  * @param minx
  * @param miny
  * @param maxx
  * @param maxy
  * @param crs
- * 
  * @author Xandros
- *
  */
-
 public class Bounds {
 
     private Double minx;
@@ -33,8 +30,7 @@ public class Bounds {
 
     private String crs;
 
-    public Bounds() {
-    }
+    public Bounds() {}
 
     public Bounds(ReferencedEnvelope bb) {
         this.minx = bb.getMinX();
@@ -84,9 +80,7 @@ public class Bounds {
         this.crs = crs;
     }
 
-    /**
-     * Rebuilds {@link ReferencedEnvelope} from parameters
-     */
+    /** Rebuilds {@link ReferencedEnvelope} from parameters */
     public ReferencedEnvelope getBb() {
         try {
             return new ReferencedEnvelope(minx, maxx, miny, maxy, CRS.decode(crs));
@@ -94,5 +88,4 @@ public class Bounds {
             return null;
         }
     }
-
 }

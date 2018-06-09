@@ -8,7 +8,6 @@ package org.geoserver.wcs.kvp;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.MissingParameterValue;
 
 import java.util.Map;
-
 import net.opengis.ows11.BoundingBoxType;
 import net.opengis.wcs11.DomainSubsetType;
 import net.opengis.wcs11.GetCoverageType;
@@ -16,7 +15,6 @@ import net.opengis.wcs11.GridCrsType;
 import net.opengis.wcs11.OutputType;
 import net.opengis.wcs11.TimeSequenceType;
 import net.opengis.wcs11.Wcs111Factory;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.vfny.geoserver.wcs.WcsException;
@@ -37,8 +35,8 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
 
         // grab coverage info to perform further checks
         if (getCoverage.getIdentifier() == null)
-            throw new WcsException("identifier parameter is mandatory", MissingParameterValue,
-                    "identifier");
+            throw new WcsException(
+                    "identifier parameter is mandatory", MissingParameterValue, "identifier");
 
         // build the domain subset
         getCoverage.setDomainSubset(parseDomainSubset(kvp));
@@ -49,7 +47,6 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
         return getCoverage;
     }
 
-
     private DomainSubsetType parseDomainSubset(Map kvp) {
         final DomainSubsetType domainSubset = Wcs111Factory.eINSTANCE.createDomainSubsetType();
 
@@ -59,7 +56,8 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
         if (timeSequence == null && bbox == null)
             throw new WcsException(
                     "Bounding box cannot be null, TimeSequence has not been specified",
-                    WcsExceptionCode.MissingParameterValue, "BoundingBox");
+                    WcsExceptionCode.MissingParameterValue,
+                    "BoundingBox");
 
         domainSubset.setBoundingBox(bbox);
         domainSubset.setTemporalSubset(timeSequence);
@@ -73,25 +71,25 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
 
         // check and set store
         Boolean store = (Boolean) kvp.get("store");
-        if (store != null)
-            output.setStore(store.booleanValue());
+        if (store != null) output.setStore(store.booleanValue());
 
         // check and set format
         String format = (String) kvp.get("format");
         if (format == null)
-            throw new WcsException("format parameter is mandatory", MissingParameterValue, "format");
+            throw new WcsException(
+                    "format parameter is mandatory", MissingParameterValue, "format");
         output.setFormat(format);
 
         // set the other gridcrs properties
         final GridCrsType gridCRS = output.getGridCRS();
         gridCRS.setGridBaseCRS((String) kvp.get("gridBaseCrs"));
-        
+
         String gridType = (String) kvp.get("gridType");
         if (gridType == null) {
             gridType = gridCRS.getGridType();
         }
         gridCRS.setGridType(gridType);
-        
+
         String gridCS = (String) kvp.get("gridCS");
         if (gridCS == null) {
             gridCS = gridCRS.getGridCS();
@@ -102,5 +100,4 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
 
         return output;
     }
-
 }

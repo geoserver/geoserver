@@ -11,9 +11,10 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import java.net.URI;
 import java.util.HashSet;
-
 import org.geogig.geoserver.HeapResourceStore;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.resource.ResourceStore;
@@ -22,20 +23,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
-
 /**
  * Integration test suite that simulates a clustered setup where two {@link RepositoryManager}/
  * {@link ConfigStore} combos work against the same {@link ResourceStore}, making sure events issued
  * by the {@code ResourceStore} are properly handled both by the node that triggered it and the one
  * that didn't.
- *
  */
 public class RepositoryManagerConfigStoreIntegrationTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     private ResourceStore dataDir;
 

@@ -1,7 +1,6 @@
 package org.geoserver.gwc;
 
 import junit.framework.TestCase;
-
 import org.geowebcache.util.URLMangler;
 
 public class ResponseUtilsURLManglerTest extends TestCase {
@@ -27,5 +26,4 @@ public class ResponseUtilsURLManglerTest extends TestCase {
         String url = urlMangler.buildURL("http://foo.example.com/", "foo/", "bar");
         assertEquals("http://foo.example.com/foo/bar", url);
     }
-
 }

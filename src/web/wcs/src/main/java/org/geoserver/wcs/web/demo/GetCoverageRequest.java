@@ -7,25 +7,23 @@ package org.geoserver.wcs.web.demo;
 
 import java.awt.geom.AffineTransform;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
-
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A simple model backing the WCS GetCoverage builder GUI
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 class GetCoverageRequest implements Serializable {
     private static final long serialVersionUID = -1473018934663380028L;
 
     enum Version {
-        v1_0_0("1.0.0"), v1_1_1("1.1.1");
-        
+        v1_0_0("1.0.0"),
+        v1_1_1("1.1.1");
+
         String name;
 
         Version(String name) {

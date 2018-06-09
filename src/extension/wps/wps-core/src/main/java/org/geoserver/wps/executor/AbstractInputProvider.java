@@ -8,10 +8,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
-
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.Request;
@@ -29,17 +27,19 @@ import org.springframework.validation.Validator;
 
 /**
  * Base class for single value input providers
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractInputProvider implements InputProvider {
 
-    /**
-     * Creates an input provider
-     */
-    public static InputProvider getInputProvider(InputType input, ProcessParameterIO ppio,
-            WPSExecutionManager executor, ApplicationContext context,
-            Collection<Validator> validators) throws Exception {
+    /** Creates an input provider */
+    public static InputProvider getInputProvider(
+            InputType input,
+            ProcessParameterIO ppio,
+            WPSExecutionManager executor,
+            ApplicationContext context,
+            Collection<Validator> validators)
+            throws Exception {
         InputProvider provider;
         if (input.getReference() != null) {
             // this is a reference
@@ -57,8 +57,12 @@ public abstract class AbstractInputProvider implements InputProvider {
             } else {
                 int maxSizeMB = Validators.getMaxSizeMB(validators);
                 validators = Validators.filterOutClasses(validators, MaxSizeValidator.class);
-                provider = new RemoteRequestInputProvider(input, (ComplexPPIO) ppio,
-                        executor.getConnectionTimeout(), maxSizeMB * 1024 * 1024);
+                provider =
+                        new RemoteRequestInputProvider(
+                                input,
+                                (ComplexPPIO) ppio,
+                                executor.getConnectionTimeout(),
+                                maxSizeMB * 1024 * 1024);
             }
         } else {
             provider = new SimpleInputProvider(input, ppio);
@@ -92,7 +96,7 @@ public abstract class AbstractInputProvider implements InputProvider {
     }
 
     @Override
-    final public Object getValue(ProgressListener listener) throws Exception {
+    public final Object getValue(ProgressListener listener) throws Exception {
         if (value == null) {
             value = getValueInternal(listener);
         }
@@ -102,19 +106,16 @@ public abstract class AbstractInputProvider implements InputProvider {
 
     /**
      * Computes the value
-     * 
-     * @param listener
-     * 
      *
+     * @param listener
      */
     protected abstract Object getValueInternal(ProgressListener listener) throws Exception;
 
     /**
      * Simulates what the Dispatcher is doing when parsing a KVP request
-     * 
+     *
      * @param href
      * @param reader
-     *
      */
     protected Object kvpParse(String href, KvpRequestReader reader) throws Exception {
         Map original = new KvpMap(KvpUtils.parseQueryString(href));
@@ -137,12 +138,10 @@ public abstract class AbstractInputProvider implements InputProvider {
 
     /**
      * Returns the version from the kvp request
-     * 
-     * @param href
      *
+     * @param href
      */
     protected String getVersion(String href) {
         return (String) new KvpMap(KvpUtils.parseQueryString(href)).get("VERSION");
     }
-
 }

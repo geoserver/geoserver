@@ -7,7 +7,7 @@ package org.geoserver.importer.rest.converters;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-
+import net.sf.json.JSONObject;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
@@ -21,11 +21,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-import net.sf.json.JSONObject;
-
-/**
- * Convert {@link ImportContext} to/from {@link MediaType#APPLICATION_JSON}.
- */
+/** Convert {@link ImportContext} to/from {@link MediaType#APPLICATION_JSON}. */
 @Component
 public class ImportContextJSONMessageConverter extends BaseMessageConverter<ImportContext> {
 
@@ -51,8 +47,9 @@ public class ImportContextJSONMessageConverter extends BaseMessageConverter<Impo
     // Reading
     //
     @Override
-    protected ImportContext readInternal(Class<? extends ImportContext> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected ImportContext readInternal(
+            Class<? extends ImportContext> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);
             JSONObject json = reader.parse(in);
@@ -78,5 +75,4 @@ public class ImportContextJSONMessageConverter extends BaseMessageConverter<Impo
             output.flush();
         }
     }
-
 }

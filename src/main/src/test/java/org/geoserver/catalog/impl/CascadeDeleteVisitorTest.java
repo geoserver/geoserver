@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -28,7 +27,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
@@ -56,10 +54,8 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
             catalog.remove(group);
         }
 
-
         setupExtras(getTestData(), catalog);
     }
-
 
     @Test
     public void testCascadeLayer() {
@@ -90,14 +86,14 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         assertEquals(1, nestedGroup.getLayers().size());
         assertEquals(1, nestedGroup.getStyles().size());
     }
-    
+
     @Test
     public void testCascadeLayerDuplicate() {
         Catalog catalog = getCatalog();
         String name = toString(LAKES);
         LayerInfo layer = catalog.getLayerByName(name);
         assertNotNull(layer);
-        
+
         LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
         group.getLayers().add(layer);
         group.getStyles().add(null);
@@ -114,8 +110,8 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
     @Test
     public void testCascadeStore() {
         Catalog catalog = getCatalog();
-        DataStoreInfo store = (DataStoreInfo) catalog.getLayerByName(getLayerId(LAKES))
-                .getResource().getStore();
+        DataStoreInfo store =
+                (DataStoreInfo) catalog.getLayerByName(getLayerId(LAKES)).getResource().getStore();
         new CascadeDeleteVisitor(catalog).visit(store);
 
         // that store actually holds all layers, so check we got empty

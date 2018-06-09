@@ -6,7 +6,6 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
-
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
@@ -18,32 +17,29 @@ import org.opengis.filter.Filter;
 
 /**
  * Secure version of {@link SecuredFeatureSource}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
-public class SecuredSimpleFeatureSource extends
-        SecuredFeatureSource<SimpleFeatureType, SimpleFeature> implements SimpleFeatureSource {
+public class SecuredSimpleFeatureSource
+        extends SecuredFeatureSource<SimpleFeatureType, SimpleFeature>
+        implements SimpleFeatureSource {
 
     protected SecuredSimpleFeatureSource(SimpleFeatureSource delegate, WrapperPolicy policy) {
         super(delegate, policy);
     }
-    
+
     @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
         return DataUtilities.simple(super.getFeatures());
     }
-    
+
     @Override
-    public SimpleFeatureCollection getFeatures(Filter filter)
-            throws IOException {
+    public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
         return DataUtilities.simple(super.getFeatures(filter));
     }
-    
+
     @Override
-    public SimpleFeatureCollection getFeatures(Query query)
-            throws IOException {
+    public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         return DataUtilities.simple(super.getFeatures(query));
     }
-
 }

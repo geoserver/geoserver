@@ -7,7 +7,6 @@
 package org.geoserver.gwc.web.layer;
 
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -18,38 +17,36 @@ import org.geowebcache.filter.parameters.ParameterFilter;
 
 /**
  * Subform that displays basic information about a ParameterFilter
- * @author Kevin Smith, OpenGeo
  *
+ * @author Kevin Smith, OpenGeo
  */
 public class DefaultParameterFilterSubform extends AbstractParameterFilterSubform<ParameterFilter> {
 
     private static final long serialVersionUID = 4827404723366519890L;
 
-    public DefaultParameterFilterSubform(String id,
-            IModel<ParameterFilter> model) {
+    public DefaultParameterFilterSubform(String id, IModel<ParameterFilter> model) {
         super(id, model);
-        
+
         final Component defaultValue;
-        
+
         defaultValue = new Label("defaultValue", new PropertyModel<String>(model, "defaultValue"));
         add(defaultValue);
-        
+
         final Component legalValueList;
-        
-        legalValueList = new ListView<String>("legalValueList", new PropertyModel<List<String>>(model, "legalValues")){
 
-            /** serialVersionUID */
-            private static final long serialVersionUID = 1L;
+        legalValueList =
+                new ListView<String>(
+                        "legalValueList", new PropertyModel<List<String>>(model, "legalValues")) {
 
-            @Override
-            protected void populateItem(ListItem<String> item) {
-                item.add(new Label("legalValue",item.getModel()));
-            }
-            
-        };
-        
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void populateItem(ListItem<String> item) {
+                        item.add(new Label("legalValue", item.getModel()));
+                    }
+                };
+
         add(legalValueList);
-
     }
-
 }

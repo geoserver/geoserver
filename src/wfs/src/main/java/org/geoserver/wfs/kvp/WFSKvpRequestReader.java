@@ -6,19 +6,15 @@
 package org.geoserver.wfs.kvp;
 
 import net.opengis.wfs.WfsFactory;
-
 import org.eclipse.emf.ecore.EFactory;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 
-
 /**
  * Web Feature Service Key Value Pair Request reader.
- * <p>
- * This request reader makes use of the Eclipse Modelling Framework
- * reflection api.
- * </p>
- * @author Justin Deoliveira, The Open Planning Project
  *
+ * <p>This request reader makes use of the Eclipse Modelling Framework reflection api.
+ *
+ * @author Justin Deoliveira, The Open Planning Project
  */
 public class WFSKvpRequestReader extends EMFKvpRequestReader {
 
@@ -30,7 +26,7 @@ public class WFSKvpRequestReader extends EMFKvpRequestReader {
     public WFSKvpRequestReader(Class requestBean) {
         this(requestBean, WfsFactory.eINSTANCE);
     }
-    
+
     /**
      * Creates the Wfs Kvp Request reader specifying the factory.
      *
@@ -40,7 +36,7 @@ public class WFSKvpRequestReader extends EMFKvpRequestReader {
     public WFSKvpRequestReader(Class requestBean, EFactory factory) {
         super(requestBean, factory);
     }
-    
+
     protected EFactory getFactory() {
         return factory;
     }

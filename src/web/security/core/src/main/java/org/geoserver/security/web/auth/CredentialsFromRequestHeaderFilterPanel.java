@@ -5,7 +5,6 @@
 package org.geoserver.security.web.auth;
 
 import java.util.logging.Logger;
-
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -16,12 +15,12 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Configuration panel for {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
- * 
+ *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
- *
  */
-public class CredentialsFromRequestHeaderFilterPanel  extends AuthenticationFilterPanel<CredentialsFromRequestHeaderFilterConfig>{
+public class CredentialsFromRequestHeaderFilterPanel
+        extends AuthenticationFilterPanel<CredentialsFromRequestHeaderFilterConfig> {
     private static final long serialVersionUID = 1;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
@@ -30,8 +29,8 @@ public class CredentialsFromRequestHeaderFilterPanel  extends AuthenticationFilt
 
     IModel<CredentialsFromRequestHeaderFilterConfig> model;
 
-    public CredentialsFromRequestHeaderFilterPanel(String id,
-            IModel<CredentialsFromRequestHeaderFilterConfig> model) {
+    public CredentialsFromRequestHeaderFilterPanel(
+            String id, IModel<CredentialsFromRequestHeaderFilterConfig> model) {
         super(id, model);
 
         dialog = (GeoServerDialog) get("dialog");
@@ -44,6 +43,5 @@ public class CredentialsFromRequestHeaderFilterPanel  extends AuthenticationFilt
         add(new TextField<String>("userNameRegex"));
         add(new TextField<String>("passwordRegex"));
         add(new CheckBox("parseAsUriComponents"));
-
     }
 }

@@ -8,9 +8,7 @@ package org.geoserver.wms.featureinfo;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.Icon;
-
 import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.renderer.style.ExternalGraphicFactory;
@@ -28,7 +26,7 @@ import org.opengis.style.GraphicalSymbol;
 /**
  * Evaluates a meta-buffer against the specified feature. Can be called with multiple subsequent
  * features and will accumulate the largest available buffer.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DynamicBufferEstimator extends AbstractStyleVisitor {
@@ -82,14 +80,16 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
                         // expand embedded cql expression
                         Expression expanded = ExpressionExtractor.extractCqlExpressions(location);
 
-                        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder
-                                .getExternalGraphicFactories();
+                        Iterator<ExternalGraphicFactory> it =
+                                DynamicSymbolFactoryFinder.getExternalGraphicFactories();
                         while (it.hasNext()) {
                             try {
                                 icon = it.next().getIcon(feature, expanded, eg.getFormat(), -1);
                             } catch (Exception e) {
-                                LOGGER.log(Level.FINE,
-                                        "Error occurred evaluating external graphic", e);
+                                LOGGER.log(
+                                        Level.FINE,
+                                        "Error occurred evaluating external graphic",
+                                        e);
                             }
                         }
                     }
@@ -113,8 +113,11 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
         } catch (ClassCastException e) {
             LOGGER.info("Could not parse graphic size, " + "it's a literal but not a Number...");
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Error occured during the graphic size estimation, "
-                    + "meta buffer estimate cannot be performed", e);
+            LOGGER.log(
+                    Level.INFO,
+                    "Error occured during the graphic size estimation, "
+                            + "meta buffer estimate cannot be performed",
+                    e);
         }
     }
 }

@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.beanutils.BeanComparator;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
@@ -24,7 +23,7 @@ import org.opengis.filter.sort.SortOrder;
 
 /**
  * In memory implementation of the {@link ProcessStatusStore} interface
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class MemoryProcessStatusStore implements ProcessStatusStore {
@@ -50,8 +49,11 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
                 ProcessState previousPhase = oldStatus.getPhase();
                 ProcessState currPhase = status.getPhase();
                 if (!currPhase.isValidSuccessor(previousPhase)) {
-                    throw new WPSException("Cannot switch process status from " + previousPhase
-                            + " to " + currPhase);
+                    throw new WPSException(
+                            "Cannot switch process status from "
+                                    + previousPhase
+                                    + " to "
+                                    + currPhase);
                 }
                 ExecutionStatus prevInMap = statuses.put(status.getExecutionId(), newStatus);
                 succeded = prevInMap == oldStatus;
@@ -60,7 +62,6 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
                 succeded = previous == null;
             }
         }
-
     }
 
     @Override
@@ -103,12 +104,12 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
                     comparators.add(Collections.reverseOrder(new BeanComparator("creationTime")));
                 } else {
                     String property = sort.getPropertyName().getPropertyName();
-                    //map property to ExecutionStatus values
-                    if("node".equalsIgnoreCase(property)) {
+                    // map property to ExecutionStatus values
+                    if ("node".equalsIgnoreCase(property)) {
                         property = "nodeId";
-                    }else if("user".equalsIgnoreCase(property)) {
+                    } else if ("user".equalsIgnoreCase(property)) {
                         property = "userName";
-                    }else if("task".equalsIgnoreCase(property)) {
+                    } else if ("task".equalsIgnoreCase(property)) {
                         property = "task";
                     }
                     Comparator<ExecutionStatus> comparator = new BeanComparator(property);
@@ -159,7 +160,7 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
 
     @Override
     public boolean supportsPredicate() {
-        // 
+        //
         return true;
     }
 
@@ -167,5 +168,4 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
     public boolean supportsPaging() {
         return false;
     }
-
 }

@@ -15,14 +15,21 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A parser that allows dateline crossing envelopes
- * 
+ *
  * @author Andrea Aime
  */
 public class OpenSearchBBoxKvpParser extends BBoxKvpParser {
 
     @Override
-    protected Object buildEnvelope(int countco, double minx, double miny, double minz, double maxx,
-            double maxy, double maxz, String srs)
+    protected Object buildEnvelope(
+            int countco,
+            double minx,
+            double miny,
+            double minz,
+            double maxx,
+            double maxy,
+            double maxz,
+            String srs)
             throws NoSuchAuthorityCodeException, FactoryException {
         if (countco > 4) {
             throw new IllegalArgumentException(
@@ -33,15 +40,18 @@ public class OpenSearchBBoxKvpParser extends BBoxKvpParser {
         if (crs != null && !CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
             throw new OWS20Exception(
                     "OpenSearch for EO requests only support boundig boxes in WGS84",
-                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "box");
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue,
+                    "box");
         }
         minx = rollLongitude(minx);
         maxx = rollLongitude(maxx);
 
         if (minx > maxx) {
             // dateline crossing case
-            return new ReferencedEnvelope[] { new ReferencedEnvelope(minx, 180, miny, maxy, crs),
-                    new ReferencedEnvelope(-180, maxx, miny, maxy, crs), };
+            return new ReferencedEnvelope[] {
+                new ReferencedEnvelope(minx, 180, miny, maxy, crs),
+                new ReferencedEnvelope(-180, maxx, miny, maxy, crs),
+            };
         } else {
             return new ReferencedEnvelope(minx, maxx, miny, maxy, crs);
         }

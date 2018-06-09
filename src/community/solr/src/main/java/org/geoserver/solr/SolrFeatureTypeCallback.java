@@ -6,7 +6,6 @@ package org.geoserver.solr;
 
 import java.io.IOException;
 import java.io.Serializable;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.FeatureTypeCallback;
@@ -24,11 +23,9 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
 /**
- * 
  * Implementation of FeatureTypeInitializer extension point to initialize SOLR datastore
- * 
+ *
  * @see {@link FeatureTypeCallback}
- * 
  */
 public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogListener {
 
@@ -40,8 +37,8 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     @Override
-    public boolean canHandle(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public boolean canHandle(
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         if (dataAccess instanceof SolrDataStore) {
             return true;
         } else {
@@ -50,11 +47,13 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     @Override
-    public boolean initialize(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
+    public boolean initialize(
+            FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            Name temporaryName)
             throws IOException {
-        SolrLayerConfiguration configuration = (SolrLayerConfiguration) info.getMetadata().get(
-                SolrLayerConfiguration.KEY);
+        SolrLayerConfiguration configuration =
+                (SolrLayerConfiguration) info.getMetadata().get(SolrLayerConfiguration.KEY);
         if (configuration != null) {
             SolrDataStore dataStore = (SolrDataStore) dataAccess;
             dataStore.setSolrConfigurations(configuration);
@@ -64,18 +63,21 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     @Override
-    public void dispose(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
+    public void dispose(
+            FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            Name temporaryName)
             throws IOException {
-        SolrLayerConfiguration configuration = (SolrLayerConfiguration) info.getMetadata().get(
-                SolrLayerConfiguration.KEY);
+        SolrLayerConfiguration configuration =
+                (SolrLayerConfiguration) info.getMetadata().get(SolrLayerConfiguration.KEY);
         SolrDataStore dataStore = (SolrDataStore) dataAccess;
         dataStore.getSolrConfigurations().remove(configuration.getLayerName());
     }
 
     @Override
-    public void flush(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) throws IOException {
+    public void flush(
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
+            throws IOException {
         // nothing to do
     }
 
@@ -100,9 +102,8 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
                 SolrLayerConfiguration slc = (SolrLayerConfiguration) config;
                 // go directly to the resource pool to avoid security wrappers
                 try {
-                    DataAccess<? extends FeatureType, ? extends Feature> dataStore = catalog
-                            .getResourcePool()
-                            .getDataStore(ft.getStore());
+                    DataAccess<? extends FeatureType, ? extends Feature> dataStore =
+                            catalog.getResourcePool().getDataStore(ft.getStore());
                     if (dataStore instanceof SolrDataStore) {
                         SolrDataStore solr = (SolrDataStore) dataStore;
                         solr.getSolrConfigurations().remove(slc.getLayerName());
@@ -113,7 +114,6 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
                 }
             }
         }
-
     }
 
     @Override
@@ -133,17 +133,15 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
                 if (!ft.getName().equals(slc.getLayerName())) {
                     updateSolrConfiguration(ft, slc);
                 }
-
             }
         }
-
     }
 
     private void updateSolrConfiguration(FeatureTypeInfo ft, SolrLayerConfiguration slc) {
         // go directly to the resource pool to avoid security wrappers
         try {
-            DataAccess<? extends FeatureType, ? extends Feature> dataStore = catalog
-                    .getResourcePool().getDataStore(ft.getStore());
+            DataAccess<? extends FeatureType, ? extends Feature> dataStore =
+                    catalog.getResourcePool().getDataStore(ft.getStore());
             if (dataStore instanceof SolrDataStore) {
                 SolrDataStore solr = (SolrDataStore) dataStore;
                 solr.getSolrConfigurations().remove(slc.getLayerName());
@@ -151,8 +149,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
                 solr.setSolrConfigurations(slc);
             }
         } catch (IOException e) {
-            throw new CatalogException(
-                    "Failed to remove layer configuration from data store", e);
+            throw new CatalogException("Failed to remove layer configuration from data store", e);
         }
         FeatureTypeInfo proxy = catalog.getFeatureType(ft.getId());
         proxy.setNativeName(ft.getName());
@@ -164,5 +161,4 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     public void reloaded() {
         // nothing to do
     }
-
 }

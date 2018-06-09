@@ -5,63 +5,62 @@
  */
 package org.geoserver.web.admin;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 public class StatusPageTest extends GeoServerWicketTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        
+
         // print(tester.getLastRenderedPage(), true, true);
     }
-    
+
     @Before
     public void setupTests() {
         login();
         tester.startPage(StatusPage.class);
     }
-    
+
     @Test
     public void testValues() {
         tester.assertRenderedPage(StatusPage.class);
         tester.assertLabel("tabs:panel:locks", "0");
         tester.assertLabel("tabs:panel:jai.memory.used", "0 KB");
     }
-    
+
     @Test
     public void testFreeLocks() {
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:panel:free.locks", false);
         tester.assertRenderedPage(StatusPage.class);
     }
+
     @Test
     public void testFreeMemory() {
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:panel:free.memory", false);
         tester.assertRenderedPage(StatusPage.class);
     }
-    
+
     @Test
     public void testFreeMemoryJAI() {
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:panel:free.memory.jai", false);
         tester.assertRenderedPage(StatusPage.class);
     }
-    
+
     @Test
     public void testClearCache() {
         tester.assertRenderedPage(StatusPage.class);
@@ -75,23 +74,23 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("tabs:panel:reload.catalogConfig", true);
         tester.assertRenderedPage(StatusPage.class);
     }
-    
+
     @Test
     public void testReload() throws Exception {
         // the status page was rendered as expected
         tester.assertRenderedPage(StatusPage.class);
-        
+
         // now force a config reload
         getGeoServer().reload();
-        
+
         // force the page reload
         login();
         tester.startPage(StatusPage.class);
-        
+
         // check we did not NPE
         tester.assertRenderedPage(StatusPage.class);
     }
-    
+
     @Test
     public void testModuleStatusPanel() {
         tester.assertRenderedPage(StatusPage.class);
@@ -121,18 +120,16 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         // check that extra tab content was rendered
         tester.assertContains("extra tab content");
         // check that the tab has the correct title
-        Component component = tester.getComponentFromLastRenderedPage(
-                "tabs:tabs-container:tabs:2:link:title");
+        Component component =
+                tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:2:link:title");
         assertThat(component, instanceOf(Label.class));
         Label label = (Label) component;
         assertThat(label.getDefaultModel(), notNullValue());
         assertThat(label.getDefaultModel().getObject(), is("extra"));
     }
 
-    /**
-     * Extra tab definition that will be added to GeoServer status page.
-     */
-    public static final class ExtraTabDefinition implements StatusPage.TabDefinition  {
+    /** Extra tab definition that will be added to GeoServer status page. */
+    public static final class ExtraTabDefinition implements StatusPage.TabDefinition {
 
         @Override
         public String getTitleKey() {

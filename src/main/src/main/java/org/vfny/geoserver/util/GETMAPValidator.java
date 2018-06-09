@@ -17,9 +17,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.ServletContext;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -28,22 +26,20 @@ import org.geotools.data.DataUtilities;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-
 public class GETMAPValidator {
-    
-    public GETMAPValidator() {
-    }
+
+    public GETMAPValidator() {}
 
     /**
-     *  validates against the "normal" location of the schema (ie. ".../capabilities/sld/StyleLayerDescriptor.xsd"
-     *  uses the geoserver_home patch
+     * validates against the "normal" location of the schema (ie.
+     * ".../capabilities/sld/StyleLayerDescriptor.xsd" uses the geoserver_home patch
+     *
      * @param xml
      * @param req
-     *
      */
     public List validateGETMAP(InputStream xml) {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        
+
         Resource schema = loader.get("data/capabilities/sld/GetMap.xsd");
         File schemaFile = schema.file();
         try {
@@ -61,14 +57,14 @@ public class GETMAPValidator {
     }
 
     /**
-       *  returns a better formated error message - suitable for framing.
-       * There's a more complex version in StylesEditorAction.
-       *
-       * This will kick out a VERY LARGE errorMessage.
-       *
-       * @param xml
-       * @param errors
-       */
+     * returns a better formated error message - suitable for framing. There's a more complex
+     * version in StylesEditorAction.
+     *
+     * <p>This will kick out a VERY LARGE errorMessage.
+     *
+     * @param xml
+     * @param errors
+     */
     public static String getErrorMessage(Reader xml, List errors) {
         return SLDValidator.getErrorMessage(xml, errors);
     }
@@ -78,14 +74,14 @@ public class GETMAPValidator {
     }
 
     public List validateGETMAP(InputSource xml, ServletContext servContext) {
-        
+
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        
+
         Resource schema = loader.get("data/capabilities/sld/GetMap.xsd");
         File schemaFile = schema.file();
-        
-//        File schemaFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-//                "/data/capabilities/sld/GetMap.xsd");
+
+        //        File schemaFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
+        //                "/data/capabilities/sld/GetMap.xsd");
 
         try {
             return validateGETMAP(xml, DataUtilities.fileToURL(schemaFile));
@@ -98,10 +94,11 @@ public class GETMAPValidator {
     }
 
     /**
-     *  validate a GETMAP against the schema
+     * validate a GETMAP against the schema
      *
-     * @param xml  input stream representing the GETMAP file
-     * @param SchemaUrl location of the schemas. Normally use ".../capabilities/sld/StyleLayerDescriptor.xsd"
+     * @param xml input stream representing the GETMAP file
+     * @param SchemaUrl location of the schemas. Normally use
+     *     ".../capabilities/sld/StyleLayerDescriptor.xsd"
      * @return list of SAXExceptions (0 if the file's okay)
      */
     public List validateGETMAP(InputSource xml, URL SchemaUrl) {

@@ -4,6 +4,10 @@
  */
 package org.geoserver.gwc.wmts;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+import java.util.List;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
@@ -14,15 +18,9 @@ import org.geoserver.gwc.wmts.dimensions.RasterCustomDimension;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
-import java.util.List;
-import java.util.TreeSet;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-
 /**
- * This class contains tests that check that custom dimensions values are correctly extracted from rasters.
- * Custom dimensions are only supported in rasters.
+ * This class contains tests that check that custom dimensions values are correctly extracted from
+ * rasters. Custom dimensions are only supported in rasters.
  */
 public class RasterCustomDimensionTest extends TestsSupport {
 
@@ -32,13 +30,21 @@ public class RasterCustomDimensionTest extends TestsSupport {
         DimensionInfo dimensionInfo = new DimensionInfoImpl();
         dimensionInfo.setEnabled(true);
         CoverageInfo rasterInfo = getCoverageInfo();
-        rasterInfo.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
+        rasterInfo
+                .getMetadata()
+                .put(
+                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
+                        dimensionInfo);
         getCatalog().save(rasterInfo);
         // check that we correctly retrieve the custom dimension
         assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(1));
         // disable the custom dimension
         dimensionInfo.setEnabled(false);
-        rasterInfo.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
+        rasterInfo
+                .getMetadata()
+                .put(
+                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
+                        dimensionInfo);
         getCatalog().save(rasterInfo);
         // no dimensions should be available
         assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(0));
@@ -52,14 +58,24 @@ public class RasterCustomDimensionTest extends TestsSupport {
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "CustomDimValueA", "CustomDimValueB", "CustomDimValueC");
+        testDomainsValuesRepresentation(
+                DimensionPresentation.LIST,
+                "CustomDimValueA",
+                "CustomDimValueB",
+                "CustomDimValueC");
     }
 
     @Override
     protected Dimension buildDimension(DimensionInfo dimensionInfo) {
         CoverageInfo rasterInfo = getCoverageInfo();
-        Dimension dimension = new RasterCustomDimension(wms, getLayerInfo(), CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
-        rasterInfo.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
+        Dimension dimension =
+                new RasterCustomDimension(
+                        wms, getLayerInfo(), CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
+        rasterInfo
+                .getMetadata()
+                .put(
+                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
+                        dimensionInfo);
         getCatalog().save(rasterInfo);
         return dimension;
     }
@@ -73,16 +89,12 @@ public class RasterCustomDimensionTest extends TestsSupport {
         assertThat(histogram.second, containsInAnyOrder(1, 1, 1));
     }
 
-    /**
-     * Helper method that just returns the current layer info.
-     */
+    /** Helper method that just returns the current layer info. */
     private LayerInfo getLayerInfo() {
         return catalog.getLayerByName(RASTER_CUSTOM.getLocalPart());
     }
 
-    /**
-     * Helper method that just returns the current coverage info.
-     */
+    /** Helper method that just returns the current coverage info. */
     private CoverageInfo getCoverageInfo() {
         LayerInfo layerInfo = getLayerInfo();
         assertThat(layerInfo.getResource(), instanceOf(CoverageInfo.class));

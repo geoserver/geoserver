@@ -8,7 +8,6 @@ package org.geoserver.notification;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.notification.common.NotificationConfiguration;
@@ -47,5 +46,4 @@ public class DefaultConfigTest extends GeoServerSystemTestSupport {
         }
         assertEquals(1, counter);
     }
-
 }

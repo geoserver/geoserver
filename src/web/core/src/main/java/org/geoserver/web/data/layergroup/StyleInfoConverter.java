@@ -6,11 +6,9 @@
 package org.geoserver.web.data.layergroup;
 
 import java.util.Locale;
-
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
-
 
 public class StyleInfoConverter implements IConverter<StyleInfo> {
 

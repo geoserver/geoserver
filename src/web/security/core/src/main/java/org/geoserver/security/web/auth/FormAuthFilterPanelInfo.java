@@ -10,11 +10,12 @@ import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilt
 
 /**
  * Configuration panel extension for {@link GeoServerUserNamePasswordAuthenticationFilter}.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class FormAuthFilterPanelInfo 
-    extends AuthenticationFilterPanelInfo<UsernamePasswordAuthenticationFilterConfig, FormAuthFilterPanel> {
+public class FormAuthFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<
+                UsernamePasswordAuthenticationFilterConfig, FormAuthFilterPanel> {
 
     public FormAuthFilterPanelInfo() {
         setServiceClass(GeoServerUserNamePasswordAuthenticationFilter.class);

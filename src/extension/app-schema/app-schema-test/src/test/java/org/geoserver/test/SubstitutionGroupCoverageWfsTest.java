@@ -9,9 +9,10 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * This test ensures that substitution groups in XSD schemas work as expected. Specifically, test:DomainSet is substitutable for gml:domainSet and
- * should appear in the response. This test case is loosely based upon WXXM 2 schemas, but significant portions of the schemas were removed or changed
- * to simplify this test case
+ * This test ensures that substitution groups in XSD schemas work as expected. Specifically,
+ * test:DomainSet is substitutable for gml:domainSet and should appear in the response. This test
+ * case is loosely based upon WXXM 2 schemas, but significant portions of the schemas were removed
+ * or changed to simplify this test case
  *
  * @author Aaron Braeckel (National Center for Atmospheric Research)
  */
@@ -35,12 +36,14 @@ public class SubstitutionGroupCoverageWfsTest extends AbstractAppSchemaTestSuppo
         assertXpathEvaluatesTo(id, "(//test:DiscreteCoverage)[1]/@gml:id", doc);
         assertXpathCount(1, "//test:DiscreteCoverage/test:domainSet", doc);
         assertXpathCount(1, "//test:DiscreteCoverage/test:domainSet/test:DomainObject", doc);
-        assertXpathCount(1,
-                "//test:DiscreteCoverage/test:domainSet/test:DomainObject/test:elements", doc);
-        assertXpathCount(2,
-                "//test:DiscreteCoverage/test:domainSet/test:DomainObject/test:elements/*", doc);
-        assertXpathEvaluatesTo("-0.6476 81.0527", "//test:DiscreteCoverage/test:domainSet/"
-                + "test:DomainObject/test:elements[1]/gml:Point/gml:pos", doc);
+        assertXpathCount(
+                1, "//test:DiscreteCoverage/test:domainSet/test:DomainObject/test:elements", doc);
+        assertXpathCount(
+                2, "//test:DiscreteCoverage/test:domainSet/test:DomainObject/test:elements/*", doc);
+        assertXpathEvaluatesTo(
+                "-0.6476 81.0527",
+                "//test:DiscreteCoverage/test:domainSet/"
+                        + "test:DomainObject/test:elements[1]/gml:Point/gml:pos",
+                doc);
     }
-
 }

@@ -18,11 +18,11 @@ public class SecuredLayerInfo extends DecoratingLayerInfo {
 
     WrapperPolicy policy;
 
-    public SecuredLayerInfo(LayerInfo delegate, WrapperPolicy  policy) {
+    public SecuredLayerInfo(LayerInfo delegate, WrapperPolicy policy) {
         super(delegate);
         this.policy = policy;
     }
-    
+
     public WrapperPolicy getWrapperPolicy() {
         return policy;
     }
@@ -30,20 +30,15 @@ public class SecuredLayerInfo extends DecoratingLayerInfo {
     @Override
     public ResourceInfo getResource() {
         ResourceInfo r = super.getResource();
-        if (r == null)
-            return null;
+        if (r == null) return null;
         else if (r instanceof FeatureTypeInfo)
             return (FeatureTypeInfo) SecuredObjects.secure(r, policy);
-        else if (r instanceof CoverageInfo)
-            return (CoverageInfo) SecuredObjects.secure(r, policy);
-        else if (r instanceof WMSLayerInfo)
-            return (WMSLayerInfo) SecuredObjects.secure(r, policy);
+        else if (r instanceof CoverageInfo) return (CoverageInfo) SecuredObjects.secure(r, policy);
+        else if (r instanceof WMSLayerInfo) return (WMSLayerInfo) SecuredObjects.secure(r, policy);
         else if (r instanceof WMTSLayerInfo)
             return (WMTSLayerInfo) SecuredObjects.secure(r, policy);
-        else
-            throw new RuntimeException("Don't know how to make resource of type " + r.getClass());
+        else throw new RuntimeException("Don't know how to make resource of type " + r.getClass());
     }
-
 
     @Override
     public void setResource(ResourceInfo resource) {

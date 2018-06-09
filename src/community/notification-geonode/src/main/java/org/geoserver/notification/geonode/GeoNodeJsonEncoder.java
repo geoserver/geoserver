@@ -5,12 +5,16 @@
 
 package org.geoserver.notification.geonode;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.net.InetAddress;
 import java.rmi.server.UID;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,12 +43,6 @@ import org.geoserver.notification.geonode.kombu.KombuStoreInfo;
 import org.geoserver.notification.geonode.kombu.KombuWMSLayerInfo;
 import org.geoserver.notification.geonode.kombu.KombuWorkspaceInfo;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 public class GeoNodeJsonEncoder implements NotificationEncoder {
 
     @Override
@@ -62,7 +60,8 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
 
         message.setId(new UID().toString());
         message.setType(notification.getType() != null ? notification.getType().name() : null);
-        message.setAction(notification.getAction() != null ? notification.getAction().name() : null);
+        message.setAction(
+                notification.getAction() != null ? notification.getAction().name() : null);
         message.setTimestamp(new Date());
         message.setUser(notification.getUser());
         message.setOriginator(InetAddress.getLocalHost().getHostAddress());
@@ -95,13 +94,15 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
             BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("name");
             Collection<String> styleNames = CollectionUtils.collect(obj.getStyles(), transformer);
             source.setStyles(StringUtils.join(styleNames.toArray()));
-            source.setDefaultStyle(obj.getDefaultStyle() != null ? obj.getDefaultStyle().getName()
-                    : "");
+            source.setDefaultStyle(
+                    obj.getDefaultStyle() != null ? obj.getDefaultStyle().getName() : "");
             ResourceInfo res = obj.getResource();
-            source.setWorkspace(res.getStore() != null ? res.getStore().getWorkspace() != null ? res
-                    .getStore().getWorkspace().getName()
-                    : ""
-                    : "");
+            source.setWorkspace(
+                    res.getStore() != null
+                            ? res.getStore().getWorkspace() != null
+                                    ? res.getStore().getWorkspace().getName()
+                                    : ""
+                            : "");
             if (res.getNativeBoundingBox() != null) {
                 source.setBounds(new Bounds(res.getNativeBoundingBox()));
             }
@@ -118,8 +119,8 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
             source.setName(obj.getName());
             source.setWorkspace(obj.getWorkspace() != null ? obj.getWorkspace().getName() : "");
             source.setMode(obj.getType().name());
-            String rootStyle = obj.getRootLayerStyle() != null ? obj.getRootLayerStyle().getName()
-                    : "";
+            String rootStyle =
+                    obj.getRootLayerStyle() != null ? obj.getRootLayerStyle().getName() : "";
             source.setRootLayerStyle(rootStyle);
             source.setRootLayer(obj.getRootLayer() != null ? obj.getRootLayer().getPath() : "");
             for (PublishedInfo pl : obj.getLayers()) {
@@ -127,8 +128,8 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
                 if (pl instanceof LayerInfo) {
                     LayerInfo li = (LayerInfo) pl;
                     kl.setName(li.getName());
-                    String lstyle = li.getDefaultStyle() != null ? li.getDefaultStyle().getName()
-                            : "";
+                    String lstyle =
+                            li.getDefaultStyle() != null ? li.getDefaultStyle().getName() : "";
                     if (!lstyle.equals(rootStyle)) {
                         kl.setStyle(lstyle);
                     }
@@ -155,10 +156,12 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
             if (source != null) {
                 source.setId(obj.getId());
                 source.setName(obj.getName());
-                source.setWorkspace(obj.getStore() != null ? obj.getStore().getWorkspace() != null ? obj
-                        .getStore().getWorkspace().getName()
-                        : ""
-                        : "");
+                source.setWorkspace(
+                        obj.getStore() != null
+                                ? obj.getStore().getWorkspace() != null
+                                        ? obj.getStore().getWorkspace().getName()
+                                        : ""
+                                : "");
                 source.setNativeName(obj.getNativeName());
                 source.setStore(obj.getStore() != null ? obj.getStore().getName() : "");
                 if (obj.getNativeBoundingBox() != null) {
@@ -181,7 +184,5 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
         }
         ret = mapper.writeValueAsBytes(message);
         return ret;
-
     }
-
 }

@@ -5,7 +5,9 @@
 package org.geoserver.taskmanager.external.impl;
 
 import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
-
+import java.io.Serializable;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
@@ -13,15 +15,9 @@ import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.util.NamedImpl;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import javax.sql.DataSource;
-
-import java.io.Serializable;
-import java.util.Map;
-
 /**
- * Generic datasource that only takes the connection url and driver class as input in
- * addition the the user name and password.
- * The schema attribute is optional.
+ * Generic datasource that only takes the connection url and driver class as input in addition the
+ * the user name and password. The schema attribute is optional.
  *
  * @author Timothy De Bock
  */
@@ -95,7 +91,7 @@ public class GenericDbSourceImpl extends NamedImpl implements DbSource {
 
     @Override
     public Map<String, Serializable> getParameters() {
-      throw new UnsupportedOperationException("Generic datasource cannot be used as a store.");
+        throw new UnsupportedOperationException("Generic datasource cannot be used as a store.");
     }
 
     @Override

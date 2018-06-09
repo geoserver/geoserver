@@ -8,7 +8,6 @@ package org.geoserver.web.services;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -46,10 +45,11 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 
 /**
  * Base page for service administration pages.
- * <p>
- * Subclasses of this page should contribute form components in the {@link #build(ServiceInfo, Form)}
- * method. Each component that is added to the form should have a corresponding
- * markup entry of the following form:
+ *
+ * <p>Subclasses of this page should contribute form components in the {@link #build(ServiceInfo,
+ * Form)} method. Each component that is added to the form should have a corresponding markup entry
+ * of the following form:
+ *
  * <pre>
  * <wicket:extend>
  *   &lt;li>
@@ -63,10 +63,8 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  *
  * </wicket:extend>
  *   </pre>
- * </p>
  *
- *@author Justin Deoliveira, The Open Planning Project
- *
+ * @author Justin Deoliveira, The Open Planning Project
  */
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
 
@@ -91,74 +89,82 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         dialog = new GeoServerDialog("dialog");
         add(dialog);
 
-        Form form = new Form( "form", new CompoundPropertyModel(infoModel));
+        Form form = new Form("form", new CompoundPropertyModel(infoModel));
         add(form);
 
         if (service.getWorkspace() == null) {
-            //create the panel that has the drop down list to switch between workspace
+            // create the panel that has the drop down list to switch between workspace
             form.add(new GlobalWorkspacePanel("workspace"));
-        }
-        else {
-            //create just a panel with a label that signifies the workspace
+        } else {
+            // create just a panel with a label that signifies the workspace
             form.add(new LocalWorkspacePanel("workspace", service));
         }
 
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
+        form.add(
+                new Label(
+                        "service.enabled",
+                        new StringResourceModel("service.enabled", this)
+                                .setParameters(getServiceName())));
         form.add(new TextField("maintainer"));
         TextField onlineResource = new TextField("onlineResource");
-        
-        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-        
+
+        final GeoServerEnvironment gsEnvironment =
+                GeoServerExtensions.bean(GeoServerEnvironment.class);
+
         // AF: Disable Binding if GeoServer Env Parametrization is enabled!
         if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
             onlineResource.add(new UrlValidator());
         }
-        
+
         form.add(onlineResource);
         form.add(new CheckBox("enabled"));
         form.add(new CheckBox("citeCompliant"));
         form.add(new TextField("title"));
         form.add(new TextArea("abstract"));
-        form.add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel(infoModel, "keywords"))));
+        form.add(
+                new KeywordsEditor(
+                        "keywords",
+                        LiveCollectionModel.list(new PropertyModel(infoModel, "keywords"))));
         form.add(new TextField("fees"));
         form.add(new TextField("accessConstraints"));
 
         build(infoModel, form);
 
-        //add the extension panels
+        // add the extension panels
         ListView extensionPanels = createExtensionPanelList("extensions", infoModel);
         extensionPanels.setReuseItems(true);
         form.add(extensionPanels);
 
-        SubmitLink submit = new SubmitLink("submit",new StringResourceModel( "save", (Component)null, null) ) {
-            @Override
-            public void onSubmit() {
-                try {
-                    handleSubmit((T)infoModel.getObject());
-                    doReturn();
-                }
-                catch(Exception e) {
-                    error(e);
-                }
-            }
-        };
+        SubmitLink submit =
+                new SubmitLink("submit", new StringResourceModel("save", (Component) null, null)) {
+                    @Override
+                    public void onSubmit() {
+                        try {
+                            handleSubmit((T) infoModel.getObject());
+                            doReturn();
+                        } catch (Exception e) {
+                            error(e);
+                        }
+                    }
+                };
         form.add(submit);
 
-        Button cancel = new Button( "cancel" ) {
-            public void onSubmit() {
-                doReturn();
-            }
-        };
-        form.add( cancel );
-        //cancel.setDefaultFormProcessing( false );
+        Button cancel =
+                new Button("cancel") {
+                    public void onSubmit() {
+                        doReturn();
+                    }
+                };
+        form.add(cancel);
+        // cancel.setDefaultFormProcessing( false );
     }
 
-   protected ListView createExtensionPanelList(String id, final IModel infoModel) {
+    protected ListView createExtensionPanelList(String id, final IModel infoModel) {
         List<AdminPagePanelInfo> panels =
-            getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
-        for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext();) {
+                getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
+        for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext(); ) {
             AdminPagePanelInfo panel = it.next();
             if (!getServiceClass().equals(panel.getServiceClass())) {
                 it.remove();
@@ -171,13 +177,17 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             protected void populateItem(ListItem<AdminPagePanelInfo> item) {
                 AdminPagePanelInfo info = item.getModelObject();
                 try {
-                    AdminPagePanel panel = info.getComponentClass().getConstructor(
-                            String.class, IModel.class).newInstance("content", infoModel);
+                    AdminPagePanel panel =
+                            info.getComponentClass()
+                                    .getConstructor(String.class, IModel.class)
+                                    .newInstance("content", infoModel);
                     item.add(panel);
-                }
-                catch (Exception e) {
-                    throw new WicketRuntimeException("Failed to create admin extension panel of " +
-                        "type " + info.getComponentClass().getSimpleName(), e);
+                } catch (Exception e) {
+                    throw new WicketRuntimeException(
+                            "Failed to create admin extension panel of "
+                                    + "type "
+                                    + info.getComponentClass().getSimpleName(),
+                            e);
                 }
             }
         };
@@ -185,50 +195,43 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     /**
      * The class of the service.
-     * <p>
-     * This value is used to obtain a reference to the service info
-     * object via {@link GeoServer#getService(Class)}.
-     * </p>
+     *
+     * <p>This value is used to obtain a reference to the service info object via {@link
+     * GeoServer#getService(Class)}.
      */
     protected abstract Class<T> getServiceClass();
 
     /**
      * Builds the form for the page.
-     * <p>
-     * The form uses a {@link CompoundPropertyModel} so in the normal
-     * case components do not need a model as its inherited from the parent.
-     * This means that component id's should match the info bean property
-     * they correspond to.
-     * </p>
+     *
+     * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need
+     * a model as its inherited from the parent. This means that component id's should match the
+     * info bean property they correspond to.
+     *
      * @param info The service info object.
      * @param form The page form.
      */
-    protected abstract void build(IModel info, Form form ); // {
+    protected abstract void build(IModel info, Form form); // {
 
     // }
 
     /**
      * Callback for submit.
-     * <p>
-     * This implementation simply saves the service. Subclasses may
-     * extend / override if need be.
-     * </p>
+     *
+     * <p>This implementation simply saves the service. Subclasses may extend / override if need be.
+     *
      * @param info
      */
-    protected void handleSubmit( T info ) {
+    protected void handleSubmit(T info) {
         if (info.getId() != null) {
-            getGeoServer().save( info );
-        }
-        else {
-            //means a non attached instance was passed to us, do nothing, up to caller to add it
+            getGeoServer().save(info);
+        } else {
+            // means a non attached instance was passed to us, do nothing, up to caller to add it
             // to configuration
         }
     }
 
-    /**
-     * The string to use when representing this service to users.
-     * Subclasses must override.
-     */
+    /** The string to use when representing this service to users. Subclasses must override. */
     protected abstract String getServiceName();
 
     class ServiceModel<T extends ServiceInfo> extends LoadableDetachableModel<T> {
@@ -274,10 +277,9 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         @Override
         public void detach() {
             if (id == null && serviceClass == null) {
-                //keep reference serialize service object
+                // keep reference serialize service object
                 service = getObject();
-            }
-            else {
+            } else {
                 service = null;
             }
         }
@@ -296,7 +298,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             Collection<WorkspaceInfo> workspaces = (Collection<WorkspaceInfo>) wsModel.getObject();
 
             GeoServer gs = getGeoServer();
-            for (Iterator<WorkspaceInfo> it = workspaces.iterator(); it.hasNext();) {
+            for (Iterator<WorkspaceInfo> it = workspaces.iterator(); it.hasNext(); ) {
                 if (gs.getService(it.next(), getServiceClass()) == null) {
                     it.remove();
                 }
@@ -310,22 +312,26 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         public GlobalWorkspacePanel(String id) {
             super(id);
 
-            final DropDownChoice<WorkspaceInfo> wsChoice = new DropDownChoice<WorkspaceInfo>("workspace",
-                new ServiceFilteredWorkspacesModel(new WorkspacesModel()), new WorkspaceChoiceRenderer());
+            final DropDownChoice<WorkspaceInfo> wsChoice =
+                    new DropDownChoice<WorkspaceInfo>(
+                            "workspace",
+                            new ServiceFilteredWorkspacesModel(new WorkspacesModel()),
+                            new WorkspaceChoiceRenderer());
             wsChoice.setNullValid(true);
-            wsChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    WorkspaceInfo ws = wsChoice.getModelObject();
-                    PageParameters pp = new PageParameters();
+            wsChoice.add(
+                    new AjaxFormComponentUpdatingBehavior("change") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            WorkspaceInfo ws = wsChoice.getModelObject();
+                            PageParameters pp = new PageParameters();
 
-                    if (ws != null) {
-                        pp.add("workspace", ws.getName());
-                    }
+                            if (ws != null) {
+                                pp.add("workspace", ws.getName());
+                            }
 
-                    setResponsePage(BaseServiceAdminPage.this.getClass(), pp);
-                }
-            });
+                            setResponsePage(BaseServiceAdminPage.this.getClass(), pp);
+                        }
+                    });
             add(wsChoice);
         }
     }

@@ -7,7 +7,6 @@ package org.geoserver.taskmanager.data.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Run;
@@ -43,17 +41,21 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @JoinColumn(name = "batch")
     private BatchImpl batch;
 
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun",
-            cascade = CascadeType.ALL)
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        targetEntity = RunImpl.class,
+        mappedBy = "batchRun",
+        cascade = CascadeType.ALL
+    )
     @OrderBy("start")
     @Fetch(FetchMode.SUBSELECT)
     private List<Run> runs = new ArrayList<Run>();
-    
+
     @Column(nullable = false)
-    private Boolean interruptMe = false; 
-    
+    private Boolean interruptMe = false;
+
     @Column
-    @Index(name="schedulerReferenceIndex")
+    @Index(name = "schedulerReferenceIndex")
     private String schedulerReference;
 
     @Override
@@ -105,7 +107,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     public void setInterruptMe(boolean interruptMe) {
         this.interruptMe = interruptMe;
     }
-    
+
     @Override
     public String getSchedulerReference() {
         return schedulerReference;
@@ -115,7 +117,4 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     public void setSchedulerReference(String qReference) {
         this.schedulerReference = qReference;
     }
-    
-
-    
 }

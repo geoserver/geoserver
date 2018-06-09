@@ -4,15 +4,12 @@
  */
 package org.geoserver.wms.staticRasterStore;
 
-import org.geotools.coverage.grid.io.GridFormatFactorySpi;
-
 import java.awt.*;
 import java.util.Collections;
 import java.util.Map;
+import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 
-/**
- * Simple factory for the static raster format.
- */
+/** Simple factory for the static raster format. */
 public final class StaticRasterFormatFactory implements GridFormatFactorySpi {
 
     public boolean isAvailable() {

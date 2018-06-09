@@ -6,6 +6,11 @@ package org.geoserver.rest;
 
 import freemarker.core.ParseException;
 import freemarker.template.*;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -20,48 +25,40 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Base class for all rest controllers
  *
- * Extending classes should be annotated with {@link org.springframework.web.bind.annotation.RestController} so that
- * they are automatically instantiated as a Controller bean.
+ * <p>Extending classes should be annotated with {@link
+ * org.springframework.web.bind.annotation.RestController} so that they are automatically
+ * instantiated as a Controller bean.
  *
- * Custom configuration can be added to XStreamPersister by overriding {@link #configurePersister(XStreamPersister, XStreamMessageConverter)}
- * Custom configuration can be added to Freemarker by calling {@link #configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
+ * <p>Custom configuration can be added to XStreamPersister by overriding {@link
+ * #configurePersister(XStreamPersister, XStreamMessageConverter)} Custom configuration can be added
+ * to Freemarker by calling {@link #configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
  *
- * Any extending classes which override {@link #configurePersister(XStreamPersister, XStreamMessageConverter)}, and
- * require this configuration for reading objects from incoming requests must also be annotated with
- * {@link org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link #supports(MethodParameter, Type, Class)}
- * method.
+ * <p>Any extending classes which override {@link #configurePersister(XStreamPersister,
+ * XStreamMessageConverter)}, and require this configuration for reading objects from incoming
+ * requests must also be annotated with {@link
+ * org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link
+ * #supports(MethodParameter, Type, Class)} method.
  *
- * Any response objects that should be encoded using either {@link XStreamMessageConverter} or {@link FreemarkerHTMLMessageConverter}
- * should be wrapped in a {@link RestWrapper} by calling {@link #wrapObject(Object, Class)}.
- * Any response objects that should be encoded using {@link org.geoserver.rest.converters.XStreamCatalogListConverter}
- * should be wrapped by calling {@link #wrapList(Collection, Class)}
+ * <p>Any response objects that should be encoded using either {@link XStreamMessageConverter} or
+ * {@link FreemarkerHTMLMessageConverter} should be wrapped in a {@link RestWrapper} by calling
+ * {@link #wrapObject(Object, Class)}. Any response objects that should be encoded using {@link
+ * org.geoserver.rest.converters.XStreamCatalogListConverter} should be wrapped by calling {@link
+ * #wrapList(Collection, Class)}
  */
 public abstract class RestBaseController implements RequestBodyAdvice {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest");
 
-    /**
-     * Root path of the rest api
-     */
+    /** Root path of the rest api */
     public static final String ROOT_PATH = "/rest";
 
-    /**
-     * Default encoding for the freemarker {@link Configuration}
-     */
+    /** Default encoding for the freemarker {@link Configuration} */
     protected String encoding = "UTF-8";
 
-    /**
-     * Name of the folder containing freemarker templates
-     */
+    /** Name of the folder containing freemarker templates */
     protected String pathPrefix = "ftl-templates";
 
     /**
@@ -71,9 +68,9 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @return
      */
     protected <T> Configuration createConfiguration(Class<T> clazz) {
-        Configuration cfg = new Configuration( );
+        Configuration cfg = new Configuration();
         cfg.setObjectWrapper(createObjectWrapper(clazz));
-        cfg.setClassForTemplateLoading(getClass(),pathPrefix);
+        cfg.setClassForTemplateLoading(getClass(), pathPrefix);
         if (encoding != null) {
             cfg.setDefaultEncoding(encoding);
         }
@@ -92,6 +89,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
 
     /**
      * Finds a freemarker {@link Template} based on the object and {@link Configuration}
+     *
      * @param o Object being serialized
      * @param clazz Class of the object
      * @return Freemarker template
@@ -100,69 +98,68 @@ public abstract class RestBaseController implements RequestBodyAdvice {
         Template template = null;
         Configuration configuration = createConfiguration(clazz);
 
-        //first try finding a name directly
-        String templateName = getTemplateName( o );
-        if ( templateName != null ) {
+        // first try finding a name directly
+        String templateName = getTemplateName(o);
+        if (templateName != null) {
             template = tryLoadTemplate(configuration, templateName);
-            if(template == null)
-                template = tryLoadTemplate(configuration, templateName + ".ftl");
+            if (template == null) template = tryLoadTemplate(configuration, templateName + ".ftl");
         }
         final RequestInfo requestInfo = RequestInfo.get();
 
-        //next look up by the resource being requested
-        if ( template == null && requestInfo != null ) {
-            //could not find a template bound to the class directly, search by the resource
+        // next look up by the resource being requested
+        if (template == null && requestInfo != null) {
+            // could not find a template bound to the class directly, search by the resource
             // being requested
             String pagePath = requestInfo.getPagePath();
-            String r = pagePath.substring(pagePath.lastIndexOf('/')+1);
-            //trim trailing slash
-            if(r.equals("")) {
+            String r = pagePath.substring(pagePath.lastIndexOf('/') + 1);
+            // trim trailing slash
+            if (r.equals("")) {
                 pagePath = pagePath.substring(0, pagePath.length() - 1);
-                r = pagePath.substring(pagePath.lastIndexOf('/')+1);
+                r = pagePath.substring(pagePath.lastIndexOf('/') + 1);
             }
-            int i = r.lastIndexOf( "." );
-            if ( i != -1 ) {
-                r = r.substring( 0, i );
+            int i = r.lastIndexOf(".");
+            if (i != -1) {
+                r = r.substring(0, i);
             }
 
             template = tryLoadTemplate(configuration, r + ".ftl");
         }
 
-        //finally try to find by class
-        while( template == null && clazz != null ) {
+        // finally try to find by class
+        while (template == null && clazz != null) {
 
             template = tryLoadTemplate(configuration, clazz.getSimpleName() + ".ftl");
             if (template == null) {
-                template = tryLoadTemplate(configuration, clazz.getSimpleName().toLowerCase() + ".ftl");
+                template =
+                        tryLoadTemplate(
+                                configuration, clazz.getSimpleName().toLowerCase() + ".ftl");
             }
-            if(template == null) {
+            if (template == null) {
                 for (Class<?> interfaze : clazz.getInterfaces()) {
-                    template = tryLoadTemplate(configuration, interfaze.getSimpleName() + ".ftl" );
-                    if(template != null)
-                        break;
+                    template = tryLoadTemplate(configuration, interfaze.getSimpleName() + ".ftl");
+                    if (template != null) break;
                 }
             }
 
-            //move up the class hierarchy to continue to look for a matching template
-            if ( clazz.getSuperclass() == Object.class ) {
+            // move up the class hierarchy to continue to look for a matching template
+            if (clazz.getSuperclass() == Object.class) {
                 break;
             }
             clazz = clazz.getSuperclass();
         }
 
-        if ( template != null ) {
+        if (template != null) {
             templateName = template.getName();
-        }
-        else {
-            //use a fallback
+        } else {
+            // use a fallback
             templateName = "Object.ftl";
         }
         return tryLoadTemplate(configuration, templateName);
     }
 
     /**
-     * Tries to load a template, will return null if it's not found. If the template exists
-     * but it contains syntax errors an exception will be thrown instead
+     * Tries to load a template, will return null if it's not found. If the template exists but it
+     * contains syntax errors an exception will be thrown instead
      *
      * @param configuration The template configuration.
      * @param templateName The name of the template to load.
@@ -170,9 +167,9 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     protected Template tryLoadTemplate(Configuration configuration, String templateName) {
         try {
             return configuration.getTemplate(templateName);
-        } catch(ParseException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
-        } catch(IOException io) {
+        } catch (IOException io) {
             LOGGER.log(Level.FINE, "Failed to lookup template " + templateName, io);
             return null;
         }
@@ -218,10 +215,12 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @param quietOnNotFound The value of the quietOnNotFound parameter
      * @return
      */
-    //TODO: Remove this once all references have been removed (should just use ResourceNotFoundExceptions)
-    protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz, String errorMessage, Boolean quietOnNotFound) {
+    // TODO: Remove this once all references have been removed (should just use
+    // ResourceNotFoundExceptions)
+    protected <T> RestWrapper<T> wrapObject(
+            T object, Class<T> clazz, String errorMessage, Boolean quietOnNotFound) {
         errorMessage = quietOnNotFound != null && quietOnNotFound ? "" : errorMessage;
-        if (object == null){
+        if (object == null) {
             throw new RestException(errorMessage, HttpStatus.NOT_FOUND);
         }
         return new RestWrapperAdapter<>(object, clazz, this, getTemplate(object, clazz));
@@ -229,22 +228,36 @@ public abstract class RestBaseController implements RequestBodyAdvice {
 
     @Override
     /**
-     * Any subclass that implements {@link #configurePersister(XStreamPersister, XStreamMessageConverter)} and require
-     * this configuration for reading objects from incoming requests should override this method to return true when
-     * called from the appropriate controller, and should also be annotated with
-     * {@link org.springframework.web.bind.annotation.ControllerAdvice}
+     * Any subclass that implements {@link #configurePersister(XStreamPersister,
+     * XStreamMessageConverter)} and require this configuration for reading objects from incoming
+     * requests should override this method to return true when called from the appropriate
+     * controller, and should also be annotated with {@link
+     * org.springframework.web.bind.annotation.ControllerAdvice}
      */
-    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return false;
     }
 
     @Override
-    public Object handleEmptyBody(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public Object handleEmptyBody(
+            Object body,
+            HttpInputMessage inputMessage,
+            MethodParameter parameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return body;
     }
 
     @Override
-    public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
+    public HttpInputMessage beforeBodyRead(
+            HttpInputMessage inputMessage,
+            MethodParameter parameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType)
+            throws IOException {
         if (!(inputMessage instanceof RestHttpInputWrapper)) {
             return new RestHttpInputWrapper(inputMessage, this);
         }
@@ -252,34 +265,38 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     }
 
     @Override
-    public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public Object afterBodyRead(
+            Object body,
+            HttpInputMessage inputMessage,
+            MethodParameter parameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return body;
     }
 
     /**
-     * Default (empty) implementation of configurePersister. This will be called by the default implementations of
-     * {@link RestWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)} and
-     * {@link RestHttpInputWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)} constructed by
-     * {@link #wrapObject(Object, Class)}, {@link #wrapList(Collection, Class)}, and
+     * Default (empty) implementation of configurePersister. This will be called by the default
+     * implementations of {@link RestWrapper#configurePersister(XStreamPersister,
+     * XStreamMessageConverter)} and {@link
+     * RestHttpInputWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)}
+     * constructed by {@link #wrapObject(Object, Class)}, {@link #wrapList(Collection, Class)}, and
      * {@link #beforeBodyRead(HttpInputMessage, MethodParameter, Type, Class)}
      *
-     * Subclasses should override this to implement custom functionality
+     * <p>Subclasses should override this to implement custom functionality
      *
      * @param persister
      */
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) { }
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {}
 
     /**
-     * Default (empty) implementation of configurePersister. This will be called by the default implementation of
-     * {@link RestWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)}, constructed by
-     * {@link #wrapObject(Object, Class)}, and {@link #wrapList(Collection, Class)}
+     * Default (empty) implementation of configurePersister. This will be called by the default
+     * implementation of {@link RestWrapper#configurePersister(XStreamPersister,
+     * XStreamMessageConverter)}, constructed by {@link #wrapObject(Object, Class)}, and {@link
+     * #wrapList(Collection, Class)}
      *
-     * Subclasses should override this to implement custom functionality
+     * <p>Subclasses should override this to implement custom functionality
      *
      * @param converter
      */
-    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-
-    }
-
+    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {}
 }

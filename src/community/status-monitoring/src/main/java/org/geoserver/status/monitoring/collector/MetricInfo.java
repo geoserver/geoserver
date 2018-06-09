@@ -4,9 +4,7 @@
  */
 package org.geoserver.status.monitoring.collector;
 
-/**
- * This enum defines the system metrics that can be retrieved by a collector.
- */
+/** This enum defines the system metrics that can be retrieved by a collector. */
 public enum MetricInfo {
 
     // system metrics

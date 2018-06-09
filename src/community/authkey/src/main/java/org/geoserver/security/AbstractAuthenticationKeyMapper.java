@@ -12,32 +12,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
-
 import org.geoserver.security.validation.FilterConfigException;
 import org.springframework.util.StringUtils;
 
 /**
  * Base class for {@link AuthenticationKeyMapper} implementations
- * 
- * 
- * @author christian
  *
+ * @author christian
  */
 public abstract class AbstractAuthenticationKeyMapper implements AuthenticationKeyMapper {
 
-
-    protected static Logger LOGGER = 
+    protected static Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
 
-    
-    private String beanName;    
+    private String beanName;
     private String userGroupServiceName;
     private GeoServerSecurityManager securityManager;
-    
+
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    
-    
     public AbstractAuthenticationKeyMapper() {
         super();
         fillDefaultParameters();
@@ -45,9 +38,9 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
 
     @Override
     public void setBeanName(String name) {
-        beanName=name;
+        beanName = name;
     }
-    
+
     public String getBeanName() {
         return beanName;
     }
@@ -60,7 +53,6 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         this.userGroupServiceName = userGroupServiceName;
     }
 
-
     public GeoServerSecurityManager getSecurityManager() {
         return securityManager;
     }
@@ -70,39 +62,35 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     }
 
     protected GeoServerUserGroupService getUserGroupService() throws IOException {
-        GeoServerUserGroupService service= getSecurityManager().loadUserGroupService(getUserGroupServiceName());
-        if (service==null) { 
-            throw new IOException("Unkown user/group service: "+getUserGroupServiceName());
+        GeoServerUserGroupService service =
+                getSecurityManager().loadUserGroupService(getUserGroupServiceName());
+        if (service == null) {
+            throw new IOException("Unkown user/group service: " + getUserGroupServiceName());
         }
         return service;
     }
 
     protected void checkProperties() throws IOException {
-        if (StringUtils.hasLength(getUserGroupServiceName())==false) {
-            throw new IOException ("User/Group Service Name is unset");            
+        if (StringUtils.hasLength(getUserGroupServiceName()) == false) {
+            throw new IOException("User/Group Service Name is unset");
         }
-        if (getSecurityManager()==null) {
-            throw new IOException ("Security manager is unset");            
+        if (getSecurityManager() == null) {
+            throw new IOException("Security manager is unset");
         }
-
     }
-    
+
     protected String createAuthKey() {
         return UUID.randomUUID().toString();
     }
-    
-    /**
-     * Returns the list of configuration parameters supported by the mapper.
-     * 
-     *
-     */
+
+    /** Returns the list of configuration parameters supported by the mapper. */
     public Set<String> getAvailableParameters() {
         return new HashSet<String>();
     }
-    
+
     /**
      * Configures the mapper parameters.
-     * 
+     *
      * @param parameters mapper parameters
      */
     public void configureMapper(Map<String, String> parameters) {
@@ -110,10 +98,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         fillDefaultParameters();
     }
 
-    /**
-     * Fills parameters with default values (if defined by the mapper.
-     * 
-     */
+    /** Fills parameters with default values (if defined by the mapper. */
     private void fillDefaultParameters() {
         for (String paramName : getAvailableParameters()) {
             if (!this.parameters.containsKey(paramName)) {
@@ -121,13 +106,12 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
             }
         }
     }
-    
+
     /**
-     * Gets the default value for the given parameter.
-     * Default implementation always returns an empty string.
-     * 
-     * @param paramName
+     * Gets the default value for the given parameter. Default implementation always returns an
+     * empty string.
      *
+     * @param paramName
      */
     protected String getDefaultParamValue(String paramName) {
         return "";
@@ -136,22 +120,18 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     public Map<String, String> getMapperConfiguration() {
         return parameters;
     }
-    
-    /**
-     * Validates the given parameter (used by the filter validator).
-     */
-    public void validateParameter(String paramName, String value) throws FilterConfigException {
-        
-    }
-    
+
+    /** Validates the given parameter (used by the filter validator). */
+    public void validateParameter(String paramName, String value) throws FilterConfigException {}
+
     /**
      * Creates a validation exception (used by inheriting mappers).
-     * 
+     *
      * @param errorid
      * @param args
-     *
      */
-    protected AuthenticationKeyFilterConfigException createFilterException (String errorid, Object ...args) {
-        return new AuthenticationKeyFilterConfigException(errorid,args);
+    protected AuthenticationKeyFilterConfigException createFilterException(
+            String errorid, Object... args) {
+        return new AuthenticationKeyFilterConfigException(errorid, args);
     }
 }

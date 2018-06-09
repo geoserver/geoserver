@@ -23,9 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
-
 import net.opengis.wcs10.DescribeCoverageType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -33,8 +31,8 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
@@ -64,14 +62,13 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WCS
  * 1.0.0 DescribeCoverage document.
- * 
+ *
  * @author Andrea Aime, TOPP
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class Wcs10DescribeCoverageTransformer extends TransformerBase {
-    private static final Logger LOGGER = Logging.getLogger(Wcs10DescribeCoverageTransformer.class
-            .getPackage().getName());
+    private static final Logger LOGGER =
+            Logging.getLogger(Wcs10DescribeCoverageTransformer.class.getPackage().getName());
 
     private static final String WCS_URI = "http://www.opengis.net/wcs";
 
@@ -80,7 +77,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
     private static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
     private static final Map<String, String> METHOD_NAME_MAP = new HashMap<String, String>();
-    
+
     private final boolean skipMisconfigured;
 
     static {
@@ -93,15 +90,14 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
     private Catalog catalog;
 
-    /**
-     * Creates a new WFSCapsTransformer object.
-     */
+    /** Creates a new WFSCapsTransformer object. */
     public Wcs10DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog) {
         super();
         this.wcs = wcs;
         this.catalog = catalog;
-        this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals( 
-                wcs.getGeoServer().getGlobal().getResourceErrorHandling());
+        this.skipMisconfigured =
+                ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                        wcs.getGeoServer().getGlobal().getResourceErrorHandling());
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -119,9 +115,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * Creates a new WFSCapsTranslator object.
-         * 
-         * @param handler
-         *            DOCUMENT ME!
+         *
+         * @param handler DOCUMENT ME!
          */
         public WCS100DescribeCoverageTranslator(ContentHandler handler) {
             super(handler, null, null);
@@ -129,71 +124,75 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * Encode the object.
-         * 
-         * @param o
-         *            The Object to encode.
-         * 
-         * @throws IllegalArgumentException
-         *             if the Object is not encodeable.
+         *
+         * @param o The Object to encode.
+         * @throws IllegalArgumentException if the Object is not encodeable.
          */
         public void encode(Object o) throws IllegalArgumentException {
             // try {
             if (!(o instanceof DescribeCoverageType)) {
-                throw new IllegalArgumentException(new StringBuilder("Not a GetCapabilitiesType: ")
-                        .append(o).toString());
+                throw new IllegalArgumentException(
+                        new StringBuilder("Not a GetCapabilitiesType: ").append(o).toString());
             }
 
             this.request = (DescribeCoverageType) o;
 
             final AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute("", "xmlns:wcs", "xmlns:wcs", "", WCS_URI);
-            attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "",
-                    "http://www.w3.org/1999/xlink");
+            attributes.addAttribute(
+                    "", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
             attributes.addAttribute("", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
-            attributes.addAttribute("", "xmlns:ows", "xmlns:ows", "",
-                    "http://www.opengis.net/ows/1.1");
+            attributes.addAttribute(
+                    "", "xmlns:ows", "xmlns:ows", "", "http://www.opengis.net/ows/1.1");
             attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
 
             final String prefixDef = new StringBuilder("xmlns:").append(XSI_PREFIX).toString();
             attributes.addAttribute("", prefixDef, prefixDef, "", XSI_URI);
 
-            final String locationAtt = new StringBuilder(XSI_PREFIX).append(":schemaLocation")
-                    .toString();
+            final String locationAtt =
+                    new StringBuilder(XSI_PREFIX).append(":schemaLocation").toString();
 
             // proxifiedBaseUrl = RequestUtils.proxifiedBaseURL(request.getBaseUrl(),
             // wcs.getGeoServer().getGlobal().getProxyBaseUrl());
             // final String locationDef = WCS_URI + " " + proxifiedBaseUrl +
             // "schemas/wcs/1.0.0/describeCoverage.xsd";
-            final String locationDef = WCS_URI
-                    + " "
-                    + buildURL(request.getBaseUrl(), appendPath(SCHEMAS,
-                            "wcs/1.0.0/describeCoverage.xsd"), null, URLType.RESOURCE);
+            final String locationDef =
+                    WCS_URI
+                            + " "
+                            + buildURL(
+                                    request.getBaseUrl(),
+                                    appendPath(SCHEMAS, "wcs/1.0.0/describeCoverage.xsd"),
+                                    null,
+                                    URLType.RESOURCE);
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 
             attributes.addAttribute("", "version", "version", "", "1.0.0");
 
             start("wcs:CoverageDescription", attributes);
-            
+
             List<CoverageInfo> coverages;
             final boolean skipMisconfiguredThisTime;
-            if(request.getCoverage() == null || request.getCoverage().size() == 0) {
+            if (request.getCoverage() == null || request.getCoverage().size() == 0) {
                 skipMisconfiguredThisTime = skipMisconfigured;
                 coverages = catalog.getCoverages();
             } else {
-                skipMisconfiguredThisTime = false; // NEVER skip layers when the user requested specific ones
+                skipMisconfiguredThisTime =
+                        false; // NEVER skip layers when the user requested specific ones
                 coverages = new ArrayList<CoverageInfo>();
-                for(Iterator it = request.getCoverage().iterator(); it.hasNext();) {
+                for (Iterator it = request.getCoverage().iterator(); it.hasNext(); ) {
                     String coverageId = (String) it.next();
                     // check the coverage is known
                     LayerInfo layer = catalog.getLayerByName(coverageId);
                     if (layer == null || layer.getType() != PublishedType.RASTER) {
-                        throw new WcsException("Could not find the specified coverage: " + coverageId,
-                                WcsExceptionCode.InvalidParameterValue, "coverage");
+                        throw new WcsException(
+                                "Could not find the specified coverage: " + coverageId,
+                                WcsExceptionCode.InvalidParameterValue,
+                                "coverage");
                     }
                     coverages.add(catalog.getCoverageByName(coverageId));
                 }
             }
-            for (Iterator it = coverages.iterator(); it.hasNext();) {
+            for (Iterator it = coverages.iterator(); it.hasNext(); ) {
                 CoverageInfo coverage = (CoverageInfo) it.next();
                 try {
                     mark();
@@ -204,18 +203,17 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                         reset();
                     } else {
                         throw new RuntimeException(
-                            "Unexpected error occurred during describe coverage xml encoding", e);
+                                "Unexpected error occurred during describe coverage xml encoding",
+                                e);
                     }
                 }
-
             }
             end("wcs:CoverageDescription");
         }
 
         private void handleCoverageOffering(CoverageInfo ci) throws Exception {
             start("wcs:CoverageOffering");
-            for (MetadataLinkInfo mdl : ci.getMetadataLinks())
-                handleMetadataLink(mdl, "simple");
+            for (MetadataLinkInfo mdl : ci.getMetadataLinks()) handleMetadataLink(mdl, "simple");
             element("wcs:description", ci.getDescription());
             element("wcs:name", ci.getPrefixedName());
             element("wcs:label", ci.getTitle());
@@ -237,10 +235,10 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
                 attributes.addAttribute("", "about", "about", "", mdl.getAbout());
             }
-            
+
             if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
-                        .getMetadataType());
+                attributes.addAttribute(
+                        "", "metadataType", "metadataType", "", mdl.getMetadataType());
             }
 
             if ((linkType != null) && (linkType != "")) {
@@ -248,8 +246,12 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             }
 
             if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
-                attributes.addAttribute("", "xlink:href", "xlink:href", 
-                        "", ResponseUtils.proxifyMetadataLink(mdl, request.getBaseUrl()));
+                attributes.addAttribute(
+                        "",
+                        "xlink:href",
+                        "xlink:href",
+                        "",
+                        ResponseUtils.proxifyMetadataLink(mdl, request.getBaseUrl()));
             }
 
             if (attributes.getLength() > 0) {
@@ -259,40 +261,56 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @param lonLatEnvelope
-         * @throws IOException 
+         * @throws IOException
          */
-        private void handleLonLatEnvelope(CoverageInfo ci, ReferencedEnvelope referencedEnvelope) throws IOException {
+        private void handleLonLatEnvelope(CoverageInfo ci, ReferencedEnvelope referencedEnvelope)
+                throws IOException {
 
             CoverageStoreInfo csinfo = ci.getStore();
-            
-            if(csinfo == null)
-                throw new WcsException("Unable to acquire coverage store resource for coverage: " + ci.getName());
-            
+
+            if (csinfo == null)
+                throw new WcsException(
+                        "Unable to acquire coverage store resource for coverage: " + ci.getName());
+
             GridCoverage2DReader reader = null;
             try {
-                reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                reader =
+                        (GridCoverage2DReader)
+                                ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
             } catch (IOException e) {
-                LOGGER.severe("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
+                LOGGER.severe(
+                        "Unable to acquire a reader for this coverage with format: "
+                                + csinfo.getFormat().getName());
             }
-            
-            if(reader == null)
-                throw new WcsException("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
+
+            if (reader == null)
+                throw new WcsException(
+                        "Unable to acquire a reader for this coverage with format: "
+                                + csinfo.getFormat().getName());
 
             if (referencedEnvelope != null) {
                 AttributesImpl attributes = new AttributesImpl();
-                attributes.addAttribute("", "srsName", "srsName", "", /* "WGS84(DD)" */ "urn:ogc:def:crs:OGC:1.3:CRS84");
+                attributes.addAttribute(
+                        "",
+                        "srsName",
+                        "srsName",
+                        "", /* "WGS84(DD)" */
+                        "urn:ogc:def:crs:OGC:1.3:CRS84");
 
                 start("wcs:lonLatEnvelope", attributes);
 
-                final String minCP = referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
-                final String maxCP = referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
+                final String minCP =
+                        referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
+                final String maxCP =
+                        referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
                 element("gml:pos", minCP);
                 element("gml:pos", maxCP);
-                
+
                 // are we going to report time?
-                DimensionInfo timeInfo = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                DimensionInfo timeInfo =
+                        ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
                 if (timeInfo != null && timeInfo.isEnabled()) {
                     ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
                     SimpleDateFormat format = dimensions.getTimeFormat();
@@ -306,18 +324,15 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * DOCUMENT ME!
-         * 
-         * @param kwords
-         *            DOCUMENT ME!
-         * 
-         * @throws SAXException
-         *             DOCUMENT ME!
+         *
+         * @param kwords DOCUMENT ME!
+         * @throws SAXException DOCUMENT ME!
          */
         private void handleKeywords(List kwords) {
             start("wcs:keywords");
 
             if (kwords != null) {
-                for (Iterator it = kwords.iterator(); it.hasNext();) {
+                for (Iterator it = kwords.iterator(); it.hasNext(); ) {
                     element("wcs:keyword", it.next().toString());
                 }
             }
@@ -327,20 +342,26 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         private void handleDomain(CoverageInfo ci) throws Exception {
             CoverageStoreInfo csinfo = ci.getStore();
-            
-            if(csinfo == null)
-                throw new WcsException("Unable to acquire coverage store resource for coverage: " + ci.getName());
-            
+
+            if (csinfo == null)
+                throw new WcsException(
+                        "Unable to acquire coverage store resource for coverage: " + ci.getName());
+
             GridCoverage2DReader reader = null;
             try {
-                reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                reader =
+                        (GridCoverage2DReader)
+                                ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
             } catch (IOException e) {
-                LOGGER.severe("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
+                LOGGER.severe(
+                        "Unable to acquire a reader for this coverage with format: "
+                                + csinfo.getFormat().getName());
             }
-            
-            if(reader == null) {
-                throw new WcsException("Unable to acquire a reader for this coverage with format: " 
-                        + csinfo.getFormat().getName());
+
+            if (reader == null) {
+                throw new WcsException(
+                        "Unable to acquire a reader for this coverage with format: "
+                                + csinfo.getFormat().getName());
             }
 
             DimensionInfo timeInfo = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
@@ -358,42 +379,48 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @param referencedEnvelope
-         * @param elevationMetadata 
-         * @param timeMetadata 
+         * @param elevationMetadata
+         * @param timeMetadata
          * @param set2
          * @param set
          */
-        private void handleBoundingBox(String srsName, ReferencedEnvelope referencedEnvelope, DimensionInfo timeInfo,
-                ReaderDimensionsAccessor dimensions) throws IOException {
+        private void handleBoundingBox(
+                String srsName,
+                ReferencedEnvelope referencedEnvelope,
+                DimensionInfo timeInfo,
+                ReaderDimensionsAccessor dimensions)
+                throws IOException {
             if (referencedEnvelope != null) {
                 AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "srsName", "srsName", "", srsName);
 
-                final String minCP = referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
-                final String maxCP = referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
-                
+                final String minCP =
+                        referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
+                final String maxCP =
+                        referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
+
                 String minTime = null;
                 String maxTime = null;
-                if(timeInfo != null && timeInfo.isEnabled()) {
+                if (timeInfo != null && timeInfo.isEnabled()) {
                     SimpleDateFormat timeFormat = dimensions.getTimeFormat();
                     minTime = timeFormat.format(dimensions.getMinTime());
                     maxTime = timeFormat.format(dimensions.getMaxTime());
                 }
-                
+
                 if (minTime != null && maxTime != null) {
                     start("gml:EnvelopeWithTimePeriod", attributes);
-                        element("gml:pos", minCP);
-                        element("gml:pos", maxCP);
+                    element("gml:pos", minCP);
+                    element("gml:pos", maxCP);
 
-                        element("gml:timePosition", minTime);
-                        element("gml:timePosition", maxTime);
+                    element("gml:timePosition", minTime);
+                    element("gml:timePosition", maxTime);
                     end("gml:EnvelopeWithTimePeriod");
                 } else {
                     start("gml:Envelope", attributes);
-                        element("gml:pos", minCP);
-                        element("gml:pos", maxCP);
+                    element("gml:pos", minCP);
+                    element("gml:pos", maxCP);
                     end("gml:Envelope");
                 }
             }
@@ -401,18 +428,19 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @param ci
          * @param timeMetadata
          * @param elevationMetadata
          */
-        private void handleTemporalDomain(CoverageInfo ci, DimensionInfo timeInfo, 
-                ReaderDimensionsAccessor dimensions) throws IOException {
+        private void handleTemporalDomain(
+                CoverageInfo ci, DimensionInfo timeInfo, ReaderDimensionsAccessor dimensions)
+                throws IOException {
             SimpleDateFormat timeFormat = dimensions.getTimeFormat();
             start("wcs:temporalDomain");
-            if(timeInfo.getPresentation() == DimensionPresentation.LIST) {
-                for(Object item : dimensions.getTimeDomain()) {
-                    if(item instanceof Date) {
+            if (timeInfo.getPresentation() == DimensionPresentation.LIST) {
+                for (Object item : dimensions.getTimeDomain()) {
+                    if (item instanceof Date) {
                         element("gml:timePosition", timeFormat.format((Date) item));
                     } else {
                         DateRange range = (DateRange) item;
@@ -430,38 +458,42 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 start("wcs:timePeriod");
                 element("wcs:beginPosition", minTime);
                 element("wcs:endPosition", maxTime);
-                if(timeInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
+                if (timeInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
                     BigDecimal resolution = timeInfo.getResolution();
-                    if(resolution == null) {
-                        resolution = new BigDecimal(dimensions.getMaxTime().getTime() - 
-                                dimensions.getMinTime().getTime());
+                    if (resolution == null) {
+                        resolution =
+                                new BigDecimal(
+                                        dimensions.getMaxTime().getTime()
+                                                - dimensions.getMinTime().getTime());
                     }
                     // this will format the time period properly
-                    element("wcs:timeResolution", new DefaultPeriodDuration(resolution.longValue()).toString());
+                    element(
+                            "wcs:timeResolution",
+                            new DefaultPeriodDuration(resolution.longValue()).toString());
                 }
                 end("wcs:timePeriod");
             }
             end("wcs:temporalDomain");
         }
-        
+
         /**
-         * 
          * @param ci
-         * @param elevationMetadata 
-             */
+         * @param elevationMetadata
+         */
         private void handleGrid(CoverageInfo ci) throws Exception {
-        	final GridGeometry originalGrid = ci.getGrid();
-        	final GridEnvelope gridRange=originalGrid.getGridRange();
-        	final AffineTransform2D gridToCRS = (AffineTransform2D) originalGrid.getGridToCRS();
+            final GridGeometry originalGrid = ci.getGrid();
+            final GridEnvelope gridRange = originalGrid.getGridRange();
+            final AffineTransform2D gridToCRS = (AffineTransform2D) originalGrid.getGridToCRS();
             final int gridDimension = (gridToCRS != null ? gridToCRS.getSourceDimensions() : 0);
 
             AttributesImpl attributes = new AttributesImpl();
-            attributes.addAttribute("", "dimension", "dimension", "", String.valueOf(gridDimension));
+            attributes.addAttribute(
+                    "", "dimension", "dimension", "", String.valueOf(gridDimension));
             attributes.addAttribute("", "srsName", "srsName", "", ci.getSRS());
 
             // RectifiedGrid
             start("gml:RectifiedGrid", attributes);
-            
+
             // Grid Envelope
             String lowers = "";
             String uppers = "";
@@ -474,12 +506,12 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     uppers += (0 + " ");
                 }
             }
- 
+
             start("gml:limits");
-                start("gml:GridEnvelope");
-                    element("gml:low", lowers.trim());
-                    element("gml:high", uppers.trim());
-                end("gml:GridEnvelope");
+            start("gml:GridEnvelope");
+            element("gml:low", lowers.trim());
+            element("gml:high", uppers.trim());
+            end("gml:GridEnvelope");
             end("gml:limits");
 
             // Grid Axes
@@ -489,16 +521,14 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 axisName = axisName.toLowerCase().startsWith("lat") ? "y" : axisName;
                 element("gml:axisName", axisName);
             }
-   
 
-            
             // Grid Origins
             final StringBuilder origins = new StringBuilder();
             origins.append(gridToCRS.getTranslateX()).append(" ").append(gridToCRS.getTranslateY());
             start("gml:origin");
-                element("gml:pos", origins.toString());
+            element("gml:pos", origins.toString());
             end("gml:origin");
-            
+
             // Grid Offsets
             final StringBuilder offsetX = new StringBuilder();
             offsetX.append(gridToCRS.getScaleX()).append(" ").append(gridToCRS.getShearX());
@@ -511,10 +541,9 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         }
 
         /**
-         * 
          * @param ci
          * @param field
-         * @throws IOException 
+         * @throws IOException
          */
         private void handleRange(CoverageInfo ci) throws IOException {
             // rangeSet
@@ -530,8 +559,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             // STANDARD BANDS
             //
             int numSampleDimensions = ci.getDimensions().size();
-            
-
 
             element("wcs:name", "Band");
             element("wcs:label", "Band");
@@ -548,24 +575,30 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
             end("wcs:AxisDescription");
             end("wcs:axisDescription");
-            
-            // 
+
+            //
             // ELEVATION
             //
             // now get possible elevation
-            DimensionInfo elevationInfo = ci.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
-            if(elevationInfo != null && elevationInfo.isEnabled()) {
+            DimensionInfo elevationInfo =
+                    ci.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+            if (elevationInfo != null && elevationInfo.isEnabled()) {
                 GridCoverage2DReader reader = null;
                 try {
-                    reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                    reader =
+                            (GridCoverage2DReader)
+                                    ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
                 } catch (IOException e) {
-                    LOGGER.severe("Unable to acquire a reader for this coverage with format: " + ci.getStore().getFormat().getName());
-                }            
-                if(reader == null) {
-                    throw new WcsException("Unable to acquire a reader for this coverage with format: " 
-                            + ci.getStore().getFormat().getName());
+                    LOGGER.severe(
+                            "Unable to acquire a reader for this coverage with format: "
+                                    + ci.getStore().getFormat().getName());
                 }
-                
+                if (reader == null) {
+                    throw new WcsException(
+                            "Unable to acquire a reader for this coverage with format: "
+                                    + ci.getStore().getFormat().getName());
+                }
+
                 ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
                 if (dimensions.hasElevation()) {
                     // we can only report values one at a time here, there is no interval concept
@@ -574,13 +607,13 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     element("wcs:name", "ELEVATION");
                     element("wcs:label", "ELEVATION");
                     start("wcs:values");
-                    
+
                     TreeSet<Object> rawElevations = dimensions.getElevationDomain();
                     // we cannot expose ranges, so if we find them, we turn them into
                     // their mid point
                     TreeSet<Double> elevations = new TreeSet<Double>();
                     for (Object raw : rawElevations) {
-                        if(raw instanceof Double) {
+                        if (raw instanceof Double) {
                             elevations.add((Double) raw);
                         } else {
                             NumberRange<Double> range = (NumberRange<Double>) raw;
@@ -588,37 +621,33 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                             elevations.add(midValue);
                         }
                     }
-                    for(Double elevation : elevations) {
-                    	element("wcs:singleValue", Double.toString(elevation));
+                    for (Double elevation : elevations) {
+                        element("wcs:singleValue", Double.toString(elevation));
                     }
                     element("wcs:default", Double.toString(elevations.first()));
-                   
-                   
+
                     end("wcs:values");
-    
+
                     end("wcs:AxisDescription");
                     end("wcs:axisDescription");
-                    
                 }
             }
-                            
+
             end("wcs:RangeSet");
             end("wcs:rangeSet");
         }
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @param ci
-             */
+         */
         private void handleSupportedCRSs(CoverageInfo ci) throws Exception {
             Set supportedCRSs = new LinkedHashSet();
-            if (ci.getRequestSRS() != null)
-                supportedCRSs.addAll(ci.getRequestSRS());
-            if (ci.getResponseSRS() != null)
-                supportedCRSs.addAll(ci.getResponseSRS());
+            if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());
+            if (ci.getResponseSRS() != null) supportedCRSs.addAll(ci.getResponseSRS());
             start("wcs:supportedCRSs");
-            for (Iterator it = supportedCRSs.iterator(); it.hasNext();) {
+            for (Iterator it = supportedCRSs.iterator(); it.hasNext(); ) {
                 String crsName = (String) it.next();
                 CoordinateReferenceSystem crs = CRS.decode(crsName, true);
                 // element("requestResponseCRSs", urnIdentifier(crs));
@@ -637,19 +666,22 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @param ci
-             */
+         */
         private void handleSupportedFormats(CoverageInfo ci) throws Exception {
-            final String nativeFormat = (((ci.getNativeFormat() != null) && ci.getNativeFormat()
-                    .equalsIgnoreCase("GEOTIFF")) ? "GeoTIFF" : ci.getNativeFormat());
+            final String nativeFormat =
+                    (((ci.getNativeFormat() != null)
+                                    && ci.getNativeFormat().equalsIgnoreCase("GEOTIFF"))
+                            ? "GeoTIFF"
+                            : ci.getNativeFormat());
 
             final AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute("", "nativeFormat", "nativeFormat", "", nativeFormat);
 
             // gather all the formats for this coverage
             Set<String> formats = new HashSet<String>();
-            for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext();) {
+            for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext(); ) {
                 String format = (String) it.next();
                 formats.add(format);
             }
@@ -665,31 +697,28 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         /**
          * DOCUMENT ME!
-         * 
+         *
          * @param ci
          */
         private void handleSupportedInterpolations(CoverageInfo ci) {
             if (ci.getDefaultInterpolationMethod() != null) {
                 final AttributesImpl attributes = new AttributesImpl();
-                attributes.addAttribute("", "default", "default", "", ci.getDefaultInterpolationMethod());
+                attributes.addAttribute(
+                        "", "default", "default", "", ci.getDefaultInterpolationMethod());
 
                 start("wcs:supportedInterpolations", attributes);
             } else {
                 start("wcs:supportedInterpolations");
             }
-            
-            for (Iterator it = ci.getInterpolationMethods().iterator(); it.hasNext();) {
+
+            for (Iterator it = ci.getInterpolationMethods().iterator(); it.hasNext(); ) {
                 String method = (String) it.next();
                 String converted = METHOD_NAME_MAP.get(method);
-                if (/* converted */ method != null)
+                if (
+                /* converted */ method != null)
                     element("wcs:interpolationMethod", /* converted */ method);
-
             }
             end("wcs:supportedInterpolations");
         }
     }
-
-
-   
-
 }

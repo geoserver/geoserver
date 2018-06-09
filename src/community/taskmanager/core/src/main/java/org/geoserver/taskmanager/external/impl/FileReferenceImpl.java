@@ -8,13 +8,13 @@ import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.external.FileService;
 
 public class FileReferenceImpl implements FileReference {
-    
+
     private FileService service;
-    
+
     private String latestVersion;
-    
+
     private String nextVersion;
-    
+
     public FileReferenceImpl(FileService service, String latestVersion, String nextVersion) {
         this.service = service;
         this.latestVersion = latestVersion;
@@ -35,5 +35,4 @@ public class FileReferenceImpl implements FileReference {
     public FileService getService() {
         return service;
     }
-
 }

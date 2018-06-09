@@ -13,7 +13,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.notification.common.Notification;
 import org.geoserver.notification.common.NotificationProcessor;
 import org.geotools.filter.text.cql2.CQL;
@@ -21,11 +20,7 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
-/**
- * 
- * @author Xandros
- *
- */
+/** @author Xandros */
 public class MessageProcessor {
 
     private Logger LOGGER = Logging.getLogger(MessageProcessor.class);
@@ -42,8 +37,8 @@ public class MessageProcessor {
         }
     }
 
-    public MessageProcessor(int queueSize, int processorThreads, String filter,
-            NotificationProcessor processor) {
+    public MessageProcessor(
+            int queueSize, int processorThreads, String filter, NotificationProcessor processor) {
         try {
             if (filter != null && !filter.isEmpty()) {
                 this.filter = CQL.toFilter(filter);
@@ -55,9 +50,15 @@ public class MessageProcessor {
         // Get the ThreadFactory implementation to use
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
         // creating the ThreadPoolExecutor
-        executorPool = new ThreadPoolExecutor(1, processorThreads, 10, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(queueSize), threadFactory,
-                new RejectedExecutionHandlerImpl());
+        executorPool =
+                new ThreadPoolExecutor(
+                        1,
+                        processorThreads,
+                        10,
+                        TimeUnit.SECONDS,
+                        new ArrayBlockingQueue<Runnable>(queueSize),
+                        threadFactory,
+                        new RejectedExecutionHandlerImpl());
     }
 
     private class WorkerThread implements Runnable {
@@ -81,7 +82,6 @@ public class MessageProcessor {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
-
     }
 
     // RejectedExecutionHandler implementation

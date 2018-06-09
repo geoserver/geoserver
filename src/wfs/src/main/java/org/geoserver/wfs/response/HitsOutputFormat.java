@@ -9,10 +9,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
-
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.ResultTypeType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
@@ -26,18 +24,14 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
 
-
 /**
  * WFS output format for a GetFeature operation in which the resultType is "hits".
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class HitsOutputFormat extends WFSResponse {
-    
-    /**
-     * Xml configuration
-     */
+
+    /** Xml configuration */
     Configuration configuration;
 
     public HitsOutputFormat(GeoServer gs, Configuration configuration) {
@@ -46,31 +40,27 @@ public class HitsOutputFormat extends WFSResponse {
         this.configuration = configuration;
     }
 
-    /**
-     * @return "text/xml";
-     */
-    public String getMimeType(Object value, Operation operation)
-        throws ServiceException {
+    /** @return "text/xml"; */
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
-    /**
-     * Checks that the resultType is of type "hits".
-     */
+    /** Checks that the resultType is of type "hits". */
     public boolean canHandle(Operation operation) {
-        GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
+        GetFeatureType request =
+                (GetFeatureType)
+                        OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
 
         return (request != null) && (request.getResultType() == ResultTypeType.HITS_LITERAL);
     }
 
     public void write(Object value, OutputStream output, Operation operation)
-        throws IOException, ServiceException {
+            throws IOException, ServiceException {
         WFSInfo wfs = getInfo();
-        
+
         FeatureCollectionResponse featureCollection = (FeatureCollectionResponse) value;
-        
-        //create a new feautre collcetion type with just the numbers
+
+        // create a new feautre collcetion type with just the numbers
         FeatureCollectionResponse hits = featureCollection.create();
         if (GML3OutputFormat.isComplexFeature(featureCollection)) {
             // we have to count the number of features here manually because complex feature
@@ -83,7 +73,7 @@ public class HitsOutputFormat extends WFSResponse {
         } else {
             hits.setNumberOfFeatures(featureCollection.getNumberOfFeatures());
         }
-        
+
         hits.setTotalNumberOfFeatures(featureCollection.getTotalNumberOfFeatures());
         hits.setNext(featureCollection.getNext());
         hits.setPrevious(featureCollection.getPrevious());
@@ -91,14 +81,15 @@ public class HitsOutputFormat extends WFSResponse {
 
         encode(hits, output, wfs);
     }
-    
+
     private BigInteger countFeature(FeatureCollectionResponse fct) {
         BigInteger count = BigInteger.valueOf(0);
         for (int fcIndex = 0; fcIndex < fct.getFeature().size(); fcIndex++) {
             FeatureIterator i = null;
             try {
-                for (i = (((FeatureCollection) fct.getFeature().get(fcIndex)).features()); i
-                        .hasNext(); i.next()) {
+                for (i = (((FeatureCollection) fct.getFeature().get(fcIndex)).features());
+                        i.hasNext();
+                        i.next()) {
                     count = count.add(BigInteger.ONE);
                 }
             } finally {
@@ -110,14 +101,15 @@ public class HitsOutputFormat extends WFSResponse {
         return count;
     }
 
-    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs) 
-        throws IOException {
+    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs)
+            throws IOException {
         Encoder encoder = new Encoder(configuration, configuration.schema());
-        encoder.setEncoding(Charset.forName( wfs.getGeoServer().getSettings().getCharset()) );
-        encoder.setSchemaLocation(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
-            ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
+        encoder.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
+        encoder.setSchemaLocation(
+                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
+                ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
 
-        encoder.encode(hits.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+        encoder.encode(
+                hits.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
     }
-
 }

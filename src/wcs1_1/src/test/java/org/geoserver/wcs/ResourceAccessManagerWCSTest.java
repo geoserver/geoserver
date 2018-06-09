@@ -10,13 +10,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
@@ -38,14 +39,10 @@ import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.io.WKTReader;
-
 /**
  * Performs integration tests using a mock {@link ResourceAccessManager}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
 
@@ -54,18 +51,14 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         springContextLocations.add("classpath:/org/geoserver/wcs/ResourceAccessManagerContext.xml");
     }
 
-    /**
-     * Enable the Spring Security auth filters
-     */
+    /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions
-                .bean("filterChainProxy"));
+        return Collections.singletonList(
+                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
-    /**
-     * Add the users
-     */
+    /** Add the users */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
@@ -80,7 +73,6 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         props.put("cite_noworld_challenge", "cite,ROLE_DUMMY");
         props.put("cite_usa", "cite,ROLE_DUMMY");
         props.store(new FileOutputStream(users), "");
-
     }
 
     @Override
@@ -88,26 +80,36 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         super.onSetUp(testData);
 
         // populate the access manager
-        TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext
-                .getBean("testResourceAccessManager");
+        TestResourceAccessManager tam =
+                (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
         CoverageInfo world = catalog.getCoverageByName(getLayerId(MockData.WORLD));
-        world.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+        world.getParameters()
+                .put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
         catalog.save(world);
 
         // limits for mr cite_noworld: can't access the world layer
-        tam.putLimits("cite_noworld", world, new CoverageAccessLimits(CatalogMode.HIDE,
-                Filter.EXCLUDE, null, null));
+        tam.putLimits(
+                "cite_noworld",
+                world,
+                new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
 
         // limits for mr cite_noworld: can't access the world layer
-        tam.putLimits("cite_noworld_challenge", world, new CoverageAccessLimits(
-                CatalogMode.CHALLENGE, Filter.EXCLUDE, null, null));
+        tam.putLimits(
+                "cite_noworld_challenge",
+                world,
+                new CoverageAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE, null, null));
 
         // limits the area to north america
-        MultiPolygon rasterFilter = (MultiPolygon) new WKTReader()
-                .read("MULTIPOLYGON(((-120 30, -120 60, -60 60, -60 30, -120 30)))");
-        tam.putLimits("cite_usa", world, new CoverageAccessLimits(CatalogMode.HIDE, null,
-                rasterFilter, null));
+        MultiPolygon rasterFilter =
+                (MultiPolygon)
+                        new WKTReader()
+                                .read(
+                                        "MULTIPOLYGON(((-120 30, -120 60, -60 60, -60 30, -120 30)))");
+        tam.putLimits(
+                "cite_usa",
+                world,
+                new CoverageAccessLimits(CatalogMode.HIDE, null, rasterFilter, null));
     }
 
     Map<String, Object> getWorld() {
@@ -194,7 +196,6 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
                 assertTrue(se.getMessage().contains("World"));
                 assertTrue(se.getMessage().contains("privileges"));
             }
-
         }
     }
 

@@ -5,7 +5,6 @@
 package org.geoserver.security.oauth2;
 
 import java.util.logging.Logger;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecurityManagerListener;
@@ -20,7 +19,7 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
 /**
  * Security provider for OAuth2
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
  */
 public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider
@@ -37,19 +36,23 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
     private ApplicationContext context;
 
     public GeoServerOAuthAuthenticationProvider(
-            GeoServerSecurityManager securityManager, 
-            String tokenServices, String oauth2SecurityConfiguration, String geoServerOauth2RestTemplate) {
-        
+            GeoServerSecurityManager securityManager,
+            String tokenServices,
+            String oauth2SecurityConfiguration,
+            String geoServerOauth2RestTemplate) {
+
         assert securityManager != null;
-        
+
         context = securityManager.getApplicationContext();
-        
+
         assert context != null;
-        
+
         this.tokenServices = (RemoteTokenServices) context.getBean(tokenServices);
-        this.oauth2SecurityConfiguration = (GeoServerOAuth2SecurityConfiguration) context.getBean(oauth2SecurityConfiguration);
-        this.geoServerOauth2RestTemplate = (OAuth2RestTemplate) context.getBean(geoServerOauth2RestTemplate);
-        
+        this.oauth2SecurityConfiguration =
+                (GeoServerOAuth2SecurityConfiguration) context.getBean(oauth2SecurityConfiguration);
+        this.geoServerOauth2RestTemplate =
+                (OAuth2RestTemplate) context.getBean(geoServerOauth2RestTemplate);
+
         securityManager.addListener(this);
     }
 
@@ -67,5 +70,4 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
             GeoServerSecurityManager securityManager) {
         return new OAuth2FilterConfigValidator(securityManager);
     }
-
 }

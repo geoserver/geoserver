@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.apache.vysper.xml.fragment.XMLSemanticError;
 import org.apache.vysper.xmpp.addressing.Entity;
 import org.apache.vysper.xmpp.addressing.EntityImpl;
@@ -53,13 +52,13 @@ import org.opengis.feature.type.Name;
 
 /**
  * This class tests checks if the RemoteProcess class behaves correctly.
- * 
+ *
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  */
 public class RemoteProcessTest extends WPSTestSupport {
 
-    private static final boolean DISABLE = "false"
-            .equalsIgnoreCase(System.getProperty("disableTest", "true"));
+    private static final boolean DISABLE =
+            "false".equalsIgnoreCase(System.getProperty("disableTest", "true"));
 
     private RemoteProcessFactory factory;
 
@@ -78,8 +77,11 @@ public class RemoteProcessTest extends WPSTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         // add limits properties file
-        testData.copyTo(RemoteProcessTest.class.getClassLoader().getResourceAsStream(
-                "remote-process/remoteProcess.properties"), "remoteProcess.properties");
+        testData.copyTo(
+                RemoteProcessTest.class
+                        .getClassLoader()
+                        .getResourceAsStream("remote-process/remoteProcess.properties"),
+                "remoteProcess.properties");
     }
 
     @Test
@@ -141,7 +143,8 @@ public class RemoteProcessTest extends WPSTestSupport {
         XMPPServerEmbedded server = null;
         XMPPClient xmppRemoteClient = null;
         try {
-            final RemoteProcessFactoryConfiguration configuration = factory.getRemoteClient().getConfiguration();
+            final RemoteProcessFactoryConfiguration configuration =
+                    factory.getRemoteClient().getConfiguration();
             final String xmppDomain = configuration.get("xmpp_domain");
             final String xmppUserName = configuration.get("xmpp_manager_username");
             final String[] serviceChannels = configuration.get("xmpp_service_channels").split(",");
@@ -163,20 +166,32 @@ public class RemoteProcessTest extends WPSTestSupport {
             Thread.sleep(1000);
             Presence presence = getPresence(server, adminJID);
             assertNotNull(presence);
-            
+
             assertTrue(presence.isAvailable());
             assertTrue("Orchestrator Active".equals(presence.getStatus()));
-            
-            List<RemoteMachineDescriptor> remoteMachines = xmppRemoteClient.getRegisteredProcessingMachines();
+
+            List<RemoteMachineDescriptor> remoteMachines =
+                    xmppRemoteClient.getRegisteredProcessingMachines();
             assertNotNull(remoteMachines);
             assertTrue(remoteMachines.size() > 0);
-            
+
             for (RemoteMachineDescriptor machine : remoteMachines) {
-                if(!"test".equals(machine.getServiceName().getNamespaceURI())) {
+                if (!"test".equals(machine.getServiceName().getNamespaceURI())) {
                     assertTrue(xmppUserName.equals(machine.getServiceName().getLocalPart()));
-                    assertTrue(Arrays.asList(serviceChannels).contains(machine.getServiceName().getNamespaceURI()));
-                
-                    assertTrue(machine.getNodeJID().equals(machine.getServiceName().getNamespaceURI() + "@" + configuration.get("xmpp_bus") + "." + xmppDomain + "/" + xmppUserName));
+                    assertTrue(
+                            Arrays.asList(serviceChannels)
+                                    .contains(machine.getServiceName().getNamespaceURI()));
+
+                    assertTrue(
+                            machine.getNodeJID()
+                                    .equals(
+                                            machine.getServiceName().getNamespaceURI()
+                                                    + "@"
+                                                    + configuration.get("xmpp_bus")
+                                                    + "."
+                                                    + xmppDomain
+                                                    + "/"
+                                                    + xmppUserName));
                 }
             }
         } catch (Exception e) {
@@ -217,19 +232,22 @@ public class RemoteProcessTest extends WPSTestSupport {
             }
         }
     }
-    
-    private PresenceStanza presenceStanza(Entity userJID, Presence presence, Entity to) throws XMLSemanticError {
+
+    private PresenceStanza presenceStanza(Entity userJID, Presence presence, Entity to)
+            throws XMLSemanticError {
         Entity from = userJID;
         String lang = null;
         String show = "ONLINE";
         String status = presence.getStatus();
         Type presenceType = presence.getType();
-        PresenceStanzaType type = presenceType == Type.unavailable ? PresenceStanzaType.UNAVAILABLE : null;
+        PresenceStanzaType type =
+                presenceType == Type.unavailable ? PresenceStanzaType.UNAVAILABLE : null;
         StanzaBuilder b = StanzaBuilder.createPresenceStanza(from, to, lang, type, show, status);
         return new PresenceStanza(b.build());
     }
 
-    private void updatePresenceCache(XMPPServer xmpp, Entity userJID, Presence presence) throws PresenceCachingException, XMLSemanticError {
+    private void updatePresenceCache(XMPPServer xmpp, Entity userJID, Presence presence)
+            throws PresenceCachingException, XMLSemanticError {
         LatestPresenceCache presenceCache = xmpp.getServerRuntimeContext().getPresenceCache();
         presenceCache.put(userJID, presenceStanza(userJID, presence, null));
     }
@@ -237,8 +255,8 @@ public class RemoteProcessTest extends WPSTestSupport {
     @Test
     public void testRegisterMessage() {
         // /
-        XMPPClient xmppRemoteClient = (XMPPClient) applicationContext
-                .getBean("xmppRemoteProcessClient");
+        XMPPClient xmppRemoteClient =
+                (XMPPClient) applicationContext.getBean("xmppRemoteProcessClient");
         assertNotNull(xmppRemoteClient);
 
         XMPPMessage msg = new XMPPRegisterMessage();
@@ -249,42 +267,47 @@ public class RemoteProcessTest extends WPSTestSupport {
         signalArgs.put("service", "test.Service");
         /**
          * JSON URL Encoded Body
-         * 
-         * { "title": "test.Service", "description": "This is a test Service!", "input": [ ["simpleType",
-         * "{\"type\": \"string\", \"description\": \"A simple string parameter\", \"max\": 1}"], ["complexType",
-         * "{\"type\": \"complex\", \"description\": \"A complex parameter\", \"min\": 1, \"max\": 10}"] ] }
+         *
+         * <p>{ "title": "test.Service", "description": "This is a test Service!", "input": [
+         * ["simpleType", "{\"type\": \"string\", \"description\": \"A simple string parameter\",
+         * \"max\": 1}"], ["complexType", "{\"type\": \"complex\", \"description\": \"A complex
+         * parameter\", \"min\": 1, \"max\": 10}"] ] }
          */
-        signalArgs.put("message",
+        signalArgs.put(
+                "message",
                 "%7B%0A%20%20%22title%22%3A%20%22test.Service%22%2C%0A%20%20%22description%22%3A%20%22This%20is%20a%20test%20Service!%22%2C%0A%20%20%22input%22%3A%20%5B%0A%20%20%20%20%5B%22simpleType%22%2C%20%22%7B%5C%22type%5C%22%3A%20%5C%22string%5C%22%2C%20%5C%22description%5C%22%3A%20%5C%22A%20simple%20string%20parameter%5C%22%2C%20%5C%22max%5C%22%3A%201%7D%22%5D%2C%0A%20%20%20%20%5B%22complexType%22%2C%20%22%7B%5C%22type%5C%22%3A%20%5C%22complex%5C%22%2C%20%5C%22description%5C%22%3A%20%5C%22A%20complex%20parameter%5C%22%2C%20%5C%22min%5C%22%3A%201%2C%20%5C%22max%5C%22%3A%2010%7D%22%5D%0A%20%20%5D%0A%7D");
 
         // handle signal
-        Packet packet = new Packet() {
+        Packet packet =
+                new Packet() {
 
-            @Override
-            public String getFrom() {
-                return "test@geoserver.org";
-            }
+                    @Override
+                    public String getFrom() {
+                        return "test@geoserver.org";
+                    }
 
-            @Override
-            public CharSequence toXML() {
-                return null;
-            }
-        };
+                    @Override
+                    public CharSequence toXML() {
+                        return null;
+                    }
+                };
         msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
     }
 
     @Test
     public void testLoadAverageMessage() {
         // /
-        XMPPClient xmppRemoteClient = (XMPPClient) applicationContext
-                .getBean("xmppRemoteProcessClient");
+        XMPPClient xmppRemoteClient =
+                (XMPPClient) applicationContext.getBean("xmppRemoteProcessClient");
         assertNotNull(xmppRemoteClient);
 
-        
-        List<RemoteMachineDescriptor> registeredProcessingMachines = new ArrayList<RemoteMachineDescriptor>();
-        registeredProcessingMachines.add(new RemoteMachineDescriptor("test@geoserver.org", new NameImpl("test", "Service"), true, 90.0, 90.0));
+        List<RemoteMachineDescriptor> registeredProcessingMachines =
+                new ArrayList<RemoteMachineDescriptor>();
+        registeredProcessingMachines.add(
+                new RemoteMachineDescriptor(
+                        "test@geoserver.org", new NameImpl("test", "Service"), true, 90.0, 90.0));
         xmppRemoteClient.setRegisteredProcessingMachines(registeredProcessingMachines);
-        
+
         XMPPMessage msg = new XMPPLoadAverageMessage();
 
         // build register body
@@ -296,61 +319,66 @@ public class RemoteProcessTest extends WPSTestSupport {
 
         /**
          * JSON URL Encoded Body
-         * 
-         * { "title": "test.Service", "description": "This is a test Service!", "input": [ ["simpleType",
-         * "{\"type\": \"string\", \"description\": \"A simple string parameter\", \"max\": 1}"], ["complexType",
-         * "{\"type\": \"complex\", \"description\": \"A complex parameter\", \"min\": 1, \"max\": 10}"] ] }
+         *
+         * <p>{ "title": "test.Service", "description": "This is a test Service!", "input": [
+         * ["simpleType", "{\"type\": \"string\", \"description\": \"A simple string parameter\",
+         * \"max\": 1}"], ["complexType", "{\"type\": \"complex\", \"description\": \"A complex
+         * parameter\", \"min\": 1, \"max\": 10}"] ] }
          */
-        signalArgs.put("result_vmem",
+        signalArgs.put(
+                "result_vmem",
                 "%7B%22vmem_value%22%3A%2089.3%2C%20%22vmem_description%22%3A%20%22Percentage%20of%20Memory%20used%20by%20the%20server.%22%7D");
-        signalArgs.put("result_loadavg",
+        signalArgs.put(
+                "result_loadavg",
                 "%7B%22loadavg_description%22%3A%20%22Average%20Load%20on%20CPUs%20during%20the%20last%2015%20minutes.%22%2C%20%22loadavg_value%22%3A%2014.6%7D");
 
         // handle signal
-        Packet packet = new Packet() {
+        Packet packet =
+                new Packet() {
 
-            @Override
-            public String getFrom() {
-                return "test@geoserver.org";
-            }
+                    @Override
+                    public String getFrom() {
+                        return "test@geoserver.org";
+                    }
 
-            @Override
-            public CharSequence toXML() {
-                return null;
-            }
-        };
+                    @Override
+                    public CharSequence toXML() {
+                        return null;
+                    }
+                };
         msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
-        
-        assertTrue("LoadAverage does not match!", registeredProcessingMachines.get(0).getLoadAverage().equals(14.6));
-        assertTrue("MemoryPerc does not match!", registeredProcessingMachines.get(0).getMemPercUsed().equals(89.3));
+
+        assertTrue(
+                "LoadAverage does not match!",
+                registeredProcessingMachines.get(0).getLoadAverage().equals(14.6));
+        assertTrue(
+                "MemoryPerc does not match!",
+                registeredProcessingMachines.get(0).getMemPercUsed().equals(89.3));
     }
 
-    /**
-     * 
-     */
+    /** */
     protected void setupFactory() {
         if (factory == null) {
             factory = new RemoteProcessFactory();
 
             // check SPI will see the factory if we register it using an iterator
             // provider
-            GeoTools.addFactoryIteratorProvider(new FactoryIteratorProvider() {
+            GeoTools.addFactoryIteratorProvider(
+                    new FactoryIteratorProvider() {
 
-                public <T> Iterator<T> iterator(Class<T> category) {
-                    if (ProcessFactory.class.isAssignableFrom(category)) {
-                        return (Iterator<T>) Collections.singletonList(factory).iterator();
-                    } else {
-                        return null;
-                    }
-                }
-            });
+                        public <T> Iterator<T> iterator(Class<T> category) {
+                            if (ProcessFactory.class.isAssignableFrom(category)) {
+                                return (Iterator<T>) Collections.singletonList(factory).iterator();
+                            } else {
+                                return null;
+                            }
+                        }
+                    });
         }
     }
 
     /**
-     * 
      * @param fname
-     *
      * @throws IOException
      */
     private static InputStream fullStream(File fname) throws IOException {
@@ -361,5 +389,4 @@ public class RemoteProcessTest extends WPSTestSupport {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         return bais;
     }
-
 }

@@ -7,6 +7,10 @@ package org.geoserver.wfs3.response;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -18,11 +22,6 @@ import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.NCNameResourceCodec;
 import org.opengis.filter.Filter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A class representing the WFS3 server "collections" in a way that Jackson can easily translate to
@@ -66,7 +65,8 @@ public class CollectionsDocument {
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document " + " as " + format;
             String outputFormat = request.getOutputFormat();
-            if (format.equals(outputFormat) || (outputFormat == null && format.equals(BaseRequest.JSON_MIME))) {
+            if (format.equals(outputFormat)
+                    || (outputFormat == null && format.equals(BaseRequest.JSON_MIME))) {
                 linkType = Link.REL_SELF;
                 linkTitle = "This document";
             }

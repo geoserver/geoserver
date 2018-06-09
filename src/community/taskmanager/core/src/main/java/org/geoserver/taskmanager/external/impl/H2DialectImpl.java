@@ -6,7 +6,7 @@ package org.geoserver.taskmanager.external.impl;
 
 /**
  * H2 Dialect.
- * 
+ *
  * @author Timothy De Bock
  */
 public class H2DialectImpl extends DefaultDialectImpl {

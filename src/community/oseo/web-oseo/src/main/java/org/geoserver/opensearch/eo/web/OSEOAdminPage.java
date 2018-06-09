@@ -41,7 +41,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         return OSEOInfo.class;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked", "serial" })
+    @SuppressWarnings({"rawtypes", "unchecked", "serial"})
     protected void build(final IModel info, Form form) {
         OSEOInfo model = (OSEOInfo) info.getObject();
 
@@ -49,45 +49,52 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         if (model.getOpenSearchAccessStoreId() != null) {
             this.backend = getCatalog().getDataStore(model.getOpenSearchAccessStoreId());
         }
-        DropDownChoice<DataStoreInfo> openSearchAccessReference = new DropDownChoice<>(
-                "openSearchAccessId", new PropertyModel<DataStoreInfo>(this, "backend"),
-                new OpenSearchAccessListModel(), new StoreListChoiceRenderer());
+        DropDownChoice<DataStoreInfo> openSearchAccessReference =
+                new DropDownChoice<>(
+                        "openSearchAccessId",
+                        new PropertyModel<DataStoreInfo>(this, "backend"),
+                        new OpenSearchAccessListModel(),
+                        new StoreListChoiceRenderer());
         form.add(openSearchAccessReference);
-        
+
         final TextField<Integer> recordsPerPage = new TextField<>("recordsPerPage", Integer.class);
         recordsPerPage.add(RangeValidator.minimum(0));
         recordsPerPage.setRequired(true);
         form.add(recordsPerPage);
-        final TextField<Integer> maximumRecordsPerPage = new TextField<>("maximumRecordsPerPage", Integer.class);
+        final TextField<Integer> maximumRecordsPerPage =
+                new TextField<>("maximumRecordsPerPage", Integer.class);
         maximumRecordsPerPage.add(RangeValidator.minimum(0));
         maximumRecordsPerPage.setRequired(true);
         form.add(maximumRecordsPerPage);
         // check that records is lower or equal than maximum
-        form.add(new AbstractFormValidator() {
-            
-            @Override
-            public void validate(Form<?> form) {
-                Integer records = recordsPerPage.getConvertedInput();
-                Integer maximum = maximumRecordsPerPage.getConvertedInput();
-                if(recordsPerPage != null && maximum != null && records > maximum) {
-                    form.error(new ParamResourceModel("recordsGreaterThanMaximum", form, records, maximum));
-                }
-            }
-            
-            @Override
-            public FormComponent<?>[] getDependentFormComponents() {
-                return new FormComponent<?>[] {recordsPerPage, maximumRecordsPerPage};
-            }
-        });
+        form.add(
+                new AbstractFormValidator() {
+
+                    @Override
+                    public void validate(Form<?> form) {
+                        Integer records = recordsPerPage.getConvertedInput();
+                        Integer maximum = maximumRecordsPerPage.getConvertedInput();
+                        if (recordsPerPage != null && maximum != null && records > maximum) {
+                            form.error(
+                                    new ParamResourceModel(
+                                            "recordsGreaterThanMaximum", form, records, maximum));
+                        }
+                    }
+
+                    @Override
+                    public FormComponent<?>[] getDependentFormComponents() {
+                        return new FormComponent<?>[] {recordsPerPage, maximumRecordsPerPage};
+                    }
+                });
     }
 
     protected String getServiceName() {
         return "OSEO";
     }
-    
+
     @Override
     protected void handleSubmit(OSEOInfo info) {
-        if(backend != null) {
+        if (backend != null) {
             info.setOpenSearchAccessStoreId(backend.getId());
         } else {
             info.setOpenSearchAccessStoreId(null);

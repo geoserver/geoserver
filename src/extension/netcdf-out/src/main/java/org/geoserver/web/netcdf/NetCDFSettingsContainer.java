@@ -7,19 +7,20 @@ package org.geoserver.web.netcdf;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 
 /**
- * NetCDF output settings. This class stores the global settings that are used to initialise newly published layers. Once layers have been published,
- * their settings are stored in the subclass {@link NetCDFLayerSettingsContainer}.
+ * NetCDF output settings. This class stores the global settings that are used to initialise newly
+ * published layers. Once layers have been published, their settings are stored in the subclass
+ * {@link NetCDFLayerSettingsContainer}.
  */
 @SuppressWarnings("serial")
 public class NetCDFSettingsContainer implements Serializable {
 
     public enum Version {
-        NETCDF_3, NETCDF_4C;
+        NETCDF_3,
+        NETCDF_4C;
     }
 
     public static final String NETCDFOUT_KEY = "NetCDFOutput.Key";
@@ -29,16 +30,19 @@ public class NetCDFSettingsContainer implements Serializable {
     public static final boolean DEFAULT_SHUFFLE = true;
 
     public static final boolean DEFAULT_COPY_ATTRIBUTES = false;
-    
+
     public static final boolean DEFAULT_COPY_GLOBAL_ATTRIBUTES = false;
 
     public static final Version DEFAULT_VERSION = Version.NETCDF_3;
 
-    public static final List<GlobalAttribute> DEFAULT_GLOBAL_ATTRIBUTES = new ArrayList<GlobalAttribute>();
+    public static final List<GlobalAttribute> DEFAULT_GLOBAL_ATTRIBUTES =
+            new ArrayList<GlobalAttribute>();
 
-    public static final List<VariableAttribute> DEFAULT_VARIABLE_ATTRIBUTES = new ArrayList<VariableAttribute>();
+    public static final List<VariableAttribute> DEFAULT_VARIABLE_ATTRIBUTES =
+            new ArrayList<VariableAttribute>();
 
-    public static final List<ExtraVariable> DEFAULT_EXTRA_VARIABLES = new ArrayList<ExtraVariable>();
+    public static final List<ExtraVariable> DEFAULT_EXTRA_VARIABLES =
+            new ArrayList<ExtraVariable>();
 
     private int compressionLevel = DEFAULT_COMPRESSION;
 
@@ -82,30 +86,22 @@ public class NetCDFSettingsContainer implements Serializable {
         this.shuffle = shuffle;
     }
 
-    /**
-     * Whether to copy attributes from the NetCDF/GRIB source to the main output variable.
-     */
+    /** Whether to copy attributes from the NetCDF/GRIB source to the main output variable. */
     public boolean isCopyAttributes() {
         return copyAttributes;
     }
 
-    /**
-     * Whether to copy global attributes from the NetCDF/GRIB source to the main output.
-     */
+    /** Whether to copy global attributes from the NetCDF/GRIB source to the main output. */
     public boolean isCopyGlobalAttributes() {
         return copyGlobalAttributes;
     }
 
-    /**
-     * Whether to copy attributes from the NetCDF/GRIB source to the main output variable.
-     */
+    /** Whether to copy attributes from the NetCDF/GRIB source to the main output variable. */
     public void setCopyAttributes(boolean copyAttributes) {
         this.copyAttributes = copyAttributes;
     }
 
-    /**
-     * Whether to copy global attributes from the NetCDF/GRIB source to the main output.
-     */
+    /** Whether to copy global attributes from the NetCDF/GRIB source to the main output. */
     public void setCopyGlobalAttributes(boolean copyGlobalAttributes) {
         this.copyGlobalAttributes = copyGlobalAttributes;
     }
@@ -150,7 +146,6 @@ public class NetCDFSettingsContainer implements Serializable {
         return metadata;
     }
 
-
     private abstract static class AbstractAttribute implements Serializable {
 
         private String key;
@@ -181,9 +176,7 @@ public class NetCDFSettingsContainer implements Serializable {
             this.value = value;
         }
 
-        /**
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
+        /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
             return other instanceof AbstractAttribute
@@ -191,73 +184,55 @@ public class NetCDFSettingsContainer implements Serializable {
                     && getValue().equals(((AbstractAttribute) other).getValue());
         }
 
-        /**
-         * @see java.lang.Object#hashCode()
-         */
+        /** @see java.lang.Object#hashCode() */
         @Override
         public int hashCode() {
             return getKey().hashCode() + getValue().hashCode();
         }
-
     }
 
-    /**
-     * Global attribute to be set in the NetCDF output.
-     */
+    /** Global attribute to be set in the NetCDF output. */
     public static class GlobalAttribute extends AbstractAttribute {
 
         public GlobalAttribute(String key, String value) {
             super(key, value);
         }
 
-        /**
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
+        /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
             return other instanceof GlobalAttribute && super.equals(other);
         }
-
     }
 
-    /**
-     * Attribute to be set on the main variable in the NetCDF output.
-     */
+    /** Attribute to be set on the main variable in the NetCDF output. */
     public static class VariableAttribute extends AbstractAttribute {
 
         public VariableAttribute(String key, String value) {
             super(key, value);
         }
 
-        /**
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
+        /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
             return other instanceof VariableAttribute && super.equals(other);
         }
-
     }
 
-    /**
-     * Extra variable that should be copied from NetCDF/GRIB source to output.
-     */
+    /** Extra variable that should be copied from NetCDF/GRIB source to output. */
     public static class ExtraVariable implements Serializable {
 
-        /**
-         * Name of source variable.
-         */
+        /** Name of source variable. */
         private String source;
 
-        /**
-         * Name of output variable.
-         */
+        /** Name of output variable. */
         private String output;
 
         /**
-         * Whitespace-separated list of output variable dimension names. Empty string to copy a scalar, or a single dimension name like "time" to turn
-         * scalar ImageMosaic granules into a vector over that dimensions. More than one dimension not yet supported, but the naming is here as a
-         * future extension point.
+         * Whitespace-separated list of output variable dimension names. Empty string to copy a
+         * scalar, or a single dimension name like "time" to turn scalar ImageMosaic granules into a
+         * vector over that dimensions. More than one dimension not yet supported, but the naming is
+         * here as a future extension point.
          */
         private String dimensions;
 
@@ -306,9 +281,7 @@ public class NetCDFSettingsContainer implements Serializable {
             this.dimensions = dimensions;
         }
 
-        /**
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
+        /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
             return other instanceof ExtraVariable
@@ -317,14 +290,10 @@ public class NetCDFSettingsContainer implements Serializable {
                     && getDimensions().equals(((ExtraVariable) other).getDimensions());
         }
 
-        /**
-         * @see java.lang.Object#hashCode()
-         */
+        /** @see java.lang.Object#hashCode() */
         @Override
         public int hashCode() {
             return getSource().hashCode() + getOutput().hashCode() + getDimensions().hashCode();
         }
-
     }
-
 }

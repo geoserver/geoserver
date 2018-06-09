@@ -13,10 +13,11 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 
 /**
  * Configuration panel for {@link GeoServerDigestAuthenticationFilter}.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class DigestAuthFilterPanel extends AuthenticationFilterPanel<DigestAuthenticationFilterConfig>{
+public class DigestAuthFilterPanel
+        extends AuthenticationFilterPanel<DigestAuthenticationFilterConfig> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
@@ -27,5 +28,4 @@ public class DigestAuthFilterPanel extends AuthenticationFilterPanel<DigestAuthe
         add(new UserGroupServiceChoice("userGroupServiceName"));
         add(new TextField("nonceValiditySeconds").setType(Integer.class));
     }
-
 }

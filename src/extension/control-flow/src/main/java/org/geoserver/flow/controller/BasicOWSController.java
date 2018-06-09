@@ -7,21 +7,26 @@ package org.geoserver.flow.controller;
 
 /**
  * A flow controller that can categorize requests by service, method and output format
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 public class BasicOWSController extends SingleQueueFlowController {
-    
+
     public BasicOWSController(String service, int controllerPriority, ThreadBlocker blocker) {
         this(service, null, null, controllerPriority, blocker);
     }
 
-    public BasicOWSController(String service, String method, int controllerPriority, ThreadBlocker blocker) {
+    public BasicOWSController(
+            String service, String method, int controllerPriority, ThreadBlocker blocker) {
         this(service, method, null, controllerPriority, blocker);
     }
 
-    public BasicOWSController(String service, String method, String outputFormat, int controllerPriority, ThreadBlocker blocker) {
+    public BasicOWSController(
+            String service,
+            String method,
+            String outputFormat,
+            int controllerPriority,
+            ThreadBlocker blocker) {
         super(new OWSRequestMatcher(service, method, outputFormat), controllerPriority, blocker);
     }
 
@@ -29,5 +34,4 @@ public class BasicOWSController extends SingleQueueFlowController {
     public String toString() {
         return "BasicOWSController(" + matcher + "," + blocker + ")";
     }
-
 }

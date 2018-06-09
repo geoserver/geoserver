@@ -4,6 +4,8 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.File;
+import java.util.List;
 import org.apache.commons.exec.CommandLine;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.importer.ImportData;
@@ -12,17 +14,13 @@ import org.geoserver.importer.ValidationException;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 
-import java.io.File;
-import java.util.List;
-
 /**
- * <p>Runs a post-script with the provided options.</p> 
- * 
- * <p>Eventually it would be useful to pass some
- * information about the data just imported, but will require more configuration (like, for 
- * direct imports it may be the data location, for indirect ones the layer just created,
- * along with some configuration about if and how to pass said into the script). If you're 
- * reading this and are interested, hop on gs-devel and discuss</p>
+ * Runs a post-script with the provided options.
+ *
+ * <p>Eventually it would be useful to pass some information about the data just imported, but will
+ * require more configuration (like, for direct imports it may be the data location, for indirect
+ * ones the layer just created, along with some configuration about if and how to pass said into the
+ * script). If you're reading this and are interested, hop on gs-devel and discuss
  */
 public class PostScriptTransform extends AbstractCommandLineTransform implements PostTransform {
 
@@ -31,13 +29,14 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
     public PostScriptTransform(String name, List<String> options) {
         super(options);
         this.name = name;
-        
+
         // force validation since there is no setter for name
         getExecutable();
     }
 
     /**
      * Name of the script to be run
+     *
      * @return
      */
     public String getName() {
@@ -52,7 +51,7 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
         for (String option : options) {
             cmd.addArgument(option, false);
         }
-        
+
         execute(cmd, getScriptsFolder().dir());
     }
 
@@ -61,13 +60,19 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
 
         Resource resource = scripts.get(name);
         if (resource.getType() != Resource.Type.RESOURCE) {
-            throw new ValidationException("Script named '" + name + "' was not found in " +
-                    "$GEOSERVER_DATA_DIR/importer/scripts");
+            throw new ValidationException(
+                    "Script named '"
+                            + name
+                            + "' was not found in "
+                            + "$GEOSERVER_DATA_DIR/importer/scripts");
         }
         File executable = resource.file();
         if (!executable.canExecute()) {
-            throw new ValidationException("Found file named '" + name + "' in " +
-                    "$GEOSERVER_DATA_DIR/importer/scripts, but it's not executable");
+            throw new ValidationException(
+                    "Found file named '"
+                            + name
+                            + "' in "
+                            + "$GEOSERVER_DATA_DIR/importer/scripts, but it's not executable");
         }
         return executable;
     }
@@ -78,8 +83,9 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
         if (scripts.getType() == Resource.Type.UNDEFINED) {
             throw new ValidationException("Could not find importer/scripts in data directory");
         } else if (scripts.getType() == Resource.Type.RESOURCE) {
-            throw new ValidationException("Found importer/scripts in data directory, but it's a" +
-                    " file and was expecting a directory");
+            throw new ValidationException(
+                    "Found importer/scripts in data directory, but it's a"
+                            + " file and was expecting a directory");
         } else {
             return scripts;
         }

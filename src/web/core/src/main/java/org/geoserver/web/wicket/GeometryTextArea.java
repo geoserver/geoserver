@@ -5,25 +5,23 @@
  */
 package org.geoserver.web.wicket;
 
-import java.util.Locale;
-
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.util.convert.ConversionException;
-import org.apache.wicket.util.convert.IConverter;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import java.util.Locale;
+import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.IConverter;
 
 /**
  * A form component for a {@link Geometry} object, expressed either as 2-3 space separated ordinates
  * or a WKT formatted {@link Geometry}
- * 
+ *
  * @author Andrea Aime, GeoSolutions
  */
 public class GeometryTextArea extends TextArea<Geometry> {
@@ -51,12 +49,12 @@ public class GeometryTextArea extends TextArea<Geometry> {
     }
     /**
      * Converts between String and Geometry
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     private class GeometryConverter implements IConverter<Object> {
         private static final long serialVersionUID = 5868644160487841740L;
-        
+
         transient GeometryFactory gf = new GeometryFactory();
 
         transient WKTReader reader = new WKTReader(gf);
@@ -93,7 +91,5 @@ public class GeometryTextArea extends TextArea<Geometry> {
                 return value.toString();
             }
         }
-
     }
-
 }

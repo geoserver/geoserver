@@ -5,7 +5,6 @@
 package org.geoserver.wms.ncwms;
 
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -28,10 +27,10 @@ public class NcWmsDatasetCallback extends AbstractDispatcherCallback implements 
 
     @Override
     public Request init(Request request) {
-        if(request.getRawKvp() == null) {
+        if (request.getRawKvp() == null) {
             return request;
         }
-        
+
         String dataset = Converters.convert(request.getRawKvp().get("DATASET"), String.class);
         if (dataset != null) {
             WorkspaceInfo ws = catalog.getWorkspaceByName(dataset);
@@ -59,10 +58,12 @@ public class NcWmsDatasetCallback extends AbstractDispatcherCallback implements 
     }
 
     @Override
-    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp,
-            URLType type) {
+    public void mangleURL(
+            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Request request = Dispatcher.REQUEST.get();
-        if (request != null && "GetCapabilities".equals(request.getRequest()) && request.getRawKvp() != null) {
+        if (request != null
+                && "GetCapabilities".equals(request.getRequest())
+                && request.getRawKvp() != null) {
             String dataset = Converters.convert(request.getRawKvp().get("DATASET"), String.class);
             if (dataset != null) {
                 kvp.put("DATASET", dataset);

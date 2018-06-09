@@ -6,18 +6,16 @@
 package org.geoserver.ows.xml.v1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.Ows10Factory;
-
 import org.geotools.xml.AbstractComplexEMFBinding;
-
 
 /**
  * Binding object for the element http://www.opengis.net/ows:ExceptionReport.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;element name="ExceptionReport"&gt;
  *      &lt;annotation&gt;
@@ -46,22 +44,22 @@ import org.geotools.xml.AbstractComplexEMFBinding;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class ExceptionReportBinding extends AbstractComplexEMFBinding {
-    
+
     public ExceptionReportBinding(Ows10Factory owsfactory) {
         super(owsfactory);
     }
-    
-    /**
-     * @generated
-     */
+
+    /** @generated */
     public QName getTarget() {
         return OWS.EXCEPTIONREPORT;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *

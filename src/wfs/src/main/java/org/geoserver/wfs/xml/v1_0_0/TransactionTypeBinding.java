@@ -6,9 +6,7 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import java.util.Iterator;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.AllSomeType;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.InsertElementType;
@@ -16,17 +14,16 @@ import net.opengis.wfs.NativeType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexEMFBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:TransactionType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="TransactionType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -98,24 +95,24 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class TransactionTypeBinding extends AbstractComplexEMFBinding {
     WfsFactory wfsfactory;
 
     public TransactionTypeBinding(WfsFactory wfsfactory) {
-        super( wfsfactory );
+        super(wfsfactory);
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.TRANSACTIONTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -126,22 +123,22 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         TransactionType transaction = wfsfactory.createTransactionType();
 
-        //lock id
+        // lock id
         if (node.hasChild("LockId")) {
             transaction.setLockId((String) node.getChildValue("LockId"));
         }
 
-        //transactions, need to maintain order
-        for (Iterator itr = node.getChildren().iterator(); itr.hasNext();) {
+        // transactions, need to maintain order
+        for (Iterator itr = node.getChildren().iterator(); itr.hasNext(); ) {
             Node child = (Node) itr.next();
             Object cv = child.getValue();
 
@@ -156,16 +153,16 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
             }
         }
 
-        //service + version
+        // service + version
         WFSBindingUtils.service(transaction, node);
         WFSBindingUtils.version(transaction, node);
 
-        //handle
+        // handle
         if (node.hasAttribute("handle")) {
             transaction.setHandle((String) node.getAttributeValue("handle"));
         }
 
-        //release action
+        // release action
         if (node.hasAttribute(AllSomeType.class)) {
             transaction.setReleaseAction((AllSomeType) node.getAttributeValue(AllSomeType.class));
         }

@@ -4,13 +4,12 @@
  */
 package org.geoserver.flow.controller;
 
-import org.geoserver.ows.Request;
-
 import com.google.common.base.Predicate;
+import org.geoserver.ows.Request;
 
 /**
  * Matches OWS requests based on service, method and output format
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class OWSRequestMatcher implements Predicate<Request> {
@@ -46,7 +45,6 @@ public class OWSRequestMatcher implements Predicate<Request> {
             throw new IllegalArgumentException(
                     "Invalid OWS definition, output format cannot be valued if "
                             + "method is not provided");
-
     }
 
     @Override
@@ -89,29 +87,17 @@ public class OWSRequestMatcher implements Predicate<Request> {
         return true;
     }
 
-    /**
-     * Returns the matched service (case insensitive)
-     * 
-     *
-     */
+    /** Returns the matched service (case insensitive) */
     public String getService() {
         return service;
     }
 
-    /**
-     * Returns the matched method (case insensitive)
-     * 
-     *
-     */
+    /** Returns the matched method (case insensitive) */
     public String getMethod() {
         return method;
     }
 
-    /**
-     * Returns the matched output format (case insensitive)
-     * 
-     *
-     */
+    /** Returns the matched output format (case insensitive) */
     public String getOutputFormat() {
         return outputFormat;
     }
@@ -128,29 +114,19 @@ public class OWSRequestMatcher implements Predicate<Request> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         OWSRequestMatcher other = (OWSRequestMatcher) obj;
         if (method == null) {
-            if (other.method != null)
-                return false;
-        } else if (!method.equals(other.method))
-            return false;
+            if (other.method != null) return false;
+        } else if (!method.equals(other.method)) return false;
         if (outputFormat == null) {
-            if (other.outputFormat != null)
-                return false;
-        } else if (!outputFormat.equals(other.outputFormat))
-            return false;
+            if (other.outputFormat != null) return false;
+        } else if (!outputFormat.equals(other.outputFormat)) return false;
         if (service == null) {
-            if (other.service != null)
-                return false;
-        } else if (!service.equals(other.service))
-            return false;
+            if (other.service != null) return false;
+        } else if (!service.equals(other.service)) return false;
         return true;
     }
-
 }

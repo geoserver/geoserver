@@ -10,9 +10,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 
-/**
- * Contains tests for the cluster configuration UI.
- */
+/** Contains tests for the cluster configuration UI. */
 public final class ClusterPageTest extends GeoServerWicketTestSupport {
 
     @Test

@@ -9,7 +9,6 @@ package org.geoserver.wps;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-
 import org.apache.commons.io.output.WriterOutputStream;
 import org.geoserver.wps.ppio.CDataPPIO;
 import org.geotools.xml.EncoderDelegate;
@@ -19,7 +18,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 /**
  * Encodes objects as text sections within CDATA markers
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class CDataEncoderDelegate implements EncoderDelegate {
@@ -73,7 +72,5 @@ public class CDataEncoderDelegate implements EncoderDelegate {
             // nothing to do
 
         }
-
     }
-
 }

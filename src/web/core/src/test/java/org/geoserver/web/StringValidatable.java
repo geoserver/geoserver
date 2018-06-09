@@ -7,14 +7,11 @@ package org.geoserver.web;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
 
-/**
- * Helper class to test validators that need to validate a String object
- */
+/** Helper class to test validators that need to validate a String object */
 public class StringValidatable implements IValidatable<String> {
     List<IValidationError> errors = new ArrayList<IValidationError>();
     String value;
@@ -24,7 +21,7 @@ public class StringValidatable implements IValidatable<String> {
     }
 
     public void error(IValidationError error) {
-        errors.add(error);            
+        errors.add(error);
     }
 
     public String getValue() {
@@ -42,5 +39,4 @@ public class StringValidatable implements IValidatable<String> {
     public IModel<String> getModel() {
         return null;
     }
-    
 }

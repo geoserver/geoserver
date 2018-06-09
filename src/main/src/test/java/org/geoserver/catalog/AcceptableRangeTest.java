@@ -4,12 +4,11 @@
  */
 package org.geoserver.catalog;
 
-import org.geotools.util.DateRange;
-import org.junit.Test;
+import static junit.framework.TestCase.assertEquals;
 
 import java.util.Date;
-
-import static junit.framework.TestCase.assertEquals;
+import org.geotools.util.DateRange;
+import org.junit.Test;
 
 public class AcceptableRangeTest {
 

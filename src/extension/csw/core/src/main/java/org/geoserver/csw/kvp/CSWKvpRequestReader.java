@@ -4,16 +4,14 @@
  * application directory.
  */
 
-
 package org.geoserver.csw.kvp;
 
 import net.opengis.cat.csw20.Csw20Factory;
-
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 
 /**
  * CSW KVP Request Reader base class
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWKvpRequestReader extends EMFKvpRequestReader {

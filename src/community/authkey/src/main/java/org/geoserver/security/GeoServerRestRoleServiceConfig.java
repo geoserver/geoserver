@@ -7,10 +7,7 @@ package org.geoserver.security;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConfig
         implements SecurityRoleServiceConfig {
 
@@ -28,25 +25,25 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
     private String groupAdminGroup;
 
     private String baseUrl;
-    
+
     private String rolesRESTEndpoint = "/api/roles";
-    
+
     private String adminRoleRESTEndpoint = "/api/adminRole";
-    
+
     private String usersRESTEndpoint = "/api/users";
-    
+
     private String rolesJSONPath = "$.groups";
-    
+
     private String adminRoleJSONPath = "$.adminRole";
-    
+
     private String usersJSONPath = "$.users[?(@.username=='${username}')].groups";
 
     private int cacheConcurrencyLevel = defaultCacheConcurrencyLevel;
-    
+
     private long cacheMaximumSize = defaultCacheMaximumSize;
-    
+
     private long cacheExpirationTime = defaultCacheExpirationTime;
-    
+
     @Override
     public String getAdminRoleName() {
         return adminGroup;
@@ -67,107 +64,77 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
         this.groupAdminGroup = adminRoleName;
     }
 
-    /**
-     * @return the baseUrl
-     */
+    /** @return the baseUrl */
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    /**
-     * @param baseUrl the baseUrl to set
-     */
+    /** @param baseUrl the baseUrl to set */
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    /**
-     * @return the rolesRESTEndpoint
-     */
+    /** @return the rolesRESTEndpoint */
     public String getRolesRESTEndpoint() {
         return rolesRESTEndpoint;
     }
 
-    /**
-     * @param rolesRESTEndpoint the rolesRESTEndpoint to set
-     */
+    /** @param rolesRESTEndpoint the rolesRESTEndpoint to set */
     public void setRolesRESTEndpoint(String rolesRESTEndpoint) {
         this.rolesRESTEndpoint = rolesRESTEndpoint;
     }
 
-    /**
-     * @return the adminRoleRESTEndpoint
-     */
+    /** @return the adminRoleRESTEndpoint */
     public String getAdminRoleRESTEndpoint() {
         return adminRoleRESTEndpoint;
     }
 
-    /**
-     * @param adminRoleRESTEndpoint the adminRoleRESTEndpoint to set
-     */
+    /** @param adminRoleRESTEndpoint the adminRoleRESTEndpoint to set */
     public void setAdminRoleRESTEndpoint(String adminRoleRESTEndpoint) {
         this.adminRoleRESTEndpoint = adminRoleRESTEndpoint;
     }
 
-    /**
-     * @return the usersRESTEndpoint
-     */
+    /** @return the usersRESTEndpoint */
     public String getUsersRESTEndpoint() {
         return usersRESTEndpoint;
     }
 
-    /**
-     * @param usersRESTEndpoint the usersRESTEndpoint to set
-     */
+    /** @param usersRESTEndpoint the usersRESTEndpoint to set */
     public void setUsersRESTEndpoint(String usersRESTEndpoint) {
         this.usersRESTEndpoint = usersRESTEndpoint;
     }
 
-    /**
-     * @return the rolesJSONPath
-     */
+    /** @return the rolesJSONPath */
     public String getRolesJSONPath() {
         return rolesJSONPath;
     }
 
-    /**
-     * @param rolesJSONPath the rolesJSONPath to set
-     */
+    /** @param rolesJSONPath the rolesJSONPath to set */
     public void setRolesJSONPath(String rolesJSONPath) {
         this.rolesJSONPath = rolesJSONPath;
     }
 
-    /**
-     * @return the adminRoleJSONPath
-     */
+    /** @return the adminRoleJSONPath */
     public String getAdminRoleJSONPath() {
         return adminRoleJSONPath;
     }
 
-    /**
-     * @param adminRoleJSONPath the adminRoleJSONPath to set
-     */
+    /** @param adminRoleJSONPath the adminRoleJSONPath to set */
     public void setAdminRoleJSONPath(String adminRoleJSONPath) {
         this.adminRoleJSONPath = adminRoleJSONPath;
     }
 
-    /**
-     * @return the usersJSONPath
-     */
+    /** @return the usersJSONPath */
     public String getUsersJSONPath() {
         return usersJSONPath;
     }
 
-    /**
-     * @param usersJSONPath the usersJSONPath to set
-     */
+    /** @param usersJSONPath the usersJSONPath to set */
     public void setUsersJSONPath(String usersJSONPath) {
         this.usersJSONPath = usersJSONPath;
     }
 
-    /**
-     * @return the cacheConcurrencyLevel
-     */
+    /** @return the cacheConcurrencyLevel */
     public int getCacheConcurrencyLevel() {
         if (cacheConcurrencyLevel > 1) {
             return cacheConcurrencyLevel;
@@ -176,16 +143,12 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
         }
     }
 
-    /**
-     * @param cacheConcurrencyLevel the cacheConcurrencyLevel to set
-     */
+    /** @param cacheConcurrencyLevel the cacheConcurrencyLevel to set */
     public void setCacheConcurrencyLevel(int cacheConcurrencyLevel) {
         this.cacheConcurrencyLevel = cacheConcurrencyLevel;
     }
 
-    /**
-     * @return the cacheMaximumSize
-     */
+    /** @return the cacheMaximumSize */
     public long getCacheMaximumSize() {
         if (cacheMaximumSize > 0) {
             return cacheMaximumSize;
@@ -194,23 +157,17 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
         }
     }
 
-    /**
-     * @param cacheMaximumSize the cacheMaximumSize to set
-     */
+    /** @param cacheMaximumSize the cacheMaximumSize to set */
     public void setCacheMaximumSize(long cacheMaximumSize) {
         this.cacheMaximumSize = cacheMaximumSize;
     }
 
-    /**
-     * @param cacheExpirationTime the cacheExpirationTime to set
-     */
+    /** @param cacheExpirationTime the cacheExpirationTime to set */
     public void setCacheExpirationTime(long cacheExpirationTime) {
         this.cacheExpirationTime = cacheExpirationTime;
     }
 
-    /**
-     * @return
-     */
+    /** @return */
     public long getCacheExpirationTime() {
         if (cacheExpirationTime > 0) {
             return cacheExpirationTime;
@@ -218,5 +175,4 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
             return defaultCacheExpirationTime;
         }
     }
-
 }

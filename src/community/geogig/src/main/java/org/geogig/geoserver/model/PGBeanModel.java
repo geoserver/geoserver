@@ -5,7 +5,6 @@
 package org.geogig.geoserver.model;
 
 import java.net.URI;
-
 import org.apache.wicket.model.IModel;
 import org.geogig.geoserver.config.PostgresConfigBean;
 import org.geogig.geoserver.config.RepositoryInfo;
@@ -34,7 +33,7 @@ public class PGBeanModel implements IModel<PostgresConfigBean> {
             if (location != null && "postgresql".equals(location.getScheme())) {
                 // build a bean from the parts
                 bean = PostgresConfigBean.from(location);
-            }else{
+            } else {
                 bean = PostgresConfigBean.newInstance();
             }
         }
@@ -53,5 +52,4 @@ public class PGBeanModel implements IModel<PostgresConfigBean> {
         }
         bean = null;
     }
-
 }

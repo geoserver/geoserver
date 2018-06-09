@@ -6,19 +6,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
 import org.geotools.data.jdbc.FilterToSQLException;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.jdbc.JDBCDataStore;
@@ -43,28 +44,26 @@ import org.opengis.filter.spatial.Touches;
 import org.opengis.filter.spatial.Within;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-
 public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSupport {
 
     private static final String GML32_PREFIX = "gml32";
 
     private static final String STATION_FEATURE = "st_gml32:StationWithMeasurements_gml32";
 
-    private static final Name STATION_FEATURE_NAME = new NameImpl(MockData.STATIONS_URI_GML32,
-            "StationWithMeasurements_gml32");
+    private static final Name STATION_FEATURE_NAME =
+            new NameImpl(MockData.STATIONS_URI_GML32, "StationWithMeasurements_gml32");
 
-    private static final String STATION_NESTED_GEOM = "st_gml32:measurements/ms_gml32:Measurement_gml32/"
-            + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:geometry";
+    private static final String STATION_NESTED_GEOM =
+            "st_gml32:measurements/ms_gml32:Measurement_gml32/"
+                    + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:geometry";
 
-    private static final String STATION_NONEXISTENT_NESTED_GEOM = "st_gml32:measurements/ms_gml32:Measurement_gml32/"
-            + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:not_there_geometry";
+    private static final String STATION_NONEXISTENT_NESTED_GEOM =
+            "st_gml32:measurements/ms_gml32:Measurement_gml32/"
+                    + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:not_there_geometry";
 
-    private static final String STATION_WRONG_NESTED_GEOM = "st_gml32:measurements/ms_gml32:Measurement_gml32/"
-            + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:code";
+    private static final String STATION_WRONG_NESTED_GEOM =
+            "st_gml32:measurements/ms_gml32:Measurement_gml32/"
+                    + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:code";
 
     AppSchemaDataAccess dataAccess;
 
@@ -92,71 +91,110 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             gml32Parameters.put("GML_PREFIX", GML32_PREFIX);
             gml32Parameters.put("GML_NAMESPACE", "http://www.opengis.net/gml/3.2");
             gml32Parameters.put("GML_LOCATION", "http://schemas.opengis.net/gml/3.2.1/gml.xsd");
-            addStationFeatureType(STATIONS_PREFIX_GML32, GML32_PREFIX, "StationWithMeasurements",
-                    "stations", "defaultGeometryMappings/stationsWithMeasurements.xml",
-                    "measurements", "defaultGeometryMappings/measurements.xml", gml32Parameters);
-            addMeasurementFeatureType(MEASUREMENTS_PREFIX_GML32, GML32_PREFIX, "measurements",
-                    "defaultGeometryMappings/measurements.xml", gml32Parameters);
+            addStationFeatureType(
+                    STATIONS_PREFIX_GML32,
+                    GML32_PREFIX,
+                    "StationWithMeasurements",
+                    "stations",
+                    "defaultGeometryMappings/stationsWithMeasurements.xml",
+                    "measurements",
+                    "defaultGeometryMappings/measurements.xml",
+                    gml32Parameters);
+            addMeasurementFeatureType(
+                    MEASUREMENTS_PREFIX_GML32,
+                    GML32_PREFIX,
+                    "measurements",
+                    "defaultGeometryMappings/measurements.xml",
+                    gml32Parameters);
         }
 
         /**
-         * Helper method that will add the station feature type customizing it for the desired GML version.
+         * Helper method that will add the station feature type customizing it for the desired GML
+         * version.
          */
-        protected void addStationFeatureType(String namespacePrefix, String gmlPrefix,
-                String stationsFeatureType, String stationsMappingsName,
-                String stationsMappingsPath, String measurementsMappingsName,
-                String measurementsMappingsPath, Map<String, String> parameters) {
+        protected void addStationFeatureType(
+                String namespacePrefix,
+                String gmlPrefix,
+                String stationsFeatureType,
+                String stationsMappingsName,
+                String stationsMappingsPath,
+                String measurementsMappingsName,
+                String measurementsMappingsPath,
+                Map<String, String> parameters) {
             // create root directory
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File stationsMappings = new File(gmlDirectory,
-                    String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
-            File stationsProperties = new File(gmlDirectory,
-                    String.format("stations_%s.properties", gmlPrefix));
-            File stationsSchema = new File(gmlDirectory,
-                    String.format("stations_%s.xsd", gmlPrefix));
-            File measurementsSchema = new File(gmlDirectory,
-                    String.format("measurements_%s.xsd", gmlPrefix));
+            File stationsMappings =
+                    new File(
+                            gmlDirectory,
+                            String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
+            File stationsProperties =
+                    new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
+            File stationsSchema =
+                    new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
+            File measurementsSchema =
+                    new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
             // perform the parameterization
-            substituteParameters("/test-data/stations/" + stationsMappingsPath, parameters,
-                    stationsMappings);
-            substituteParameters("/test-data/stations/data/stationsDefaultGeometry.properties",
-                    parameters, stationsProperties);
-            substituteParameters("/test-data/stations/schemas/stationsDefaultGeometry.xsd",
-                    parameters, stationsSchema);
-            substituteParameters("/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
-                    parameters, measurementsSchema);
+            substituteParameters(
+                    "/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
+            substituteParameters(
+                    "/test-data/stations/data/stationsDefaultGeometry.properties",
+                    parameters,
+                    stationsProperties);
+            substituteParameters(
+                    "/test-data/stations/schemas/stationsDefaultGeometry.xsd",
+                    parameters,
+                    stationsSchema);
+            substituteParameters(
+                    "/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
+                    parameters,
+                    measurementsSchema);
             // create station feature type
-            addFeatureType(namespacePrefix, String.format("%s_%s", stationsFeatureType, gmlPrefix),
-                    stationsMappings.getAbsolutePath(), stationsProperties.getAbsolutePath(),
-                    stationsSchema.getAbsolutePath(), measurementsSchema.getAbsolutePath());
+            addFeatureType(
+                    namespacePrefix,
+                    String.format("%s_%s", stationsFeatureType, gmlPrefix),
+                    stationsMappings.getAbsolutePath(),
+                    stationsProperties.getAbsolutePath(),
+                    stationsSchema.getAbsolutePath(),
+                    measurementsSchema.getAbsolutePath());
         }
 
         @Override
-        protected void addMeasurementFeatureType(String namespacePrefix, String gmlPrefix,
-                String mappingsName, String mappingsPath, Map<String, String> parameters) {
+        protected void addMeasurementFeatureType(
+                String namespacePrefix,
+                String gmlPrefix,
+                String mappingsName,
+                String mappingsPath,
+                Map<String, String> parameters) {
             // create root directory
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File measurementsMappings = new File(gmlDirectory,
-                    String.format("%s_%s.xml", mappingsName, gmlPrefix));
-            File measurementsProperties = new File(gmlDirectory,
-                    String.format("measurements_%s.properties", gmlPrefix));
-            File measurementsSchema = new File(gmlDirectory,
-                    String.format("measurements_%s.xsd", gmlPrefix));
+            File measurementsMappings =
+                    new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
+            File measurementsProperties =
+                    new File(gmlDirectory, String.format("measurements_%s.properties", gmlPrefix));
+            File measurementsSchema =
+                    new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
             // perform the parameterization
-            substituteParameters("/test-data/stations/" + mappingsPath, parameters,
-                    measurementsMappings);
-            substituteParameters("/test-data/stations/data/measurementsDefaultGeometry.properties",
-                    parameters, measurementsProperties);
-            substituteParameters("/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
-                    parameters, measurementsSchema);
+            substituteParameters(
+                    "/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
+            substituteParameters(
+                    "/test-data/stations/data/measurementsDefaultGeometry.properties",
+                    parameters,
+                    measurementsProperties);
+            substituteParameters(
+                    "/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
+                    parameters,
+                    measurementsSchema);
             // create measurements feature type
-            addFeatureType(namespacePrefix, String.format("Measurement_%s", gmlPrefix),
+            addFeatureType(
+                    namespacePrefix,
+                    String.format("Measurement_%s", gmlPrefix),
                     measurementsMappings.getAbsolutePath(),
-                    measurementsProperties.getAbsolutePath(), measurementsSchema.getAbsolutePath());
+                    measurementsProperties.getAbsolutePath(),
+                    measurementsSchema.getAbsolutePath());
         }
     }
 
@@ -194,8 +232,9 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon contained = (Polygon) wktReader
-                .read("POLYGON((-1.5 -1.5, -1.5 1.5, 0 1.5, 0 -1.5, -1.5 -1.5))");
+        Polygon contained =
+                (Polygon)
+                        wktReader.read("POLYGON((-1.5 -1.5, -1.5 1.5, 0 1.5, 0 -1.5, -1.5 -1.5))");
         Contains contains = ff.contains(nestedGeom, ff.literal(contained));
 
         checkPostPreFilterSplitting(contains);
@@ -246,8 +285,8 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon intersecting = (Polygon) wktReader
-                .read("POLYGON((-4 3, -2 4.5, -2.5 2, -3.5 2, -4 3))");
+        Polygon intersecting =
+                (Polygon) wktReader.read("POLYGON((-4 3, -2 4.5, -2.5 2, -3.5 2, -4 3))");
         Overlaps overlaps = ff.overlaps(nestedGeom, ff.literal(intersecting));
 
         checkPostPreFilterSplitting(overlaps);
@@ -330,8 +369,8 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
         String units = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon beyondSt2 = (Polygon) wktReader
-                .read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
+        Polygon beyondSt2 =
+                (Polygon) wktReader.read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
         Beyond beyond = ff.beyond(nestedGeom, ff.literal(beyondSt2), 1.0, units);
 
         checkPostPreFilterSplitting(beyond);
@@ -348,8 +387,8 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
         String units = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon dwithinSt2 = (Polygon) wktReader
-                .read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
+        Polygon dwithinSt2 =
+                (Polygon) wktReader.read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
         DWithin dwithin = ff.dwithin(nestedGeom, ff.literal(dwithinSt2), 1.0, units);
 
         checkPostPreFilterSplitting(dwithin);
@@ -376,8 +415,10 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             assertTrue(errorMessage.contains("not_there_geometry"));
             assertTrue(errorMessage.contains("not found in type"));
         } catch (Exception other) {
-            fail("Expected IllegalArgumentException to be thrown, but " + other.getClass().getName()
-                    + " was thrown instead");
+            fail(
+                    "Expected IllegalArgumentException to be thrown, but "
+                            + other.getClass().getName()
+                            + " was thrown instead");
         }
     }
 
@@ -399,20 +440,24 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             assertTrue(errorMessage.contains("should be of type"));
             assertTrue(errorMessage.contains("GeometryDescriptor"));
         } catch (Exception other) {
-            fail("Expected IllegalArgumentException to be thrown, but " + other.getClass().getName()
-                    + " was thrown instead");
+            fail(
+                    "Expected IllegalArgumentException to be thrown, but "
+                            + other.getClass().getName()
+                            + " was thrown instead");
         }
     }
 
     CoordinateReferenceSystem getCoordinateReferenceSystem() throws IOException {
-        return dataAccess.getSchema(STATION_FEATURE_NAME).getGeometryDescriptor()
+        return dataAccess
+                .getSchema(STATION_FEATURE_NAME)
+                .getGeometryDescriptor()
                 .getCoordinateReferenceSystem();
     }
 
     private void checkPostPreFilterSplitting(Filter filter) {
         JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
-        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(),
-                rootMapping);
+        ComplexFilterSplitter splitter =
+                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         filter.accept(splitter, null);
         Filter preFilter = splitter.getFilterPre();
         Filter postFilter = splitter.getFilterPost();

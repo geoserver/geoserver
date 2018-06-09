@@ -6,17 +6,15 @@
 package org.geoserver.ows.xml.v1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.ows10.Ows10Factory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 
-
 /**
  * Binding object for the type http://www.opengis.net/ows:AddressType.
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;complexType name="AddressType"&gt;
  *      &lt;annotation&gt;
@@ -70,14 +68,13 @@ public class AddressTypeBinding extends AbstractComplexBinding {
         this.owsfactory = owsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return OWS.ADDRESSTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -88,14 +85,14 @@ public class AddressTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        //TODO: implement
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        // TODO: implement
         return null;
     }
 }

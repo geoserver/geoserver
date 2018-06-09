@@ -5,6 +5,9 @@
  */
 package org.geoserver.rest.catalog;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -13,10 +16,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport {
 
@@ -27,27 +26,25 @@ public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport 
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        //addUser("admin", "geoxserver", null, Arrays.asList("ROLE_ADMINISTRATOR"));
+        // addUser("admin", "geoxserver", null, Arrays.asList("ROLE_ADMINISTRATOR"));
         addLayerAccessRule("*", "*", AccessMode.READ, "*");
         addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
 
         catalog = getCatalog();
-        
+
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         namespaces.put("sld", "http://www.opengis.net/sld");
         namespaces.put("ogc", "http://www.opengis.net/ogc");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");
-        
+
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
     }
 
-    protected final void setUpUsers(Properties props) {
-    }
+    protected final void setUpUsers(Properties props) {}
 
-    protected final void setUpLayerRoles(Properties properties) {
-    }
+    protected final void setUpLayerRoles(Properties properties) {}
 
     @Before
     public void login() throws Exception {

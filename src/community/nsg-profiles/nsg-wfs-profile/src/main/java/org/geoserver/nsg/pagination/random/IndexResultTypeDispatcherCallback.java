@@ -5,6 +5,7 @@
 
 package org.geoserver.nsg.pagination.random;
 
+import java.util.logging.Logger;
 import net.opengis.wfs20.ResultTypeType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.AbstractDispatcherCallback;
@@ -13,28 +14,21 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geotools.util.logging.Logging;
 
-import java.util.logging.Logger;
-
 /**
- * <p>
  * When a request that contains the "resultType" parameter arrives, if the parameter value is
  * "index" it is substituted by "hits".
- * </p>
- * <p>
- * A new entry named RESULT_TYPE_INDEX specifying that the original result type was "index" is added
- * to KVP maps
- * </p>
- * <p>
- * The object that manage response of type HitsOutputFormat is replaced with IndexOutputFormat
+ *
+ * <p>A new entry named RESULT_TYPE_INDEX specifying that the original result type was "index" is
+ * added to KVP maps
+ *
+ * <p>The object that manage response of type HitsOutputFormat is replaced with IndexOutputFormat
  * before response has been dispatched
- * </p>
  *
  * @author sandr
  */
-
 public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallback {
 
-    private final static Logger LOGGER = Logging.getLogger(IndexResultTypeDispatcherCallback.class);
+    private static final Logger LOGGER = Logging.getLogger(IndexResultTypeDispatcherCallback.class);
 
     private GeoServer gs;
 
@@ -46,7 +40,8 @@ public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallbac
 
     static final String RESULT_TYPE_INDEX_PARAMETER = "RESULT_TYPE_INDEX";
 
-    public IndexResultTypeDispatcherCallback(GeoServer gs, IndexConfigurationManager indexConfiguration) {
+    public IndexResultTypeDispatcherCallback(
+            GeoServer gs, IndexConfigurationManager indexConfiguration) {
         this.gs = gs;
         this.indexConfiguration = indexConfiguration;
     }
@@ -63,8 +58,8 @@ public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallbac
     }
 
     @Override
-    public Response responseDispatched(Request request, Operation operation, Object result,
-                                       Response response) {
+    public Response responseDispatched(
+            Request request, Operation operation, Object result, Response response) {
         Response newResponse = response;
         if (request.getKvp().get(RESULT_TYPE_INDEX_PARAMETER) != null
                 && (Boolean) request.getKvp().get(RESULT_TYPE_INDEX_PARAMETER)) {
@@ -74,5 +69,4 @@ public class IndexResultTypeDispatcherCallback extends AbstractDispatcherCallbac
         }
         return super.responseDispatched(request, operation, result, newResponse);
     }
-
 }

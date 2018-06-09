@@ -4,6 +4,26 @@
  */
 package org.geoserver.wfs3;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.RequestWrapper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.filters.GeoServerFilter;
@@ -14,35 +34,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.RequestWrapper;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * Simple hack to bridge part of the path based approach in WFS 3 to traditional OWS mappings.
- * If this is somehow generalized and brought into the main dispatcher, check OSEOFilter as well (in the OpenSearch
- * module)
+ * Simple hack to bridge part of the path based approach in WFS 3 to traditional OWS mappings. If
+ * this is somehow generalized and brought into the main dispatcher, check OSEOFilter as well (in
+ * the OpenSearch module)
  */
 public class WFS3Filter implements GeoServerFilter {
-    
+
     static final Logger LOGGER = Logging.getLogger(WFS3Filter.class);
 
     private final Catalog catalog;
@@ -64,14 +62,14 @@ public class WFS3Filter implements GeoServerFilter {
             if (requestNeedsWrapper(requestHTTP)) {
                 try {
                     request = new RequestWrapper(requestHTTP);
-                } catch(HttpErrorCodeException exception) {
-                    ((HttpServletResponse) response).sendError(exception.getErrorCode(), exception.getMessage());
+                } catch (HttpErrorCodeException exception) {
+                    ((HttpServletResponse) response)
+                            .sendError(exception.getErrorCode(), exception.getMessage());
                     return;
                 }
             }
         }
         chain.doFilter(request, response);
-
     }
 
     private boolean requestNeedsWrapper(HttpServletRequest requestHTTP) {
@@ -102,49 +100,57 @@ public class WFS3Filter implements GeoServerFilter {
                 request = "conformance";
             } else if (pathInfo.startsWith("/collections")) {
                 List<Function<String, Boolean>> matchers = new ArrayList<>();
-                matchers.add(path -> {
-                    Matcher matcher = Pattern.compile("/collections/([^/]+)/items/(.+)").matcher(path);
-                    boolean matches = matcher.matches();
-                    if (matches) {
-                        request = "getFeature";
-                        String layerName = matcher.group(1);
-                        setLayerName(layerName);
-                        this.featureId = matcher.group(2);
-                    }
-                    return matches;
-                });
-                matchers.add(path -> {
-                    Matcher matcher = Pattern.compile("/collections/([^/]+)/items/?").matcher(path);
-                    boolean matches = matcher.matches();
-                    if (matches) {
-                        request = "getFeature";
-                        String layerName = matcher.group(1);
-                        setLayerName(layerName);
-                    }
-                    return matches;
-                });
-                matchers.add(path -> {
-                    Matcher matcher = Pattern.compile("/collections/([^/]+)/?").matcher(path);
-                    boolean matches = matcher.matches();
-                    if (matches) {
-                        request = "collections";
-                        String layerName = matcher.group(1);
-                        setLayerName(layerName);
-                    }
-                    return matches;
-                });
-                matchers.add(path -> {
-                    Matcher matcher = Pattern.compile("/collections/?").matcher(path);
-                    boolean matches = matcher.matches();
-                    if (matches) {
-                        request = "collections";
-                    }
-                    return matches;
-                });
-                
+                matchers.add(
+                        path -> {
+                            Matcher matcher =
+                                    Pattern.compile("/collections/([^/]+)/items/(.+)")
+                                            .matcher(path);
+                            boolean matches = matcher.matches();
+                            if (matches) {
+                                request = "getFeature";
+                                String layerName = matcher.group(1);
+                                setLayerName(layerName);
+                                this.featureId = matcher.group(2);
+                            }
+                            return matches;
+                        });
+                matchers.add(
+                        path -> {
+                            Matcher matcher =
+                                    Pattern.compile("/collections/([^/]+)/items/?").matcher(path);
+                            boolean matches = matcher.matches();
+                            if (matches) {
+                                request = "getFeature";
+                                String layerName = matcher.group(1);
+                                setLayerName(layerName);
+                            }
+                            return matches;
+                        });
+                matchers.add(
+                        path -> {
+                            Matcher matcher =
+                                    Pattern.compile("/collections/([^/]+)/?").matcher(path);
+                            boolean matches = matcher.matches();
+                            if (matches) {
+                                request = "collections";
+                                String layerName = matcher.group(1);
+                                setLayerName(layerName);
+                            }
+                            return matches;
+                        });
+                matchers.add(
+                        path -> {
+                            Matcher matcher = Pattern.compile("/collections/?").matcher(path);
+                            boolean matches = matcher.matches();
+                            if (matches) {
+                                request = "collections";
+                            }
+                            return matches;
+                        });
+
                 // loop over the matchers
                 boolean matched = false;
-                for (Function<String,Boolean> matcher : matchers) {
+                for (Function<String, Boolean> matcher : matchers) {
                     if (matcher.apply(pathInfo)) {
                         matched = true;
                         break;
@@ -152,26 +158,31 @@ public class WFS3Filter implements GeoServerFilter {
                 }
                 // if none matches, complain
                 if (!matched) {
-                    throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);   
+                    throw new HttpErrorCodeException(
+                            HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);
                 }
             } else {
-                throw new HttpErrorCodeException(HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);
+                throw new HttpErrorCodeException(
+                        HttpStatus.NOT_FOUND.value(), "Unsupported path " + pathInfo);
             }
-            
+
             // everything defaults to JSON in WFS3
             String f = wrapped.getParameter("f");
             if (f != null) {
                 if ("json".equalsIgnoreCase(f)) {
-                    this.outputFormat = "getFeature".equals(request) ? RFCGeoJSONFeaturesResponse.MIME : BaseRequest.JSON_MIME;
-                } else if("yaml".equalsIgnoreCase(f)) {
+                    this.outputFormat =
+                            "getFeature".equals(request)
+                                    ? RFCGeoJSONFeaturesResponse.MIME
+                                    : BaseRequest.JSON_MIME;
+                } else if ("yaml".equalsIgnoreCase(f)) {
                     this.outputFormat = BaseRequest.YAML_MIME;
-                } else if("html".equalsIgnoreCase(f)) {
+                } else if ("html".equalsIgnoreCase(f)) {
                     this.outputFormat = BaseRequest.HTML_MIME;
                 } else {
                     this.outputFormat = f;
                 }
-            } 
-            
+            }
+
             // support for the limit parameter
             String limit = wrapped.getParameter("limit");
             if (limit != null) {
@@ -214,7 +225,8 @@ public class WFS3Filter implements GeoServerFilter {
                     BBoxKvpParser parser = new BBoxKvpParser();
                     ReferencedEnvelope envelope = (ReferencedEnvelope) parser.parse(bbox);
                     // if 2D and lacking a CRS, force WGS84
-                    if (envelope.getCoordinateReferenceSystem() == null && envelope.getDimension() == 2) {
+                    if (envelope.getCoordinateReferenceSystem() == null
+                            && envelope.getDimension() == 2) {
                         filtered.put("bbox", bbox + ",EPSG:4326");
                     }
                 } catch (Exception expected) {
@@ -252,5 +264,4 @@ public class WFS3Filter implements GeoServerFilter {
             }
         }
     }
-
 }

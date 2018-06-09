@@ -14,14 +14,13 @@ public class Link {
     public static final String REL_ABOUT = "about";
     public static final String REL_DESCRIBEDBY = "describedBy";
     static final String ATOM_NS = "http://www.w3.org/2005/Atom";
-    
+
     String href;
     String rel;
     String type;
     String title;
 
-    public Link() {
-    }
+    public Link() {}
 
     public Link(String href, String rel, String type, String title) {
         this.href = href;

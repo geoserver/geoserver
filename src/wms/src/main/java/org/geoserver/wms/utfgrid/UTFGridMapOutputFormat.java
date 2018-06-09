@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.CachedGridReaderLayer;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -38,41 +37,40 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Handles a GetMap request that spects a map in UTFGrid format.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
-    
+
     static final Logger LOGGER = Logging.getLogger(UTFGridMapOutputFormat.class);
 
     /** the only MIME type this map producer supports */
     static final String MIME_TYPE = "application/json;type=utfgrid";
 
     static final String OUTPUT_FORMAT_NAME = "utfgrid";
-    
-    /**
-     * Default scale-down factor for the output grid size
-     */
-    static final int DEFAULT_UTFRESOLUTION = 4; 
+
+    /** Default scale-down factor for the output grid size */
+    static final int DEFAULT_UTFRESOLUTION = 4;
 
     /**
      * Default capabilities for UTFGrid format.
-     * 
+     *
      * <p>
+     *
      * <ol>
-     * <li>tiled = unsupported</li>
-     * <li>multipleValues = unsupported</li>
-     * <li>paletteSupported = unsupported</li>
-     * <li>transparency = supported</li>
+     *   <li>tiled = unsupported
+     *   <li>multipleValues = unsupported
+     *   <li>paletteSupported = unsupported
+     *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false,
-            false, true, null);
+    private static MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(false, false, false, true, null);
 
     private WMS wms;
 
     public UTFGridMapOutputFormat(WMS wms) {
-        super(MIME_TYPE, new String[] { OUTPUT_FORMAT_NAME });
+        super(MIME_TYPE, new String[] {OUTPUT_FORMAT_NAME});
         this.wms = wms;
     }
 
@@ -82,33 +80,35 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
 
     @Override
     public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
-        RenderedImageMapOutputFormat of = new RenderedImageMapOutputFormat(wms) {
-            @Override
-            protected StreamingRenderer buildRenderer() {
-                // use a renderer that won't render raster or labels, not even by accident 
-                return new PureVectorRenderer();
-            }
+        RenderedImageMapOutputFormat of =
+                new RenderedImageMapOutputFormat(wms) {
+                    @Override
+                    protected StreamingRenderer buildRenderer() {
+                        // use a renderer that won't render raster or labels, not even by accident
+                        return new PureVectorRenderer();
+                    }
 
-            @Override
-            protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
-                    boolean transparent) {
-                // each color is a feature index
-                return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            }
+                    @Override
+                    protected RenderedImage prepareImage(
+                            int width, int height, IndexColorModel palette, boolean transparent) {
+                        // each color is a feature index
+                        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                    }
 
-            @Override
-            protected void onBeforeRender(StreamingRenderer renderer) {
-                // disable antialiasing, numbers signify ids, we cannot have "half tints"
-                renderer.getJava2DHints().put(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_OFF);
-                
-                Map hints = renderer.getRendererHints();
-                double dpi = RendererUtilities.getDpi(hints);
-                dpi = dpi / DEFAULT_UTFRESOLUTION;
-                hints.put(StreamingRenderer.DPI_KEY, dpi);
-            }
+                    @Override
+                    protected void onBeforeRender(StreamingRenderer renderer) {
+                        // disable antialiasing, numbers signify ids, we cannot have "half tints"
+                        renderer.getJava2DHints()
+                                .put(
+                                        RenderingHints.KEY_ANTIALIASING,
+                                        RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        };
+                        Map hints = renderer.getRendererHints();
+                        double dpi = RendererUtilities.getDpi(hints);
+                        dpi = dpi / DEFAULT_UTFRESOLUTION;
+                        hints.put(StreamingRenderer.DPI_KEY, dpi);
+                    }
+                };
 
         UTFGridEntries entries = new UTFGridEntries();
         UTFGridMapContent utfGridMapContent = buildUTFGridMapContent(mapContent, entries);
@@ -116,8 +116,8 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
         return new UTFGridMap(utfGridMapContent, map.getImage());
     }
 
-    private UTFGridMapContent buildUTFGridMapContent(WMSMapContent original,
-            UTFGridEntries entries) {
+    private UTFGridMapContent buildUTFGridMapContent(
+            WMSMapContent original, UTFGridEntries entries) {
         UTFGridColorFunction colorFunction = new UTFGridColorFunction(entries);
 
         UTFGridMapContent result = new UTFGridMapContent(original, entries, DEFAULT_UTFRESOLUTION);
@@ -136,8 +136,9 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
             Style copy = (Style) styleVisitor.getCopy();
 
             // if the copy is empty or we don't have vector transformations, skip it
-            if (copy.featureTypeStyles().isEmpty() || (styleVisitor.hasTransformations()
-                    && !styleVisitor.hasVectorTransformations())) {
+            if (copy.featureTypeStyles().isEmpty()
+                    || (styleVisitor.hasTransformations()
+                            && !styleVisitor.hasVectorTransformations())) {
                 continue;
             }
 
@@ -148,26 +149,29 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
 
             if (layer instanceof FeatureLayer) {
                 // copy making sure we retain all attributes
-                FeatureLayer fl = new FeatureLayer(
-                        new UTFGridFeatureSource(layer.getFeatureSource(), null), copy);
+                FeatureLayer fl =
+                        new FeatureLayer(
+                                new UTFGridFeatureSource(layer.getFeatureSource(), null), copy);
                 fl.setQuery(layer.getQuery());
                 sl = fl;
-            } else if(layer instanceof GridCoverageLayer) {
+            } else if (layer instanceof GridCoverageLayer) {
                 GridCoverageLayer gc = (GridCoverageLayer) sl;
                 sl = new GridCoverageLayer(gc.getCoverage(), copy);
-            } else if(layer instanceof WMSLayer) {
+            } else if (layer instanceof WMSLayer) {
                 // these are pure raster, we cannot do a UTFGrid out of them... although
                 // we could try a cascading if the remote server also supports UTFGrid,
                 // in the future
                 continue;
-            } else if(layer instanceof CachedGridReaderLayer) {
+            } else if (layer instanceof CachedGridReaderLayer) {
                 CachedGridReaderLayer gr = (CachedGridReaderLayer) sl;
                 sl = new CachedGridReaderLayer(gr.getReader(), copy);
-            } else if(layer instanceof GridReaderLayer) {
+            } else if (layer instanceof GridReaderLayer) {
                 GridReaderLayer gr = (GridReaderLayer) sl;
                 sl = new GridReaderLayer(gr.getReader(), copy);
             } else {
-                LOGGER.log(Level.WARNING, "Skipping unknown layer " + sl + " of type " + sl.getClass());
+                LOGGER.log(
+                        Level.WARNING,
+                        "Skipping unknown layer " + sl + " of type " + sl.getClass());
                 continue;
             }
             utfLayers.add(sl);
@@ -176,5 +180,4 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
 
         return result;
     }
-
 }

@@ -6,35 +6,35 @@
 package org.geoserver.web.data.importer;
 
 import java.io.Serializable;
-
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
 
 /**
  * The bean to be rendered in the wms mass publisher page
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class LayerResource implements Comparable<LayerResource>, Serializable {
-    
+
     private static final long serialVersionUID = 7584589248746230483L;
 
-    enum LayerStatus {ERROR, NEWLY_PUBLISHED, UPDATED, NEW, PUBLISHED}; 
+    enum LayerStatus {
+        ERROR,
+        NEWLY_PUBLISHED,
+        UPDATED,
+        NEW,
+        PUBLISHED
+    };
 
-    /**
-     * The resource name
-     */
+    /** The resource name */
     String name;
+
     String uri;
 
-    /**
-     * Status of the resource in the workflow 
-     */
+    /** Status of the resource in the workflow */
     LayerStatus status = LayerStatus.NEW;
-    
-    /**
-     * The eventual import error
-     */
+
+    /** The eventual import error */
     String error;
 
     public String getError() {
@@ -50,7 +50,7 @@ public class LayerResource implements Comparable<LayerResource>, Serializable {
         this.name = name.getLocalPart();
         this.uri = name.getURI();
     }
-    
+
     public String getLocalName() {
         return name;
     }
@@ -59,7 +59,6 @@ public class LayerResource implements Comparable<LayerResource>, Serializable {
         return new NameImpl(uri, name);
     }
 
-    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -73,33 +72,22 @@ public class LayerResource implements Comparable<LayerResource>, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         LayerResource other = (LayerResource) obj;
         if (error == null) {
-            if (other.error != null)
-                return false;
-        } else if (!error.equals(other.error))
-            return false;
+            if (other.error != null) return false;
+        } else if (!error.equals(other.error)) return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
         if (status == null) {
-            if (other.status != null)
-                return false;
-        } else if (!status.equals(other.status))
-            return false;
+            if (other.status != null) return false;
+        } else if (!status.equals(other.status)) return false;
         if (uri == null) {
-            if (other.uri != null)
-                return false;
-        } else if (!uri.equals(other.uri))
-            return false;
+            if (other.uri != null) return false;
+        } else if (!uri.equals(other.uri)) return false;
         return true;
     }
 
@@ -125,5 +113,4 @@ public class LayerResource implements Comparable<LayerResource>, Serializable {
     public String toString() {
         return name + "(" + status + ")";
     }
-
 }

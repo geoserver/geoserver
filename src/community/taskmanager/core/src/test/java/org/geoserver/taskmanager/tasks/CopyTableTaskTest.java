@@ -13,7 +13,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
@@ -34,18 +33,17 @@ import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.quartz.Trigger.TriggerState;
+import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
  * @author Niels Charlier
  * @author Timothy De Bock
  */
 public class CopyTableTaskTest extends AbstractTaskManagerTest {
 
-    //configure these constants
+    // configure these constants
     private static final String SOURCEDB_NAME = "testsourcedb";
     private static final String TARGETDB_NAME = "testtargetdb";
     private static final String SOURCEDB_PG_NAME = "myjndidb";
@@ -55,7 +53,8 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
 
     private static final String VIEW_NAME = "gw_beleid.vw_grondwaterlichamen";
 
-    private static final String VIEW_W_GENERATED_ID = "gw_beleid.vw_grondwaterlichamen_generated_id";
+    private static final String VIEW_W_GENERATED_ID =
+            "gw_beleid.vw_grondwaterlichamen_generated_id";
 
     private static final String VIEW_CAMEL_CASE = "gw_beleid.vw_GrondwaterlichamenCamelCase";
     private static final String TARGET_TABLE_CAMELCASE_NAME = "temp.Grondwaterlichamen_Copy";
@@ -64,32 +63,25 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
 
     private static final String TARGET_TABLE_NAME_NEW_SCHEMA = "foobar.grondwaterlichamen_copy";
 
-    //attributes
+    // attributes
     private static final String ATT_TABLE_NAME = "table_name";
     private static final String ATT_TARGET_DB = "target_db";
     private static final String ATT_SOURCE_DB = "source_db";
     private static final String ATT_TARGET_TABLE_NAME = "target_table_name";
 
-    @Autowired
-    private TaskManagerDao dao;
+    @Autowired private TaskManagerDao dao;
 
-    @Autowired
-    private TaskManagerFactory fac;
+    @Autowired private TaskManagerFactory fac;
 
-    @Autowired
-    private TaskManagerDataUtil dataUtil;
+    @Autowired private TaskManagerDataUtil dataUtil;
 
-    @Autowired
-    private TaskManagerTaskUtil taskUtil;
+    @Autowired private TaskManagerTaskUtil taskUtil;
 
-    @Autowired
-    private BatchJobService bjService;
+    @Autowired private BatchJobService bjService;
 
-    @Autowired
-    private LookupService<DbSource> dbSources;
+    @Autowired private LookupService<DbSource> dbSources;
 
-    @Autowired
-    private Scheduler scheduler;
+    @Autowired private Scheduler scheduler;
 
     private Configuration config;
 
@@ -104,11 +96,15 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(CopyTableTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_SOURCE_DB_NAME, ATT_SOURCE_DB);
-        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_TARGET_DB_NAME, ATT_TARGET_DB);
-        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CopyTableTaskTypeImpl.PARAM_SOURCE_DB_NAME, ATT_SOURCE_DB);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CopyTableTaskTypeImpl.PARAM_TARGET_DB_NAME, ATT_TARGET_DB);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CopyTableTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
 
-        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_TARGET_TABLE_NAME, ATT_TARGET_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CopyTableTaskTypeImpl.PARAM_TARGET_TABLE_NAME, ATT_TARGET_TABLE_NAME);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -136,10 +132,8 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME);
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -147,42 +141,46 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         String[] splitTargetTableName = TARGET_TABLE_NAME.split("\\.", 2);
         if (splitTargetTableName.length == 2) {
             assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], "_temp%"));
-            assertTrue(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+            assertTrue(
+                    tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
         } else {
             assertFalse(tableExists(TARGETDB_NAME, null, "_temp%"));
             assertTrue(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME));
         }
-        assertEquals(getNumberOfRecords(SOURCEDB_NAME, TABLE_NAME),
+        assertEquals(
+                getNumberOfRecords(SOURCEDB_NAME, TABLE_NAME),
                 getNumberOfRecords(TARGETDB_NAME, TARGET_TABLE_NAME));
-        assertEquals(getNumberOfColumns(SOURCEDB_NAME, TABLE_NAME),
+        assertEquals(
+                getNumberOfColumns(SOURCEDB_NAME, TABLE_NAME),
                 getNumberOfColumns(TARGETDB_NAME, TARGET_TABLE_NAME));
 
         String[] splitTableName = TABLE_NAME.split("\\.", 2);
 
         int numberOfindexesSource = getNumberOfIndexes(SOURCEDB_NAME, splitTableName[1]);
-        int numberOfindexesTarget = getNumberOfIndexes(TARGETDB_NAME,  splitTargetTableName[1]);
-        assertEquals(numberOfindexesSource , numberOfindexesTarget);
+        int numberOfindexesTarget = getNumberOfIndexes(TARGETDB_NAME, splitTargetTableName[1]);
+        assertEquals(numberOfindexesSource, numberOfindexesTarget);
 
         assertTrue(taskUtil.cleanup(config));
 
         if (splitTargetTableName.length == 2) {
-            assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+            assertFalse(
+                    tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
         } else {
             assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME));
         }
     }
-
 
     @Test
     public void testCopyFromViewSuccess() throws SchedulerException, SQLException {
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, VIEW_NAME);
-        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_FROM_VIEW_NAME);
+        dataUtil.setConfigurationAttribute(
+                config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_FROM_VIEW_NAME);
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
@@ -201,11 +199,11 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         int numberOfRecordsTarget = getNumberOfRecords(TARGETDB_NAME, TARGET_TABLE_FROM_VIEW_NAME);
         assertEquals(numberOfRecordsSource, numberOfRecordsTarget);
         // a primary key column was added
-        assertEquals(getNumberOfColumns(SOURCEDB_NAME, VIEW_NAME) + 1,
+        assertEquals(
+                getNumberOfColumns(SOURCEDB_NAME, VIEW_NAME) + 1,
                 getNumberOfColumns(TARGETDB_NAME, TARGET_TABLE_FROM_VIEW_NAME));
 
-
-        int numberOfindexesTarget = getNumberOfIndexes(TARGETDB_NAME,  split[1]);
+        int numberOfindexesTarget = getNumberOfIndexes(TARGETDB_NAME, split[1]);
 
         int numberOfColumnsTarget = getNumberOfColumns(TARGETDB_NAME, TARGET_TABLE_FROM_VIEW_NAME);
         // We did not add Geometry support on the H2 DB. So only check the index on the shape
@@ -213,7 +211,7 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             assertEquals(2, numberOfindexesTarget);
             assertEquals("shape", getColumnName(TARGETDB_NAME, TARGET_TABLE_FROM_VIEW_NAME, 3));
         } else {
-            assertEquals(1,numberOfindexesTarget);
+            assertEquals(1, numberOfindexesTarget);
         }
 
         assertTrue(taskUtil.cleanup(config));
@@ -224,7 +222,6 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME));
         }
     }
-
 
     /**
      * Use the existing generated_id column if it exists.
@@ -237,11 +234,12 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, VIEW_W_GENERATED_ID);
-        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_FROM_VIEW_NAME);
+        dataUtil.setConfigurationAttribute(
+                config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_FROM_VIEW_NAME);
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
@@ -256,10 +254,12 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             assertFalse(tableExists(TARGETDB_NAME, null, "_temp%"));
             assertTrue(tableExists(TARGETDB_NAME, null, TARGET_TABLE_FROM_VIEW_NAME));
         }
-        assertEquals(getNumberOfRecords(SOURCEDB_NAME, VIEW_NAME),
+        assertEquals(
+                getNumberOfRecords(SOURCEDB_NAME, VIEW_NAME),
                 getNumberOfRecords(TARGETDB_NAME, TARGET_TABLE_FROM_VIEW_NAME));
         // a primary key column was not added
-        assertEquals(getNumberOfColumns(SOURCEDB_NAME, VIEW_NAME),
+        assertEquals(
+                getNumberOfColumns(SOURCEDB_NAME, VIEW_NAME),
                 getNumberOfColumns(TARGETDB_NAME, TARGET_TABLE_FROM_VIEW_NAME));
 
         assertTrue(taskUtil.cleanup(config));
@@ -271,15 +271,18 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         }
     }
 
-    /**
-     * keep the case of columns.
-     */
+    /** keep the case of columns. */
     @Test
     public void testCopyKeepCase() throws SchedulerException, SQLException {
         DbSource source = dbSources.get(SOURCEDB_PG_NAME);
         try (Connection conn = source.getDataSource().getConnection()) {
-            try (ResultSet res = conn.getMetaData().getTables(null, SqlUtil.schema(VIEW_CAMEL_CASE), 
-                    SqlUtil.notQualified(VIEW_CAMEL_CASE), null)) {
+            try (ResultSet res =
+                    conn.getMetaData()
+                            .getTables(
+                                    null,
+                                    SqlUtil.schema(VIEW_CAMEL_CASE),
+                                    SqlUtil.notQualified(VIEW_CAMEL_CASE),
+                                    null)) {
                 Assume.assumeTrue(res.next());
             }
         } catch (SQLException e) {
@@ -290,15 +293,16 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         } catch (SQLException e) {
             Assume.assumeTrue(false);
         }
-        
+
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_PG_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_PG_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, VIEW_CAMEL_CASE);
-        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_CAMELCASE_NAME);
+        dataUtil.setConfigurationAttribute(
+                config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_CAMELCASE_NAME);
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
@@ -313,10 +317,12 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             assertFalse(tableExists(TARGETDB_PG_NAME, null, "_temp%"));
             assertTrue(tableExists(TARGETDB_PG_NAME, null, TARGET_TABLE_CAMELCASE_NAME));
         }
-        //column names are the same
-        assertEquals(getColumnName(SOURCEDB_PG_NAME, VIEW_CAMEL_CASE, 1),
+        // column names are the same
+        assertEquals(
+                getColumnName(SOURCEDB_PG_NAME, VIEW_CAMEL_CASE, 1),
                 getColumnName(TARGETDB_PG_NAME, TARGET_TABLE_CAMELCASE_NAME, 1));
-        assertEquals(getColumnName(SOURCEDB_PG_NAME, VIEW_CAMEL_CASE, 2),
+        assertEquals(
+                getColumnName(SOURCEDB_PG_NAME, VIEW_CAMEL_CASE, 2),
                 getColumnName(TARGETDB_PG_NAME, TARGET_TABLE_CAMELCASE_NAME, 2));
 
         assertTrue(taskUtil.cleanup(config));
@@ -327,7 +333,6 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             assertFalse(tableExists(TARGETDB_PG_NAME, null, TARGET_TABLE_NAME));
         }
     }
-
 
     @Test
     public void testRollback() throws SchedulerException, SQLException {
@@ -346,22 +351,23 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertFalse(tableExists(TARGETDB_NAME, SqlUtil.schema(TARGET_TABLE_NAME), "_temp%"));
-        assertFalse(tableExists(TARGETDB_NAME, SqlUtil.schema(TARGET_TABLE_NAME),
-                SqlUtil.notQualified(TARGET_TABLE_NAME)));
+        assertFalse(
+                tableExists(
+                        TARGETDB_NAME,
+                        SqlUtil.schema(TARGET_TABLE_NAME),
+                        SqlUtil.notQualified(TARGET_TABLE_NAME)));
     }
-
 
     /**
      * the copy task should create the schema if it doesn't exist.
+     *
      * @throws SchedulerException
      * @throws SQLException
      */
@@ -370,22 +376,21 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
-        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME_NEW_SCHEMA);
+        dataUtil.setConfigurationAttribute(
+                config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME_NEW_SCHEMA);
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
-        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
-        }
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         String[] splitTargetTableName = TARGET_TABLE_NAME_NEW_SCHEMA.split("\\.", 2);
         if (splitTargetTableName.length == 2) {
             assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], "_temp%"));
-            assertTrue(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+            assertTrue(
+                    tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
         } else {
             assertFalse(tableExists(TARGETDB_NAME, null, "_temp%"));
             assertTrue(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME_NEW_SCHEMA));
@@ -394,7 +399,8 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         assertTrue(taskUtil.cleanup(config));
 
         if (splitTargetTableName.length == 2) {
-            assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+            assertFalse(
+                    tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
         } else {
             assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME_NEW_SCHEMA));
         }
@@ -423,21 +429,20 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         }
     }
 
-
     private String getColumnName(String db, String tableName, int columnIndex) throws SQLException {
         DbSource ds = dbSources.get(db);
         try (Connection conn = ds.getDataSource().getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                try (ResultSet rs = stmt.executeQuery("SELECT * FROM " + ds.getDialect().quote(tableName))) {
+                try (ResultSet rs =
+                        stmt.executeQuery("SELECT * FROM " + ds.getDialect().quote(tableName))) {
                     return rs.getMetaData().getColumnName(columnIndex);
                 }
             }
         }
     }
 
-
     private int getNumberOfIndexes(String db, String tableName) throws SQLException {
-        int indexCount=0;
+        int indexCount = 0;
         DbSource ds = dbSources.get(db);
         try (Connection conn = ds.getDataSource().getConnection()) {
             DatabaseMetaData metaData = conn.getMetaData();
@@ -447,10 +452,10 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             } else {
                 rs = metaData.getIndexInfo(null, null, tableName, false, false);
             }
-            while(rs.next()) {
+            while (rs.next()) {
                 indexCount++;
             }
-         }
+        }
         return indexCount;
     }
 
@@ -460,12 +465,16 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             DatabaseMetaData md = conn.getMetaData();
             ResultSet rs;
             if (md.storesUpperCaseIdentifiers()) {
-                rs = md.getTables(null, schema.toUpperCase(), pattern.toUpperCase(), new String[]{"TABLE"});
+                rs =
+                        md.getTables(
+                                null,
+                                schema.toUpperCase(),
+                                pattern.toUpperCase(),
+                                new String[] {"TABLE"});
             } else {
-                rs = md.getTables(null, schema, pattern, new String[]{"TABLE"});
+                rs = md.getTables(null, schema, pattern, new String[] {"TABLE"});
             }
             return (rs.next());
         }
     }
-
 }

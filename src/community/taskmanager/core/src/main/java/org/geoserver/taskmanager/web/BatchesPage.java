@@ -9,7 +9,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 
 public class BatchesPage extends GeoServerSecuredPage {
-    
+
     private static final long serialVersionUID = 2273966783474224452L;
 
     @Override
@@ -21,5 +21,4 @@ public class BatchesPage extends GeoServerSecuredPage {
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.AUTHENTICATED;
     }
-
 }

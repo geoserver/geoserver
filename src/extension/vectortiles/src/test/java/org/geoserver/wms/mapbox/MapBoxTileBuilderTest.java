@@ -8,19 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import java.awt.Rectangle;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Map;
-
-import no.ecc.vectortile.VectorTileDecoder;
-import no.ecc.vectortile.VectorTileDecoder.Feature;
-
-import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.map.RawMap;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.junit.Test;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -30,6 +17,16 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import java.awt.Rectangle;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Map;
+import no.ecc.vectortile.VectorTileDecoder;
+import no.ecc.vectortile.VectorTileDecoder.Feature;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.map.RawMap;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.junit.Test;
 
 public class MapBoxTileBuilderTest {
 
@@ -69,10 +66,10 @@ public class MapBoxTileBuilderTest {
         MapBoxTileBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);
 
         Geometry point = geom("POINT(1 10)");
-        Map<String, Object> pointProps = ImmutableMap.<String, Object> of("name", "point1");
+        Map<String, Object> pointProps = ImmutableMap.<String, Object>of("name", "point1");
 
         Geometry line = geom("LINESTRING(0 0, 1 1, 2 2)");
-        Map<String, Object> lineProps = ImmutableMap.<String, Object> of("name", "line1");
+        Map<String, Object> lineProps = ImmutableMap.<String, Object>of("name", "line1");
 
         tileBuilder.addFeature("Points", "unused", "unused", point, pointProps);
         tileBuilder.addFeature("Lines", "unused", "unused", line, lineProps);
@@ -97,9 +94,9 @@ public class MapBoxTileBuilderTest {
         assertEquals(line, lineFeature.getGeometry());
         assertEquals(lineProps, lineFeature.getAttributes());
     }
-    
+
     /*
-     * we ensure that the encoder is NOT clipping geometries by giving it 
+     * we ensure that the encoder is NOT clipping geometries by giving it
      * a "too big" line and ensuring it isn't changed by the encoder.
      */
     @Test
@@ -110,11 +107,13 @@ public class MapBoxTileBuilderTest {
         Rectangle screenSize = new Rectangle(256, 256);
         ReferencedEnvelope mapArea = new ReferencedEnvelope();
 
-        MapBoxTileBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);        
+        MapBoxTileBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);
 
-        Geometry line = geom("LINESTRING(-100 -100,300 300)"); //box is 0 to 256, so this is outside the box
-        
-        Map<String, Object> lineProps = ImmutableMap.<String, Object> of("name", "line1");
+        Geometry line =
+                geom("LINESTRING(-100 -100,300 300)"); // box is 0 to 256, so this is outside the
+        // box
+
+        Map<String, Object> lineProps = ImmutableMap.<String, Object>of("name", "line1");
 
         tileBuilder.addFeature("Lines", "unused", "unused", line, lineProps);
 
@@ -125,12 +124,11 @@ public class MapBoxTileBuilderTest {
         ListMultimap<String, Feature> features = decode(map);
 
         assertEquals(1, features.size());
-        assertEquals(ImmutableSet.of( "Lines"), features.keySet());
+        assertEquals(ImmutableSet.of("Lines"), features.keySet());
 
         Feature lineFeature = features.get("Lines").get(0);
 
         assertTrue(lineFeature.getGeometry() instanceof LineString);
         assertEquals(line, lineFeature.getGeometry()); // line should not be clipped
     }
-    
 }

@@ -10,39 +10,41 @@ import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-
 import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
 public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     // @Override
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
-	
+
     @Test
     public void testKvpBasic() throws Exception {
-        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
-                + getLayerId(TASMANIA_BM)
-                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326" + "&format=geotiff";
+        String request =
+                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                        + "&identifier="
+                        + getLayerId(TASMANIA_BM)
+                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
+                        + "&format=geotiff";
         MockHttpServletResponse response = getAsServletResponse(request);
         // System.out.println(response.getOutputStreamContent());
         // make sure we got a multipart
         String contentType = response.getContentType();
         assertTrue(contentType.matches("multipart/related;\\s*boundary=\".*\""));
-        // Tomcat 7 does not like to have newlines in the http headers, and it's right, they are not allowed
+        // Tomcat 7 does not like to have newlines in the http headers, and it's right, they are not
+        // allowed
         assertFalse(contentType.contains("\n"));
         assertFalse(contentType.contains("\r"));
 
@@ -58,36 +60,41 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // read the xml document into a dom
         Document dom = dom(coveragesPart.getDataHandler().getInputStream());
         checkValidationErrors(dom, WCS11_SCHEMA);
-        assertXpathEvaluatesTo(TASMANIA_BM.getLocalPart(), "wcs:Coverages/wcs:Coverage/ows:Title",
-                dom);
+        assertXpathEvaluatesTo(
+                TASMANIA_BM.getLocalPart(), "wcs:Coverages/wcs:Coverage/ows:Title", dom);
 
         // the second part is the actual coverage
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
+        assertEquals(
+                GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
                 coveragePart.getContentType());
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
     }
 
     /**
-     * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a garbled mime multipart instead of a service exception. This makes
-     * sure an exception is returned instead.
-     * 
+     * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a garbled mime
+     * multipart instead of a service exception. This makes sure an exception is returned instead.
      */
     @Test
     public void testArcgridException() throws Exception {
-        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage&identifier="
-                + getLayerId(TASMANIA_BM) + "&format=application/arcgrid"
-                + "&boundingbox=-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326";
+        String request =
+                "wcs?service=WCS&version=1.1.1&request=GetCoverage&identifier="
+                        + getLayerId(TASMANIA_BM)
+                        + "&format=application/arcgrid"
+                        + "&boundingbox=-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326";
         Document dom = getAsDOM(request);
         checkOws11Exception(dom);
     }
 
     @Test
     public void testTiffOutput() throws Exception {
-        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
-                + getLayerId(TASMANIA_BM)
-                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326" + "&format=image/tiff";
+        String request =
+                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                        + "&identifier="
+                        + getLayerId(TASMANIA_BM)
+                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
+                        + "&format=image/tiff";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         // parse the multipart, check there are two parts
@@ -100,17 +107,20 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // make sure we can read the coverage back
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
         ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream());
-		reader.setInput(iis);
+        reader.setInput(iis);
         reader.read(0);
         iis.close();
     }
 
     @Test
     public void testPngOutput() throws Exception {
-        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
-                + getLayerId(TASMANIA_BM)
-                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326" + "&format=image/png";
+        String request =
+                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                        + "&identifier="
+                        + getLayerId(TASMANIA_BM)
+                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
+                        + "&format=image/png";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         // parse the multipart, check there are two parts
@@ -128,26 +138,29 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffNamesGalore() throws Exception {
-        String requestBase = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
-                + getLayerId(TASMANIA_BM)
-                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326";
+        String requestBase =
+                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                        + "&identifier="
+                        + getLayerId(TASMANIA_BM)
+                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326";
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/geotiff"));
-        ensureTiffFormat(getAsServletResponse(requestBase
-                + "&format=image/tiff"));
+        ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/tiff"));
     }
 
-    private void ensureTiffFormat(MockHttpServletResponse response) throws MessagingException,
-            IOException {
+    private void ensureTiffFormat(MockHttpServletResponse response)
+            throws MessagingException, IOException {
         // make sure we got a multipart
-        assertTrue("Content type not mulipart but " + response.getContentType(), response
-                .getContentType().matches("multipart/related;\\s*boundary=\".*\""));
+        assertTrue(
+                "Content type not mulipart but " + response.getContentType(),
+                response.getContentType().matches("multipart/related;\\s*boundary=\".*\""));
 
         // parse the multipart, check the second part is a geotiff
         Multipart multipart = getMultipart(response);
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
+        assertEquals(
+                GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
                 coveragePart.getContentType());
     }
 }

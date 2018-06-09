@@ -16,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
-
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -37,48 +36,55 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class YsldStyleGeneratorTest {
 
     /**
-     * Test integration of {@link YsldHandler#getStyle(org.geoserver.catalog.StyleType, java.awt.Color, String, String)} with the
-     * {@link StyleGenerator} by generating a generic style (from {@link YsldHandler#TEMPLATES} for {@link StyleType.GENERIC}).
-     * 
+     * Test integration of {@link YsldHandler#getStyle(org.geoserver.catalog.StyleType,
+     * java.awt.Color, String, String)} with the {@link StyleGenerator} by generating a generic
+     * style (from {@link YsldHandler#TEMPLATES} for {@link StyleType.GENERIC}).
      */
     @Test
     public void testYsldStyleGenerator() throws Exception {
         final YsldHandler handler = new YsldHandler();
         ResourcePool rp = createNiceMock(ResourcePool.class);
         rp.writeStyle((StyleInfo) anyObject(), (InputStream) anyObject());
-        expectLastCall().andAnswer(new IAnswer<Void>() {
+        expectLastCall()
+                .andAnswer(
+                        new IAnswer<Void>() {
 
-            @Override
-            public Void answer() throws Throwable {
-                Object[] args = getCurrentArguments();
-                InputStream is = (InputStream) args[1];
-                StyledLayerDescriptor sld = handler.parse(is, null, null, null);
+                            @Override
+                            public Void answer() throws Throwable {
+                                Object[] args = getCurrentArguments();
+                                InputStream is = (InputStream) args[1];
+                                StyledLayerDescriptor sld = handler.parse(is, null, null, null);
 
-                assertEquals(1, sld.getStyledLayers().length);
+                                assertEquals(1, sld.getStyledLayers().length);
 
-                NamedLayer nl = (NamedLayer) sld.getStyledLayers()[0];
-                assertEquals(1, nl.getStyles().length);
+                                NamedLayer nl = (NamedLayer) sld.getStyledLayers()[0];
+                                assertEquals(1, nl.getStyles().length);
 
-                Style style = nl.getStyles()[0];
-                assertEquals(1, style.featureTypeStyles().size());
+                                Style style = nl.getStyles()[0];
+                                assertEquals(1, style.featureTypeStyles().size());
 
-                FeatureTypeStyle fts = style.featureTypeStyles().get(0);
-                assertEquals(4, fts.rules().size());
-                assertEquals("raster", fts.rules().get(0).getDescription().getTitle().toString());
-                assertEquals("orange polygon",
-                        fts.rules().get(1).getDescription().getTitle().toString());
-                assertEquals("orange line",
-                        fts.rules().get(2).getDescription().getTitle().toString());
-                assertEquals("orange point",
-                        fts.rules().get(3).getDescription().getTitle().toString());
+                                FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+                                assertEquals(4, fts.rules().size());
+                                assertEquals(
+                                        "raster",
+                                        fts.rules().get(0).getDescription().getTitle().toString());
+                                assertEquals(
+                                        "orange polygon",
+                                        fts.rules().get(1).getDescription().getTitle().toString());
+                                assertEquals(
+                                        "orange line",
+                                        fts.rules().get(2).getDescription().getTitle().toString());
+                                assertEquals(
+                                        "orange point",
+                                        fts.rules().get(3).getDescription().getTitle().toString());
 
-                for (org.geotools.styling.Rule r : fts.rules()) {
-                    assertEquals(1, r.getSymbolizers().length);
-                }
+                                for (org.geotools.styling.Rule r : fts.rules()) {
+                                    assertEquals(1, r.getSymbolizers().length);
+                                }
 
-                return null;
-            }
-        });
+                                return null;
+                            }
+                        });
 
         Catalog cat = createNiceMock(Catalog.class);
         expect(cat.getFactory()).andReturn(new CatalogFactoryImpl(null)).anyTimes();
@@ -91,11 +97,12 @@ public class YsldStyleGeneratorTest {
 
         replay(rp, ft, ws, cat);
 
-        StyleGenerator gen = new StyleGenerator(cat) {
-            protected void randomizeRamp() {
-                // do not randomize for this test
-            };
-        };
+        StyleGenerator gen =
+                new StyleGenerator(cat) {
+                    protected void randomizeRamp() {
+                        // do not randomize for this test
+                    };
+                };
         gen.setWorkspace(ws);
 
         SimpleFeatureType schema = DataUtilities.createType("foo", "geom:Geometry");
@@ -103,5 +110,4 @@ public class YsldStyleGeneratorTest {
         assertNotNull(style);
         assertNotNull(style.getWorkspace());
     }
-
 }

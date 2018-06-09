@@ -7,27 +7,24 @@ package org.geoserver.security.web;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
-public class ConfirmRemovalNamedServicePanel<T extends SecurityNamedServiceConfig> extends  AbstractConfirmRemovalPanel<T> {
+public class ConfirmRemovalNamedServicePanel<T extends SecurityNamedServiceConfig>
+        extends AbstractConfirmRemovalPanel<T> {
 
     private static final long serialVersionUID = 1L;
 
-    
     public ConfirmRemovalNamedServicePanel(String id, List<T> roots) {
-        super(id, roots);        
+        super(id, roots);
     }
-    
+
     public ConfirmRemovalNamedServicePanel(String id, T... roots) {
         this(id, Arrays.asList(roots));
     }
 
     @Override
-    protected String getConfirmationMessage(SecurityNamedServiceConfig object) throws Exception{
+    protected String getConfirmationMessage(SecurityNamedServiceConfig object) throws Exception {
         return OwsUtils.property(object, "name", String.class);
     }
- 
-
 }

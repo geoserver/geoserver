@@ -6,15 +6,10 @@
 package org.geoserver.wms.kvp;
 
 import java.awt.image.IndexColorModel;
-
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.ServiceException;
 
-/**
- * 
- * @author Simone Giannecchini, GeoSolutions SAS
- * 
- */
+/** @author Simone Giannecchini, GeoSolutions SAS */
 public class PaletteKvpParser extends KvpParser {
     public PaletteKvpParser() {
         super("palette", IndexColorModel.class);
@@ -25,8 +20,11 @@ public class PaletteKvpParser extends KvpParser {
         try {
             final IndexColorModel model = PaletteManager.getPalette(value);
             if (model == null) {
-                throw new ServiceException("Palette " + value + " could not be found "
-                        + "in $GEOSERVER_DATA_DIR/palettes directory");
+                throw new ServiceException(
+                        "Palette "
+                                + value
+                                + " could not be found "
+                                + "in $GEOSERVER_DATA_DIR/palettes directory");
             }
 
             return model;

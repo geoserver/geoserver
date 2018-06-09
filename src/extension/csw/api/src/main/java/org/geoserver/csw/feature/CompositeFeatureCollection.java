@@ -8,7 +8,6 @@ package org.geoserver.csw.feature;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -19,7 +18,8 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
 
     private List<FeatureCollection<FeatureType, Feature>> collections;
 
-    protected CompositeFeatureCollection(List<FeatureCollection<FeatureType, Feature>> collections) {
+    protected CompositeFeatureCollection(
+            List<FeatureCollection<FeatureType, Feature>> collections) {
         super(collections.get(0).getSchema());
         this.collections = collections;
 
@@ -27,19 +27,23 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
         for (FeatureCollection<FeatureType, Feature> fc : collections) {
             if (!getSchema().equals(fc.getSchema())) {
                 throw new IllegalArgumentException(
-                        "All feature collections must have the same type, found " + getSchema()
-                                + " and " + fc.getSchema() + " instead");
+                        "All feature collections must have the same type, found "
+                                + getSchema()
+                                + " and "
+                                + fc.getSchema()
+                                + " instead");
             }
         }
     }
 
     @Override
     public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
-        List<FeatureCollection<FeatureType, Feature>> filtered = new ArrayList<FeatureCollection<FeatureType, Feature>>();
+        List<FeatureCollection<FeatureType, Feature>> filtered =
+                new ArrayList<FeatureCollection<FeatureType, Feature>>();
         for (FeatureCollection<FeatureType, Feature> fc : filtered) {
             filtered.add(fc.subCollection(filter));
         }
-        
+
         return new CompositeFeatureCollection(filtered);
     }
 
@@ -57,15 +61,12 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
     @Override
     protected Iterator<Feature> openIterator() {
         return new CompositeIterator(collections);
-        
     }
 
     @Override
     protected void closeIterator(Iterator<Feature> close) {
-        if(close instanceof CompositeIterator) {
+        if (close instanceof CompositeIterator) {
             ((CompositeIterator) close).close();
         }
     }
-    
-
 }

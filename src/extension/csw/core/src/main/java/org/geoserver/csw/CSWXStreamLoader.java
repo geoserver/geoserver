@@ -6,9 +6,9 @@
 
 package org.geoserver.csw;
 
+import com.thoughtworks.xstream.XStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -16,11 +16,9 @@ import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.Version;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
  * Service loader for the Catalog Services for the Web
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWXStreamLoader extends XStreamServiceLoader<CSWInfo> {
@@ -74,5 +72,4 @@ public class CSWXStreamLoader extends XStreamServiceLoader<CSWInfo> {
 
         return service;
     }
-
 }

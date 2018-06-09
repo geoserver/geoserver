@@ -9,11 +9,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import com.sleepycat.je.DatabaseEntry;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -26,8 +26,6 @@ import org.geoserver.importer.ImporterTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.sleepycat.je.DatabaseEntry;
-
 public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
 
     @Test
@@ -36,7 +34,7 @@ public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
         ImportContext context = importer.createContext(new Directory(dir));
 
         XStreamPersister xp = importer.createXStreamPersisterXML();
-        XStreamInfoSerialBinding<ImportContext> binding = 
+        XStreamInfoSerialBinding<ImportContext> binding =
                 new XStreamInfoSerialBinding<ImportContext>(xp, ImportContext.class);
         binding.setCompress(false);
 
@@ -46,13 +44,13 @@ public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
         Document dom = dom(new ByteArrayInputStream(e.getData(), 0, e.getSize()));
         print(dom);
         XMLAssert.assertXpathExists("/import", dom);
-        
+
         print(dom);
-        
-        //workspace referenced by id
+
+        // workspace referenced by id
         XMLAssert.assertXpathExists("/import/targetWorkspace/id", dom);
 
-        //store inline
+        // store inline
         XMLAssert.assertXpathExists("/import/tasks/task[position()=1]/store/name", dom);
         XMLAssert.assertXpathNotExists("/import/tasks/task[position()=1]/store/id", dom);
 
@@ -67,7 +65,7 @@ public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
         assertNotNull(task.getStore().getName());
 
         assertNotNull(task.getLayer());
-        //assertNotNull(item.getLayer().getResource());
+        // assertNotNull(item.getLayer().getResource());
     }
 
     Document dom(DatabaseEntry e) throws Exception {
@@ -82,16 +80,16 @@ public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
 
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setWorkspace(cat.getDefaultWorkspace());
-        ds.setName("spearfish"); 
+        ds.setName("spearfish");
         ds.setType("H2");
 
         Map params = new HashMap();
-        params.put("database", getTestData().getDataDirectoryRoot().getPath()+"/spearfish");
+        params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/spearfish");
         params.put("dbtype", "h2");
         ds.getConnectionParameters().putAll(params);
         ds.setEnabled(true);
         cat.add(ds);
-        
+
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
@@ -103,7 +101,7 @@ public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
         XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
         xp.getXStream().omitField(ImportTask.class, "context");
 
-        XStreamInfoSerialBinding<ImportContext> binding = 
+        XStreamInfoSerialBinding<ImportContext> binding =
                 new XStreamInfoSerialBinding<ImportContext>(xp, ImportContext.class);
         binding.setCompress(false);
 

@@ -10,12 +10,9 @@ import org.geoserver.security.web.SecurityNamedServicePanelInfo;
 
 /**
  * Extension point for role service configuration panels.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
-public class RoleServicePanelInfo 
-    <C extends SecurityRoleServiceConfig, T extends RoleServicePanel<C>>
-    extends SecurityNamedServicePanelInfo<C,T>{
-
-}
+public class RoleServicePanelInfo<
+                C extends SecurityRoleServiceConfig, T extends RoleServicePanel<C>>
+        extends SecurityNamedServicePanelInfo<C, T> {}

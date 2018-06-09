@@ -4,13 +4,23 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.gwc.wmts.Domains;
 import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
@@ -35,36 +45,17 @@ import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.util.comparator.ComparableComparator;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-/**
- * Some utils methods useful to interact with dimensions.
- */
+/** Some utils methods useful to interact with dimensions. */
 public final class DimensionsUtils {
-    
+
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    /**
-     * No expansion limit provided
-     */
+    /** No expansion limit provided */
     public static final int NO_LIMIT = Integer.MIN_VALUE;
 
-    /**
-     * Helper method that will extract a layer dimensions.
-     */
-    public static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, Set<String> requestedDimensions) throws OWSException {
+    /** Helper method that will extract a layer dimensions. */
+    public static List<Dimension> extractDimensions(
+            WMS wms, LayerInfo layerInfo, Set<String> requestedDimensions) throws OWSException {
         ResourceInfo resourceInfo = layerInfo.getResource();
         List<Dimension> result = new ArrayList<>();
         if (resourceInfo instanceof FeatureTypeInfo) {
@@ -74,63 +65,79 @@ public final class DimensionsUtils {
             result = extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
         }
         if (requestedDimensions != MultiDimensionalExtension.ALL_DOMAINS) {
-            Set<String> availableDimensions = result.stream().map(d -> d.getDimensionName()).collect(Collectors.toSet());
+            Set<String> availableDimensions =
+                    result.stream().map(d -> d.getDimensionName()).collect(Collectors.toSet());
             HashSet<String> unknownDimensions = new HashSet<>(requestedDimensions);
             unknownDimensions.removeAll(availableDimensions);
             unknownDimensions.remove(MultiDimensionalExtension.SPACE_DIMENSION);
             if (!unknownDimensions.isEmpty()) {
-                String dimensionList = unknownDimensions.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", "));
-                throw new OWSException(400, "InvalidParameterValue", "Domains", "Unknown dimensions requested " + dimensionList);
+                String dimensionList =
+                        unknownDimensions
+                                .stream()
+                                .map(s -> "'" + s + "'")
+                                .collect(Collectors.joining(", "));
+                throw new OWSException(
+                        400,
+                        "InvalidParameterValue",
+                        "Domains",
+                        "Unknown dimensions requested " + dimensionList);
             } else {
-                result = result.stream().filter(d -> requestedDimensions.contains(d.getDimensionName())).collect(Collectors.toList());
+                result =
+                        result.stream()
+                                .filter(d -> requestedDimensions.contains(d.getDimensionName()))
+                                .collect(Collectors.toList());
             }
         }
-        
+
         return result;
     }
 
-    /**
-     * Helper method that will extract the dimensions from a feature type info.
-     */
-    private static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, FeatureTypeInfo typeInfo) {
+    /** Helper method that will extract the dimensions from a feature type info. */
+    private static List<Dimension> extractDimensions(
+            WMS wms, LayerInfo layerInfo, FeatureTypeInfo typeInfo) {
         List<Dimension> dimensions = new ArrayList<>();
-        DimensionInfo timeDimension = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        DimensionInfo timeDimension =
+                typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (timeDimension != null) {
-            checkAndAddDimension(dimensions, new VectorTimeDimension(wms, layerInfo, timeDimension));
+            checkAndAddDimension(
+                    dimensions, new VectorTimeDimension(wms, layerInfo, timeDimension));
         }
-        DimensionInfo elevationDimension = typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        DimensionInfo elevationDimension =
+                typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevationDimension != null) {
-            checkAndAddDimension(dimensions, new VectorElevationDimension(wms, layerInfo, elevationDimension));
+            checkAndAddDimension(
+                    dimensions, new VectorElevationDimension(wms, layerInfo, elevationDimension));
         }
         return dimensions;
     }
 
-    /**
-     * Helper method that will extract the dimensions from a coverage type info.
-     */
-    private static List<Dimension> extractDimensions(WMS wms, LayerInfo layerInfo, CoverageInfo typeInfo) {
+    /** Helper method that will extract the dimensions from a coverage type info. */
+    private static List<Dimension> extractDimensions(
+            WMS wms, LayerInfo layerInfo, CoverageInfo typeInfo) {
         List<Dimension> dimensions = new ArrayList<>();
         for (Map.Entry<String, Serializable> entry : typeInfo.getMetadata().entrySet()) {
             String key = entry.getKey();
             Serializable value = entry.getValue();
             if (key.equals(ResourceInfo.TIME)) {
                 DimensionInfo dimensionInfo = Converters.convert(value, DimensionInfo.class);
-                checkAndAddDimension(dimensions, new RasterTimeDimension(wms, layerInfo, dimensionInfo));
+                checkAndAddDimension(
+                        dimensions, new RasterTimeDimension(wms, layerInfo, dimensionInfo));
             } else if (key.equals(ResourceInfo.ELEVATION)) {
                 DimensionInfo dimensionInfo = Converters.convert(value, DimensionInfo.class);
-                checkAndAddDimension(dimensions, new RasterElevationDimension(wms, layerInfo, dimensionInfo));
+                checkAndAddDimension(
+                        dimensions, new RasterElevationDimension(wms, layerInfo, dimensionInfo));
             } else if (key.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
                 DimensionInfo dimensionInfo = Converters.convert(value, DimensionInfo.class);
                 String dimensionName = key.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
-                checkAndAddDimension(dimensions, new RasterCustomDimension(wms, layerInfo, dimensionName, dimensionInfo));
+                checkAndAddDimension(
+                        dimensions,
+                        new RasterCustomDimension(wms, layerInfo, dimensionName, dimensionInfo));
             }
         }
         return dimensions;
     }
 
-    /**
-     * Helper method that adds a dimension to a list of dimensions if the dimension is enabled.
-     */
+    /** Helper method that adds a dimension to a list of dimensions if the dimension is enabled. */
     private static void checkAndAddDimension(List<Dimension> dimensions, Dimension dimension) {
         // some layers can have a dimension configured but not enable
         if (dimension.getDimensionInfo().isEnabled()) {
@@ -139,12 +146,13 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Helper method that simply returns a string representation of the values of a dimension.
-     * Dates and ranges will have a special handling. This method will take in account the
-     * dimension required presentation.
+     * Helper method that simply returns a string representation of the values of a dimension. Dates
+     * and ranges will have a special handling. This method will take in account the dimension
+     * required presentation.
      */
     static List<String> getDomainValuesAsStrings(DomainSummary summary) {
-        if (summary.getMin() == null && (summary.getUniqueValues() == null || summary.getUniqueValues().isEmpty())) {
+        if (summary.getMin() == null
+                && (summary.getUniqueValues() == null || summary.getUniqueValues().isEmpty())) {
             // no domain values so he just return an empty collection
             return Collections.emptyList();
         }
@@ -159,14 +167,13 @@ public final class DimensionsUtils {
             // the dimension representation for this values require a compact representation
             Object minValue = summary.getMin();
             Object maxValue = summary.getMax();
-            stringValues.add(formatDomainSimpleValue(minValue) + "--" + formatDomainSimpleValue(maxValue));
+            stringValues.add(
+                    formatDomainSimpleValue(minValue) + "--" + formatDomainSimpleValue(maxValue));
         }
         return stringValues;
     }
 
-    /**
-     * Helper method that converts a domain value to string, range will be correctly handled.
-     */
+    /** Helper method that converts a domain value to string, range will be correctly handled. */
     public static String formatDomainValue(Object value) {
         if (value instanceof Range) {
             // this domain value is a range, we use the min and max value
@@ -178,7 +185,8 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Helper method that converts a domain value to string. Date values are formatted using the ISO8601 format.
+     * Helper method that converts a domain value to string. Date values are formatted using the
+     * ISO8601 format.
      */
     public static String formatDomainSimpleValue(Object value) {
         if (value instanceof Date) {
@@ -190,8 +198,8 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Helper method that return the minimum value. If the first value of the tree set
-     * is a range the minimum value of the range is returned.
+     * Helper method that return the minimum value. If the first value of the tree set is a range
+     * the minimum value of the range is returned.
      */
     private static Object getMinValue(List<Object> values) {
         Object minValue = values.get(0);
@@ -202,8 +210,8 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Helper method that return the maximum value. If the first value of the tree set
-     * is a range the maximum value of the range is returned.
+     * Helper method that return the maximum value. If the first value of the tree set is a range
+     * the maximum value of the range is returned.
      */
     private static Object getMaxValue(List<Object> values) {
         Object maxValue = values.get(values.size() - 1);
@@ -213,9 +221,7 @@ public final class DimensionsUtils {
         return maxValue;
     }
 
-    /**
-     * Return the min a max values of a tree set of values converted to the provided type.
-     */
+    /** Return the min a max values of a tree set of values converted to the provided type. */
     static <T> Tuple<T, T> getMinMax(List<Object> values, Class<T> type) {
         Object minValue = getMinValue(values);
         Object maxValue = getMaxValue(values);
@@ -223,10 +229,11 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Helper method that simply extract from a feature collection the values of a
-     * specific attribute removing duplicate values.
+     * Helper method that simply extract from a feature collection the values of a specific
+     * attribute removing duplicate values.
      */
-    static Set<Object> getValuesWithoutDuplicates(String attributeName, FeatureCollection featureCollection) {
+    static Set<Object> getValuesWithoutDuplicates(
+            String attributeName, FeatureCollection featureCollection) {
         Set uniques = getUniqueValues(featureCollection, attributeName, NO_LIMIT);
 
         // dimension values are dates/numbers/strings, all comparable, native sorting is fine
@@ -234,7 +241,8 @@ public final class DimensionsUtils {
         return values;
     }
 
-    static TreeSet getUniqueValues(FeatureCollection featureCollection, String attributeName, int limit) {
+    static TreeSet getUniqueValues(
+            FeatureCollection featureCollection, String attributeName, int limit) {
         // using the unique visitor to remove duplicate values
         UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
         if (limit > 0 && limit < Integer.MAX_VALUE) {
@@ -250,9 +258,11 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Helper method that extracts a set of aggregates on the given collection and attribute and returns the results
+     * Helper method that extracts a set of aggregates on the given collection and attribute and
+     * returns the results
      */
-    static Map<Aggregate, Object> getAggregates(String attributeName, FeatureCollection featureCollection, Aggregate... aggregates) {
+    static Map<Aggregate, Object> getAggregates(
+            String attributeName, FeatureCollection featureCollection, Aggregate... aggregates) {
         Map<Aggregate, Object> result = new HashMap<>();
         PropertyName property = FF.property(attributeName);
         for (Aggregate aggregate : aggregates) {
@@ -262,17 +272,19 @@ public final class DimensionsUtils {
                 Object value = featureCalc.getResult().getValue();
                 result.put(aggregate, value);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to collect summary aggregates on attribute " + attributeName, e);
+                throw new RuntimeException(
+                        "Failed to collect summary aggregates on attribute " + attributeName, e);
             }
         }
         return result;
     }
 
     /**
-     * Helper method that simply extract from a feature collection the values of a
-     * specific attribute keeping duplicate values.
+     * Helper method that simply extract from a feature collection the values of a specific
+     * attribute keeping duplicate values.
      */
-    static List<Object> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection) {
+    static List<Object> getValuesWithDuplicates(
+            String attributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
         List<Object> values = new ArrayList<>();
         FeatureIterator featuresIterator = featureCollection.features();
@@ -287,6 +299,7 @@ public final class DimensionsUtils {
 
     /**
      * Compute the resource bounds based on the provided filter
+     *
      * @param resource
      * @param filter
      * @return
@@ -294,14 +307,17 @@ public final class DimensionsUtils {
     public static ReferencedEnvelope getBounds(ResourceInfo resource, Filter filter) {
         try {
             if (resource instanceof FeatureTypeInfo) {
-                FeatureSource featureSource = ((FeatureTypeInfo) resource).getFeatureSource(null, null);
+                FeatureSource featureSource =
+                        ((FeatureTypeInfo) resource).getFeatureSource(null, null);
                 FeatureCollection features = featureSource.getFeatures(filter);
                 return features.getBounds();
             } else if (resource instanceof CoverageInfo) {
-                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+                CoverageDimensionsReader reader =
+                        CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
                 return reader.getBounds(filter);
             } else {
-                // for all other resource types (WMS/WMTS cascading) we cannot do anything intelligent
+                // for all other resource types (WMS/WMTS cascading) we cannot do anything
+                // intelligent
                 return resource.getNativeBoundingBox();
             }
         } catch (IOException e) {
@@ -310,52 +326,72 @@ public final class DimensionsUtils {
     }
 
     /**
-     * Builds a bounding box filter, or returns {@link Filter#INCLUDE} if the bounding box is null 
+     * Builds a bounding box filter, or returns {@link Filter#INCLUDE} if the bounding box is null
      */
-    public static Filter getBoundingBoxFilter(ResourceInfo resource, ReferencedEnvelope boundingBox, FilterFactory 
-            filterFactory) {
+    public static Filter getBoundingBoxFilter(
+            ResourceInfo resource, ReferencedEnvelope boundingBox, FilterFactory filterFactory) {
         String geometryName = getGeometryPropertyName(resource);
         if (boundingBox == null || geometryName == null) {
             return Filter.INCLUDE;
         }
-        CoordinateReferenceSystem coordinateReferenceSystem = boundingBox.getCoordinateReferenceSystem();
-        String epsgCode = coordinateReferenceSystem == null ? null : GML2EncodingUtils.toURI(coordinateReferenceSystem);
-        Filter spatialFilter = filterFactory.bbox(geometryName, boundingBox.getMinX(), boundingBox.getMinY(),
-                boundingBox.getMaxX(), boundingBox.getMaxY(), epsgCode);
+        CoordinateReferenceSystem coordinateReferenceSystem =
+                boundingBox.getCoordinateReferenceSystem();
+        String epsgCode =
+                coordinateReferenceSystem == null
+                        ? null
+                        : GML2EncodingUtils.toURI(coordinateReferenceSystem);
+        Filter spatialFilter =
+                filterFactory.bbox(
+                        geometryName,
+                        boundingBox.getMinX(),
+                        boundingBox.getMinY(),
+                        boundingBox.getMaxX(),
+                        boundingBox.getMaxY(),
+                        epsgCode);
         return spatialFilter;
     }
 
     private static String getGeometryPropertyName(ResourceInfo resource) {
         try {
-            String geometryName = ""; // the default geometry, unfortunately does not work in some cases
+            String geometryName =
+                    ""; // the default geometry, unfortunately does not work in some cases
             if (resource instanceof FeatureTypeInfo) {
-                geometryName = ((FeatureTypeInfo) resource).getFeatureType().getGeometryDescriptor().getLocalName();
+                geometryName =
+                        ((FeatureTypeInfo) resource)
+                                .getFeatureType()
+                                .getGeometryDescriptor()
+                                .getLocalName();
             } else if (resource instanceof CoverageInfo) {
-                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+                CoverageDimensionsReader reader =
+                        CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
                 return reader.getGeometryAttributeName();
             }
             return geometryName;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to gather feature type information for " + resource, e);
+            throw new RuntimeException(
+                    "Failed to gather feature type information for " + resource, e);
         }
     }
 
-    public static Tuple<String,String> getAttributes(ResourceInfo resource, Dimension dimension) {
+    public static Tuple<String, String> getAttributes(ResourceInfo resource, Dimension dimension) {
         if (resource instanceof FeatureTypeInfo) {
             DimensionInfo di = dimension.getDimensionInfo();
             return Tuple.tuple(di.getAttribute(), di.getEndAttribute());
         } else if (resource instanceof CoverageInfo) {
-            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+            CoverageDimensionsReader reader =
+                    CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
             String dimensionName = dimension.getDimensionName();
             Tuple<String, String> attributes = reader.getDimensionAttributesNames(dimensionName);
             if (attributes.first == null) {
-                throw new RuntimeException(String.format(
-                        "Could not found start attribute name for dimension '%s' in raster '%s'.", dimensionName,
-                        resource.prefixedName()));
+                throw new RuntimeException(
+                        String.format(
+                                "Could not found start attribute name for dimension '%s' in raster '%s'.",
+                                dimensionName, resource.prefixedName()));
             }
             return attributes;
         } else {
-            throw new RuntimeException("Cannot get restriction attributes on this resource: " + resource);
+            throw new RuntimeException(
+                    "Cannot get restriction attributes on this resource: " + resource);
         }
     }
 }

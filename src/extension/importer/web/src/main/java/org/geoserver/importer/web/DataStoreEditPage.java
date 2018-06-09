@@ -20,6 +20,6 @@ public class DataStoreEditPage extends DataAccessEditPage {
             super.doSaveStore(info);
         }
 
-        //do nothing, not part of catalog yet
+        // do nothing, not part of catalog yet
     }
 }

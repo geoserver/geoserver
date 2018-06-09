@@ -6,11 +6,8 @@
 package org.geoserver.csw.response;
 
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import net.opengis.cat.csw20.RequestBaseType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.records.CSWRecordDescriptor;
@@ -18,8 +15,8 @@ import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Encodes responses with ISO MetaData records 
- * 
+ * Encodes responses with ISO MetaData records
+ *
  * @author Niels Charlier
  */
 public class MetaDataResponse extends AbstractRecordsResponse {
@@ -28,10 +25,10 @@ public class MetaDataResponse extends AbstractRecordsResponse {
         super(CSWRecordDescriptor.RECORD_TYPE, MetaDataDescriptor.NAMESPACE_GMD, gs);
     }
 
-    protected void transformResponse(OutputStream output, CSWRecordsResult result,
-            RequestBaseType request, CSWInfo csw) {
-        MetaDataTransformer transformer = new MetaDataTransformer(request,
-                csw.isCanonicalSchemaLocation());
+    protected void transformResponse(
+            OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
+        MetaDataTransformer transformer =
+                new MetaDataTransformer(request, csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);
         try {
             transformer.transform(result, output);
@@ -39,5 +36,4 @@ public class MetaDataResponse extends AbstractRecordsResponse {
             throw new ServiceException(e);
         }
     }
-
 }

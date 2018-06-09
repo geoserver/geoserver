@@ -6,13 +6,12 @@
 package org.geoserver.security.web.data;
 
 import java.io.Serializable;
-
 import org.geoserver.security.CatalogMode;
 
 public class CatalogModeModel implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     CatalogMode catalogMode;
 
     public CatalogModeModel(CatalogMode catalogMode) {
@@ -26,5 +25,4 @@ public class CatalogModeModel implements Serializable {
     public void setCatalogMode(CatalogMode catalogMode) {
         this.catalogMode = catalogMode;
     }
-
 }

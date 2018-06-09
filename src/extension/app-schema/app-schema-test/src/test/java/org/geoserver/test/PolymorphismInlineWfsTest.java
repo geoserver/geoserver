@@ -7,12 +7,11 @@
 package org.geoserver.test;
 
 import org.junit.Test;
-
 import org.w3c.dom.Document;
 
 /**
  * WFS GetFeature to test polymorphism mixed with inline mappings in Geoserver app-schema.
- * 
+ *
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
 public class PolymorphismInlineWfsTest extends AbstractAppSchemaTestSupport {
@@ -30,10 +29,10 @@ public class PolymorphismInlineWfsTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature");
-        LOGGER
-                .info("WFS GetFeature&typename=ex:PolymorphicFeature response:\n"
-                        + prettyString(doc));
+        Document doc =
+                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature");
+        LOGGER.info(
+                "WFS GetFeature&typename=ex:PolymorphicFeature response:\n" + prettyString(doc));
         assertXpathCount(6, "//ex:PolymorphicFeature", doc);
 
         // f1

@@ -8,7 +8,6 @@ package org.geoserver.catalog.impl;
 import static org.geoserver.data.test.CiteTestData.*;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -66,10 +65,9 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
         nestGroup.getStyles().add(null);
         nestGroup.getStyles().add(null);
         catalog.add(nestGroup);
-        
+
         // add a workspace specific style
         WorkspaceInfo ws = catalog.getWorkspaceByName(CITE_PREFIX);
         testData.addStyle(ws, WS_STYLE, "Streams.sld", SystemTestData.class, catalog);
     };
-
 }

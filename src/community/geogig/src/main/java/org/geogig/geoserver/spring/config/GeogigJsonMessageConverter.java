@@ -8,13 +8,13 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.stereotype.Component;
 
 /**
- * Delegate marshalling of json request bodies to geogig DTO classes to the default spring json marshaller.
+ * Delegate marshalling of json request bodies to geogig DTO classes to the default spring json
+ * marshaller.
  */
 @Component
 public class GeogigJsonMessageConverter extends AbstractDelegatingGeogigMessageConverter {
-    
+
     public GeogigJsonMessageConverter() {
         super(new GsonHttpMessageConverter());
     }
-
 }

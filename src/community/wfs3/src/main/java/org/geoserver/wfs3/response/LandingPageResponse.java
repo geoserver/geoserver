@@ -7,9 +7,7 @@ package org.geoserver.wfs3.response;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 
-/**
- * JSON/YAML encoding for the API document
- */
+/** JSON/YAML encoding for the API document */
 public class LandingPageResponse extends JacksonResponse {
 
     public LandingPageResponse(GeoServer gs) {

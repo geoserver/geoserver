@@ -11,12 +11,11 @@ import org.geoserver.security.web.SecurityNamedServicePanel;
 
 /**
  * Base class for authentication panels.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
-public class AuthenticationProviderPanel<T extends SecurityAuthProviderConfig> 
-    extends SecurityNamedServicePanel<T> {
+public class AuthenticationProviderPanel<T extends SecurityAuthProviderConfig>
+        extends SecurityNamedServicePanel<T> {
 
     public AuthenticationProviderPanel(String id, IModel<T> model) {
         super(id, model);
@@ -24,7 +23,7 @@ public class AuthenticationProviderPanel<T extends SecurityAuthProviderConfig>
 
     @Override
     public void doSave(T config) throws Exception {
-       getSecurityManager().saveAuthenticationProvider(config);
+        getSecurityManager().saveAuthenticationProvider(config);
     }
 
     @Override

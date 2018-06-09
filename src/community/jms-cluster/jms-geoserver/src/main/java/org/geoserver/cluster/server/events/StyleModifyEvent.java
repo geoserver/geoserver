@@ -4,14 +4,11 @@
  */
 package org.geoserver.cluster.server.events;
 
+import java.util.List;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 
-import java.util.List;
-
-/**
- * Catalog modify event for styles that include the style file as an array of bytes.
- */
+/** Catalog modify event for styles that include the style file as an array of bytes. */
 public class StyleModifyEvent implements CatalogModifyEvent {
 
     private final CatalogModifyEvent event;

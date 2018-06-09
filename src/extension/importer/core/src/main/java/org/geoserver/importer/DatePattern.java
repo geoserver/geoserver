@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * Encapsulates a date format and regular expression.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class DatePattern implements java.io.Serializable {
@@ -30,8 +30,8 @@ public class DatePattern implements java.io.Serializable {
     Pattern pattern;
 
     /**
-     * Constructor with defaults, <tt>forceGmt</tt> set to <tt>true</tt> and <tt>strict</tt>
-     * set to <tt>false</tt>. 
+     * Constructor with defaults, <tt>forceGmt</tt> set to <tt>true</tt> and <tt>strict</tt> set to
+     * <tt>false</tt>.
      */
     public DatePattern(String format, String regex) {
         this(format, regex, true, false);
@@ -44,7 +44,7 @@ public class DatePattern implements java.io.Serializable {
      * @param regex The regular expression to pull the date out of a another string.
      * @param forceGmt Whether the pattern should assume the GMT time zone.
      * @param strict Whether or not this pattern must apply the regular expression to match before
-     *   parsing a date. 
+     *     parsing a date.
      */
     public DatePattern(String format, String regex, boolean forceGmt, boolean strict) {
         this.format = format;
@@ -58,7 +58,7 @@ public class DatePattern implements java.io.Serializable {
     }
 
     public SimpleDateFormat dateFormat() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.CANADA); 
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.CANADA);
         if (forceGmt) {
             dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         }
@@ -71,15 +71,14 @@ public class DatePattern implements java.io.Serializable {
 
     public Pattern pattern() {
         if (pattern == null) {
-            //wrap the regex in a group and match anything around it (use reluctant wildcard matching)
+            // wrap the regex in a group and match anything around it (use reluctant wildcard
+            // matching)
             pattern = Pattern.compile(".*?(" + regex + ").*?", Pattern.CASE_INSENSITIVE);
         }
         return pattern;
     }
 
-    /**
-     * When true the {@link #matchAndParse(String)} method should be used.
-     */
+    /** When true the {@link #matchAndParse(String)} method should be used. */
     public boolean isStrict() {
         return strict;
     }
@@ -96,7 +95,7 @@ public class DatePattern implements java.io.Serializable {
 
     public Date parse(String str) {
         if (isStrict()) {
-            //matchAndParse should be called
+            // matchAndParse should be called
             return null;
         }
 
@@ -130,27 +129,17 @@ public class DatePattern implements java.io.Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         DatePattern other = (DatePattern) obj;
-        if (forceGmt != other.forceGmt)
-            return false;
+        if (forceGmt != other.forceGmt) return false;
         if (format == null) {
-            if (other.format != null)
-                return false;
-        } else if (!format.equals(other.format))
-            return false;
+            if (other.format != null) return false;
+        } else if (!format.equals(other.format)) return false;
         if (regex == null) {
-            if (other.regex != null)
-                return false;
-        } else if (!regex.equals(other.regex))
-            return false;
+            if (other.regex != null) return false;
+        } else if (!regex.equals(other.regex)) return false;
         return true;
     }
-
-    
 }

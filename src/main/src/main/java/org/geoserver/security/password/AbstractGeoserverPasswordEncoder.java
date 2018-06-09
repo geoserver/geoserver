@@ -9,7 +9,6 @@ package org.geoserver.security.password;
 import java.io.IOException;
 import java.security.Security;
 import java.util.logging.Logger;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -18,15 +17,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 /**
- * Abstract base implementation, delegating the encoding 
- * to third party encoders implementing {@link PasswordEncoder}
- * 
- * @author christian
+ * Abstract base implementation, delegating the encoding to third party encoders implementing {@link
+ * PasswordEncoder}
  *
+ * @author christian
  */
 public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPasswordEncoder {
 
-    static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
+    protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     protected volatile PasswordEncoder stringEncoder;
     protected volatile CharArrayPasswordEncoder charEncoder;
@@ -40,8 +38,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
-    
-    
+
     public String getName() {
         return name;
     }
@@ -50,18 +47,11 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         this.name = beanName;
     }
 
-    /**
-     * Does nothing, subclases may override.
-     */
-    public void initialize(GeoServerSecurityManager securityManager) throws IOException {
-        
-    }
+    /** Does nothing, subclases may override. */
+    public void initialize(GeoServerSecurityManager securityManager) throws IOException {}
 
-    /**
-     * Does nothing, subclases may override.
-     */
-    public void initializeFor(GeoServerUserGroupService service) throws IOException {
-    }
+    /** Does nothing, subclases may override. */
+    public void initializeFor(GeoServerUserGroupService service) throws IOException {}
 
     public AbstractGeoserverPasswordEncoder() {
         setAvailableWithoutStrongCryptogaphy(true);
@@ -78,9 +68,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         return stringEncoder;
     }
 
-    /**
-     * Creates the encoder instance used when source is a string. 
-     */
+    /** Creates the encoder instance used when source is a string. */
     protected abstract PasswordEncoder createStringEncoder();
 
     protected CharArrayPasswordEncoder getCharEncoder() {
@@ -94,26 +82,21 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         return charEncoder;
     }
 
-    /**
-     * Creates the encoder instance used when source is a char array. 
-     */
+    /** Creates the encoder instance used when source is a char array. */
     protected abstract CharArrayPasswordEncoder createCharEncoder();
 
-    /**
-     * @return the concrete {@link PasswordEncoder} object
-     */
+    /** @return the concrete {@link PasswordEncoder} object */
     protected final PasswordEncoder getActualEncoder() {
         return null;
     }
-    
+
     @Override
     public String encodePassword(String rawPass, Object salt) throws DataAccessException {
         return doEncodePassword(getStringEncoder().encodePassword(rawPass, salt));
     }
 
     @Override
-    public String encodePassword(char[] rawPass, Object salt)
-            throws DataAccessException {
+    public String encodePassword(char[] rawPass, Object salt) throws DataAccessException {
         return doEncodePassword(getCharEncoder().encodePassword(rawPass, salt));
     }
 
@@ -138,13 +121,13 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     @Override
     public boolean isPasswordValid(String encPass, String rawPass, Object salt)
             throws DataAccessException {
-        if (encPass==null) return false;
+        if (encPass == null) return false;
         return getStringEncoder().isPasswordValid(stripPrefix(encPass), rawPass, salt);
     }
 
     @Override
     public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-        if (encPass==null) return false;
+        if (encPass == null) return false;
         return getCharEncoder().isPasswordValid(stripPrefix(encPass), rawPass, salt);
     }
 
@@ -153,7 +136,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     }
 
     protected String removePrefix(String encPass) {
-        return encPass.replaceFirst(getPrefix()+GeoServerPasswordEncoder.PREFIX_DELIMTER, "");
+        return encPass.replaceFirst(getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER, "");
     }
 
     @Override
@@ -164,25 +147,22 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
      * @return true if this encoder has encoded encPass
      */
     public boolean isResponsibleForEncoding(String encPass) {
-        if (encPass==null) return false;        
-        return encPass.startsWith(getPrefix()+GeoServerPasswordEncoder.PREFIX_DELIMTER);
+        if (encPass == null) return false;
+        return encPass.startsWith(getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER);
     }
-    
-    
+
     public String decode(String encPass) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("decoding passwords not supported");
     }
 
     @Override
-    public char[] decodeToCharArray(String encPass)
-            throws UnsupportedOperationException {
+    public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("decoding passwords not supported");
     }
 
     public String getPrefix() {
         return prefix;
     }
-
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -191,7 +171,6 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     public boolean isAvailableWithoutStrongCryptogaphy() {
         return availableWithoutStrongCryptogaphy;
     }
-
 
     public void setAvailableWithoutStrongCryptogaphy(boolean availableWithoutStrongCryptogaphy) {
         this.availableWithoutStrongCryptogaphy = availableWithoutStrongCryptogaphy;
@@ -205,9 +184,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
         this.reversible = reversible;
     }
 
-    /**
-     * Interface for password encoding when source password is specified as char array.
-     */
+    /** Interface for password encoding when source password is specified as char array. */
     protected static interface CharArrayPasswordEncoder {
 
         String encodePassword(char[] rawPass, Object salt);

@@ -11,7 +11,6 @@ import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataVisitor;
@@ -21,26 +20,26 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-/**
- * Convert MonitorResutls to a csv file.
- */
+/** Convert MonitorResutls to a csv file. */
 @Component
 public class CSVMonitorConverter extends BaseMonitorConverter {
-    
+
     static Pattern ESCAPE_REQUIRED = Pattern.compile("[\\,\\s\"]");
-    
+
     private static final class CSVRequestDataVisitor implements RequestDataVisitor {
         private BufferedWriter writer;
         private String[] fields;
-        CSVRequestDataVisitor( BufferedWriter writer, String fields[]){
+
+        CSVRequestDataVisitor(BufferedWriter writer, String fields[]) {
             this.writer = writer;
             this.fields = fields;
         }
+
         @Override
         public void visit(RequestData data, Object... aggregates) {
             try {
                 StringBuffer sb = new StringBuffer();
-    
+
                 for (String fld : fields) {
                     Object val = OwsUtils.get(data, fld);
                     if (val instanceof Date) {
@@ -50,7 +49,9 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
                         String string = val.toString();
                         Matcher match = ESCAPE_REQUIRED.matcher(string);
                         if (match.find()) { // may need escaping, so escape
-                            string = string.replaceAll("\"", "\"\"");// Double all double quotes to escape
+                            string =
+                                    string.replaceAll(
+                                            "\"", "\"\""); // Double all double quotes to escape
                             sb.append("\"");
                             sb.append(string);
                             sb.append("\"");
@@ -83,10 +84,10 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
         OutputStream os = outputMessage.getBody();
         writeCSVfile(result, fields, monitor, os);
     }
-    
-    
+
     /**
      * Write CSV file (also called by {@link ZIPMonitorConverter}
+     *
      * @param result Query, List or individual RequestData)
      * @param fields
      * @param monitor used to cancel output process
@@ -108,5 +109,4 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
 
         w.flush();
     }
-
 }

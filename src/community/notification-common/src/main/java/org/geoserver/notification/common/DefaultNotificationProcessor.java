@@ -6,7 +6,6 @@
 package org.geoserver.notification.common;
 
 import java.io.Serializable;
-
 import org.geoserver.notification.common.sender.NotificationSender;
 
 public class DefaultNotificationProcessor implements NotificationProcessor, Serializable {
@@ -22,7 +21,8 @@ public class DefaultNotificationProcessor implements NotificationProcessor, Seri
     }
 
     /**
-     * Process {@link Notification} using an encoder to generate the payload and a sender to delivery it to destination
+     * Process {@link Notification} using an encoder to generate the payload and a sender to
+     * delivery it to destination
      *
      * @param the encoder to transform {@link Notification} to payload
      * @param the sender to deliver the payload
@@ -54,5 +54,4 @@ public class DefaultNotificationProcessor implements NotificationProcessor, Seri
     public void setSender(NotificationSender sender) {
         this.sender = sender;
     }
-
 }

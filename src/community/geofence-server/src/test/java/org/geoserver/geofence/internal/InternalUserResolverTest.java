@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
@@ -27,10 +26,10 @@ import org.geoserver.security.impl.MemoryRoleService;
 import org.junit.Before;
 import org.junit.Test;
 
-/***
- * 
- * @author Niels Charlier
+/**
+ * *
  *
+ * @author Niels Charlier
  */
 public class InternalUserResolverTest extends AbstractSecurityServiceTest {
 
@@ -50,8 +49,8 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         GeoServerUserGroupStore userGroupStore = userGroupService.createStore();
         GeoServerRoleStore rolesStore = roleService.createStore();
 
-        GeoServerUser roleUserTest = userGroupService.createUserObject("role_user_test",
-                "role_user_test", true);
+        GeoServerUser roleUserTest =
+                userGroupService.createUserObject("role_user_test", "role_user_test", true);
         userGroupStore.addUser(roleUserTest);
 
         GeoServerRole roleTest = rolesStore.createRoleObject("ROLE_TEST");
@@ -98,8 +97,12 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         System.setProperty(InternalUserResolver.DEFAULT_USER_GROUP_SERVICE_KEY, "test");
     }
 
-    protected void addTestUser(String username, List<String> roles, GeoServerRoleService service,
-            GeoServerRoleStore store) throws Exception {
+    protected void addTestUser(
+            String username,
+            List<String> roles,
+            GeoServerRoleService service,
+            GeoServerRoleStore store)
+            throws Exception {
 
         if (roles != null && !roles.isEmpty()) {
             for (String roleName : roles) {
@@ -154,8 +157,8 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         assertEquals("test", resolver.getDefaultSecurityService().getName());
         assertTrue(resolver.getDefaultSecurityService() instanceof GeoServerRoleService);
 
-        GeoServerRoleStore store = ((GeoServerRoleService) resolver.getDefaultSecurityService())
-                .createStore();
+        GeoServerRoleStore store =
+                ((GeoServerRoleService) resolver.getDefaultSecurityService()).createStore();
         addTestUser("user1", Arrays.asList("adminRole", "groupAdminRole"), service, store);
         addTestUser("user2", Arrays.asList("adminRole"), service, store);
         addTestUser("user3", Arrays.asList("role1"), service, store);
@@ -183,6 +186,5 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         roles = resolver.getRoles("user3");
         assertEquals(1, roles.size());
         assertTrue(roles.contains("role1"));
-
     }
 }

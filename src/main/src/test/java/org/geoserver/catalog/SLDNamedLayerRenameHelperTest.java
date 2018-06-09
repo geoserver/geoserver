@@ -4,24 +4,27 @@
  */
 package org.geoserver.catalog;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 public class SLDNamedLayerRenameHelperTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws IOException {
-        testData.addStyle("singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
+        testData.addStyle(
+                "singleStyleGroup",
+                "singleStyleGroup.sld",
+                CatalogIntegrationTest.class,
+                getCatalog());
     }
 
     @Test
@@ -43,18 +46,29 @@ public class SLDNamedLayerRenameHelperTest extends GeoServerSystemTestSupport {
             StyleInfo s = getCatalog().getStyleByName("singleStyleGroup");
 
             Resource newStyle = getCatalog().getResourceLoader().get("styles/singleStyleGroup.sld");
-            Resource oldStyle = getCatalog().getResourceLoader().get("styles/singleStyleGroup_BACKUP.sld");
+            Resource oldStyle =
+                    getCatalog().getResourceLoader().get("styles/singleStyleGroup_BACKUP.sld");
 
-            //Make sure both exist
+            // Make sure both exist
             assertEquals(Resource.Type.RESOURCE, newStyle.getType());
             assertEquals(Resource.Type.RESOURCE, oldStyle.getType());
 
             assertEquals("singleStyleGroup.sld", s.getFilename());
 
-            StyledLayerDescriptor newSld = Styles.handler(s.getFormat()).parse(newStyle.file(), s.getFormatVersion(),
-                    null, getCatalog().getResourcePool().getEntityResolver());
-            StyledLayerDescriptor oldSld = Styles.handler(s.getFormat()).parse(oldStyle.file(), s.getFormatVersion(),
-                    null, getCatalog().getResourcePool().getEntityResolver());
+            StyledLayerDescriptor newSld =
+                    Styles.handler(s.getFormat())
+                            .parse(
+                                    newStyle.file(),
+                                    s.getFormatVersion(),
+                                    null,
+                                    getCatalog().getResourcePool().getEntityResolver());
+            StyledLayerDescriptor oldSld =
+                    Styles.handler(s.getFormat())
+                            .parse(
+                                    oldStyle.file(),
+                                    s.getFormatVersion(),
+                                    null,
+                                    getCatalog().getResourcePool().getEntityResolver());
 
             assertNotNull(newSld);
             assertNotNull(oldSld);
@@ -62,7 +76,7 @@ public class SLDNamedLayerRenameHelperTest extends GeoServerSystemTestSupport {
             assertEquals("Streams", oldSld.getStyledLayers()[0].getName());
             assertEquals("Stream", newSld.getStyledLayers()[0].getName());
         } finally {
-            //Clean up
+            // Clean up
             helper = new SLDNamedLayerRenameHelper(getCatalog(), true);
             helper.registerLayerRename("Stream", "Streams");
             helper.visitStyles(true);

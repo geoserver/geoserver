@@ -7,9 +7,7 @@ package org.geogig.geoserver.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Test Utility for altering available repository backend choices in the GeoServer UI drop down.
- */
+/** Test Utility for altering available repository backend choices in the GeoServer UI drop down. */
 public class DropDownTestUtil {
 
     // get the runtime config so it can be restored after tests run when altering them.
@@ -25,16 +23,14 @@ public class DropDownTestUtil {
      * Allows for overriding the list of available backends for testing purposes, as well as the
      * default backend.
      *
-     * @param backends       List of available backends.
+     * @param backends List of available backends.
      * @param defaultBackend The default backend.
      */
     public static void setAvailableBackends(List<String> backends, String defaultBackend) {
         DropDownModel.setConfigList(backends, defaultBackend);
     }
 
-    /**
-     * Resets the list of available backends, based on what is available at runtime.
-     */
+    /** Resets the list of available backends, based on what is available at runtime. */
     public static void resetAvailableBackends() {
         DropDownModel.setConfigList(DEFAULT_LIST, DEFAULT_CONFIG);
     }

@@ -7,7 +7,6 @@ package org.geoserver.notification;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.geoserver.notification.common.Notification;
 import org.geotools.filter.expression.PropertyAccessor;
@@ -38,7 +37,5 @@ public class NotificationPropertyAccessor implements PropertyAccessor {
     public <T> void set(Object object, String xpath, T value, Class<T> target)
             throws IllegalArgumentException {
         throw new UnsupportedOperationException();
-
     }
-
 }

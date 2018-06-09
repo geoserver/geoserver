@@ -10,9 +10,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.management.RuntimeErrorException;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
@@ -42,9 +40,10 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
             WMSStoreInfo store = builder.buildWMSStore(null);
 
             initUI(store);
-            
-            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-            
+
+            final GeoServerEnvironment gsEnvironment =
+                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
             if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
                 capabilitiesURL.getFormComponent().add(new WMSCapabilitiesURLValidator());
@@ -70,7 +69,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         try {
             // GeoServer Env substitution; validate first
             getCatalog().validate(expandedStore, false).throwIfInvalid();
-            
+
             // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
             savedStore = getCatalog().getResourcePool().clone(info, false);
             // ... and save
@@ -88,9 +87,12 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
             // The ID is assigned by the catalog and therefore cannot be cloned
             layerChooserPage = new NewLayerPage(savedStore.getId());
         } catch (RuntimeException e) {
-            LOGGER.log(Level.INFO, "Getting list of layers for the WMS store " + info.getCapabilitiesURL(), e);
+            LOGGER.log(
+                    Level.INFO,
+                    "Getting list of layers for the WMS store " + info.getCapabilitiesURL(),
+                    e);
             // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.
-            try {// be extra cautious
+            try { // be extra cautious
                 getCatalog().remove(expandedStore);
                 getCatalog().remove(savedStore);
             } catch (RuntimeErrorException shouldNotHappen) {
@@ -102,7 +104,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
 
         setResponsePage(layerChooserPage);
     }
-    
+
     final class WMSCapabilitiesURLValidator implements IValidator {
 
         @Override
@@ -121,24 +123,24 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 Map<String, Object> hints = new HashMap<>();
                 hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
                 hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-                EntityResolverProvider provider = getCatalog().getResourcePool().getEntityResolverProvider();
-                if(provider != null) {
+                EntityResolverProvider provider =
+                        getCatalog().getResourcePool().getEntityResolverProvider();
+                if (provider != null) {
                     EntityResolver entityResolver = provider.getEntityResolver();
-                    if(entityResolver != null) {
+                    if (entityResolver != null) {
                         hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
                     }
                 }
-                
+
                 WebMapServer server = new WebMapServer(new URL(url), client, hints);
                 server.getCapabilities();
-            } catch(IOException | ServiceException e) {
-                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure")
-                        .addKey("WMSCapabilitiesValidator.connectionFailure")
-                        .setVariable("error", e.getMessage());
+            } catch (IOException | ServiceException e) {
+                IValidationError err =
+                        new ValidationError("WMSCapabilitiesValidator.connectionFailure")
+                                .addKey("WMSCapabilitiesValidator.connectionFailure")
+                                .setVariable("error", e.getMessage());
                 validatable.error(err);
             }
         }
-        
     }
-
 }

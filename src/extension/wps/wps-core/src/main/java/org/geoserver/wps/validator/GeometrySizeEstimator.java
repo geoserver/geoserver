@@ -8,9 +8,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Estimates the size of a geometry
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class GeometrySizeEstimator implements ObjectSizeEstimator {
 
@@ -24,5 +23,4 @@ public class GeometrySizeEstimator implements ObjectSizeEstimator {
 
         return ObjectSizeEstimator.UNKNOWN_SIZE;
     }
-
 }

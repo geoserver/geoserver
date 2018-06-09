@@ -11,5 +11,4 @@ public class TemplatesPage extends AbstractConfigurationsPage {
     public TemplatesPage() {
         super(true);
     }
-
 }

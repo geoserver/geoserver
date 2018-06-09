@@ -9,19 +9,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Unit test suite for {@link JSONDescribeLayerResponse}
- * 
+ *
  * @author Carlo Cancellieri - GeoSolutions
  * @version $Id$
  */
@@ -36,18 +35,24 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
         }
     }
 
-    /**
-     * Tests jsonp with custom callback function
-     * 
-     */
+    /** Tests jsonp with custom callback function */
     @Test
     public void testCustomJSONP() throws Exception {
 
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
-        String request = "wms?version=1.1.1" + "&request=DescribeLayer" + "&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20" + "&outputFormat="
-                + JSONType.jsonp + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY
-                + ":DescribeLayer";
+        String request =
+                "wms?version=1.1.1"
+                        + "&request=DescribeLayer"
+                        + "&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + "&outputFormat="
+                        + JSONType.jsonp
+                        + "&format_options="
+                        + JSONType.CALLBACK_FUNCTION_KEY
+                        + ":DescribeLayer";
 
         JSONType.setJsonpEnabled(true);
         String result = getAsString(request);
@@ -56,16 +61,20 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
         checkJSONPDescribeLayer(result, layer);
     }
 
-    /**
-     * Tests JSON
-     * 
-     */
+    /** Tests JSON */
     @Test
     public void testSimpleJSON() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
-        String request = "wms?version=1.1.1" + "&request=DescribeLayer" + "&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20" + "&outputFormat="
-                + JSONType.json;
+        String request =
+                "wms?version=1.1.1"
+                        + "&request=DescribeLayer"
+                        + "&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + "&outputFormat="
+                        + JSONType.json;
 
         String result = getAsString(request);
 
@@ -74,7 +83,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
 
     /**
      * @param body Accepts:<br>
-     *        DescribeLayer(...)<br>
+     *     DescribeLayer(...)<br>
      * @param layer
      */
     private void checkJSONPDescribeLayer(String body, String layer) {
@@ -88,17 +97,21 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
         checkJSONDescribeLayer(body, layer);
     }
 
-    /**
-     * Tests jsonp with custom callback function
-     * 
-     */
+    /** Tests jsonp with custom callback function */
     @Test
     public void testJSONLayerGroup() throws Exception {
 
         String layer = NATURE_GROUP;
-        String request = "wms?version=1.1.1" + "&request=DescribeLayer" + "&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20" + "&outputFormat="
-                + JSONType.json;
+        String request =
+                "wms?version=1.1.1"
+                        + "&request=DescribeLayer"
+                        + "&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + "&outputFormat="
+                        + JSONType.json;
 
         String result = getAsString(request);
 
@@ -126,29 +139,35 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
 
         JSONArray layerDescs = rootObject.getJSONArray("layerDescriptions");
         JSONObject layerDesc = layerDescs.getJSONObject(0);
-        assertEquals(layerDesc.get("layerName"),
+        assertEquals(
+                layerDesc.get("layerName"),
                 MockData.LAKES.getPrefix() + ":" + MockData.LAKES.getLocalPart());
         assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
         assertEquals(layerDesc.get("owsType"), "WFS");
 
         layerDesc = layerDescs.getJSONObject(1);
-        assertEquals(layerDesc.get("layerName"), MockData.FORESTS.getPrefix() + ":"
-                + MockData.FORESTS.getLocalPart());
+        assertEquals(
+                layerDesc.get("layerName"),
+                MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart());
         assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
         assertEquals(layerDesc.get("owsType"), "WFS");
-
     }
-    
+
     @Test
     public void testJSONDescribeLayerCharset() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
-        String request = "wms?version=1.1.1" + "&request=DescribeLayer" + "&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20" + "&outputFormat="
-                + JSONType.json;
+        String request =
+                "wms?version=1.1.1"
+                        + "&request=DescribeLayer"
+                        + "&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + "&outputFormat="
+                        + JSONType.json;
 
-        MockHttpServletResponse result = getAsServletResponse(request,"");
+        MockHttpServletResponse result = getAsServletResponse(request, "");
         assertTrue("UTF-8".equals(result.getCharacterEncoding()));
-
     }
-    
 }

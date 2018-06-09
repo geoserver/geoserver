@@ -6,23 +6,18 @@
 package org.geoserver.data;
 
 import java.util.List;
-
 import org.geotools.data.DataAccessFactory;
 
 /**
  * Provider of data access factories.
- * <p>
- * This extension point allows for the addition of data access factories outside of 
- * the geotools spi framework.
- * </p>
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>This extension point allows for the addition of data access factories outside of the geotools
+ * spi framework.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
 public interface DataAccessFactoryProducer {
 
-    /**
-     * Returns the list of factories.  
-     */
+    /** Returns the list of factories. */
     List<DataAccessFactory> getDataStoreFactories();
 }

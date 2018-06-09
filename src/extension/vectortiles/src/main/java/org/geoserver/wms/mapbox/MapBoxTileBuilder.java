@@ -6,26 +6,18 @@ package org.geoserver.wms.mapbox;
 
 import static org.geoserver.wms.mapbox.MapBoxTileBuilderFactory.MIME_TYPE;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Map;
-
 import no.ecc.vectortile.VectorTileEncoder;
 import no.ecc.vectortile.VectorTileEncoderNoClip;
-
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
-import com.vividsolutions.jts.geom.Geometry;
-
-/**
- * 
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 public class MapBoxTileBuilder implements VectorTileBuilder {
 
     private VectorTileEncoder encoder;
@@ -38,8 +30,12 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public void addFeature(String layerName, String featureId, String geometryName,
-            Geometry geometry, Map<String, Object> properties) {
+    public void addFeature(
+            String layerName,
+            String featureId,
+            String geometryName,
+            Geometry geometry,
+            Map<String, Object> properties) {
 
         encoder.addFeature(layerName, properties, geometry);
     }
@@ -49,5 +45,4 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
         byte[] contents = encoder.encode();
         return new RawMap(mapContent, contents, MIME_TYPE);
     }
-
 }

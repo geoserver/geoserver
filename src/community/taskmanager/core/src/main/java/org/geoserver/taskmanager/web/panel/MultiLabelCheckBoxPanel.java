@@ -15,11 +15,14 @@ public class MultiLabelCheckBoxPanel extends Panel {
 
     private static final long serialVersionUID = 3765410954951956161L;
 
-    public MultiLabelCheckBoxPanel(String id, String labelContent, String checkboxContent,
+    public MultiLabelCheckBoxPanel(
+            String id,
+            String labelContent,
+            String checkboxContent,
             IModel<Boolean> selectionModel) {
-        super(id);        
+        super(id);
         Form<?> form = new Form<>("form");
-        add(form);        
+        add(form);
         form.add(new MultiLineLabel("multilabel", labelContent).setEscapeModelStrings(false));
         form.add(new CheckBox("checkbox", selectionModel));
         form.add(new Label("checkboxLabel", checkboxContent));

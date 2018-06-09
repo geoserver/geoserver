@@ -5,7 +5,6 @@
 package org.geoserver.taskmanager.schedule.impl;
 
 import java.util.Map;
-
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.schedule.BatchContext;
@@ -18,26 +17,23 @@ import org.springframework.stereotype.Component;
 
 /**
  * Task Context Implementation
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 @Component
 @Scope("prototype")
 public class TaskContextImpl implements TaskContext {
 
-    @Autowired
-    private TaskManagerDao dao;
-    
-    @Autowired
-    private TaskManagerTaskUtil taskUtil;
-    
+    @Autowired private TaskManagerDao dao;
+
+    @Autowired private TaskManagerTaskUtil taskUtil;
+
     private Task task;
-    
+
     private BatchContext batchContext;
-    
+
     private Map<String, Object> parameterValues;
-    
+
     public TaskContextImpl(Task task) {
         this.task = task;
     }
@@ -59,7 +55,7 @@ public class TaskContextImpl implements TaskContext {
         }
         return parameterValues;
     }
-    
+
     @Override
     public boolean isInterruptMe() {
         return batchContext != null && dao.reload(batchContext.getBatchRun()).isInterruptMe();
@@ -69,7 +65,4 @@ public class TaskContextImpl implements TaskContext {
     public BatchContext getBatchContext() {
         return batchContext;
     }
-    
-    
-
 }

@@ -28,27 +28,24 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.geotools.util.logging.Logging;
 
 /**
  * Utility class for IO related utilities
- * 
+ *
  * @author Andrea Aime - TOPP
- * 
  */
 public class IOUtils {
     private static final Logger LOGGER = Logging.getLogger(IOUtils.class);
-    
+
     protected IOUtils() {
         // singleton
     }
 
     /**
      * Copies the provided input stream onto a file
-     * 
+     *
      * @param from
      * @param to
      * @throws IOException
@@ -56,12 +53,12 @@ public class IOUtils {
     public static void copy(InputStream from, File to) throws IOException {
         copy(from, new FileOutputStream(to));
     }
-    
+
     /**
      * Copies the provided input stream onto an outputstream.
-     * <p>
-     * Please note that both from input stream and out output stream will be closed.
-     * 
+     *
+     * <p>Please note that both from input stream and out output stream will be closed.
+     *
      * @param in
      * @param to
      * @throws IOException
@@ -70,8 +67,7 @@ public class IOUtils {
         try {
             byte[] buffer = new byte[1024 * 16];
             int bytes = 0;
-            while ((bytes = in.read(buffer)) != -1)
-                out.write(buffer, 0, bytes);
+            while ((bytes = in.read(buffer)) != -1) out.write(buffer, 0, bytes);
 
             out.flush();
         } finally {
@@ -85,13 +81,13 @@ public class IOUtils {
     }
 
     /**
-     * Copies from a file to another by performing a filtering on certain
-     * specified tokens. In particular, each key in the filters map will be
-     * looked up in the reader as ${key} and replaced with the associated value.
+     * Copies from a file to another by performing a filtering on certain specified tokens. In
+     * particular, each key in the filters map will be looked up in the reader as ${key} and
+     * replaced with the associated value.
+     *
      * @param to
      * @param filters
      * @param reader
-     * 
      * @throws IOException
      */
     public static void filteredCopy(File from, File to, Map<String, String> filters)
@@ -100,33 +96,33 @@ public class IOUtils {
     }
     /**
      * Capture contents of {@link InputStream} as a String.
-     * @param input InputStream, closed after use. 
+     *
+     * @param input InputStream, closed after use.
      * @return contents of input
      */
     public static String toString(InputStream input) throws IOException {
-        if( input == null){
+        if (input == null) {
             return null;
         }
         ByteArrayOutputStream output;
         try {
             output = new ByteArrayOutputStream();
-            copy( input, output );
-        }
-        finally {
+            copy(input, output);
+        } finally {
             input.close();
             input.close();
         }
         return output.toString();
     }
-    
+
     /**
-     * Copies from a reader to a file by performing a filtering on certain
-     * specified tokens. In particular, each key in the filters map will be
-     * looked up in the reader as ${key} and replaced with the associated value.
+     * Copies from a reader to a file by performing a filtering on certain specified tokens. In
+     * particular, each key in the filters map will be looked up in the reader as ${key} and
+     * replaced with the associated value.
+     *
      * @param to
      * @param filters
      * @param reader
-     * 
      * @throws IOException
      */
     public static void filteredCopy(BufferedReader from, File to, Map<String, String> filters)
@@ -159,7 +155,7 @@ public class IOUtils {
 
     /**
      * Copies the provided file onto the specified destination file
-     * 
+     *
      * @param from
      * @param to
      * @throws IOException
@@ -169,43 +165,38 @@ public class IOUtils {
     }
 
     /**
-     * Copy the contents of fromDir into toDir (if the latter is missing it will
-     * be created)
-     * 
+     * Copy the contents of fromDir into toDir (if the latter is missing it will be created)
+     *
      * @param fromDir
      * @param toDir
      * @throws IOException
      */
     public static void deepCopy(File fromDir, File toDir) throws IOException {
         if (!fromDir.isDirectory() || !fromDir.exists())
-            throw new IllegalArgumentException("Invalid source directory "
-                    + "(it's either not a directory, or does not exist");
+            throw new IllegalArgumentException(
+                    "Invalid source directory "
+                            + "(it's either not a directory, or does not exist");
         if (toDir.exists() && toDir.isFile())
-            throw new IllegalArgumentException("Invalid destination directory, "
-                    + "it happens to be a file instead");
+            throw new IllegalArgumentException(
+                    "Invalid destination directory, " + "it happens to be a file instead");
 
         // create destination if not available
-        if (!toDir.exists())
-            if (!toDir.mkdir())
-                throw new IOException("Could not create " + toDir);
+        if (!toDir.exists()) if (!toDir.mkdir()) throw new IOException("Could not create " + toDir);
 
         File[] files = fromDir.listFiles();
         for (File file : files) {
             File destination = new File(toDir, file.getName());
-            if (file.isDirectory())
-                deepCopy(file, destination);
-            else
-                copy(file, destination);
+            if (file.isDirectory()) deepCopy(file, destination);
+            else copy(file, destination);
         }
     }
 
     /**
-     * Creates a directory as a child of baseDir. The directory name will be
-     * preceded by prefix and followed by suffix
-     * 
+     * Creates a directory as a child of baseDir. The directory name will be preceded by prefix and
+     * followed by suffix
+     *
      * @param basePath
      * @param prefix
-     *
      * @throws IOException
      */
     public static File createRandomDirectory(String baseDir, String prefix, String suffix)
@@ -216,12 +207,11 @@ public class IOUtils {
             throw new IOException("Could not create the temp directory " + tempDir.getPath());
         return tempDir;
     }
-    
+
     /**
      * Creates a temporary directory whose name will start by prefix
      *
-     * Strategy is to leverage the system temp directory, then create a sub-directory.
-     *
+     * <p>Strategy is to leverage the system temp directory, then create a sub-directory.
      */
     public static File createTempDirectory(String prefix) throws IOException {
         File dummyTemp = File.createTempFile("blah", null);
@@ -235,10 +225,9 @@ public class IOUtils {
     }
 
     /**
-     * Recursively deletes the contents of the specified directory, 
-     * and finally wipes out the directory itself. For each
-     * file that cannot be deleted a warning log will be issued. 
-     * 
+     * Recursively deletes the contents of the specified directory, and finally wipes out the
+     * directory itself. For each file that cannot be deleted a warning log will be issued.
+     *
      * @param directory Directory to delete
      * @throws IOException
      * @returns true if the directory could be deleted, false otherwise
@@ -249,18 +238,17 @@ public class IOUtils {
     }
 
     /**
-     * Recursively deletes the contents of the specified directory 
-     * (but not the directory itself). For each
-     * file that cannot be deleted a warning log will be issued.
-     * 
+     * Recursively deletes the contents of the specified directory (but not the directory itself).
+     * For each file that cannot be deleted a warning log will be issued.
+     *
      * @param dir
      * @throws IOException
      * @returns true if all the directory contents could be deleted, false otherwise
      */
     public static boolean emptyDirectory(File directory) throws IOException {
         if (!directory.isDirectory())
-            throw new IllegalArgumentException(directory
-                    + " does not appear to be a directory at all...");
+            throw new IllegalArgumentException(
+                    directory + " does not appear to be a directory at all...");
 
         boolean allClean = true;
         File[] files = directory.listFiles();
@@ -275,53 +263,51 @@ public class IOUtils {
                 }
             }
         }
-        
+
         return allClean;
     }
-    
+
     /**
      * Zips up the directory contents into the specified {@link ZipOutputStream}.
-     * <p>
-     * Note this method does not take ownership of the provided zip output stream, meaning the
+     *
+     * <p>Note this method does not take ownership of the provided zip output stream, meaning the
      * client code is responsible for calling {@link ZipOutputStream#finish() finish()} when it's
      * done adding zip entries.
-     * </p>
      *
-     * @param directory
-     *            The directory whose contents have to be zipped up
-     * @param zipout
-     *            The {@link ZipOutputStream} that will be populated by the files found
-     * @param filter
-     *            An optional filter that can be used to select only certain files. Can be null, in
-     *            that case all files in the directory will be zipped
+     * @param directory The directory whose contents have to be zipped up
+     * @param zipout The {@link ZipOutputStream} that will be populated by the files found
+     * @param filter An optional filter that can be used to select only certain files. Can be null,
+     *     in that case all files in the directory will be zipped
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static void zipDirectory(File directory, ZipOutputStream zipout, final FilenameFilter filter)
+    public static void zipDirectory(
+            File directory, ZipOutputStream zipout, final FilenameFilter filter)
             throws IOException, FileNotFoundException {
         zipDirectory(directory, "", zipout, filter);
     }
-    
+
     /**
-     * See {@link #zipDirectory(File, ZipOutputStream, FilenameFilter)}, this version handles the prefix needed
-     * to recursively zip data preserving the relative path of each
+     * See {@link #zipDirectory(File, ZipOutputStream, FilenameFilter)}, this version handles the
+     * prefix needed to recursively zip data preserving the relative path of each
      */
-    private static void zipDirectory(File directory, String prefix, ZipOutputStream zipout, final FilenameFilter filter)
+    private static void zipDirectory(
+            File directory, String prefix, ZipOutputStream zipout, final FilenameFilter filter)
             throws IOException, FileNotFoundException {
         File[] files = directory.listFiles(filter);
         // copy file by reading 4k at a time (faster than buffered reading)
         byte[] buffer = new byte[4 * 1024];
         for (File file : files) {
             if (file.exists()) {
-                if(file.isDirectory()) {
+                if (file.isDirectory()) {
                     // recurse and append
                     String newPrefix = prefix + file.getName() + "/";
                     zipout.putNextEntry(new ZipEntry(newPrefix));
                     zipDirectory(file, newPrefix, zipout, filter);
                 } else {
-                    ZipEntry entry = new ZipEntry(prefix  + file.getName());
+                    ZipEntry entry = new ZipEntry(prefix + file.getName());
                     zipout.putNextEntry(entry);
-   
+
                     InputStream in = new FileInputStream(file);
                     int c;
                     try {
@@ -337,42 +323,41 @@ public class IOUtils {
         }
         zipout.flush();
     }
-    
+
     public static void decompress(InputStream input, File destDir) throws IOException {
         ZipInputStream zin = new ZipInputStream(input);
         ZipEntry entry = null;
-        
+
         byte[] buffer = new byte[1024];
-        while((entry = zin.getNextEntry()) != null) {
-            File f = new File(destDir, entry.getName()); 
+        while ((entry = zin.getNextEntry()) != null) {
+            File f = new File(destDir, entry.getName());
             if (entry.isDirectory()) {
                 f.mkdirs();
                 continue;
             }
-            
+
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
-            
+
             int n = -1;
-            while((n = zin.read(buffer)) != -1) {
+            while ((n = zin.read(buffer)) != -1) {
                 out.write(buffer, 0, n);
             }
-            
+
             out.flush();
             out.close();
         }
     }
-    
-    public static void decompress(final File inputFile, final File destDir)
-    throws IOException {
+
+    public static void decompress(final File inputFile, final File destDir) throws IOException {
         ZipFile zipFile = new ZipFile(inputFile);
 
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-        while(entries.hasMoreElements()) {
-            ZipEntry entry = (ZipEntry)entries.nextElement();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = (ZipEntry) entries.nextElement();
             InputStream stream = zipFile.getInputStream(entry);
 
-            if(entry.isDirectory()) {
+            if (entry.isDirectory()) {
                 // Assume directories are stored parents first then children.
                 (new File(destDir, entry.getName())).mkdir();
                 continue;
@@ -384,8 +369,7 @@ public class IOUtils {
                 byte[] buf = new byte[1024];
                 int len;
 
-                while((len = stream.read(buf)) >= 0)
-                    saveCompressedStream(buf, fos, len);
+                while ((len = stream.read(buf)) >= 0) saveCompressedStream(buf, fos, len);
 
             } catch (IOException e) {
                 zipFile.close();
@@ -401,14 +385,15 @@ public class IOUtils {
         }
         zipFile.close();
     }
-    
+
     /**
-     * @param len 
+     * @param len
      * @param stream
      * @param fos
      * @throws IOException
      */
-    public static void saveCompressedStream(final byte[] buffer, final OutputStream out, final int len) throws IOException {
+    public static void saveCompressedStream(
+            final byte[] buffer, final OutputStream out, final int len) throws IOException {
         try {
             out.write(buffer, 0, len);
 
@@ -416,48 +401,47 @@ public class IOUtils {
             out.flush();
             out.close();
             IOException ioe = new IOException("Not valid archive file type.");
-        ioe.initCause(e);
-        throw ioe;
+            ioe.initCause(e);
+            throw ioe;
+        }
     }
-}
 
     /**
      * Backs up a directory <tt>dir</tt> by creating a .bak next to it.
-     *  
+     *
      * @param dir The directory to back up.
      */
     public static void backupDirectory(File dir) throws IOException {
-        File bak = new File( dir.getCanonicalPath() + ".bak");
-        if ( bak.exists() ) {
-            FileUtils.deleteDirectory( bak );
+        File bak = new File(dir.getCanonicalPath() + ".bak");
+        if (bak.exists()) {
+            FileUtils.deleteDirectory(bak);
         }
-        dir.renameTo( bak );
+        dir.renameTo(bak);
     }
 
     /**
      * Renames a file.
-     *  
+     *
      * @param f The file to rename.
      * @param newName The new name of the file.
      */
     public static void rename(File f, String newName) throws IOException {
-        rename( f, new File( f.getParentFile(), newName ) );
+        rename(f, new File(f.getParentFile(), newName));
     }
-    
+
     /**
      * Renames a file.
-     *  
+     *
      * @param source The file to rename.
-     * @param dest The file to rename to. 
+     * @param dest The file to rename to.
      */
-    public static void rename( File source, File dest ) throws IOException {
+    public static void rename(File source, File dest) throws IOException {
         // same path? Do nothing
-        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()))
-            return;
+        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath())) return;
 
         // windows needs special treatment, we cannot rename onto an existing file
         boolean win = System.getProperty("os.name").startsWith("Windows");
-        if ( win && dest.exists() ) {
+        if (win && dest.exists()) {
             // windows does not do atomic renames, and can not rename a file if the dest file
             // exists
             if (!dest.delete()) {
@@ -465,12 +449,11 @@ public class IOUtils {
             }
         }
         // make sure the rename actually succeeds
-        if(!source.renameTo(dest)) {
+        if (!source.renameTo(dest)) {
             FileUtils.deleteQuietly(dest);
-            if( source.isDirectory() ){
-                FileUtils.moveDirectory(source, dest );
-            }
-            else {
+            if (source.isDirectory()) {
+                FileUtils.moveDirectory(source, dest);
+            } else {
                 FileUtils.moveFile(source, dest);
             }
         }

@@ -6,9 +6,7 @@ package org.geoserver.rest.catalog;
 
 import java.util.LinkedHashMap;
 
-/**
- * A map that can be given a name
- */
+/** A map that can be given a name */
 @SuppressWarnings("serial")
 public class NamedMap<K, T> extends LinkedHashMap<K, T> {
 
@@ -25,5 +23,4 @@ public class NamedMap<K, T> extends LinkedHashMap<K, T> {
     public void setName(String name) {
         this.name = name;
     }
-
 }

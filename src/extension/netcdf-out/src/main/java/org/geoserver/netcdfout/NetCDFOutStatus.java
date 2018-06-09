@@ -7,12 +7,10 @@ package org.geoserver.netcdfout;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-
 import org.geoserver.platform.ModuleStatus;
 import org.geotools.factory.GeoTools;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.Version;
-
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 
 public class NetCDFOutStatus implements ModuleStatus {
@@ -55,11 +53,12 @@ public class NetCDFOutStatus implements ModuleStatus {
         try {
             // This reflection code is to deal with JNA being an optional jar.
             // Its the same as;
-            // Nc4prototypes nc4 = (Nc4prototypes) Native.loadLibrary("netcdf", Nc4prototypes.class);
-            // return nc4.nc_inq_libvers(); 
+            // Nc4prototypes nc4 = (Nc4prototypes) Native.loadLibrary("netcdf",
+            // Nc4prototypes.class);
+            // return nc4.nc_inq_libvers();
             Class jnaNativeClass = Class.forName("com.sun.jna.Native");
-            Method loadLibraryMethod = jnaNativeClass.getMethod("loadLibrary", String.class,
-                    Class.class);
+            Method loadLibraryMethod =
+                    jnaNativeClass.getMethod("loadLibrary", String.class, Class.class);
             Object nc4 = loadLibraryMethod.invoke(null, "netcdf", Nc4prototypes.class);
 
             Method nc_inq_libversMethod = Nc4prototypes.class.getMethod("nc_inq_libvers");

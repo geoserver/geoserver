@@ -17,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geotools.feature.NameImpl;
@@ -26,15 +25,14 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ExtTypesTest extends AbstractTaskManagerTest {
-    
-    @Autowired
-    ExtTypes extTypes;
-    
+
+    @Autowired ExtTypes extTypes;
+
     protected boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addWcs11Coverages();
         return true;
     }
-    
+
     @Test
     public void testDbName() {
         List<String> domain = extTypes.dbName.getDomain(null);
@@ -48,17 +46,18 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
         assertTrue(extTypes.dbName.parse("myjndidb", null) instanceof DbSource);
         assertNull(extTypes.dbName.parse("doesntexist", null));
     }
-    
+
     @Test
     public void testTableName() {
         List<String> domain = extTypes.tableName.getDomain(Collections.singletonList("myjndidb"));
         assertEquals("", domain.get(0));
-        
+
         final String tableName = "grondwaterlichamen_new";
 
-        assertTrue(extTypes.tableName.validate("doesntexist", Collections.singletonList("myjndidb")));
+        assertTrue(
+                extTypes.tableName.validate("doesntexist", Collections.singletonList("myjndidb")));
         assertTrue(extTypes.tableName.validate(tableName, Collections.singletonList("myjndidb")));
-        
+
         DbSource source = (DbSource) extTypes.dbName.parse("myjndidb", null);
         try (Connection conn = source.getDataSource().getConnection()) {
             try (ResultSet res = conn.getMetaData().getTables(null, null, tableName, null)) {
@@ -68,13 +67,15 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
             Assume.assumeTrue(false);
         }
         assertTrue(domain.contains(tableName));
-        
-        assertTrue(extTypes.tableName.parse(tableName, 
-                Collections.singletonList("myjndidb")) instanceof DbTable);
-        assertTrue(extTypes.tableName.parse("doesntexist", 
-                Collections.singletonList("myjndidb")) instanceof DbTable);
+
+        assertTrue(
+                extTypes.tableName.parse(tableName, Collections.singletonList("myjndidb"))
+                        instanceof DbTable);
+        assertTrue(
+                extTypes.tableName.parse("doesntexist", Collections.singletonList("myjndidb"))
+                        instanceof DbTable);
     }
-    
+
     @Test
     public void testExtGeoserver() {
         List<String> domain = extTypes.extGeoserver.getDomain(null);
@@ -85,7 +86,7 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
         assertTrue(extTypes.extGeoserver.parse("mygs", null) instanceof ExternalGS);
         assertNull(extTypes.extGeoserver.parse("doesntexist", null));
     }
-    
+
     @Test
     public void testInternalLayer() {
         List<String> domain = extTypes.internalLayer.getDomain(null);
@@ -99,16 +100,17 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
         assertTrue(extTypes.internalLayer.parse("wcs:BlueMarble", null) instanceof LayerInfo);
         assertNull(extTypes.internalLayer.parse("doesntexist", null));
     }
-    
+
     @Test
     public void testNames() {
         assertTrue(extTypes.name.validate("bla", null));
         assertTrue(extTypes.name.validate("gs:bla", null));
         assertFalse(extTypes.name.validate("doesntexist:bla", null));
         assertEquals(new NameImpl("http://geoserver.org", "bla"), extTypes.name.parse("bla", null));
-        assertEquals(new NameImpl("http://geoserver.org", "bla"), extTypes.name.parse("gs:bla", null));
+        assertEquals(
+                new NameImpl("http://geoserver.org", "bla"), extTypes.name.parse("gs:bla", null));
     }
-    
+
     @Test
     public void testFileServices() {
         List<String> domain = extTypes.fileService.getDomain(null);
@@ -120,21 +122,30 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
         assertTrue(extTypes.fileService.parse("data-directory", null) instanceof FileService);
         assertNull(extTypes.fileService.parse("doesntexist", null));
     }
-    
+
     @Test
     public void testFile() throws IOException {
         FileService service = (FileService) extTypes.fileService.parse("data-directory", null);
         try (InputStream is = new ByteArrayInputStream("test".getBytes())) {
             service.create("temp", is);
         }
-        
-        assertTrue(extTypes.file(true, false).validate("temp", Collections.singletonList("data-directory")));
-        assertTrue(extTypes.file(true, false).validate("doesntexist", Collections.singletonList("data-directory")));
-        assertTrue(extTypes.file(true, false).parse("temp", Collections.singletonList("data-directory")) 
-                instanceof FileReference);
-        assertNull(extTypes.file(true, false).parse("doesntexist", Collections.singletonList("data-directory")));
-        assertTrue(extTypes.file(false, false).parse("doesntexist", Collections.singletonList("data-directory")) 
-                instanceof FileReference);
-    }
 
+        assertTrue(
+                extTypes.file(true, false)
+                        .validate("temp", Collections.singletonList("data-directory")));
+        assertTrue(
+                extTypes.file(true, false)
+                        .validate("doesntexist", Collections.singletonList("data-directory")));
+        assertTrue(
+                extTypes.file(true, false)
+                                .parse("temp", Collections.singletonList("data-directory"))
+                        instanceof FileReference);
+        assertNull(
+                extTypes.file(true, false)
+                        .parse("doesntexist", Collections.singletonList("data-directory")));
+        assertTrue(
+                extTypes.file(false, false)
+                                .parse("doesntexist", Collections.singletonList("data-directory"))
+                        instanceof FileReference);
+    }
 }

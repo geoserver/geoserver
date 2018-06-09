@@ -5,6 +5,11 @@
  */
 package org.geoserver.wms.map;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -14,56 +19,36 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
-
-/**
- * 
- * @see RawMapResponse
- */
+/** @see RawMapResponse */
 public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
-    /**
-     * A logger for this class.
-     */
+    /** A logger for this class. */
     private static final Logger LOGGER = Logging.getLogger(OpenLayersMapOutputFormat.class);
 
-    /**
-     * The mime type for the response header
-     */
+    /** The mime type for the response header */
     public static final String MIME_TYPE = "text/html; subtype=openlayers";
 
-    /**
-     * System property name to toggle OL3 support.
-     */
+    /** System property name to toggle OL3 support. */
     public static final String ENABLE_OL3 = "ENABLE_OL3";
 
-    /**
-     * The formats accepted in a GetMap request for this producer and stated in getcaps
-     */
-    private static final Set<String> OUTPUT_FORMATS = new HashSet<String>(Arrays.asList(
-            "application/openlayers", "openlayers", MIME_TYPE));
+    /** The formats accepted in a GetMap request for this producer and stated in getcaps */
+    private static final Set<String> OUTPUT_FORMATS =
+            new HashSet<String>(Arrays.asList("application/openlayers", "openlayers", MIME_TYPE));
 
     private final OpenLayers2MapOutputFormat ol2Format;
     private final OpenLayers3MapOutputFormat ol3Format;
 
-    public OpenLayersMapOutputFormat(OpenLayers2MapOutputFormat ol2Format, OpenLayers3MapOutputFormat ol3Format) {
+    public OpenLayersMapOutputFormat(
+            OpenLayers2MapOutputFormat ol2Format, OpenLayers3MapOutputFormat ol3Format) {
         this.ol2Format = ol2Format;
         this.ol3Format = ol3Format;
     }
 
-    /**
-     * @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames()
-     */
+    /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
     public Set<String> getOutputFormatNames() {
         return OUTPUT_FORMATS;
     }
 
-    /**
-     * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
-     */
+    /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
     public String getMimeType() {
         return MIME_TYPE;
     }
@@ -73,11 +58,8 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         return AbstractOpenLayersMapOutputFormat.CAPABILITIES;
     }
 
-    /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
-     */
-    public RawMap produceMap(WMSMapContent mapContent)
-            throws ServiceException, IOException {
+    /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         if (isOL3Enabled(mapContent) && ol3Format.browserSupportsOL3(mapContent)) {
             return ol3Format.produceMap(mapContent);
         } else {
@@ -89,7 +71,8 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         GetMapRequest req = mapContent.getRequest();
 
         // check format options
-        Object enableOL3 = Converters.convert(req.getFormatOptions().get(ENABLE_OL3), Boolean.class);
+        Object enableOL3 =
+                Converters.convert(req.getFormatOptions().get(ENABLE_OL3), Boolean.class);
         if (enableOL3 == null) {
             // check system property
             enableOL3 = GeoServerExtensions.getProperty(ENABLE_OL3);
@@ -98,6 +81,4 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         // enable by default
         return enableOL3 == null || Converters.convert(enableOL3, Boolean.class);
     }
-
-
 }

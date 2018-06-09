@@ -4,10 +4,10 @@
  */
 package org.geoserver.taskmanager.beans;
 
+import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.schedule.TaskContext;
@@ -16,77 +16,83 @@ import org.geoserver.taskmanager.schedule.TaskResult;
 import org.geoserver.taskmanager.schedule.TaskType;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
-
 /**
  * A dummy task type used for testing.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 @Component
 public class DummyTaskTypeImpl implements TaskType {
-    
+
     public static final String NAME = "Dummy";
-    
+
     public static final String PARAM1 = "param1";
-    
+
     public static final String PARAM2 = "param2";
-    
-    private static final Map<String, ParameterInfo> PARAM_INFO = new LinkedHashMap<String, ParameterInfo>();
-            
+
+    private static final Map<String, ParameterInfo> PARAM_INFO =
+            new LinkedHashMap<String, ParameterInfo>();
+
     static {
-        PARAM_INFO.put(PARAM1, new ParameterInfo(PARAM1, 
-                new ParameterType() {
-                    @Override
-                    public List<String> getDomain(List<String> dependsOnRawValues) {
-                        return Lists.newArrayList("true", "foo", "bar");
-                    }
+        PARAM_INFO.put(
+                PARAM1,
+                new ParameterInfo(
+                        PARAM1,
+                        new ParameterType() {
+                            @Override
+                            public List<String> getDomain(List<String> dependsOnRawValues) {
+                                return Lists.newArrayList("true", "foo", "bar");
+                            }
 
-                    @Override
-                    public Object parse(String value, List<String> dependsOnRawValues) {
-                        if (getDomain(dependsOnRawValues).contains(value)) {
-                            return value;
-                        } else {
-                            return null;
-                        }
-                    }
-                    
-                    public List<String> getActions() {
-                        return Lists.newArrayList("actionDummy");
-                    }
-            
-        }, true));
+                            @Override
+                            public Object parse(String value, List<String> dependsOnRawValues) {
+                                if (getDomain(dependsOnRawValues).contains(value)) {
+                                    return value;
+                                } else {
+                                    return null;
+                                }
+                            }
 
-        PARAM_INFO.put(PARAM2, new ParameterInfo(PARAM2, 
-             new ParameterType() {
-                @Override
-                public List<String> getDomain(List<String> dependsOnRawValues) {
-                    if ("true".equals(dependsOnRawValues.get(0))) {
-                        return Lists.newArrayList("crash", "test", "dummy");
-                    } else {
-                        return Lists.newArrayList("dummy");
-                    }
-                }
-    
-                @Override
-                public Object parse(String value, List<String> dependsOnRawValues) {
-                    if (getDomain(dependsOnRawValues).contains(value)) {
-                        return value;
-                    } else {
-                        return null;
-                    }
-                }
+                            public List<String> getActions() {
+                                return Lists.newArrayList("actionDummy");
+                            }
+                        },
+                        true));
 
-                public List<String> getActions() {
-                    return Lists.newArrayList("actionDummy");
-                }
-        
-        }, true).dependsOn(PARAM_INFO.get(PARAM1)));
+        PARAM_INFO.put(
+                PARAM2,
+                new ParameterInfo(
+                                PARAM2,
+                                new ParameterType() {
+                                    @Override
+                                    public List<String> getDomain(List<String> dependsOnRawValues) {
+                                        if ("true".equals(dependsOnRawValues.get(0))) {
+                                            return Lists.newArrayList("crash", "test", "dummy");
+                                        } else {
+                                            return Lists.newArrayList("dummy");
+                                        }
+                                    }
+
+                                    @Override
+                                    public Object parse(
+                                            String value, List<String> dependsOnRawValues) {
+                                        if (getDomain(dependsOnRawValues).contains(value)) {
+                                            return value;
+                                        } else {
+                                            return null;
+                                        }
+                                    }
+
+                                    public List<String> getActions() {
+                                        return Lists.newArrayList("actionDummy");
+                                    }
+                                },
+                                true)
+                        .dependsOn(PARAM_INFO.get(PARAM1)));
     }
-    
+
     @Override
-    public Map<String, ParameterInfo> getParameterInfo() {        
+    public Map<String, ParameterInfo> getParameterInfo() {
         return PARAM_INFO;
     }
 
@@ -96,10 +102,8 @@ public class DummyTaskTypeImpl implements TaskType {
     }
 
     @Override
-    public void cleanup(TaskContext ctx) throws TaskException {
-        
-    }
-    
+    public void cleanup(TaskContext ctx) throws TaskException {}
+
     @Override
     public boolean supportsCleanup() {
         return true;
@@ -109,5 +113,4 @@ public class DummyTaskTypeImpl implements TaskType {
     public String getName() {
         return NAME;
     }
-
 }

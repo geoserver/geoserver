@@ -12,10 +12,10 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * A {@link CoordinateSequence} that grows as needed when coordinates are
- * {@link #add(double, double) added}, and stores all coordinates in a single {@code float[]}
- * <p>
- * A subset of this coordinate sequence can be obtained as a view sharing internal state using
+ * A {@link CoordinateSequence} that grows as needed when coordinates are {@link #add(double,
+ * double) added}, and stores all coordinates in a single {@code float[]}
+ *
+ * <p>A subset of this coordinate sequence can be obtained as a view sharing internal state using
  * {@link #subSequence(int, int)}
  */
 class GrowableCoordinateSequence implements CoordinateSequence {

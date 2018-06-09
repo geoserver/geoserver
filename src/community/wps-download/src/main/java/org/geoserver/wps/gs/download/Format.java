@@ -6,10 +6,6 @@ package org.geoserver.wps.gs.download;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * The format definition in a map/animation download
- */
-@XmlRootElement(name="Format")
-public class Format extends AbstractParametricEntity {
-    
-}
+/** The format definition in a map/animation download */
+@XmlRootElement(name = "Format")
+public class Format extends AbstractParametricEntity {}

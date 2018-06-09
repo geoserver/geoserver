@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.ProcessEvent;
@@ -19,7 +18,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * Handles notification to all the {@link ProcessListener} implementations for a given process
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ProcessListenerNotifier {
@@ -38,15 +37,17 @@ public class ProcessListenerNotifier {
 
     ExecuteRequest request;
 
-    public ProcessListenerNotifier(ExecutionStatus status, ExecuteRequest request,
-            LazyInputMap inputs, List<ProcessListener> listeners) {
+    public ProcessListenerNotifier(
+            ExecutionStatus status,
+            ExecuteRequest request,
+            LazyInputMap inputs,
+            List<ProcessListener> listeners) {
         this.status = status;
         this.request = request;
         this.progressListener = new WPSProgressListener();
         this.inputs = inputs;
         this.listeners = listeners;
         fireProcessSubmitted();
-        
     }
 
     public void fireProcessSubmitted() {
@@ -101,9 +102,7 @@ public class ProcessListenerNotifier {
         }
     }
 
-    /**
-     * Notifies all listeners that the process is being dismissed
-     */
+    /** Notifies all listeners that the process is being dismissed */
     public void dismiss() {
         this.status.phase = ProcessState.DISMISSING;
         ProcessEvent event = new ProcessEvent(status, inputs, outputs);
@@ -112,9 +111,7 @@ public class ProcessListenerNotifier {
         }
     }
 
-    /**
-     * Notifies all listeners that the process is being dismissed
-     */
+    /** Notifies all listeners that the process is being dismissed */
     public void fireDismissed() {
         this.status.phase = ProcessState.FAILED;
         ProcessEvent event = new ProcessEvent(status, inputs, outputs);
@@ -125,7 +122,7 @@ public class ProcessListenerNotifier {
 
     /**
      * Listens to the process progress and allows to cancel it
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     class WPSProgressListener implements ProgressListener {
@@ -198,8 +195,11 @@ public class ProcessListenerNotifier {
 
         @Override
         public void warningOccurred(String source, String location, String warning) {
-            LOGGER.log(Level.WARNING,
-                    "Got a warning during process execution " + status.getExecutionId() + ": "
+            LOGGER.log(
+                    Level.WARNING,
+                    "Got a warning during process execution "
+                            + status.getExecutionId()
+                            + ": "
                             + warning);
             // force process to just exit immediately
             checkDismissed();
@@ -217,22 +217,16 @@ public class ProcessListenerNotifier {
         public Throwable getException() {
             return exception;
         }
-
     }
 
     public WPSProgressListener getProgressListener() {
         return progressListener;
-
     }
 
-    /**
-     * Throws a process cancelled exception if the process has been cancelled
-     */
+    /** Throws a process cancelled exception if the process has been cancelled */
     public void checkDismissed() {
         if (status.getPhase() == ProcessState.DISMISSING) {
             throw new ProcessDismissedException();
         }
     }
-
-
 }

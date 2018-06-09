@@ -4,11 +4,13 @@
  */
 package org.geogig.geoserver.gwc;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.geotools.geometry.jts.JTS;
 import org.locationtech.geogig.model.Bounded;
@@ -17,29 +19,21 @@ import org.locationtech.geogig.model.NodeRef;
 import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk;
 import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk.BucketIndex;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-
 class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
 
     private static final GeometryFactory GEOM_FACTORY = CompactMultiPoint.GEOM_FACTORY;
 
-    /**
-     * Accumulates punctual differences to save heap
-     */
+    /** Accumulates punctual differences to save heap */
     private CompactMultiPoint points = new CompactMultiPoint();
 
-    /**
-     * Accumulates non punctual differences (i.e. bounding polygons)
-     */
+    /** Accumulates non punctual differences (i.e. bounding polygons) */
     private List<Geometry> nonPoints = new LinkedList<>();
 
     private final Lock lock = new ReentrantLock();
 
     /**
      * @return a single geometry product of unioning all the bounding boxes acquired while
-     *         traversing the diff
+     *     traversing the diff
      */
     public Geometry buildGeometry() {
         List<Geometry> geomList = nonPoints;
@@ -75,8 +69,11 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
     }
 
     @Override
-    public boolean bucket(final NodeRef leftParent, final NodeRef rightParent,
-            final BucketIndex bucketIndex, @Nullable final Bucket left,
+    public boolean bucket(
+            final NodeRef leftParent,
+            final NodeRef rightParent,
+            final BucketIndex bucketIndex,
+            @Nullable final Bucket left,
             @Nullable final Bucket right) {
         if (left == null) {
             addEnv(right);
@@ -144,8 +141,12 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
     }
 
     @Override
-    public void endBucket(NodeRef leftParent, NodeRef rightParent, final BucketIndex bucketIndex,
-            @Nullable final Bucket left, @Nullable final Bucket right) {
+    public void endBucket(
+            NodeRef leftParent,
+            NodeRef rightParent,
+            final BucketIndex bucketIndex,
+            @Nullable final Bucket left,
+            @Nullable final Bucket right) {
         // nothing to do, intentionally blank
     }
 }

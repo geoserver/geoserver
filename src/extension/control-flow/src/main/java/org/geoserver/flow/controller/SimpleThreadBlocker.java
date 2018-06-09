@@ -4,21 +4,21 @@
  */
 package org.geoserver.flow.controller;
 
-import org.geoserver.ows.Request;
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.geoserver.ows.Request;
 
 /**
- * Simple blocking queue based blocker, a request gets blocked if there are already <code>queueSize</code> requests
- * running
+ * Simple blocking queue based blocker, a request gets blocked if there are already <code>queueSize
+ * </code> requests running
  */
 public class SimpleThreadBlocker implements ThreadBlocker {
 
     /**
-     * This queue contains the requests that are running. The ones waiting are not "visible", are all
-     * blocked on {@link BlockingQueue#offer(Object, long, TimeUnit)}}  or {@link BlockingQueue#put(Object)}
+     * This queue contains the requests that are running. The ones waiting are not "visible", are
+     * all blocked on {@link BlockingQueue#offer(Object, long, TimeUnit)}} or {@link
+     * BlockingQueue#put(Object)}
      */
     BlockingQueue<Request> queue;
 
@@ -27,9 +27,9 @@ public class SimpleThreadBlocker implements ThreadBlocker {
     }
 
     public void requestComplete(Request request) {
-        // only removes requests that actually locked on the queue, when 
-        // a timeout happens some flow controllers won't have 
-        // requestIncoming called, but will have requestComplete called anyways 
+        // only removes requests that actually locked on the queue, when
+        // a timeout happens some flow controllers won't have
+        // requestIncoming called, but will have requestComplete called anyways
         queue.remove(request);
     }
 
@@ -46,6 +46,4 @@ public class SimpleThreadBlocker implements ThreadBlocker {
             return true;
         }
     }
-
-
 }

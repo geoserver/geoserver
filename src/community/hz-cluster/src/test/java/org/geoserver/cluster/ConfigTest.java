@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.cluster.hazelcast.HzSynchronizer;
 import org.geoserver.cluster.hazelcast.HzSynchronizerTest;
@@ -18,11 +17,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.junit.Test;
 
-/**
- * 
- * @author Alessio Fabiani, GeoSolutions
- *
- */
+/** @author Alessio Fabiani, GeoSolutions */
 public class ConfigTest extends HzSynchronizerTest {
 
     @Test
@@ -33,27 +28,29 @@ public class ConfigTest extends HzSynchronizerTest {
         GeoServerResourceLoader resourceLoader2 = new GeoServerResourceLoader(tmpDir2.dir());
         Resources.directory(tmpDir1.get("cluster"), true);
         Resources.directory(tmpDir2.get("cluster"), true);
-        
+
         this.cluster.setResourceStore(resourceLoader1.getResourceStore());
         this.cluster.saveConfiguration(resourceLoader1);
-        
+
         assertNotNull(cluster.getFileLocations());
         assertEquals(2, cluster.getFileLocations().size());
-        
+
         this.cluster.saveConfiguration(resourceLoader2);
-        
-        assertTrue("The file 'cluster.properties' does not exist!", Resources.exists(tmpDir2.get("cluster/cluster.properties")));
-        assertTrue("The file 'hazelcast.xml' does not exist!", Resources.exists(tmpDir2.get("cluster/hazelcast.xml")));
-        
+
+        assertTrue(
+                "The file 'cluster.properties' does not exist!",
+                Resources.exists(tmpDir2.get("cluster/cluster.properties")));
+        assertTrue(
+                "The file 'hazelcast.xml' does not exist!",
+                Resources.exists(tmpDir2.get("cluster/hazelcast.xml")));
+
         assertEquals(
-                IOUtils.readLines(tmpDir1.get("cluster/cluster.properties").in()), 
-                IOUtils.readLines(tmpDir2.get("cluster/cluster.properties").in())
-        );
-        
+                IOUtils.readLines(tmpDir1.get("cluster/cluster.properties").in()),
+                IOUtils.readLines(tmpDir2.get("cluster/cluster.properties").in()));
+
         assertEquals(
-                IOUtils.readLines(tmpDir1.get("cluster/hazelcast.xml").in()), 
-                IOUtils.readLines(tmpDir2.get("cluster/hazelcast.xml").in())
-        );
+                IOUtils.readLines(tmpDir1.get("cluster/hazelcast.xml").in()),
+                IOUtils.readLines(tmpDir2.get("cluster/hazelcast.xml").in()));
     }
 
     @Override

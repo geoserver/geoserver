@@ -11,20 +11,17 @@ import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 
 /**
  * Configuration panel for {@link MemoryRoleService}.
- * <p>
- * This service is only used for testing, it is only available when running from the development 
- * environment. 
- * </p>
- * 
+ *
+ * <p>This service is only used for testing, it is only available when running from the development
+ * environment.
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class MemoryRoleServicePanel extends RoleServicePanel<MemoryRoleServiceConfigImpl> {
 
-    public MemoryRoleServicePanel(String id,
-            IModel<MemoryRoleServiceConfigImpl> model) {
+    public MemoryRoleServicePanel(String id, IModel<MemoryRoleServiceConfigImpl> model) {
         super(id, model);
 
         add(new TextField("toBeEncrypted"));
     }
-
 }

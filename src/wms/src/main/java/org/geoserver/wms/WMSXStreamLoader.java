@@ -5,10 +5,14 @@
  */
 package org.geoserver.wms;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -22,18 +26,10 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geotools.util.Version;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-
 /**
  * Loads and persist the {@link WMSInfo} object to and from xstream persistence.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
 
@@ -59,6 +55,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
 
     /**
      * Sets up aliases and allowed types for the xstream persister
+     *
      * @param xs
      */
     public static void initXStreamPersister(XStreamPersister xp) {
@@ -66,7 +63,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
         xs.registerConverter(new WMSInfoConverter(xp));
         xs.addDefaultImplementation(WatermarkInfoImpl.class, WatermarkInfo.class);
-        xs.allowTypes(new Class[] { WatermarkInfo.class, WatermarkInfoImpl.class });
+        xs.allowTypes(new Class[] {WatermarkInfo.class, WatermarkInfoImpl.class});
     }
 
     @Override
@@ -84,24 +81,23 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
         if (service.getSRS() == null) {
             ((WMSInfoImpl) service).setSRS(new ArrayList<String>());
-        }        
+        }
         if (service.getGetFeatureInfoMimeTypes() == null) {
             ((WMSInfoImpl) service).setGetFeatureInfoMimeTypes(new HashSet<String>());
         }
         if (service.getGetMapMimeTypes() == null) {
             ((WMSInfoImpl) service).setGetMapMimeTypes(new HashSet<String>());
-        }        
+        }
         if (service.getInterpolation() == null) {
             service.setInterpolation(WMSInterpolation.Nearest);
         }
         return service;
     }
-    
-    
+
     /**
      * Converter for WMSInfo, stores authority urls and identifiers under metadata map in the 2.1.x
      * series.
-     * 
+     *
      * @since 2.1.3
      */
     static class WMSInfoConverter extends ServiceInfoConverter {
@@ -115,36 +111,37 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
             return WMSInfo.class.isAssignableFrom(type);
         }
 
-        /**
-         * @since 2.1.3
-         */
+        /** @since 2.1.3 */
         @Override
-        protected void doMarshal(Object source, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 
-//            WMSInfo service = (WMSInfo) source;
-//            {
-//                String authUrlsSerializedForm = AuthorityURLInfoInfoListConverter.toString(service
-//                        .getAuthorityURLs());
-//                if (null != authUrlsSerializedForm) {
-//                    service.getMetadata().put("authorityURLs", authUrlsSerializedForm);
-//                }
-//            }
-//
-//            {
-//                String identifiersSerializedForm = LayerIdentifierInfoListConverter
-//                        .toString(service.getIdentifiers());
-//                if (null != identifiersSerializedForm) {
-//                    service.getMetadata().put("identifiers", identifiersSerializedForm);
-//                }
-//            }
+            //            WMSInfo service = (WMSInfo) source;
+            //            {
+            //                String authUrlsSerializedForm =
+            // AuthorityURLInfoInfoListConverter.toString(service
+            //                        .getAuthorityURLs());
+            //                if (null != authUrlsSerializedForm) {
+            //                    service.getMetadata().put("authorityURLs",
+            // authUrlsSerializedForm);
+            //                }
+            //            }
+            //
+            //            {
+            //                String identifiersSerializedForm = LayerIdentifierInfoListConverter
+            //                        .toString(service.getIdentifiers());
+            //                if (null != identifiersSerializedForm) {
+            //                    service.getMetadata().put("identifiers",
+            // identifiersSerializedForm);
+            //                }
+            //            }
 
             super.doMarshal(source, writer, context);
         }
 
         @Override
-        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
-                UnmarshallingContext context) {
+        public Object doUnmarshal(
+                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
 
             WMSInfoImpl service = (WMSInfoImpl) super.doUnmarshal(result, reader, context);
             MetadataMap metadata = service.getMetadata();

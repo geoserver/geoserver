@@ -14,20 +14,19 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer;
 import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.util.MetadataMapModel;
 
-/**
- * {@link LayerEditTabPanel} implementation for configuring NetCDF output settings
- */
+/** {@link LayerEditTabPanel} implementation for configuring NetCDF output settings */
 public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    public NetCDFOutTabPanel(String id, IModel<LayerInfo> model, IModel<CoverageInfo> resourceModel) {
+    public NetCDFOutTabPanel(
+            String id, IModel<LayerInfo> model, IModel<CoverageInfo> resourceModel) {
         super(id, model);
 
         // Selection of the IModel associated to the metadata map
-        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(
-                    resourceModel, "metadata");
+        final PropertyModel<MetadataMap> metadata =
+                new PropertyModel<MetadataMap>(resourceModel, "metadata");
         // Selection of the CoverageInfo model
         IModel<CoverageInfo> cmodel = null;
         if (resourceModel.getObject() instanceof CoverageInfo) {
@@ -36,11 +35,13 @@ public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
         }
 
         // Getting the NetcdfSettingsContainer model from MetadataMap
-        IModel<NetCDFLayerSettingsContainer> netcdfModel = new MetadataMapModel<NetCDFLayerSettingsContainer>(metadata,
-                    NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
-        NetCDFOutSettingsEditor editor = new NetCDFOutSettingsEditor("netcdfeditor",    
-                    netcdfModel, cmodel);
+        IModel<NetCDFLayerSettingsContainer> netcdfModel =
+                new MetadataMapModel<NetCDFLayerSettingsContainer>(
+                        metadata,
+                        NetCDFSettingsContainer.NETCDFOUT_KEY,
+                        NetCDFLayerSettingsContainer.class);
+        NetCDFOutSettingsEditor editor =
+                new NetCDFOutSettingsEditor("netcdfeditor", netcdfModel, cmodel);
         add(editor);
-        
     }
 }

@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.KvpUtils;
 import org.geotools.data.ows.HTTPResponse;
@@ -21,19 +20,19 @@ import org.geotools.data.ows.HTTPResponse;
 /**
  * A simple mock http client, allows to set expectations on requests and provide canned responses on
  * them
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class MockHttpClient extends AbstractHttpClient {
 
-    Map<Request, HTTPResponse> expectedRequests = new LinkedHashMap<MockHttpClient.Request, HTTPResponse>();
+    Map<Request, HTTPResponse> expectedRequests =
+            new LinkedHashMap<MockHttpClient.Request, HTTPResponse>();
 
     /**
      * Binds a certain URL to a response. The order of the query string parameters is not relevant,
      * the code will match the same set of KVP params regardless of their sequence and case of their
      * keys (from OGC specs, keys are case insensitive, values are case sensitive)
-     * 
+     *
      * @param url
      * @param response
      */
@@ -43,17 +42,17 @@ public class MockHttpClient extends AbstractHttpClient {
 
     /**
      * Binds a certain POST request to a response.
-     * 
+     *
      * @param url
      * @param response
      */
-    public void expectPost(URL url, String postContent, String postContentType,
-            HTTPResponse response) {
+    public void expectPost(
+            URL url, String postContent, String postContentType, HTTPResponse response) {
         expectPOST(url, postContent.getBytes(), postContentType, response);
     }
 
-    public void expectPOST(URL url, byte[] postContent, String postContentType,
-            HTTPResponse response) {
+    public void expectPOST(
+            URL url, byte[] postContent, String postContentType, HTTPResponse response) {
         expectedRequests.put(new Request(url, postContent, postContentType), response);
     }
 
@@ -74,7 +73,11 @@ public class MockHttpClient extends AbstractHttpClient {
     private HTTPResponse getResponse(Request request) {
         HTTPResponse response = expectedRequests.get(request);
         if (response == null) {
-            StringBuilder sb = new StringBuilder("Unexpected request \n" + request + "\nNo response is bound to it. Bound urls are: ");
+            StringBuilder sb =
+                    new StringBuilder(
+                            "Unexpected request \n"
+                                    + request
+                                    + "\nNo response is bound to it. Bound urls are: ");
             for (Request r : expectedRequests.keySet()) {
                 sb.append("\n").append(r);
             }
@@ -102,8 +105,9 @@ public class MockHttpClient extends AbstractHttpClient {
         public Request(URL url) {
             this.path = url.getProtocol() + "://" + url.getHost() + url.getPath();
             Map<String, Object> parsedQueryString = KvpUtils.parseQueryString(url.toExternalForm());
-            // we use a treemap as it makes it easier to see what's missing when no bound url is found
-            this.kvp = new TreeMap<String, Object>(); 
+            // we use a treemap as it makes it easier to see what's missing when no bound url is
+            // found
+            this.kvp = new TreeMap<String, Object>();
             for (Entry<String, Object> entry : parsedQueryString.entrySet()) {
                 this.kvp.put(entry.getKey().toUpperCase(), entry.getValue());
             }
@@ -131,32 +135,21 @@ public class MockHttpClient extends AbstractHttpClient {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             Request other = (Request) obj;
             if (contentType == null) {
-                if (other.contentType != null)
-                    return false;
-            } else if (!contentType.equals(other.contentType))
-                return false;
-            if (isGetRequest != other.isGetRequest)
-                return false;
+                if (other.contentType != null) return false;
+            } else if (!contentType.equals(other.contentType)) return false;
+            if (isGetRequest != other.isGetRequest) return false;
             if (kvp == null) {
-                if (other.kvp != null)
-                    return false;
-            } else if (!kvp.equals(other.kvp))
-                return false;
+                if (other.kvp != null) return false;
+            } else if (!kvp.equals(other.kvp)) return false;
             if (path == null) {
-                if (other.path != null)
-                    return false;
-            } else if (!path.equals(other.path))
-                return false;
-            if (!Arrays.equals(postContent, other.postContent))
-                return false;
+                if (other.path != null) return false;
+            } else if (!path.equals(other.path)) return false;
+            if (!Arrays.equals(postContent, other.postContent)) return false;
             return true;
         }
 
@@ -165,10 +158,15 @@ public class MockHttpClient extends AbstractHttpClient {
             if (isGetRequest) {
                 return "GET " + path + ", " + kvp;
             } else {
-                return "POST " + path + ", " + kvp + ", content type " + contentType + ", content "
+                return "POST "
+                        + path
+                        + ", "
+                        + kvp
+                        + ", content type "
+                        + contentType
+                        + ", content "
                         + Arrays.toString(postContent);
             }
         }
     }
-
 }

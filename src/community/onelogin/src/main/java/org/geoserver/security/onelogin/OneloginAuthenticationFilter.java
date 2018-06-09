@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -39,12 +37,11 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 /**
- * OneLogin Authentication filter that configures SP metadata discovery filter and delegates to {@link #SAMLEntryPoint} the SAML authentication
- * process
- * 
+ * OneLogin Authentication filter that configures SP metadata discovery filter and delegates to
+ * {@link #SAMLEntryPoint} the SAML authentication process
+ *
  * @author Xandros
  */
-
 public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompositeUserNameFilter
         implements LogoutHandler {
 
@@ -60,7 +57,8 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
     }
 
     /**
-     * Configures {@link MetadataGenerator} using EntityId and ID MetadataURL from filter configuration<br/>
+     * Configures {@link MetadataGenerator} using EntityId and ID MetadataURL from filter
+     * configuration<br>
      * Configures SAMLUserDetailsService to use {@link GeoServerRole} selected provider
      */
     @Override
@@ -82,8 +80,8 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
                 ExtendedMetadata em = new ExtendedMetadata();
                 em.setRequireLogoutRequestSigned(false);
                 generator.setExtendedMetadata(em);
-                MetadataGeneratorFilter metadataGeneratorFilter = new MetadataGeneratorFilter(
-                        generator);
+                MetadataGeneratorFilter metadataGeneratorFilter =
+                        new MetadataGeneratorFilter(generator);
 
                 /*
                  * Create metadata provider
@@ -95,8 +93,9 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
                 clientParams.setSoTimeout(5000);
                 HttpClient httpClient = new HttpClient(clientParams);
                 httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-                HTTPMetadataProvider pro = new HTTPMetadataProvider(new Timer(true), httpClient,
-                        authConfig.getMetadataURL());
+                HTTPMetadataProvider pro =
+                        new HTTPMetadataProvider(
+                                new Timer(true), httpClient, authConfig.getMetadataURL());
                 pro.setParserPool(parserPool);
 
                 /*
@@ -104,7 +103,7 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
                  * "<?xml version=\"1.0\"?> <EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" entityID=\"https://app.onelogin.com/saml/metadata/575443\"> <IDPSSODescriptor xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\"> <KeyDescriptor use=\"signing\"> <ds:KeyInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"> <ds:X509Data> <ds:X509Certificate>MIIEHTCCAwWgAwIBAgIUIYlArFxWB1C7BX6q/mFytCIYeI8wDQYJKoZIhvcNAQEF BQAwWjELMAkGA1UEBhMCVVMxEzARBgNVBAoMCmNvZGVzdHVkaW8xFTATBgNVBAsM DE9uZUxvZ2luIElkUDEfMB0GA1UEAwwWT25lTG9naW4gQWNjb3VudCA4ODk4ODAe Fw0xNjA4MDMxMDUyNTNaFw0yMTA4MDQxMDUyNTNaMFoxCzAJBgNVBAYTAlVTMRMw EQYDVQQKDApjb2Rlc3R1ZGlvMRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNV BAMMFk9uZUxvZ2luIEFjY291bnQgODg5ODgwggEiMA0GCSqGSIb3DQEBAQUAA4IB DwAwggEKAoIBAQDWKHu+QvLa9BvqL6OoKKMVMBY0deHU6xqPAoatxiGlNIazoK8T PY5srjRX18W4aOb9In3zEulipGfNaQ0Avj/Jhi1UbS9lJMVNNODZ0dzfkJhIlpkG z7+totPf5P1BdUBTNk7OpguDLsb5DXKm5ZhGSDzMgGGNDNdOEZpJJ1zVjskUkmR2 frea+ZcpMkNa9CB6Jf6d6oE2BNhW94d1F4N5KB0NbmFonzLa3N5vRHstM88DbFSO UM7N9SRf+8Jnviae7fcG12woE+25G4qB1wJ1rfIu9wL7JhiXLPA7FB4L4bRglXZs Vin9sY93QyUmrv8kxNrtwLXnQopu0myfG3CXAgMBAAGjgdowgdcwDAYDVR0TAQH/ BAIwADAdBgNVHQ4EFgQUvz2fdMwH1G1W8bbcAWN238szW34wgZcGA1UdIwSBjzCB jIAUvz2fdMwH1G1W8bbcAWN238szW36hXqRcMFoxCzAJBgNVBAYTAlVTMRMwEQYD VQQKDApjb2Rlc3R1ZGlvMRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNVBAMM Fk9uZUxvZ2luIEFjY291bnQgODg5ODiCFCGJQKxcVgdQuwV+qv5hcrQiGHiPMA4G A1UdDwEB/wQEAwIHgDANBgkqhkiG9w0BAQUFAAOCAQEANkaO/xJag1n93l+6/sbl cG/1Oi3/hI19+lp0PU26kFtkrpzfjE4QugBgnGXkeJ/MU6abk650uh+7yLqkY15G m9Lsk0XiH1k7vWWnQl12Yj0uwCY47baBLw0lMCl5vNaJcULicAM715W3d2oHptnh ftePShyHHD69Z4e+UduuClbXjSxPNB9zTOsLYRVbrX+fIFm1AK8bWcmrH/jAuj7p WP7hRJdT3jG5N7LNb4th3Ojj47NksjaPo2nOuydZvyoL2CJ/E2qJeW78V6oqXCB3 D/XVIWWdUmYMNNmXksT9MJCtZWvnV3OmdYbyZjOK2bJK7fbVgm/gwpeBSY+pquMG AA==</ds:X509Certificate> </ds:X509Data> </ds:KeyInfo> </KeyDescriptor> <SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://codestudio-dev.onelogin.com/trust/saml2/http-redirect/slo/575443\"/> <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat> <SingleSignOnService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://codestudio-dev.onelogin.com/trust/saml2/http-redirect/sso/575443\"/> <SingleSignOnService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"https://codestudio-dev.onelogin.com/trust/saml2/http-post/sso/575443\"/> <SingleSignOnService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:SOAP\" Location=\"https://codestudio-dev.onelogin.com/trust/saml2/soap/sso/575443\"/> <SingleLogoutService Location=\"https://codestudio-dev.onelogin.com/trust/saml2/http-redirect/slo/575443\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\"/> </IDPSSODescriptor> <ContactPerson contactType=\"technical\"> <SurName>Support</SurName> <EmailAddress>support@onelogin.com</EmailAddress> </ContactPerson> </EntityDescriptor>"
                  * ; DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); dbf.setNamespaceAware(true); DocumentBuilder db =
                  * dbf.newDocumentBuilder(); Document doc = db.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
-                 * 
+                 *
                  * DOMMetadataProvider pro = new DOMMetadataProvider(doc.getDocumentElement()); pro.setParserPool(parserPool); pro.initialize();
                  */
 
@@ -144,13 +143,14 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
     }
 
     /**
-     * Injects current request into {@link SAMLUserDetailsServiceImpl} and sets {@link SAMLEntryPoint} as filter entry point
+     * Injects current request into {@link SAMLUserDetailsServiceImpl} and sets {@link
+     * SAMLEntryPoint} as filter entry point
      */
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        req.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER,
-                this.samlEntryPoint);
+        req.setAttribute(
+                GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, this.samlEntryPoint);
         /*
          * Inject current request into SAML user details service
          */
@@ -170,11 +170,12 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response,
+    public void logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
             Authentication authentication) {
-        request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
-                SAMLLogoutFilter.FILTER_URL);
-
+        request.setAttribute(
+                GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, SAMLLogoutFilter.FILTER_URL);
     }
 
     @Override
@@ -182,5 +183,4 @@ public class OneloginAuthenticationFilter extends GeoServerPreAuthenticatedCompo
         // TODO Auto-generated method stub
         return null;
     }
-
 }

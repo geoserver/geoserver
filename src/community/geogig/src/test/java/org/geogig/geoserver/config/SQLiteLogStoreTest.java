@@ -8,28 +8,28 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.Test;
 
 public class SQLiteLogStoreTest extends AbstractLogStoreTest {
 
-	@Override
-	protected ResourceStore getResourceStore() {
-		return new FileSystemResourceStore(tmpDir.getRoot());
-	}
-	
-	@Override
-	protected void populateConfigProperties(Properties properties) {
-		// do nothing create the default log store.
-	}
-	
+    @Override
+    protected ResourceStore getResourceStore() {
+        return new FileSystemResourceStore(tmpDir.getRoot());
+    }
+
+    @Override
+    protected void populateConfigProperties(Properties properties) {
+        // do nothing create the default log store.
+    }
+
     @Test
     public void testCreatesDefault() throws Exception {
-        File file = FileUtils.getFile(tmpDir.getRoot(), "geogig", "config", "security", "securitylogs.db");
+        File file =
+                FileUtils.getFile(
+                        tmpDir.getRoot(), "geogig", "config", "security", "securitylogs.db");
         logStore.afterPropertiesSet();
         assertTrue(file.exists());
     }

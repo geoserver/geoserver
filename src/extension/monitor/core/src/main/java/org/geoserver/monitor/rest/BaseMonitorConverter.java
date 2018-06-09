@@ -4,24 +4,16 @@
  */
 package org.geoserver.monitor.rest;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataVisitor;
-import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 
-/**
- * Base class for monitor requests converters, handles visiting results.
- */
+/** Base class for monitor requests converters, handles visiting results. */
 public abstract class BaseMonitorConverter extends BaseMessageConverter<MonitorQueryResults> {
 
     protected BaseMonitorConverter(MediaType... mediaType) {
@@ -54,5 +46,4 @@ public abstract class BaseMonitorConverter extends BaseMessageConverter<MonitorQ
             }
         }
     }
-
 }

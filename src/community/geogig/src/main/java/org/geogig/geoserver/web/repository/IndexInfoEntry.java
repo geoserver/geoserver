@@ -6,51 +6,49 @@ package org.geogig.geoserver.web.repository;
 
 import static com.google.common.base.Objects.equal;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
 import org.locationtech.geogig.repository.IndexInfo;
 import org.locationtech.geogig.repository.IndexInfo.IndexType;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-
-/**
- * A {@link IndexInfo} representation for the presentation layer
- *
- */
+/** A {@link IndexInfo} representation for the presentation layer */
 public class IndexInfoEntry implements Serializable {
 
-	private static final long serialVersionUID = 4290576065610816811L;
+    private static final long serialVersionUID = 4290576065610816811L;
 
-	private Integer id;
-    
-	private String layer;
-	
-	private String indexedAttribute;
-	
-	private IndexType indexType;
-	
-	private List<String> extraAttributes;
-	
-	public IndexInfoEntry() {
-		this.layer = "";
-		this.indexedAttribute = "";
-		this.indexType = null;
-		this.extraAttributes = Lists.newArrayList();
-		this.id = null;
-	}
-	
-	public IndexInfoEntry(String layer, String indexedAttribute, IndexType indexType, List<String> extraAttributes) {
-		this.layer = layer;
-		this.indexedAttribute = indexedAttribute;
-		this.indexType = IndexType.QUADTREE;
-		this.extraAttributes = extraAttributes;
-		this.id = hashCode();
-	}
+    private Integer id;
+
+    private String layer;
+
+    private String indexedAttribute;
+
+    private IndexType indexType;
+
+    private List<String> extraAttributes;
+
+    public IndexInfoEntry() {
+        this.layer = "";
+        this.indexedAttribute = "";
+        this.indexType = null;
+        this.extraAttributes = Lists.newArrayList();
+        this.id = null;
+    }
+
+    public IndexInfoEntry(
+            String layer,
+            String indexedAttribute,
+            IndexType indexType,
+            List<String> extraAttributes) {
+        this.layer = layer;
+        this.indexedAttribute = indexedAttribute;
+        this.indexType = IndexType.QUADTREE;
+        this.extraAttributes = extraAttributes;
+        this.id = hashCode();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -61,7 +59,10 @@ public class IndexInfoEntry implements Serializable {
             return true;
         }
         IndexInfoEntry i = (IndexInfoEntry) o;
-        return equal(layer, i.layer) && equal(indexedAttribute, i.indexedAttribute) && equal(indexType, i.indexType) && equal(extraAttributes, i.extraAttributes);
+        return equal(layer, i.layer)
+                && equal(indexedAttribute, i.indexedAttribute)
+                && equal(indexType, i.indexType)
+                && equal(extraAttributes, i.extraAttributes);
     }
 
     @Override
@@ -84,18 +85,19 @@ public class IndexInfoEntry implements Serializable {
     public void setIndexedAttribute(String indexedAttribute) {
         this.indexedAttribute = indexedAttribute;
     }
-    
+
     @Nullable
     Integer getId() {
         return id;
     }
-    
+
     public static IndexInfoEntry fromIndexInfo(IndexInfo indexInfo) {
-    	String layer = indexInfo.getTreeName();
-    	String indexedAttribute = indexInfo.getAttributeName();
-    	IndexType indexType = indexInfo.getIndexType();
-    	List<String> extraAttributes = Lists.newArrayList(IndexInfo.getMaterializedAttributeNames(indexInfo));
-    	return new IndexInfoEntry(layer, indexedAttribute, indexType, extraAttributes);
+        String layer = indexInfo.getTreeName();
+        String indexedAttribute = indexInfo.getAttributeName();
+        IndexType indexType = indexInfo.getIndexType();
+        List<String> extraAttributes =
+                Lists.newArrayList(IndexInfo.getMaterializedAttributeNames(indexInfo));
+        return new IndexInfoEntry(layer, indexedAttribute, indexType, extraAttributes);
     }
 
     public static ArrayList<IndexInfoEntry> fromIndexInfos(List<IndexInfo> indexInfos) {

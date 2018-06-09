@@ -20,7 +20,7 @@ public class CSWAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(CSWAdminPage.class);
 
         tester.assertRenderedPage(CSWAdminPage.class);
-        
+
         // test that components have been filled as expected
         tester.assertComponent("form:keywords", KeywordsEditor.class);
         tester.assertModelValue("form:keywords", csw.getKeywords());

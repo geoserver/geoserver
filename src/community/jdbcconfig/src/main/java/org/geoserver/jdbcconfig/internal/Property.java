@@ -48,9 +48,7 @@ public class Property {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /**
-     *
-     */
+    /** */
     public String getPropertyName() {
         return propertyType.getPropertyName();
     }

@@ -4,16 +4,13 @@
  */
 package org.geoserver.backuprestore.listener;
 
+import java.util.List;
 import org.geoserver.backuprestore.listener.BackupRestoreJobExecutionListener.JobType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
-import java.util.List;
-
-/**
- * Job execution listener that will invoke listeners contributed by extensions.
- */
+/** Job execution listener that will invoke listeners contributed by extensions. */
 public final class GenericListenersExecutor implements JobExecutionListener {
 
     // type of the job associated to this listener instance (backup or restore)
@@ -33,9 +30,7 @@ public final class GenericListenersExecutor implements JobExecutionListener {
         getListeners().forEach(listener -> listener.afterJob(jobType, jobExecution));
     }
 
-    /**
-     * Helper method that returns all the available job execution listeners.
-     */
+    /** Helper method that returns all the available job execution listeners. */
     private List<BackupRestoreJobExecutionListener> getListeners() {
         return GeoServerExtensions.extensions(BackupRestoreJobExecutionListener.class);
     }

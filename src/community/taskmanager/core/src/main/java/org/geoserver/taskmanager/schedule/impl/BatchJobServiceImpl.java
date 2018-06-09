@@ -6,7 +6,6 @@ package org.geoserver.taskmanager.schedule.impl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
@@ -33,37 +32,35 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the batch job service.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 @Service("batchJobService")
-public class BatchJobServiceImpl implements BatchJobService, ApplicationListener<ContextRefreshedEvent>  {
-    
-    private static final Logger LOGGER = Logging.getLogger(BatchJobServiceImpl.class);
-    
-    @Autowired 
-    private TaskManagerDao dao;
+public class BatchJobServiceImpl
+        implements BatchJobService, ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired 
-    private TaskManagerDataUtil dataUtil;
-    
-    @Autowired
-    private Scheduler scheduler;
-    
+    private static final Logger LOGGER = Logging.getLogger(BatchJobServiceImpl.class);
+
+    @Autowired private TaskManagerDao dao;
+
+    @Autowired private TaskManagerDataUtil dataUtil;
+
+    @Autowired private Scheduler scheduler;
+
     private boolean init = true;
 
     @Transactional("tmTransactionManager")
     protected void schedule(Batch batch) throws SchedulerException {
-        //check for inactive tasks
+        // check for inactive tasks
         for (BatchElement be : batch.getElements()) {
             if (!be.getTask().isActive()) {
-                throw new IllegalArgumentException("Cannot save & schedule a batch with inactive tasks!");
+                throw new IllegalArgumentException(
+                        "Cannot save & schedule a batch with inactive tasks!");
             }
         }
-        
-        JobKey jobKey = JobKey.jobKey(batch.getId().toString());        
-        
+
+        JobKey jobKey = JobKey.jobKey(batch.getId().toString());
+
         boolean exists = scheduler.checkExists(jobKey);
 
         if (!batch.isActive()) {
@@ -75,8 +72,11 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
 
         } else {
             if (!exists) {
-                JobDetail jobDetail = JobBuilder.newJob(BatchJobImpl.class).withIdentity(jobKey)
-                        .storeDurably().build();
+                JobDetail jobDetail =
+                        JobBuilder.newJob(BatchJobImpl.class)
+                                .withIdentity(jobKey)
+                                .storeDurably()
+                                .build();
 
                 scheduler.addJob(jobDetail, true);
             }
@@ -84,28 +84,31 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
             TriggerKey triggerKey = TriggerKey.triggerKey(batch.getId().toString());
             scheduler.unscheduleJob(triggerKey);
 
-            if (batch.isEnabled() && batch.getFrequency() != null && !batch.getElements().isEmpty()
+            if (batch.isEnabled()
+                    && batch.getFrequency() != null
+                    && !batch.getElements().isEmpty()
                     && (batch.getConfiguration() == null
                             || batch.getConfiguration().isValidated())) {
-                Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
-                        .forJob(jobKey)
-                        .withSchedule(CronScheduleBuilder.cronSchedule(batch.getFrequency()))
-                        .build();
+                Trigger trigger =
+                        TriggerBuilder.newTrigger()
+                                .withIdentity(triggerKey)
+                                .forJob(jobKey)
+                                .withSchedule(
+                                        CronScheduleBuilder.cronSchedule(batch.getFrequency()))
+                                .build();
 
                 scheduler.scheduleJob(trigger);
             }
 
             LOGGER.log(Level.INFO, "Successfully (re)scheduled batch " + batch.getFullName());
         }
-
     }
-    
+
     @Override
     @Transactional("tmTransactionManager")
     public Batch saveAndSchedule(Batch batch) {
         batch = dao.save(batch);
-        if (batch.getConfiguration() == null
-                || !batch.getConfiguration().isTemplate()) {
+        if (batch.getConfiguration() == null || !batch.getConfiguration().isTemplate()) {
             try {
                 schedule(batch);
             } catch (SchedulerException e) {
@@ -115,7 +118,7 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
         }
         return batch;
     }
-    
+
     @Override
     @Transactional("tmTransactionManager")
     public Configuration saveAndSchedule(Configuration config) {
@@ -132,7 +135,7 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
         }
         return config;
     }
-    
+
     @Override
     @Transactional("tmTransactionManager")
     public Batch remove(Batch batch) {
@@ -144,7 +147,7 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
         }
         return dao.remove(batch);
     }
-    
+
     @Override
     @Transactional("tmTransactionManager")
     public Configuration remove(Configuration config) {
@@ -158,34 +161,40 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
         }
         return dao.remove(config);
     }
-    
+
     @Override
     public void reloadFromData() {
         LOGGER.info("Reloading scheduler from data.");
-        
+
         try {
             scheduler.clear();
         } catch (SchedulerException e) {
             LOGGER.log(Level.WARNING, "Failed to clear scheduler ", e);
             throw new IllegalStateException(e);
         }
-                
+
         for (Batch batch : dao.getAllBatches()) {
             try {
                 schedule(batch);
             } catch (SchedulerException | IllegalArgumentException e) {
-                LOGGER.log(Level.WARNING, "Failed to schedule batch " + batch.getName() + ", disabling. ", e);
+                LOGGER.log(
+                        Level.WARNING,
+                        "Failed to schedule batch " + batch.getName() + ", disabling. ",
+                        e);
                 batch.setEnabled(false);
-                dao.save(batch); 
+                dao.save(batch);
             }
-            
+
             for (BatchRun br : dao.getCurrentBatchRuns(batch)) {
-                LOGGER.log(Level.WARNING, "Automatically closing inactive batch run at start-up: " + batch.getFullName());
+                LOGGER.log(
+                        Level.WARNING,
+                        "Automatically closing inactive batch run at start-up: "
+                                + batch.getFullName());
                 dataUtil.closeBatchRun(br, "closed at start-up");
             }
         }
     }
-        
+
     public boolean isInit() {
         return init;
     }
@@ -206,39 +215,37 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
-    
+
     @Override
     public String scheduleNow(Batch batch) {
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()        
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         try {
             scheduler.scheduleJob(trigger);
         } catch (SchedulerException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-        
+
         return trigger.getKey().getName();
     }
-        
+
     @Override
     @Transactional(transactionManager = "tmTransactionManager")
     public void interrupt(BatchRun batchRun) {
         batchRun = dao.reload(batchRun);
-        if (!batchRun.getStatus().isClosed())  {
+        if (!batchRun.getStatus().isClosed()) {
             if (batchRun.getSchedulerReference() != null) {
                 try {
                     TriggerKey triggerKey = TriggerKey.triggerKey(batchRun.getSchedulerReference());
                     Trigger trigger = scheduler.getTrigger(triggerKey);
                     boolean lastFire = trigger != null ? (trigger.getNextFireTime() == null) : true;
                     TriggerState state = scheduler.getTriggerState(triggerKey);
-                    
-                    //the blocked check only works thanks to @DisallowConcurrentExecution
-                    //otherwise it would go straight back to waiting and we wouldn't know
-                    //when the job was finished.
-                    if ((lastFire && state == TriggerState.NONE) || 
-                            (!lastFire && state != TriggerState.BLOCKED)) {
+
+                    // the blocked check only works thanks to @DisallowConcurrentExecution
+                    // otherwise it would go straight back to waiting and we wouldn't know
+                    // when the job was finished.
+                    if ((lastFire && state == TriggerState.NONE)
+                            || (!lastFire && state != TriggerState.BLOCKED)) {
                         dataUtil.closeBatchRun(batchRun, "manually closed due to inactivity");
                         return;
                     }
@@ -250,6 +257,4 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
             dao.save(batchRun);
         }
     }
-
-
 }

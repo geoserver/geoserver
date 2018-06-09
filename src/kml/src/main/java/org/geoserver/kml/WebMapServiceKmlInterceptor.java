@@ -20,15 +20,15 @@ public class WebMapServiceKmlInterceptor implements MethodInterceptor {
         this.wms = wms;
         this.webMapService = webMapService;
     }
-    
+
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        if(invocation.getMethod().getName().equals("kml")) {
+        if (invocation.getMethod().getName().equals("kml")) {
             try {
                 GetMapRequest getMap = (GetMapRequest) invocation.getArguments()[0];
                 return KMLReflector.doWms(getMap, webMapService, wms);
             } catch (Exception e) {
-                if(e instanceof ServiceException) {
+                if (e instanceof ServiceException) {
                     throw e;
                 } else {
                     throw new ServiceException(e);
@@ -38,6 +38,4 @@ public class WebMapServiceKmlInterceptor implements MethodInterceptor {
             return invocation.proceed();
         }
     }
-
-
 }

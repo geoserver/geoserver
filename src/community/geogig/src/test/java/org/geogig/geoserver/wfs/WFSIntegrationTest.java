@@ -9,13 +9,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
@@ -53,9 +54,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-
 @TestSetup(run = TestSetupFrequency.ONCE)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // zz_testCommitsSurviveShutDown run the latest
 public class WFSIntegrationTest extends WFSTestSupport {
@@ -77,13 +75,11 @@ public class WFSIntegrationTest extends WFSTestSupport {
         }
 
         @Override
-        protected void setUpInternal() throws Exception {
-        }
+        protected void setUpInternal() throws Exception {}
 
         File getRepositoryDirectory() {
             return super.repositoryDirectory;
         }
-
     }
 
     @Override
@@ -162,8 +158,8 @@ public class WFSIntegrationTest extends WFSTestSupport {
         fti.setEnabled(true);
         fti.setCqlFilter("INCLUDE");
         fti.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
-        ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180, -90, 90,
-                CRS.decode("EPSG:4326"));
+        ReferencedEnvelope bounds =
+                new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326"));
         fti.setNativeBoundingBox(bounds);
         fti.setLatLonBoundingBox(bounds);
         catalog.add(fti);
@@ -178,18 +174,21 @@ public class WFSIntegrationTest extends WFSTestSupport {
     @Test
     public void testInsert() throws Exception {
         Document dom;
-        dom = getAsDOM(
-                "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
+        dom =
+                getAsDOM(
+                        "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
         int initial = dom.getElementsByTagName("geogig:Lines").getLength();
 
         dom = insert();
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
-        assertEquals("1",
+        assertEquals(
+                "1",
                 getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild().getNodeValue());
 
-        dom = getAsDOM(
-                "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
+        dom =
+                getAsDOM(
+                        "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
         // print(dom);
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
 
@@ -197,22 +196,25 @@ public class WFSIntegrationTest extends WFSTestSupport {
     }
 
     private Document insert() throws Exception {
-        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "//
-                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "//
-                + " xmlns:gml=\"http://www.opengis.net/gml\" " //
-                + " xmlns:geogig=\"" + NAMESPACE + "\">"//
-                + "<wfs:Insert>"//
-                + "<geogig:Lines gml:id=\"Lines.1000\">"//
-                + "    <geogig:sp>StringProp new</geogig:sp>"//
-                + "    <geogig:ip>999</geogig:ip>"//
-                + "    <geogig:pp>"//
-                + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">"//
-                + "            <gml:posList>1.0 1.0 2.0 2.0</gml:posList>"//
-                + "        </gml:LineString>"//
-                + "    </geogig:pp>"//
-                + "</geogig:Lines>"//
-                + "</wfs:Insert>"//
-                + "</wfs:Transaction>";
+        String xml =
+                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" " //
+                        + " xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                        + " xmlns:gml=\"http://www.opengis.net/gml\" " //
+                        + " xmlns:geogig=\""
+                        + NAMESPACE
+                        + "\">" //
+                        + "<wfs:Insert>" //
+                        + "<geogig:Lines gml:id=\"Lines.1000\">" //
+                        + "    <geogig:sp>StringProp new</geogig:sp>" //
+                        + "    <geogig:ip>999</geogig:ip>" //
+                        + "    <geogig:pp>" //
+                        + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">" //
+                        + "            <gml:posList>1.0 1.0 2.0 2.0</gml:posList>" //
+                        + "        </gml:LineString>" //
+                        + "    </geogig:pp>" //
+                        + "</geogig:Lines>" //
+                        + "</wfs:Insert>" //
+                        + "</wfs:Transaction>";
 
         Document dom = postAsDOM("wfs", xml);
         return dom;
@@ -222,39 +224,46 @@ public class WFSIntegrationTest extends WFSTestSupport {
     public void testUpdate() throws Exception {
         Document dom = update();
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
-        assertEquals("1",
+        assertEquals(
+                "1",
                 getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
 
-        dom = getAsDOM("wfs?version=1.1.0&request=getfeature&typename=geogig:Lines" + "&"
-                + "cql_filter=ip%3D1000");
+        dom =
+                getAsDOM(
+                        "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines"
+                                + "&"
+                                + "cql_filter=ip%3D1000");
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
 
         assertEquals(1, dom.getElementsByTagName("geogig:Lines").getLength());
     }
 
     private Document update() throws Exception {
-        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\""//
-                + " xmlns:geogig=\"" + NAMESPACE + "\""//
-                + " xmlns:ogc=\"http://www.opengis.net/ogc\""//
-                + " xmlns:gml=\"http://www.opengis.net/gml\""//
-                + " xmlns:wfs=\"http://www.opengis.net/wfs\">"//
-                + " <wfs:Update typeName=\"geogig:Lines\">"//
-                + "   <wfs:Property>"//
-                + "     <wfs:Name>geogig:pp</wfs:Name>"//
-                + "     <wfs:Value>"
-                + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">"//
-                + "            <gml:posList>1 2 3 4</gml:posList>"//
-                + "        </gml:LineString>"//
-                + "     </wfs:Value>"//
-                + "   </wfs:Property>"//
-                + "   <ogc:Filter>"//
-                + "     <ogc:PropertyIsEqualTo>"//
-                + "       <ogc:PropertyName>ip</ogc:PropertyName>"//
-                + "       <ogc:Literal>1000</ogc:Literal>"//
-                + "     </ogc:PropertyIsEqualTo>"//
-                + "   </ogc:Filter>"//
-                + " </wfs:Update>"//
-                + "</wfs:Transaction>";
+        String xml =
+                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" //
+                        + " xmlns:geogig=\""
+                        + NAMESPACE
+                        + "\"" //
+                        + " xmlns:ogc=\"http://www.opengis.net/ogc\"" //
+                        + " xmlns:gml=\"http://www.opengis.net/gml\"" //
+                        + " xmlns:wfs=\"http://www.opengis.net/wfs\">" //
+                        + " <wfs:Update typeName=\"geogig:Lines\">" //
+                        + "   <wfs:Property>" //
+                        + "     <wfs:Name>geogig:pp</wfs:Name>" //
+                        + "     <wfs:Value>"
+                        + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">" //
+                        + "            <gml:posList>1 2 3 4</gml:posList>" //
+                        + "        </gml:LineString>" //
+                        + "     </wfs:Value>" //
+                        + "   </wfs:Property>" //
+                        + "   <ogc:Filter>" //
+                        + "     <ogc:PropertyIsEqualTo>" //
+                        + "       <ogc:PropertyName>ip</ogc:PropertyName>" //
+                        + "       <ogc:Literal>1000</ogc:Literal>" //
+                        + "     </ogc:PropertyIsEqualTo>" //
+                        + "   </ogc:Filter>" //
+                        + " </wfs:Update>" //
+                        + "</wfs:Transaction>";
 
         Document dom = postAsDOM("wfs", xml);
         return dom;
@@ -263,31 +272,34 @@ public class WFSIntegrationTest extends WFSTestSupport {
     /**
      * Test case to expose issue https://github.com/boundlessgeo/geogig/issues/310 "Editing Features
      * changes the feature type"
-     * 
+     *
      * @see #testUpdateDoesntChangeFeatureType()
      */
     @Test
     public void testInsertDoesntChangeFeatureType() throws Exception {
-        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "//
-                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "//
-                + " xmlns:gml=\"http://www.opengis.net/gml\" " //
-                + " xmlns:geogig=\"" + NAMESPACE + "\">"//
-                + "<wfs:Insert>"//
-                + "<geogig:Lines gml:id=\"Lines.1000\">"//
-                + "    <geogig:sp>added</geogig:sp>"//
-                + "    <geogig:ip>7</geogig:ip>"//
-                + "    <geogig:pp>"//
-                + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">"//
-                + "            <gml:posList>1 2 3 4</gml:posList>"//
-                + "        </gml:LineString>"//
-                + "    </geogig:pp>"//
-                + "</geogig:Lines>"//
-                + "</wfs:Insert>"//
-                + "</wfs:Transaction>";
+        String xml =
+                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" " //
+                        + " xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                        + " xmlns:gml=\"http://www.opengis.net/gml\" " //
+                        + " xmlns:geogig=\""
+                        + NAMESPACE
+                        + "\">" //
+                        + "<wfs:Insert>" //
+                        + "<geogig:Lines gml:id=\"Lines.1000\">" //
+                        + "    <geogig:sp>added</geogig:sp>" //
+                        + "    <geogig:ip>7</geogig:ip>" //
+                        + "    <geogig:pp>" //
+                        + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">" //
+                        + "            <gml:posList>1 2 3 4</gml:posList>" //
+                        + "        </gml:LineString>" //
+                        + "    </geogig:pp>" //
+                        + "</geogig:Lines>" //
+                        + "</wfs:Insert>" //
+                        + "</wfs:Transaction>";
 
         GeoGIG geogig = helper.getGeogig();
-        final NodeRef initialTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
-                .call().get();
+        final NodeRef initialTypeTreeRef =
+                geogig.command(FindTreeChild.class).setChildPath("Lines").call().get();
         assertFalse(initialTypeTreeRef.getMetadataId().isNull());
 
         Document dom = postAsDOM("wfs", xml);
@@ -299,20 +311,25 @@ public class WFSIntegrationTest extends WFSTestSupport {
         }
 
         try {
-            assertEquals("1", getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild()
-                    .getNodeValue());
+            assertEquals(
+                    "1",
+                    getFirstElementByTagName(dom, "wfs:totalInserted")
+                            .getFirstChild()
+                            .getNodeValue());
         } catch (AssertionError e) {
             print(dom);
             throw e;
         }
 
-        final NodeRef finalTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
-                .call().get();
+        final NodeRef finalTypeTreeRef =
+                geogig.command(FindTreeChild.class).setChildPath("Lines").call().get();
         assertFalse(initialTypeTreeRef.equals(finalTypeTreeRef));
         assertFalse(finalTypeTreeRef.getMetadataId().isNull());
 
-        assertEquals("Feature type tree metadataId shouuldn't change upon edits",
-                initialTypeTreeRef.getMetadataId(), finalTypeTreeRef.getMetadataId());
+        assertEquals(
+                "Feature type tree metadataId shouuldn't change upon edits",
+                initialTypeTreeRef.getMetadataId(),
+                finalTypeTreeRef.getMetadataId());
 
         Iterator<NodeRef> featureRefs = geogig.command(LsTreeOp.class).setReference("Lines").call();
         while (featureRefs.hasNext()) {
@@ -325,52 +342,58 @@ public class WFSIntegrationTest extends WFSTestSupport {
     /**
      * Test case to expose issue https://github.com/boundlessgeo/geogig/issues/310 "Editing Features
      * changes the feature type"
-     * 
+     *
      * @see #testInsertDoesntChangeFeatureType()
      */
     @Test
     public void testUpdateDoesntChangeFeatureType() throws Exception {
-        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\""//
-                + " xmlns:geogig=\"" + NAMESPACE + "\""//
-                + " xmlns:ogc=\"http://www.opengis.net/ogc\""//
-                + " xmlns:gml=\"http://www.opengis.net/gml\""//
-                + " xmlns:wfs=\"http://www.opengis.net/wfs\">"//
-                + " <wfs:Update typeName=\"geogig:Lines\">"//
-                + "   <wfs:Property>"//
-                + "     <wfs:Name>geogig:pp</wfs:Name>"//
-                + "     <wfs:Value>"
-                + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">"//
-                + "            <gml:posList>3 4 5 6</gml:posList>"//
-                + "        </gml:LineString>"//
-                + "     </wfs:Value>"//
-                + "   </wfs:Property>"//
-                + "   <ogc:Filter>"//
-                + "     <ogc:PropertyIsEqualTo>"//
-                + "       <ogc:PropertyName>ip</ogc:PropertyName>"//
-                + "       <ogc:Literal>1000</ogc:Literal>"//
-                + "     </ogc:PropertyIsEqualTo>"//
-                + "   </ogc:Filter>"//
-                + " </wfs:Update>"//
-                + "</wfs:Transaction>";
+        String xml =
+                "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" //
+                        + " xmlns:geogig=\""
+                        + NAMESPACE
+                        + "\"" //
+                        + " xmlns:ogc=\"http://www.opengis.net/ogc\"" //
+                        + " xmlns:gml=\"http://www.opengis.net/gml\"" //
+                        + " xmlns:wfs=\"http://www.opengis.net/wfs\">" //
+                        + " <wfs:Update typeName=\"geogig:Lines\">" //
+                        + "   <wfs:Property>" //
+                        + "     <wfs:Name>geogig:pp</wfs:Name>" //
+                        + "     <wfs:Value>"
+                        + "        <gml:LineString srsDimension=\"2\" srsName=\"EPSG:4326\">" //
+                        + "            <gml:posList>3 4 5 6</gml:posList>" //
+                        + "        </gml:LineString>" //
+                        + "     </wfs:Value>" //
+                        + "   </wfs:Property>" //
+                        + "   <ogc:Filter>" //
+                        + "     <ogc:PropertyIsEqualTo>" //
+                        + "       <ogc:PropertyName>ip</ogc:PropertyName>" //
+                        + "       <ogc:Literal>1000</ogc:Literal>" //
+                        + "     </ogc:PropertyIsEqualTo>" //
+                        + "   </ogc:Filter>" //
+                        + " </wfs:Update>" //
+                        + "</wfs:Transaction>";
 
         GeoGIG geogig = helper.getGeogig();
-        final NodeRef initialTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
-                .call().get();
+        final NodeRef initialTypeTreeRef =
+                geogig.command(FindTreeChild.class).setChildPath("Lines").call().get();
         assertFalse(initialTypeTreeRef.getMetadataId().isNull());
 
         Document dom = postAsDOM("wfs", xml);
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
-        assertEquals("1",
+        assertEquals(
+                "1",
                 getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
 
-        final NodeRef finalTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
-                .call().get();
+        final NodeRef finalTypeTreeRef =
+                geogig.command(FindTreeChild.class).setChildPath("Lines").call().get();
         assertFalse(initialTypeTreeRef.equals(finalTypeTreeRef));
         assertFalse(finalTypeTreeRef.getMetadataId().isNull());
 
-        assertEquals("Feature type tree metadataId shouuldn't change upon edits",
-                initialTypeTreeRef.getMetadataId(), finalTypeTreeRef.getMetadataId());
+        assertEquals(
+                "Feature type tree metadataId shouuldn't change upon edits",
+                initialTypeTreeRef.getMetadataId(),
+                finalTypeTreeRef.getMetadataId());
         Iterator<NodeRef> featureRefs = geogig.command(LsTreeOp.class).setReference("Lines").call();
         while (featureRefs.hasNext()) {
             NodeRef ref = featureRefs.next();

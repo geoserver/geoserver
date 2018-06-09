@@ -4,12 +4,6 @@
  */
 package org.geoserver.importer.transform;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.io.output.CountingOutputStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +11,15 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.output.CountingOutputStream;
 
 /**
- * Runs a generic executable with the given options 
- * 
+ * Runs a generic executable with the given options
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractCommandLineTransform extends AbstractTransform {
@@ -35,16 +34,12 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
         this.options = Optional.ofNullable(options).orElseGet(() -> new ArrayList<>());
     }
 
-    /**
-     * @return the options
-     */
+    /** @return the options */
     public List<String> getOptions() {
         return options;
     }
 
-    /**
-     * @param options the options to set
-     */
+    /** @param options the options to set */
     public void setOptions(List<String> options) {
         this.options = options;
     }
@@ -66,29 +61,39 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
         // grab at least some part of the outputs
         int limit = 16 * 1024;
         try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
-             OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
+                OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
             PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
             executor.setStreamHandler(streamHandler);
             try {
                 int result = executor.execute(cmd);
-                
+
                 if (executor.isFailure(result)) {
                     // toString call is routed to ByteArrayOutputStream, which does the right string
                     // conversion
-                    throw new IOException("Failed to execute command " + cmd.toString()
-                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                            + es.toString());
+                    throw new IOException(
+                            "Failed to execute command "
+                                    + cmd.toString()
+                                    + "\nStandard output is:\n"
+                                    + os.toString()
+                                    + "\nStandard error is:\n"
+                                    + es.toString());
                 }
             } catch (Exception e) {
-                throw new IOException("Failure to execute command " + cmd.toString() + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                        + es.toString(), e);
+                throw new IOException(
+                        "Failure to execute command "
+                                + cmd.toString()
+                                + "\nStandard output is:\n"
+                                + os.toString()
+                                + "\nStandard error is:\n"
+                                + es.toString(),
+                        e);
             }
         }
     }
 
     /**
      * Output stream wrapper with a soft limit
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     static final class BoundedOutputStream extends CountingOutputStream {
@@ -131,12 +136,9 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
         public String toString() {
             return delegate.toString();
         }
-
     }
 
     public static void main(String[] args) {
         System.out.println(Math.log(-0.3201613498354639));
-        
     }
-
 }

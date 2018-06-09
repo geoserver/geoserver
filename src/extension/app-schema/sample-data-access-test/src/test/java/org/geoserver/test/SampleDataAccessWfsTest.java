@@ -12,13 +12,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -32,11 +30,10 @@ import org.w3c.dom.NodeList;
 
 /**
  * WFS GetFeature to test integration of {@link SampleDataAccess} with GeoServer.
- * 
+ *
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
 public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
-
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -51,15 +48,11 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
         namespaces.put(SampleDataAccessData.NAMESPACE_PREFIX, SampleDataAccessData.NAMESPACE_URI);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
-    
-    @Override
-    protected void onTearDown(SystemTestData testData) throws Exception {
-    }
 
-    /**
-     * Test whether GetCapabilities returns wfs:WFS_Capabilities.
-     * 
-     */
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {}
+
+    /** Test whether GetCapabilities returns wfs:WFS_Capabilities. */
     @Test
     public void testGetCapabilities() throws Exception {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
@@ -67,21 +60,17 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
     }
 
-    /**
-     * Test whether DescribeFeatureType returns xsd:schema.
-     * 
-     */
+    /** Test whether DescribeFeatureType returns xsd:schema. */
     @Test
     public void testDescribeFeatureType() throws Exception {
-        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
     }
 
-    /**
-     * Test whether GetFeature returns wfs:FeatureCollection.
-     * 
-     */
+    /** Test whether GetFeature returns wfs:FeatureCollection. */
     @Test
     public void testGetFeature() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
@@ -89,10 +78,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
     }
 
-    /**
-     * Test content of GetFeature response.
-     * 
-     */
+    /** Test content of GetFeature response. */
     @Test
     public void testGetFeatureContent() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
@@ -100,40 +86,50 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
         assertXpathCount(2, "//gsml:MappedFeature", doc);
 
         // mf1
-        XMLAssert.assertXpathEvaluatesTo("GUNTHORPE FORMATION",
-                "//gsml:MappedFeature[@gml:id='mf1']/gml:description", doc);
-        XMLAssert.assertXpathEvaluatesTo("mf1.spec",
+        XMLAssert.assertXpathEvaluatesTo(
+                "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:description", doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "mf1.spec",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/@gml:id", doc);
-        XMLAssert.assertXpathEvaluatesTo("Gunthorpe specification description",
+                        + "/gsml:GeologicUnit/@gml:id",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "Gunthorpe specification description",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description", doc);
-        XMLAssert.assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape//gml:posList", doc);
+                        + "/gsml:GeologicUnit/gml:description",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape//gml:posList",
+                doc);
 
         // mf2
-        XMLAssert.assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP",
-                "//gsml:MappedFeature[@gml:id='mf2']/gml:description", doc);
-        XMLAssert.assertXpathEvaluatesTo("mf2.spec",
+        XMLAssert.assertXpathEvaluatesTo(
+                "MERCIA MUDSTONE GROUP",
+                "//gsml:MappedFeature[@gml:id='mf2']/gml:description",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "mf2.spec",
                 "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/@gml:id", doc);
-        XMLAssert.assertXpathEvaluatesTo("Mercia specification description",
+                        + "/gsml:GeologicUnit/@gml:id",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "Mercia specification description",
                 "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description", doc);
-        XMLAssert.assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape//gml:posList", doc);
-
+                        + "/gsml:GeologicUnit/gml:description",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo(
+                "-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape//gml:posList",
+                doc);
     }
 
     /**
      * Assert that there are count matches of xpath in doc.
-     * 
-     * @param count
-     *            expected number of matches
-     * @param xpath
-     *            xpath expression
-     * @param doc
-     *            document under test
+     *
+     * @param count expected number of matches
+     * @param xpath xpath expression
+     * @param doc document under test
      */
     public void assertXpathCount(int count, String xpath, Document doc) throws Exception {
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -143,9 +139,8 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
 
     /**
      * Return {@link Document} as a pretty-printed string.
-     * 
-     * @param doc
      *
+     * @param doc
      */
     public String prettyString(Document doc) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
@@ -155,7 +150,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
 
     /**
      * Pretty-print a {@link Document} to an {@link OutputStream}.
-     * 
+     *
      * @param doc
      * @param out
      */
@@ -169,5 +164,4 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpSecurity();
     }
-
 }

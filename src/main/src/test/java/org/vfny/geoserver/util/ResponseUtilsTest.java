@@ -5,24 +5,21 @@
  */
 package org.vfny.geoserver.util;
 
-import org.easymock.classextension.EasyMock;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
+
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.impl.DataLinkInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.URLMangler;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-
-import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
-import org.geoserver.catalog.DataLinkInfo;
-import org.geoserver.catalog.impl.DataLinkInfoImpl;
-import static org.junit.Assert.*;
 
 public class ResponseUtilsTest {
 
@@ -30,14 +27,15 @@ public class ResponseUtilsTest {
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
         expect(settings.getProxyBaseUrl()).andReturn(proxyBaseUrl).anyTimes();
         replay(settings);
-        
+
         GeoServer geoServer = createNiceMock(GeoServer.class);
         expect(geoServer.getSettings()).andReturn(settings).anyTimes();
         replay(geoServer);
-        
+
         ProxifyingURLMangler mangler = new ProxifyingURLMangler(geoServer);
         ApplicationContext appContext = createNiceMock(ApplicationContext.class);
-        expect(appContext.getBeanNamesForType(URLMangler.class)).andReturn(new String[]{"mangler"});
+        expect(appContext.getBeanNamesForType(URLMangler.class))
+                .andReturn(new String[] {"mangler"});
         expect(appContext.getBean("mangler")).andReturn(mangler).anyTimes();
         replay(appContext);
         GeoServerExtensionsHelper.init(appContext);

@@ -7,9 +7,8 @@ package org.geoserver.wcs.kvp;
 
 /**
  * The WCS 1.1 grid type enumeration
- * 
+ *
  * @author Andrea Aime
- * 
  */
 public enum GridType {
     GT2dGridIn2dCrs("urn:ogc:def:method:WCS:1.1:2dGridIn2dCrs", 2, 4), //
@@ -26,30 +25,18 @@ public enum GridType {
         this.originArrayLength = originArrayLenght;
     }
 
-    /**
-     * Returns the full fledges xml constant associated to the specified grid type
-     *
-     */
+    /** Returns the full fledges xml constant associated to the specified grid type */
     public String getXmlConstant() {
         return xmlConstant;
     }
 
-    /**
-     * Returns the expected size of the offsets array for this grid type
-     *
-     */
+    /** Returns the expected size of the offsets array for this grid type */
     public int getOffsetArrayLength() {
         return offsetArrayLength;
     }
 
-    
-    /**
-     * Returns the expected size of the origin array for this grid type
-     *
-     */
+    /** Returns the expected size of the origin array for this grid type */
     public int getOriginArrayLength() {
         return originArrayLength;
     }
-    
-    
 }

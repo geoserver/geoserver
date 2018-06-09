@@ -7,13 +7,13 @@ package org.geoserver.gwc.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -22,13 +22,10 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
  * Loads and saves the integrated GWC configuration at {@code <data dir>/gwc-gs.xml}
- * 
+ *
  * @author groldan
- * 
  */
 public class GWCConfigPersister {
 
@@ -42,8 +39,8 @@ public class GWCConfigPersister {
 
     private GWCConfig config;
 
-    public GWCConfigPersister(final XStreamPersisterFactory xspf,
-            final GeoServerResourceLoader resourceLoader) {
+    public GWCConfigPersister(
+            final XStreamPersisterFactory xspf, final GeoServerResourceLoader resourceLoader) {
         this.persisterFactory = xspf;
         this.resourceLoader = resourceLoader;
     }
@@ -82,18 +79,20 @@ public class GWCConfigPersister {
         } catch (Exception e) {
             LOGGER.log(
                     Level.WARNING,
-                    "Error loading GWC GeoServer specific " + "configuration from "
-                            + configFile.path() + ". Applying defaults.", e);
+                    "Error loading GWC GeoServer specific "
+                            + "configuration from "
+                            + configFile.path()
+                            + ". Applying defaults.",
+                    e);
             this.config = new GWCConfig();
         }
     }
 
     /**
-     * Saves and applies the integrated GWC's GeoServer specific configuration to the
-     * {@code <data dir>/gwc-gs.xml} file.
-     * 
+     * Saves and applies the integrated GWC's GeoServer specific configuration to the {@code <data
+     * dir>/gwc-gs.xml} file.
+     *
      * @param config
-     * 
      * @throws IOException
      */
     public void save(final GWCConfig config) throws IOException {
@@ -120,7 +119,7 @@ public class GWCConfigPersister {
         xs.alias("defaultVectorCacheFormats", HashSet.class);
         xs.alias("defaultOtherCacheFormats", HashSet.class);
         xs.alias("InnerCacheConfiguration", CacheConfiguration.class);
-        xs.allowTypes(new Class[] { GWCConfig.class, CacheConfiguration.class });
+        xs.allowTypes(new Class[] {GWCConfig.class, CacheConfiguration.class});
     }
 
     private Resource getConfigRoot() {

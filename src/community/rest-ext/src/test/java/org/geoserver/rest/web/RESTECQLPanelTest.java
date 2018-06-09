@@ -21,9 +21,7 @@ import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Unit test for evaluating the ECQL TextField for the RESTUploadPathMapper.
- */
+/** Unit test for evaluating the ECQL TextField for the RESTUploadPathMapper. */
 public class RESTECQLPanelTest extends GeoServerWicketTestSupport {
 
     /** Workspace info object called "cite" */
@@ -67,19 +65,23 @@ public class RESTECQLPanelTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
 
         // CQL expression
-        String expression = "stringTemplate(path, '(\\w{4})_(\\w{7})_(\\d{3})_(\\d{4})(\\d{2})(\\d{2})T(\\d{7})_(\\d{2})\\.(\\w{4})', "
-                + "'/${1}/${4}/${5}/${6}/${0}')";
+        String expression =
+                "stringTemplate(path, '(\\w{4})_(\\w{7})_(\\d{3})_(\\d{4})(\\d{2})(\\d{2})T(\\d{7})_(\\d{2})\\.(\\w{4})', "
+                        + "'/${1}/${4}/${5}/${6}/${0}')";
         // Set the root directory
         FormTester form2 = tester.newFormTester("form");
-        form2.setValue("settings:settingsContainer:otherSettings:extensions:0:content:ecqlexp",
+        form2.setValue(
+                "settings:settingsContainer:otherSettings:extensions:0:content:ecqlexp",
                 expression);
         form2.submit();
         // Check if no error has been found
         tester.assertNoErrorMessage();
         // Control if the defined root has been correctly set
         assertEquals(
-                gs.getSettings(citeWorkspace).getMetadata()
-                        .get(RESTUploadECQLPathMapper.EXPRESSION_KEY, String.class), expression);
+                gs.getSettings(citeWorkspace)
+                        .getMetadata()
+                        .get(RESTUploadECQLPathMapper.EXPRESSION_KEY, String.class),
+                expression);
     }
 
     @Test
@@ -88,13 +90,14 @@ public class RESTECQLPanelTest extends GeoServerWicketTestSupport {
         tester.startPage(new GlobalSettingsPage());
         tester.assertRenderedPage(GlobalSettingsPage.class);
         tester.assertNoErrorMessage();
-        
+
         // Get GeoServer object for searching the global settings
         GeoServer gs = getGeoServer();
 
         // CQL expression
-        String expression = "stringTemplate(path, '(\\w{4})_(\\w{7})_(\\d{3})_(\\d{4})(\\d{2})(\\d{2})T(\\d{7})_(\\d{2})\\.(\\w{4})', "
-                + "'/${1}/${4}/${5}/${6}/${0}')";
+        String expression =
+                "stringTemplate(path, '(\\w{4})_(\\w{7})_(\\d{3})_(\\d{4})(\\d{2})(\\d{2})T(\\d{7})_(\\d{2})\\.(\\w{4})', "
+                        + "'/${1}/${4}/${5}/${6}/${0}')";
         // Set the root directory
         FormTester form = tester.newFormTester("form");
         form.setValue("extensions:0:content:ecqlexp", expression);
@@ -103,7 +106,10 @@ public class RESTECQLPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         // Control if the defined root has been correctly set
         assertEquals(
-                gs.getGlobal().getSettings().getMetadata()
-                        .get(RESTUploadECQLPathMapper.EXPRESSION_KEY, String.class), expression);
+                gs.getGlobal()
+                        .getSettings()
+                        .getMetadata()
+                        .get(RESTUploadECQLPathMapper.EXPRESSION_KEY, String.class),
+                expression);
     }
 }

@@ -7,7 +7,6 @@ package org.geoserver.feature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentDataStore;
@@ -29,8 +28,8 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
 
     private SimpleFeatureType flattenedType;
 
-    private FlatteningFeatureCollection(SimpleFeatureCollection delegate,
-            SimpleFeatureType flattenedType) {
+    private FlatteningFeatureCollection(
+            SimpleFeatureCollection delegate, SimpleFeatureType flattenedType) {
         super(delegate);
         this.flattenedType = flattenedType;
     }
@@ -38,10 +37,10 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
     /**
      * Flattens a SimpleFeatureCollection that may contain SimpleFeatures as attributes of other
      * features.
-     * 
+     *
      * @param collection The input SimpleFeatureCollection
      * @return A SimpleFeatureCollection whose features have no SimpleFeature attributes, or the
-     *         original one, if no SimpleFeature attributes were found
+     *     original one, if no SimpleFeature attributes were found
      */
     public static SimpleFeatureCollection flatten(SimpleFeatureCollection collection) {
         SimpleFeatureType schema = collection.getSchema();
@@ -53,8 +52,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         // build the flattened feature type
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(schema.getName());
-        for (AttributeDescriptor desc : attributeDescriptors)
-            builder.add(desc);
+        for (AttributeDescriptor desc : attributeDescriptors) builder.add(desc);
         SimpleFeatureType flattenedType = builder.buildFeatureType();
 
         // if the number of attributes is the same, we did not encounter a new attribute
@@ -68,18 +66,20 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
     /**
      * Recursively scans a SimpleFeature for SimpleFeature attributes in order to build a
      * "flattened" list of attributes
-     * 
+     *
      * @param attributeDescriptors A List of attribute descriptors, populated recursively
      * @param featuretype The feature type to scan
      * @param attrAlias An alias for adding as a prefix to the simple attribute names
      */
-    private static void scanAttributeDescriptors(List<AttributeDescriptor> attributeDescriptors,
-            SimpleFeatureType featureType, String attrAlias) {
+    private static void scanAttributeDescriptors(
+            List<AttributeDescriptor> attributeDescriptors,
+            SimpleFeatureType featureType,
+            String attrAlias) {
         List<AttributeDescriptor> descriptors = featureType.getAttributeDescriptors();
         for (int i = 0; i < descriptors.size(); i++) {
             AttributeDescriptor ad = descriptors.get(i);
-            SimpleFeatureType joinedSchema = (SimpleFeatureType) ad.getUserData()
-                    .get(ContentDataStore.JOINED_FEATURE_TYPE);
+            SimpleFeatureType joinedSchema =
+                    (SimpleFeatureType) ad.getUserData().get(ContentDataStore.JOINED_FEATURE_TYPE);
             String name = (attrAlias != null ? attrAlias + "." : "") + ad.getLocalName();
             if (joinedSchema != null) {
                 // go forth and harvest feature attribute types
@@ -103,17 +103,15 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         return new FlatteningFeatureIterator(delegate.features(), flattenedType);
     }
 
-    /**
-     * Flattens the features in a streaming fashion
-     */
+    /** Flattens the features in a streaming fashion */
     class FlatteningFeatureIterator implements SimpleFeatureIterator {
 
         private SimpleFeatureIterator delegate;
 
         private SimpleFeatureBuilder builder;
 
-        public FlatteningFeatureIterator(SimpleFeatureIterator delegate,
-                SimpleFeatureType flattenedType) {
+        public FlatteningFeatureIterator(
+                SimpleFeatureIterator delegate, SimpleFeatureType flattenedType) {
             this.delegate = delegate;
             this.builder = new SimpleFeatureBuilder(flattenedType);
         }
@@ -139,11 +137,10 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         /**
          * Recursively breaks down SimpleFeatures that may contain other features as attributes to
          * accumulate simple attribute values to a List
-         * 
+         *
          * @param attributeValues The List of attribute values
          * @param feature A SimpleFeature to harvest attributes
          */
-
         private void accumulateAttributes(SimpleFeature feature) {
             for (int i = 0; i < feature.getAttributes().size(); i++) {
                 Object attr = feature.getAttribute(i);
@@ -156,5 +153,4 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
             }
         }
     }
-
 }

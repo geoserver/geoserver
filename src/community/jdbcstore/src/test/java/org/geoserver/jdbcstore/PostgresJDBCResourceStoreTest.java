@@ -8,18 +8,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 
 /**
- * 
  * @author Kevin Smith, Boundless
  * @author Niels Charlier
- *
  */
 @Ignore
-public class PostgresJDBCResourceStoreTest extends AbstractJDBCResourceStoreTest{
-    
+public class PostgresJDBCResourceStoreTest extends AbstractJDBCResourceStoreTest {
+
     @Before
     public void setUp() throws Exception {
         support = new PostgresTestSupport();
     }
-    
-
 }

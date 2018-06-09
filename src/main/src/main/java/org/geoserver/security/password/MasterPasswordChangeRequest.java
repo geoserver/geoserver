@@ -14,23 +14,27 @@ public class MasterPasswordChangeRequest {
     private char[] currentPassword;
     private char[] newPassword;
     private char[] confirmPassword;
-    
 
     public char[] getCurrentPassword() {
         return currentPassword;
     }
+
     public void setCurrentPassword(char[] currentPassword) {
         this.currentPassword = currentPassword;
     }
+
     public char[] getNewPassword() {
         return newPassword;
     }
+
     public void setNewPassword(char[] newPassword) {
         this.newPassword = newPassword;
     }
+
     public char[] getConfirmPassword() {
         return confirmPassword;
     }
+
     public void setConfirmPassword(char[] confirmPassword) {
         this.confirmPassword = confirmPassword;
     }

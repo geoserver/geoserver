@@ -6,18 +6,15 @@ package org.geoserver.jdbcconfig.internal;
 
 import static org.junit.Assert.*;
 
+import com.google.common.cache.Cache;
 import java.io.Serializable;
-
 import org.geoserver.util.CacheProvider;
 import org.junit.Test;
 
-import com.google.common.cache.Cache;
-
 /**
  * Test class for the {@link JDBCCacheProvider}
- * 
- * @author Nicola Lagomarsini geosolutions
  *
+ * @author Nicola Lagomarsini geosolutions
  */
 public class JDBCCacheProviderTest {
 
@@ -30,5 +27,4 @@ public class JDBCCacheProviderTest {
         // assert if it exists
         assertNotNull(cache);
     }
-
 }

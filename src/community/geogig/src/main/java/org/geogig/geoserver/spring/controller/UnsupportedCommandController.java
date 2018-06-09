@@ -17,27 +17,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller for disabling specific geogig endpoints.
- */
+/** Controller for disabling specific geogig endpoints. */
 @RestController
-@RequestMapping(path = GEOGIG_ROUTE_PREFIX + "/" + BASE_REPOSITORY_ROUTE + "/{repoName}/",
-produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+@RequestMapping(
+    path = GEOGIG_ROUTE_PREFIX + "/" + BASE_REPOSITORY_ROUTE + "/{repoName}/",
+    produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+)
 public class UnsupportedCommandController extends AbstractController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UnsupportedCommandController.class);
-    
-    /**
-     * List any unsupported commands in this RequestMapping annotation.
-     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(UnsupportedCommandController.class);
+
+    /** List any unsupported commands in this RequestMapping annotation. */
     @RequestMapping(value = {"/rename"})
     public void rename() {
-        throw new CommandSpecException("This command is unsupported by the GeoGig plugin.", HttpStatus.BAD_REQUEST);
+        throw new CommandSpecException(
+                "This command is unsupported by the GeoGig plugin.", HttpStatus.BAD_REQUEST);
     }
-    
+
     @Override
     protected Logger getLogger() {
         return LOGGER;
     }
-
 }

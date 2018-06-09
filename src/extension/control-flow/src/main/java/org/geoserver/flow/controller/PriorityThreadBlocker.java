@@ -4,9 +4,6 @@
  */
 package org.geoserver.flow.controller;
 
-import org.geoserver.ows.Request;
-import org.geotools.util.logging.Logging;
-
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -14,11 +11,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.ows.Request;
+import org.geotools.util.logging.Logging;
 
 /**
- * Blocking queue based blocker, a request gets blocked if there are already <code>queueSize</code> requests
- * running. Unlike {@link SimpleThreadBlocker} here threads that got blocked due to full queue will
- * be awaken in priority order, highest to lowest
+ * Blocking queue based blocker, a request gets blocked if there are already <code>queueSize</code>
+ * requests running. Unlike {@link SimpleThreadBlocker} here threads that got blocked due to full
+ * queue will be awaken in priority order, highest to lowest
  */
 public class PriorityThreadBlocker implements ThreadBlocker {
 
@@ -26,10 +25,11 @@ public class PriorityThreadBlocker implements ThreadBlocker {
 
     private final PriorityProvider priorityProvider;
     private final int maxRunningRequests;
-    // unlike the SimpleThreadBlock this does not contain the requests that were freed to go onto the next
+    // unlike the SimpleThreadBlock this does not contain the requests that were freed to go onto
+    // the next
     // controller or execution, but the ones blocked waiting
     private final PriorityQueue<WaitToken> queue = new PriorityQueue<>();
-    // This holds the requests actually running on this blocker. Flow controllers 
+    // This holds the requests actually running on this blocker. Flow controllers
     // might not all be called if one fails, but all get a "requestComplete" for cleanup,
     // so need to know if this blocker was called before, or not
     private final Set<Request> runningQueue = new HashSet<>();
@@ -53,14 +53,21 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         synchronized (this) {
             if (runningQueue.size() < maxRunningRequests) {
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.log(Level.FINER, "Running requests at " + runningQueue.size() + ", no block");
+                    LOGGER.log(
+                            Level.FINER,
+                            "Running requests at " + runningQueue.size() + ", no block");
                 }
                 result = true;
             } else {
                 int priority = priorityProvider.getPriority(request);
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.log(Level.FINER, "Running requests at " + runningQueue.size() + ", Queuing request with " +
-                            "priority " + priority);
+                    LOGGER.log(
+                            Level.FINER,
+                            "Running requests at "
+                                    + runningQueue.size()
+                                    + ", Queuing request with "
+                                    + "priority "
+                                    + priority);
                 }
                 token = new WaitToken(priority);
                 queue.add(token);
@@ -75,14 +82,20 @@ public class PriorityThreadBlocker implements ThreadBlocker {
                     // if timeout out, just remove from the queue
                     if (!result) {
                         if (LOGGER.isLoggable(Level.FINER)) {
-                            LOGGER.log(Level.FINER, "Request with priority " + token.priority + " timed out, removing" +
-                                    " from" +
-                                    " queue");
+                            LOGGER.log(
+                                    Level.FINER,
+                                    "Request with priority "
+                                            + token.priority
+                                            + " timed out, removing"
+                                            + " from"
+                                            + " queue");
                         }
                         boolean removed = queue.remove(token);
                         if (!removed) {
                             if (LOGGER.isLoggable(Level.FINER)) {
-                                LOGGER.log(Level.FINER, "Request was not found in queue, releasing next");
+                                LOGGER.log(
+                                        Level.FINER,
+                                        "Request was not found in queue, releasing next");
                             }
                             // has already been removed by releaseNext, release the next one then
                             if (runningQueue.size() < maxRunningRequests) {
@@ -113,7 +126,6 @@ public class PriorityThreadBlocker implements ThreadBlocker {
                 releaseNext();
             }
         }
-
     }
 
     private void releaseNext() {
@@ -128,7 +140,6 @@ public class PriorityThreadBlocker implements ThreadBlocker {
             }
 
             token.latch.countDown();
-
         }
     }
 
@@ -166,5 +177,4 @@ public class PriorityThreadBlocker implements ThreadBlocker {
             }
         }
     }
-
 }

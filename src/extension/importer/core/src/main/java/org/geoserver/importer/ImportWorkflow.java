@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Combination of {@link ImportStep}s that form a particular import workflow. 
- * 
+ * Combination of {@link ImportStep}s that form a particular import workflow.
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class ImportWorkflow {

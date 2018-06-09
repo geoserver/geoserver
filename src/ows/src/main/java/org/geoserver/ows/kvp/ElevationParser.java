@@ -5,11 +5,6 @@
  */
 package org.geoserver.ows.kvp;
 
-import org.geoserver.platform.ServiceException;
-import org.geotools.util.DateRange;
-import org.geotools.util.NumberRange;
-import org.geotools.util.logging.Logging;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,26 +13,27 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.platform.ServiceException;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
+import org.geotools.util.logging.Logging;
 
 /**
  * Parses the {@code elevation} parameter of the request.
- * 
+ *
  * @author Ariel Nunez, GeoSolutions S.A.S.
  * @author Simone Giannecchini, GeoSolutions S.A.S.
  * @version $Id$
  */
 public class ElevationParser {
-    
+
     static final Logger LOGGER = Logging.getLogger(ElevationParser.class);
 
-    private final static int DEFAULT_MAX_ELEMENTS_ELEVATIONS_KVP = 100;
+    private static final int DEFAULT_MAX_ELEMENTS_ELEVATIONS_KVP = 100;
     private final Integer maxElevations;
 
-    /**
-     * Builds a default ElevationParser with no provided maximum number of times
-     */
+    /** Builds a default ElevationParser with no provided maximum number of times */
     public ElevationParser() {
         this.maxElevations = null;
     }
@@ -56,16 +52,14 @@ public class ElevationParser {
      * Parses the elevation given in parameter. The string may contains either a single double, or a
      * start value, end value and a period. In the first case, this method returns a singleton
      * containing only the parsed value. In the second case, this method returns a list including
-     * all elevations from start value up to the end value with the interval specified in the
-     * {@code value} string.
-     * 
-     * @param value
-     *            The elevation item or items to parse.
+     * all elevations from start value up to the end value with the interval specified in the {@code
+     * value} string.
+     *
+     * @param value The elevation item or items to parse.
      * @return A list of doubles, or an empty list of the {@code value} string is null or empty.
-     * @throws ParseException
-     *             if the string can not be parsed.
+     * @throws ParseException if the string can not be parsed.
      */
-    @SuppressWarnings( { "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection parse(String value) throws ParseException {
         if (value == null) {
             return Collections.emptyList();
@@ -74,33 +68,36 @@ public class ElevationParser {
         if (value.length() == 0) {
             return Collections.emptyList();
         }
-        final Set values = new TreeSet(new Comparator() {
+        final Set values =
+                new TreeSet(
+                        new Comparator() {
 
-            public int compare(Object o1, Object o2) {
-                final boolean o1Double = o1 instanceof Double;
-                final boolean o2Double = o2 instanceof Double;
+                            public int compare(Object o1, Object o2) {
+                                final boolean o1Double = o1 instanceof Double;
+                                final boolean o2Double = o2 instanceof Double;
 
-                // o1 date
-                if (o1Double) {
-                    final Double left = (Double) o1;
-                    if (o2Double) {
-                        // o2 date
-                        return left.compareTo((Double) o2);
-                    }
-                    // o2 number range
-                    return left.compareTo(((NumberRange<Double>) o2).getMinValue());
-                }
+                                // o1 date
+                                if (o1Double) {
+                                    final Double left = (Double) o1;
+                                    if (o2Double) {
+                                        // o2 date
+                                        return left.compareTo((Double) o2);
+                                    }
+                                    // o2 number range
+                                    return left.compareTo(((NumberRange<Double>) o2).getMinValue());
+                                }
 
-                // o1 number range
-                final NumberRange left = (NumberRange) o1;
-                if (o2Double) {
-                    // o2 date
-                    return left.getMinValue().compareTo(((Double) o2));
-                }
-                // o2 daterange
-                return left.getMinValue().compareTo(((NumberRange) o2).getMinValue());
-            }
-        });
+                                // o1 number range
+                                final NumberRange left = (NumberRange) o1;
+                                if (o2Double) {
+                                    // o2 date
+                                    return left.getMinValue().compareTo(((Double) o2));
+                                }
+                                // o2 daterange
+                                return left.getMinValue()
+                                        .compareTo(((NumberRange) o2).getMinValue());
+                            }
+                        });
         final String[] listValues = value.split(",");
         int maxValues = getMaxElevations();
         for (String d : listValues) {
@@ -142,6 +139,7 @@ public class ElevationParser {
 
     /**
      * Maximum number of elevations this parser will parse before throwing an exception
+     *
      * @return
      */
     private int getMaxElevations() {
@@ -154,33 +152,32 @@ public class ElevationParser {
 
     public void checkMaxElevations(Set result, int maxValues) {
         // limiting number of elements we can create
-        if(maxValues > 0 && result.size() > maxValues){
-            throw new ServiceException("More than " + maxValues
-                    + " elevations specified in the request, bailing out.", ServiceException.INVALID_PARAMETER_VALUE, "elevation");
+        if (maxValues > 0 && result.size() > maxValues) {
+            throw new ServiceException(
+                    "More than " + maxValues + " elevations specified in the request, bailing out.",
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "elevation");
         }
     }
 
     private void addValue(Collection result, Double step) {
-        for (Iterator it = result.iterator(); it.hasNext();) {
+        for (Iterator it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
             if (element instanceof Double) {
                 // convert
                 final Double local = (Double) element;
-                if (local.equals(step))
-                    return;
+                if (local.equals(step)) return;
             } else {
                 // convert
                 final DateRange local = (DateRange) element;
-                if (local.contains(step))
-                    return;
+                if (local.contains(step)) return;
             }
         }
         result.add(step);
-
     }
 
     private void addPeriod(Collection result, NumberRange<Double> newRange) {
-        for (Iterator it = result.iterator(); it.hasNext();) {
+        for (Iterator it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
             if (element instanceof Double) {
                 // convert
@@ -190,14 +187,10 @@ public class ElevationParser {
             } else {
                 // convert
                 final NumberRange<Double> local = (NumberRange<Double>) element;
-                if (local.contains(newRange))
-                    return;
-                if (newRange.contains(local))
-                    it.remove();
+                if (local.contains(newRange)) return;
+                if (newRange.contains(local)) it.remove();
             }
         }
         result.add(newRange);
-
     }
-    
 }

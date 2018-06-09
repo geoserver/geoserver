@@ -7,7 +7,6 @@ package org.geoserver.catalog.impl;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -15,9 +14,8 @@ import org.geoserver.catalog.DimensionPresentation;
 /**
  * Configuration about a dimension, such as time or elevation (theoretically could be a custom one
  * too)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DimensionInfoImpl implements DimensionInfo {
 
@@ -27,35 +25,34 @@ public class DimensionInfoImpl implements DimensionInfo {
     boolean enabled;
 
     String attribute;
-    
+
     String endAttribute;
 
     DimensionPresentation presentation;
 
     BigDecimal resolution;
-    
+
     String units;
-    
+
     String unitSymbol;
 
     DimensionDefaultValueSetting defaultValue;
-    
+
     Boolean nearestMatchEnabled;
-    
+
     String acceptableInterval;
-    
-    /**
-     * The default constructor
-     */
-    public DimensionInfoImpl(){
+
+    /** The default constructor */
+    public DimensionInfoImpl() {
         super();
     }
-    
+
     /**
      * Creates a shallow copy of the given Dimension object
+     *
      * @param info
      */
-    public DimensionInfoImpl(DimensionInfo info){
+    public DimensionInfoImpl(DimensionInfo info) {
         super();
         this.enabled = info.isEnabled();
         this.attribute = info.getAttribute();
@@ -67,7 +64,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         this.defaultValue = info.getDefaultValue();
         this.enabled = info.isEnabled();
     }
-    
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -83,7 +80,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
-        
+
     public String getEndAttribute() {
         return this.endAttribute;
     }
@@ -107,7 +104,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setResolution(BigDecimal resolution) {
         this.resolution = resolution;
     }
-    
+
     public String getUnits() {
         return units;
     }
@@ -180,16 +177,16 @@ public class DimensionInfoImpl implements DimensionInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DimensionInfoImpl that = (DimensionInfoImpl) o;
-        return enabled == that.enabled &&
-                Objects.equals(attribute, that.attribute) &&
-                Objects.equals(endAttribute, that.endAttribute) &&
-                presentation == that.presentation &&
-                Objects.equals(resolution, that.resolution) &&
-                Objects.equals(units, that.units) &&
-                Objects.equals(unitSymbol, that.unitSymbol) &&
-                Objects.equals(defaultValue, that.defaultValue) &&
-                Objects.equals(nearestMatchEnabled, that.nearestMatchEnabled) &&
-                Objects.equals(acceptableInterval, that.acceptableInterval);
+        return enabled == that.enabled
+                && Objects.equals(attribute, that.attribute)
+                && Objects.equals(endAttribute, that.endAttribute)
+                && presentation == that.presentation
+                && Objects.equals(resolution, that.resolution)
+                && Objects.equals(units, that.units)
+                && Objects.equals(unitSymbol, that.unitSymbol)
+                && Objects.equals(defaultValue, that.defaultValue)
+                && Objects.equals(nearestMatchEnabled, that.nearestMatchEnabled)
+                && Objects.equals(acceptableInterval, that.acceptableInterval);
     }
 
     @Override
@@ -199,7 +196,6 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     @Override
     public void setDefaultValue(DimensionDefaultValueSetting defaultValue) {
-       this.defaultValue = defaultValue;        
+        this.defaultValue = defaultValue;
     }
-
 }

@@ -19,7 +19,8 @@ public class UrlTransform {
         this.requestUri = requestUri;
         for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
             normalizedNames.put(entry.getKey().toLowerCase(), entry.getKey());
-            this.parameters.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
+            this.parameters.put(
+                    entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
         }
     }
 
@@ -38,8 +39,11 @@ public class UrlTransform {
     public String getQueryString() {
         StringBuilder queryStringBuilder = new StringBuilder();
         for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
-            queryStringBuilder.append(parameter.getKey())
-                    .append("=").append(URLEncoder.encode(parameter.getValue()[0])).append("&");
+            queryStringBuilder
+                    .append(parameter.getKey())
+                    .append("=")
+                    .append(URLEncoder.encode(parameter.getValue()[0]))
+                    .append("&");
         }
         if (queryStringBuilder.length() == 0) {
             return "";
@@ -56,7 +60,7 @@ public class UrlTransform {
             combinedValue = combinedValue.replace("$2", value);
             existingValues[0] = combinedValue;
         } else {
-            parameters.put(rawName, new String[]{value});
+            parameters.put(rawName, new String[] {value});
         }
     }
 

@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 public class OracleDialect extends Dialect {
 
     @Override
-    public void applyOffsetLimit(StringBuilder sql, @Nullable Integer offset,
-            @Nullable Integer limit) {
+    public void applyOffsetLimit(
+            StringBuilder sql, @Nullable Integer offset, @Nullable Integer limit) {
         // some db's require limit to be present of offset is
         if (offset != null && limit == null) {
             limit = Integer.MAX_VALUE; // ensure we don't wrap around
@@ -20,7 +20,7 @@ public class OracleDialect extends Dialect {
             offset = 0;
             limit += 1; // not zero-based
         }
-        if (offset != null && limit !=null) {
+        if (offset != null && limit != null) {
             sql.insert(0, "select * from ( select query.*, rownum rnum from (\n");
             sql.append(") query\n");
             if (limit != Integer.MAX_VALUE) {
@@ -35,5 +35,4 @@ public class OracleDialect extends Dialect {
     public String nextVal(String sequence) {
         return sequence + ".nextval";
     }
-
 }

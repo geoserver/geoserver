@@ -9,12 +9,14 @@ import org.geoserver.catalog.Wrapper;
 
 /**
  * Generic delegating base class. Provides the following features:
+ *
  * <ul>
- * <li>null check for the delegate object</li>
- * <li>direct forwarding of {@link #equals(Object)}, {@link #hashCode()} and
- * {@link #toString()} to the delegate</li>
- * <li>implements the Wrapper interface for programmatic extraction</li>
+ *   <li>null check for the delegate object
+ *   <li>direct forwarding of {@link #equals(Object)}, {@link #hashCode()} and {@link #toString()}
+ *       to the delegate
+ *   <li>implements the Wrapper interface for programmatic extraction
  * </ul>
+ *
  * @deprecated use org.geotools.decorate.AbstractDecorator
  */
 public abstract class AbstractDecorator<D> extends org.geotools.decorate.AbstractDecorator<D>
@@ -23,5 +25,4 @@ public abstract class AbstractDecorator<D> extends org.geotools.decorate.Abstrac
     public AbstractDecorator(D delegate) {
         super(delegate);
     }
-
 }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
@@ -20,10 +19,10 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Run;
+import org.geoserver.taskmanager.data.Run.Status;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
-import org.geoserver.taskmanager.data.Run.Status;
 import org.geoserver.taskmanager.schedule.BatchJobService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,31 +31,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation independent helper methods.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 @Service
 public class TaskManagerDataUtil {
-    
+
     private static Pattern PATTERN_ATTRIBUTEREF = Pattern.compile("^\\$\\{(.*)\\}$");
 
-    @Autowired
-    private TaskManagerFactory fac;
+    @Autowired private TaskManagerFactory fac;
 
-    @Autowired
-    private TaskManagerDao dao;
+    @Autowired private TaskManagerDao dao;
 
-    @Autowired
-    private BatchJobService bjService;    
+    @Autowired private BatchJobService bjService;
 
     // -------------------------
     // Non-transactional methods
     // -------------------------
-        
+
     /**
      * Set parameter of a task.
-     *  
+     *
      * @param task the task.
      * @param name the parameter name.
      * @param attName the attribute name.
@@ -64,33 +59,35 @@ public class TaskManagerDataUtil {
     public void setTaskParameter(final Task task, final String name, final String value) {
         Parameter pam = task.getParameters().get(name);
         if (pam == null) {
-            pam = fac.createParameter();        
+            pam = fac.createParameter();
             pam.setTask(task);
             pam.setName(name);
             task.getParameters().put(name, pam);
         }
         pam.setValue(value);
     }
-    
+
     /**
      * Set parameter of a task associated with an attribute.
-     *  
+     *
      * @param task the task.
      * @param name the parameter name.
      * @param attName the attribute name.
      */
-    public void setTaskParameterToAttribute(final Task task, final String name, final String attName) {
+    public void setTaskParameterToAttribute(
+            final Task task, final String name, final String attName) {
         setTaskParameter(task, name, "${" + attName + "}");
     }
 
     /**
      * Set attribute of a configuration.
-     * 
-     * @param config the configuration.     
+     *
+     * @param config the configuration.
      * @param name the attribute name.
      * @param value the attribute value.
      */
-    public void setConfigurationAttribute(final Configuration config, final String name, final String value) {
+    public void setConfigurationAttribute(
+            final Configuration config, final String name, final String value) {
         Attribute att = config.getAttributes().get(name);
         if (att == null) {
             att = fac.createAttribute();
@@ -100,10 +97,10 @@ public class TaskManagerDataUtil {
         }
         att.setValue(value);
     }
-    
+
     /**
      * Add a task to configuration.
-     * 
+     *
      * @param config the configuration.
      * @param task the task.
      */
@@ -116,7 +113,7 @@ public class TaskManagerDataUtil {
     }
     /**
      * Add a batch to configuration.
-     * 
+     *
      * @param config the configuration.
      * @param batch the batch.
      */
@@ -127,18 +124,17 @@ public class TaskManagerDataUtil {
         batch.setConfiguration(config);
         config.getBatches().put(batch.getName(), batch);
     }
-        
+
     /**
-     * Add a batch element to a batch at the end of the batch.
-     * If a batch element with this combination batch/task already exists,
-     * (even if it has been soft removed) this batch element will be activated if necessary
-     * and returned.
-     * 
+     * Add a batch element to a batch at the end of the batch. If a batch element with this
+     * combination batch/task already exists, (even if it has been soft removed) this batch element
+     * will be activated if necessary and returned.
+     *
      * @param batch the batch.
      * @param task the task.
      * @return the new or existing batch element.
      */
-    public BatchElement addBatchElement(final Batch batch, final Task task) {        
+    public BatchElement addBatchElement(final Batch batch, final Task task) {
         BatchElement batchElement = getOrCreateBatchElement(batch, task);
         if (!batch.getElements().contains(batchElement)) {
             batch.getElements().add(batchElement);
@@ -146,13 +142,12 @@ public class TaskManagerDataUtil {
         }
         return batchElement;
     }
-    
+
     /**
-     * Add a batch element to a batch on a particular position.
-     * If a batch element with this combination batch/task already exists,
-     * (even if it has been soft removed) this batch element will be activated if necessary
-     * and returned.
-     * 
+     * Add a batch element to a batch on a particular position. If a batch element with this
+     * combination batch/task already exists, (even if it has been soft removed) this batch element
+     * will be activated if necessary and returned.
+     *
      * @param batch the batch.
      * @param task the task.
      * @param position the position.
@@ -165,10 +160,10 @@ public class TaskManagerDataUtil {
         batchElement.setBatch(batch);
         return batchElement;
     }
-        
+
     private BatchElement getOrCreateBatchElement(final Batch batch, final Task task) {
         BatchElement batchElement = null;
-        if (batch.getId() != null) { 
+        if (batch.getId() != null) {
             batchElement = dao.getBatchElement(batch, task);
             if (batchElement != null) {
                 batchElement.setActive(true);
@@ -191,7 +186,7 @@ public class TaskManagerDataUtil {
         }
         return null;
     }
-    
+
     public Set<String> getAssociatedAttributeNames(Task task) {
         Set<String> attNames = new HashSet<String>();
         for (Parameter pam : task.getParameters().values()) {
@@ -202,10 +197,10 @@ public class TaskManagerDataUtil {
         }
         return attNames;
     }
-    
+
     /**
      * List all associated parameters of attribute
-     * 
+     *
      * @param att the attribute
      * @return the parameters
      */
@@ -223,17 +218,17 @@ public class TaskManagerDataUtil {
 
     /**
      * Verifiy if batch is deletable (not running)
-     * 
+     *
      * @param batch the batch to verify
      * @return whether it is deletable
      */
     public boolean isDeletable(Batch batch) {
         return dao.getCurrentBatchRuns(batch).isEmpty();
     }
-    
+
     /**
      * Verifiy if configuration is deletable (no batches are running)
-     * 
+     *
      * @param config the config to verify
      * @return whether it is deletable
      */
@@ -245,14 +240,14 @@ public class TaskManagerDataUtil {
         }
         return true;
     }
-    
+
     // -----------------------
     // Transactional methods
     // -----------------------
-    
-    @Transactional("tmTransactionManager") 
-    public Configuration saveScheduleAndRemove(Configuration config, Collection<Task> tasks, 
-            Collection<Batch> batches) {
+
+    @Transactional("tmTransactionManager")
+    public Configuration saveScheduleAndRemove(
+            Configuration config, Collection<Task> tasks, Collection<Batch> batches) {
         config = bjService.saveAndSchedule(config);
         for (Task task : tasks) {
             dao.remove(task);
@@ -262,8 +257,8 @@ public class TaskManagerDataUtil {
         }
         return config;
     }
-    
-    @Transactional("tmTransactionManager") 
+
+    @Transactional("tmTransactionManager")
     public Batch saveScheduleAndRemove(Batch batch, Collection<BatchElement> bes) {
         batch = bjService.saveAndSchedule(batch);
         for (BatchElement be : bes) {
@@ -274,11 +269,11 @@ public class TaskManagerDataUtil {
 
     /**
      * Run a batch element if possible (i.e. if the task is not being run already).
-     * 
+     *
      * @param element the batch element.
      * @return the run, or null if the task is being run elsewhere)
      */
-    @Transactional("tmTransactionManager")    
+    @Transactional("tmTransactionManager")
     public Run runIfPossible(BatchElement element, BatchRun br) {
         if (dao.getCurrentRun(element.getTask()) == null) {
             Run run = fac.createRun();
@@ -291,20 +286,20 @@ public class TaskManagerDataUtil {
             return null;
         }
     }
-    
+
     /**
      * Commit a batch element if possible (i.e. if the task is not being committed already).
-     * 
+     *
      * @param element the batch element.
      * @return the run, or null if the task is being committed elsewhere)
      */
-    @Transactional("tmTransactionManager")    
+    @Transactional("tmTransactionManager")
     public Run startCommitIfPossible(Run run) {
         if (run == null) {
             System.out.println("run is null");
         }
         if (run.getBatchElement() == null) {
-            System.out.println("batchelement " + run.getId() +" is null");
+            System.out.println("batchelement " + run.getId() + " is null");
         }
         if (dao.getCommittingRun(run.getBatchElement().getTask()) == null) {
             run.setStatus(Run.Status.COMMITTING);
@@ -312,12 +307,12 @@ public class TaskManagerDataUtil {
         } else {
             return null;
         }
-    }  
-    
+    }
+
     /**
-     * Close a batch run (do this when the batch run is no longer running,
-     * but its status suggests it is.)
-     * 
+     * Close a batch run (do this when the batch run is no longer running, but its status suggests
+     * it is.)
+     *
      * @param br
      */
     @Transactional("tmTransactionManager")
@@ -325,14 +320,14 @@ public class TaskManagerDataUtil {
         for (Run run : br.getRuns()) {
             if (!run.getStatus().isClosed()) {
                 if (run.getEnd() == null) {
-                    //the task stopped while running
+                    // the task stopped while running
                     run.setStatus(Status.FAILED);
                     run.setEnd(new Date());
                 } else if (br.getStatus() == Status.COMMITTING) {
-                    //if the batch run was already in the commit phase,
-                    //we were already past the point of rolling back
+                    // if the batch run was already in the commit phase,
+                    // we were already past the point of rolling back
                     run.setStatus(Status.NOT_COMMITTED);
-                } else { //the task was finished, but was neither committed or rolled back
+                } else { // the task was finished, but was neither committed or rolled back
                     run.setStatus(Status.NOT_ROLLED_BACK);
                 }
                 run.setMessage(message);
@@ -341,48 +336,47 @@ public class TaskManagerDataUtil {
         }
         return dao.reload(br);
     }
-    
+
     // -----------------------
     // Init methods
     // -----------------------
-        
+
     /**
      * Initialize lazy collection(s) in Task
-     * 
+     *
      * @param task the task to be initialized
      * @return return the initialized task
      */
-    @Transactional("tmTransactionManager")    
+    @Transactional("tmTransactionManager")
     public Task init(Task task) {
         task = dao.reload(task);
         Hibernate.initialize(task.getBatchElements());
         return task;
     }
-    
+
     /**
      * Initialize lazy collection(s) in BatchElement
-     * 
+     *
      * @param be the BatchElement to be initialized
      * @return return the initialized BatchElement
      */
-    @Transactional("tmTransactionManager")    
+    @Transactional("tmTransactionManager")
     public BatchElement init(BatchElement be) {
         be = dao.reload(be);
         Hibernate.initialize(be.getRuns());
         return be;
     }
-    
+
     /**
      * Initialize lazy collection(s) in Batch
-     * 
+     *
      * @param be the Batch to be initialized
      * @return return the initialized Batch
      */
-    @Transactional("tmTransactionManager")    
+    @Transactional("tmTransactionManager")
     public Batch init(Batch b) {
         b = dao.reload(b);
-        Hibernate.initialize(b.getBatchRuns()); 
+        Hibernate.initialize(b.getBatchRuns());
         return b;
     }
-
 }

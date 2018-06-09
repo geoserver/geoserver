@@ -6,7 +6,6 @@
 package org.geoserver.web.publish;
 
 import java.io.IOException;
-
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
@@ -15,18 +14,15 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 
 /**
  * Extension point for panels which appear in separate tabs on the layer edit page.
- * <p>
- * Subclasses <b>must</b> override the {@link #LayerEditTabPanel(String, IModel)} constructor
- * and <b>not</b> change its signature.
- * </p>
- * <p>
- * Instances of this class are described in a spring context with a {@link PublishedEditTabPanelInfo}
- * bean.
- * </p>
+ *
+ * <p>Subclasses <b>must</b> override the {@link #LayerEditTabPanel(String, IModel)} constructor and
+ * <b>not</b> change its signature.
+ *
+ * <p>Instances of this class are described in a spring context with a {@link
+ * PublishedEditTabPanelInfo} bean.
  *
  * @author Justin Deoliveira, OpenGeo
  * @author Niels Charlier
- *
  */
 public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
 
@@ -40,9 +36,7 @@ public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
         super(id, model);
     }
 
-    /**
-     * Returns the layer currently being edited by the panel.
-     */
+    /** Returns the layer currently being edited by the panel. */
     @SuppressWarnings("unchecked")
     public T getPublishedInfo() {
         return ((IModel<? extends T>) getDefaultModel()).getObject();
@@ -50,17 +44,18 @@ public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
 
     /**
      * Called by {@link ResourceConfigurationPage} to save the state of this tab's model.
+     *
      * <p>
      */
     public void save() throws IOException {
-        //do nothing by default
+        // do nothing by default
     }
 
-
     public PublishedEditTabPanel<T> setInputEnabled(final boolean enabled) {
-        visitChildren((component, visit) -> {
-            component.setEnabled(enabled);
-        });
+        visitChildren(
+                (component, visit) -> {
+                    component.setEnabled(enabled);
+                });
         return this;
     }
 }

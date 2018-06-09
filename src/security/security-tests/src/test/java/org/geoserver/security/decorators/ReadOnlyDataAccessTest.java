@@ -5,6 +5,10 @@
  */
 package org.geoserver.security.decorators;
 
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
@@ -14,10 +18,6 @@ import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
-
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class ReadOnlyDataAccessTest extends SecureObjectsTest {
 
@@ -69,17 +69,15 @@ public class ReadOnlyDataAccessTest extends SecureObjectsTest {
             ro.createSchema(null);
             fail("Should have failed with a security exception");
         } catch (Throwable e) {
-            if (SecurityUtils.isSecurityException(e)==false)
-                fail("Should have thrown a security exception...");            
+            if (SecurityUtils.isSecurityException(e) == false)
+                fail("Should have thrown a security exception...");
         }
         try {
             ro.updateSchema(null, null);
             fail("Should have failed with a security exception");
         } catch (Throwable e) {
-            if (SecurityUtils.isSecurityException(e)==false)
-                fail("Should have thrown a security exception...");            
-
+            if (SecurityUtils.isSecurityException(e) == false)
+                fail("Should have thrown a security exception...");
         }
     }
-
 }

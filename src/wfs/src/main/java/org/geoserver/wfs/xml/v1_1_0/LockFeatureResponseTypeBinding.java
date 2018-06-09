@@ -6,20 +6,18 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.LockFeatureResponseType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexEMFBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:LockFeatureResponseType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="LockFeatureResponseType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -74,6 +72,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class LockFeatureResponseTypeBinding extends AbstractComplexEMFBinding {
@@ -83,14 +82,13 @@ public class LockFeatureResponseTypeBinding extends AbstractComplexEMFBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.LOCKFEATURERESPONSETYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -101,14 +99,14 @@ public class LockFeatureResponseTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        //TODO: implement
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        // TODO: implement
         return null;
     }
 }

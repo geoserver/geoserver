@@ -11,24 +11,20 @@ import org.geoserver.security.web.role.RoleServiceChoice;
 import org.geoserver.security.web.usergroup.UserGroupServicePanel;
 import org.geoserver.web.wicket.HelpLink;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class WebServiceBodyResponseUserGroupServicePanel
         extends UserGroupServicePanel<WebServiceBodyResponseUserGroupServiceConfig> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = -5204330095571014979L;
 
-    public WebServiceBodyResponseUserGroupServicePanel(String id,
-            IModel<WebServiceBodyResponseUserGroupServiceConfig> model) {
+    public WebServiceBodyResponseUserGroupServicePanel(
+            String id, IModel<WebServiceBodyResponseUserGroupServiceConfig> model) {
         super(id, model);
-        add(new HelpLink("webServiceBodyResponseUserGroupParametersHelp",this).setDialog(dialog));
+        add(new HelpLink("webServiceBodyResponseUserGroupParametersHelp", this).setDialog(dialog));
         add(new TextField<String>("searchRoles").setRequired(true));
         add(new TextField<String>("availableGroups").setRequired(false));
-        
+
         add(new RoleServiceChoice("roleServiceName"));
     }
-
 }

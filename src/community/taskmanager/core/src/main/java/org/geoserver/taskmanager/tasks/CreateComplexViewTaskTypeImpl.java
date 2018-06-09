@@ -6,9 +6,7 @@ package org.geoserver.taskmanager.tasks;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
@@ -22,24 +20,25 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImpl {
-    
+
     public static final String NAME = "CreateComplexView";
 
     public static final String PARAM_DEFINITION = "definition";
-    
+
     private static final Pattern PATTERN_PLACEHOLDER = Pattern.compile("\\$\\{([^}]+)\\}");
 
     @Override
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();
-        paramInfo.put(PARAM_DEFINITION, new ParameterInfo(PARAM_DEFINITION, ParameterType.SQL, true));
+        paramInfo.put(
+                PARAM_DEFINITION, new ParameterInfo(PARAM_DEFINITION, ParameterType.SQL, true));
     }
-    
-    public String buildQueryDefinition(TaskContext ctx,            
-            BatchContext.Dependency dependency) throws TaskException {
+
+    public String buildQueryDefinition(TaskContext ctx, BatchContext.Dependency dependency)
+            throws TaskException {
         String definition = (String) ctx.getParameterValues().get(PARAM_DEFINITION);
-        
+
         Matcher m = PATTERN_PLACEHOLDER.matcher(definition);
 
         while (m.find()) {
@@ -48,7 +47,7 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
                 String value = attribute.getValue();
                 Object o = ctx.getBatchContext().get(value, dependency);
                 if (o == value) {
-                    //check if it is a table in the batch context
+                    // check if it is a table in the batch context
                     final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
                     final DbTable table = new DbTableImpl(db, value);
                     Object t = ctx.getBatchContext().get(table, dependency);
@@ -56,11 +55,12 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
                         o = t;
                     }
                 }
-                definition = m.replaceFirst(
-                        o instanceof DbTable ? ((DbTable) o).getTableName() : o.toString());
+                definition =
+                        m.replaceFirst(
+                                o instanceof DbTable ? ((DbTable) o).getTableName() : o.toString());
                 m = PATTERN_PLACEHOLDER.matcher(definition);
             } else {
-                //TODO: should already happen in validation
+                // TODO: should already happen in validation
                 throw new TaskException("Attribute not found for placeholder:" + m.group(1));
             }
         }
@@ -72,5 +72,4 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
     public String getName() {
         return NAME;
     }
-
 }

@@ -5,13 +5,12 @@
  */
 package org.geoserver.script.web;
 
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -31,8 +30,6 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.collect.Lists;
-
 public class ScriptNewPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.script.web");
@@ -44,13 +41,14 @@ public class ScriptNewPage extends GeoServerSecuredPage {
 
         Script script = new Script();
 
-        form = new Form("form", new CompoundPropertyModel(script)) {
-            @Override
-            protected void onSubmit() {
-                save();
-                doReturn(ScriptPage.class);
-            }
-        };
+        form =
+                new Form("form", new CompoundPropertyModel(script)) {
+                    @Override
+                    protected void onSubmit() {
+                        save();
+                        doReturn(ScriptPage.class);
+                    }
+                };
         add(form);
 
         // Get List of script extensions from installed plugins
@@ -58,7 +56,8 @@ public class ScriptNewPage extends GeoServerSecuredPage {
 
         // Content
         String mode = extensions.size() > 0 ? getModeFromExtension(extensions.get(0)) : "py";
-        final CodeMirrorEditor content = new CodeMirrorEditor("contents", mode, new PropertyModel(script, "contents"));
+        final CodeMirrorEditor content =
+                new CodeMirrorEditor("contents", mode, new PropertyModel(script, "contents"));
         content.setRequired(true);
         form.add(content);
 
@@ -68,52 +67,58 @@ public class ScriptNewPage extends GeoServerSecuredPage {
         form.add(name);
 
         // Type
-        DropDownChoice<String> typeDropDownChoice = new DropDownChoice<String>("type",
-                new PropertyModel(script, "type"), new LoadableDetachableModel<List<String>>() {
-                    @Override
-                    protected List<String> load() {
-                        List<String> values = Lists.newArrayList();
-                        for (ScriptType type : ScriptType.values()) {
-                            values.add(type.getLabel());
-                        }
-                        return values;
-                    }
-                });
+        DropDownChoice<String> typeDropDownChoice =
+                new DropDownChoice<String>(
+                        "type",
+                        new PropertyModel(script, "type"),
+                        new LoadableDetachableModel<List<String>>() {
+                            @Override
+                            protected List<String> load() {
+                                List<String> values = Lists.newArrayList();
+                                for (ScriptType type : ScriptType.values()) {
+                                    values.add(type.getLabel());
+                                }
+                                return values;
+                            }
+                        });
         typeDropDownChoice.setRequired(true);
         form.add(typeDropDownChoice);
 
         // Extension
-        final DropDownChoice<String> extensionDropDownChoice = new DropDownChoice<String>("extension",
-            new PropertyModel(script, "extension"),
-            new LoadableDetachableModel<List<String>>() {
-                @Override
-                protected List<String> load() {
-                    return extensions;
-                }
-            }
-        );
+        final DropDownChoice<String> extensionDropDownChoice =
+                new DropDownChoice<String>(
+                        "extension",
+                        new PropertyModel(script, "extension"),
+                        new LoadableDetachableModel<List<String>>() {
+                            @Override
+                            protected List<String> load() {
+                                return extensions;
+                            }
+                        });
         extensionDropDownChoice.setRequired(true);
-        extensionDropDownChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                int i = Integer.parseInt(extensionDropDownChoice.getValue());
-                String ext = extensions.get(i);
-                String mode = getModeFromExtension(ext);
-                content.setMode(mode);
-            }
-        });
+        extensionDropDownChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        int i = Integer.parseInt(extensionDropDownChoice.getValue());
+                        String ext = extensions.get(i);
+                        String mode = getModeFromExtension(ext);
+                        content.setMode(mode);
+                    }
+                });
         form.add(extensionDropDownChoice);
 
         SubmitLink submitLink = new SubmitLink("submit", form);
         form.add(submitLink);
         form.setDefaultButton(submitLink);
-        
-        AjaxLink cancelLink = new AjaxLink("cancel") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                doReturn(ScriptPage.class);
-            }
-        };
+
+        AjaxLink cancelLink =
+                new AjaxLink("cancel") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        doReturn(ScriptPage.class);
+                    }
+                };
         form.add(cancelLink);
     }
 

@@ -6,26 +6,24 @@ package org.geoserver.taskmanager.data;
 
 /**
  * Factory for DAO objects.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface TaskManagerFactory {
-    
+
     Task createTask();
-    
+
     Batch createBatch();
-    
+
     Run createRun();
-    
+
     Configuration createConfiguration();
-    
+
     Parameter createParameter();
-    
+
     Attribute createAttribute();
-    
+
     BatchElement createBatchElement();
 
     BatchRun createBatchRun();
-
 }

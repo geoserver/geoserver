@@ -9,9 +9,8 @@ import java.util.List;
 
 /**
  * Element of a batch.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface BatchElement extends SoftRemove, Serializable, Identifiable {
 
@@ -28,5 +27,4 @@ public interface BatchElement extends SoftRemove, Serializable, Identifiable {
     void setIndex(Integer index);
 
     List<Run> getRuns();
-
 }

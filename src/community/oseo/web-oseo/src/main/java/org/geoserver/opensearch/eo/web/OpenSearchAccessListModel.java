@@ -8,7 +8,6 @@ package org.geoserver.opensearch.eo.web;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -17,9 +16,8 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Model providing a list of DataStoreInfo backed by a {@link OpenSearchAccess}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class OpenSearchAccessListModel extends LoadableDetachableModel<List<DataStoreInfo>> {
     private static final long serialVersionUID = -7742496075623731474L;
@@ -28,8 +26,8 @@ public class OpenSearchAccessListModel extends LoadableDetachableModel<List<Data
 
     @Override
     protected List<DataStoreInfo> load() {
-        List<DataStoreInfo> stores = GeoServerApplication.get().getCatalog()
-                .getStores(DataStoreInfo.class);
+        List<DataStoreInfo> stores =
+                GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class);
         List<DataStoreInfo> openSearchAccesses = new ArrayList<>();
         for (DataStoreInfo info : stores) {
             try {
@@ -37,8 +35,12 @@ public class OpenSearchAccessListModel extends LoadableDetachableModel<List<Data
                     openSearchAccesses.add(info);
                 }
             } catch (Exception e) {
-                LOGGER.fine("Skipping store " + info.getWorkspace().getName() + ":" + info.getName()
-                        + " as it cannot be connected to");
+                LOGGER.fine(
+                        "Skipping store "
+                                + info.getWorkspace().getName()
+                                + ":"
+                                + info.getName()
+                                + " as it cannot be connected to");
             }
         }
         return openSearchAccesses;

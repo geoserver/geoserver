@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-
 import javax.media.jai.Interpolation;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
@@ -44,10 +42,10 @@ public class ScaleToTargetTest {
 
     private static final double DELTA = 1E-06;
 
-    private static final double[] EXP_NATIVE_RES = new double[] { 0.0041666667, 0.0041666667 };
+    private static final double[] EXP_NATIVE_RES = new double[] {0.0041666667, 0.0041666667};
 
-    private static final ReferencedEnvelope ROI = new ReferencedEnvelope(146.5, 148, -43.5, -43,
-            DefaultGeographicCRS.WGS84);
+    private static final ReferencedEnvelope ROI =
+            new ReferencedEnvelope(146.5, 148, -43.5, -43, DefaultGeographicCRS.WGS84);
 
     private File inputTempFile = null;
 
@@ -134,39 +132,57 @@ public class ScaleToTargetTest {
     @Test
     public void testFullSizeScale2X() throws Exception {
         final int targetSizeX = 720, targetSizeY = 720;
-        final double[] expectedRequestedResolution = new double[] { EXP_NATIVE_RES[0]/2, EXP_NATIVE_RES[1]/2 };
+        final double[] expectedRequestedResolution =
+                new double[] {EXP_NATIVE_RES[0] / 2, EXP_NATIVE_RES[1] / 2};
         final double[] expectedReadResolution = EXP_NATIVE_RES;
-        final int[] expectedGridSize = new int[] { 360, 360 }; // full size image
+        final int[] expectedGridSize = new int[] {360, 360}; // full size image
 
-        testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution,
+        testFullSize(
+                targetSizeX,
+                targetSizeY,
+                expectedRequestedResolution,
+                expectedReadResolution,
                 expectedGridSize);
     }
 
     @Test
     public void testFullSizeTargetSizeMatchesOverview() throws Exception {
         final int targetSizeX = 90, targetSizeY = 90;
-        final double[] expectedRequestedResolution = new double[] { 0.0166666667, 0.0166666667 };
+        final double[] expectedRequestedResolution = new double[] {0.0166666667, 0.0166666667};
         final double[] expectedReadResolution = expectedRequestedResolution;
-        final int[] expectedGridSize = new int[] { targetSizeX, targetSizeY }; // matches 90x90 overview
+        final int[] expectedGridSize =
+                new int[] {targetSizeX, targetSizeY}; // matches 90x90 overview
 
-        testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution,
+        testFullSize(
+                targetSizeX,
+                targetSizeY,
+                expectedRequestedResolution,
+                expectedReadResolution,
                 expectedGridSize);
     }
 
     @Test
     public void testFullSizeTargetSizeDoesNotMatchOverview() throws Exception {
         final int targetSizeX = 110, targetSizeY = 110;
-        final double[] expectedRequestedResolution = new double[] { 0.0136363636, 0.0136363636 };
-        final double[] expectedReadResolution = new double[] { 0.0166666667, 0.0166666667 };
-        final int[] expectedGridSize = new int[] { 90, 90 }; // closest overview: 90x90
+        final double[] expectedRequestedResolution = new double[] {0.0136363636, 0.0136363636};
+        final double[] expectedReadResolution = new double[] {0.0166666667, 0.0166666667};
+        final int[] expectedGridSize = new int[] {90, 90}; // closest overview: 90x90
 
-        testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution,
+        testFullSize(
+                targetSizeX,
+                targetSizeY,
+                expectedRequestedResolution,
+                expectedReadResolution,
                 expectedGridSize);
     }
 
-    private void testFullSize(int targetSizeX, int targetSizeY,
-            final double[] expectedRequestedResolution, final double[] expectedReadResolution,
-            final int[] expectedGridSize) throws Exception {
+    private void testFullSize(
+            int targetSizeX,
+            int targetSizeY,
+            final double[] expectedRequestedResolution,
+            final double[] expectedReadResolution,
+            final int[] expectedGridSize)
+            throws Exception {
         GeoTiffReader inputReader = null, outputReader = null;
         GeoTiffWriter writer = null;
         File outputTempFile = null;
@@ -218,28 +234,40 @@ public class ScaleToTargetTest {
     @Test
     public void testROITargetSizeMatchesOverview() throws Exception {
         final int targetSizeX = 180, targetSizeY = 60; // matches 180x180 overview
-        final double[] expectedRequestedResolution = new double[] { 0.0083333333, 0.0083333333 };
+        final double[] expectedRequestedResolution = new double[] {0.0083333333, 0.0083333333};
         final double[] expectedReadResolution = expectedRequestedResolution;
-        final int[] expectedGridSize = new int[] { 180, 60 }; // matches 180x180 overview
+        final int[] expectedGridSize = new int[] {180, 60}; // matches 180x180 overview
 
-        testROI(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution,
+        testROI(
+                targetSizeX,
+                targetSizeY,
+                expectedRequestedResolution,
+                expectedReadResolution,
                 expectedGridSize);
     }
 
     @Test
     public void testROITargetSizeDoesNotMatchOverview() throws Exception {
         final int targetSizeX = 150, targetSizeY = 50; // closest overview is 180x180
-        final double[] expectedRequestedResolution = new double[] { 0.01, 0.01 };
-        final double[] expectedReadResolution = new double[] { 0.0083333333, 0.0083333333 };
-        final int[] expectedGridSize = new int[] { 180, 60 }; // targetSize * requestedRes / readRes
+        final double[] expectedRequestedResolution = new double[] {0.01, 0.01};
+        final double[] expectedReadResolution = new double[] {0.0083333333, 0.0083333333};
+        final int[] expectedGridSize = new int[] {180, 60}; // targetSize * requestedRes / readRes
 
-        testROI(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution,
+        testROI(
+                targetSizeX,
+                targetSizeY,
+                expectedRequestedResolution,
+                expectedReadResolution,
                 expectedGridSize);
     }
 
-    private void testROI(int targetSizeX, int targetSizeY,
-            final double[] expectedRequestedResolution, final double[] expectedReadResolution,
-            final int[] expectedGridSize) throws Exception {
+    private void testROI(
+            int targetSizeX,
+            int targetSizeY,
+            final double[] expectedRequestedResolution,
+            final double[] expectedReadResolution,
+            final int[] expectedGridSize)
+            throws Exception {
         GeoTiffReader inputReader = null, outputReader = null;
         GeoTiffWriter writer = null;
         File outputTempFile = null;
@@ -297,8 +325,13 @@ public class ScaleToTargetTest {
         }
     }
 
-    private void finalCleanUp(GeoTiffReader inputReader, GeoTiffReader outputReader,
-            GeoTiffWriter writer, GridCoverage2D gc, GridCoverage2D croppedGC, File outputTempFile) {
+    private void finalCleanUp(
+            GeoTiffReader inputReader,
+            GeoTiffReader outputReader,
+            GeoTiffWriter writer,
+            GridCoverage2D gc,
+            GridCoverage2D croppedGC,
+            File outputTempFile) {
         if (inputReader != null) {
             inputReader.dispose();
         }
@@ -324,15 +357,19 @@ public class ScaleToTargetTest {
         assertEquals(expectedResolution[1], actualResolution[1], DELTA);
     }
 
-    private GeneralParameterValue[] getReaderParams(GridCoverage2DReader reader,
-            GridGeometry2D gridGeometry) {
+    private GeneralParameterValue[] getReaderParams(
+            GridCoverage2DReader reader, GridGeometry2D gridGeometry) {
         // setup reader parameters to have it exploit overviews
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
-        final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
-                .getDescriptor().descriptors();
+        final List<GeneralParameterDescriptor> parameterDescriptors =
+                readParametersDescriptor.getDescriptor().descriptors();
         GeneralParameterValue[] readParameters = new GeneralParameterValue[] {};
-        readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
-                gridGeometry, AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
+        readParameters =
+                CoverageUtils.mergeParameter(
+                        parameterDescriptors,
+                        readParameters,
+                        gridGeometry,
+                        AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
 
         return readParameters;
     }

@@ -5,15 +5,6 @@
 package org.geoserver.wfs3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
-import org.geoserver.ows.Request;
-import org.geoserver.ows.ServiceExceptionHandler;
-import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.platform.OWS20Exception;
-import org.geoserver.platform.ServiceException;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -21,6 +12,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.servlet.http.HttpServletResponse;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.ows.Request;
+import org.geoserver.ows.ServiceExceptionHandler;
+import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.OWS20Exception;
+import org.geoserver.platform.ServiceException;
 
 /**
  * Returns exceptions as a JSON document according to the WFS 3 draft spec
@@ -49,12 +48,12 @@ public class WFS3ExceptionHandler extends ServiceExceptionHandler {
                 response.setStatus(500);
             }
         } else {
-            OWS20Exception.OWSExceptionCode code = OWS20Exception.OWSExceptionCode.getByCode
-                    (exception.getCode());
+            OWS20Exception.OWSExceptionCode code =
+                    OWS20Exception.OWSExceptionCode.getByCode(exception.getCode());
             if (code != null) {
                 response.setStatus(code.getHttpCode());
             } else {
-                response.setStatus(500); 
+                response.setStatus(500);
             }
         }
 
@@ -65,14 +64,16 @@ public class WFS3ExceptionHandler extends ServiceExceptionHandler {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(response.getOutputStream(), error);
         } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
+            LOGGER.log(
+                    Level.INFO,
+                    "Problem writing exception information back to calling client:",
+                    ex);
         } finally {
             try {
                 request.getHttpResponse().getOutputStream().flush();
             } catch (IOException ignored) {
             }
         }
-
     }
 
     private String getDescription(GeoServerInfo geoServer, ServiceException e) {
@@ -89,5 +90,4 @@ public class WFS3ExceptionHandler extends ServiceExceptionHandler {
 
         return sb.toString();
     }
-
 }

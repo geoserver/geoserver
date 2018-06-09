@@ -15,23 +15,21 @@ import org.springframework.core.io.Resource;
 
 /**
  * Concrete Spring Batch {@link ItemReader}.
- * 
- * Reads resource items from in memory {@link Catalog}.
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * <p>Reads resource items from in memory {@link Catalog}.
+ *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class CatalogItemReader<T> extends CatalogReader<T> {
 
     CloseableIterator<T> catalogIterator;
-    
-    public CatalogItemReader(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
+
+    public CatalogItemReader(
+            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         super(clazz, backupFacade, xStreamPersisterFactory);
     }
 
-    protected void initialize(StepExecution stepExecution) {
-    }
+    protected void initialize(StepExecution stepExecution) {}
 
     @Override
     public void setResource(Resource resource) {
@@ -67,5 +65,4 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
     protected void doClose() throws Exception {
         catalogIterator.close();
     }
-
 }

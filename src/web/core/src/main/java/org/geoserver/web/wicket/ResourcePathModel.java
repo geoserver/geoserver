@@ -13,14 +13,14 @@ import org.geoserver.web.GeoServerApplication;
  * A model allowing to use a non serializable {@link Resource} in GeoServer. This class assumes the
  * resource store is the GeoServer main one, subclass in case you need to work against resources
  * coming from a different store
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("serial")
 public class ResourcePathModel extends LoadableDetachableModel<Resource> {
-    
+
     String path;
-    
+
     public ResourcePathModel(Resource resource) {
         super(resource);
         this.path = resource.path();
@@ -33,13 +33,11 @@ public class ResourcePathModel extends LoadableDetachableModel<Resource> {
     }
 
     /**
-     * Returns the main {@link ResourceStore} for GeoServer. Subclasses can override in case
-     * they are using a different resource store
-     *
+     * Returns the main {@link ResourceStore} for GeoServer. Subclasses can override in case they
+     * are using a different resource store
      */
     protected ResourceStore getResourceStore() {
         ResourceStore store = (ResourceStore) GeoServerApplication.get().getBean("resourceStore");
         return store;
     }
-
 }

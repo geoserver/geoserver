@@ -10,53 +10,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
-
-import net.opengis.wfs.DescribeFeatureTypeType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
-import org.geoserver.config.ResourceErrorHandling;
 import org.geotools.util.logging.Logging;
-
 
 /**
  * Web Feature Service DescribeFeatureType operation.
- * <p>
- * This operation returns an array of  {@link org.geoserver.data.feature.FeatureTypeInfo} metadata
+ *
+ * <p>This operation returns an array of {@link org.geoserver.data.feature.FeatureTypeInfo} metadata
  * objects corresponding to the feature type names specified in the request.
- * </p>
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  * @version $Id$
  */
 public class DescribeFeatureType {
-    /**
-    * Catalog reference
-    */
+    /** Catalog reference */
     private Catalog catalog;
 
-    /**
-     * WFS service
-     */
+    /** WFS service */
     private WFSInfo wfs;
-    
+
     private static Logger LOGGER = Logging.getLogger(DescribeFeatureType.class);
 
     /**
-         * Creates a new wfs 1.0/1.1 DescribeFeatureType operation.
-         *
-         * @param wfs The wfs configuration
-         * @param catalog The geoserver catalog.
-         */
+     * Creates a new wfs 1.0/1.1 DescribeFeatureType operation.
+     *
+     * @param wfs The wfs configuration
+     * @param catalog The geoserver catalog.
+     */
     public DescribeFeatureType(WFSInfo wfs, Catalog catalog) {
         this.catalog = catalog;
         this.wfs = wfs;
@@ -78,8 +67,7 @@ public class DescribeFeatureType {
         this.catalog = catalog;
     }
 
-    public FeatureTypeInfo[] run(DescribeFeatureTypeRequest request)
-        throws WFSException {
+    public FeatureTypeInfo[] run(DescribeFeatureTypeRequest request) throws WFSException {
         List<QName> names = new ArrayList<QName>(request.getTypeNames());
 
         final boolean citeConformance = getWFS().isCiteCompliant();
@@ -110,25 +98,29 @@ public class DescribeFeatureType {
             names = hackedNames;
         }
 
-        //list of catalog handles
+        // list of catalog handles
         List<FeatureTypeInfo> requested = new ArrayList<FeatureTypeInfo>(names.size());
 
         if (names.isEmpty()) {
             // if there are no specific requested types then get all the ones that
             // are enabled
-            final boolean skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
-                    getWFS().getGeoServer().getGlobal().getResourceErrorHandling());
+            final boolean skipMisconfigured =
+                    ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                            getWFS().getGeoServer().getGlobal().getResourceErrorHandling());
 
-            for (FeatureTypeInfo ftInfo : new ArrayList<FeatureTypeInfo>(catalog.getFeatureTypes())) {
+            for (FeatureTypeInfo ftInfo :
+                    new ArrayList<FeatureTypeInfo>(catalog.getFeatureTypes())) {
                 if (ftInfo.enabled()) {
                     try {
                         ftInfo.getFeatureType(); // check that we can get a connection to this ftype
                         requested.add(ftInfo);
                     } catch (IOException ioe) {
                         if (skipMisconfigured) {
-                            LOGGER.log(Level.WARNING,
-                                    "Skipping DescribeFeature for " + ftInfo.getPrefixedName()
-                                        + " because we couldn't connect",
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Skipping DescribeFeature for "
+                                            + ftInfo.getPrefixedName()
+                                            + " because we couldn't connect",
                                     ioe);
                         } else {
                             throw new WFSException(ioe);
@@ -150,7 +142,6 @@ public class DescribeFeatureType {
                 } else {
                     typeInfo = catalog.getFeatureTypeByName(namespaceURI, typeName);
                 }
-               
 
                 if (typeInfo != null && typeInfo.enabled()) {
                     requested.add(typeInfo);
@@ -158,8 +149,9 @@ public class DescribeFeatureType {
                     // not found
                     String msg = "Could not find type: " + name;
                     if (citeConformance) {
-                        msg += ". \nStrict WFS protocol conformance is being applied.\n"
-                                + "Make sure the type name is correctly qualified";
+                        msg +=
+                                ". \nStrict WFS protocol conformance is being applied.\n"
+                                        + "Make sure the type name is correctly qualified";
                     }
                     throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
                 }

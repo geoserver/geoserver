@@ -5,18 +5,17 @@
 package org.geoserver.taskmanager.beans;
 
 import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.springframework.stereotype.Component;
 import org.geoserver.taskmanager.web.ConfigurationPage;
 import org.geoserver.taskmanager.web.action.Action;
+import org.springframework.stereotype.Component;
 
-@Component 
+@Component
 public class DummyAction implements Action {
 
     public static final String NAME = "actionDummy";
-    
+
     private static final long serialVersionUID = 2055260073253741911L;
 
     @Override
@@ -25,7 +24,9 @@ public class DummyAction implements Action {
     }
 
     @Override
-    public void execute(ConfigurationPage onPage, AjaxRequestTarget target, IModel<String> valueModel, List<String> dependentValues) {
-
-    }
+    public void execute(
+            ConfigurationPage onPage,
+            AjaxRequestTarget target,
+            IModel<String> valueModel,
+            List<String> dependentValues) {}
 }

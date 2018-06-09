@@ -10,9 +10,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import net.opengis.cat.csw20.GetDomainType;
-
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -42,7 +40,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
         xpath.setNamespaceContext(nameSpaceContext);
     }
 
-    @Test 
+    @Test
     public void testKVPParameter() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -59,7 +57,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
         assertEquals("GetRecords.resultType", gd.getParameterName());
     }
 
-    @Test 
+    @Test
     public void testKVPProperty() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -76,48 +74,67 @@ public class GetDomainTest extends CSWSimpleTestSupport {
         assertEquals("dc:title", gd.getPropertyName());
     }
 
-    @Test 
+    @Test
     public void testXMLReaderParameter() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration(),
-                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        GetDomainType gd = (GetDomainType) reader.read(null,
-                getResourceAsReader("GetDomainParameter.xml"), (Map) null);
+        CSWXmlReader reader =
+                new CSWXmlReader(
+                        "GetDomain",
+                        "2.0.2",
+                        new CSWConfiguration(),
+                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        GetDomainType gd =
+                (GetDomainType)
+                        reader.read(
+                                null, getResourceAsReader("GetDomainParameter.xml"), (Map) null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("GetRecords.resultType", gd.getParameterName());
     }
 
-    @Test 
+    @Test
     public void testXMLReaderProperty() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration(),
-                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        GetDomainType gd = (GetDomainType) reader.read(null,
-                getResourceAsReader("GetDomainProperty.xml"), (Map) null);
+        CSWXmlReader reader =
+                new CSWXmlReader(
+                        "GetDomain",
+                        "2.0.2",
+                        new CSWConfiguration(),
+                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        GetDomainType gd =
+                (GetDomainType)
+                        reader.read(null, getResourceAsReader("GetDomainProperty.xml"), (Map) null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("dc:title", gd.getPropertyName());
     }
 
-    @Test 
+    @Test
     public void testGETReaderParameter() throws Exception {
-        Document dom = getAsDOM(BASEPATH
-                + "?service=csw&version=2.0.2&request=GetDomain&parameterName=GetRecords.resultType");
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "?service=csw&version=2.0.2&request=GetDomain&parameterName=GetRecords.resultType");
         // print(dom);
-        //checkValidationErrors(dom);
-        
-        assertXpathEvaluatesTo("GetRecords.resultType", "/csw:GetDomainResponse/csw:DomainValues/csw:ParameterName", dom);
+        // checkValidationErrors(dom);
+
+        assertXpathEvaluatesTo(
+                "GetRecords.resultType",
+                "/csw:GetDomainResponse/csw:DomainValues/csw:ParameterName",
+                dom);
         assertXpathEvaluatesTo("3", "count(//csw:Value)", dom);
     }
 
-    @Test 
+    @Test
     public void testGETReaderProperty() throws Exception {
-        Document dom = getAsDOM(BASEPATH
-            + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title", "ISO-8859-1");
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title",
+                        "ISO-8859-1");
         print(dom);
-        //checkValidationErrors(dom);
-        
-        assertXpathEvaluatesTo("dc:title", "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);
+        // checkValidationErrors(dom);
+
+        assertXpathEvaluatesTo(
+                "dc:title", "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);
         assertXpathEvaluatesTo("9", "count(//csw:Value)", dom);
     }
-
 }

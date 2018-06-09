@@ -11,11 +11,11 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
  * Configuration panel extension for {@link GeoServerCasAuthenticationFilter}.
- * 
+ *
  * @author mcr
  */
-public class CasAuthFilterPanelInfo 
-    extends AuthenticationFilterPanelInfo<CasAuthenticationFilterConfig, CasAuthFilterPanel> {
+public class CasAuthFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<CasAuthenticationFilterConfig, CasAuthFilterPanel> {
 
     private static final long serialVersionUID = 1L;
 

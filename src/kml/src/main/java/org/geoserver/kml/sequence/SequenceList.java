@@ -11,9 +11,8 @@ import java.util.NoSuchElementException;
 
 /**
  * TODO: implement at least partially listiterator
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  * @param <T>
  */
 public class SequenceList<T> extends AbstractList<T> {
@@ -49,11 +48,10 @@ public class SequenceList<T> extends AbstractList<T> {
         public void remove() {
             throw new UnsupportedOperationException();
         }
-
     }
 
     SequenceFactory<T> generatorFactory;
-    
+
     public SequenceList(SequenceFactory<T> generatorFactory) {
         this.generatorFactory = generatorFactory;
     }
@@ -72,5 +70,4 @@ public class SequenceList<T> extends AbstractList<T> {
     public int size() {
         return -1;
     }
-
 }

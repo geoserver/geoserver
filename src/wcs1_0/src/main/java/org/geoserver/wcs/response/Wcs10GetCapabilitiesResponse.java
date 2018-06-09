@@ -7,27 +7,23 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geotools.xml.transform.TransformerBase;
 
 /**
  * Runs the transformer and outputs the capabilities
- * 
+ *
  * @author Andrea Aime, TOPP TODO: This is a blatant copy of WFS GetCapabilities response. Find a
- *         way to share code.
+ *     way to share code.
  */
 public class Wcs10GetCapabilitiesResponse extends Response {
     public Wcs10GetCapabilitiesResponse() {
         super(TransformerBase.class);
     }
 
-    /**
-     * Makes sure this triggers only </p>
-     */
+    /** Makes sure this triggers only */
     public boolean canHandle(Operation operation) {
         return "GetCapabilities".equalsIgnoreCase(operation.getId())
                 && operation.getService().getId().equals("wcs")
@@ -48,5 +44,4 @@ public class Wcs10GetCapabilitiesResponse extends Response {
             throw (IOException) new IOException().initCause(e);
         }
     }
-
 }

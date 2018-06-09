@@ -5,15 +5,18 @@
  */
 package org.geoserver.script.js;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.function.ScriptFunctionFactory;
-import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -25,16 +28,10 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.PropertyName;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
-
 public class JavaScriptFunctionTest extends ScriptIntTestSupport {
 
     ScriptFunctionFactory functionFactory;
-    
+
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         File fromDir = URLs.urlToFile(getClass().getResource("scripts"));
@@ -48,7 +45,7 @@ public class JavaScriptFunctionTest extends ScriptIntTestSupport {
         super.oneTimeSetUp();
         functionFactory = new ScriptFunctionFactory(getScriptManager());
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testFactorial() {
         Function factorial = functionFactory.function("factorial", Collections.EMPTY_LIST, null);
@@ -93,5 +90,4 @@ public class JavaScriptFunctionTest extends ScriptIntTestSupport {
         assertTrue(result instanceof Polygon);
         assertTrue(((Polygon) result).getArea() > 35314);
     }
-
 }

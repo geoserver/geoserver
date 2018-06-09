@@ -12,14 +12,12 @@ import org.geoserver.gwc.wmts.dimensions.CoverageDimensionsReader.DataType;
 import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.filter.Filter;
 
-/**
- * Represents a custom dimension of a raster.
- */
+/** Represents a custom dimension of a raster. */
 public class RasterCustomDimension extends RasterDimension {
 
-    public RasterCustomDimension(WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
+    public RasterCustomDimension(
+            WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
         super(wms, name, layerInfo, dimensionInfo, DataType.CUSTOM);
     }
 
@@ -30,9 +28,10 @@ public class RasterCustomDimension extends RasterDimension {
 
     @Override
     protected FeatureCollection getDomain(Query query) {
-        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
-        Tuple<String, FeatureCollection> values = reader.getValues(this.dimensionName, query,
-                DataType.CUSTOM);
+        CoverageDimensionsReader reader =
+                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        Tuple<String, FeatureCollection> values =
+                reader.getValues(this.dimensionName, query, DataType.CUSTOM);
 
         return values.second;
     }
@@ -44,7 +43,7 @@ public class RasterCustomDimension extends RasterDimension {
 
     @Override
     public String getDefaultValueAsString() {
-        return getWms().getDefaultCustomDimensionValue(getDimensionName(), getResourceInfo(), String.class);
+        return getWms().getDefaultCustomDimensionValue(
+                        getDimensionName(), getResourceInfo(), String.class);
     }
-
 }

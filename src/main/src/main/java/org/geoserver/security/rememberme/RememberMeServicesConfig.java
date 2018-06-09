@@ -9,7 +9,7 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 
 /**
  * Configuration object for remember me services.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class RememberMeServicesConfig extends BaseSecurityNamedServiceConfig {
@@ -20,8 +20,7 @@ public class RememberMeServicesConfig extends BaseSecurityNamedServiceConfig {
 
     String key = DEFAULT_KEY;
 
-    public RememberMeServicesConfig() {
-    }
+    public RememberMeServicesConfig() {}
 
     public RememberMeServicesConfig(RememberMeServicesConfig other) {
         super(other);
@@ -35,5 +34,4 @@ public class RememberMeServicesConfig extends BaseSecurityNamedServiceConfig {
     public void setKey(String key) {
         this.key = key;
     }
-
 }

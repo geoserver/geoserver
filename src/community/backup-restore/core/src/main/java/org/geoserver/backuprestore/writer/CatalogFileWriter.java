@@ -13,7 +13,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.backuprestore.Backup;
@@ -35,11 +34,10 @@ import org.springframework.util.Assert;
 
 /**
  * Concrete Spring Batch {@link AbstractItemStreamItemWriter}.
- * 
- * Streams {@link Catalog} resource items to JSON via {@link XStreamPersister} on mass storage.
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * <p>Streams {@link Catalog} resource items to JSON via {@link XStreamPersister} on mass storage.
+ *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
@@ -67,8 +65,8 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
     private boolean append = false;
 
-    public CatalogFileWriter(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
+    public CatalogFileWriter(
+            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         super(clazz, backupFacade, xStreamPersisterFactory);
     }
 
@@ -96,13 +94,15 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
         OutputState state = getOutputState();
 
-        StringBuilder lines = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
+        StringBuilder lines =
+                new StringBuilder(
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
         int lineCount = 0;
-        
-        if (items.size()>0) {
+
+        if (items.size() > 0) {
             lines.append("<items>\n");
         }
-        
+
         for (T item : items) {
             lines.append(doWrite(item));
             lineCount++;
@@ -110,19 +110,22 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
             try {
                 firePostWrite(item, resource);
             } catch (IOException e) {
-                logValidationExceptions((ValidationResult) null, new WriteFailedException(
-                        "Could not write data.  The file may be corrupt.", e));
+                logValidationExceptions(
+                        (ValidationResult) null,
+                        new WriteFailedException(
+                                "Could not write data.  The file may be corrupt.", e));
             }
         }
 
-        if (items.size()>0) {
+        if (items.size() > 0) {
             lines.append("</items>\n");
         }
 
         try {
             state.write(lines.toString());
         } catch (IOException e) {
-            logValidationExceptions((ValidationResult) null,
+            logValidationExceptions(
+                    (ValidationResult) null,
                     new WriteFailedException("Could not write data.  The file may be corrupt.", e));
         }
         state.linesWritten += lineCount;
@@ -144,7 +147,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
     /**
      * Setter for resource. Represents a file that can be written.
-     * 
+     *
      * @param resource
      */
     @Override
@@ -153,9 +156,10 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
     }
 
     /**
-     * Set the flag indicating whether or not state should be saved in the provided {@link ExecutionContext} during the {@link ItemStream} call to
-     * update. Setting this to false means that it will always start at the beginning on a restart.
-     * 
+     * Set the flag indicating whether or not state should be saved in the provided {@link
+     * ExecutionContext} during the {@link ItemStream} call to update. Setting this to false means
+     * that it will always start at the beginning on a restart.
+     *
      * @param saveState
      */
     public void setSaveState(boolean saveState) {
@@ -163,10 +167,11 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
     }
 
     /**
-     * Flag to indicate that the target file should be deleted if it already exists, otherwise it will be created. Defaults to true, so no appending
-     * except on restart. If set to false and {@link #setAppendAllowed(boolean) appendAllowed} is also false then there will be an exception when the
-     * stream is opened to prevent existing data being potentially corrupted.
-     * 
+     * Flag to indicate that the target file should be deleted if it already exists, otherwise it
+     * will be created. Defaults to true, so no appending except on restart. If set to false and
+     * {@link #setAppendAllowed(boolean) appendAllowed} is also false then there will be an
+     * exception when the stream is opened to prevent existing data being potentially corrupted.
+     *
      * @param shouldDeleteIfExists the flag value to set
      */
     public void setShouldDeleteIfExists(boolean shouldDeleteIfExists) {
@@ -174,10 +179,11 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
     }
 
     /**
-     * Flag to indicate that the target file should be appended if it already exists. If this flag is set then the flag
-     * {@link #setShouldDeleteIfExists(boolean) shouldDeleteIfExists} is automatically set to false, so that flag should not be set explicitly.
-     * Defaults value is false.
-     * 
+     * Flag to indicate that the target file should be appended if it already exists. If this flag
+     * is set then the flag {@link #setShouldDeleteIfExists(boolean) shouldDeleteIfExists} is
+     * automatically set to false, so that flag should not be set explicitly. Defaults value is
+     * false.
+     *
      * @param append the flag value to set
      */
     public void setAppendAllowed(boolean append) {
@@ -186,7 +192,8 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
     }
 
     /**
-     * Flag to indicate that writing to the buffer should be delayed if a transaction is active. Defaults to true.
+     * Flag to indicate that writing to the buffer should be delayed if a transaction is active.
+     * Defaults to true.
      */
     public void setTransactional(boolean transactional) {
         this.transactional = transactional;
@@ -194,9 +201,8 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
     /**
      * Initialize the reader. This method may be called multiple times before close is called.
-     * 
+     *
      * @throws Exception
-     * 
      * @see ItemStream#open(ExecutionContext)
      */
     @Override
@@ -209,8 +215,10 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
             try {
                 doOpen(executionContext);
             } catch (ItemStreamException e) {
-                logValidationExceptions((T) null, new WriteFailedException(
-                        "Could not write data.  The file may be corrupt.", e));
+                logValidationExceptions(
+                        (T) null,
+                        new WriteFailedException(
+                                "Could not write data.  The file may be corrupt.", e));
             }
         }
     }
@@ -244,21 +252,21 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
         if (saveState) {
             try {
-                executionContext.putLong(getExecutionContextKey(RESTART_DATA_NAME),
-                        state.position());
+                executionContext.putLong(
+                        getExecutionContextKey(RESTART_DATA_NAME), state.position());
             } catch (IOException e) {
-                logValidationExceptions((T) null, new ItemStreamException(
-                        "ItemStream does not return current position properly", e));
+                logValidationExceptions(
+                        (T) null,
+                        new ItemStreamException(
+                                "ItemStream does not return current position properly", e));
             }
 
-            executionContext.putLong(getExecutionContextKey(WRITTEN_STATISTICS_NAME),
-                    state.linesWritten);
+            executionContext.putLong(
+                    getExecutionContextKey(WRITTEN_STATISTICS_NAME), state.linesWritten);
         }
     }
 
-    /**
-     * @see ItemStream#close()
-     */
+    /** @see ItemStream#close() */
     @Override
     public void close() {
         super.close();
@@ -278,7 +286,8 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
                 throw new ItemStreamException(
                         "Could not convert resource to file: [" + resource + "]", e);
             }
-            Assert.state(!file.exists() || file.canWrite(),
+            Assert.state(
+                    !file.exists() || file.canWrite(),
                     "Resource is not writable: [" + resource + "]");
             state = new OutputState();
             state.setDeleteIfExists(shouldDeleteIfExists);
@@ -289,7 +298,8 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
     }
 
     /**
-     * Encapsulates the runtime state of the writer. All state changing operations on the writer go through this class.
+     * Encapsulates the runtime state of the writer. All state changing operations on the writer go
+     * through this class.
      */
     private class OutputState {
         // default encoding for writing to output files - set to UTF-8.
@@ -320,9 +330,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
         private boolean appending = false;
 
-        /**
-         * Return the byte offset position of the cursor in the output file as a long integer.
-         */
+        /** Return the byte offset position of the cursor in the output file as a long integer. */
         public long position() throws IOException {
             long pos = 0;
 
@@ -337,24 +345,19 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
             }
 
             return pos;
-
         }
 
-        /**
-         * @param append
-         */
+        /** @param append */
         public void setAppendAllowed(boolean append) {
             this.append = append;
         }
 
-        /**
-         * @param executionContext
-         */
+        /** @param executionContext */
         public void restoreFrom(ExecutionContext executionContext) {
-            lastMarkedByteOffsetPosition = executionContext
-                    .getLong(getExecutionContextKey(RESTART_DATA_NAME));
-            linesWritten = executionContext
-                    .getLong(getExecutionContextKey(WRITTEN_STATISTICS_NAME));
+            lastMarkedByteOffsetPosition =
+                    executionContext.getLong(getExecutionContextKey(RESTART_DATA_NAME));
+            linesWritten =
+                    executionContext.getLong(getExecutionContextKey(WRITTEN_STATISTICS_NAME));
             /*
              * if (shouldDeleteIfEmpty && linesWritten == 0) { // previous execution deleted the output file because no items were written restarted =
              * false; lastMarkedByteOffsetPosition = 0; } else { restarted = true; }
@@ -362,23 +365,17 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
             restarted = true;
         }
 
-        /**
-         * @param shouldDeleteIfExists
-         */
+        /** @param shouldDeleteIfExists */
         public void setDeleteIfExists(boolean shouldDeleteIfExists) {
             this.shouldDeleteIfExists = shouldDeleteIfExists;
         }
 
-        /**
-         * @param encoding
-         */
+        /** @param encoding */
         public void setEncoding(String encoding) {
             this.encoding = encoding;
         }
 
-        /**
-         * Close the open resource and reset counters.
-         */
+        /** Close the open resource and reset counters. */
         public void close() {
             initialized = false;
             restarted = false;
@@ -428,7 +425,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
         /**
          * Truncate the output at the last known good point.
-         * 
+         *
          * @throws IOException
          */
         public void truncate() throws IOException {
@@ -437,8 +434,9 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
         }
 
         /**
-         * Creates the buffered writer for the output file channel based on configuration information.
-         * 
+         * Creates the buffered writer for the output file channel based on configuration
+         * information.
+         *
          * @throws IOException
          */
         private void initializeBufferedWriter() throws IOException {
@@ -475,34 +473,38 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
         }
 
         /**
-         * Returns the buffered writer opened to the beginning of the file specified by the absolute path name contained in absoluteFileName.
+         * Returns the buffered writer opened to the beginning of the file specified by the absolute
+         * path name contained in absoluteFileName.
          */
         private Writer getBufferedWriter(FileChannel fileChannel, String encoding) {
             try {
                 final FileChannel channel = fileChannel;
                 if (transactional) {
-                    TransactionAwareBufferedWriter writer = new TransactionAwareBufferedWriter(
-                            channel, new Runnable() {
-                                @Override
-                                public void run() {
-                                    closeStream();
-                                }
-                            });
+                    TransactionAwareBufferedWriter writer =
+                            new TransactionAwareBufferedWriter(
+                                    channel,
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            closeStream();
+                                        }
+                                    });
 
                     writer.setEncoding(encoding);
                     writer.setForceSync(forceSync);
                     return writer;
                 } else {
-                    Writer writer = new BufferedWriter(Channels.newWriter(fileChannel, encoding)) {
+                    Writer writer =
+                            new BufferedWriter(Channels.newWriter(fileChannel, encoding)) {
 
-                        @Override
-                        public void flush() throws IOException {
-                            super.flush();
-                            if (forceSync) {
-                                channel.force(false);
-                            }
-                        }
-                    };
+                                @Override
+                                public void flush() throws IOException {
+                                    super.flush();
+                                    if (forceSync) {
+                                        channel.force(false);
+                                    }
+                                }
+                            };
 
                     return writer;
                 }
@@ -513,9 +515,10 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
         }
 
         /**
-         * Checks (on setState) to make sure that the current output file's size is not smaller than the last saved commit point. If it is, then the
-         * file has been damaged in some way and whole task must be started over again from the beginning.
-         * 
+         * Checks (on setState) to make sure that the current output file's size is not smaller than
+         * the last saved commit point. If it is, then the file has been damaged in some way and
+         * whole task must be started over again from the beginning.
+         *
          * @throws IOException if there is an IO problem
          */
         private void checkFileSize() throws IOException {
@@ -529,7 +532,5 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
                         "Current file size is smaller than size at last commit");
             }
         }
-
     }
-
 }

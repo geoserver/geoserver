@@ -14,9 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -41,13 +39,12 @@ import org.geotools.xlink.XLINK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
@@ -82,9 +79,10 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
     public static QName WATTEMP = new QName(CSW_URI, "watertemp", CSW_PREFIX);
 
-    private final static String GET_RECORD_REQUEST = "csw?service=csw&version=2.0.2&request=GetRecords"
-            + "&elementsetname=full&typeNames=csw:Record&resultType=results"
-            + "&constraint=title=%27watertemp%27";
+    private static final String GET_RECORD_REQUEST =
+            "csw?service=csw&version=2.0.2&request=GetRecords"
+                    + "&elementsetname=full&typeNames=csw:Record&resultType=results"
+                    + "&constraint=title=%27watertemp%27";
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -155,8 +153,10 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
             String baseLink = DownloadLinkHandler.LINK;
             MockHttpServletRequest request = createRequest(baseLink);
             baseLink = request.getRequestURL() + "?" + request.getQueryString();
-            baseLink = baseLink.replace("${nameSpace}", coverageInfo.getNamespace().getName())
-                    .replace("${layerName}", coverageInfo.getName()).replace("${version}", "2.0.2");
+            baseLink =
+                    baseLink.replace("${nameSpace}", coverageInfo.getNamespace().getName())
+                            .replace("${layerName}", coverageInfo.getName())
+                            .replace("${version}", "2.0.2");
 
             iterator = new CloseableLinksIterator<String>(baseLink, files);
             while (iterator.hasNext()) {
@@ -186,7 +186,6 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
             }
         }
         assertEquals(4, matches);
-
     }
 
     @Test
@@ -212,12 +211,12 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = getAsServletResponse(downloadLink);
         assertEquals("application/xml", response.getContentType());
 
-        Document domResponse = dom(new ByteArrayInputStream(response.getContentAsString()
-                .getBytes()));
+        Document domResponse =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         Element root = domResponse.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName());
-        String exceptionText = evaluate("//ows:ExceptionReport/ows:Exception/ows:ExceptionText",
-                domResponse);
+        String exceptionText =
+                evaluate("//ows:ExceptionReport/ows:Exception/ows:ExceptionText", domResponse);
         assertTrue(exceptionText.contains(DirectDownload.LIMIT_MESSAGE));
     }
 
@@ -242,7 +241,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = getAsServletResponse(link);
         assertEquals("application/zip", response.getContentType());
     }
-    
+
     private XpathEngine getXpathEngine() {
         if (xpathEngine == null) {
             xpathEngine = XMLUnit.newXpathEngine();
@@ -255,11 +254,9 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
     /**
      * Return the flattened value corresponding to an XPath expression from a document.
-     * 
-     * @param xpath
-     *            XPath expression
-     * @param document
-     *            the document under test
+     *
+     * @param xpath XPath expression
+     * @param document the document under test
      * @return flattened string value
      */
     protected String evaluate(String xpath, Document document) {
@@ -272,11 +269,9 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
     /**
      * Return the list of nodes in a document that match an XPath expression.
-     * 
-     * @param xpath
-     *            XPath expression
-     * @param document
-     *            the document under test
+     *
+     * @param xpath XPath expression
+     * @param document the document under test
      * @return list of matching nodes
      */
     protected NodeList getMatchingNodes(String xpath, Document document) {
@@ -286,9 +281,11 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
             throw new RuntimeException(e);
         }
     }
-    
+
     @AfterClass
     public static void resetStore() {
-        System.setProperty("DefaultCatalogStore", "org.geoserver.csw.store.simple.GeoServerSimpleCatalogStore");
+        System.setProperty(
+                "DefaultCatalogStore",
+                "org.geoserver.csw.store.simple.GeoServerSimpleCatalogStore");
     }
 }

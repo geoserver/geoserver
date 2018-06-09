@@ -10,14 +10,13 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.ImageWorker;
 import org.geotools.util.logging.Logging;
 
 /**
- * Process parameter input / output for GridCoverage on a specific mime type. 
- * Current implementation only supports PNG/JPEG encoding.
+ * Process parameter input / output for GridCoverage on a specific mime type. Current implementation
+ * only supports PNG/JPEG encoding.
  */
 public abstract class CoveragePPIO extends BinaryPPIO {
 
@@ -37,8 +36,9 @@ public abstract class CoveragePPIO extends BinaryPPIO {
 
     private static float extractQuality(Map<String, Object> encodingParameters) {
         float quality = DEFAULT_QUALITY;
-        if (encodingParameters != null && !encodingParameters.isEmpty() && 
-                encodingParameters.containsKey(QUALITY_KEY)) {
+        if (encodingParameters != null
+                && !encodingParameters.isEmpty()
+                && encodingParameters.containsKey(QUALITY_KEY)) {
             String compressionQuality = (String) encodingParameters.get(QUALITY_KEY);
             try {
                 quality = Float.parseFloat(compressionQuality);
@@ -46,8 +46,10 @@ public abstract class CoveragePPIO extends BinaryPPIO {
                 if (LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.info(
                             "Specified quality is not valid (it should be in the range [0,1])."
-                                    + " quality = " + compressionQuality 
-                                    + "\nUsing default Quality: " + DEFAULT_QUALITY);
+                                    + " quality = "
+                                    + compressionQuality
+                                    + "\nUsing default Quality: "
+                                    + DEFAULT_QUALITY);
                 }
             }
         }
@@ -55,9 +57,8 @@ public abstract class CoveragePPIO extends BinaryPPIO {
     }
 
     /**
-     * GridCoverage2D to PNG encoding PPIO.
-     * Note that we cannot decode a GridCoverage2D out of a pure PNG Image.
-     * Report this by overriding the getDirection method and throwing an 
+     * GridCoverage2D to PNG encoding PPIO. Note that we cannot decode a GridCoverage2D out of a
+     * pure PNG Image. Report this by overriding the getDirection method and throwing an
      * UnsupportedOperationException on a decode call.
      */
     public static class PNGPPIO extends CoveragePPIO {
@@ -67,8 +68,9 @@ public abstract class CoveragePPIO extends BinaryPPIO {
         }
 
         @Override
-        public void encode(Object value, Map<String, Object> encodingParameters,
-                OutputStream outputStream) throws Exception {
+        public void encode(
+                Object value, Map<String, Object> encodingParameters, OutputStream outputStream)
+                throws Exception {
             GridCoverage2D gridCoverage = (GridCoverage2D) value;
             RenderedImage renderedImage = gridCoverage.getRenderedImage();
             ImageWorker worker = new ImageWorker(renderedImage);
@@ -94,9 +96,8 @@ public abstract class CoveragePPIO extends BinaryPPIO {
     }
 
     /**
-     * GridCoverage2D to JPEG encoding PPIO.
-     * Note that we cannot decode a GridCoverage2D out of a pure JPEG Image.
-     * Report this by overriding the getDirection method and throwing an 
+     * GridCoverage2D to JPEG encoding PPIO. Note that we cannot decode a GridCoverage2D out of a
+     * pure JPEG Image. Report this by overriding the getDirection method and throwing an
      * UnsupportedOperationException on a decode call.
      */
     public static class JPEGPPIO extends CoveragePPIO {
@@ -106,8 +107,9 @@ public abstract class CoveragePPIO extends BinaryPPIO {
         }
 
         @Override
-        public void encode(Object value, Map<String, Object> encodingParameters,
-                OutputStream outputStream) throws Exception {
+        public void encode(
+                Object value, Map<String, Object> encodingParameters, OutputStream outputStream)
+                throws Exception {
             GridCoverage2D gridCoverage = (GridCoverage2D) value;
             RenderedImage renderedImage = gridCoverage.getRenderedImage();
             ImageWorker worker = new ImageWorker(renderedImage);

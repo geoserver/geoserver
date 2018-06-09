@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.csw.DownloadLinkHandler;
 import org.geoserver.csw.records.CSWRecordDescriptor;
@@ -21,23 +20,21 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.ComplexType;
 
-/**
- * {@link FeatureCustomizer} subclass to deal with CSW DublinCore records
- */
+/** {@link FeatureCustomizer} subclass to deal with CSW DublinCore records */
 public class RecordCustomizer extends FeatureCustomizer {
 
-    private final static AttributeDescriptor REFERENCES_DESCRIPTOR;
+    private static final AttributeDescriptor REFERENCES_DESCRIPTOR;
 
-    private final static AttributeDescriptor VALUE_DESCRIPTOR;
+    private static final AttributeDescriptor VALUE_DESCRIPTOR;
 
-    private final static String REFERENCES = "references";
+    private static final String REFERENCES = "references";
 
-    private final static String TYPENAME = "RecordType";
+    private static final String TYPENAME = "RecordType";
+
     static {
         REFERENCES_DESCRIPTOR = CSWRecordDescriptor.getDescriptor(REFERENCES);
         ComplexType referenceType = (ComplexType) REFERENCES_DESCRIPTOR.getType();
         VALUE_DESCRIPTOR = (AttributeDescriptor) referenceType.getDescriptor("value");
-
     }
 
     /** An instance of {@link DownloadLinkHandler}, used to deal with download links */
@@ -53,7 +50,7 @@ public class RecordCustomizer extends FeatureCustomizer {
 
     @Override
     public void customizeFeature(Feature feature, CatalogInfo resource) {
-        CloseableIterator<String> links = null; 
+        CloseableIterator<String> links = null;
         List<Property> newReferencesList = new ArrayList<Property>();
         String link = null;
         try {
@@ -90,7 +87,8 @@ public class RecordCustomizer extends FeatureCustomizer {
 
                 // link String should contain the last link generated
                 // let's recycle it to generate the full download link
-                newReferencesList.add(createReferencesElement(downloadLinkHandler.extractFullDownloadLink(link)));
+                newReferencesList.add(
+                        createReferencesElement(downloadLinkHandler.extractFullDownloadLink(link)));
                 // append new references to the current collection
                 // before going to other elements
                 propertyList.addAll(newReferencesList);
@@ -101,14 +99,12 @@ public class RecordCustomizer extends FeatureCustomizer {
         feature.setValue(propertyList);
     }
 
-    /**
-     * Create a new references element for the link
-     */
+    /** Create a new references element for the link */
     private Property createReferencesElement(String link) {
         Property urlAttribute = new AttributeImpl(link, VALUE_DESCRIPTOR, null);
 
         // Setting references
-        return new ComplexAttributeImpl(Collections.singletonList(urlAttribute),
-                REFERENCES_DESCRIPTOR, null);
+        return new ComplexAttributeImpl(
+                Collections.singletonList(urlAttribute), REFERENCES_DESCRIPTOR, null);
     }
 }

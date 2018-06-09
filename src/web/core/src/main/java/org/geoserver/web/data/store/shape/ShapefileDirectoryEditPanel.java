@@ -18,9 +18,8 @@ import org.geoserver.web.wicket.browser.ExtensionFileFilter;
 
 /**
  * Provides the form components for the directory of shapefiles store
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 @SuppressWarnings("serial")
 public class ShapefileDirectoryEditPanel extends ShapefileStoreEditPanel {
@@ -30,10 +29,13 @@ public class ShapefileDirectoryEditPanel extends ShapefileStoreEditPanel {
     }
 
     protected FileParamPanel buildFileParamPanel(final IModel paramsModel) {
-        FileParamPanel file = new DirectoryParamPanel("url", new MapModel(paramsModel, URLP.key),
-                new ParamResourceModel("shapefile", this), true);
+        FileParamPanel file =
+                new DirectoryParamPanel(
+                        "url",
+                        new MapModel(paramsModel, URLP.key),
+                        new ParamResourceModel("shapefile", this),
+                        true);
         file.setFileFilter(new Model<ExtensionFileFilter>(new ExtensionFileFilter(".shp")));
         return file;
     }
-
 }

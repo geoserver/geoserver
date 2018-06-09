@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -56,14 +55,12 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
-public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoServerSecuredPage implements GeoServerUnlockablePage {
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
+public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoServerSecuredPage
+        implements GeoServerUnlockablePage {
 
-    public static final PackageResourceReference COMPRESS_ICON = new PackageResourceReference(
-            BackupRestorePage.class, "compress.png");
+    public static final PackageResourceReference COMPRESS_ICON =
+            new PackageResourceReference(BackupRestorePage.class, "compress.png");
 
     static final String DETAILS_LEVEL = "expand";
 
@@ -78,12 +75,17 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
     private Class<T> clazz;
 
     public BackupRestorePage(PageParameters pp) {
-        this(new BackupRestoreExecutionModel(pp.get("id").toLong(),
-                getType(pp.get("clazz").toString())), pp, getType(pp.get("clazz").toString()));
+        this(
+                new BackupRestoreExecutionModel(
+                        pp.get("id").toLong(), getType(pp.get("clazz").toString())),
+                pp,
+                getType(pp.get("clazz").toString()));
     }
 
     public BackupRestorePage(T bkp, PageParameters pp) {
-        this(new BackupRestoreExecutionModel(bkp, getType(pp.get("clazz").toString())), pp,
+        this(
+                new BackupRestoreExecutionModel(bkp, getType(pp.get("clazz").toString())),
+                pp,
                 getType(pp.get("clazz").toString()));
     }
 
@@ -113,23 +115,31 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
 
     void initComponents(final IModel<T> model) {
         add(new Label("id", new PropertyModel(model, "id")));
-        add(new Label("clazz", new Model(this.clazz.getSimpleName().substring(0,
-                this.clazz.getSimpleName().indexOf("Execution")))));
+        add(
+                new Label(
+                        "clazz",
+                        new Model(
+                                this.clazz
+                                        .getSimpleName()
+                                        .substring(
+                                                0,
+                                                this.clazz.getSimpleName().indexOf("Execution")))));
 
-        BackupRestoreExecutionsProvider provider = new BackupRestoreExecutionsProvider(getType()) {
-            @Override
-            protected List<Property<AbstractExecutionAdapter>> getProperties() {
-                return Arrays.asList(ID, STATE, STARTED, PROGRESS, ARCHIVEFILE, OPTIONS);
-            }
+        BackupRestoreExecutionsProvider provider =
+                new BackupRestoreExecutionsProvider(getType()) {
+                    @Override
+                    protected List<Property<AbstractExecutionAdapter>> getProperties() {
+                        return Arrays.asList(ID, STATE, STARTED, PROGRESS, ARCHIVEFILE, OPTIONS);
+                    }
 
-            @Override
-            protected List<T> getItems() {
-                return Collections.singletonList(model.getObject());
-            }
-        };
+                    @Override
+                    protected List<T> getItems() {
+                        return Collections.singletonList(model.getObject());
+                    }
+                };
 
-        final BackupRestoreExecutionsTable headerTable = new BackupRestoreExecutionsTable("header",
-                provider, getType());
+        final BackupRestoreExecutionsTable headerTable =
+                new BackupRestoreExecutionsTable("header", provider, getType());
 
         headerTable.setOutputMarkupId(true);
         headerTable.setFilterable(false);
@@ -140,8 +150,9 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         boolean selectable = bkp.getStatus() != BatchStatus.COMPLETED;
 
         add(new Icon("icon", COMPRESS_ICON));
-        add(new Label("title", new DataTitleModel(bkp))
-                .add(new AttributeModifier("title", new DataTitleModel(bkp, false))));
+        add(
+                new Label("title", new DataTitleModel(bkp))
+                        .add(new AttributeModifier("title", new DataTitleModel(bkp, false))));
 
         @SuppressWarnings("rawtypes")
         Form<?> form = new Form("form");
@@ -154,22 +165,27 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing the 'details level' parameter: ",
+            LOGGER.log(
+                    Level.WARNING,
+                    "Error parsing the 'details level' parameter: ",
                     params.get(DETAILS_LEVEL).toString());
         }
 
-        form.add(new SubmitLink("refresh") {
-            @Override
-            public void onSubmit() {
-                setResponsePage(BackupRestorePage.class,
-                        new PageParameters().add("id", params.get("id").toLong())
-                                .add("clazz", getType().getSimpleName())
-                                .add(DETAILS_LEVEL, expand));
-            }
-        });
+        form.add(
+                new SubmitLink("refresh") {
+                    @Override
+                    public void onSubmit() {
+                        setResponsePage(
+                                BackupRestorePage.class,
+                                new PageParameters()
+                                        .add("id", params.get("id").toLong())
+                                        .add("clazz", getType().getSimpleName())
+                                        .add(DETAILS_LEVEL, expand));
+                    }
+                });
 
-        NumberTextField<Integer> expand = new NumberTextField<Integer>("expand",
-                new PropertyModel<Integer>(this, "expand"));
+        NumberTextField<Integer> expand =
+                new NumberTextField<Integer>("expand", new PropertyModel<Integer>(this, "expand"));
         expand.add(RangeValidator.minimum(0));
         form.add(expand);
 
@@ -185,8 +201,8 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         backupFile = new File(location);
         if (!backupFile.isAbsolute()) {
             // locate the geoserver.log file
-            GeoServerDataDirectory dd = getGeoServerApplication()
-                    .getBeanOfType(GeoServerDataDirectory.class);
+            GeoServerDataDirectory dd =
+                    getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);
             backupFile = dd.get(Paths.convert(backupFile.getPath())).file();
         }
 
@@ -194,171 +210,173 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
             error("Could not find the Backup Archive file: " + backupFile.getAbsolutePath());
         }
 
-        /***
-         * DOWNLOAD LINK
-         */
-        final Link<Object> downLoadLink = new Link<Object>("download") {
+        /** * DOWNLOAD LINK */
+        final Link<Object> downLoadLink =
+                new Link<Object>("download") {
 
-            @Override
-            public void onClick() {
-                IResourceStream stream = new FileResourceStream(backupFile) {
-                    public String getContentType() {
-                        return "application/zip";
+                    @Override
+                    public void onClick() {
+                        IResourceStream stream =
+                                new FileResourceStream(backupFile) {
+                                    public String getContentType() {
+                                        return "application/zip";
+                                    }
+                                };
+                        ResourceStreamRequestHandler handler =
+                                new ResourceStreamRequestHandler(stream, backupFile.getName());
+                        handler.setContentDisposition(ContentDisposition.ATTACHMENT);
+
+                        RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
                     }
                 };
-                ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(stream,
-                        backupFile.getName());
-                handler.setContentDisposition(ContentDisposition.ATTACHMENT);
-
-                RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
-            }
-        };
         add(downLoadLink);
 
-        /***
-         * PAUSE LINK
-         */
-        final AjaxLink pauseLink = new AjaxLink("pause") {
+        /** * PAUSE LINK */
+        final AjaxLink pauseLink =
+                new AjaxLink("pause") {
 
-            @Override
-            protected void disableLink(ComponentTag tag) {
-                super.disableLink(tag);
-                tag.setName("a");
-                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-            }
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                AbstractExecutionAdapter bkp = model.getObject();
-                if (bkp.getStatus() == BatchStatus.STOPPED) {
-                    setLinkEnabled((AjaxLink) downLoadLink.getParent().get("pause"), false, target);
-                } else {
-                    try {
-                        backupFacade().stopExecution(bkp.getId());
-
-                        setResponsePage(BackupRestoreDataPage.class);
-                    } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
-                        LOGGER.log(Level.WARNING, "", e);
-                        getSession().error(e);
-                        setResponsePage(BackupRestoreDataPage.class);
+                    @Override
+                    protected void disableLink(ComponentTag tag) {
+                        super.disableLink(tag);
+                        tag.setName("a");
+                        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
-                }
-            }
 
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        AbstractExecutionAdapter bkp = model.getObject();
+                        if (bkp.getStatus() == BatchStatus.STOPPED) {
+                            setLinkEnabled(
+                                    (AjaxLink) downLoadLink.getParent().get("pause"),
+                                    false,
+                                    target);
+                        } else {
+                            try {
+                                backupFacade().stopExecution(bkp.getId());
+
+                                setResponsePage(BackupRestoreDataPage.class);
+                            } catch (NoSuchJobExecutionException
+                                    | JobExecutionNotRunningException e) {
+                                LOGGER.log(Level.WARNING, "", e);
+                                getSession().error(e);
+                                setResponsePage(BackupRestoreDataPage.class);
+                            }
+                        }
+                    }
+                };
         pauseLink.setEnabled(doSelectReady(bkp) && bkp.getStatus() != BatchStatus.STOPPED);
         add(pauseLink);
 
-        /***
-         * RESUME LINK
-         */
-        final AjaxLink resumeLink = new AjaxLink("resume") {
+        /** * RESUME LINK */
+        final AjaxLink resumeLink =
+                new AjaxLink("resume") {
 
-            @Override
-            protected void disableLink(ComponentTag tag) {
-                super.disableLink(tag);
-                tag.setName("a");
-                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-            }
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                AbstractExecutionAdapter bkp = model.getObject();
-                if (bkp.getStatus() != BatchStatus.STOPPED) {
-                    setLinkEnabled((AjaxLink) downLoadLink.getParent().get("pause"), false, target);
-                } else {
-                    try {
-                        Long id = backupFacade().restartExecution(bkp.getId());
-
-                        PageParameters pp = new PageParameters();
-                        pp.add("id", id);
-                        if (bkp instanceof BackupExecutionAdapter) {
-                            pp.add("clazz", BackupExecutionAdapter.class.getSimpleName());
-                        } else if (bkp instanceof RestoreExecutionAdapter) {
-                            pp.add("clazz", RestoreExecutionAdapter.class.getSimpleName());
-                        }
-
-                        setResponsePage(BackupRestorePage.class, pp);
-                    } catch (NoSuchJobExecutionException | JobInstanceAlreadyCompleteException
-                            | NoSuchJobException | JobRestartException
-                            | JobParametersInvalidException e) {
-                        LOGGER.log(Level.WARNING, "", e);
-                        getSession().error(e);
-                        setResponsePage(BackupRestoreDataPage.class);
+                    @Override
+                    protected void disableLink(ComponentTag tag) {
+                        super.disableLink(tag);
+                        tag.setName("a");
+                        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
-                }
-            }
 
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        AbstractExecutionAdapter bkp = model.getObject();
+                        if (bkp.getStatus() != BatchStatus.STOPPED) {
+                            setLinkEnabled(
+                                    (AjaxLink) downLoadLink.getParent().get("pause"),
+                                    false,
+                                    target);
+                        } else {
+                            try {
+                                Long id = backupFacade().restartExecution(bkp.getId());
+
+                                PageParameters pp = new PageParameters();
+                                pp.add("id", id);
+                                if (bkp instanceof BackupExecutionAdapter) {
+                                    pp.add("clazz", BackupExecutionAdapter.class.getSimpleName());
+                                } else if (bkp instanceof RestoreExecutionAdapter) {
+                                    pp.add("clazz", RestoreExecutionAdapter.class.getSimpleName());
+                                }
+
+                                setResponsePage(BackupRestorePage.class, pp);
+                            } catch (NoSuchJobExecutionException
+                                    | JobInstanceAlreadyCompleteException
+                                    | NoSuchJobException
+                                    | JobRestartException
+                                    | JobParametersInvalidException e) {
+                                LOGGER.log(Level.WARNING, "", e);
+                                getSession().error(e);
+                                setResponsePage(BackupRestoreDataPage.class);
+                            }
+                        }
+                    }
+                };
         resumeLink.setEnabled(bkp.getStatus() == BatchStatus.STOPPED);
         add(resumeLink);
 
-        /***
-         * ABANDON LINK
-         */
-        final AjaxLink cancelLink = new AjaxLink("cancel") {
+        /** * ABANDON LINK */
+        final AjaxLink cancelLink =
+                new AjaxLink("cancel") {
 
-            @Override
-            protected void disableLink(ComponentTag tag) {
-                super.disableLink(tag);
-                tag.setName("a");
-                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-            }
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                AbstractExecutionAdapter bkp = model.getObject();
-                if (!doSelectReady(bkp)) {
-                    setLinkEnabled((AjaxLink) downLoadLink.getParent().get("cancel"), false,
-                            target);
-                } else {
-                    try {
-                        backupFacade().abandonExecution(bkp.getId());
-                        
-                        PageParameters pp = new PageParameters();
-                        pp.add("id", bkp.getId());
-                        if (bkp instanceof BackupExecutionAdapter) {
-                            pp.add("clazz", BackupExecutionAdapter.class.getSimpleName());
-                        } else if (bkp instanceof RestoreExecutionAdapter) {
-                            pp.add("clazz", RestoreExecutionAdapter.class.getSimpleName());
-                        }
-
-                        setResponsePage(BackupRestorePage.class, pp);
-                    } catch (NoSuchJobExecutionException | JobExecutionAlreadyRunningException e) {
-                        error(e);
-                        LOGGER.log(Level.WARNING, "", e);
+                    @Override
+                    protected void disableLink(ComponentTag tag) {
+                        super.disableLink(tag);
+                        tag.setName("a");
+                        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
-                }
-            }
 
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        AbstractExecutionAdapter bkp = model.getObject();
+                        if (!doSelectReady(bkp)) {
+                            setLinkEnabled(
+                                    (AjaxLink) downLoadLink.getParent().get("cancel"),
+                                    false,
+                                    target);
+                        } else {
+                            try {
+                                backupFacade().abandonExecution(bkp.getId());
+
+                                PageParameters pp = new PageParameters();
+                                pp.add("id", bkp.getId());
+                                if (bkp instanceof BackupExecutionAdapter) {
+                                    pp.add("clazz", BackupExecutionAdapter.class.getSimpleName());
+                                } else if (bkp instanceof RestoreExecutionAdapter) {
+                                    pp.add("clazz", RestoreExecutionAdapter.class.getSimpleName());
+                                }
+
+                                setResponsePage(BackupRestorePage.class, pp);
+                            } catch (NoSuchJobExecutionException
+                                    | JobExecutionAlreadyRunningException e) {
+                                error(e);
+                                LOGGER.log(Level.WARNING, "", e);
+                            }
+                        }
+                    }
+                };
         cancelLink.setEnabled(doSelectReady(bkp));
         add(cancelLink);
 
-        /***
-         * DONE LINK
-         */
-        final AjaxLink doneLink = new AjaxLink("done") {
+        /** * DONE LINK */
+        final AjaxLink doneLink =
+                new AjaxLink("done") {
 
-            @Override
-            protected void disableLink(ComponentTag tag) {
-                super.disableLink(tag);
-                tag.setName("a");
-                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-            }
+                    @Override
+                    protected void disableLink(ComponentTag tag) {
+                        super.disableLink(tag);
+                        tag.setName("a");
+                        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
+                    }
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                setResponsePage(BackupRestoreDataPage.class);
-                return;
-            }
-
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        setResponsePage(BackupRestoreDataPage.class);
+                        return;
+                    }
+                };
         add(doneLink);
 
-        /**
-         * FINALIZE
-         */
+        /** FINALIZE */
         add(dialog = new GeoServerDialog("dialog"));
     }
 
@@ -367,7 +385,8 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
      * @return
      */
     private boolean doSelectReady(AbstractExecutionAdapter bkp) {
-        if (bkp.getStatus() == BatchStatus.COMPLETED || bkp.getStatus() == BatchStatus.FAILED
+        if (bkp.getStatus() == BatchStatus.COMPLETED
+                || bkp.getStatus() == BatchStatus.FAILED
                 || bkp.getStatus() == BatchStatus.ABANDONED) {
             return false;
         }
@@ -405,21 +424,23 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
             } else if (getType() == RestoreExecutionAdapter.class) {
                 ctx = backupFacade().getRestoreExecutions().get(contextId);
             }
-            String title = ctx.getArchiveFile() != null ? ctx.getArchiveFile().path()
-                    : ctx.toString();
+            String title =
+                    ctx.getArchiveFile() != null ? ctx.getArchiveFile().path() : ctx.toString();
 
             if (abbrev && title.length() > 70) {
                 // shorten it
                 title = title.substring(0, 20) + "[...]" + title.substring(title.length() - 50);
             }
 
-            title = title + " ["
-                    + humanReadableByteCount(FileUtils.sizeOf(ctx.getArchiveFile().file()), false)
-                    + "]";
+            title =
+                    title
+                            + " ["
+                            + humanReadableByteCount(
+                                    FileUtils.sizeOf(ctx.getArchiveFile().file()), false)
+                            + "]";
 
             return title;
         }
-
     }
 
     void setLinkEnabled(AjaxLink link, boolean enabled, AjaxRequestTarget target) {
@@ -493,6 +514,5 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
             }
             return ex;
         }
-
     }
 }

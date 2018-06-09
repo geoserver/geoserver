@@ -6,9 +6,14 @@
 package org.geoserver.wcs.kvp;
 
 /**
- * Enumeration of supported interpolation methods 
+ * Enumeration of supported interpolation methods
+ *
  * @author Andrea Aime
  */
 public enum InterpolationMethod {
-    nearest, linear, quadratic, cubic, none;
+    nearest,
+    linear,
+    quadratic,
+    cubic,
+    none;
 }

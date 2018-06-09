@@ -5,7 +5,11 @@
  */
 package org.geoserver.ows;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 import com.google.common.collect.Iterators;
+import java.util.Collections;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -23,16 +27,11 @@ import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
-import java.util.Collections;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
-    
+
     @Rule
     public PropertyRule inheritance = PropertyRule.system("GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT");
-    
+
     @Before
     public void setUp() throws Exception {
         LocalWorkspaceCatalogFilter.groupInherit = null;
@@ -47,13 +46,14 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         mgr.setDelegate(defAsResourceManager);
         return mgr;
     }
+
     @Test
     public void testAccessToLayer() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
-        
+
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
         assertNotNull(sc.getLayerByName("topp:states"));
-        
+
         WorkspaceInfo ws = sc.getWorkspaceByName("nurc");
         LocalWorkspace.set(ws);
         assertNull(sc.getWorkspaceByName("topp"));
@@ -78,7 +78,7 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         assertEquals(1, sc.getStyles().size());
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testAccessToLayerGroup() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
@@ -100,7 +100,13 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     }
 
     private long getWorkspaceAccessibleGroupSize(String workspaceName) {
-        return catalog.getLayerGroups().stream().filter(lg -> lg.getWorkspace() == null || workspaceName.equals(lg.getWorkspace().getName())).count();
+        return catalog.getLayerGroups()
+                .stream()
+                .filter(
+                        lg ->
+                                lg.getWorkspace() == null
+                                        || workspaceName.equals(lg.getWorkspace().getName()))
+                .count();
     }
 
     @Test
@@ -130,12 +136,13 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
         // Defining a SecureCatalog with a user which is not admin
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {
-            @Override
-            protected boolean isAdmin(Authentication authentication) {
-                return false;
-            }
-        };
+        SecureCatalogImpl sc =
+                new SecureCatalogImpl(catalog, mgr) {
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
         GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
 
         // Get the iterator on the styles

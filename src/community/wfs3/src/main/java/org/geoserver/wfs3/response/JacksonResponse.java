@@ -11,26 +11,29 @@ import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.response.WFSResponse;
 import org.geoserver.wfs3.BaseRequest;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-
-/**
- * Response encoding outputs in JSON/YAML using Jackson
- */
+/** Response encoding outputs in JSON/YAML using Jackson */
 public abstract class JacksonResponse extends WFSResponse {
 
     public JacksonResponse(GeoServer gs, Class targetClass) {
-        super(gs, targetClass, new LinkedHashSet<>(Arrays.asList(BaseRequest.JSON_MIME, 
-                BaseRequest.YAML_MIME, BaseRequest.XML_MIME)));
+        super(
+                gs,
+                targetClass,
+                new LinkedHashSet<>(
+                        Arrays.asList(
+                                BaseRequest.JSON_MIME,
+                                BaseRequest.YAML_MIME,
+                                BaseRequest.XML_MIME)));
     }
 
     @Override
@@ -70,7 +73,8 @@ public abstract class JacksonResponse extends WFSResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         ObjectMapper mapper;
         if (isYamlFormat(operation)) {
             YAMLFactory factory = new YAMLFactory();
@@ -79,24 +83,25 @@ public abstract class JacksonResponse extends WFSResponse {
             mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
         } else if (isXMLFormat(operation)) {
             mapper = new XmlMapper();
-            // using a custom annotation introspector to set the desired namespace 
-            mapper.setAnnotationIntrospector(new JacksonXmlAnnotationIntrospector() {
-                @Override
-                public String findNamespace(Annotated ann) {
-                    String ns = super.findNamespace(ann);
-                    if (ns == null || ns.isEmpty()) {
-                        return "http://www.opengis.net/wfs/3.0";
-                    } else {
-                        return ns;
-                    }
-                }
-            });
+            // using a custom annotation introspector to set the desired namespace
+            mapper.setAnnotationIntrospector(
+                    new JacksonXmlAnnotationIntrospector() {
+                        @Override
+                        public String findNamespace(Annotated ann) {
+                            String ns = super.findNamespace(ann);
+                            if (ns == null || ns.isEmpty()) {
+                                return "http://www.opengis.net/wfs/3.0";
+                            } else {
+                                return ns;
+                            }
+                        }
+                    });
 
         } else {
             mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         }
-        
+
         mapper.writeValue(output, value);
     }
 
@@ -107,6 +112,7 @@ public abstract class JacksonResponse extends WFSResponse {
 
     /**
      * Just the name of the file to be returned (no extension)
+     *
      * @return
      */
     protected abstract String getFileName(Object value, Operation operation);

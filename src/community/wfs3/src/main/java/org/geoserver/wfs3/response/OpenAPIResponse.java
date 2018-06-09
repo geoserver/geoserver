@@ -8,9 +8,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 
-/**
- * JSON/YAML encoding for the API document
- */
+/** JSON/YAML encoding for the API document */
 public class OpenAPIResponse extends JacksonResponse {
 
     public OpenAPIResponse(GeoServer gs) {

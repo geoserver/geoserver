@@ -8,10 +8,9 @@ import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 
 /**
  * Configuration for OneLogin authentication
- * 
+ *
  * @author Xandros
  */
-
 public class OneloginAuthenticationFilterConfig extends PreAuthenticatedUserNameFilterConfig {
 
     private static final long serialVersionUID = 1199751476823173800L;
@@ -45,5 +44,4 @@ public class OneloginAuthenticationFilterConfig extends PreAuthenticatedUserName
     public void setWantAssertionSigned(Boolean wantAssertionSigned) {
         this.wantAssertionSigned = wantAssertionSigned;
     }
-
 }

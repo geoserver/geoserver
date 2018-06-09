@@ -4,16 +4,13 @@
  */
 package org.geoserver.rest.wrapper;
 
+import freemarker.template.Template;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 
-import freemarker.template.Template;
-
-/**
- * Default implementation of {@link RestWrapper}
- */
+/** Default implementation of {@link RestWrapper} */
 public class RestWrapperAdapter<T> implements RestWrapper<T> {
 
     Object object;
@@ -21,11 +18,16 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     Template template;
     RestBaseController controller;
 
-    public RestWrapperAdapter(Object object, Class<T> advertisedClass, RestBaseController controller) {
+    public RestWrapperAdapter(
+            Object object, Class<T> advertisedClass, RestBaseController controller) {
         this(object, advertisedClass, controller, null);
     }
 
-    public RestWrapperAdapter(Object object, Class<T> advertisedClass, RestBaseController controller, Template template) {
+    public RestWrapperAdapter(
+            Object object,
+            Class<T> advertisedClass,
+            RestBaseController controller,
+            Template template) {
         this.object = object;
         this.clazz = advertisedClass;
         this.template = template;
@@ -43,8 +45,8 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     }
 
     /**
-     * Default implementation.
-     * Calls {@link RestBaseController#configurePersister(XStreamPersister, XStreamMessageConverter)}
+     * Default implementation. Calls {@link RestBaseController#configurePersister(XStreamPersister,
+     * XStreamMessageConverter)}
      */
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
@@ -52,8 +54,8 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     }
 
     /**
-     * Default implementation.
-     * Subclasses should override this to implement custom functionality
+     * Default implementation. Subclasses should override this to implement custom functionality
+     *
      * @return freemarker template
      */
     @Override
@@ -62,14 +64,11 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     }
 
     /**
-     * Default implementation.
-     * Calls {@link RestBaseController#configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
+     * Default implementation. Calls {@link
+     * RestBaseController#configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
      */
-
     @Override
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter) {
         controller.configureFreemarker(converter, getTemplate());
     }
-
-   
 }

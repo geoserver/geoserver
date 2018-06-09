@@ -1,13 +1,11 @@
 package org.geoserver.config;
 
+import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-
 import org.junit.Test;
-
-import java.io.File;
 
 public class GeoServerTolerantStartupTest extends GeoServerSystemTestSupport {
 

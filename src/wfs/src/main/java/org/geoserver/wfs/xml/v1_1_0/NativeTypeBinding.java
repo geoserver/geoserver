@@ -6,20 +6,18 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.NativeType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:NativeType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="NativeType"&gt;
  *      &lt;xsd:seq uence>
@@ -52,6 +50,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class NativeTypeBinding extends AbstractComplexBinding {
@@ -61,14 +60,13 @@ public class NativeTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.NATIVETYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -79,22 +77,22 @@ public class NativeTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         NativeType nativ = wfsfactory.createNativeType();
 
-        //&lt;xsd:attribute name="vendorId" type="xsd:string" use="required"&gt;
+        // &lt;xsd:attribute name="vendorId" type="xsd:string" use="required"&gt;
         nativ.setVendorId((String) node.getAttributeValue("vendorId"));
 
-        //&lt;xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required"&gt;
+        // &lt;xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required"&gt;
         nativ.setSafeToIgnore(((Boolean) node.getAttributeValue("safeToIgnore")).booleanValue());
-        
-        //&lt;xsd:any processContents="lax" namespace="##other" minOccurs="0"/>
+
+        // &lt;xsd:any processContents="lax" namespace="##other" minOccurs="0"/>
         if (instance.getText() != null && instance.getText().length() != 0) {
             nativ.setValue(instance.getText());
         }

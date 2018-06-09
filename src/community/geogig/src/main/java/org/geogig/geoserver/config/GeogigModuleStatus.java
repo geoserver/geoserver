@@ -8,14 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Optional;
 import java.util.Properties;
-
 import org.geoserver.platform.ModuleStatus;
 import org.locationtech.geogig.porcelain.VersionOp;
 
-/**
- * Spring defined bean publishing geogig module status to the web UI and REST API
- *
- */
+/** Spring defined bean publishing geogig module status to the web UI and REST API */
 public class GeogigModuleStatus implements ModuleStatus {
 
     private static final String VERSION;
@@ -28,8 +24,8 @@ public class GeogigModuleStatus implements ModuleStatus {
         String date = "Unknown";
 
         Properties props = new Properties();
-        try (InputStream in = GeogigModuleStatus.class
-                .getResourceAsStream("module_version.properties")) {
+        try (InputStream in =
+                GeogigModuleStatus.class.getResourceAsStream("module_version.properties")) {
             try (InputStreamReader reader = new InputStreamReader(in)) {
                 props.load(reader);
             }
@@ -44,9 +40,10 @@ public class GeogigModuleStatus implements ModuleStatus {
         VERSION = version;
 
         String geogigInfo = new VersionOp().call().toString();
-        MESSAGE = String.format(
-                "GeoGig plugin:\n version: %s\n revision: %s\n build date: %s\n\nGeoGig info:\n%s",
-                version, revision, date, geogigInfo);
+        MESSAGE =
+                String.format(
+                        "GeoGig plugin:\n version: %s\n revision: %s\n build date: %s\n\nGeoGig info:\n%s",
+                        version, revision, date, geogigInfo);
     }
 
     public @Override String getModule() {
@@ -81,5 +78,4 @@ public class GeogigModuleStatus implements ModuleStatus {
         // not being used as far as I can see
         return Optional.empty();
     }
-
 }

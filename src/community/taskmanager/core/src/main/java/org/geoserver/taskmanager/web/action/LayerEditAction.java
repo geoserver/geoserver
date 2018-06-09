@@ -5,7 +5,6 @@
 package org.geoserver.taskmanager.web.action;
 
 import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.geoserver.taskmanager.web.ConfigurationPage;
@@ -13,17 +12,13 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.springframework.stereotype.Component;
 
-/**
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 @Component
 public class LayerEditAction implements Action {
-    
+
     private static final long serialVersionUID = 6978608806982184868L;
-    
-    private final static String NAME = "LayerEdit";
+
+    private static final String NAME = "LayerEdit";
 
     @Override
     public String getName() {
@@ -31,13 +26,17 @@ public class LayerEditAction implements Action {
     }
 
     @Override
-    public void execute(ConfigurationPage onPage, AjaxRequestTarget target, 
-            IModel<String> valueModel, List<String> dependentValues) {
+    public void execute(
+            ConfigurationPage onPage,
+            AjaxRequestTarget target,
+            IModel<String> valueModel,
+            List<String> dependentValues) {
         String[] prefixname = valueModel.getObject().split(":", 2);
         onPage.setResponsePage(
-                new ResourceConfigurationPage(prefixname.length > 1 ? prefixname[0] : null,
-                        prefixname[prefixname.length - 1]).setReturnPage(onPage));
-
+                new ResourceConfigurationPage(
+                                prefixname.length > 1 ? prefixname[0] : null,
+                                prefixname[prefixname.length - 1])
+                        .setReturnPage(onPage));
     }
 
     @Override
@@ -48,5 +47,4 @@ public class LayerEditAction implements Action {
             return GeoServerApplication.get().getCatalog().getLayerByName(value) != null;
         }
     }
-
 }

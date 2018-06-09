@@ -4,11 +4,10 @@
  */
 package org.geoserver.nsg.timeout;
 
+import java.io.IOException;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.GetFeatureCallback;
 import org.geoserver.wfs.GetFeatureContext;
-
-import java.io.IOException;
 
 public class GetFeatureWaitOnExecuteCallback implements GetFeatureCallback {
 
@@ -24,6 +23,5 @@ public class GetFeatureWaitOnExecuteCallback implements GetFeatureCallback {
                 throw new RuntimeException("Unexpected wake up", e);
             }
         }
-
     }
 }

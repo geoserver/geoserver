@@ -1,13 +1,13 @@
 package org.geoserver.wfs3;
 
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
-
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 @JsonPropertyOrder({"spatial", "temporal"})
 public class WFSExtents {

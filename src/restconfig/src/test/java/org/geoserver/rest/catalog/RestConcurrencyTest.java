@@ -21,7 +21,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.util.logging.Logging;
@@ -66,15 +65,18 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
         zout.flush();
         zout.close();
 
-        put(RestBaseController.ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties?configure=none",
-                zbytes.toByteArray(), "application/zip");
+        put(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/gs/datastores/pds/file.properties?configure=none",
+                zbytes.toByteArray(),
+                "application/zip");
     }
 
     @Override
     protected DispatcherServlet getDispatcher() throws Exception {
-        if(dispatcher == null) {
+        if (dispatcher == null) {
             synchronized (this) {
-                if(dispatcher == null) {
+                if (dispatcher == null) {
                     dispatcher = super.getDispatcher();
                 }
             }
@@ -112,7 +114,8 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
 
         int loops;
 
-        public AddRemoveFeatureTypeWorker(String workspace, String store, String typeName, int loops) {
+        public AddRemoveFeatureTypeWorker(
+                String workspace, String store, String typeName, int loops) {
             this.typeName = typeName;
             this.workspace = workspace;
             this.store = store;
@@ -136,14 +139,34 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
             String threadId = Thread.currentThread().getId() + " ";
             for (int i = 0; i < loops && exception == null; i++) {
                 // add the type name
-                String base = RestBaseController.ROOT_PATH + "/workspaces/" + workspace + "/datastores/" + store
-                        + "/featuretypes/";
-                String xml = "<featureType>" + "<name>" + typeName + "</name>" + "<nativeName>"
-                        + typeName + "</nativeName>" + "<srs>EPSG:4326</srs>"
-                        + "<nativeCRS>EPSG:4326</nativeCRS>" + "<nativeBoundingBox>"
-                        + "<minx>0.0</minx>" + "<maxx>1.0</maxx>" + "<miny>0.0</miny>"
-                        + "<maxy>1.0</maxy>" + "<crs>EPSG:4326</crs>" + "</nativeBoundingBox>"
-                        + "<store>" + store + "</store>" + "</featureType>";
+                String base =
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/"
+                                + workspace
+                                + "/datastores/"
+                                + store
+                                + "/featuretypes/";
+                String xml =
+                        "<featureType>"
+                                + "<name>"
+                                + typeName
+                                + "</name>"
+                                + "<nativeName>"
+                                + typeName
+                                + "</nativeName>"
+                                + "<srs>EPSG:4326</srs>"
+                                + "<nativeCRS>EPSG:4326</nativeCRS>"
+                                + "<nativeBoundingBox>"
+                                + "<minx>0.0</minx>"
+                                + "<maxx>1.0</maxx>"
+                                + "<miny>0.0</miny>"
+                                + "<maxy>1.0</maxy>"
+                                + "<crs>EPSG:4326</crs>"
+                                + "</nativeBoundingBox>"
+                                + "<store>"
+                                + store
+                                + "</store>"
+                                + "</featureType>";
 
                 LOGGER.info(threadId + "Adding " + typeName);
                 MockHttpServletResponse response = postAsServletResponse(base, xml, "text/xml");
@@ -154,13 +177,17 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
 
                 // check it's there
                 LOGGER.info(threadId + "Checking " + typeName);
-                String resourcePath = RestBaseController.ROOT_PATH + "/layers/" + workspace + ":" + typeName;
+                String resourcePath =
+                        RestBaseController.ROOT_PATH + "/layers/" + workspace + ":" + typeName;
                 response = getAsServletResponse(resourcePath + ".xml");
                 assertEquals(200, response.getStatus());
 
                 // reload
                 LOGGER.info(threadId + "Reloading catalog");
-                assertEquals(200, postAsServletResponse(RestBaseController.ROOT_PATH + "/reload", "").getStatus());
+                assertEquals(
+                        200,
+                        postAsServletResponse(RestBaseController.ROOT_PATH + "/reload", "")
+                                .getStatus());
 
                 // remove it
                 LOGGER.info(threadId + "Removing layer");

@@ -6,7 +6,6 @@
 package org.geoserver.wps.security;
 
 import java.util.logging.Logger;
-
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLimits;
@@ -40,15 +39,15 @@ public class ProcessAccessLimits extends AccessLimits {
     /*
      * Changes WPS permissions computed form rules configuration based on CATALOG MODE settings.
      * Following this rules:
-     * 
+     *
      * HIDE: GetCapabilities -> hides processes for not authorized roles, shows otherwise
      * DescribeProcess -> hides informations for not authorized roles, shows otherwise Execute ->
      * hides processes for not authorized roles, executes otherwise
-     * 
+     *
      * CHALLENGE: GetCapabilities -> shows processes for all DescribeProcess -> rise unauthorized
      * access exception for not authorized roles, shows informations otherwise Execute -> rise
      * unauthorized access exception for not authorized roles, executes otherwise
-     * 
+     *
      * MIXED: GetCapabilities -> hides processes for not authorized roles, shows otherwise
      * DescribeProcess -> rise unauthorized access exception for not authorized roles, shows
      * informations otherwise Execute -> rise unauthorized access exception for not authorized
@@ -72,8 +71,8 @@ public class ProcessAccessLimits extends AccessLimits {
                 // But throw unauthorized access in Execute and Describe request
                 if (request != null
                         && !"GetCapabilities".equalsIgnoreCase(request.getRequest())
-                        && ("Execute".equalsIgnoreCase(request.getRequest()) || "DescribeProcess"
-                                .equalsIgnoreCase(request.getRequest()))) {
+                        && ("Execute".equalsIgnoreCase(request.getRequest())
+                                || "DescribeProcess".equalsIgnoreCase(request.getRequest()))) {
                     throw unauthorizedAccess(resource);
                 }
             }
@@ -85,10 +84,10 @@ public class ProcessAccessLimits extends AccessLimits {
         // is an unauthorized direct resource access, complain
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         if (user == null || user.getAuthorities().size() == 0)
-            return new InsufficientAuthenticationException("Cannot access " + resourceName
-                    + " as anonymous");
+            return new InsufficientAuthenticationException(
+                    "Cannot access " + resourceName + " as anonymous");
         else
-            return new AccessDeniedException("Cannot access " + resourceName
-                    + " with the current privileges");
+            return new AccessDeniedException(
+                    "Cannot access " + resourceName + " with the current privileges");
     }
 }

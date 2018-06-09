@@ -100,5 +100,4 @@ public class KombuMessage implements Serializable {
     public Map<String, Object> getProperties() {
         return properties;
     }
-
 }

@@ -8,11 +8,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.net.URL;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
@@ -21,14 +19,11 @@ import org.junit.Test;
 
 public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
-    /**
-     * print page structure?
-     */
+    /** print page structure? */
     private static final boolean debugMode = false;
 
     @Before
-    public void init() {
-    }
+    public void init() {}
 
     private WMSStoreNewPage startPage() {
 
@@ -43,9 +38,7 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         return page;
     }
 
-    /**
-     * A kind of smoke test that only asserts the page is rendered when first loaded
-     */
+    /** A kind of smoke test that only asserts the page is rendered when first loaded */
     @Test
     public void testPageRendersOnLoad() {
 
@@ -63,7 +56,8 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         assertNull(page.getDefaultModelObject());
 
         tester.assertModelValue("form:enabledPanel:paramValue", Boolean.TRUE);
-        tester.assertModelValue("form:workspacePanel:border:border_body:paramValue",
+        tester.assertModelValue(
+                "form:workspacePanel:border:border_body:paramValue",
                 getCatalog().getDefaultWorkspace());
     }
 
@@ -83,8 +77,9 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
-        Component wsDropDown = tester.getComponentFromLastRenderedPage(
-                "form:workspacePanel:border:border_body:paramValue");
+        Component wsDropDown =
+                tester.getComponentFromLastRenderedPage(
+                        "form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "foo");
         form.setValue("capabilitiesURL:border:border_body:paramValue", "http://foo");
@@ -102,7 +97,7 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         catalog.validate(expandedStore, false).throwIfInvalid();
     }
-    
+
     @Test
     public void testSaveNewStoreEntityExpansion() throws Exception {
 
@@ -119,20 +114,21 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
-        Component wsDropDown = tester.getComponentFromLastRenderedPage(
-                "form:workspacePanel:border:border_body:paramValue");
+        Component wsDropDown =
+                tester.getComponentFromLastRenderedPage(
+                        "form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "bar");
         form.setValue("capabilitiesURL:border:border_body:paramValue", url.toExternalForm());
 
         tester.clickLink("form:save", true);
         tester.assertErrorMessages("Connection test failed: Error while parsing XML.");
-        
-        //make sure clearing the catalog does not clear the EntityResolver
+
+        // make sure clearing the catalog does not clear the EntityResolver
         getGeoServer().reload();
         tester.clickLink("form:save", true);
         tester.assertErrorMessages("Connection test failed: Error while parsing XML.");
-        
+
         catalog.save(info);
 
         assertNotNull(info.getId());

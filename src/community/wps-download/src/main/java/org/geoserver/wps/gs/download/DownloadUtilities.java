@@ -5,13 +5,18 @@
  */
 package org.geoserver.wps.gs.download;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
@@ -34,35 +39,24 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.context.ApplicationContext;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * Various Utilities for Download Services.
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
- * 
  */
 final class DownloadUtilities {
 
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(DownloadUtilities.class);
 
-    /**
-     * Singleton
-     */
-    private DownloadUtilities() {
-    }
+    /** Singleton */
+    private DownloadUtilities() {}
 
     /**
      * This method checks whether or not the provided geometry is valid {@link Polygon} or not.
-     * <p>
-     * In case the egometry is not a valid polygon, it throws an {@link IllegalStateException};
-     * 
+     *
+     * <p>In case the egometry is not a valid polygon, it throws an {@link IllegalStateException};
+     *
      * @param roi the {@link Geometry} to check.
      * @throws IllegalStateException
      */
@@ -72,7 +66,9 @@ final class DownloadUtilities {
             throw new NullPointerException("The provided ROI is null!");
         }
         // Check that the Geometry is only Polygon or MultiPolygon
-        if (roi instanceof Point || roi instanceof MultiPoint || roi instanceof LineString
+        if (roi instanceof Point
+                || roi instanceof MultiPoint
+                || roi instanceof LineString
                 || roi instanceof MultiLineString) {
             throw new IllegalStateException(
                     "The Region of Interest is not a Polygon or Multipolygon!");
@@ -85,18 +81,19 @@ final class DownloadUtilities {
 
     /**
      * Looks for a valid PPIO given the provided mime type and process parameter.
-     * 
+     *
      * @param p
-     * @param context <p>
-     *        The lenient approach makes this method try harder to send back a result but it is preferrable to be non-lenient since otherwise we might
-     *        get s a PPIO which is not really what we need.
-     * 
+     * @param context
+     *     <p>The lenient approach makes this method try harder to send back a result but it is
+     *     preferrable to be non-lenient since otherwise we might get s a PPIO which is not really
+     *     what we need.
      * @param mime the mime-type for which we are searching for a {@link ProcessParameterIO}
-     * @param lenient whether or not trying to be lenient when returning a suitable {@link ProcessParameterIO}.
+     * @param lenient whether or not trying to be lenient when returning a suitable {@link
+     *     ProcessParameterIO}.
      * @return either <code>null</code> or the found
      */
-    final static ProcessParameterIO find(Parameter<?> p, ApplicationContext context, String mime,
-            boolean lenient) {
+    static final ProcessParameterIO find(
+            Parameter<?> p, ApplicationContext context, String mime, boolean lenient) {
         //
         // lenient approach, try to give something back in any case
         //
@@ -130,11 +127,12 @@ final class DownloadUtilities {
         // Get the PPIO for the mimetype
         if (mime != null) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE,
-                        "Trying to search for a PPIO for the parameter " + p.getName());
+                LOGGER.log(
+                        Level.FINE, "Trying to search for a PPIO for the parameter " + p.getName());
             }
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                if (ppio instanceof ComplexPPIO
+                        && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
                     return ppio;
                 }
             }
@@ -149,13 +147,14 @@ final class DownloadUtilities {
 
     /**
      * This methods checks if the provided {@link FeatureCollection} is empty or not.
-     * <p>
-     * In case the provided feature collection is empty it throws an {@link IllegalStateException};
-     * 
+     *
+     * <p>In case the provided feature collection is empty it throws an {@link
+     * IllegalStateException};
+     *
      * @param features the {@link SimpleFeatureCollection} to check
      * @throws IllegalStateException
      */
-    final static void checkIsEmptyFeatureCollection(SimpleFeatureCollection features)
+    static final void checkIsEmptyFeatureCollection(SimpleFeatureCollection features)
             throws IllegalStateException {
         if (features == null || features.isEmpty()) {
             throw new IllegalStateException("Got an empty feature collection.");
@@ -164,7 +163,7 @@ final class DownloadUtilities {
 
     /**
      * Retrieves the native {@link CoordinateReferenceSystem} for the provided {@link ResourceInfo}.
-     * 
+     *
      * @param resourceInfo
      * @return the native {@link CoordinateReferenceSystem} for the provided {@link ResourceInfo}.
      * @throws IOException in case something bad happems!
@@ -184,7 +183,7 @@ final class DownloadUtilities {
 
     /**
      * Reprojects the input Geometry from its CRS to the defined CRS.
-     * 
+     *
      * @param geometry Geometry to transform
      * @param crs target CRS for the transformation
      * @return a transformed Geometry object
@@ -192,13 +191,14 @@ final class DownloadUtilities {
      */
     static Geometry transformGeometry(Geometry geometry, CoordinateReferenceSystem crs)
             throws IOException {
-        final CoordinateReferenceSystem geometryCRS = (CoordinateReferenceSystem) geometry
-                .getUserData();
+        final CoordinateReferenceSystem geometryCRS =
+                (CoordinateReferenceSystem) geometry.getUserData();
         // find math transform between the two coordinate reference systems
         MathTransform targetTX = null;
         if (!CRS.equalsIgnoreMetadata(geometryCRS, crs)) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE,
+                LOGGER.log(
+                        Level.FINE,
                         "Geometry CRS is not equal to the target CRS, we might have to reproject");
             }
             // we MIGHT have to reproject
@@ -210,7 +210,8 @@ final class DownloadUtilities {
             // reproject
             if (!targetTX.isIdentity()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE,
+                    LOGGER.log(
+                            Level.FINE,
                             "CRS transform is not an identity, we have to reproject the Geometry");
                 }
                 try {
@@ -225,7 +226,8 @@ final class DownloadUtilities {
                             "The Region of Interest is null after going back to native CRS!");
                 }
                 geometry.setUserData(crs); // set new CRS
-                DownloadUtilities.checkPolygonROI(geometry); // Check if the geometry is a Polygon or MultiPolygon
+                DownloadUtilities.checkPolygonROI(
+                        geometry); // Check if the geometry is a Polygon or MultiPolygon
             }
         }
         return geometry;
@@ -233,15 +235,16 @@ final class DownloadUtilities {
 
     /**
      * Retrieves the underlying SLD {@link File} for the provided GeoSerevr Style.
-     * 
+     *
      * @param style the underlying SLD {@link File} for the provided GeoSerevr Style.
      * @return the underlying SLD {@link File} for the provided GeoSerevr Style.
      * @throws IOException
      */
     static Resource findStyle(StyleInfo style) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        Resource styleFile = loader.get(Paths.path("styles", style.getFilename())); 
-        if (styleFile != null && styleFile.getType() == Resource.Type.RESOURCE
+        Resource styleFile = loader.get(Paths.path("styles", style.getFilename()));
+        if (styleFile != null
+                && styleFile.getType() == Resource.Type.RESOURCE
                 && Resources.canRead(styleFile)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Style " + style.getName() + " found");
@@ -250,21 +253,32 @@ final class DownloadUtilities {
             return styleFile;
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Style " + style.getName()
-                        + " not found. Trying to search in the layer workspace");
+                LOGGER.log(
+                        Level.FINE,
+                        "Style "
+                                + style.getName()
+                                + " not found. Trying to search in the layer workspace");
             }
             // the SLD file is not public, most probably it is located under a workspace.
             // lets try to search for the file inside the same layer workspace folder ...
-            styleFile = loader.get(Paths.path("workspaces", style.getWorkspace().getName(),
-                    "styles", style.getFilename()));
+            styleFile =
+                    loader.get(
+                            Paths.path(
+                                    "workspaces",
+                                    style.getWorkspace().getName(),
+                                    "styles",
+                                    style.getFilename()));
 
-            if (styleFile != null && styleFile.getType() == Resource.Type.RESOURCE
+            if (styleFile != null
+                    && styleFile.getType() == Resource.Type.RESOURCE
                     && Resources.canRead(styleFile)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE,
+                    LOGGER.log(
+                            Level.FINE,
                             "The style file cannot be found anywhere. We need to skip the SLD file");
                 }
-                // unfortunately the style file cannot be found anywhere. We need to skip the SLD file!
+                // unfortunately the style file cannot be found anywhere. We need to skip the SLD
+                // file!
                 return null;
             }
             return styleFile;
@@ -273,7 +287,7 @@ final class DownloadUtilities {
 
     /**
      * Collect all the underlying SLD {@link File}s for the provided GeoServer layer.
-     * 
+     *
      * @param layerInfo the provided GeoServer layer.
      * @return all the underlying SLD {@link File}s for the provided GeoServer layer.
      * @throws IOException

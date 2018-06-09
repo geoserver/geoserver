@@ -14,6 +14,7 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 
+import com.google.common.collect.ImmutableSet;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -25,12 +26,7 @@ import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableSet;
-
-/**
- * Unit test suite for {@link TileLayerInfoUtil}
- * 
- */
+/** Unit test suite for {@link TileLayerInfoUtil} */
 public class TileLayerInfoUtilTest {
 
     private GWCConfig defaults;
@@ -47,7 +43,7 @@ public class TileLayerInfoUtilTest {
 
     @Test
     public void testCreateLayerInfo() {
-        LayerInfoImpl layer = mockLayer("testLayer",new String[]{}, PublishedType.RASTER);
+        LayerInfoImpl layer = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         defaultVectorInfo.setId(layer.getId());
         defaultVectorInfo.setName(tileLayerName(layer));
@@ -57,7 +53,9 @@ public class TileLayerInfoUtilTest {
 
     @Test
     public void testCreateLayerGroupInfo() {
-        LayerGroupInfoImpl group = mockGroup("testGroup", mockLayer("testLayer",new String[]{}, PublishedType.RASTER));
+        LayerGroupInfoImpl group =
+                mockGroup(
+                        "testGroup", mockLayer("testLayer", new String[] {}, PublishedType.RASTER));
 
         defaults.getDefaultOtherCacheFormats().clear();
         defaults.getDefaultOtherCacheFormats().add("image/png8");
@@ -79,11 +77,12 @@ public class TileLayerInfoUtilTest {
 
         defaults.setCacheNonDefaultStyles(true);
 
-        LayerInfoImpl layer = mockLayer("testLayer", new String[]{"style1", "style2"}, PublishedType.RASTER);
+        LayerInfoImpl layer =
+                mockLayer("testLayer", new String[] {"style1", "style2"}, PublishedType.RASTER);
 
         GeoServerTileLayerInfo actual;
         actual = TileLayerInfoUtil.loadOrCreate(layer, defaults);
-        
+
         TileLayerInfoUtil.checkAutomaticStyles(layer, info);
 
         TileLayerInfoUtil.setCachedStyles(info, "default", ImmutableSet.of("style1", "style2"));
@@ -97,7 +96,11 @@ public class TileLayerInfoUtilTest {
 
     @Test
     public void testCreateLayerGroup() {
-        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1",new String[]{}, PublishedType.RASTER), mockLayer("L2",new String[]{}, PublishedType.RASTER));
+        LayerGroupInfoImpl lg =
+                mockGroup(
+                        "tesGroup",
+                        mockLayer("L1", new String[] {}, PublishedType.RASTER),
+                        mockLayer("L2", new String[] {}, PublishedType.RASTER));
 
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setId(lg.getId());
@@ -118,25 +121,25 @@ public class TileLayerInfoUtilTest {
         // If createParam is false and there isn't already a filter, don't create one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", false);
         assertNull(TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters()));
-        
+
         // If createParam is true and there isn't already a filter, create one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", true);
-        ParameterFilter filter = TileLayerInfoUtil.findParameterFilter("ENV",
-                info.getParameterFilters());
+        ParameterFilter filter =
+                TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters());
         assertTrue(filter instanceof RegexParameterFilter);
         assertEquals(".*", ((RegexParameterFilter) filter).getRegex());
 
         // If createParam is true and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", true);
-        ParameterFilter filter2 = TileLayerInfoUtil.findParameterFilter("ENV",
-                info.getParameterFilters());
+        ParameterFilter filter2 =
+                TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters());
         assertNotSame(filter, filter2);
         assertEquals(filter, filter2);
-        
+
         // If createParam is false and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", false);
-        ParameterFilter filter3 = TileLayerInfoUtil.findParameterFilter("ENV",
-                info.getParameterFilters());
+        ParameterFilter filter3 =
+                TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters());
         assertNotSame(filter2, filter3);
         assertEquals(filter, filter3);
     }
@@ -144,33 +147,30 @@ public class TileLayerInfoUtilTest {
     @Test
     public void testUpdateAcceptAllFloatParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
-        
+
         // If createParam is false and there isn't already a filter, don't create one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", false);
         assertNull(TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters()));
-        
-        
+
         // If createParam is true and there isn't already a filter, create one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", true);
-        ParameterFilter filter = TileLayerInfoUtil.findParameterFilter("ELEVATION",
-                info.getParameterFilters());
+        ParameterFilter filter =
+                TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters());
         assertTrue(filter instanceof FloatParameterFilter);
         assertEquals(0, ((FloatParameterFilter) filter).getValues().size());
 
         // If createParam is true and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", true);
-        ParameterFilter filter2 = TileLayerInfoUtil.findParameterFilter("ELEVATION",
-                info.getParameterFilters());
+        ParameterFilter filter2 =
+                TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters());
         assertNotSame(filter, filter2);
         assertEquals(filter, filter2);
 
         // If createParam is false and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", false);
-        ParameterFilter filter3 = TileLayerInfoUtil.findParameterFilter("ELEVATION",
-                info.getParameterFilters());
+        ParameterFilter filter3 =
+                TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters());
         assertNotSame(filter2, filter3);
         assertEquals(filter, filter3);
-        
     }
-
 }

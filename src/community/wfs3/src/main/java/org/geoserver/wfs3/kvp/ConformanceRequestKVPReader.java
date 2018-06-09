@@ -5,16 +5,11 @@
 package org.geoserver.wfs3.kvp;
 
 import org.geoserver.wfs3.ConformanceRequest;
-import org.geoserver.wfs3.LandingPageRequest;
 
-/**
- * Parses a "landingPage" request
- */
+/** Parses a "landingPage" request */
 public class ConformanceRequestKVPReader extends BaseKvpRequestReader {
 
     public ConformanceRequestKVPReader() {
         super(ConformanceRequest.class);
     }
-    
-    
 }

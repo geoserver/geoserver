@@ -10,14 +10,16 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 public final class FrequencyUtil {
-    
-    public static final Pattern DAILY_PATTERN = Pattern.compile("^00? (\\d\\d?) (\\d\\d?) \\* \\* \\?$");
-    public static final Pattern WEEKLY_PATTERN = Pattern.compile("^00? (\\d\\d?) (\\d\\d?) \\? \\* (\\p{Alpha}\\p{Alpha}\\p{Alpha})$");
-    public static final Pattern MONTHLY_PATTERN = Pattern.compile("^00? (\\d\\d?) (\\d\\d?) (\\d\\d?) \\* \\?$");
+
+    public static final Pattern DAILY_PATTERN =
+            Pattern.compile("^00? (\\d\\d?) (\\d\\d?) \\* \\* \\?$");
+    public static final Pattern WEEKLY_PATTERN =
+            Pattern.compile("^00? (\\d\\d?) (\\d\\d?) \\? \\* (\\p{Alpha}\\p{Alpha}\\p{Alpha})$");
+    public static final Pattern MONTHLY_PATTERN =
+            Pattern.compile("^00? (\\d\\d?) (\\d\\d?) (\\d\\d?) \\* \\?$");
 
     private FrequencyUtil() {}
-    
-    
+
     public static DayOfWeek findDayOfWeek(String threeLetters) {
         for (DayOfWeek dow : DayOfWeek.values()) {
             if (threeLetters.equals(dow.getDisplayName(TextStyle.SHORT, Locale.ENGLISH))) {
@@ -26,6 +28,4 @@ public final class FrequencyUtil {
         }
         return null;
     }
-    
-
 }

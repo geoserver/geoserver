@@ -12,9 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.impl.DbTableImpl;
@@ -32,22 +30,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public abstract class AbstractCreateViewTaskTypeImpl implements TaskType {
-    
+
     public static final String PARAM_DB_NAME = "database";
 
     public static final String PARAM_VIEW_NAME = "view-name";
 
-    protected final Map<String, ParameterInfo> paramInfo = new LinkedHashMap<String, ParameterInfo>();
+    protected final Map<String, ParameterInfo> paramInfo =
+            new LinkedHashMap<String, ParameterInfo>();
 
     protected static final Logger LOGGER = Logging.getLogger(AbstractCreateViewTaskTypeImpl.class);
 
-    @Autowired
-    protected ExtTypes extTypes;
-    
+    @Autowired protected ExtTypes extTypes;
+
     @PostConstruct
     public void initParamInfo() {
         paramInfo.put(PARAM_DB_NAME, new ParameterInfo(PARAM_DB_NAME, extTypes.dbName, true));
-        paramInfo.put(PARAM_VIEW_NAME, new ParameterInfo(PARAM_VIEW_NAME, ParameterType.STRING, true));
+        paramInfo.put(
+                PARAM_VIEW_NAME, new ParameterInfo(PARAM_VIEW_NAME, ParameterType.STRING, true));
     }
 
     @Override
@@ -59,59 +58,73 @@ public abstract class AbstractCreateViewTaskTypeImpl implements TaskType {
     public TaskResult run(TaskContext ctx) throws TaskException {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
         final String viewName = (String) ctx.getParameterValues().get(PARAM_VIEW_NAME);
-        final String tempViewName = SqlUtil.qualified(SqlUtil.schema(viewName),
-                "_temp_" + UUID.randomUUID().toString().replace('-', '_'));
+        final String tempViewName =
+                SqlUtil.qualified(
+                        SqlUtil.schema(viewName),
+                        "_temp_" + UUID.randomUUID().toString().replace('-', '_'));
         ctx.getBatchContext().put(new DbTableImpl(db, viewName), new DbTableImpl(db, tempViewName));
 
-        final String definition = buildQueryDefinition(ctx,
-                db.getDialect().autoUpdateView() ? null : new BatchContext.Dependency() {
-                    @Override
-                    public void revert() throws TaskException {
-                        final String definition = buildQueryDefinition(ctx, null);
-                        try (Connection conn = db.getDataSource().getConnection()) {
-                            try (Statement stmt = conn.createStatement()){
-                                StringBuilder sb = new StringBuilder("DROP VIEW ")
-                                        .append(viewName).append("; CREATE VIEW ")
-                                        .append(viewName).append(" AS ").append(definition);
-                                LOGGER.log(Level.FINE, "replacing temporary View: " + sb.toString());
-                                stmt.executeUpdate(sb.toString());
-                            }
-                        } catch (SQLException e) {
-                            throw new TaskException(e);
-                        }
-                   }
-        });
-        
-        try (Connection conn = db.getDataSource().getConnection()) {
-            try (Statement stmt = conn.createStatement()){
+        final String definition =
+                buildQueryDefinition(
+                        ctx,
+                        db.getDialect().autoUpdateView()
+                                ? null
+                                : new BatchContext.Dependency() {
+                                    @Override
+                                    public void revert() throws TaskException {
+                                        final String definition = buildQueryDefinition(ctx, null);
+                                        try (Connection conn = db.getDataSource().getConnection()) {
+                                            try (Statement stmt = conn.createStatement()) {
+                                                StringBuilder sb =
+                                                        new StringBuilder("DROP VIEW ")
+                                                                .append(viewName)
+                                                                .append("; CREATE VIEW ")
+                                                                .append(viewName)
+                                                                .append(" AS ")
+                                                                .append(definition);
+                                                LOGGER.log(
+                                                        Level.FINE,
+                                                        "replacing temporary View: "
+                                                                + sb.toString());
+                                                stmt.executeUpdate(sb.toString());
+                                            }
+                                        } catch (SQLException e) {
+                                            throw new TaskException(e);
+                                        }
+                                    }
+                                });
 
-                String sqlCreateSchemaIfNotExists = db.getDialect().createSchema(
-                        conn,
-                        SqlUtil.schema(tempViewName));
+        try (Connection conn = db.getDataSource().getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+
+                String sqlCreateSchemaIfNotExists =
+                        db.getDialect().createSchema(conn, SqlUtil.schema(tempViewName));
 
                 StringBuilder sb = new StringBuilder(sqlCreateSchemaIfNotExists);
-                sb.append("CREATE VIEW ")
-                        .append(tempViewName).append(" AS ")
-                        .append(definition);
+                sb.append("CREATE VIEW ").append(tempViewName).append(" AS ").append(definition);
                 LOGGER.log(Level.FINE, "creating temporary View: " + sb.toString());
                 stmt.executeUpdate(sb.toString());
             }
         } catch (SQLException e) {
             throw new TaskException(e);
         }
-        
-        return new TaskResult() {            
+
+        return new TaskResult() {
             @Override
             public void commit() throws TaskException {
                 try (Connection conn = db.getDataSource().getConnection()) {
-                    try (Statement stmt = conn.createStatement()){
+                    try (Statement stmt = conn.createStatement()) {
                         LOGGER.log(Level.FINE, "committing view: " + viewName);
-                        String viewNameQuoted = db.getDialect().quote(viewName);                        
+                        String viewNameQuoted = db.getDialect().quote(viewName);
                         stmt.executeUpdate("DROP VIEW IF EXISTS " + viewNameQuoted);
-                        
-                        stmt.executeUpdate(db.getDialect().sqlRenameView(tempViewName, 
-                               db.getDialect().quote(SqlUtil.notQualified(viewName))));
-                        
+
+                        stmt.executeUpdate(
+                                db.getDialect()
+                                        .sqlRenameView(
+                                                tempViewName,
+                                                db.getDialect()
+                                                        .quote(SqlUtil.notQualified(viewName))));
+
                         ctx.getBatchContext().delete(new DbTableImpl(db, viewName));
 
                         LOGGER.log(Level.FINE, "committed view: " + viewName);
@@ -124,7 +137,7 @@ public abstract class AbstractCreateViewTaskTypeImpl implements TaskType {
             @Override
             public void rollback() throws TaskException {
                 try (Connection conn = db.getDataSource().getConnection()) {
-                    try (Statement stmt = conn.createStatement()){
+                    try (Statement stmt = conn.createStatement()) {
                         LOGGER.log(Level.FINE, "rolling back view: " + viewName);
                         stmt.executeUpdate("DROP VIEW " + tempViewName);
                         LOGGER.log(Level.FINE, "rolled back view: " + viewName);
@@ -133,25 +146,22 @@ public abstract class AbstractCreateViewTaskTypeImpl implements TaskType {
                     throw new TaskException(e);
                 }
             }
-
         };
     }
-    
-    public abstract String buildQueryDefinition(TaskContext ctx, 
-            BatchContext.Dependency dependency) throws TaskException ;
+
+    public abstract String buildQueryDefinition(TaskContext ctx, BatchContext.Dependency dependency)
+            throws TaskException;
 
     @Override
-    public void cleanup(TaskContext ctx)
-            throws TaskException {
+    public void cleanup(TaskContext ctx) throws TaskException {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
         final String viewName = (String) ctx.getParameterValues().get(PARAM_VIEW_NAME);
         try (Connection conn = db.getDataSource().getConnection()) {
-            try (Statement stmt = conn.createStatement()){
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("DROP VIEW IF EXISTS " + db.getDialect().quote(viewName));
             }
         } catch (SQLException e) {
             throw new TaskException(e);
         }
     }
-
 }

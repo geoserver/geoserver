@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geotools.jdbc.ConnectionLifecycleListener;
 import org.geotools.jdbc.JDBCDataStore;
 
@@ -24,7 +23,8 @@ class MockConnectionLifecycleListener implements ConnectionLifecycleListener {
         int rollbackCount = 0;
     }
 
-    Map<JDBCDataStore, ActionCount> actionCountByDataStore = new HashMap<JDBCDataStore, ActionCount>();
+    Map<JDBCDataStore, ActionCount> actionCountByDataStore =
+            new HashMap<JDBCDataStore, ActionCount>();
 
     private void initCountIfNecessary(JDBCDataStore store) {
         if (!actionCountByDataStore.containsKey(store)) {
@@ -55,5 +55,4 @@ class MockConnectionLifecycleListener implements ConnectionLifecycleListener {
         initCountIfNecessary(store);
         actionCountByDataStore.get(store).rollbackCount++;
     }
-
 }

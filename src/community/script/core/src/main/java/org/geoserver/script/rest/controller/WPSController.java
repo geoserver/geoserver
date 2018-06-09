@@ -1,13 +1,16 @@
-/** (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/**
+ * (c) 2014 Open Source Geospatial Foundation - all rights reserved (c) 2001 - 2013 OpenPlans This
+ * code is licensed under the GPL 2.0 license, available at the root application directory.
  *
  * @author David Vick, Boundless 2017
- **/
+ */
 package org.geoserver.script.rest.controller;
 
 import com.thoughtworks.xstream.XStream;
+import java.util.Collection;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -18,47 +21,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.List;
-
 @RestController
 @RequestMapping(path = {RestBaseController.ROOT_PATH + "/scripts", "/script/scripts"})
 public class WPSController extends RestBaseController {
 
-    @Autowired
-    ScriptService scriptService;
+    @Autowired ScriptService scriptService;
 
-    @GetMapping(path = "/wps", produces = {
+    @GetMapping(
+        path = "/wps",
+        produces = {
             MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE})
+            MediaType.APPLICATION_XML_VALUE
+        }
+    )
     public RestWrapper<Script> getAppList(HttpServletRequest request) {
         List<Script> scripts = scriptService.getScriptList(request);
         return wrapList(scripts, Script.class);
     }
 
     @GetMapping(path = "/wps/{fileName:.+}")
-    public void getAppMain(HttpServletRequest request, HttpServletResponse response, @PathVariable String fileName) {
+    public void getAppMain(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable String fileName) {
         scriptService.getScript(request, response);
     }
 
     @PutMapping(path = "/wps/{fileName:.+}")
-    public void doPut(HttpServletRequest request, HttpServletResponse response, @PathVariable String fileName) {
+    public void doPut(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable String fileName) {
         scriptService.doPut(request, response);
     }
 
     @DeleteMapping(path = "/wps/{fileName:.+}")
-    public void doDelete(HttpServletRequest request, HttpServletResponse response, @PathVariable String fileName) {
+    public void doDelete(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable String fileName) {
         scriptService.doDelete(request, response);
     }
 
     @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter){
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xstream = persister.getXStream();
         xstream.alias("script", Script.class);
         xstream.alias("scripts", Collection.class);
     }
-
 }

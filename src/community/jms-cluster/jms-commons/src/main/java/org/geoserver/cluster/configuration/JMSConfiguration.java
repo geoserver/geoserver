@@ -12,9 +12,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
@@ -22,33 +20,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.WebUtils;
 
 /**
- * 
  * Abstract class to store and load configuration from global var or temp webapp directory
- * 
+ *
  * @author carlo cancellieri - GeoSolutions SAS
- * 
  */
-final public class JMSConfiguration {
+public final class JMSConfiguration {
     public static final String DEFAULT_GROUP = "geoserver-cluster";
 
-    protected static final java.util.logging.Logger LOGGER = Logging
-            .getLogger(JMSConfiguration.class);
+    protected static final java.util.logging.Logger LOGGER =
+            Logging.getLogger(JMSConfiguration.class);
 
-    @Autowired
-    public List<JMSConfigurationExt> exts;
+    @Autowired public List<JMSConfigurationExt> exts;
 
     public static final String INSTANCE_NAME_KEY = "instanceName";
 
     public static final String GROUP_KEY = "group";
 
-    /**
-     * This file contains the configuration
-     */
+    /** This file contains the configuration */
     public static final String CONFIG_FILE_NAME = "cluster.properties";
 
     /**
-     * This variable stores the configuration path dir. the default initialization will set this to the webapp temp dir. If you need to store it to a
-     * new path use the setter to change it.
+     * This variable stores the configuration path dir. the default initialization will set this to
+     * the webapp temp dir. If you need to store it to a new path use the setter to change it.
      */
     private static Resource configPathDir = Files.asResource(getTempDir());
 
@@ -77,7 +70,7 @@ final public class JMSConfiguration {
 
     /**
      * Initialize configuration
-     * 
+     *
      * @throws IOException
      */
     @PostConstruct
@@ -91,7 +84,8 @@ final public class JMSConfiguration {
             String topicName = configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY);
             if (topicName.equalsIgnoreCase("VirtualTopic.>")) {
                 // override topic name with the default topic name
-                configuration.put(TopicConfiguration.TOPIC_NAME_KEY, TopicConfiguration.DEFAULT_TOPIC_NAME);
+                configuration.put(
+                        TopicConfiguration.TOPIC_NAME_KEY, TopicConfiguration.DEFAULT_TOPIC_NAME);
                 storeConfig();
             }
             // if configuration is changed (since last boot) store changes
@@ -116,12 +110,11 @@ final public class JMSConfiguration {
         } catch (IOException e) {
             LOGGER.severe("Unable to store properties");
         }
-
     }
 
     /**
      * Initialize configuration with default parameters
-     * 
+     *
      * @throws IOException
      */
     public void initDefaults() throws IOException {
@@ -138,8 +131,9 @@ final public class JMSConfiguration {
     }
 
     /**
-     * check if instance name is changed since last application boot, if so set the overridden value into configuration and returns true
-     * 
+     * check if instance name is changed since last application boot, if so set the overridden value
+     * into configuration and returns true
+     *
      * @return true if some parameter is overridden by an Extension property
      */
     public boolean override() {
@@ -147,7 +141,8 @@ final public class JMSConfiguration {
     }
 
     /**
-     * check if instance name is changed since last application boot, if so set the overridden value into configuration and returns true
+     * check if instance name is changed since last application boot, if so set the overridden value
+     * into configuration and returns true
      */
     public final boolean override(String nameKey, Object defaultVal) {
         boolean override = false;
@@ -191,20 +186,18 @@ final public class JMSConfiguration {
         }
     }
 
-    public final static File getTempDir() {
-        String tempPath = (ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) != null ? ApplicationProperties
-                .getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) : System
-                .getProperty("java.io.tmpdir"));
+    public static final File getTempDir() {
+        String tempPath =
+                (ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) != null
+                        ? ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE)
+                        : System.getProperty("java.io.tmpdir"));
         if (tempPath == null) {
             return null;
         }
         File tempDir = new File(tempPath);
-        if (tempDir.exists() == false)
-            return null;
-        if (tempDir.isDirectory() == false)
-            return null;
-        if (tempDir.canWrite() == false)
-            return null;
+        if (tempDir.exists() == false) return null;
+        if (tempDir.isDirectory() == false) return null;
+        if (tempDir.canWrite() == false) return null;
         return tempDir;
     }
 }

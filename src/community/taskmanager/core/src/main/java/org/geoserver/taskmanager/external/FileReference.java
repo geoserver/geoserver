@@ -5,11 +5,10 @@
 package org.geoserver.taskmanager.external;
 
 public interface FileReference {
-    
-    FileService getService();
-    
-    String getLatestVersion();
-    
-    String getNextVersion();
 
+    FileService getService();
+
+    String getLatestVersion();
+
+    String getNextVersion();
 }

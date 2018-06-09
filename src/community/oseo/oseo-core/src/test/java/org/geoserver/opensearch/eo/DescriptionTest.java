@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.response.DescriptionResponse;
@@ -38,10 +37,18 @@ public class DescriptionTest extends OSEOTestSupport {
             Document dom = getAsOpenSearchException("oseo/description", 500);
             // print(dom);
 
-            assertThat(dom, hasXPath("/rss/channel/item/title", equalTo(
-                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
-            assertThat(dom, hasXPath("/rss/channel/item/description", equalTo(
-                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
+            assertThat(
+                    dom,
+                    hasXPath(
+                            "/rss/channel/item/title",
+                            equalTo(
+                                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
+            assertThat(
+                    dom,
+                    hasXPath(
+                            "/rss/channel/item/description",
+                            equalTo(
+                                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
         } finally {
             // reset old values
             service.setOpenSearchAccessStoreId(storeId);
@@ -66,12 +73,23 @@ public class DescriptionTest extends OSEOTestSupport {
             Document dom = getAsOpenSearchException("oseo/description", 500);
             // print(dom);
 
-            assertThat(dom, hasXPath("/rss/channel/item/title", equalTo(
-                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
-            assertThat(dom, hasXPath("/rss/channel/item/description", startsWith(
-                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
-            assertThat(dom, hasXPath("/rss/channel/item/description",
-                    containsString("org.geoserver.platform.OWS20Exception")));
+            assertThat(
+                    dom,
+                    hasXPath(
+                            "/rss/channel/item/title",
+                            equalTo(
+                                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
+            assertThat(
+                    dom,
+                    hasXPath(
+                            "/rss/channel/item/description",
+                            startsWith(
+                                    "OpenSearchAccess is not configured in the OpenSearch for EO panel, please do so")));
+            assertThat(
+                    dom,
+                    hasXPath(
+                            "/rss/channel/item/description",
+                            containsString("org.geoserver.platform.OWS20Exception")));
         } finally {
             // reset old values
             service.setOpenSearchAccessStoreId(storeId);
@@ -87,7 +105,8 @@ public class DescriptionTest extends OSEOTestSupport {
         Document dom = getAsOpenSearchException("oseo/description?parentId=IAmNotThere", 400);
         // print(dom);
 
-        assertThat(dom,
+        assertThat(
+                dom,
                 hasXPath("/rss/channel/item/title", equalTo("Unknown parentId 'IAmNotThere'")));
     }
 
@@ -103,13 +122,23 @@ public class DescriptionTest extends OSEOTestSupport {
         // generic contents check
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:ShortName", equalTo("OSEO")));
-        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:LongName",
-                equalTo("OpenSearch for Earth Observation")));
-        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Description",
-                containsString("Earth Observation")));
-        assertThat(dom,
-                hasXPath("/os:OpenSearchDescription/os:Tags", equalTo("EarthObservation OGC CEOS-OS-BP-V1.2/L1")));
-        assertThat(dom,
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:LongName",
+                        equalTo("OpenSearch for Earth Observation")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Description",
+                        containsString("Earth Observation")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Tags",
+                        equalTo("EarthObservation OGC CEOS-OS-BP-V1.2/L1")));
+        assertThat(
+                dom,
                 hasXPath("/os:OpenSearchDescription/os:LongName", containsString("OpenSearch")));
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:SyndicationRight", equalTo("open")));
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:AdultContent", equalTo("false")));
@@ -118,56 +147,94 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:InputEncoding", equalTo("UTF-8")));
 
         // check the self link
-        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Url[@rel='self' "
-                + "and @type='application/opensearchdescription+xml']"));
-        assertThat(dom,
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Url[@rel='self' "
+                                + "and @type='application/opensearchdescription+xml']"));
+        assertThat(
+                dom,
                 hasXPath(
                         "/os:OpenSearchDescription/os:Url[@rel='self' "
                                 + "and @type='application/opensearchdescription+xml']/@template",
                         containsString("/oseo/description")));
 
         // check the result link
-        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='collection'and @type='application/atom+xml']";
+        String resultsBase =
+                "/os:OpenSearchDescription/os:Url[@rel='collection'and @type='application/atom+xml']";
         assertThat(dom, hasXPath(resultsBase));
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        allOf(containsString("/oseo/search?"), //
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString("/oseo/search?"), //
                                 containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"))));
-        assertThat(dom,
-                hasXPath(resultsBase + "/@indexOffset",
-                        equalTo("1")));
+        assertThat(dom, hasXPath(resultsBase + "/@indexOffset", equalTo("1")));
 
         // check some parameters have been described
         String paramBase = resultsBase + "/param:Parameter";
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='searchTerms' and @value='{searchTerms}' and @minimum='0']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='count' and @value='{count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='100']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='searchTerms' and @value='{searchTerms}' and @minimum='0']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='count' and @value='{count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='100']"));
 
         // search profiles
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='searchTerms']/atom:link[@rel='profile' and @href='http://localhost:8080/geoserver/docs/searchTerms.html']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/LINESTRING']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/POINT']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/POLYGON']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTILINESTRING']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTIPOINT']"));
-        assertThat(dom, hasXPath(paramBase
-                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTIPOLYGON']"));
-
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='searchTerms']/atom:link[@rel='profile' and @href='http://localhost:8080/geoserver/docs/searchTerms.html']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/LINESTRING']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/POINT']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/POLYGON']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTILINESTRING']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTIPOINT']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='geometry']/atom:link[@rel='profile' and @href='http://www.opengis.net/wkt/MULTIPOLYGON']"));
 
         // check some EO parameter
-        assertThat(dom, hasXPath(
-                paramBase + "[@name='wavelength' and @value='{eo:wavelength}' and @minimum='0']"));
-        assertThat(dom, hasXPath(
-                paramBase + "[@name='identifier' and @value='{eo:identifier}' and @minimum='0']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='wavelength' and @value='{eo:wavelength}' and @minimum='0']"));
+        assertThat(
+                dom,
+                hasXPath(
+                        paramBase
+                                + "[@name='identifier' and @value='{eo:identifier}' and @minimum='0']"));
 
         // general validation
         checkValidOSDD(dom);
@@ -182,41 +249,62 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
 
         // self is there and uses the right parentId
-        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Url[@rel='self' "
-                + "and @type='application/opensearchdescription+xml']"));
-        assertThat(dom,
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Url[@rel='self' "
+                                + "and @type='application/opensearchdescription+xml']"));
+        assertThat(
+                dom,
                 hasXPath(
                         "/os:OpenSearchDescription/os:Url[@rel='self' "
                                 + "and @type='application/opensearchdescription+xml']/@template",
                         containsString("/oseo/description?parentId=SENTINEL2")));
 
         // check the results link is there
-        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
+        String resultsBase =
+                "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
         assertThat(dom, hasXPath(resultsBase));
         // ... and has the right parentId, and basic search params
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        allOf(containsString("/oseo/search?"), //
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString("/oseo/search?"), //
                                 containsString("parentId=SENTINEL2"), //
                                 containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"))));
         // ... and has generic EOP parameters
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString(
+                                        "productQualityStatus={eo:productQualityStatus?}"), //
                                 containsString("processorName={eo:processorName?}"), //
                                 containsString("modificationDate={eo:modificationDate?}"))));
         // ... and has OPT parameters
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        allOf(containsString("cloudCover={eo:cloudCover?}"), //
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString("cloudCover={eo:cloudCover?}"), //
                                 containsString("snowCover={eo:snowCover?}"))));
         // ... but no SAR parameters
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template", not(anyOf(
-                        containsString("polarisationMode={eo:polarisationMode?}"), //
-                        containsString("polarisationChannels={eo:polarisationChannels?}")))));
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        not(
+                                anyOf(
+                                        containsString(
+                                                "polarisationMode={eo:polarisationMode?}"), //
+                                        containsString(
+                                                "polarisationChannels={eo:polarisationChannels?}")))));
     }
 
     @Test
@@ -228,21 +316,29 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
 
         // self is there and uses the right parentId
-        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Url[@rel='self' "
-                + "and @type='application/opensearchdescription+xml']"));
-        assertThat(dom,
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Url[@rel='self' "
+                                + "and @type='application/opensearchdescription+xml']"));
+        assertThat(
+                dom,
                 hasXPath(
                         "/os:OpenSearchDescription/os:Url[@rel='self' "
                                 + "and @type='application/opensearchdescription+xml']/@template",
                         containsString("/oseo/description?parentId=SENTINEL1")));
 
         // check the results link is there
-        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
+        String resultsBase =
+                "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
         assertThat(dom, hasXPath(resultsBase));
         // ... and has the right parentId, and basic search params
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        allOf(containsString("/oseo/search?"), //
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString("/oseo/search?"), //
                                 containsString("parentId=SENTINEL1"), //
                                 containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
@@ -250,21 +346,32 @@ public class DescriptionTest extends OSEOTestSupport {
                                 containsString("timeEnd={time:end?}"), //
                                 containsString("timeRelation={time:relation?}"))));
         // ... and has generic EOP parameters
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString(
+                                        "productQualityStatus={eo:productQualityStatus?}"), //
                                 containsString("processorName={eo:processorName?}"), //
                                 containsString("modificationDate={eo:modificationDate?}"))));
         // ... and SAR parameters
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template", allOf(
-                        containsString("polarisationMode={eo:polarisationMode?}"), //
-                        containsString("polarisationChannels={eo:polarisationChannels?}"))));
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        allOf(
+                                containsString("polarisationMode={eo:polarisationMode?}"), //
+                                containsString(
+                                        "polarisationChannels={eo:polarisationChannels?}"))));
         // ... but no OPT parameters
-        assertThat(dom,
-                hasXPath(resultsBase + "/@template",
-                        not(anyOf(containsString("cloudCover={eo:cloudCover?}"), //
-                                containsString("snowCover={eo:snowCover?}")))));
+        assertThat(
+                dom,
+                hasXPath(
+                        resultsBase + "/@template",
+                        not(
+                                anyOf(
+                                        containsString("cloudCover={eo:cloudCover?}"), //
+                                        containsString("snowCover={eo:snowCover?}")))));
     }
-
 }

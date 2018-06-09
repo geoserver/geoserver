@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;
@@ -31,19 +29,18 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /**
- * 
  * Connection handler
- * 
+ *
  * @author Carlo Cancellieri - GeoSolutions SAS
- * 
  */
-final public class JMSContainer extends DefaultMessageListenerContainer implements DisposableBean,
-        ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
+public final class JMSContainer extends DefaultMessageListenerContainer
+        implements DisposableBean,
+                ApplicationListener<ContextRefreshedEvent>,
+                ApplicationContextAware {
 
-    private final static Logger LOGGER = Logging.getLogger(JMSContainer.class);
+    private static final Logger LOGGER = Logging.getLogger(JMSContainer.class);
 
-    @Autowired
-    public JMSFactory jmsFactory;
+    @Autowired public JMSFactory jmsFactory;
 
     @Autowired
     public List<JMSContainerHandlerExceptionListener> jmsContainerHandleExceptionListener;
@@ -65,37 +62,42 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
 
         // configuration
         this.config = config;
-        
+
         // the listener used to handle incoming events
         setMessageListener(listener);
-
-
     }
 
     @PostConstruct
     private void init() {
         // change the default autostartup status to false
         setAutoStartup(false);
-        
+
         // force no concurrent consumers
         setConcurrentConsumers(1);
-        
+
         // set to topic
         setPubSubDomain(true);
-        
-        
+
         // set subscription durability
-        setSubscriptionDurable(Boolean.parseBoolean(config.getConfiguration(TopicConfiguration.DURABLE_KEY).toString()));
-        
-        
+        setSubscriptionDurable(
+                Boolean.parseBoolean(
+                        config.getConfiguration(TopicConfiguration.DURABLE_KEY).toString()));
+
         // set subscription ID
-        setDurableSubscriptionName(config.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY).toString());
-        
+        setDurableSubscriptionName(
+                config.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY).toString());
+
         // times to test (connection)
-        max = Integer.parseInt(config.getConfiguration(ConnectionConfiguration.CONNECTION_RETRY_KEY).toString());
-        
+        max =
+                Integer.parseInt(
+                        config.getConfiguration(ConnectionConfiguration.CONNECTION_RETRY_KEY)
+                                .toString());
+
         // millisecs to wait between tests (connection)
-        maxWait = Long.parseLong(config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY).toString());
+        maxWait =
+                Long.parseLong(
+                        config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY)
+                                .toString());
 
         // check configuration for connection and try to start if needed
         // configure (needed by initializeBean)
@@ -104,13 +106,13 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
 
     private static void verify(final Object type, final String message) {
         if (type == null)
-            throw new IllegalArgumentException(message != null ? message
-                    : "Verify fails the argument check");
+            throw new IllegalArgumentException(
+                    message != null ? message : "Verify fails the argument check");
     }
 
     /**
      * try to disconnect
-     * 
+     *
      * @return true if success
      */
     public boolean disconnect() {
@@ -121,14 +123,15 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
                 LOGGER.info("Unregistering...");
                 if (!isRunning()) {
                     LOGGER.info("Succesfully un-registered from the destination topic");
-                    LOGGER.warning("You will (probably) loose next incoming events from other instances!!! (depending on how you have configured the broker)");
+                    LOGGER.warning(
+                            "You will (probably) loose next incoming events from other instances!!! (depending on how you have configured the broker)");
                     return true;
                 }
                 LOGGER.info("Waiting for connection shutdown...(" + rep + "/" + max + ")");
                 try {
                     Thread.sleep(maxWait);
                 } catch (InterruptedException e) {
-                    LOGGER.log(Level.SEVERE,e.getLocalizedMessage(), e);
+                    LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
                 }
             }
         } else {
@@ -143,14 +146,14 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
 
         // set destination
         setDestination(jmsFactory.getClientDestination(conf));
-        
+
         // use a CachingConnectionFactory
         setConnectionFactory(jmsFactory.getConnectionFactory(conf));
     }
 
     /**
      * try to connect
-     * 
+     *
      * @return true in success case, false otherwise
      */
     public boolean connect() {
@@ -164,17 +167,19 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
                         LOGGER.info("Now GeoServer is registered with the destination");
                         return true;
                     } else if (repReg == max) {
-                        LOGGER.log(Level.SEVERE,"Registration aborted due to a connection problem");
+                        LOGGER.log(
+                                Level.SEVERE, "Registration aborted due to a connection problem");
                         stop();
                         LOGGER.info("Disconnected");
                     } else {
-                        LOGGER.info("Impossible to register GeoServer with destination, waiting...");
+                        LOGGER.info(
+                                "Impossible to register GeoServer with destination, waiting...");
                     }
                     LOGGER.info("Waiting for registration...(" + repReg + "/" + max + ")");
                     try {
                         Thread.sleep(maxWait);
                     } catch (InterruptedException e) {
-                        LOGGER.log(Level.SEVERE,e.getLocalizedMessage(), e);
+                        LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
                     }
                 }
             } else {
@@ -205,10 +210,9 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
 
             // initialize the container
             initialize();
-
         }
     }
-    
+
     @Override
     public void destroy() {
         super.stop();
@@ -220,7 +224,8 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
         super.handleListenerSetupFailure(ex, alreadyRecovered);
 
         if (jmsContainerHandleExceptionListener != null) {
-            for (JMSContainerHandlerExceptionListener handler : jmsContainerHandleExceptionListener) {
+            for (JMSContainerHandlerExceptionListener handler :
+                    jmsContainerHandleExceptionListener) {
                 handler.handleListenerSetupFailure(ex, alreadyRecovered);
             }
         }
@@ -229,23 +234,24 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (event.getApplicationContext() == applicationContext) {
-            final String startString = config
-                    .getConfiguration(ConnectionConfiguration.CONNECTION_KEY);
+            final String startString =
+                    config.getConfiguration(ConnectionConfiguration.CONNECTION_KEY);
             if (startString != null
                     && startString.equals(ConnectionConfigurationStatus.enabled.toString())) {
                 if (!connect()) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.severe("Unable to connect to the broker, force connection status to disabled");
+                        LOGGER.severe(
+                                "Unable to connect to the broker, force connection status to disabled");
                     }
 
                     // change configuration status
-                    config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY,
+                    config.putConfiguration(
+                            ConnectionConfiguration.CONNECTION_KEY,
                             ConnectionConfigurationStatus.disabled.toString());
 
                     // store changes to the configuration
@@ -257,6 +263,5 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
                 }
             }
         }
-
     }
 }

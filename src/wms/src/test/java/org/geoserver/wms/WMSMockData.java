@@ -5,18 +5,20 @@
  */
 package org.geoserver.wms;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
-
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -47,15 +49,11 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.util.ProgressListener;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-
 /**
  * WMS tests utility class to set up a mocked up catalog and geoserver environment so unit tests
  * does not depend on a fully configured geoserver instance, and also they run fast due to no data
  * directory set up required.
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  */
@@ -63,9 +61,7 @@ public class WMSMockData {
 
     public static final String TEST_NS_PREFIX = "geos";
 
-    /**
-     * Namespace used for the resources in this test suite
-     */
+    /** Namespace used for the resources in this test suite */
     public static final String TEST_NAMESPACE = "http://geoserver.org";
 
     private CatalogImpl catalog;
@@ -103,18 +99,17 @@ public class WMSMockData {
         catalog.add(workspaceInfo);
         catalog.setDefaultWorkspace(workspaceInfo);
 
-        defaultStyle = new StyleInfoImpl(catalog) {
-            /**
-             * Override so it does not try to load a file from disk
-             */
-            @Override
-            public Style getStyle() throws IOException {
-                StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
-                Style style = styleFactory.createStyle();
-                style.setName("Default Style");
-                return style;
-            }
-        };
+        defaultStyle =
+                new StyleInfoImpl(catalog) {
+                    /** Override so it does not try to load a file from disk */
+                    @Override
+                    public Style getStyle() throws IOException {
+                        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
+                        Style style = styleFactory.createStyle();
+                        style.setName("Default Style");
+                        return style;
+                    }
+                };
         defaultStyle.setFilename("defaultStyleFileName");
         defaultStyle.setId("defaultStyleId");
         defaultStyle.setName("defaultStyleName");
@@ -133,13 +128,16 @@ public class WMSMockData {
         dataStoreInfo.setWorkspace(workspaceInfo);
 
         dataStore = new MemoryDataStore();
-        dataStore.setNamespaceURI("http://geoserver.org"); // required for GeoTools 12 implemetnation of MemoryDataStore
-        ResourcePool resourcePool = new ResourcePool(catalog) {
-            @Override
-            public DataStore getDataStore(DataStoreInfo info) throws IOException {
-                return dataStore;
-            }
-        };
+        dataStore.setNamespaceURI(
+                "http://geoserver.org"); // required for GeoTools 12 implemetnation of
+        // MemoryDataStore
+        ResourcePool resourcePool =
+                new ResourcePool(catalog) {
+                    @Override
+                    public DataStore getDataStore(DataStoreInfo info) throws IOException {
+                        return dataStore;
+                    }
+                };
         catalog.setResourcePool(resourcePool);
 
         mockGeoServer = new GeoServerImpl();
@@ -165,7 +163,7 @@ public class WMSMockData {
     /**
      * This dummy producer adds no functionality to DefaultRasterMapProducer, just implements a void
      * formatImageOutputStream
-     * 
+     *
      * @author Gabriel Roldan
      * @version $Id$
      */
@@ -181,35 +179,30 @@ public class WMSMockData {
 
         public DummyRasterMapProducer() {
             super(WebMap.class);
-
         }
 
-        /**
-         * @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames()
-         */
+        /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
         public Set<String> getOutputFormatNames() {
             return Collections.singleton(MIME_TYPE);
         }
 
-        /**
-         * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
-         */
+        /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
         public String getMimeType() {
             return MIME_TYPE;
         }
 
         /**
-         * @see org.geoserver.wms.map.RasterMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
+         * @see
+         *     org.geoserver.wms.map.RasterMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
          */
         public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
             produceMapCalled = true;
-            return new WebMap(mapContent) {
-            };
+            return new WebMap(mapContent) {};
         }
 
         /**
          * @see org.geoserver.ows.Response#getMimeType(java.lang.Object,
-         *      org.geoserver.platform.Operation)
+         *     org.geoserver.platform.Operation)
          */
         @Override
         public String getMimeType(Object value, Operation operation) throws ServiceException {
@@ -218,17 +211,15 @@ public class WMSMockData {
 
         /**
          * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream,
-         *      org.geoserver.platform.Operation)
+         *     org.geoserver.platform.Operation)
          */
         @Override
         public void write(Object value, OutputStream output, Operation operation)
-                throws IOException, ServiceException {
-        }
+                throws IOException, ServiceException {}
 
         public MapProducerCapabilities getCapabilities(String format) {
             return new MapProducerCapabilities(true, true, true, true, MIME_TYPE);
         }
-
     }
 
     public StyleInfo getDefaultStyle() {
@@ -261,23 +252,24 @@ public class WMSMockData {
      * Creates a vector layer with associated FeatureType in the internal MemoryDataStore with the
      * given type and two attributes: name:String and geom:geometryType
      */
-    public MapLayerInfo addFeatureTypeLayer(final String name,
-            Class<? extends Geometry> geometryType) throws IOException {
+    public MapLayerInfo addFeatureTypeLayer(
+            final String name, Class<? extends Geometry> geometryType) throws IOException {
 
         final DataStore dataStore = this.dataStore;
-        FeatureTypeInfoImpl featureTypeInfo = new FeatureTypeInfoImpl(catalog) {
-            /**
-             * Override to avoid going down to the catalog and geoserver resource loader etc
-             */
-            @Override
-            public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
-                try {
-                    return dataStore.getFeatureSource(getQualifiedName());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
+        FeatureTypeInfoImpl featureTypeInfo =
+                new FeatureTypeInfoImpl(catalog) {
+                    /**
+                     * Override to avoid going down to the catalog and geoserver resource loader etc
+                     */
+                    @Override
+                    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
+                        try {
+                            return dataStore.getFeatureSource(getQualifiedName());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
         featureTypeInfo.setName(name);
         featureTypeInfo.setNativeName(name);
         featureTypeInfo.setEnabled(true);
@@ -329,5 +321,4 @@ public class WMSMockData {
     public GeoServer getGeoServer() {
         return this.mockGeoServer;
     }
-
 }

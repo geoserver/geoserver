@@ -9,12 +9,10 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geotools.util.Utilities;
 
 /**
- * Realization of {@link AuthorityURLInfo}; being a "data type" there's no
- * {@code createAuthorityURL()} method in {@code CatalogFactory}, instead directly instantiate this
- * class.
- * 
+ * Realization of {@link AuthorityURLInfo}; being a "data type" there's no {@code
+ * createAuthorityURL()} method in {@code CatalogFactory}, instead directly instantiate this class.
+ *
  * @author groldan
- * 
  */
 public class AuthorityURL implements AuthorityURLInfo {
 
@@ -60,7 +58,12 @@ public class AuthorityURL implements AuthorityURLInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append("[ name: '").append(name)
-                .append("', href: '").append(href).append("']").toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append("[ name: '")
+                .append(name)
+                .append("', href: '")
+                .append(href)
+                .append("']")
+                .toString();
     }
 }

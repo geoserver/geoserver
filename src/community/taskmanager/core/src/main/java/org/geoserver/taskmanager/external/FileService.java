@@ -4,39 +4,32 @@
  */
 package org.geoserver.taskmanager.external;
 
-import org.geoserver.taskmanager.util.Named;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
-
+import org.geoserver.taskmanager.util.Named;
 
 /**
  * Persist and read files. All actions on this service are relative to the configured rootFolder.
- * 
+ *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
- *
  */
 public interface FileService extends Serializable, Named {
-    
+
     String PLACEHOLDER_VERSION = "###";
-    
+
     /**
-     * User-friendly description of this file service. 
-     * 
+     * User-friendly description of this file service.
+     *
      * @return description
      */
     String getDescription();
 
     /**
-     * List existing all nested folders in this file service.
-     * e.g.
-     *  /foo/
-     *  /foo/bar/
-     *  /other/
+     * List existing all nested folders in this file service. e.g. /foo/ /foo/bar/ /other/
      *
      * @return list of existing sub folders
      * @throws IOException
@@ -45,7 +38,7 @@ public interface FileService extends Serializable, Named {
 
     /**
      * Create a file in the file service
-     * 
+     *
      * @param filePath the path of the file, relative to this service
      * @param content the content of the file
      * @return a location string that can be used to configure a Geoserver store
@@ -55,16 +48,16 @@ public interface FileService extends Serializable, Named {
 
     /**
      * Check if this file exists.
-     * 
+     *
      * @param filePath the path of the file, relative to this service
      * @return whether the file exists
      * @throws IOException
      */
     boolean checkFileExists(String filePath) throws IOException;
-    
+
     /**
      * Get current and next version of a versioned file
-     * 
+     *
      * @param filePath the original file path
      * @return the versioned file info
      */
@@ -72,7 +65,7 @@ public interface FileService extends Serializable, Named {
 
     /**
      * Delete this file.
-     * 
+     *
      * @param filePath the path of the file, relative to this service
      * @return whether anything was actually deleted.
      * @throws IOException
@@ -81,7 +74,7 @@ public interface FileService extends Serializable, Named {
 
     /**
      * Read this file.
-     * 
+     *
      * @param filePath the path of the file, relative to this service
      * @return inputstream with data
      * @throws IOException
@@ -90,14 +83,15 @@ public interface FileService extends Serializable, Named {
 
     /**
      * Returns the rootFolder. All actions on the service are relative to the rootFolder.
+     *
      * @return the rootFolder.
      */
     String getRootFolder();
-    
+
     /**
      * Returns the URI for the path
-     * 
-     * @param filePath the file path 
+     *
+     * @param filePath the file path
      * @return the URI
      */
     URI getURI(String filePath);

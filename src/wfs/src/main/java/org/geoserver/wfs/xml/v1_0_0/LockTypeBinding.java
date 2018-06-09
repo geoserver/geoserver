@@ -6,21 +6,19 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.LockType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 import org.opengis.filter.Filter;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:LockType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="LockType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -43,6 +41,7 @@ import org.opengis.filter.Filter;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class LockTypeBinding extends AbstractComplexBinding {
@@ -52,14 +51,13 @@ public class LockTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.LOCKTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -70,26 +68,26 @@ public class LockTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         LockType lock = wfsfactory.createLockType();
 
-        //&lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"/&gt;
+        // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"/&gt;
         if (node.hasChild(Filter.class)) {
             lock.setFilter((Filter) node.getChildValue(Filter.class));
         }
 
-        //&lt;xsd:attribute name="handle" type="xsd:string" use="optional"/&gt;
+        // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"/&gt;
         if (node.hasAttribute("handle")) {
             lock.setHandle((String) node.getAttributeValue("handle"));
         }
 
-        //&lt;xsd:attribute name="typeName" type="xsd:QName" use="required"/&gt;
+        // &lt;xsd:attribute name="typeName" type="xsd:QName" use="required"/&gt;
         lock.setTypeName((QName) node.getAttributeValue("typeName"));
 
         return lock;

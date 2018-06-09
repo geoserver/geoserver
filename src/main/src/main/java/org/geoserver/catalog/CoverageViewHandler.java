@@ -11,9 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.media.jai.ImageLayout;
-
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
@@ -37,14 +35,13 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.MathTransform2D;
 
 /**
- * Class delegate to parse coverageView information and computing consistency checks,
- * resolution and envelope computations
+ * Class delegate to parse coverageView information and computing consistency checks, resolution and
+ * envelope computations
  */
 class CoverageViewHandler {
 
     /**
-     * Visit the a coverage and decide if its resolution is better than the ones
-     * previously visited
+     * Visit the a coverage and decide if its resolution is better than the ones previously visited
      */
     abstract static class CoverageResolutionChooser {
 
@@ -77,10 +74,7 @@ class CoverageViewHandler {
         protected abstract boolean compare(double scaleX, double scaleY, double[] resolution);
     }
 
-        /**
-     * Visit the reader for a coverage composing the view 
-     * and compute the resolution levels
-     */
+    /** Visit the reader for a coverage composing the view and compute the resolution levels */
     interface ReaderResolutionComposer {
         void visit(GridCoverage2DReader reader) throws IOException;
 
@@ -107,9 +101,7 @@ class CoverageViewHandler {
         }
     }
 
-    /**
-     * Implementation returning the Best resolution of the visited elements
-     */
+    /** Implementation returning the Best resolution of the visited elements */
     class BestReaderResolutionComposer extends AbstractReaderResolutionComposer {
 
         @Override
@@ -135,12 +127,9 @@ class CoverageViewHandler {
                 }
             };
         }
-
     }
 
-    /**
-     * Implementation returning the Worst resolution of the visited elements
-     */
+    /** Implementation returning the Worst resolution of the visited elements */
     class WorstReaderResolutionComposer extends AbstractReaderResolutionComposer {
 
         @Override
@@ -168,9 +157,7 @@ class CoverageViewHandler {
         }
     }
 
-    /**
-     * Visit the reader for a coverage composing the view and compute the envelope.
-     */
+    /** Visit the reader for a coverage composing the view and compute the envelope. */
     interface EnvelopeComposer {
         void visit(GridCoverage2DReader reader);
 
@@ -186,9 +173,7 @@ class CoverageViewHandler {
         }
     }
 
-    /**
-     * Implementation returning the union envelope of the visited elements
-     */
+    /** Implementation returning the union envelope of the visited elements */
     class UnionEnvelopeComposer extends AbstractEnvelopeComposer {
         @Override
         public void visit(GridCoverage2DReader reader) {
@@ -201,9 +186,7 @@ class CoverageViewHandler {
         }
     }
 
-    /**
-     * Implementation returning the intersection envelope of the visited elements
-     */
+    /** Implementation returning the intersection envelope of the visited elements */
     class IntersectionEnvelopeComposer extends AbstractEnvelopeComposer {
         @Override
         public void visit(GridCoverage2DReader reader) {
@@ -217,15 +200,17 @@ class CoverageViewHandler {
     }
 
     /**
-     * A CoveragesConsistencyChecker checks if the composing coverages respect the constraints which currently are:
+     * A CoveragesConsistencyChecker checks if the composing coverages respect the constraints which
+     * currently are:
+     *
      * <UL>
-     * <LI>same CRS</LI>
-     * <LI>same resolution</LI>
-     * <LI>same bbox</LI>
-     * <LI>same data type</LI>
-     * <LI>same dimensions (same number of dimension, same type, and same name)</LI>
+     *   <LI>same CRS
+     *   <LI>same resolution
+     *   <LI>same bbox
+     *   <LI>same data type
+     *   <LI>same dimensions (same number of dimension, same type, and same name)
      * </UL>
-     * 
+     *
      * When JAI-EXT BandMerge is available, constraints on resolution and bbox can be excluded.
      */
     static class CoveragesConsistencyChecker {
@@ -246,7 +231,9 @@ class CoverageViewHandler {
 
         private boolean canSupportHeterogeneousCoverages = false;
 
-        public CoveragesConsistencyChecker(GridCoverage2DReader reader, boolean canSupportHeterogeneousCoverages) throws IOException {
+        public CoveragesConsistencyChecker(
+                GridCoverage2DReader reader, boolean canSupportHeterogeneousCoverages)
+                throws IOException {
             envelope = reader.getOriginalEnvelope();
             gridRange = reader.getOriginalGridRange();
             crs = reader.getCoordinateReferenceSystem();
@@ -257,8 +244,9 @@ class CoverageViewHandler {
         }
 
         /**
-         * Check whether the coverages associated to the provided reader is consistent with the reference coverage.
-         * 
+         * Check whether the coverages associated to the provided reader is consistent with the
+         * reference coverage.
+         *
          * @param reader
          * @throws IOException
          */
@@ -274,36 +262,47 @@ class CoverageViewHandler {
 
                 // Throw an exception in case we are not supporting heterogeneous coverages
                 if (!canSupportHeterogeneousCoverages) {
-                    throw new IllegalArgumentException("The coverage envelope must be the same for all coverages");
+                    throw new IllegalArgumentException(
+                            "The coverage envelope must be the same for all coverages");
                 }
 
-                // We won't support coverage views made of coverages having empty intersection 
+                // We won't support coverage views made of coverages having empty intersection
                 if (!envelope.intersects(this.envelope, true)) {
-                    throw new IllegalArgumentException("The coverage envelopes need to intersect each other");
+                    throw new IllegalArgumentException(
+                            "The coverage envelopes need to intersect each other");
                 }
                 return false;
             }
 
             // Checking gridRange equality
-            final Rectangle thisRectangle = new Rectangle(this.gridRange.getLow(0),
-                    this.gridRange.getLow(1), this.gridRange.getSpan(0), this.gridRange.getSpan(1));
-            final Rectangle thatRectangle = new Rectangle(gridRange.getLow(0), gridRange.getLow(1),
-                    gridRange.getSpan(0), gridRange.getSpan(1));
+            final Rectangle thisRectangle =
+                    new Rectangle(
+                            this.gridRange.getLow(0),
+                            this.gridRange.getLow(1),
+                            this.gridRange.getSpan(0),
+                            this.gridRange.getSpan(1));
+            final Rectangle thatRectangle =
+                    new Rectangle(
+                            gridRange.getLow(0),
+                            gridRange.getLow(1),
+                            gridRange.getSpan(0),
+                            gridRange.getSpan(1));
             if (!thisRectangle.equals(thatRectangle)) {
                 if (!canSupportHeterogeneousCoverages) {
-                    throw new IllegalArgumentException("The coverage gridRange should be the same for all coverages");
+                    throw new IllegalArgumentException(
+                            "The coverage gridRange should be the same for all coverages");
                 }
                 return false;
             }
 
             // Checking dimensions
-            if(metadataNames == null) {
-                if(this.metadataNames != null && this.metadataNames.length > 0) {
+            if (metadataNames == null) {
+                if (this.metadataNames != null && this.metadataNames.length > 0) {
                     throw new IllegalArgumentException(
                             "The coverage metadataNames should have the same size");
                 }
-            } else if(this.metadataNames == null) {
-                if(metadataNames != null && metadataNames.length > 0) {
+            } else if (this.metadataNames == null) {
+                if (metadataNames != null && metadataNames.length > 0) {
                     throw new IllegalArgumentException(
                             "The coverage metadataNames should have the same size");
                 }
@@ -332,37 +331,37 @@ class CoverageViewHandler {
             }
 
             // now transform the requested envelope to source crs
-            if (destinationToSourceTransform != null && !destinationToSourceTransform.isIdentity()) {
+            if (destinationToSourceTransform != null
+                    && !destinationToSourceTransform.isIdentity()) {
                 throw new IllegalArgumentException(
                         "The coverage coordinateReferenceSystem should be the same for all coverages");
             }
 
             // Checking data type
-            if (layout.getSampleModel(null).getDataType() != this.layout.getSampleModel(null)
-                    .getDataType()) {
-                throw new IllegalArgumentException("The coverage dataType should be the same for all coverages");
+            if (layout.getSampleModel(null).getDataType()
+                    != this.layout.getSampleModel(null).getDataType()) {
+                throw new IllegalArgumentException(
+                        "The coverage dataType should be the same for all coverages");
             }
             return true;
-
         }
     }
 
     private GridCoverage2DReader delegate;
 
-    /** 
-     * The coverageName to be used as reference. 
-     * It is used for homogeneous coverages case, to extract shared properties.
-     * It is used for heterogeneous coverages case, to access a specific coverage in order to 
-     * get the resolutions  
-     * */
+    /**
+     * The coverageName to be used as reference. It is used for homogeneous coverages case, to
+     * extract shared properties. It is used for heterogeneous coverages case, to access a specific
+     * coverage in order to get the resolutions
+     */
     private String referenceName;
 
     /** specifying whether this view is made of homogeneous coverages or not */
     private boolean homogeneousCoverages = true;
 
-    /** 
-     * specifying whether we can support heterogeneous coverages 
-     * (JAI-EXT's BandMerge is required to support heterogeneous composition)
+    /**
+     * specifying whether we can support heterogeneous coverages (JAI-EXT's BandMerge is required to
+     * support heterogeneous composition)
      */
     boolean supportHeterogeneousCoverages;
 
@@ -376,8 +375,11 @@ class CoverageViewHandler {
 
     private EnvelopeComposer envelopeComposer;
 
-    public CoverageViewHandler(boolean supportHeterogeneousCoverages, GridCoverage2DReader delegate,
-                                     String referenceName, CoverageView coverageView) {
+    public CoverageViewHandler(
+            boolean supportHeterogeneousCoverages,
+            GridCoverage2DReader delegate,
+            String referenceName,
+            CoverageView coverageView) {
         this.supportHeterogeneousCoverages = supportHeterogeneousCoverages;
         this.delegate = delegate;
         this.referenceName = referenceName;
@@ -398,7 +400,8 @@ class CoverageViewHandler {
 
             try {
                 if (checker == null) {
-                    checker = new CoveragesConsistencyChecker(reader, supportHeterogeneousCoverages);
+                    checker =
+                            new CoveragesConsistencyChecker(reader, supportHeterogeneousCoverages);
                 } else {
                     homogeneousCoverages &= checker.checkConsistency(reader);
                 }
@@ -439,26 +442,26 @@ class CoverageViewHandler {
         double[] res;
         try {
             res = getResolutionLevels()[0];
-            return new GridEnvelope2D(new Rectangle((int) (envelope.getSpan(0) / res[0]),
-                    (int) (envelope.getSpan(1) / res[1])));
+            return new GridEnvelope2D(
+                    new Rectangle(
+                            (int) (envelope.getSpan(0) / res[0]),
+                            (int) (envelope.getSpan(1) / res[1])));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-
     }
 
     public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
         if (homogeneousCoverages) {
             return delegate.getOriginalGridToWorld(referenceName, pixInCell);
         }
-        final GridToEnvelopeMapper geMapper = new GridToEnvelopeMapper(getOriginalGridRange(),
-                getOriginalEnvelope());
+        final GridToEnvelopeMapper geMapper =
+                new GridToEnvelopeMapper(getOriginalGridRange(), getOriginalEnvelope());
         geMapper.setPixelAnchor(PixelInCell.CELL_CENTER);
         MathTransform2D coverageGridToWorld2D = (MathTransform2D) geMapper.createTransform();
 
         // we do not have to change the pixel datum
-        if (pixInCell == PixelInCell.CELL_CENTER)
-            return coverageGridToWorld2D;
+        if (pixInCell == PixelInCell.CELL_CENTER) return coverageGridToWorld2D;
 
         // we do have to change the pixel datum
         if (coverageGridToWorld2D instanceof AffineTransform) {
@@ -469,28 +472,27 @@ class CoverageViewHandler {
         throw new IllegalStateException("This reader's grid to world transform is invalid!");
     }
 
-
     private ReaderResolutionComposer initResolutionComposer() {
         SelectedResolution selectedResolution = coverageView.getSelectedResolution();
         switch (selectedResolution) {
-        case WORST:
-            return new WorstReaderResolutionComposer();
-        case BEST:
-            return new BestReaderResolutionComposer();
-        default:
-            return new BestReaderResolutionComposer();
+            case WORST:
+                return new WorstReaderResolutionComposer();
+            case BEST:
+                return new BestReaderResolutionComposer();
+            default:
+                return new BestReaderResolutionComposer();
         }
     }
 
     private EnvelopeComposer initEnvelopeComposer() {
         EnvelopeCompositionType envelopeCompositionType = coverageView.getEnvelopeCompositionType();
         switch (envelopeCompositionType) {
-        case INTERSECTION:
-            return new IntersectionEnvelopeComposer();
-        case UNION:
-            return new UnionEnvelopeComposer();
-        default:
-            return new UnionEnvelopeComposer();
+            case INTERSECTION:
+                return new IntersectionEnvelopeComposer();
+            case UNION:
+                return new UnionEnvelopeComposer();
+            default:
+                return new UnionEnvelopeComposer();
         }
     }
 
@@ -498,7 +500,7 @@ class CoverageViewHandler {
             throws IOException {
         return delegate.getReadingResolutions(referenceName, policy, requestedResolution);
     }
-    
+
     EnvelopeCompositionType getEnvelopeCompositionType() {
         return coverageView.getEnvelopeCompositionType();
     }

@@ -11,19 +11,17 @@ import org.geoserver.web.GeoServerSecuredPage;
 
 /**
  * Base page for monitor web pages.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class MonitorBasePage extends GeoServerSecuredPage {
-
 
     private static final long serialVersionUID = 5400909938411833603L;
 
     protected Monitor getMonitor() {
         return getGeoServerApplication().getBeanOfType(Monitor.class);
     }
-    
+
     protected MonitorDAO getMonitorDAO() {
         return getMonitor().getDAO();
     }

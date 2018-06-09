@@ -17,5 +17,4 @@ public class DescriptionRequestKvpReader extends KvpRequestReader {
     public DescriptionRequestKvpReader() {
         super(OSEODescriptionRequest.class);
     }
-
 }

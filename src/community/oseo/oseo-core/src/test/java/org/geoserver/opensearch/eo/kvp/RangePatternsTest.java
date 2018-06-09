@@ -5,12 +5,10 @@
 package org.geoserver.opensearch.eo.kvp;
 
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.*;
-
 import static org.junit.Assert.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.junit.Test;
 
 public class RangePatternsTest {
@@ -31,7 +29,8 @@ public class RangePatternsTest {
         assertPatternNotMatch(FULL_RANGE_PATTERN, "10,20,30");
     }
 
-    private void assertFullRangeMatch(String testRange, String g1, String g2, String g3, String g4) {
+    private void assertFullRangeMatch(
+            String testRange, String g1, String g2, String g3, String g4) {
         Matcher matcher = FULL_RANGE_PATTERN.matcher(testRange);
         assertTrue(matcher.matches());
         assertEquals(g1, matcher.group(1));
@@ -39,19 +38,19 @@ public class RangePatternsTest {
         assertEquals(g3, matcher.group(3));
         assertEquals(g4, matcher.group(4));
     }
-    
+
     private void assertPatternNotMatch(Pattern pattern, String testRange) {
         Matcher matcher = pattern.matcher(testRange);
         assertFalse(matcher.matches());
     }
-    
+
     @Test
     public void testLeftRangePattern() {
         // check matches
         assertLeftRangeMatch("[10", "[", "10");
         assertLeftRangeMatch("]10", "]", "10");
         assertLeftRangeMatch("[2010-09-21", "[", "2010-09-21");
-        
+
         // check failures
         assertPatternNotMatch(LEFT_RANGE_PATTERN, "abcd");
         assertPatternNotMatch(LEFT_RANGE_PATTERN, "10");
@@ -68,14 +67,14 @@ public class RangePatternsTest {
         assertEquals(g1, matcher.group(1));
         assertEquals(g2, matcher.group(2));
     }
-    
+
     @Test
     public void testRightRangePattern() {
         // check matches
         assertRightRangeMatch("10]", "10", "]");
         assertRightRangeMatch("10[", "10", "[");
         assertRightRangeMatch("2010-09-21]", "2010-09-21", "]");
-        
+
         // check failures
         assertPatternNotMatch(LEFT_RANGE_PATTERN, "abcd");
         assertPatternNotMatch(LEFT_RANGE_PATTERN, "10");

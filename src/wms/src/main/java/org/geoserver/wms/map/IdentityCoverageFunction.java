@@ -4,14 +4,12 @@
  */
 package org.geoserver.wms.map;
 
+import static org.geotools.filter.capability.FunctionNameImpl.parameter;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.filter.expression.InternalVolatileFunction;
 import org.opengis.filter.capability.FunctionName;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
-
-import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 /**
  * Simple rendering transformation placeholder, just returns its input (specific to GridCoverage2D
@@ -19,9 +17,8 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
  */
 class IdentityCoverageFunction extends InternalVolatileFunction {
 
-    public static FunctionName NAME = new FunctionNameImpl("Identify", parameter("coverage",
-            GridCoverage2D.class));
-
+    public static FunctionName NAME =
+            new FunctionNameImpl("Identify", parameter("coverage", GridCoverage2D.class));
 
     public IdentityCoverageFunction() {
         super("Identity");

@@ -11,7 +11,7 @@ import org.springframework.validation.ObjectError;
 
 /**
  * A WPS exception occurring when validation on a certain input fails
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ValidationException extends WPSException {
@@ -25,8 +25,10 @@ public class ValidationException extends WPSException {
     }
 
     private static String buildMessage(Errors errors) {
-        StringBuilder sb = new StringBuilder("Validation failed for input '").append(
-                errors.getObjectName()).append("': ");
+        StringBuilder sb =
+                new StringBuilder("Validation failed for input '")
+                        .append(errors.getObjectName())
+                        .append("': ");
         for (ObjectError error : errors.getGlobalErrors()) {
             sb.append(error.getDefaultMessage());
             sb.append("\n");
@@ -42,5 +44,4 @@ public class ValidationException extends WPSException {
     public Errors getErrors() {
         return errors;
     }
-
 }

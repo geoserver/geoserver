@@ -5,15 +5,14 @@
  */
 package org.geoserver.wcs.kvp;
 
+import java.util.Collection;
+import java.util.Date;
 import net.opengis.wcs11.TimeSequenceType;
 import net.opengis.wcs11.Wcs111Factory;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.wcs.WCSInfo;
-
-import java.util.Collection;
-import java.util.Date;
 
 public class TimeSequenceKvpParser extends KvpParser {
     private final GeoServer geoServer;
@@ -34,8 +33,7 @@ public class TimeSequenceKvpParser extends KvpParser {
         for (Date tp : timePositions) {
             timeSequence.getTimePosition().add(tp);
         }
-        
+
         return timeSequence;
     }
-
 }

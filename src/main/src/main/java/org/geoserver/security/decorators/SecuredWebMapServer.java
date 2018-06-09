@@ -7,7 +7,6 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.util.logging.Level;
-
 import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.ows.GetCapabilitiesRequest;
@@ -33,8 +32,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Applies security around the web map server
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class SecuredWebMapServer extends WebMapServer {
 
@@ -44,28 +43,29 @@ public class SecuredWebMapServer extends WebMapServer {
         super(delegate.getCapabilities());
         this.delegate = delegate;
     }
-    
+
     public GetFeatureInfoRequest createGetFeatureInfoRequest(GetMapRequest getMapRequest) {
-        return new SecuredGetFeatureInfoRequest(delegate.createGetFeatureInfoRequest(getMapRequest), getMapRequest);
+        return new SecuredGetFeatureInfoRequest(
+                delegate.createGetFeatureInfoRequest(getMapRequest), getMapRequest);
     }
-    
+
     public GetMapRequest createGetMapRequest() {
         return new SecuredGetMapRequest(delegate.createGetMapRequest());
     }
-    
+
     // -------------------------------------------------------------------------------------------
     //
     // Purely delegated methods
     //
     // -------------------------------------------------------------------------------------------
 
-    public GetStylesResponse issueRequest(GetStylesRequest request) throws IOException,
-            ServiceException {
+    public GetStylesResponse issueRequest(GetStylesRequest request)
+            throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
-    public PutStylesResponse issueRequest(PutStylesRequest request) throws IOException,
-            ServiceException {
+    public PutStylesResponse issueRequest(PutStylesRequest request)
+            throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
@@ -75,18 +75,18 @@ public class SecuredWebMapServer extends WebMapServer {
         return delegate.issueRequest(request);
     }
 
-    public DescribeLayerResponse issueRequest(DescribeLayerRequest request) throws IOException,
-            ServiceException {
+    public DescribeLayerResponse issueRequest(DescribeLayerRequest request)
+            throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
-    public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request) throws IOException,
-            ServiceException {
+    public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request)
+            throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
-    public GetFeatureInfoResponse issueRequest(GetFeatureInfoRequest request) throws IOException,
-            ServiceException {
+    public GetFeatureInfoResponse issueRequest(GetFeatureInfoRequest request)
+            throws IOException, ServiceException {
         return delegate.issueRequest(request);
     }
 
@@ -142,5 +142,4 @@ public class SecuredWebMapServer extends WebMapServer {
     public String toString() {
         return "SecuredWebMapServer " + delegate.toString();
     }
-
 }

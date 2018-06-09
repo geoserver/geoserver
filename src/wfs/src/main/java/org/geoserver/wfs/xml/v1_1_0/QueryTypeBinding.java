@@ -8,12 +8,9 @@ package org.geoserver.wfs.xml.v1_1_0;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.wfs.WFSException;
 import org.geotools.gml2.bindings.GML2ParsingUtils;
 import org.geotools.xml.AbstractComplexBinding;
@@ -25,12 +22,12 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.picocontainer.MutablePicoContainer;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:QueryType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="QueryType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -155,6 +152,7 @@ import org.picocontainer.MutablePicoContainer;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class QueryTypeBinding extends AbstractComplexBinding {
@@ -164,14 +162,13 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.QUERYTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -181,91 +178,87 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         return QueryType.class;
     }
 
-
-    public void initializeChildContext(ElementInstance childInstance,
-            Node node, MutablePicoContainer context) {
-        //if an srsName is set for this geometry, put it in the context for
+    public void initializeChildContext(
+            ElementInstance childInstance, Node node, MutablePicoContainer context) {
+        // if an srsName is set for this geometry, put it in the context for
         // children, so they can use it as well
-        if ( node.hasAttribute("srsName") ) {
+        if (node.hasAttribute("srsName")) {
             try {
                 CoordinateReferenceSystem crs = GML2ParsingUtils.crs(node);
-                if ( crs != null ) {
+                if (crs != null) {
                     context.registerComponentInstance(CoordinateReferenceSystem.class, crs);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new WFSException(e, "InvalidParameterValue");
             }
         }
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         QueryType query = wfsfactory.createQueryType();
 
-        //&lt;xsd:choice maxOccurs="unbounded" minOccurs="0"&gt;
-        //&lt;xsd:element ref="wfs:PropertyName"&gt;
+        // &lt;xsd:choice maxOccurs="unbounded" minOccurs="0"&gt;
+        // &lt;xsd:element ref="wfs:PropertyName"&gt;
         if (node.hasChild("PropertyName")) {
-            //HACK, stripping of namespace prefix
-            for (Iterator p = node.getChildValues("PropertyName").iterator(); p.hasNext();) {
+            // HACK, stripping of namespace prefix
+            for (Iterator p = node.getChildValues("PropertyName").iterator(); p.hasNext(); ) {
                 Object property = p.next();
                 String propertyName;
-                if(property instanceof String)
-                    propertyName = (String) property;
-                else
-                    propertyName = (String) ((PropertyName) property).getPropertyName();
+                if (property instanceof String) propertyName = (String) property;
+                else propertyName = (String) ((PropertyName) property).getPropertyName();
 
                 query.getPropertyName().add(propertyName);
             }
         }
 
-        //&lt;xsd:element ref="ogc:Function"&gt;
+        // &lt;xsd:element ref="ogc:Function"&gt;
         if (node.hasChild("Function")) {
             query.getFunction().add(node.getChildValues("Function"));
         }
 
-        //&lt;/xsd:choice&gt;
+        // &lt;/xsd:choice&gt;
 
-        //&lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"&gt;
+        // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"&gt;
         if (node.hasChild(Filter.class)) {
             query.setFilter((Filter) node.getChildValue(Filter.class));
         }
 
-        //&lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:SortBy"&gt;
+        // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:SortBy"&gt;
         if (node.hasChild(SortBy[].class)) {
             SortBy[] sortBy = (SortBy[]) node.getChildValue(SortBy[].class);
 
-            for (int i = 0; i < sortBy.length; i++)
-                query.getSortBy().add(sortBy[i]);
+            for (int i = 0; i < sortBy.length; i++) query.getSortBy().add(sortBy[i]);
         }
 
-        //&lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;
+        // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("handle")) {
             query.setHandle((String) node.getAttributeValue("handle"));
         }
 
-        //&lt;xsd:attribute name="typeName" type="wfs:TypeNameListType" use="required"&gt;
+        // &lt;xsd:attribute name="typeName" type="wfs:TypeNameListType" use="required"&gt;
         query.setTypeName((List) node.getAttributeValue("typeName"));
 
-        //&lt;xsd:attribute name="featureVersion" type="xsd:string" use="optional"&gt;
+        // &lt;xsd:attribute name="featureVersion" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("featureVersion")) {
             query.setFeatureVersion((String) node.getAttributeValue("featureVersion"));
         }
 
-        //&lt;xsd:attribute name="srsName" type="xsd:anyURI" use="optional"&gt;
+        // &lt;xsd:attribute name="srsName" type="xsd:anyURI" use="optional"&gt;
         if (node.hasAttribute("srsName")) {
             query.setSrsName((URI) node.getAttributeValue("srsName"));
         }
-        
-        if ( node.hasChild( "XlinkPropertyName" ) ) {
-            query.getXlinkPropertyName().addAll( node.getChildValues( "XlinkPropertyName" ));    
+
+        if (node.hasChild("XlinkPropertyName")) {
+            query.getXlinkPropertyName().addAll(node.getChildValues("XlinkPropertyName"));
         }
-        
+
         return query;
     }
 }

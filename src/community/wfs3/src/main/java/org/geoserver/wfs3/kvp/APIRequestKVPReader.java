@@ -6,14 +6,10 @@ package org.geoserver.wfs3.kvp;
 
 import org.geoserver.wfs3.APIRequest;
 
-/**
- * Parses a "api" request
- */
+/** Parses a "api" request */
 public class APIRequestKVPReader extends BaseKvpRequestReader {
 
     public APIRequestKVPReader() {
         super(APIRequest.class);
     }
-    
-    
 }

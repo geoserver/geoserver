@@ -8,24 +8,22 @@ package org.geoserver.script.wps;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 
 /**
  * Base class to perform tests against a single process
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public abstract class ScriptProcessTestSupport extends ScriptIntTestSupport {
 
     protected File script;
-    
+
     @Override
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
-    
+
         script = copyScriptIfExists(getProcessName());
     }
 
@@ -54,5 +52,4 @@ public abstract class ScriptProcessTestSupport extends ScriptIntTestSupport {
     }
 
     public abstract String getProcessName();
-
 }

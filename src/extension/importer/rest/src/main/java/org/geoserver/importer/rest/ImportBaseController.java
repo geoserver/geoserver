@@ -58,7 +58,7 @@ public class ImportBaseController extends RestBaseController {
         ImportContext context = context(imp);
         ImportTask task = null;
 
-        //handle null taskNumber
+        // handle null taskNumber
         if (taskNumber == null) {
             if (!optional && !allowAll) {
                 throw new RestException("No task specified", HttpStatus.NOT_FOUND);
@@ -67,7 +67,7 @@ public class ImportBaseController extends RestBaseController {
             task = context.task(taskNumber);
         }
 
-        //handle no task found
+        // handle no task found
         if (task == null) {
             if (allowAll) {
                 return context.getTasks();
@@ -84,7 +84,9 @@ public class ImportBaseController extends RestBaseController {
     ImportTransform transform(Long importId, Integer taskId, Integer transformId) {
         return transform(importId, taskId, transformId, false);
     }
-    ImportTransform transform(Long importId, Integer taskId, Integer transformId, boolean optional) {
+
+    ImportTransform transform(
+            Long importId, Integer taskId, Integer transformId, boolean optional) {
         ImportTask task = task(importId, taskId);
 
         ImportTransform tx = null;
@@ -107,8 +109,10 @@ public class ImportBaseController extends RestBaseController {
             return def;
         }
         try {
-            return "self".equalsIgnoreCase(ex) ? 1
-                    : "all".equalsIgnoreCase(ex) ? Integer.MAX_VALUE
+            return "self".equalsIgnoreCase(ex)
+                    ? 1
+                    : "all".equalsIgnoreCase(ex)
+                            ? Integer.MAX_VALUE
                             : "none".equalsIgnoreCase(ex) ? 0 : Integer.parseInt(ex);
         } catch (NumberFormatException e) {
             return def;

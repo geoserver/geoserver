@@ -8,7 +8,6 @@ package org.geoserver.wps.gs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -26,14 +25,14 @@ import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * Stores a coverage and the file system and returns a link to retrieve it back
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  * @author ETj <etj at geo-solutions.it>
  */
 @DescribeProcess(title = "Store Coverage", description = "Stores a raster on the server.")
 public class StoreCoverage implements GSProcess {
 
-    private final static GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
+    private static final GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
 
     static {
         // setting the write parameters (we my want to make these configurable in the future
@@ -53,21 +52,21 @@ public class StoreCoverage implements GSProcess {
 
     @DescribeResult(name = "coverageLocation", description = "URL at which raster can be accessed")
     public URL execute(
-            @DescribeParameter(name = "coverage", description = "Input raster") GridCoverage2D coverage)
+            @DescribeParameter(name = "coverage", description = "Input raster")
+                    GridCoverage2D coverage)
             throws IOException {
         String fileName = coverage.getName().toString() + ".tif";
         final Resource resource = resources.getOutputResource(null, fileName);
 
         // setting the write parameters for this geotiff
         final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
-        params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(
-                DEFAULT_WRITE_PARAMS);
-        final GeneralParameterValue[] wps = params.values().toArray(
-                new GeneralParameterValue[1]);        
-        
-        // TODO check file prior to writing        
+        params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+                .setValue(DEFAULT_WRITE_PARAMS);
+        final GeneralParameterValue[] wps = params.values().toArray(new GeneralParameterValue[1]);
+
+        // TODO check file prior to writing
         try (OutputStream os = resource.out()) {
-            GeoTiffWriter writer = new GeoTiffWriter(os);    
+            GeoTiffWriter writer = new GeoTiffWriter(os);
             try {
                 writer.write(coverage, wps);
             } finally {
@@ -77,5 +76,4 @@ public class StoreCoverage implements GSProcess {
 
         return new URL(resources.getOutputResourceUrl(fileName, "image/tiff"));
     }
-
 }

@@ -6,14 +6,10 @@ package org.geoserver.wfs3.kvp;
 
 import org.geoserver.wfs3.LandingPageRequest;
 
-/**
- * Parses a "landingPage" request
- */
+/** Parses a "landingPage" request */
 public class LandingPageRequestKVPReader extends BaseKvpRequestReader {
 
     public LandingPageRequestKVPReader() {
         super(LandingPageRequest.class);
     }
-    
-    
 }

@@ -6,7 +6,6 @@ package org.geoserver.taskmanager.data.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
@@ -28,11 +26,11 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 
-@Entity 
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "removeStamp" }) })
+@Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "removeStamp"})})
 @FilterDefs({
-    @FilterDef(name="activeTaskFilter", defaultCondition="removeStamp = 0"),
-    @FilterDef(name="activeBatchFilter", defaultCondition="removeStamp = 0")
+    @FilterDef(name = "activeTaskFilter", defaultCondition = "removeStamp = 0"),
+    @FilterDef(name = "activeBatchFilter", defaultCondition = "removeStamp = 0")
 })
 public class ConfigurationImpl extends BaseImpl implements Configuration {
 
@@ -40,45 +38,58 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
 
     @Id
     @Column
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @Column(nullable = false)
     private String name;
-    
+
     @Column(nullable = false)
     private Boolean template = false;
 
     @Column(nullable = false)
     private Boolean validated = false;
-    
-    @Column
-    private String workspace;
-    
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = AttributeImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL, 
-            orphanRemoval = true)
+
+    @Column private String workspace;
+
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        targetEntity = AttributeImpl.class,
+        mappedBy = "configuration",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     @OrderBy("id")
     @MapKey(name = "name")
     private Map<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
-    
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = TaskImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL)
+
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        targetEntity = TaskImpl.class,
+        mappedBy = "configuration",
+        cascade = CascadeType.ALL
+    )
     @OrderBy("id")
     @MapKey(name = "name")
-    @Filter(name="activeTaskFilter")
+    @Filter(name = "activeTaskFilter")
     private Map<String, Task> tasks = new LinkedHashMap<String, Task>();
-    
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = BatchImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL)
+
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        targetEntity = BatchImpl.class,
+        mappedBy = "configuration",
+        cascade = CascadeType.ALL
+    )
     @OrderBy("id")
     @MapKey(name = "name")
-    @Filter(name="activeBatchFilter")
+    @Filter(name = "activeBatchFilter")
     private Map<String, Batch> batches = new LinkedHashMap<String, Batch>();
 
     @Column(nullable = false)
     private Long removeStamp = 0L;
-    
-    @Column
-    private String description;
-    
+
+    @Column private String description;
+
     @Override
     public Long getId() {
         return id;
@@ -141,7 +152,7 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @Override
     public void setDescription(String description) {
         this.description = description;
-    }    
+    }
 
     @Override
     public void setRemoveStamp(long removeStamp) {
@@ -162,5 +173,4 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     public void setValidated(boolean initMode) {
         this.validated = initMode;
     }
-    
 }

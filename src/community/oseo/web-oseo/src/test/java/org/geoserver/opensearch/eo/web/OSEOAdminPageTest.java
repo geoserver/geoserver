@@ -14,7 +14,6 @@ import org.junit.Test;
 
 public class OSEOAdminPageTest extends OSEOWebTestSupport {
 
-    
     @Before
     public void startPage() {
         login();
@@ -28,13 +27,13 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         tester.assertModelValue("form:recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
         // print(tester.getLastRenderedPage(), true, true);
     }
-    
+
     @Test
     public void verifyRequiredFields() throws Exception {
         checkRequired("maximumRecordsPerPage");
         checkRequired("recordsPerPage");
     }
-    
+
     @Test
     public void testPagingValidation() throws Exception {
         setupPagingValues(-10, 100);

@@ -10,15 +10,13 @@ import org.geoserver.security.GeoServerRoleService;
 
 public class H2JNDIRoleServiceTest extends JDBCRoleServiceTest {
 
-    
     @Override
     protected String getFixtureId() {
         return "h2";
     }
-        
+
     @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
         return JDBCTestSupport.createH2RoleServiceFromJNDI(getFixtureId(), getSecurityManager());
     }
-
 }

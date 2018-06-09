@@ -10,10 +10,9 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
  * Validates {@link CredentialsFromRequestHeaderFilterConfig} objects.
- * 
+ *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
- *
  */
 public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterConfigValidator {
 
@@ -27,8 +26,7 @@ public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterCon
 
         if (config instanceof CredentialsFromRequestHeaderFilterConfig)
             validateFilterConfig((CredentialsFromRequestHeaderFilterConfig) config);
-        else
-            super.validateFilterConfig(config);
+        else super.validateFilterConfig(config);
     }
 
     public void validateFilterConfig(CredentialsFromRequestHeaderFilterConfig config)
@@ -40,7 +38,8 @@ public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterCon
         }
         if (config.getUserNameRegex() == null || "".equals(config.getUserNameRegex())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_REGEX_REQUIRED, null);
+                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_REGEX_REQUIRED,
+                    null);
         }
         if (config.getPasswordHeaderName() == null || "".equals(config.getPasswordHeaderName())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
@@ -49,10 +48,8 @@ public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterCon
         }
         if (config.getPasswordRegex() == null || "".equals(config.getPasswordRegex())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_REGEX_REQUIRED, null);
+                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_REGEX_REQUIRED,
+                    null);
         }
-
     }
-    
-
 }

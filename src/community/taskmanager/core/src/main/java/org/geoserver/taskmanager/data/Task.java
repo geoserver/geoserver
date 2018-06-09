@@ -10,12 +10,11 @@ import java.util.Map;
 
 /**
  * A task.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface Task extends SoftRemove, Serializable, Identifiable {
-    
+
     public static final String FULL_NAME_DIVISOR = "/";
 
     String getType();
@@ -25,18 +24,18 @@ public interface Task extends SoftRemove, Serializable, Identifiable {
     Map<String, Parameter> getParameters();
 
     List<? extends BatchElement> getBatchElements();
-    
+
     Configuration getConfiguration();
-    
+
     void setConfiguration(Configuration configuration);
 
     String getName();
 
     void setName(String name);
-    
-    default String getFullName() {
-        return (getConfiguration().getName() == null ? "" : getConfiguration().getName()) +                 
-                FULL_NAME_DIVISOR + getName();
-    }
 
+    default String getFullName() {
+        return (getConfiguration().getName() == null ? "" : getConfiguration().getName())
+                + FULL_NAME_DIVISOR
+                + getName();
+    }
 }

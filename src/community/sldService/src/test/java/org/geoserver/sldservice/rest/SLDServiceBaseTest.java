@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.data.test.SystemTestData;
@@ -79,8 +78,8 @@ public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {
             Style style = namedLayer.getStyles()[0];
             assertNotNull(style.featureTypeStyles().toArray(new FeatureTypeStyle[0]));
             assertEquals(1, style.featureTypeStyles().toArray(new FeatureTypeStyle[0]).length);
-            FeatureTypeStyle featureTypeStyle = style.featureTypeStyles()
-                    .toArray(new FeatureTypeStyle[0])[0];
+            FeatureTypeStyle featureTypeStyle =
+                    style.featureTypeStyles().toArray(new FeatureTypeStyle[0])[0];
             assertNotNull(featureTypeStyle.rules().toArray(new Rule[0]));
             return featureTypeStyle.rules().toArray(new Rule[0]);
         } else {

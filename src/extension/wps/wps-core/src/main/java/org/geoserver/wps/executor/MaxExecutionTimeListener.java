@@ -6,7 +6,6 @@ package org.geoserver.wps.executor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.wps.ProcessDismissedException;
 import org.geotools.util.DelegateProgressListener;
 import org.geotools.util.logging.Logging;
@@ -15,7 +14,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * A listener wrapper that will forcefully fail a process once the max time expired
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class MaxExecutionTimeListener extends DelegateProgressListener {
@@ -27,13 +26,15 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
     long queuedTime;
     long startTime;
 
-    public MaxExecutionTimeListener(ProgressListener progress, long maxExecutionTime, long maxTotalTime) {
+    public MaxExecutionTimeListener(
+            ProgressListener progress, long maxExecutionTime, long maxTotalTime) {
         super(progress);
 
         if (maxTotalTime > 0 && maxTotalTime < maxExecutionTime) {
-            LOGGER.log(Level.WARNING, 
+            LOGGER.log(
+                    Level.WARNING,
                     "The maximum total queuing and execution time allowed for processes is "
-                    + "less than the maximum allowed execution time");
+                            + "less than the maximum allowed execution time");
         }
 
         this.maxExecutionTime = maxExecutionTime;
@@ -57,29 +58,25 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
         }
     }
 
-    /**
-     * Returns true if the execution went beyond the allowed max time
-     * 
-     *
-     */
+    /** Returns true if the execution went beyond the allowed max time */
     public boolean isExpired() {
-        boolean maxExecutionTimeExceeded = maxExecutionTime > 0 && startTime > 0 && (System.currentTimeMillis() - startTime) > maxExecutionTime;
-        boolean maxTotalTimeExceeded = maxTotalTime > 0 && (System.currentTimeMillis() - queuedTime) > maxTotalTime;
+        boolean maxExecutionTimeExceeded =
+                maxExecutionTime > 0
+                        && startTime > 0
+                        && (System.currentTimeMillis() - startTime) > maxExecutionTime;
+        boolean maxTotalTimeExceeded =
+                maxTotalTime > 0 && (System.currentTimeMillis() - queuedTime) > maxTotalTime;
         return maxExecutionTimeExceeded || maxTotalTimeExceeded;
     }
 
-    /**
-     * The maximum execution time
-     * 
-     *
-     */
+    /** The maximum execution time */
     public long getMaxExecutionTime() {
         return maxExecutionTime;
     }
 
     /**
      * The maximum total time
-     * 
+     *
      * @return
      */
     public long getMaxTotalTime() {

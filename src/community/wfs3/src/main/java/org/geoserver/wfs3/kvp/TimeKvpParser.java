@@ -1,17 +1,13 @@
 package org.geoserver.wfs3.kvp;
 
+import java.text.ParseException;
+import java.util.Collection;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.List;
-
-/**
- * WFS specific version of time parsing, turns a time spec into a single time or date range
- */
+/** WFS specific version of time parsing, turns a time spec into a single time or date range */
 public class TimeKvpParser extends KvpParser {
 
     TimeParser parser = new TimeParser();
@@ -27,7 +23,7 @@ public class TimeKvpParser extends KvpParser {
         setService("WFS");
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object parse(String value) throws ParseException {
         Collection times = parser.parse(value);
         if (times.isEmpty() || times.size() > 1) {
@@ -36,9 +32,7 @@ public class TimeKvpParser extends KvpParser {
                     ServiceException.INVALID_PARAMETER_VALUE,
                     "time");
         }
-        
+
         return times.iterator().next();
     }
-
-    
 }

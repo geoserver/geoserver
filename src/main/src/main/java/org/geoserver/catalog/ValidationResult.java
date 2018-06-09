@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * ValidationResult encapsulates the result of running Catalog::validate(),
- * accounting for the fact that there may be multiple validation errors.
+ * ValidationResult encapsulates the result of running Catalog::validate(), accounting for the fact
+ * that there may be multiple validation errors.
  */
 public class ValidationResult {
     private final List<RuntimeException> errorList;
@@ -29,10 +29,11 @@ public class ValidationResult {
     }
 
     public void throwIfInvalid() {
-        if (!isValid()){
+        if (!isValid()) {
             int n = errorList.size();
             String msg = errorList.get(0).getMessage();
-            throw new RuntimeException("Validation failed with " + n + " errors.  First error message is: " + msg);
+            throw new RuntimeException(
+                    "Validation failed with " + n + " errors.  First error message is: " + msg);
         }
     }
 
@@ -46,13 +47,14 @@ public class ValidationResult {
     }
 
     /**
-     * Concatenates all the messages of the exceptions associated to this validation results
-     * using the provided separator.
+     * Concatenates all the messages of the exceptions associated to this validation results using
+     * the provided separator.
      *
      * @return concatenation of all exceptions messages
      */
     public String getErrosAsString(String separator) {
-        return errorList.stream()
+        return errorList
+                .stream()
                 .map(RuntimeException::getMessage)
                 .collect(Collectors.joining(separator));
     }

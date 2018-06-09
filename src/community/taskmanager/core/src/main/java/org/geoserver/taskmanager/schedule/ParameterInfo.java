@@ -9,37 +9,26 @@ import java.util.List;
 
 /**
  * Information about a task type's parameter.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class ParameterInfo {
-    
-    /**
-     * The parameter name
-     */
+
+    /** The parameter name */
     private String name;
-    
-    /**
-     * The parameter type.
-     */
+
+    /** The parameter type. */
     private ParameterType type;
-    
-    /**
-     * Whether the parameter is required or not.
-     */
+
+    /** Whether the parameter is required or not. */
     private boolean required;
-    
-    /**
-     * Dependent parameters
-     */
+
+    /** Dependent parameters */
     private List<ParameterInfo> dependents = new ArrayList<ParameterInfo>();
 
-    /**
-     * Depends on parameters
-     */
+    /** Depends on parameters */
     private List<ParameterInfo> dependsOn = new ArrayList<ParameterInfo>();
-    
+
     public ParameterInfo(String name, ParameterType type, boolean required) {
         this.name = name;
         this.type = type;
@@ -57,7 +46,7 @@ public class ParameterInfo {
     public boolean isRequired() {
         return required;
     }
-    
+
     public ParameterInfo dependsOn(ParameterInfo... infos) {
         for (ParameterInfo info : infos) {
             dependsOn.add(info);
@@ -65,7 +54,7 @@ public class ParameterInfo {
         }
         return this;
     }
-    
+
     public List<ParameterInfo> getDependsOn() {
         return dependsOn;
     }

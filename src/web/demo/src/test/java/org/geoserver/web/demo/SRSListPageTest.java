@@ -5,13 +5,13 @@
  */
 package org.geoserver.web.demo;
 
+import static junit.framework.TestCase.assertTrue;
+
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.HeaderContribution;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static junit.framework.TestCase.assertTrue;
 
 public class SRSListPageTest extends GeoServerWicketTestSupport {
 
@@ -22,8 +22,11 @@ public class SRSListPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testBasicPage() throws Exception {
         tester.startPage(SRSListPage.class);
-        tester.assertLabel("srsListPanel:table:listContainer:items:1:itemProperties:0:component:link:label","2000");
-        tester.clickLink("srsListPanel:table:listContainer:items:1:itemProperties:0:component:link");
+        tester.assertLabel(
+                "srsListPanel:table:listContainer:items:1:itemProperties:0:component:link:label",
+                "2000");
+        tester.clickLink(
+                "srsListPanel:table:listContainer:items:1:itemProperties:0:component:link");
         tester.assertRenderedPage(SRSDescriptionPage.class);
     }
 
@@ -32,12 +35,13 @@ public class SRSListPageTest extends GeoServerWicketTestSupport {
         HeaderContribution testHeaderContribution = new HeaderContribution();
         testHeaderContribution.setCSSFilename("testHeaderContribution.css");
         testHeaderContribution.setScope(getClass());
-        extensions.singleton("testHeaderContribution", testHeaderContribution,HeaderContribution.class);
+        extensions.singleton(
+                "testHeaderContribution", testHeaderContribution, HeaderContribution.class);
 
         tester.startPage(SRSListPage.class);
-        tester.clickLink("srsListPanel:table:listContainer:items:1:itemProperties:0:component:link");
+        tester.clickLink(
+                "srsListPanel:table:listContainer:items:1:itemProperties:0:component:link");
         tester.assertRenderedPage(SRSDescriptionPage.class);
         assertTrue(tester.getLastResponse().getDocument().contains("testHeaderContribution.css"));
-
     }
 }

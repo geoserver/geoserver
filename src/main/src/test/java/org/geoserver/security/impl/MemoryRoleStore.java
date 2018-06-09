@@ -12,16 +12,11 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 
 /**
- * Implementation for testing
- * uses serialization into a byte array
- * 
- * @author christian
+ * Implementation for testing uses serialization into a byte array
  *
+ * @author christian
  */
 public class MemoryRoleStore extends AbstractRoleStore {
-    
-    
-    
 
     @Override
     protected void serialize() throws IOException {
@@ -31,8 +26,8 @@ public class MemoryRoleStore extends AbstractRoleStore {
         oout.writeObject(helper.role_parentMap);
         oout.writeObject(helper.user_roleMap);
         oout.writeObject(helper.group_roleMap);
-        ((MemoryRoleService)service).byteArray=out.toByteArray();
-        oout.close();            
+        ((MemoryRoleService) service).byteArray = out.toByteArray();
+        oout.close();
     }
 
     @SuppressWarnings("unchecked")
@@ -40,28 +35,25 @@ public class MemoryRoleStore extends AbstractRoleStore {
     protected void deserialize() throws IOException {
         clearMaps();
         byte[] bytes = ((MemoryRoleService) service).byteArray;
-        if (bytes==null) {
+        if (bytes == null) {
             setModified(false);
             return;
         }
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ObjectInputStream oin = new ObjectInputStream(in);
         try {
-            helper.roleMap = (TreeMap<String,GeoServerRole>) oin.readObject();
-            helper.role_parentMap =(HashMap<GeoServerRole,GeoServerRole>) oin.readObject();
-            helper.user_roleMap = (TreeMap<String,SortedSet<GeoServerRole>>)oin.readObject();
-            helper.group_roleMap = (TreeMap<String,SortedSet<GeoServerRole>>)oin.readObject();
+            helper.roleMap = (TreeMap<String, GeoServerRole>) oin.readObject();
+            helper.role_parentMap = (HashMap<GeoServerRole, GeoServerRole>) oin.readObject();
+            helper.user_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
+            helper.group_roleMap = (TreeMap<String, SortedSet<GeoServerRole>>) oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
         setModified(false);
     }
-    
+
     @Override
-    public GeoServerRole createRoleObject(String role)
-            throws IOException {
+    public GeoServerRole createRoleObject(String role) throws IOException {
         return new MemoryGeoserverRole(role);
     }
-
-
 }

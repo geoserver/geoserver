@@ -6,9 +6,13 @@ package org.geogig.geoserver.config;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Scopes;
+import com.google.inject.multibindings.MapBinder;
+import com.google.inject.util.Modules;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.di.GeogigModule;
 import org.locationtech.geogig.di.HintsModule;
@@ -24,22 +28,15 @@ import org.locationtech.geogig.storage.RefDatabase;
 import org.locationtech.geogig.storage.StorageProvider;
 import org.locationtech.geogig.storage.VersionedFormat;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Scopes;
-import com.google.inject.multibindings.MapBinder;
-import com.google.inject.util.Modules;
-
 public class GeoServerContextBuilder extends ContextBuilder {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerContextBuilder.class);
 
     @Override
     public Context build(Hints hints) {
-        return Guice
-                .createInjector(Modules
-                        .override(new GeogigModule(), new HintsModule(hints))
-                        .with(new PluginsModule(), new DefaultPlugins()))
+        return Guice.createInjector(
+                        Modules.override(new GeogigModule(), new HintsModule(hints))
+                                .with(new PluginsModule(), new DefaultPlugins()))
                 .getInstance(org.locationtech.geogig.repository.Context.class);
     }
 
@@ -75,21 +72,21 @@ public class GeoServerContextBuilder extends ContextBuilder {
                 bind(PluginDefaults.class).toInstance(pluginDefaults);
             }
 
-            MapBinder<VersionedFormat, RefDatabase> refPlugins = MapBinder
-                    .newMapBinder(binder(), VersionedFormat.class, RefDatabase.class)
-                    .permitDuplicates();
+            MapBinder<VersionedFormat, RefDatabase> refPlugins =
+                    MapBinder.newMapBinder(binder(), VersionedFormat.class, RefDatabase.class)
+                            .permitDuplicates();
 
-            MapBinder<VersionedFormat, ObjectDatabase> objectPlugins = MapBinder
-                    .newMapBinder(binder(), VersionedFormat.class, ObjectDatabase.class)
-                    .permitDuplicates();
+            MapBinder<VersionedFormat, ObjectDatabase> objectPlugins =
+                    MapBinder.newMapBinder(binder(), VersionedFormat.class, ObjectDatabase.class)
+                            .permitDuplicates();
 
-            MapBinder<VersionedFormat, IndexDatabase> indexPlugins = MapBinder
-                    .newMapBinder(binder(), VersionedFormat.class, IndexDatabase.class)
-                    .permitDuplicates();
+            MapBinder<VersionedFormat, IndexDatabase> indexPlugins =
+                    MapBinder.newMapBinder(binder(), VersionedFormat.class, IndexDatabase.class)
+                            .permitDuplicates();
 
-            MapBinder<VersionedFormat, ConflictsDatabase> graphPlugins = MapBinder
-                    .newMapBinder(binder(), VersionedFormat.class, ConflictsDatabase.class)
-                    .permitDuplicates();
+            MapBinder<VersionedFormat, ConflictsDatabase> graphPlugins =
+                    MapBinder.newMapBinder(binder(), VersionedFormat.class, ConflictsDatabase.class)
+                            .permitDuplicates();
 
             Iterable<StorageProvider> providers = StorageProvider.findProviders();
 
@@ -117,11 +114,11 @@ public class GeoServerContextBuilder extends ContextBuilder {
 
     static <T> void bind(MapBinder<VersionedFormat, T> plugins, VersionedFormat format) {
         Class<?> implementingClass = format.getImplementingClass();
-        checkState(implementingClass != null,
+        checkState(
+                implementingClass != null,
                 "If singleton class not provided, this method must be overritten");
         @SuppressWarnings("unchecked")
         Class<? extends T> binding = (Class<? extends T>) implementingClass;
         plugins.addBinding(format).to(binding).in(Scopes.SINGLETON);
     }
-
 }

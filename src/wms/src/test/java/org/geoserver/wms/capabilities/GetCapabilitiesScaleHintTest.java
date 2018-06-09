@@ -2,7 +2,7 @@
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
- */package org.geoserver.wms.capabilities;
+ */ package org.geoserver.wms.capabilities;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -42,11 +40,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Test cases for Capabilities' ScaleHint  
- * 
+ * Test cases for Capabilities' ScaleHint
+ *
  * @author Mauricio Pazos
  * @author Niels Charlier
- *
  */
 public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
@@ -59,15 +56,18 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
     private static final Set<String> LEGEND_FORMAT = Collections.singleton("image/png");
 
     /** Test layers */
-    public static final QName REGIONATED = new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
-    public static final QName ACCIDENT = new QName(MockData.SF_URI, "Accident", MockData.SF_PREFIX);
-    public static final QName ACCIDENT2 = new QName(MockData.SF_URI, "Accident2", MockData.SF_PREFIX);
-    public static final QName ACCIDENT3 = new QName(MockData.SF_URI, "Accident3", MockData.SF_PREFIX);
+    public static final QName REGIONATED =
+            new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
 
+    public static final QName ACCIDENT = new QName(MockData.SF_URI, "Accident", MockData.SF_PREFIX);
+    public static final QName ACCIDENT2 =
+            new QName(MockData.SF_URI, "Accident2", MockData.SF_PREFIX);
+    public static final QName ACCIDENT3 =
+            new QName(MockData.SF_URI, "Accident3", MockData.SF_PREFIX);
 
     private Catalog catalog;
 
-    public GetCapabilitiesScaleHintTest(){
+    public GetCapabilitiesScaleHintTest() {
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
@@ -81,9 +81,9 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         testData.setUpSecurity();
     }
 
-
     /**
-     * Adds required styles to test the selection of maximum and minimum denominator from style's rules.
+     * Adds required styles to test the selection of maximum and minimum denominator from style's
+     * rules.
      */
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -98,8 +98,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
     }
 
     void addLayerAndStyle(SystemTestData testData, QName name) throws IOException {
-        testData.addVectorLayer(name, null, name.getLocalPart() + ".properties", getClass(),
-                this.catalog);
+        testData.addVectorLayer(
+                name, null, name.getLocalPart() + ".properties", getClass(), this.catalog);
 
         final String styleName = name.getLocalPart();
         testData.addStyle(styleName, getClass(), this.catalog);
@@ -111,283 +111,285 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         layerInfo.setDefaultStyle(defaultStyle);
         this.catalog.save(layerInfo);
     }
-    
+
     void addLayerGroups(SystemTestData testData) throws Exception {
-        //setup basic layergroups
+        // setup basic layergroups
         testData.addStyle("Accident3_2", getClass(), this.catalog);
-        
+
         CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
         ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
-        
-        LayerGroupInfo layerGroup1 = catalog.getFactory().createLayerGroup();        
+
+        LayerGroupInfo layerGroup1 = catalog.getFactory().createLayerGroup();
         layerGroup1.setName("testLayerGroup1");
         layerGroup1.setBounds(nativeBounds);
-        
-        LayerGroupInfo layerGroup2 = catalog.getFactory().createLayerGroup();        
+
+        LayerGroupInfo layerGroup2 = catalog.getFactory().createLayerGroup();
         layerGroup2.setName("testLayerGroup2");
         layerGroup2.setBounds(nativeBounds);
-        
-        LayerGroupInfo layerGroup3 = catalog.getFactory().createLayerGroup();        
+
+        LayerGroupInfo layerGroup3 = catalog.getFactory().createLayerGroup();
         layerGroup3.setName("testLayerGroup3");
         layerGroup3.setBounds(nativeBounds);
-        
-        //add layers & styles
+
+        // add layers & styles
         layerGroup1.getLayers().add(catalog.getLayerByName(getLayerId(REGIONATED)));
         layerGroup1.getStyles().add(null);
         layerGroup1.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT3)));
         layerGroup1.getStyles().add(catalog.getStyleByName("Accident3_2"));
-        
+
         layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(REGIONATED)));
         layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT)));
         layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT2)));
         layerGroup2.getStyles().add(null);
         layerGroup2.getStyles().add(null);
         layerGroup2.getStyles().add(null);
-        
+
         layerGroup3.getLayers().add(layerGroup2);
         layerGroup3.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT3)));
         layerGroup3.getStyles().add(null);
         layerGroup3.getStyles().add(null);
-                        
+
         catalog.add(layerGroup1);
         catalog.add(layerGroup2);
         catalog.add(layerGroup3);
     }
-    
+
     @Test
-    public void testLayerGroups()throws Exception{
+    public void testLayerGroups() throws Exception {
 
         Document dom = findCapabilities(false);
-        
-        //print(dom);
 
-        Element layerElement= searchLayerElement("testLayerGroup1", dom);
+        // print(dom);
+
+        Element layerElement = searchLayerElement("testLayerGroup1", dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
         assertEquals(Double.valueOf(1000000000), Double.valueOf(scaleElement.getAttribute("max")));
-        
-        layerElement= searchLayerElement("testLayerGroup3", dom);        
+
+        layerElement = searchLayerElement("testLayerGroup3", dom);
         scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        scaleElement = (Element)scaleNode.item(0);
+        scaleElement = (Element) scaleNode.item(0);
 
         assertNull(scaleElement);
     }
 
     /**
      * Default values for ScaleHint should be set.
-     * 
+     *
      * <pre>
-     * The computation of Min and Max values return: 
+     * The computation of Min and Max values return:
      * 		Min: 0.0
      * 		Max: infinity
-     * 
+     *
      * Capabilities document Expected:
-     *  
+     *
      * 		ScaleHint element shouldn't be generated.
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintDefaultValues()throws Exception{
+    public void scaleHintDefaultValues() throws Exception {
 
         Document dom = findCapabilities(false);
 
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT), dom);
+        Element layerElement = searchLayerElement(getLayerId(ACCIDENT), dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
         assertTrue(scaleElement == null); // scale hint is not generated
     }
 
     /**
      * Default values for ScaleHint should be set.
-     * 
+     *
      * <pre>
      * Check the min and max values return:
      * 		Min: 0.0
      * 		Max: a value
-     * 
+     *
      * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=0 max=value/>     
+     *
+     *   <ScaleHint min=0 max=value/>
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintDefaultMinValue()throws Exception{
+    public void scaleHintDefaultMinValue() throws Exception {
 
         Document dom = findCapabilities(false);
 
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT2), dom);
+        Element layerElement = searchLayerElement(getLayerId(ACCIDENT2), dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
 
         assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
-
     }
 
     /**
      * Default values for ScaleHint should be set.
-     * 
+     *
      * <pre>
-     * The computation of Min and Max values when the option 
-     * 'Scalehint in units per diagonal pixel' is set. Return: 
+     * The computation of Min and Max values when the option
+     * 'Scalehint in units per diagonal pixel' is set. Return:
      * 		Min: 0.0
      * 		Max: a value
-     * 
+     *
      * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=0 max=value/>     
+     *
+     *   <ScaleHint min=0 max=value/>
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintUnitsPerPixelDefaultMinValue()throws Exception{
+    public void scaleHintUnitsPerPixelDefaultMinValue() throws Exception {
 
         Document dom = findCapabilities(true);
 
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT2), dom);
+        Element layerElement = searchLayerElement(getLayerId(ACCIDENT2), dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
 
-        assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
-
+        assertEquals(
+                Double.valueOf(253427.07037725858),
+                Double.valueOf(scaleElement.getAttribute("max")));
     }
 
     /**
      * Default values for ScaleHint should be set.
-     * 
+     *
      * <pre>
-     * Check the Min and Max values return: 
+     * Check the Min and Max values return:
      * 		Min: a value
      * 		Max: Infinity
-     * 
+     *
      * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=value max=infinity/>     
+     *
+     *   <ScaleHint min=value max=infinity/>
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintDefaultMaxValue()throws Exception{
+    public void scaleHintDefaultMaxValue() throws Exception {
 
         Document dom = findCapabilities(false);
 
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT3), dom);
+        Element layerElement = searchLayerElement(getLayerId(ACCIDENT3), dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(Double.valueOf(320000000), Double.valueOf(scaleElement.getAttribute("min")));
         assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
-
     }
 
     /**
      * Default values for ScaleHint should be set.
-     * 
+     *
      * <pre>
-     * The computation of Min and Max values when the option 
-     * 'Scalehint in units per diagonal pixel' is set. Return: 
+     * The computation of Min and Max values when the option
+     * 'Scalehint in units per diagonal pixel' is set. Return:
      * 		Min: a value
      * 		Max: Infinity
-     * 
+     *
      * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=value max=infinity/>     
+     *
+     *   <ScaleHint min=value max=infinity/>
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintUnitsPerPixelDefaultMaxValue()throws Exception{
+    public void scaleHintUnitsPerPixelDefaultMaxValue() throws Exception {
 
         Document dom = findCapabilities(true);
 
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT3), dom);
+        Element layerElement = searchLayerElement(getLayerId(ACCIDENT3), dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
-        assertEquals(Double.valueOf(126713.53518862929), Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(
+                Double.valueOf(126713.53518862929),
+                Double.valueOf(scaleElement.getAttribute("min")));
         assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
-
     }
 
     /**
+     *
+     *
      * <pre>
-     * Max is the maximum value found in the set of rules 
+     * Max is the maximum value found in the set of rules
      * Min is the minimum value found in the set of rules
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintFoundMaxMinDenominators()throws Exception{
+    public void scaleHintFoundMaxMinDenominators() throws Exception {
 
         Document dom = findCapabilities(false);
 
         final String layerName = getLayerId(REGIONATED);
-        Element layerElement= searchLayerElement(layerName, dom);
+        Element layerElement = searchLayerElement(layerName, dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
         assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
     }
 
     /**
+     *
+     *
      * <pre>
-     * Max is the maximum value found in the set of rules 
+     * Max is the maximum value found in the set of rules
      * Min is the minimum value found in the set of rules
      * Both values are computed as units per diagonal pixel
      * </pre>
-     * 
      */
     @Test
-    public void scaleHintUnitsPerPixelFoundMaxMinDenominators()throws Exception{
+    public void scaleHintUnitsPerPixelFoundMaxMinDenominators() throws Exception {
 
         Document dom = findCapabilities(true);
 
         final String layerName = getLayerId(REGIONATED);
-        Element layerElement= searchLayerElement(layerName, dom);
+        Element layerElement = searchLayerElement(layerName, dom);
 
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        Element scaleElement = (Element)scaleNode.item(0);
+        Element scaleElement = (Element) scaleNode.item(0);
 
-        assertEquals(Double.valueOf(31678.383797157323), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
+        assertEquals(
+                Double.valueOf(31678.383797157323),
+                Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(
+                Double.valueOf(253427.07037725858),
+                Double.valueOf(scaleElement.getAttribute("max")));
     }
     /**
      * Retrieves the WMS's capabilities document.
-     * 
-     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a pixel
+     *
+     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a
+     *     pixel
      * @return Capabilities as {@link Document}
-     * 
      */
-    private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception{
-        //set the Scalehint units per diagonal pixel setting.
+    private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception {
+        // set the Scalehint units per diagonal pixel setting.
         WMS wms = getWMS();
-        WMSInfo info=wms.getServiceInfo();
-        MetadataMap mm= info.getMetadata();
+        WMSInfo info = wms.getServiceInfo();
+        MetadataMap mm = info.getMetadata();
         mm.put(WMS.SCALEHINT_MAPUNITS_PIXEL, scaleHintUnitsPerDiaPixel);
         info.getGeoServer().save(info);
 
-        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_1_1.toString());
@@ -400,18 +402,18 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         return dom;
     }
 
-
-    /** 
-     * Searches the required layer in the capabilities document. 
-     * 
+    /**
+     * Searches the required layer in the capabilities document.
+     *
      * @param layerRequired
      * @param capabilities
      * @return The layer element or null it the required layer isn't found
      * @throws XpathException
      */
-    private Element searchLayerElement(final String layerRequired, Document capabilities) throws XpathException {
+    private Element searchLayerElement(final String layerRequired, Document capabilities)
+            throws XpathException {
 
-        NodeList layersNodes = xpath.getMatchingNodes("//Layer/Name",capabilities);
+        NodeList layersNodes = xpath.getMatchingNodes("//Layer/Name", capabilities);
         for (int i = 0; i < layersNodes.getLength(); i++) {
 
             Element e = (Element) layersNodes.item(i);
@@ -421,15 +423,14 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
                 Node item = childNodes.item(j);
                 String nodeValue = item.getNodeValue();
 
-                if(layerRequired.equalsIgnoreCase(nodeValue)){
+                if (layerRequired.equalsIgnoreCase(nodeValue)) {
 
-                    return  (Element) e.getParentNode(); // returns the layer element associated to the required layer name.
+                    return (Element)
+                            e.getParentNode(); // returns the layer element associated to the
+                    // required layer name.
                 }
             }
         }
         return null; // not found
     }
-
-
-
 }

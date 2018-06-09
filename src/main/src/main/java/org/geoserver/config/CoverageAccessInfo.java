@@ -8,59 +8,50 @@ package org.geoserver.config;
 import java.io.Serializable;
 import java.util.concurrent.ThreadPoolExecutor;
 
-
 /**
  * Coverage Settings configuration.
- * 
- * @author Daniele Romagnoli, GeoSolutions
  *
+ * @author Daniele Romagnoli, GeoSolutions
  */
-public interface CoverageAccessInfo extends Cloneable, Serializable{
+public interface CoverageAccessInfo extends Cloneable, Serializable {
 
     public enum QueueType {
-        UNBOUNDED, DIRECT
+        UNBOUNDED,
+        DIRECT
     }
-    
-    /**
-     * The threadPoolExecutor
-     */
+
+    /** The threadPoolExecutor */
     ThreadPoolExecutor getThreadPoolExecutor();
+
     void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor);
-    
-    /**
-     * The ThreadPoolExecutor core pool size.
-     */
+
+    /** The ThreadPoolExecutor core pool size. */
     int getCorePoolSize();
+
     void setCorePoolSize(int corePoolSize);
-    
-    /**
-     * The ThreadPoolExecutor keep alive time.
-     */
+
+    /** The ThreadPoolExecutor keep alive time. */
     int getKeepAliveTime();
+
     void setKeepAliveTime(int keepAliveTime);
 
-    /**
-     * The ThreadPoolExecutor max pool size.
-     */
+    /** The ThreadPoolExecutor max pool size. */
     int getMaxPoolSize();
+
     void setMaxPoolSize(int maxPoolSize);
-    
-    /**
-     * The ThreadPoolExecutor queue type.
-     */
+
+    /** The ThreadPoolExecutor queue type. */
     QueueType getQueueType();
+
     void setQueueType(QueueType queueType);
-    
-    /**
-     * Disposes the global configuration object.
-     */
+
+    /** Disposes the global configuration object. */
     void dispose();
-    
-    /**
-     * Flag controlling the image io cache.
-     */
+
+    /** Flag controlling the image io cache. */
     void setImageIOCacheThreshold(long threshold);
+
     long getImageIOCacheThreshold();
-    
+
     public CoverageAccessInfo clone();
 }

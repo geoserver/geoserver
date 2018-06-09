@@ -8,7 +8,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 
-public class SecuredFeatureTypeInfoTest extends SecuredResourceInfoTest<FeatureTypeInfo, SecuredFeatureTypeInfo> {
+public class SecuredFeatureTypeInfoTest
+        extends SecuredResourceInfoTest<FeatureTypeInfo, SecuredFeatureTypeInfo> {
 
     @Override
     FeatureTypeInfo createDelegate() {
@@ -41,5 +42,4 @@ public class SecuredFeatureTypeInfoTest extends SecuredResourceInfoTest<FeatureT
     int getStackOverflowCount() {
         return 500;
     }
-
 }

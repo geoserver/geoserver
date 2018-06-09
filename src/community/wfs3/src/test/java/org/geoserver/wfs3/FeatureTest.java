@@ -4,16 +4,15 @@
  */
 package org.geoserver.wfs3;
 
-import com.jayway.jsonpath.DocumentContext;
-import org.geoserver.data.test.MockData;
-import org.junit.Test;
-
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import com.jayway.jsonpath.DocumentContext;
+import java.util.List;
+import org.geoserver.data.test.MockData;
+import org.junit.Test;
 
 public class FeatureTest extends WFS3TestSupport {
 
@@ -73,13 +72,15 @@ public class FeatureTest extends WFS3TestSupport {
         assertEquals(
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class).size());
     }
-    
+
     @Test
     public void testTimeDurationFilter() throws Exception {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
-                        "wfs3/collections/" + roadSegments + "/items?time=2006-09-01/P1M23DT12H31M12S",
+                        "wfs3/collections/"
+                                + roadSegments
+                                + "/items?time=2006-09-01/P1M23DT12H31M12S",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));

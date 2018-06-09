@@ -10,13 +10,12 @@ import net.opengis.wcs20.InterpolationAxisType;
 import net.opengis.wcs20.InterpolationMethodType;
 import net.opengis.wcs20.InterpolationType;
 import net.opengis.wcs20.Wcs20Factory;
-
 import org.geoserver.ows.KvpParser;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 
 /**
  * KVP parser for the WCS 2.0 {@link InterpolationType}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class InterpolationKvpParser extends KvpParser {
@@ -61,7 +60,7 @@ public class InterpolationKvpParser extends KvpParser {
                 // two consequent columns
                 throwInvalidSyntaxException();
             }
-            
+
             int idx = component.lastIndexOf(":", component.lastIndexOf(":") - 1);
             InterpolationAxisType ia = Wcs20Factory.eINSTANCE.createInterpolationAxisType();
             ia.setAxis(component.substring(0, idx));
@@ -77,6 +76,7 @@ public class InterpolationKvpParser extends KvpParser {
         throw new WCS20Exception(
                 "Invalid Interpolation syntax, expecting either a single interpolation value, "
                         + "or a comma separated list of axis:interpolation specs",
-                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax, "interpolation");
+                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
+                "interpolation");
     }
 }

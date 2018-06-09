@@ -21,5 +21,4 @@ public class TestGeoServerLoaderProxy extends GeoServerLoaderProxy {
     protected GeoServerLoader lookupGeoServerLoader(ApplicationContext appContext) {
         return new LegacyGeoServerLoader(resourceLoader);
     }
-
 }

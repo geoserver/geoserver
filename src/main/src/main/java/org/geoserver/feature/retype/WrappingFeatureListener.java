@@ -9,8 +9,7 @@ import org.geotools.data.FeatureEvent;
 import org.geotools.data.FeatureListener;
 
 /**
- * A FeatureListener wrapper that changes the feature source, to be used in
- * wrapping feature sources
+ * A FeatureListener wrapper that changes the feature source, to be used in wrapping feature sources
  */
 public class WrappingFeatureListener implements FeatureListener {
 
@@ -23,9 +22,8 @@ public class WrappingFeatureListener implements FeatureListener {
     }
 
     public void changed(FeatureEvent featureEvent) {
-        FeatureEvent retyped = new FeatureEvent(source, featureEvent.getEventType(), featureEvent
-                .getBounds());
+        FeatureEvent retyped =
+                new FeatureEvent(source, featureEvent.getEventType(), featureEvent.getBounds());
         listener.changed(retyped);
     }
-
 }

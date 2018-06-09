@@ -6,93 +6,75 @@
 package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 
 /**
- * Triangle geometry representation.
- * It has the 3 points as properties (A,B,C).
- *  
- * @author m.bartolomeoli
+ * Triangle geometry representation. It has the 3 points as properties (A,B,C).
  *
+ * @author m.bartolomeoli
  */
 public class Triangle {
-	public Vertex A;
-	public Vertex B;
-	public Vertex C;
+    public Vertex A;
+    public Vertex B;
+    public Vertex C;
 
-	public Triangle(Vertex a, Vertex b, Vertex c)
-	{
-		A = a;
-		B = b;
-		C = c;
-	}
+    public Triangle(Vertex a, Vertex b, Vertex c) {
+        A = a;
+        B = b;
+        C = c;
+    }
 
-	/**
-	 * Verifies if the given point is internal for this
-	 * triangle.
-	 * @param point
-	 *
-	 */
-	public boolean ContainsPoint(Vertex point)
-	{
-		//return true if the point to test is one of the vertices
-		if (point.equals(A) || point.equals(B) || point.equals(C))
-			return true;
+    /**
+     * Verifies if the given point is internal for this triangle.
+     *
+     * @param point
+     */
+    public boolean ContainsPoint(Vertex point) {
+        // return true if the point to test is one of the vertices
+        if (point.equals(A) || point.equals(B) || point.equals(C)) return true;
 
-		boolean oddNodes = false;
+        boolean oddNodes = false;
 
-		if (checkPointToSegment(C, A, point))
-			oddNodes = !oddNodes;
-		if (checkPointToSegment(A, B, point))
-			oddNodes = !oddNodes;
-		if (checkPointToSegment(B, C, point))
-			oddNodes = !oddNodes;
+        if (checkPointToSegment(C, A, point)) oddNodes = !oddNodes;
+        if (checkPointToSegment(A, B, point)) oddNodes = !oddNodes;
+        if (checkPointToSegment(B, C, point)) oddNodes = !oddNodes;
 
-		return oddNodes;
-	}
+        return oddNodes;
+    }
 
-	/**
-	 * Verifies if the given point is internal for the
-	 * triangle build from (a,b,c).
-	 * 
-	 * @param point
-	 *
-	 */
-	public static boolean ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point)
-	{
-		return new Triangle(a, b, c).ContainsPoint(point);
-	}
+    /**
+     * Verifies if the given point is internal for the triangle build from (a,b,c).
+     *
+     * @param point
+     */
+    public static boolean ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point) {
+        return new Triangle(a, b, c).ContainsPoint(point);
+    }
 
-	static boolean checkPointToSegment(Vertex sA, Vertex sB, Vertex point)
-	{
-		if ((sA.getPosition().y < point.getPosition().y && sB.getPosition().y >= point.getPosition().y) ||
-			(sB.getPosition().y < point.getPosition().y && sA.getPosition().y >= point.getPosition().y))
-		{
-			double x = 
-				sA.getPosition().x + 
-				(point.getPosition().y - sA.getPosition().y) / 
-				(sB.getPosition().y - sA.getPosition().y) * 
-				(sB.getPosition().x - sA.getPosition().x);
-			
-			if (x < point.getPosition().x)
-				return true;
-		}
+    static boolean checkPointToSegment(Vertex sA, Vertex sB, Vertex point) {
+        if ((sA.getPosition().y < point.getPosition().y
+                        && sB.getPosition().y >= point.getPosition().y)
+                || (sB.getPosition().y < point.getPosition().y
+                        && sA.getPosition().y >= point.getPosition().y)) {
+            double x =
+                    sA.getPosition().x
+                            + (point.getPosition().y - sA.getPosition().y)
+                                    / (sB.getPosition().y - sA.getPosition().y)
+                                    * (sB.getPosition().x - sA.getPosition().x);
 
-		return false;
-	}
+            if (x < point.getPosition().x) return true;
+        }
 
-	public boolean equals(Object obj)
-	{
-		if (!(obj instanceof Triangle)) 
-			return false;
-		Triangle t=(Triangle)obj;
-		return t.A.equals(A) && t.B.equals(B) && t.C.equals(C);
-	}
+        return false;
+    }
 
-	
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Triangle)) return false;
+        Triangle t = (Triangle) obj;
+        return t.A.equals(A) && t.B.equals(B) && t.C.equals(C);
+    }
 
-	public int hashCode()
-	{		
-		int result = A.hashCode();
-		result = (result * 397) ^ B.hashCode();
-		result = (result * 397) ^ C.hashCode();
-		return result;	
-	}
+    public int hashCode() {
+        int result = A.hashCode();
+        result = (result * 397) ^ B.hashCode();
+        result = (result * 397) ^ C.hashCode();
+        return result;
+    }
 }

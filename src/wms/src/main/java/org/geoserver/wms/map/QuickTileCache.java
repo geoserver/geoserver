@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.map;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.RenderedImage;
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.geoserver.config.ConfigurationListenerAdapter;
@@ -32,8 +32,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.CanonicalSet;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class QuickTileCache implements TransactionListener, GeoServerLifecycleHandler {
     /**
@@ -54,60 +52,66 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         ignoredParameters.add("EXCEPTIONS");
     }
 
-    /**
-     * Canonicalizer used to return the same object when two threads ask for the same meta-tile
-     */
+    /** Canonicalizer used to return the same object when two threads ask for the same meta-tile */
     private CanonicalSet<MetaTileKey> metaTileKeys = CanonicalSet.newInstance(MetaTileKey.class);
 
     private WeakHashMap tileCache = new WeakHashMap();
 
     public QuickTileCache(GeoServer geoServer) {
-        geoServer.addListener(new ConfigurationListenerAdapter() {
-            public void handleGlobalChange(GeoServerInfo global, List<String> propertyNames,
-                    List<Object> oldValues, List<Object> newValues) {
-                tileCache.clear();
-            }
+        geoServer.addListener(
+                new ConfigurationListenerAdapter() {
+                    public void handleGlobalChange(
+                            GeoServerInfo global,
+                            List<String> propertyNames,
+                            List<Object> oldValues,
+                            List<Object> newValues) {
+                        tileCache.clear();
+                    }
 
-            public void handleServiceChange(ServiceInfo service, List<String> propertyNames,
-                    List<Object> oldValues, List<Object> newValues) {
-                tileCache.clear();
-            }
+                    public void handleServiceChange(
+                            ServiceInfo service,
+                            List<String> propertyNames,
+                            List<Object> oldValues,
+                            List<Object> newValues) {
+                        tileCache.clear();
+                    }
 
-            public void reloaded() {
-                tileCache.clear();
-            }
-        });
+                    public void reloaded() {
+                        tileCache.clear();
+                    }
+                });
     }
 
-    /**
-     * For testing only
-     */
-    QuickTileCache() {
-    }
+    /** For testing only */
+    QuickTileCache() {}
 
     /**
      * Given a tiled request, builds a key that can be used to access the cache looking for a
      * specific meta-tile, and also as a synchronization tool to avoid multiple requests to trigger
      * parallel computation of the same meta-tile
-     * 
-     * @param request
      *
+     * @param request
      */
     public MetaTileKey getMetaTileKey(GetMapRequest request) {
         String mapDefinition = buildMapDefinition(request.getRawKvp());
         ReferencedEnvelope bbox = new ReferencedEnvelope(request.getBbox(), request.getCrs());
         Point2D origin = request.getTilesOrigin();
-        if(CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
+        if (CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
             try {
-                bbox = new ReferencedEnvelope(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX(), 
-                        CRS.decode("EPSG:" + CRS.lookupEpsgCode(request.getCrs(), false)));
+                bbox =
+                        new ReferencedEnvelope(
+                                bbox.getMinY(),
+                                bbox.getMaxY(),
+                                bbox.getMinX(),
+                                bbox.getMaxX(),
+                                CRS.decode("EPSG:" + CRS.lookupEpsgCode(request.getCrs(), false)));
                 origin = new Point2D.Double(origin.getY(), origin.getX());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new ServiceException("Failed to bring the bbox back in a EN order", e);
             }
         }
-        MapKey mapKey = new MapKey(mapDefinition, normalize(bbox.getWidth() / request.getWidth()),
-                origin);
+        MapKey mapKey =
+                new MapKey(mapDefinition, normalize(bbox.getWidth() / request.getWidth()), origin);
         Point tileCoords = getTileCoordinates(bbox, origin);
         Point metaTileCoords = getMetaTileCoordinates(tileCoords);
         ReferencedEnvelope metaTileEnvelope = getMetaTileEnvelope(bbox, tileCoords, metaTileCoords);
@@ -119,7 +123,8 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         return metaTileKeys.unique(key);
     }
 
-    private ReferencedEnvelope getMetaTileEnvelope(ReferencedEnvelope bbox, Point tileCoords, Point metaTileCoords) {
+    private ReferencedEnvelope getMetaTileEnvelope(
+            ReferencedEnvelope bbox, Point tileCoords, Point metaTileCoords) {
         double minx = bbox.getMinX() + (metaTileCoords.x - tileCoords.x) * bbox.getWidth();
         double miny = bbox.getMinY() + (metaTileCoords.y - tileCoords.y) * bbox.getHeight();
         double maxx = minx + bbox.getWidth() * 3;
@@ -130,9 +135,8 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     /**
      * Given a tile, returns the coordinates of the meta-tile that contains it (where the meta-tile
      * coordinate is the coordinate of its lower left subtile)
-     * 
-     * @param tileCoords
      *
+     * @param tileCoords
      */
     Point getMetaTileCoordinates(Point tileCoords) {
         int x = tileCoords.x;
@@ -147,10 +151,9 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
     /**
      * Given an envelope and origin, find the tile coordinate (row,col)
-     * 
+     *
      * @param env
      * @param origin
-     *
      */
     Point getTileCoordinates(Envelope env, Point2D origin) {
         // this was using the low left corner and Math.round, but turned
@@ -163,13 +166,12 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
         return new Point(x, y);
     }
-    
+
     /**
      * Given an envelope and the metatile envelope, locate the tile inside the metatile
-     * 
+     *
      * @param env
      * @param origin
-     *
      */
     Point getTileOffsetsInMeta(Envelope bbox, Envelope metatileBox) {
         // compute using local coordinates, the previous math was using global one that
@@ -189,9 +191,8 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
      * of 52 bits, and throw away the 20 more significant ones, which means we're dealing with 12
      * significant decimal digits (2^40 -> more or less one billion million). See also <a
      * href="http://en.wikipedia.org/wiki/IEEE_754">IEEE 754</a> on Wikipedia.
-     * 
-     * @param d
      *
+     * @param d
      */
     static double normalize(double d) {
         if (Double.isInfinite(d) || Double.isNaN(d)) {
@@ -203,16 +204,15 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
     /**
      * Turns the request back into a sort of GET request (not url-encoded) for fast comparison
-     * 
-     * @param map
      *
+     * @param map
      */
     private String buildMapDefinition(Map<String, String> map) {
         StringBuffer sb = new StringBuffer();
 
         Entry<String, String> en;
         String paramName;
-        for (Iterator<Map.Entry<String, String>> it = map.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<String, String>> it = map.entrySet().iterator(); it.hasNext(); ) {
             en = it.next();
             paramName = en.getKey();
 
@@ -232,9 +232,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         return sb.toString();
     }
 
-    /**
-     * Key defining a tiling layer in a map
-     */
+    /** Key defining a tiling layer in a map */
     static class MapKey {
         String mapDefinition;
 
@@ -250,8 +248,12 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         }
 
         public int hashCode() {
-            return new HashCodeBuilder().append(mapDefinition).append(resolution)
-                    .append(resolution).append(origin).toHashCode();
+            return new HashCodeBuilder()
+                    .append(mapDefinition)
+                    .append(resolution)
+                    .append(resolution)
+                    .append(origin)
+                    .toHashCode();
         }
 
         public boolean equals(Object obj) {
@@ -261,19 +263,26 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
             MapKey other = (MapKey) obj;
 
-            return new EqualsBuilder().append(mapDefinition, other.mapDefinition)
-                    .append(resolution, other.resolution).append(origin, other.origin).isEquals();
+            return new EqualsBuilder()
+                    .append(mapDefinition, other.mapDefinition)
+                    .append(resolution, other.resolution)
+                    .append(origin, other.origin)
+                    .isEquals();
         }
 
         public String toString() {
-            return mapDefinition + "\nw:" + "\nresolution:" + resolution + "\norig:"
-                    + origin.getX() + "," + origin.getY();
+            return mapDefinition
+                    + "\nw:"
+                    + "\nresolution:"
+                    + resolution
+                    + "\norig:"
+                    + origin.getX()
+                    + ","
+                    + origin.getY();
         }
     }
 
-    /**
-     * Key that identifies a certain meta-tile in a tiled map layer
-     */
+    /** Key that identifies a certain meta-tile in a tiled map layer */
     static class MetaTileKey {
         MapKey mapKey;
 
@@ -281,7 +290,8 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
         ReferencedEnvelope metaTileEnvelope;
 
-        public MetaTileKey(MapKey mapKey, Point metaTileCoords, ReferencedEnvelope metaTileEnvelope) {
+        public MetaTileKey(
+                MapKey mapKey, Point metaTileCoords, ReferencedEnvelope metaTileEnvelope) {
             super();
             this.mapKey = mapKey;
             this.metaTileCoords = metaTileCoords;
@@ -311,8 +321,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
             MetaTileKey other = (MetaTileKey) obj;
 
-            return new EqualsBuilder().append(mapKey, other.mapKey)
-                    .append(metaTileCoords, other.metaTileCoords).isEquals();
+            return new EqualsBuilder()
+                    .append(mapKey, other.mapKey)
+                    .append(metaTileCoords, other.metaTileCoords)
+                    .isEquals();
         }
 
         public int getMetaFactor() {
@@ -330,10 +342,9 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
     /**
      * Gathers a tile from the cache, if available
-     * 
+     *
      * @param key
      * @param request
-     *
      */
     public synchronized RenderedImage getTile(MetaTileKey key, GetMapRequest request) {
         CacheElement ce = (CacheElement) tileCache.get(key);
@@ -346,18 +357,16 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     }
 
     /**
-     * 
      * @param key
      * @param request
      * @param tiles
-     *
      */
     public RenderedImage getTile(MetaTileKey key, GetMapRequest request, RenderedImage[] tiles) {
         Envelope bbox = request.getBbox();
-        if(CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
+        if (CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
             bbox = new Envelope(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX());
         }
-        
+
         Point tileCoord = getTileOffsetsInMeta(bbox, key.getMetaTileEnvelope());
 
         return tiles[tileCoord.x + (tileCoord.y * key.getMetaFactor())];
@@ -365,11 +374,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
     /**
      * Puts the specified tile array in the cache, and returns the tile the request was looking for
-     * 
+     *
      * @param key
      * @param request
      * @param tiles
-     *
      */
     public synchronized void storeTiles(MetaTileKey key, RenderedImage[] tiles) {
         tileCache.put(key, new CacheElement(tiles));
@@ -394,7 +402,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     @Override
     public void onReset() {
         // data might have changed in the meantime
-        tileCache.clear();        
+        tileCache.clear();
     }
 
     @Override

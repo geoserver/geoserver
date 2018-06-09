@@ -12,18 +12,13 @@ package org.geoserver.wps.transmute;
  * @author Lucas Reed, Refractions Research Inc
  */
 public interface LiteralTransmuter extends Transmuter {
-    /**
-     * Returns string identifier for encoded value type
-     *
-     *
-     */
+    /** Returns string identifier for encoded value type */
     String getEncodedType();
 
     /**
      * Decode string value into Java type
      *
      * @param str
-     *
      */
     Object decode(String str);
 
@@ -31,7 +26,6 @@ public interface LiteralTransmuter extends Transmuter {
      * Encode from Java type to String
      *
      * @param obj
-     *
      */
     String encode(Object obj);
 }

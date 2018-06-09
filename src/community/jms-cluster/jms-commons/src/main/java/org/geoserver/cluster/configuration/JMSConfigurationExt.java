@@ -9,19 +9,19 @@ import java.io.IOException;
 
 public interface JMSConfigurationExt {
 
-	/**
-	 * initialize defaults
-	 * @param config
-	 * @throws IOException
-	 */
-	public void initDefaults(JMSConfiguration config) throws IOException;
+    /**
+     * initialize defaults
+     *
+     * @param config
+     * @throws IOException
+     */
+    public void initDefaults(JMSConfiguration config) throws IOException;
 
-	/**
-	 * returns true if the passed config is different by the default values
-	 * @param config
-	 *
-	 * @throws IOException
-	 */
-	public boolean override(JMSConfiguration config) throws IOException;
-
+    /**
+     * returns true if the passed config is different by the default values
+     *
+     * @param config
+     * @throws IOException
+     */
+    public boolean override(JMSConfiguration config) throws IOException;
 }

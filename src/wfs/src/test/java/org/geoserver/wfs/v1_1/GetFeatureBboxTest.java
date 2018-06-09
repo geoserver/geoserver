@@ -17,40 +17,49 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetFeatureBboxTest extends WFSTestSupport {
-    
+
     @Test
     public void testFeatureBoudingOn() throws Exception {
         WFSInfo wfs = getWFS();
-        wfs.setFeatureBounding( true );
-        getGeoServer().save( wfs );
+        wfs.setFeatureBounding(true);
+        getGeoServer().save(wfs);
 
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(SystemTestData.BUILDINGS) + "&version=1.1.0&service=wfs&propertyName=ADDRESS");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&typeName="
+                                + getLayerId(SystemTestData.BUILDINGS)
+                                + "&version=1.1.0&service=wfs&propertyName=ADDRESS");
         // print(doc);
-        
+
         // check it's a feature collection
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
         // check the collection has non null bounds
-        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/gml:boundedBy/gml:Envelope)", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//wfs:FeatureCollection/gml:boundedBy/gml:Envelope)", doc);
         // check that each feature has non null bounds
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Envelope", doc).getLength() > 0);
-        
+        assertTrue(
+                xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Envelope", doc)
+                                .getLength()
+                        > 0);
     }
-    
+
     @Test
     public void testFeatureBoudingOff() throws Exception {
         WFSInfo wfs = getWFS();
-        wfs.setFeatureBounding( false );
-        getGeoServer().save( wfs );
-        
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(SystemTestData.BUILDINGS) + "&version=1.1.0&service=wfs&propertyName=ADDRESS");
-//        print(doc);
-        
+        wfs.setFeatureBounding(false);
+        getGeoServer().save(wfs);
+
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&typeName="
+                                + getLayerId(SystemTestData.BUILDINGS)
+                                + "&version=1.1.0&service=wfs&propertyName=ADDRESS");
+        //        print(doc);
+
         // check it's a feature collection
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
         // check the collection does not have bounds
         assertXpathEvaluatesTo("0", "count(//wfs:FeatureCollection/gml:boundedBy)", doc);
     }
-    
-
 }

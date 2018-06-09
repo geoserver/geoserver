@@ -4,6 +4,21 @@
  */
 package org.geoserver.wcs.responses;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -26,22 +41,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-
-import javax.xml.namespace.QName;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * Base support class for NetCDF wcs tests.
@@ -70,7 +69,8 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
         final CoverageView coverageView = buildSstView();
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
-        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(SST.getLocalPart(), storeInfo, builder);
+        final CoverageInfo coverageInfo =
+                coverageView.createCoverageInfo(SST.getLocalPart(), storeInfo, builder);
         cat.add(coverageInfo);
         LayerInfo layer = builder.buildLayer(coverageInfo);
         cat.add(layer);
@@ -89,41 +89,57 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
     }
 
     private CoverageView buildSstView() {
-        String[] bandNames = new String[]{"pixels_per_bin", "sea_surface_temperature", "sst_dtime",
-                "quality_level", "wind_speed", "wind_speed_dtime_from_sst", "sea_ice_fraction",
-                "sea_ice_fraction_dtime_from_sst", "sses_bias", "sses_standard_deviation"};
+        String[] bandNames =
+                new String[] {
+                    "pixels_per_bin",
+                    "sea_surface_temperature",
+                    "sst_dtime",
+                    "quality_level",
+                    "wind_speed",
+                    "wind_speed_dtime_from_sst",
+                    "sea_ice_fraction",
+                    "sea_ice_fraction_dtime_from_sst",
+                    "sses_bias",
+                    "sses_standard_deviation"
+                };
 
         List<CoverageView.CoverageBand> coverageBands = new ArrayList<>();
         for (int i = 0; i < bandNames.length; i++) {
             String bandName = bandNames[i];
-            final CoverageView.CoverageBand band = new CoverageView.CoverageBand(
-                    Arrays.asList(new CoverageView.InputCoverageBand(bandName, "0")), bandName, i,
-                    CoverageView.CompositionType.BAND_SELECT);
+            final CoverageView.CoverageBand band =
+                    new CoverageView.CoverageBand(
+                            Arrays.asList(new CoverageView.InputCoverageBand(bandName, "0")),
+                            bandName,
+                            i,
+                            CoverageView.CompositionType.BAND_SELECT);
             coverageBands.add(band);
         }
         final CoverageView coverageView = new CoverageView(SST.getLocalPart(), coverageBands);
         return coverageView;
     }
 
-    /**
-     * Test NetCDF output from a coverage view having the required GHRSST bands/variables
-     */
+    /** Test NetCDF output from a coverage view having the required GHRSST bands/variables */
     @Test
     public void testGHRSST() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                        + "&coverageid=" + getLayerId(SST).replace(":", "__") + "&format=application/x-netcdf");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageid="
+                                + getLayerId(SST).replace(":", "__")
+                                + "&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
 
-        // hope the file name structure is correct, not 100% sure 
+        // hope the file name structure is correct, not 100% sure
         String contentDispostion = response.getHeader("Content-disposition");
-        assertEquals("inline; filename=19121213214553-EUR-L3U_GHRSST-SSTint-AVHRR_METOP_A-v02.0-fv01.0.nc", 
+        assertEquals(
+                "inline; filename=19121213214553-EUR-L3U_GHRSST-SSTint-AVHRR_METOP_A-v02.0-fv01.0.nc",
                 contentDispostion);
         byte[] responseBytes = getBinary(response);
         File file = File.createTempFile("ghrsst", ".nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath(), true, null)) {
+        try (NetcdfDataset dataset =
+                NetcdfDataset.openDataset(file.getAbsolutePath(), true, null)) {
             assertNotNull(dataset);
 
             // check global attributes
@@ -134,26 +150,43 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
             assertNotNull(globalAttributes.get("spatial_resolution"));
             // input test file is a freak that really has this resolution, as verified with gdalinfo
             // e.g. gdalinfo NETCDF:"sst-orbit053.nc":"sea_surface_temperature"
-            assertEquals("179.9499969482422 degrees", globalAttributes.get("spatial_resolution").getStringValue());
+            assertEquals(
+                    "179.9499969482422 degrees",
+                    globalAttributes.get("spatial_resolution").getStringValue());
             // likewise, it really has time time
             assertNotNull(globalAttributes.get("start_time"));
             assertNotNull(globalAttributes.get("time_coverage_start"));
             assertEquals("19121213T204553Z", globalAttributes.get("start_time").getStringValue());
-            assertEquals("19121213T204553Z", globalAttributes.get("time_coverage_start").getStringValue());
+            assertEquals(
+                    "19121213T204553Z",
+                    globalAttributes.get("time_coverage_start").getStringValue());
             assertNotNull(globalAttributes.get("stop_time"));
             assertNotNull(globalAttributes.get("time_coverage_end"));
             assertEquals("19121213T204553Z", globalAttributes.get("stop_time").getStringValue());
-            assertEquals("19121213T204553Z", globalAttributes.get("time_coverage_end").getStringValue());
+            assertEquals(
+                    "19121213T204553Z", globalAttributes.get("time_coverage_end").getStringValue());
             // and these bounds
             double EPS = 1e-3;
             assertNotNull(globalAttributes.get("northernmost_latitude"));
             assertNotNull(globalAttributes.get("southernmost_latitude"));
             assertNotNull(globalAttributes.get("westernmost_longitude"));
             assertNotNull(globalAttributes.get("easternmost_longitude"));
-            assertEquals(119.925, globalAttributes.get("northernmost_latitude").getNumericValue().doubleValue(), EPS);
-            assertEquals(-119.925, globalAttributes.get("southernmost_latitude").getNumericValue().doubleValue(), EPS);
-            assertEquals(-269.925, globalAttributes.get("westernmost_longitude").getNumericValue().doubleValue(), EPS);
-            assertEquals(269.925, globalAttributes.get("easternmost_longitude").getNumericValue().doubleValue(), EPS);
+            assertEquals(
+                    119.925,
+                    globalAttributes.get("northernmost_latitude").getNumericValue().doubleValue(),
+                    EPS);
+            assertEquals(
+                    -119.925,
+                    globalAttributes.get("southernmost_latitude").getNumericValue().doubleValue(),
+                    EPS);
+            assertEquals(
+                    -269.925,
+                    globalAttributes.get("westernmost_longitude").getNumericValue().doubleValue(),
+                    EPS);
+            assertEquals(
+                    269.925,
+                    globalAttributes.get("easternmost_longitude").getNumericValue().doubleValue(),
+                    EPS);
             // resolution, take 2
             assertNotNull(globalAttributes.get("geospatial_lat_units"));
             assertNotNull(globalAttributes.get("geospatial_lon_units"));
@@ -178,28 +211,35 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
             assertEquals(DataType.BYTE, windSpeed.getDataType());
             assertNotNull(windSpeed.findAttribute("scale_factor"));
             assertNotNull(windSpeed.findAttribute("add_offset"));
-            assertAttributeValue(windSpeed, "comment", "Typically represents surface winds (10 meters above the sea " +
-                    "surface)");
+            assertAttributeValue(
+                    windSpeed,
+                    "comment",
+                    "Typically represents surface winds (10 meters above the sea " + "surface)");
             assertAttributeValue(windSpeed, "long_name", "wind speed");
             assertAttributeValue(windSpeed, "standard_name", "wind_speed");
             assertAttributeValue(windSpeed, "units", "m s-1");
 
             // enable ehancing to check values
             dataset.enhance(NetcdfDataset.getEnhanceAll());
-            assertValues(dataset, "sea_surface_temperature", new double[]{301, 302, 303, 304, 305, 306, 307, 308, 
-                    309}, 2e-3);
-            assertValues(dataset, "wind_speed", new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 0.2);
+            assertValues(
+                    dataset,
+                    "sea_surface_temperature",
+                    new double[] {301, 302, 303, 304, 305, 306, 307, 308, 309},
+                    2e-3);
+            assertValues(dataset, "wind_speed", new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9}, 0.2);
         } finally {
             // FileUtils.deleteQuietly(file);
         }
     }
 
     private Map<String, Attribute> getGlobalAttributeMap(NetcdfDataset dataset) {
-        return dataset.getGlobalAttributes().stream()
+        return dataset.getGlobalAttributes()
+                .stream()
                 .collect(Collectors.toMap(Attribute::getShortName, Function.identity()));
     }
 
-    private void assertValues(NetcdfDataset dataset, String variableName, double[] expectedValues, double tolerance) 
+    private void assertValues(
+            NetcdfDataset dataset, String variableName, double[] expectedValues, double tolerance)
             throws IOException {
         Variable variable = dataset.findVariable(variableName);
         double[] values = (double[]) variable.read().copyTo1DJavaArray();
@@ -216,22 +256,21 @@ public class GHRSSTWCSTest extends WCSKVPTestSupport {
         }
     }
 
-    /**
-     * Test NetCDF output from a coverage view having the required GHRSST bands/variables
-     */
+    /** Test NetCDF output from a coverage view having the required GHRSST bands/variables */
     @Test
     public void testGHRSSTSubset() throws Exception {
         // test requires NetCDF-4 native libs to be available
         Assume.assumeTrue(NetCDFUtilities.isNC4CAvailable());
-        
+
         // this used to crash
-        MockHttpServletResponse response = getAsServletResponse(
-                "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                        + "&coverageid=" + getLayerId(SST).replace(":", "__")
-                        + "&subset=Long(-10,10)&subset=Lat(-10,10)"
-                        + "&format=application/x-netcdf4");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageid="
+                                + getLayerId(SST).replace(":", "__")
+                                + "&subset=Long(-10,10)&subset=Lat(-10,10)"
+                                + "&format=application/x-netcdf4");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf4", response.getContentType());
     }
-
 }

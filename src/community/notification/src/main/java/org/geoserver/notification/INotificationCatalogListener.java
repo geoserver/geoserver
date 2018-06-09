@@ -12,5 +12,4 @@ public interface INotificationCatalogListener extends CatalogListener {
     void setMessageMultiplexer(MessageMultiplexer messageMultiplexer);
 
     MessageMultiplexer getMessageMultiplexer();
-
 }

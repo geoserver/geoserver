@@ -9,56 +9,47 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import net.opengis.wfs.GetCapabilitiesType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  * Web Feature Service GetCapabilities operation.
- * <p>
- * This operation returns a {@link org.geotools.xml.transform.TransformerBase} instance
- * which will serialize the wfs capabilities document. This class uses ows version negotiation
- * to determine which version of the wfs capabilities document to return.
- * </p>
+ *
+ * <p>This operation returns a {@link org.geotools.xml.transform.TransformerBase} instance which
+ * will serialize the wfs capabilities document. This class uses ows version negotiation to
+ * determine which version of the wfs capabilities document to return.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class GetCapabilities {
-    /**
-     * WFS service configuration
-     */
+    /** WFS service configuration */
     WFSInfo wfs;
 
-    /**
-     * The catalog
-     */
+    /** The catalog */
     Catalog catalog;
 
-	private final Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders;
+    private final Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders;
 
     /**
      * Creates a new wfs 1.0/1.1 GetCapabilitis operation.
      *
      * @param wfs The wfs configuration
      * @param catalog The geoserver catalog.
-     * @param extendedCapabilitiesProviders the providers for adding extra metadata to the capabilities documents
+     * @param extendedCapabilitiesProviders the providers for adding extra metadata to the
+     *     capabilities documents
      */
-    public GetCapabilities(WFSInfo wfs, Catalog catalog, Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders) {
+    public GetCapabilities(
+            WFSInfo wfs,
+            Catalog catalog,
+            Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders) {
         this.wfs = wfs;
         this.catalog = catalog;
         this.extendedCapabilitiesProviders = extendedCapabilitiesProviders;
     }
 
-    public CapabilitiesTransformer run(GetCapabilitiesRequest request)
-        throws WFSException {
-        //cite requires that we fail when we see an "invalid" update sequence,
+    public CapabilitiesTransformer run(GetCapabilitiesRequest request) throws WFSException {
+        // cite requires that we fail when we see an "invalid" update sequence,
         // since we dont support update sequences, all are invalid, but we take
         // our more lax approach and just ignore it when not doint the cite thing
         if (wfs.isCiteCompliant()) {
@@ -67,15 +58,15 @@ public class GetCapabilities {
             }
         }
 
-        //TODO: the rest of this routine should be done by the dispatcher
-        //make sure service is set, cite conformance thing
-        //JD - We wrap this in a cite conformance check because cite stricly 
+        // TODO: the rest of this routine should be done by the dispatcher
+        // make sure service is set, cite conformance thing
+        // JD - We wrap this in a cite conformance check because cite stricly
         // tests that every request includes the 'service=WFS' key value pair.
-        // However often the the context of the request is good enough to 
+        // However often the the context of the request is good enough to
         // determine what the service is, like in 'geoserver/wfs?request=GetCapabilities'
         if (wfs.isCiteCompliant()) {
             if (!request.isSetService()) {
-                //give up 
+                // give up
                 throw new WFSException("Service not set", "MissingParameterValue", "service");
             }
         }
@@ -88,11 +79,13 @@ public class GetCapabilities {
             capsTransformer = new CapabilitiesTransformer.WFS1_0(wfs, catalog);
         } else {
             if ("1.1.0".equals(version)) {
-                capsTransformer = new CapabilitiesTransformer.WFS1_1(wfs, baseUrl, catalog,
-                        extendedCapabilitiesProviders);
+                capsTransformer =
+                        new CapabilitiesTransformer.WFS1_1(
+                                wfs, baseUrl, catalog, extendedCapabilitiesProviders);
             } else if ("2.0.0".equals(version)) {
-                capsTransformer = new CapabilitiesTransformer.WFS2_0(wfs, baseUrl, catalog,
-                        extendedCapabilitiesProviders);
+                capsTransformer =
+                        new CapabilitiesTransformer.WFS2_0(
+                                wfs, baseUrl, catalog, extendedCapabilitiesProviders);
             } else {
                 throw new WFSException(request, "Could not understand version:" + version);
             }
@@ -108,12 +101,12 @@ public class GetCapabilities {
         provided.add("1.1.0");
 
         if (request instanceof GetCapabilitiesRequest.WFS20) {
-            provided.add("2.0.0");    
+            provided.add("2.0.0");
         }
-        
+
         List<String> accepted = request.getAcceptVersions();
 
         String version = RequestUtils.getVersionPreOws(provided, accepted);
-		return version;
-	}
+        return version;
+    }
 }

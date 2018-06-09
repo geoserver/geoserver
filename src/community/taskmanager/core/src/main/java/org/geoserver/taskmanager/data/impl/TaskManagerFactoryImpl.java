@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskManagerFactoryImpl implements TaskManagerFactory {
-    
+
     @Override
     public Run createRun() {
         return new RunImpl();

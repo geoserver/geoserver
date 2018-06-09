@@ -6,20 +6,18 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:DescribeFeatureTypeType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="DescribeFeatureTypeType"&gt;
  *                  &lt;xsd:annotation&gt;
@@ -63,6 +61,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
@@ -72,14 +71,13 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.DESCRIBEFEATURETYPETYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -90,15 +88,14 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        DescribeFeatureTypeType describeFeatureType = wfsfactory
-            .createDescribeFeatureTypeType();
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        DescribeFeatureTypeType describeFeatureType = wfsfactory.createDescribeFeatureTypeType();
 
         WFSBindingUtils.service(describeFeatureType, node);
         WFSBindingUtils.version(describeFeatureType, node);

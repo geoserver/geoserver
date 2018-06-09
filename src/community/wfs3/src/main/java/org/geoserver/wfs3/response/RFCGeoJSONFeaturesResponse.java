@@ -4,6 +4,17 @@
  */
 package org.geoserver.wfs3.response;
 
+import static org.geoserver.wfs3.DefaultWebFeatureService30.getAvailableFormats;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
@@ -25,18 +36,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.Version;
 import org.opengis.feature.Feature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import javax.xml.namespace.QName;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-
-import static org.geoserver.wfs3.DefaultWebFeatureService30.getAvailableFormats;
 
 public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 

@@ -4,13 +4,12 @@
  */
 package org.geoserver.params.extractor.web;
 
+import java.io.Serializable;
+import java.util.UUID;
 import org.geoserver.params.extractor.EchoParameter;
 import org.geoserver.params.extractor.EchoParameterBuilder;
 import org.geoserver.params.extractor.Rule;
 import org.geoserver.params.extractor.RuleBuilder;
-
-import java.io.Serializable;
-import java.util.UUID;
 
 public class RuleModel implements Serializable {
 
@@ -64,14 +63,16 @@ public class RuleModel implements Serializable {
     }
 
     public Rule toRule() {
-        RuleBuilder ruleBuilder = new RuleBuilder().withId(id)
-                .withActivated(activated)
-                .withPosition(position)
-                .withMatch(match)
-                .withActivation(activation)
-                .withParameter(parameter)
-                .withRemove(remove)
-                .withCombine(combine);
+        RuleBuilder ruleBuilder =
+                new RuleBuilder()
+                        .withId(id)
+                        .withActivated(activated)
+                        .withPosition(position)
+                        .withMatch(match)
+                        .withActivation(activation)
+                        .withParameter(parameter)
+                        .withRemove(remove)
+                        .withCombine(combine);
         if (position != null && transform != null) {
             ruleBuilder.withTransform(transform.replace("{PARAMETER}", "$2"));
         } else {

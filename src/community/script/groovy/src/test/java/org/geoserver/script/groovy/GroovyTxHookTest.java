@@ -13,5 +13,4 @@ public class GroovyTxHookTest extends WfsTxHookTest {
     public String getExtension() {
         return "groovy";
     }
-
 }

@@ -22,12 +22,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -55,11 +53,11 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * Output format based on XLST transformations
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements ApplicationContextAware,
-        DisposableBean {
+public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
+        implements ApplicationContextAware, DisposableBean {
 
     static Map<String, String> formats = new ConcurrentHashMap<String, String>();
 
@@ -75,23 +73,25 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         super(gs, formats.keySet());
         this.repository = repository;
     }
-    
+
     @Override
     public boolean canHandle(Operation operation) {
         // if we don't have formats configured, we cannot respond
-        if(formats.isEmpty()) {
+        if (formats.isEmpty()) {
             LOGGER.log(Level.FINE, "Empty formats");
             return false;
         }
-        
-        if(!super.canHandle(operation)) {
+
+        if (!super.canHandle(operation)) {
             return false;
         }
-        
+
         // check the format matches, the Dispatcher just does a case insensitive match,
         // but WFS is supposed to be case sensitive and so is the XSLT code
         Request request = Dispatcher.REQUEST.get();
-        if(request != null && (request.getOutputFormat() == null || !formats.containsKey(request.getOutputFormat()))) {
+        if (request != null
+                && (request.getOutputFormat() == null
+                        || !formats.containsKey(request.getOutputFormat()))) {
             LOGGER.log(Level.FINE, "Formats are: " + formats);
             return false;
         } else {
@@ -121,23 +121,23 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
             formats.putAll(replacement);
         }
     }
-    
+
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         try {
             TransformInfo info = locateTransformation((FeatureCollectionResponse) value, operation);
             return info.mimeType();
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new WFSException("Failed to load the required transformation", e);
         }
     }
-    
+
     @Override
-    public String getAttachmentFileName(Object value, Operation operation) {      
+    public String getAttachmentFileName(Object value, Operation operation) {
         try {
             FeatureCollectionResponse featureCollections = (FeatureCollectionResponse) value;
             TransformInfo info = locateTransformation(featureCollections, operation);
-            
+
             // concatenate all feature types requested
             StringBuilder sb = new StringBuilder();
             for (FeatureCollection<FeatureType, Feature> fc : featureCollections.getFeatures()) {
@@ -145,39 +145,42 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
                 sb.append("_");
             }
             sb.setLength(sb.length() - 1);
-            
+
             String extension = info.getFileExtension();
-            if(extension == null) {
+            if (extension == null) {
                 extension = ".txt";
                 sb.append(extension);
-            } 
-            if(!extension.startsWith(".")) {
+            }
+            if (!extension.startsWith(".")) {
                 sb.append(".");
             }
             sb.append(extension);
-    
+
             return sb.toString();
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new WFSException("Failed to locate the XSLT transformation", e);
         }
     }
 
     @Override
-    protected void write(final FeatureCollectionResponse featureCollection, OutputStream output,
-            Operation operation) throws IOException, ServiceException {
+    protected void write(
+            final FeatureCollectionResponse featureCollection,
+            OutputStream output,
+            Operation operation)
+            throws IOException, ServiceException {
         // get the transformation we need
         TransformInfo info = locateTransformation(featureCollection, operation);
         Transformer transformer = repository.getTransformer(info);
         // force Xalan to indent the output
-        if(transformer.getOutputProperties() != null && "yes".equals(transformer.getOutputProperties().getProperty("indent"))) {
+        if (transformer.getOutputProperties() != null
+                && "yes".equals(transformer.getOutputProperties().getProperty("indent"))) {
             try {
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 LOGGER.log(Level.FINE, "Could not set indent amount", e);
                 // in case it's not Xalan
             }
         }
-        
 
         // prepare the fake operation we're providing to the source output format
         final Operation sourceOperation = buildSourceOperation(operation, info);
@@ -187,8 +190,10 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         if (sourceResponse == null) {
             throw new WFSException(
                     "Could not locate a response that can generate the desired source format '"
-                            + info.getSourceFormat() + "' for transformation '" + info.getName() + "'");
-
+                            + info.getSourceFormat()
+                            + "' for transformation '"
+                            + info.getName()
+                            + "'");
         }
 
         // prepare the stream connections, so that we can do the transformation on the fly
@@ -196,20 +201,23 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         final PipedOutputStream pos = new PipedOutputStream(pis);
 
         // submit the source output format execution, tracking exceptions
-        Future<Void> future = executor.submit(new Callable<Void>() {
+        Future<Void> future =
+                executor.submit(
+                        new Callable<Void>() {
 
-            @Override
-            public Void call() throws Exception {
-                try {
-                    sourceResponse.write(featureCollection, pos, sourceOperation);
-                } finally {
-                    // close the stream to make sure the transformation won't keep on waiting
-                    pos.close();
-                }
+                            @Override
+                            public Void call() throws Exception {
+                                try {
+                                    sourceResponse.write(featureCollection, pos, sourceOperation);
+                                } finally {
+                                    // close the stream to make sure the transformation won't keep
+                                    // on waiting
+                                    pos.close();
+                                }
 
-                return null;
-            }
-        });
+                                return null;
+                            }
+                        });
 
         // run the transformation
         TransformerException transformerException = null;
@@ -230,10 +238,9 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
                     e);
         }
         if (transformerException != null) {
-            throw new WFSException("Failed to run the the XSTL transformation",
-                    transformerException);
+            throw new WFSException(
+                    "Failed to run the the XSTL transformation", transformerException);
         }
-
     }
 
     private Operation buildSourceOperation(Operation operation, TransformInfo info) {
@@ -241,8 +248,12 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
             EObject originalParam = (EObject) operation.getParameters()[0];
             EObject copy = EcoreUtil.copy(originalParam);
             BeanUtils.setProperty(copy, "outputFormat", info.getSourceFormat());
-            final Operation sourceOperation = new Operation(operation.getId(),
-                    operation.getService(), operation.getMethod(), new Object[] { copy });
+            final Operation sourceOperation =
+                    new Operation(
+                            operation.getId(),
+                            operation.getService(),
+                            operation.getMethod(),
+                            new Object[] {copy});
             return sourceOperation;
         } catch (Exception e) {
             throw new WFSException(
@@ -261,8 +272,8 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         return null;
     }
 
-    private TransformInfo locateTransformation(FeatureCollectionResponse collections,
-            Operation operation) throws IOException {
+    private TransformInfo locateTransformation(
+            FeatureCollectionResponse collections, Operation operation) throws IOException {
         GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = req.getOutputFormat();
 
@@ -273,16 +284,24 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         for (FeatureType ft : featureTypes) {
             TransformInfo curr = locateTransform(outputFormat, ft);
             if (curr == null) {
-                throw new WFSException("Could not find a XSLT transformation generating "
-                        + outputFormat + " for feature type " + ft.getName(), ServiceException.INVALID_PARAMETER_VALUE, "typeName");
+                throw new WFSException(
+                        "Could not find a XSLT transformation generating "
+                                + outputFormat
+                                + " for feature type "
+                                + ft.getName(),
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "typeName");
             } else if (result == null) {
                 reference = ft;
                 result = curr;
             } else if (!result.equals(curr)) {
                 throw new WFSException(
                         "Multiple feature types are mapped to different XLST transformations, cannot proceed: "
-                                + result.getXslt() + ", " + curr.getXslt(), ServiceException.INVALID_PARAMETER_VALUE, "typeName");
-
+                                + result.getXslt()
+                                + ", "
+                                + curr.getXslt(),
+                        ServiceException.INVALID_PARAMETER_VALUE,
+                        "typeName");
             }
         }
 
@@ -307,7 +326,8 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         return result;
     }
 
-    private TransformInfo filterByOutputFormat(String outputFormat, List<TransformInfo> transforms) {
+    private TransformInfo filterByOutputFormat(
+            String outputFormat, List<TransformInfo> transforms) {
         for (TransformInfo tx : transforms) {
             if (outputFormat.equals(tx.getOutputFormat())) {
                 return tx;
@@ -335,7 +355,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
             executor = null;
         }
     }
-    
+
     @Override
     public List<String> getCapabilitiesElementNames() {
         return getAllCapabilitiesElementNames();

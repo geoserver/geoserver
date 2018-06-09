@@ -4,16 +4,16 @@
  */
 package org.geoserver.taskmanager.external.impl;
 
+import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
+import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
@@ -23,22 +23,18 @@ import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.data.postgis.PostgisNGJNDIDataStoreFactory;
 import org.geotools.factory.GeoTools;
 
-import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
-import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
-
 /**
  * DbSource for Jndi.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
-public class PostgisJndiDbSourceImpl extends NamedImpl implements DbSource  {
-    
+public class PostgisJndiDbSourceImpl extends NamedImpl implements DbSource {
+
     private String jndiName;
-    
+
     private String schema;
-    
-    private Map<String, String> targetJndiNames = new HashMap<String, String>();       
+
+    private Map<String, String> targetJndiNames = new HashMap<String, String>();
 
     public String getJndiName() {
         return jndiName;
@@ -63,32 +59,35 @@ public class PostgisJndiDbSourceImpl extends NamedImpl implements DbSource  {
     @Override
     public DataSource getDataSource() throws SQLException {
         Context ctx = null;
-        DataSource ds = null;        
-        
+        DataSource ds = null;
+
         try {
             ctx = GeoTools.getInitialContext(GeoTools.getDefaultHints());
         } catch (NamingException e) {
             throw new IllegalStateException(e);
         }
-            
+
         try {
             ds = (DataSource) ctx.lookup(jndiName);
         } catch (NamingException e) {
             throw new SQLException(e);
         }
-        
+
         if (ds == null) {
             throw new SQLException(jndiName + " not found in JNDI context.");
         }
-        
+
         if (schema != null) {
-            try(Connection conn = ds.getConnection()) {
-                conn.createStatement().executeQuery(
-                        "SELECT set_config('search_path', '" + schema + ",public', false);");
+            try (Connection conn = ds.getConnection()) {
+                conn.createStatement()
+                        .executeQuery(
+                                "SELECT set_config('search_path', '"
+                                        + schema
+                                        + ",public', false);");
             }
         }
-        
-        return ds;            
+
+        return ds;
     }
 
     @Override
@@ -129,5 +128,4 @@ public class PostgisJndiDbSourceImpl extends NamedImpl implements DbSource  {
     public Dialect getDialect() {
         return new PostgisDialectImpl();
     }
-
 }

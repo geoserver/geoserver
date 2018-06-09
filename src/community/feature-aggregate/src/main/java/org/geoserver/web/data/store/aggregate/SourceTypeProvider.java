@@ -8,7 +8,6 @@ package org.geoserver.web.data.store.aggregate;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
 import org.apache.wicket.model.IModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.data.aggregate.AggregateTypeConfiguration;
@@ -17,8 +16,8 @@ import org.geotools.data.aggregate.SourceType;
 class SourceTypeProvider extends GeoServerDataProvider<SourceType> {
     private static final long serialVersionUID = -5562124245239213938L;
 
-    public Property<SourceType> STORE = new BeanProperty<SourceType>("storeName",
-            "storeName.localPart");
+    public Property<SourceType> STORE =
+            new BeanProperty<SourceType>("storeName", "storeName.localPart");
 
     public Property<SourceType> TYPE = new BeanProperty<SourceType>("typeName", "typeName");
 
@@ -57,11 +56,11 @@ class SourceTypeProvider extends GeoServerDataProvider<SourceType> {
             super(name);
             this.config = config;
         }
-        
+
         public Comparator<SourceType> getComparator() {
             return null;
         }
-        
+
         @Override
         public Object getPropertyValue(final SourceType item) {
             return new IModel<Boolean>() {
@@ -69,8 +68,7 @@ class SourceTypeProvider extends GeoServerDataProvider<SourceType> {
                 private static final long serialVersionUID = 335379699073989386L;
 
                 @Override
-                public void detach() {
-                }
+                public void detach() {}
 
                 @Override
                 public Boolean getObject() {
@@ -83,7 +81,5 @@ class SourceTypeProvider extends GeoServerDataProvider<SourceType> {
                 }
             };
         }
-
     };
-
 }

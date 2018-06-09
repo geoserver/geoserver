@@ -9,16 +9,15 @@ import org.geoserver.taskmanager.util.NamedImpl;
 
 /**
  * A database configuration used by tasks.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class ExternalGSImpl extends NamedImpl implements ExternalGS {
-    
+
     private String url;
-    
+
     private String username;
-    
+
     private String password;
 
     @Override

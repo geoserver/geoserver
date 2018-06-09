@@ -7,7 +7,7 @@ package org.geoserver.security;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Exception thrown by the brute force attack prevention when too many threads are blocked already 
+ * Exception thrown by the brute force attack prevention when too many threads are blocked already
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -17,14 +17,15 @@ public class MaxBlockedThreadsException extends AuthenticationException {
     private int count;
 
     public MaxBlockedThreadsException(int count) {
-        super("Too many failed logins waiting on delay already: " + count+  ". Please wait a bit and try again." 
-                + ". A brute force attack to crack user's passwords may be underway.");
+        super(
+                "Too many failed logins waiting on delay already: "
+                        + count
+                        + ". Please wait a bit and try again."
+                        + ". A brute force attack to crack user's passwords may be underway.");
         this.count = count;
     }
-
 
     public int getCount() {
         return count;
     }
-
 }

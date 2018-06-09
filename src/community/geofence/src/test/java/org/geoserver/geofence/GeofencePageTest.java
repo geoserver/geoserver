@@ -19,13 +19,12 @@
  */
 package org.geoserver.geofence;
 
+import static junit.framework.TestCase.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-
-import static junit.framework.TestCase.assertTrue;
-
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -50,8 +49,9 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         super.onSetUp(testData);
 
         // get the beans we use for testing
-        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext
-                .getBean("geofence-configurer");
+        configurer =
+                (GeoFencePropertyPlaceholderConfigurer)
+                        applicationContext.getBean("geofence-configurer");
         configurer.setLocation(
                 new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
@@ -62,9 +62,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         tester.startPage(GeofencePage.class);
     }
 
-    /**
-     * @FIXME This test fails in 2.6
-     */
+    /** @FIXME This test fails in 2.6 */
     @Ignore
     @Test
     public void testSave() throws URISyntaxException, IOException {
@@ -79,9 +77,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         assertTrue(GeofenceTestUtils.readConfig(configFile).length() > 0);
     }
 
-    /**
-     * @FIXME This test fails in 2.6
-     */
+    /** @FIXME This test fails in 2.6 */
     @Ignore
     @Test
     public void testCancel() throws URISyntaxException, IOException {
@@ -117,8 +113,8 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testErrorWrongURL() {
         @SuppressWarnings("unchecked")
-        TextField<String> servicesUrl = ((TextField<String>) tester
-                .getComponentFromLastRenderedPage("form:servicesUrl"));
+        TextField<String> servicesUrl =
+                ((TextField<String>) tester.getComponentFromLastRenderedPage("form:servicesUrl"));
         servicesUrl.setDefaultModel(new Model<String>("fakeurl"));
 
         tester.clickLink("form:test", true);
@@ -149,9 +145,9 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInvalidateCache() {
         tester.clickLink("form:invalidate", true);
-        String success = new StringResourceModel(
-                GeofencePage.class.getSimpleName() + ".cacheInvalidated").getObject();
-        tester.assertInfoMessages((Serializable[]) new String[] { success });
+        String success =
+                new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated")
+                        .getObject();
+        tester.assertInfoMessages((Serializable[]) new String[] {success});
     }
-
 }

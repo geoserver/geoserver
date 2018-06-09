@@ -21,14 +21,15 @@ import org.springframework.security.core.Authentication;
  * The <code>background</code> and <code>color</code> properties are optional, the id can be a fixed
  * string or can contain the <code>$host_ip</code> or <code>$host_name</code> variable that will be
  * expanded to the first non loopback IP address of the machine, or the equivalent host name
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
 
     static final String GEOSERVER_NODE_OPTS = GeoServerNodeData.GEOSERVER_NODE_OPTS;
-    
+
     static GeoServerNodeData NODE_DATA = null;
+
     static {
         initializeFromEnviroment();
     }
@@ -40,7 +41,8 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
 
     @Override
     public void customize(WebMarkupContainer container) {
-        container.add(new AttributeAppender("style", new Model<String>(NODE_DATA.getIdStyle()), ";"));
+        container.add(
+                new AttributeAppender("style", new Model<String>(NODE_DATA.getIdStyle()), ";"));
         container.setVisible(isNodeIdVisible(container));
     }
 
@@ -50,8 +52,8 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
 
     /**
      * The element is visible if an admin is logged in, and the id is not null
-     * @param parent
      *
+     * @param parent
      */
     protected boolean isNodeIdVisible(WebMarkupContainer parent) {
         if (NODE_DATA.getId() == null) {
@@ -59,13 +61,14 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
         }
         // we don't show the node id to all users, only to the admin
         Authentication auth = ((GeoServerSession) parent.getSession()).getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+        if (auth == null
+                || !auth.isAuthenticated()
+                || auth instanceof AnonymousAuthenticationToken) {
             return false;
         } else {
-            GeoServerSecurityManager securityManager = GeoServerApplication.get()
-                    .getSecurityManager();
+            GeoServerSecurityManager securityManager =
+                    GeoServerApplication.get().getSecurityManager();
             return securityManager.checkAuthenticationForAdminRole(auth);
         }
     }
-
 }

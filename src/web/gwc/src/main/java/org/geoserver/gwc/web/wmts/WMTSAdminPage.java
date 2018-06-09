@@ -35,6 +35,5 @@ public class WMTSAdminPage extends BaseServiceAdminPage<WMTSInfo> {
     }
 
     @Override
-    protected void build(IModel info, Form form) {
-    }
+    protected void build(IModel info, Form form) {}
 }

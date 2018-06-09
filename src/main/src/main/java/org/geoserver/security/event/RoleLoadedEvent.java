@@ -7,36 +7,26 @@
 package org.geoserver.security.event;
 
 import java.util.EventObject;
-
 import org.geoserver.security.GeoServerRoleService;
 
 /**
- * 
- * Event fired after loading roles from  
- * the backend store into memory 
- * 
- * This event is intended for stateful services of
- * type {@link GeoServerRoleService}. If the
- * backend is changed externally and a reload occurs, listeners
- * should be notified. 
- * 
- * @author christian
+ * Event fired after loading roles from the backend store into memory
  *
+ * <p>This event is intended for stateful services of type {@link GeoServerRoleService}. If the
+ * backend is changed externally and a reload occurs, listeners should be notified.
+ *
+ * @author christian
  */
 public class RoleLoadedEvent extends EventObject {
 
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     public RoleLoadedEvent(GeoServerRoleService source) {
         super(source);
-        
     }
-    
+
     public GeoServerRoleService getService() {
         return (GeoServerRoleService) getSource();
     }
-
 }

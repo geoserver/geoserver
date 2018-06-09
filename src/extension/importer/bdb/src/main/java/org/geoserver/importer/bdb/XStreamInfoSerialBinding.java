@@ -5,15 +5,6 @@
  */
 package org.geoserver.importer.bdb;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.output.TeeOutputStream;
-import org.geoserver.config.util.XStreamPersister;
-
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import com.ning.compress.lzf.LZFInputStream;
@@ -22,21 +13,27 @@ import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBase;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.util.FastOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.commons.io.output.TeeOutputStream;
+import org.geoserver.config.util.XStreamPersister;
 
-/**
- * @param <T>
- */
+/** @param <T> */
 public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBinding<T> {
 
     private final XStreamPersister xstreamPersister;
     private boolean compress = true;
 
-    private static final boolean DEBUG = "true".equals(System
-            .getProperty("org.opengeo.importer.xstream.debug"));
+    private static final boolean DEBUG =
+            "true".equals(System.getProperty("org.opengeo.importer.xstream.debug"));
 
     private final Class<T> target;
 
-    public XStreamInfoSerialBinding(final XStreamPersister xstreamPersister, final Class<T> target) {
+    public XStreamInfoSerialBinding(
+            final XStreamPersister xstreamPersister, final Class<T> target) {
         this.xstreamPersister = xstreamPersister;
         this.target = target;
 
@@ -53,7 +50,7 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
         InputStream in = new ByteArrayInputStream(data, entry.getOffset(), entry.getSize());
 
         try {
-            if (compress) { 
+            if (compress) {
                 in = new LZFInputStream(in);
             }
         } catch (Exception e) {
@@ -99,5 +96,4 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
         final int length = serialOutput.getBufferLength();
         entry.setData(bytes, offset, length);
     }
-
 }

@@ -4,15 +4,12 @@
  */
 package org.geoserver.wfs3.kvp;
 
+import java.util.Map;
 import org.geoserver.ows.KvpRequestReader;
 
-import java.util.Map;
-
-/**
- * Support class for common WFS3 KVP parsing needs
- */
+/** Support class for common WFS3 KVP parsing needs */
 public abstract class BaseKvpRequestReader extends KvpRequestReader {
-    
+
     /**
      * Creats the new kvp request reader.
      *
@@ -29,9 +26,9 @@ public abstract class BaseKvpRequestReader extends KvpRequestReader {
             setOutputFormat(kvp, rawKvp, format);
         } else if (kvp.containsKey("f")) {
             Object format = kvp.get("f");
-            setOutputFormat(kvp, rawKvp, format);    
+            setOutputFormat(kvp, rawKvp, format);
         }
-        return super.read(request, kvp, rawKvp);                            
+        return super.read(request, kvp, rawKvp);
     }
 
     public void setOutputFormat(Map kvp, Map rawKvp, Object format) {

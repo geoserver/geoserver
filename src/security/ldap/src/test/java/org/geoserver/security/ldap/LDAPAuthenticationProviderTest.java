@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.MemoryRoleService;
 import org.geoserver.security.impl.MemoryRoleStore;
@@ -18,35 +19,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collections;
-
-/**
- * 
- * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
- * 
- */
+/** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
 public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
-    
+
     private LDAPAuthenticationProvider authProvider;
-    
+
     @Override
-    protected void createConfig()
-    {
+    protected void createConfig() {
         config = new LDAPSecurityServiceConfig();
     }
-    
-    /**LdapTestUtils
-     * Test that bindBeforeGroupSearch correctly enables roles fetching on a
-     * server without anonymous access enabled.
-     * 
+
+    /**
+     * LdapTestUtils Test that bindBeforeGroupSearch correctly enables roles fetching on a server
+     * without anonymous access enabled.
      */
     @Test
     public void testBindBeforeGroupSearch() throws Exception {
         // no anonymous access
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(false, ldapServerUrl,
-                basePath));
-        
-        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(false, ldapServerUrl, basePath));
+
+        ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
         config.setBindBeforeGroupSearch(true);
         createAuthenticationProvider();
 
@@ -57,17 +49,14 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
     }
 
     /**
-     * Test that without bindBeforeGroupSearch we get an exception during roles
-     * fetching on a server without anonymous access enabled.
-     * 
+     * Test that without bindBeforeGroupSearch we get an exception during roles fetching on a server
+     * without anonymous access enabled.
      */
     @Test
-    public void testBindBeforeGroupSearchRequiredIfAnonymousDisabled()
-            throws Exception {
+    public void testBindBeforeGroupSearchRequiredIfAnonymousDisabled() throws Exception {
         // no anonymous access
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(false, ldapServerUrl,
-                basePath));
-        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(false, ldapServerUrl, basePath));
+        ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
         // we don't bind
         config.setBindBeforeGroupSearch(false);
         createAuthenticationProvider();
@@ -81,65 +70,56 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
     }
 
     /**
-     * Test that authentication can be done using the couple userFilter and
-     * userFormat instead of userDnPattern.
-     * 
+     * Test that authentication can be done using the couple userFilter and userFormat instead of
+     * userDnPattern.
      */
     @Test
     public void testUserFilterAndFormat() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
-                basePath));
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
         // filter to extract user data
-        ((LDAPSecurityServiceConfig)config).setUserFilter("(telephonenumber=1)");
+        ((LDAPSecurityServiceConfig) config).setUserFilter("(telephonenumber=1)");
         // username to bind to
-        ((LDAPSecurityServiceConfig)config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
+        ((LDAPSecurityServiceConfig) config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
 
         createAuthenticationProvider();
 
         Authentication result = authProvider.authenticate(authentication);
         assertEquals(3, result.getAuthorities().size());
     }
-    
+
     /**
-     * Test that authentication can be done using the couple userFilter and
-     * userFormat instead of userDnPattern, using placemarks in userFilter.
-     * 
+     * Test that authentication can be done using the couple userFilter and userFormat instead of
+     * userDnPattern, using placemarks in userFilter.
      */
     @Test
     public void testUserFilterPlacemarks() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
-                basePath));
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
         // filter to extract user data
-        ((LDAPSecurityServiceConfig)config).setUserFilter("(givenName={1})");
+        ((LDAPSecurityServiceConfig) config).setUserFilter("(givenName={1})");
         // username to bind to
-        ((LDAPSecurityServiceConfig)config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
-    
+        ((LDAPSecurityServiceConfig) config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
+
         createAuthenticationProvider();
-    
+
         Authentication result = authProvider.authenticate(authentication);
         assertEquals(3, result.getAuthorities().size());
-    
+
         // filter to extract user data
-        ((LDAPSecurityServiceConfig)config).setUserFilter("(cn={0})");
+        ((LDAPSecurityServiceConfig) config).setUserFilter("(cn={0})");
         // username to bind to
-        ((LDAPSecurityServiceConfig)config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
-    
+        ((LDAPSecurityServiceConfig) config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
+
         createAuthenticationProvider();
-    
+
         result = authProvider.authenticate(authentication);
         assertEquals(3, result.getAuthorities().size());
     }
 
-    /**
-     * Test that if and adminGroup is defined, the roles contain
-     * ROLE_ADMINISTRATOR
-     * 
-     */
+    /** Test that if and adminGroup is defined, the roles contain ROLE_ADMINISTRATOR */
     @Test
     public void testAdminGroup() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
-                basePath));
-        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
         config.setAdminGroup("other");
 
         createAuthenticationProvider();
@@ -154,16 +134,11 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         assertTrue(foundAdmin);
     }
 
-    /**
-     * Test that if and groupAdminGroup is defined, the roles contain
-     * ROLE_GROUP_ADMIN
-     * 
-     */
+    /** Test that if and groupAdminGroup is defined, the roles contain ROLE_GROUP_ADMIN */
     @Test
     public void testGroupAdminGroup() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
-                basePath));
-        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
         config.setGroupAdminGroup("other");
 
         createAuthenticationProvider();
@@ -177,19 +152,15 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         }
         assertTrue(foundAdmin);
     }
-    
-    /**
-     * Test that active role service is applied in the LDAPAuthenticationProvider
-     * 
-     */
+
+    /** Test that active role service is applied in the LDAPAuthenticationProvider */
     @Test
     public void testRoleService() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
-                basePath));
-        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
-        
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
+
         createAuthenticationProvider();
-                
+
         authProvider.setSecurityManager(securityManager);
         securityManager.setProviders(Collections.singletonList(authProvider));
         MemoryRoleStore roleService = new MemoryRoleStore();
@@ -203,32 +174,25 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         Authentication result = authProvider.authenticate(authenticationOther);
         assertTrue(result.getAuthorities().contains(role));
         assertEquals(3, result.getAuthorities().size());
-        
     }
-    
-    /**
-     * Test that LDAPAuthenticationProvider finds roles even if there is a colon in 
-     * the password
-     * 
-     */
+
+    /** Test that LDAPAuthenticationProvider finds roles even if there is a colon in the password */
     @Test
     public void testColonPassword() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
-                basePath, "data3.ldif"));
-        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
-        
+        Assume.assumeTrue(
+                LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath, "data3.ldif"));
+        ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
+
         createAuthenticationProvider();
 
-        authentication = new UsernamePasswordAuthenticationToken("colon","da:da");
-        
+        authentication = new UsernamePasswordAuthenticationToken("colon", "da:da");
+
         Authentication result = authProvider.authenticate(authentication);
         assertEquals(2, result.getAuthorities().size());
     }
-    
 
     private void createAuthenticationProvider() {
-        authProvider = (LDAPAuthenticationProvider) securityProvider
-                .createAuthenticationProvider(config);
-
+        authProvider =
+                (LDAPAuthenticationProvider) securityProvider.createAuthenticationProvider(config);
     }
 }

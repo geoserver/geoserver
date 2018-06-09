@@ -7,7 +7,6 @@
 package org.geoserver.wps.kvp;
 
 import net.opengis.wps10.Wps10Factory;
-
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 
 /**
@@ -21,6 +20,6 @@ public class WPSKvpRequestReader extends EMFKvpRequestReader {
     }
 
     protected Wps10Factory getWps10Factory() {
-        return (Wps10Factory)factory;
+        return (Wps10Factory) factory;
     }
 }

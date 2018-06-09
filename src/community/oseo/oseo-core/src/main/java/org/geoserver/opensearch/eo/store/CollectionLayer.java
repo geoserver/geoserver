@@ -17,7 +17,7 @@ public class CollectionLayer {
     boolean separateBands;
 
     String[] bands;
-    
+
     String[] browseBands;
 
     boolean heterogeneousCRS;
@@ -29,8 +29,14 @@ public class CollectionLayer {
         // TODO Auto-generated constructor stub
     }
 
-    public CollectionLayer(String workspace, String layer, boolean separateBands, String[] bands,
-            String[] browseBands, boolean heterogeneousCRS, String targetCRS) {
+    public CollectionLayer(
+            String workspace,
+            String layer,
+            boolean separateBands,
+            String[] bands,
+            String[] browseBands,
+            boolean heterogeneousCRS,
+            String targetCRS) {
         super();
         this.workspace = workspace;
         this.layer = layer;
@@ -96,15 +102,16 @@ public class CollectionLayer {
     public void setMosaicCRS(String targetCRS) {
         this.mosaicCRS = targetCRS;
     }
-    
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
 
     /**
-     * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYER} property of a Collection
-     * feature. 
+     * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYER} property of a
+     * Collection feature.
+     *
      * @param feature
      * @return The layer, or null if the property was not found
      */
@@ -134,5 +141,4 @@ public class CollectionLayer {
             return null;
         }
     }
-
 }

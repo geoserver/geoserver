@@ -4,22 +4,19 @@
  * application directory.
  */
 
-
 package org.geoserver.security.auth;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Class implementing a LRU (last recently used) cache
- * based on {@link LinkedHashMap}
- * 
- * @author christian
+ * Class implementing a LRU (last recently used) cache based on {@link LinkedHashMap}
  *
+ * @author christian
  * @param <K>
  * @param <V>
  */
-public class LRUCache<K,V> extends LinkedHashMap<K, V> {
+public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,37 +24,30 @@ public class LRUCache<K,V> extends LinkedHashMap<K, V> {
     private long accessCount = 0;
     private long hitCount = 0;
 
-    public LRUCache(int capacity)
-    {
-      super(capacity + 1, 1.1f, true);
-      this.capacity = capacity;
+    public LRUCache(int capacity) {
+        super(capacity + 1, 1.1f, true);
+        this.capacity = capacity;
     }
 
     @Override
-    public V get(Object key)
-    {
-      accessCount++;
-      if (containsKey(key))
-      {
-        hitCount++;
-      }
-      return super.get(key);
-      
+    public V get(Object key) {
+        accessCount++;
+        if (containsKey(key)) {
+            hitCount++;
+        }
+        return super.get(key);
     }
 
     @Override
-    protected boolean removeEldestEntry(Map.Entry<K,V> eldest)
-    {
-      return size() > capacity;
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > capacity;
     }
 
-    public long getAccessCount()
-    {
-      return accessCount;
+    public long getAccessCount() {
+        return accessCount;
     }
 
-    public long getHitCount()
-    {
-      return hitCount;
+    public long getHitCount() {
+        return hitCount;
     }
 }

@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
@@ -21,14 +20,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /**
  * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer}
  * can apply it while performing the requests
- * 
+ *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
 public class SecuredWMTSLayer extends Layer {
     Layer delegate;
 
     WrapperPolicy policy;
-    
+
     public SecuredWMTSLayer(Layer delegate, WrapperPolicy policy) {
         this.delegate = delegate;
         this.policy = policy;
@@ -37,11 +36,11 @@ public class SecuredWMTSLayer extends Layer {
     public WrapperPolicy getPolicy() {
         return policy;
     }
-    
+
     public boolean isQueryable() {
         return false;
     }
-    
+
     public String toString() {
         return "SecuredWMTSLayer - " + delegate.toString();
     }
@@ -57,26 +56,19 @@ public class SecuredWMTSLayer extends Layer {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         SecuredWMTSLayer other = (SecuredWMTSLayer) obj;
         if (delegate == null) {
-            if (other.delegate != null)
-                return false;
-        } else if (!delegate.equals(other.delegate))
-            return false;
+            if (other.delegate != null) return false;
+        } else if (!delegate.equals(other.delegate)) return false;
         if (policy == null) {
-            if (other.policy != null)
-                return false;
-        } else if (!policy.equals(other.policy))
-            return false;
+            if (other.policy != null) return false;
+        } else if (!policy.equals(other.policy)) return false;
         return true;
     }
-    
+
     // --------------------------------------------------------------------------------------
     // Purely delegated methods
     // --------------------------------------------------------------------------------------
@@ -276,7 +268,4 @@ public class SecuredWMTSLayer extends Layer {
     public void setTitle(String title) {
         delegate.setTitle(title);
     }
-
-    
-
 }

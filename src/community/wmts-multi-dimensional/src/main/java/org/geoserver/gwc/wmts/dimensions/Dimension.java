@@ -4,6 +4,16 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -26,35 +36,19 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.PropertyName;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
 /**
- * <p>
- * This class represents a dimension providing an abstraction over all types of
- * dimensions and resources types (like raster and vectors).
- * </p>
- * <p>
- * Restrictions can be applied to a dimension and converted into a filter. This
- * makes possible to merge several dimensions restrictions when working with domains.
- * </p>
+ * This class represents a dimension providing an abstraction over all types of dimensions and
+ * resources types (like raster and vectors).
+ *
+ * <p>Restrictions can be applied to a dimension and converted into a filter. This makes possible to
+ * merge several dimensions restrictions when working with domains.
  */
 public abstract class Dimension {
 
-    /**
-     * Empty histogram representation
-     */
-    public static final Tuple<String, List<Integer>> EMPTY_HISTOGRAM = Tuple.tuple("", Collections.emptyList());
-    
+    /** Empty histogram representation */
+    public static final Tuple<String, List<Integer>> EMPTY_HISTOGRAM =
+            Tuple.tuple("", Collections.emptyList());
+
     protected final WMS wms;
     protected final String dimensionName;
     protected final LayerInfo layerInfo;
@@ -62,7 +56,8 @@ public abstract class Dimension {
 
     protected final ResourceInfo resourceInfo;
 
-    public Dimension(WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
+    public Dimension(
+            WMS wms, String dimensionName, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
         this.wms = wms;
         this.dimensionName = dimensionName;
         this.layerInfo = layerInfo;
@@ -71,58 +66,58 @@ public abstract class Dimension {
     }
 
     /**
-     * Returns this dimension domain values filtered with the provided filter.
-     * The provided filter can be NULL. Duplicate values may be included if
-     * noDuplicates parameter is set to FALSE.
+     * Returns this dimension domain values filtered with the provided filter. The provided filter
+     * can be NULL. Duplicate values may be included if noDuplicates parameter is set to FALSE.
      */
     public abstract List<Object> getDomainValues(Filter filter, boolean noDuplicates);
 
     /**
      * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
      * count will be returned, otherwise min and max will also be returned
+     *
      * @param features
      * @param attribute
      * @param expandLimit
      * @return
      */
-    protected DomainSummary getDomainSummary(FeatureCollection features, String attribute, int expandLimit) {
+    protected DomainSummary getDomainSummary(
+            FeatureCollection features, String attribute, int expandLimit) {
         // grab domain, but at most expandLimit + 1, to know if there are too many
         if (expandLimit != 0) {
-            TreeSet uniqueValues = DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
+            TreeSet uniqueValues =
+                    DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
             if (uniqueValues.size() <= expandLimit || expandLimit < 0) {
                 return new DomainSummary(uniqueValues);
             }
         }
-        Map<Aggregate, Object> minMax = DimensionsUtils.getAggregates(attribute, features,
-                Aggregate.MIN, Aggregate.MAX);
+        Map<Aggregate, Object> minMax =
+                DimensionsUtils.getAggregates(attribute, features, Aggregate.MIN, Aggregate.MAX);
         // size fixed to 2 as doing a full count might require a lot of time on vector data,
-        // e.g. we have a time enabled wind layer that takes tens of seconds as it has tens 
+        // e.g. we have a time enabled wind layer that takes tens of seconds as it has tens
         // of millions of points
         return new DomainSummary(minMax.get(Aggregate.MIN), minMax.get(Aggregate.MAX), 2);
     }
 
     /**
      * Returns the data type of the dimension
+     *
      * @return
      */
     protected abstract Class getDimensionType();
-    
+
     /**
-     * <p>
-     * Computes an histogram of this dimension domain values. The provided resolutionSpec value can be NULL
-     * or AUTO to let the server decide the proper resolutionSpec. If a resolutionSpec is provided it needs
-     * to be a number for numerical domains or a period syntax for time domains. For enumerated domains
-     * (i.e. string values) the resolutionSpec will be ignored.
-     * </p>
-     * <p>
-     * A filter can be provided to filter the domain values. The provided filter can be NULL.
-     * </p>
-     * <p>
-     * The first element of the returned tuple will contain the description of the histogram domain as
-     * start, end and resolutionSpec. The second element of the returned tuple will contain a list of the
-     * histogram values represented as strings. If no description of the domain can be provided (for
-     * example enumerated values) NULL will be returned and the same allies the histogram values.
-     * </p>
+     * Computes an histogram of this dimension domain values. The provided resolutionSpec value can
+     * be NULL or AUTO to let the server decide the proper resolutionSpec. If a resolutionSpec is
+     * provided it needs to be a number for numerical domains or a period syntax for time domains.
+     * For enumerated domains (i.e. string values) the resolutionSpec will be ignored.
+     *
+     * <p>A filter can be provided to filter the domain values. The provided filter can be NULL.
+     *
+     * <p>The first element of the returned tuple will contain the description of the histogram
+     * domain as start, end and resolutionSpec. The second element of the returned tuple will
+     * contain a list of the histogram values represented as strings. If no description of the
+     * domain can be provided (for example enumerated values) NULL will be returned and the same
+     * allies the histogram values.
      */
     public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolutionSpec) {
         if (loadDataInMemory()) {
@@ -141,20 +136,22 @@ public abstract class Dimension {
             double min = ((Number) summary.getMin()).doubleValue();
             double max = ((Number) summary.getMax()).doubleValue();
 
-            Tuple<String, List<Range>> specAndBuckets = HistogramUtils.getNumericBuckets
-                    (min, max, resolutionSpec);
+            Tuple<String, List<Range>> specAndBuckets =
+                    HistogramUtils.getNumericBuckets(min, max, resolutionSpec);
             List<Range> buckets = specAndBuckets.second;
             Range<Double> referenceBucket = buckets.get(0);
             double resolution = referenceBucket.getMaxValue() - referenceBucket.getMinValue();
 
             // the aggregation expression classifies results in buckets numbered from 1 on
-            Function classifier = ff.function("floor", 
-                    ff.divide(
-                            ff.subtract(dimensionProperty, ff.literal(min)), 
-                            ff.literal(resolution)));
-            TreeMap<Object, Object> results = groupByDomainOnExpression(filter, classifier,
-                    dimensionAttributeName,
-                    Integer.class);
+            Function classifier =
+                    ff.function(
+                            "floor",
+                            ff.divide(
+                                    ff.subtract(dimensionProperty, ff.literal(min)),
+                                    ff.literal(resolution)));
+            TreeMap<Object, Object> results =
+                    groupByDomainOnExpression(
+                            filter, classifier, dimensionAttributeName, Integer.class);
 
             // map out domain representation
             List<Integer> counts = new ArrayList<>(buckets.size());
@@ -171,19 +168,26 @@ public abstract class Dimension {
             if (min == null || max == null) {
                 return EMPTY_HISTOGRAM;
             }
-            
-            Tuple<String, List<Range>> specAndBuckets = HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
+
+            Tuple<String, List<Range>> specAndBuckets =
+                    HistogramUtils.getTimeBuckets(min, max, resolutionSpec);
             List<Range> buckets = specAndBuckets.second;
             Range<Date> referenceBucket = buckets.get(0);
-            double resolution = referenceBucket.getMaxValue().getTime() - referenceBucket.getMinValue().getTime();
+            double resolution =
+                    referenceBucket.getMaxValue().getTime()
+                            - referenceBucket.getMinValue().getTime();
 
             // the aggregation expression classifies results in buckets numbered from 1 on
-            Function classifier = ff.function("floor",
-                    ff.divide(
-                            ff.function("dateDifference", dimensionProperty, ff.literal(min)),
-                            ff.literal(resolution)));
-            TreeMap<Object, Object> results = groupByDomainOnExpression(filter, classifier, dimensionAttributeName,
-                    Integer.class);
+            Function classifier =
+                    ff.function(
+                            "floor",
+                            ff.divide(
+                                    ff.function(
+                                            "dateDifference", dimensionProperty, ff.literal(min)),
+                                    ff.literal(resolution)));
+            TreeMap<Object, Object> results =
+                    groupByDomainOnExpression(
+                            filter, classifier, dimensionAttributeName, Integer.class);
 
             // map out domain representation
             List<Integer> counts = new ArrayList<>(buckets.size());
@@ -196,27 +200,34 @@ public abstract class Dimension {
             // assuming custom dimension, will handle as strings, once there is support
             // for custom dimensions of different type (for structured readers) this will
             // have to be modified
-            TreeMap<Object, Object> results = groupByDomainOnExpression(filter, dimensionProperty, dimensionAttributeName, String.class);
-            
+            TreeMap<Object, Object> results =
+                    groupByDomainOnExpression(
+                            filter, dimensionProperty, dimensionAttributeName, String.class);
+
             // map out domain representation and histogram value representation
-            List<Integer> counts = results.values().stream()
-                    .map(v -> ((Number) v).intValue())
-                    .collect(Collectors.toList());
-            String domainRepresentation = results.keySet().stream()
-                    .map(v -> v.toString())
-                    .collect(Collectors.joining(","));
-                    
+            List<Integer> counts =
+                    results.values()
+                            .stream()
+                            .map(v -> ((Number) v).intValue())
+                            .collect(Collectors.toList());
+            String domainRepresentation =
+                    results.keySet()
+                            .stream()
+                            .map(v -> v.toString())
+                            .collect(Collectors.joining(","));
+
             return Tuple.tuple(domainRepresentation, counts);
         }
     }
 
     /**
      * Should we load data in memory to compute histograms (fast for small datasets not having
-     * indexes) or do we try to use visitor and perform one or more data scans instead?
-     * Small easter egg to allow testing, we might want to extend it to a per layer configuration
-     * in case there are large shapefile layers involved in this (computing min/max/groupby is
-     * three full data scans in that case). Or have a way to figure out if a collection can optimize
-     * out a visit (completely missing right now, that would be a significant API change).
+     * indexes) or do we try to use visitor and perform one or more data scans instead? Small easter
+     * egg to allow testing, we might want to extend it to a per layer configuration in case there
+     * are large shapefile layers involved in this (computing min/max/groupby is three full data
+     * scans in that case). Or have a way to figure out if a collection can optimize out a visit
+     * (completely missing right now, that would be a significant API change).
+     *
      * @return
      */
     private boolean loadDataInMemory() {
@@ -224,7 +235,8 @@ public abstract class Dimension {
         return Boolean.getBoolean(value);
     }
 
-    public TreeMap<Object, Object> groupByDomainOnExpression(Filter filter, Expression classifier, String dimensionAttribute, Class classifierType) {
+    public TreeMap<Object, Object> groupByDomainOnExpression(
+            Filter filter, Expression classifier, String dimensionAttribute, Class classifierType) {
         Query query = new Query();
         query.setFilter(filter);
         query.setPropertyNames(new String[] {dimensionAttribute});
@@ -238,23 +250,27 @@ public abstract class Dimension {
         try {
             domain.accepts(visitor, null);
         } catch (IOException e) {
-            throw new RuntimeException(String.format(
-                    "Error fetching histogram in formation from database for '%s'.", 
-                    resourceInfo.getName()), e);
+            throw new RuntimeException(
+                    String.format(
+                            "Error fetching histogram in formation from database for '%s'.",
+                            resourceInfo.getName()),
+                    e);
         }
 
         // turn the group result into the expected histogram result
         Map<List<Object>, Object> groupResult = visitor.getResult().toMap();
         TreeMap<Object, Object> sortedResults = new TreeMap<>();
-        groupResult.forEach((k, v) -> {
-            Object classifierValue = Converters.convert(k.get(0), classifierType);
-            sortedResults.put(classifierValue, v);
-        });
+        groupResult.forEach(
+                (k, v) -> {
+                    Object classifierValue = Converters.convert(k.get(0), classifierType);
+                    sortedResults.put(classifierValue, v);
+                });
         return sortedResults;
     }
 
     /**
      * Returns the attribute name representing the dimension
+     *
      * @return
      */
     protected String getDimensionAttributeName() {
@@ -263,6 +279,7 @@ public abstract class Dimension {
 
     /**
      * Returns the domain given a filter
+     *
      * @param filter
      * @return
      */
@@ -287,10 +304,9 @@ public abstract class Dimension {
     }
 
     /**
-     * Returns this dimension values represented as strings taking in account this
-     * dimension representation strategy. The returned values will be sorted. The
-     * provided filter will be used to filter the domain values. The provided filter
-     * can be NULL.
+     * Returns this dimension values represented as strings taking in account this dimension
+     * representation strategy. The returned values will be sorted. The provided filter will be used
+     * to filter the domain values. The provided filter can be NULL.
      */
     public Tuple<Integer, List<String>> getDomainValuesAsStrings(Filter filter, int expandLimit) {
         DomainSummary summary = getDomainSummary(filter, expandLimit);
@@ -300,17 +316,18 @@ public abstract class Dimension {
     protected abstract DomainSummary getDomainSummary(Filter filter, int expandLimit);
 
     /**
-     * Return this dimension default value as a string taking in account this dimension default strategy.
+     * Return this dimension default value as a string taking in account this dimension default
+     * strategy.
      */
     public String getDefaultValueAsString() {
-        DimensionDefaultValueSelectionStrategy strategy = wms.getDefaultValueStrategy(resourceInfo, dimensionName, dimensionInfo);
-        String defaultValue = strategy.getCapabilitiesRepresentation(resourceInfo, dimensionName, dimensionInfo);
+        DimensionDefaultValueSelectionStrategy strategy =
+                wms.getDefaultValueStrategy(resourceInfo, dimensionName, dimensionInfo);
+        String defaultValue =
+                strategy.getCapabilitiesRepresentation(resourceInfo, dimensionName, dimensionInfo);
         return defaultValue != null ? defaultValue : getDefaultValueFallbackAsString();
     }
 
-    /**
-     * Return dimension start and end attributes, values may be NULL.
-     */
+    /** Return dimension start and end attributes, values may be NULL. */
     public Tuple<String, String> getAttributes() {
         ResourceInfo resourceInfo = layerInfo.getResource();
         if (resourceInfo instanceof FeatureTypeInfo) {
@@ -318,14 +335,20 @@ public abstract class Dimension {
             return Tuple.tuple(dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
         }
         if (resourceInfo instanceof CoverageInfo) {
-            return CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo).getDimensionAttributesNames(getDimensionName());
+            return CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo)
+                    .getDimensionAttributesNames(getDimensionName());
         }
         return Tuple.tuple(null, null);
     }
 
     @Override
     public String toString() {
-        return "Dimension{" + ", name='" + dimensionName + '\'' + ", layer=" + layerInfo.getName() + '}';
+        return "Dimension{"
+                + ", name='"
+                + dimensionName
+                + '\''
+                + ", layer="
+                + layerInfo.getName()
+                + '}';
     }
-
 }

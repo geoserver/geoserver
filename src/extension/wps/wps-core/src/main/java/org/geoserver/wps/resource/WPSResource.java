@@ -10,26 +10,20 @@ package org.geoserver.wps.resource;
  * file, a directory, an embedded database table. The interface makes sure the resource can be
  * cleaned up when the request execution is terminated, or, if the process is asynchronous, when the
  * results availability expires.
- * 
- * Normally all resources linked to a process have to be kept around as long as one of the resulting
- * feature collections or coverages is eligible to be collected: there is no way to know if the
- * processes are computing the result once, or if they are generating streaming outputs that will
- * recompute the results every time they are queried (the JAI efficient case for coverages would be
- * the latter)
- * 
+ *
+ * <p>Normally all resources linked to a process have to be kept around as long as one of the
+ * resulting feature collections or coverages is eligible to be collected: there is no way to know
+ * if the processes are computing the result once, or if they are generating streaming outputs that
+ * will recompute the results every time they are queried (the JAI efficient case for coverages
+ * would be the latter)
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 public interface WPSResource {
 
-    /**
-     * Deletes the resource permanently
-     */
+    /** Deletes the resource permanently */
     void delete() throws Exception;
 
-    /**
-     * The resource name, used for error reporting
-     *
-     */
+    /** The resource name, used for error reporting */
     String getName();
 }

@@ -5,6 +5,11 @@
  */
 package org.geoserver.security.impl;
 
+import static org.easymock.EasyMock.*;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Collections;
+import java.util.Properties;
 import junit.framework.TestCase;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -13,25 +18,23 @@ import org.geoserver.security.AccessMode;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Collections;
-import java.util.Properties;
-
-import static org.easymock.EasyMock.*;
-
 public class DataAccessRuleDAOTest extends TestCase {
 
     DataAccessRuleDAO dao;
     Properties props;
-    
+
     @Before
     public void setUp() throws Exception {
-        // make a nice little catalog that does always tell us stuff is there 
+        // make a nice little catalog that does always tell us stuff is there
         Catalog catalog = createNiceMock(Catalog.class);
-        expect(catalog.getWorkspaceByName((String) anyObject())).andReturn(new WorkspaceInfoImpl()).anyTimes();
-        expect(catalog.getLayerByName((String) anyObject())).andReturn(new LayerInfoImpl()).anyTimes();
+        expect(catalog.getWorkspaceByName((String) anyObject()))
+                .andReturn(new WorkspaceInfoImpl())
+                .anyTimes();
+        expect(catalog.getLayerByName((String) anyObject()))
+                .andReturn(new LayerInfoImpl())
+                .anyTimes();
         replay(catalog);
-        
+
         // prepare some base rules
         props = new Properties();
         props.put("mode", "CHALLENGE");
@@ -39,20 +42,20 @@ public class DataAccessRuleDAOTest extends TestCase {
         props.put("topp.*.w", "ROLE_TW");
         props.put("*.*.r", "*");
         props.put("group.r", "ROLE_GROUP");
-        
+
         dao = new MemoryDataAccessRuleDAO(catalog, props);
     }
-    
+
     @Test
     public void testRulesForRole() {
-        
-        assertEquals(0,dao.getRulesAssociatedWithRole("CHALLENGE").size());
-        assertEquals(0,dao.getRulesAssociatedWithRole("NOTEXISTEND").size());
-        assertEquals(1,dao.getRulesAssociatedWithRole("ROLE_TSW").size());
-        assertEquals(1,dao.getRulesAssociatedWithRole("ROLE_TW").size());
-        assertEquals(1,dao.getRulesAssociatedWithRole("ROLE_GROUP").size());
+
+        assertEquals(0, dao.getRulesAssociatedWithRole("CHALLENGE").size());
+        assertEquals(0, dao.getRulesAssociatedWithRole("NOTEXISTEND").size());
+        assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_TSW").size());
+        assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_TW").size());
+        assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_GROUP").size());
     }
-    
+
     @Test
     public void testParseGlobalLayerGroupRule() {
         DataAccessRule r = dao.parseDataAccessRule("group.r", "ROLE_GROUP_OWNER");
@@ -61,19 +64,18 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertTrue(r.isGlobalGroupRule());
         assertEquals(AccessMode.READ, r.getAccessMode());
     }
-    
-    
+
     @Test
     public void testParse() {
         assertEquals(4, dao.getRules().size());
-        
+
         // check the first rule
         DataAccessRule rule = dao.getRules().get(0);
         assertEquals("*.*.r", rule.getKey());
         assertEquals(1, rule.getRoles().size());
         assertEquals("*", rule.getRoles().iterator().next());
     }
-    
+
     @Test
     public void testAdd() {
         assertEquals(4, dao.getRules().size());
@@ -83,7 +85,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertEquals(newRule, dao.getRules().get(1));
         assertFalse(dao.addRule(newRule));
     }
-    
+
     @Test
     public void testRemove() {
         assertEquals(4, dao.getRules().size());
@@ -94,11 +96,11 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertFalse(dao.removeRule(first));
         assertEquals(3, dao.getRules().size());
     }
-    
+
     @Test
     public void testStore() {
         Properties newProps = dao.toProperties();
-        
+
         // properties equality does not seem to work...
         assertEquals(newProps.size(), props.size());
         for (Object key : newProps.keySet()) {
@@ -107,7 +109,7 @@ public class DataAccessRuleDAOTest extends TestCase {
             assertEquals(newValue, oldValue);
         }
     }
-    
+
     @Test
     public void testParsePlain() {
         DataAccessRule rule = dao.parseDataAccessRule("a.b.r", "ROLE_WHO_CARES");
@@ -116,7 +118,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertFalse(rule.isGlobalGroupRule());
         assertEquals(AccessMode.READ, rule.getAccessMode());
     }
-    
+
     @Test
     public void testParseSpaces() {
         DataAccessRule rule = dao.parseDataAccessRule(" a  . b . r ", "ROLE_WHO_CARES");
@@ -125,7 +127,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertFalse(rule.isGlobalGroupRule());
         assertEquals(AccessMode.READ, rule.getAccessMode());
     }
-    
+
     @Test
     public void testParseEscapedDots() {
         DataAccessRule rule = dao.parseDataAccessRule("w. a\\.b . r ", "ROLE_WHO_CARES");
@@ -134,18 +136,21 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertFalse(rule.isGlobalGroupRule());
         assertEquals(AccessMode.READ, rule.getAccessMode());
     }
-    
+
     @Test
     public void testStoreEscapedDots() throws Exception {
         dao.clear();
-        dao.addRule(new DataAccessRule("it.geosolutions", "layer.dots", 
-                AccessMode.READ, Collections.singleton("ROLE_ABC")));
+        dao.addRule(
+                new DataAccessRule(
+                        "it.geosolutions",
+                        "layer.dots",
+                        AccessMode.READ,
+                        Collections.singleton("ROLE_ABC")));
         Properties ps = dao.toProperties();
-        
+
         assertEquals(2, ps.size());
         assertEquals("ROLE_ABC", ps.getProperty("it\\.geosolutions.layer\\.dots.r"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ps.store(bos, null);
     }
-    
 }

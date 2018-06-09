@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
@@ -20,9 +19,7 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-/**
- * Convert MonitorResutls to a zip file (containing csv files).
- */
+/** Convert MonitorResutls to a zip file (containing csv files). */
 @Component
 public class ZIPMonitorConverter extends BaseMonitorConverter {
 
@@ -41,7 +38,7 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         List<String> fields = new ArrayList<>(Arrays.asList(results.getFields()));
         final boolean body = fields.remove("Body");
         final boolean error = fields.remove("Error");
-        
+
         final ZipOutputStream zout = new ZipOutputStream(outputMessage.getBody());
 
         // create the csv entry
@@ -50,15 +47,17 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         csv.writeCSVfile(object, csvFields, monitor, zout);
 
         if (object instanceof Query) {
-            monitor.query((Query) object, new RequestDataVisitor() {
-                public void visit(RequestData data, Object... aggregates) {
-                    try {
-                        writeBodyAndError(data, zout, body, error, true);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+            monitor.query(
+                    (Query) object,
+                    new RequestDataVisitor() {
+                        public void visit(RequestData data, Object... aggregates) {
+                            try {
+                                writeBodyAndError(data, zout, body, error, true);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
         } else if (object instanceof List) {
             for (RequestData data : (List<RequestData>) object) {
                 writeBodyAndError(data, zout, body, error, true);
@@ -71,8 +70,9 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         zout.close();
     }
 
-    void writeBodyAndError(RequestData data, ZipOutputStream zout, boolean body, boolean error,
-            boolean postfix) throws IOException {
+    void writeBodyAndError(
+            RequestData data, ZipOutputStream zout, boolean body, boolean error, boolean postfix)
+            throws IOException {
 
         long id = data.getId();
         if (body && data.getBody() != null) {
@@ -85,5 +85,4 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
             data.getError().printStackTrace(new PrintStream(zout));
         }
     }
-
 }

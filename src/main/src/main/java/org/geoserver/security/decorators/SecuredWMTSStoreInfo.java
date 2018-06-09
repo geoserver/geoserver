@@ -5,7 +5,6 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
@@ -25,12 +24,9 @@ public class SecuredWMTSStoreInfo extends DecoratingWMTSStoreInfo {
     @Override
     public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
         WebMapTileServer wms = super.getWebMapTileServer(null);
-        if (wms == null)
-            return null;
-        else if(policy.level == AccessLevel.METADATA)
+        if (wms == null) return null;
+        else if (policy.level == AccessLevel.METADATA)
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
-        else
-            return (WebMapTileServer) SecuredObjects.secure(wms, policy);
+        else return (WebMapTileServer) SecuredObjects.secure(wms, policy);
     }
-
 }

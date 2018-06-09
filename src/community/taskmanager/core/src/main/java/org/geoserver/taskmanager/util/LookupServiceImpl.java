@@ -11,17 +11,17 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 
 public class LookupServiceImpl<T extends Named> implements LookupService<T> {
-    
+
     private NavigableMap<String, T> map = new TreeMap<String, T>();
 
     @Override
     public T get(String name) {
         return map.get(name);
     }
-    
+
     protected void setNamed(List<T> list) {
         for (T o : list) {
-           map.put(o.getName(), o);
+            map.put(o.getName(), o);
         }
     }
 
@@ -29,7 +29,7 @@ public class LookupServiceImpl<T extends Named> implements LookupService<T> {
     public SortedSet<String> names() {
         return map.navigableKeySet();
     }
-    
+
     @Override
     public Collection<T> all() {
         return map.values();
@@ -44,5 +44,4 @@ public class LookupServiceImpl<T extends Named> implements LookupService<T> {
             return null;
         }
     }
-
 }

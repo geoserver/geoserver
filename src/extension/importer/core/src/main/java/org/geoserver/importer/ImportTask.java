@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer;
 
+import static org.geoserver.importer.ImporterUtils.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,18 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.TransformChain;
 
-import static org.geoserver.importer.ImporterUtils.*;
-
 /**
  * A unit of work during an import.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class ImportTask implements Serializable {
@@ -33,83 +32,63 @@ public class ImportTask implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static enum State {
-        PENDING, READY, RUNNING, NO_CRS, NO_BOUNDS, NO_FORMAT, BAD_FORMAT, ERROR, CANCELED, COMPLETE
+        PENDING,
+        READY,
+        RUNNING,
+        NO_CRS,
+        NO_BOUNDS,
+        NO_FORMAT,
+        BAD_FORMAT,
+        ERROR,
+        CANCELED,
+        COMPLETE
     }
 
-    /**
-     * task id
-     */
+    /** task id */
     long id;
 
-    /**
-     * the context this task is part of
-     */
+    /** the context this task is part of */
     ImportContext context;
 
-    /**
-     * source of data for the import
-     */
+    /** source of data for the import */
     ImportData data;
 
-    /**
-     * The target store for the import 
-     */
+    /** The target store for the import */
     StoreInfo store;
 
-    /** 
-     * state
-     */
+    /** state */
     State state = State.PENDING;
 
-    /**
-     * id generator for items
-     */
+    /** id generator for items */
     int itemid = 0;
 
-    /**
-     * flag signalling direct/indirect import
-     */
+    /** flag signalling direct/indirect import */
     boolean direct;
 
-    /**
-     * how data should be applied to the target, during ingest/indirect import
-     */
+    /** how data should be applied to the target, during ingest/indirect import */
     UpdateMode updateMode;
 
-    /**
-     * The original layer name assigned to the task
-     */
+    /** The original layer name assigned to the task */
     String originalLayerName;
 
-    /**
-     * the layer/resource
-     */
+    /** the layer/resource */
     LayerInfo layer;
 
-    /**
-     * Any error associated with the resource
-     */
+    /** Any error associated with the resource */
     Exception error;
 
-    /** 
-     * transform to apply to this import item 
-     */
+    /** transform to apply to this import item */
     TransformChain transform;
 
-    /**
-     * messages logged during proessing
-     */
+    /** messages logged during proessing */
     List<LogRecord> messages = new ArrayList<LogRecord>();
 
-    /**
-     * various metadata 
-     */
-    transient Map<Object,Object> metadata;
+    /** various metadata */
+    transient Map<Object, Object> metadata;
 
-    /**
-     * used to track progress
-     */
+    /** used to track progress */
     transient volatile int totalToProcess;
+
     transient volatile int numberProcessed;
 
     public ImportTask() {
@@ -199,20 +178,20 @@ public class ImportTask implements Serializable {
         }
         return metadata;
     }
-    
+
     public void clearMessages() {
         if (messages != null) {
             messages.clear();
         }
     }
 
-    public void addMessage(Level level,String msg) {
+    public void addMessage(Level level, String msg) {
         if (messages == null) {
             messages = new ArrayList<LogRecord>();
         }
         messages.add(new LogRecord(level, msg));
     }
-    
+
     public List<LogRecord> getMessages() {
         List<LogRecord> retval;
         if (messages == null) {
@@ -230,7 +209,7 @@ public class ImportTask implements Serializable {
     public void setOriginalLayerName(String originalLayerName) {
         this.originalLayerName = originalLayerName;
     }
-    
+
     public int getNumberProcessed() {
         return numberProcessed;
     }
@@ -258,7 +237,7 @@ public class ImportTask implements Serializable {
     public void reattach(Catalog catalog) {
         reattach(catalog, false);
     }
-    
+
     public void reattach(Catalog catalog, boolean lookupByName) {
         store = resolve(store, catalog, lookupByName);
         layer = resolve(layer, catalog, lookupByName);
@@ -283,20 +262,14 @@ public class ImportTask implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         ImportTask other = (ImportTask) obj;
         if (context == null) {
-            if (other.context != null)
-                return false;
-        } else if (!context.equals(other.context))
-            return false;
-        if (id != other.id)
-            return false;
+            if (other.context != null) return false;
+        } else if (!context.equals(other.context)) return false;
+        if (id != other.id) return false;
         return true;
     }
 }

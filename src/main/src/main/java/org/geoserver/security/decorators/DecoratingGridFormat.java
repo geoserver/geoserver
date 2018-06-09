@@ -14,15 +14,15 @@ import org.opengis.coverage.grid.GridCoverageWriter;
 import org.opengis.parameter.ParameterValueGroup;
 
 /**
- * Delegates every method to the delegate grid format. Subclasses will
- * override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the delegate grid format. Subclasses will override selected methods to
+ * perform their "decoration" job
+ *
  * @author Andrea Aime
  */
 public abstract class DecoratingGridFormat implements Format {
 
     AbstractGridFormat delegate;
-    
+
     public DecoratingGridFormat(AbstractGridFormat delegate) {
         this.delegate = delegate;
     }
@@ -82,6 +82,4 @@ public abstract class DecoratingGridFormat implements Format {
     public GridCoverageWriter getWriter(Object destination) {
         return delegate.getWriter(destination);
     }
-    
-    
 }

@@ -15,6 +15,7 @@ public interface WebFeatureService30 {
 
     /**
      * Returns the landing page of WFS 3.0
+     *
      * @param request
      * @return
      */
@@ -22,13 +23,16 @@ public interface WebFeatureService30 {
 
     /**
      * Returns a description of the collection(s)
+     *
      * @param request A {@link CollectionRequest}
-     * @return A {@link CollectionDocument} or a {@link CollectionsDocument} depending on the request
+     * @return A {@link CollectionDocument} or a {@link CollectionsDocument} depending on the
+     *     request
      */
     Object collections(CollectionsRequest request);
 
     /**
      * The OpenAPI description of the service
+     *
      * @param request
      * @return
      */
@@ -36,6 +40,7 @@ public interface WebFeatureService30 {
 
     /**
      * The conformance declaration for this service
+     *
      * @param request
      * @return
      */
@@ -43,7 +48,7 @@ public interface WebFeatureService30 {
 
     /**
      * Queries features and returns them
-     * 
+     *
      * @param request
      * @return
      */

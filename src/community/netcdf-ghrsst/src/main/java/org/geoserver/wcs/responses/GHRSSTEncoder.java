@@ -5,65 +5,16 @@
 package org.geoserver.wcs.responses;
 
 import it.geosolutions.jaiext.range.NoDataContainer;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.config.GeoServer;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wcs2_0.response.DimensionBean;
-import org.geoserver.wcs2_0.response.GranuleStack;
-import org.geoserver.wcs2_0.response.WCS20GetCoverageResponse;
-import org.geoserver.wcs2_0.util.NCNameResourceCodec;
-import org.geoserver.web.netcdf.DataPacking;
-import org.geoserver.web.netcdf.NetCDFSettingsContainer;
-import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
-import org.geoserver.web.netcdf.layer.NetCDFParserBean;
-import org.geotools.coverage.GridSampleDimension;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
-import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.image.ImageWorker;
-import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.resources.coverage.CoverageUtilities;
-import org.geotools.util.DateRange;
-import org.geotools.util.logging.Logging;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
-import org.opengis.referencing.operation.MathTransform2D;
-import org.opengis.referencing.operation.TransformException;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingDefault;
-
-import javax.measure.UnitConverter;
-import si.uom.NonSI;
-import javax.measure.Unit;
-import javax.media.jai.iterator.RandomIter;
-import javax.media.jai.iterator.RandomIterFactory;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -75,16 +26,45 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.measure.Unit;
+import javax.media.jai.iterator.RandomIter;
+import javax.media.jai.iterator.RandomIterFactory;
+import org.geoserver.wcs2_0.response.GranuleStack;
+import org.geoserver.web.netcdf.DataPacking;
+import org.geoserver.web.netcdf.NetCDFSettingsContainer;
+import org.geotools.coverage.GridSampleDimension;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.cs.CoordinateSystemAxis;
+import org.opengis.referencing.operation.MathTransform2D;
+import org.opengis.referencing.operation.TransformException;
+import si.uom.NonSI;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 
-/**
- * Specific class to encode GHRSST NetCDF files
- */
+/** Specific class to encode GHRSST NetCDF files */
 public class GHRSSTEncoder extends AbstractNetCDFEncoder {
 
     /**
-     * Ideally these settings should go in a java object, but putting it in the configuration will make
-     * XStream fail to deserialize the configuration if the GHRSST plugin is removed and the configuration bean is gone.
-     * So using plain jane key/values in the settings metadata map instead
+     * Ideally these settings should go in a java object, but putting it in the configuration will
+     * make XStream fail to deserialize the configuration if the GHRSST plugin is removed and the
+     * configuration bean is gone. So using plain jane key/values in the settings metadata map
+     * instead
      */
     public static String SETTINGS_KEY = "ghrsst";
 
@@ -98,9 +78,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
 
     public static final Logger LOGGER = Logging.getLogger(GHRSSTEncoder.class);
 
-    /**
-     * The GHRSST specification mandates specific variable types for well known variables
-     */
+    /** The GHRSST specification mandates specific variable types for well known variables */
     private static final Map<String, DataType> GHRSST_VARIABLE_TYPES = new HashMap<>();
 
     static {
@@ -145,18 +123,17 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         GHRSST_VARIABLE_TYPES.put("sea_ice_fraction_error", DataType.BYTE);
     }
 
-    /**
-     * In case of data packing best to remove these as well
-     */
-    private static final Set<String> DATA_PACKING_ATTRIBUTES_BLACKLIST = new HashSet<String>() {
-        {
-            add("valid_min");
-            add("valid_max");
-            add("valid_range");
-            add("scale_factor");
-            add("add_offset");
-        }
-    };
+    /** In case of data packing best to remove these as well */
+    private static final Set<String> DATA_PACKING_ATTRIBUTES_BLACKLIST =
+            new HashSet<String>() {
+                {
+                    add("valid_min");
+                    add("valid_max");
+                    add("valid_range");
+                    add("scale_factor");
+                    add("add_offset");
+                }
+            };
 
     private static final String NETCDF_LIBRARY_VERSION;
 
@@ -172,25 +149,21 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 }
             }
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Failed to initialize NetCDF library version from netcdf.properties in classpath",
+            LOGGER.log(
+                    Level.INFO,
+                    "Failed to initialize NetCDF library version from netcdf.properties in classpath",
                     e);
         }
 
         NETCDF_LIBRARY_VERSION = version;
     }
 
-    /**
-     * Holds the configuration for a variable coming from a specific band
-     */
+    /** Holds the configuration for a variable coming from a specific band */
     class BandVariable {
-        /**
-         * The user supplied variableName
-         */
+        /** The user supplied variableName */
         private String variableName;
 
-        /**
-         * The user supplied unit of measure
-         */
+        /** The user supplied unit of measure */
         private String variableUoM;
 
         private double noDataValue;
@@ -208,7 +181,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         public void initForWriting(NetcdfFileWriter writer, int[] spatialDimensionSize) {
             var = writer.findVariable(variableName);
             if (var == null) {
-                throw new IllegalArgumentException("The requested variable doesn't exists: " + variableName);
+                throw new IllegalArgumentException(
+                        "The requested variable doesn't exists: " + variableName);
             }
 
             netCDFDataType = var.getDataType();
@@ -216,33 +190,32 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         }
     }
 
-    /**
-     * All the band variables to be handled
-     */
+    /** All the band variables to be handled */
     BandVariable[] bandVariables;
-
-    
 
     /**
      * {@link DefaultNetCDFEncoder} constructor.
      *
-     * @param granuleStack       the granule stack to be written
-     * @param file               an output file
+     * @param granuleStack the granule stack to be written
+     * @param file an output file
      * @param encodingParameters customized encoding params
      * @throws IOException
      */
-    public GHRSSTEncoder(GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String
-            outputFormat) throws IOException {
+    public GHRSSTEncoder(
+            GranuleStack granuleStack,
+            File file,
+            Map<String, String> encodingParameters,
+            String outputFormat)
+            throws IOException {
         super(granuleStack, file, encodingParameters, outputFormat);
     }
 
-    /**
-     * Initialize the NetCDF variables on this writer
-     */
+    /** Initialize the NetCDF variables on this writer */
     protected void initializeVariables() {
         // group the dimensions to be added to the variable
         List<Dimension> netCDFDimensions = new LinkedList<Dimension>();
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
+                dimensionsManager.getDimensions()) {
             netCDFDimensions.add(dimension.getNetCDFDimension());
         }
 
@@ -284,7 +257,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 }
             }
             bandVariable.noDataValue = noDataValue;
-            
+
             // collect stats for data packing
             DataPacking.DataStats stats = null;
             DataPacking dataPacking = this.dataPacking;
@@ -307,8 +280,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                         dataPacking = DataPacking.LONG;
                         break;
                     default:
-                        throw new IllegalArgumentException("Don't know how to handle packing for data type " + 
-                                varDataType);
+                        throw new IllegalArgumentException(
+                                "Don't know how to handle packing for data type " + varDataType);
                 }
             }
 
@@ -340,7 +313,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
 
             // Adding standard name if name and units are cf-compliant
             if (checkCompliant(var)) {
-                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.STANDARD_NAME, bandName));
+                writer.addVariableAttribute(
+                        var, new Attribute(NetCDFUtilities.STANDARD_NAME, bandName));
             }
 
             // handle data packing
@@ -366,20 +340,25 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 }
 
                 dataPacker = dataPacking.getDataPacker(stats);
-                writer.addVariableAttribute(var, new Attribute(DataPacking.ADD_OFFSET, dataPacker.getOffset()));
-                writer.addVariableAttribute(var, new Attribute(DataPacking.SCALE_FACTOR, dataPacker.getScale()));
+                writer.addVariableAttribute(
+                        var, new Attribute(DataPacking.ADD_OFFSET, dataPacker.getOffset()));
+                writer.addVariableAttribute(
+                        var, new Attribute(DataPacking.SCALE_FACTOR, dataPacker.getScale()));
             }
 
             if (noDataSet) {
                 Number noData = dataPacker != null ? dataPacker.getReservedValue() : noDataValue;
-                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.FILL_VALUE, NetCDFUtilities
-                        .transcodeNumber(varDataType, noData)));
+                writer.addVariableAttribute(
+                        var,
+                        new Attribute(
+                                NetCDFUtilities.FILL_VALUE,
+                                NetCDFUtilities.transcodeNumber(varDataType, noData)));
             }
             bandVariable.dataPacker = dataPacker;
 
             // Initialize the gridMapping part of the variable
             crsWriter.initializeGridMapping(var);
-            
+
             // Copy from source NetCDF
             if (copyAttributes || extraVariables != null && !extraVariables.isEmpty()) {
                 try (NetcdfDataset source = getSourceNetcdfDataset(sampleGranule)) {
@@ -387,10 +366,12 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                         if (copyAttributes) {
                             Variable sourceVar = source.findVariable(bandName);
                             if (sourceVar == null) {
-                                LOGGER.info(String.format(
-                                        "Could not copy attributes because "
-                                                + "variable '%s' not found in NetCDF/GRIB %s",
-                                        sampleGranule.getName().toString(), source.getLocation()));
+                                LOGGER.info(
+                                        String.format(
+                                                "Could not copy attributes because "
+                                                        + "variable '%s' not found in NetCDF/GRIB %s",
+                                                sampleGranule.getName().toString(),
+                                                source.getLocation()));
                             } else {
                                 for (Attribute att : sourceVar.getAttributes()) {
                                     // do not allow overwrite or attributes in blacklist
@@ -405,36 +386,47 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                         // if datapacker is set and we have min/max valid value, repack them
                         if (dataPacking != DataPacking.NONE) {
                             Variable sourceVar = source.findVariable(bandName);
-                            addValidMinMax(sourceVar, var, dataPacker, writer, NetCDFUtilities.VALID_MIN);
-                            addValidMinMax(sourceVar, var, dataPacker, writer, NetCDFUtilities.VALID_MAX);
+                            addValidMinMax(
+                                    sourceVar, var, dataPacker, writer, NetCDFUtilities.VALID_MIN);
+                            addValidMinMax(
+                                    sourceVar, var, dataPacker, writer, NetCDFUtilities.VALID_MAX);
                         }
-                        
+
                         if (extraVariables != null) {
                             for (NetCDFSettingsContainer.ExtraVariable extra : extraVariables) {
                                 Variable sourceVar = source.findVariable(extra.getSource());
                                 if (sourceVar == null) {
-                                    LOGGER.info(String.format(
-                                            "Could not find extra variable source '%s' "
-                                                    + "in NetCDF/GRIB %s",
-                                            extra.getSource(), source.getLocation()));
+                                    LOGGER.info(
+                                            String.format(
+                                                    "Could not find extra variable source '%s' "
+                                                            + "in NetCDF/GRIB %s",
+                                                    extra.getSource(), source.getLocation()));
                                 } else if (!sourceVar.getDimensionsString().isEmpty()) {
-                                    LOGGER.info(String.format(
-                                            "Only scalar extra variables are supported but source "
-                                                    + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
-                                            extra.getSource(), source.getLocation(),
-                                            sourceVar.getDimensionsString()));
+                                    LOGGER.info(
+                                            String.format(
+                                                    "Only scalar extra variables are supported but source "
+                                                            + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
+                                                    extra.getSource(),
+                                                    source.getLocation(),
+                                                    sourceVar.getDimensionsString()));
                                 } else if (writer.findVariable(extra.getOutput()) != null) {
                                     LOGGER.info(
-                                            String.format("Extra variable output '%s' already exists",
+                                            String.format(
+                                                    "Extra variable output '%s' already exists",
                                                     extra.getOutput()));
                                 } else if (extra.getDimensions().split("\\s").length > 1) {
-                                    LOGGER.info(String.format(
-                                            "Extra variable output '%s' "
-                                                    + "has too many dimensions '%s'",
-                                            extra.getOutput(), extra.getDimensions()));
+                                    LOGGER.info(
+                                            String.format(
+                                                    "Extra variable output '%s' "
+                                                            + "has too many dimensions '%s'",
+                                                    extra.getOutput(), extra.getDimensions()));
                                 } else {
-                                    Variable outputVar = writer.addVariable(null, extra.getOutput(),
-                                            sourceVar.getDataType(), extra.getDimensions());
+                                    Variable outputVar =
+                                            writer.addVariable(
+                                                    null,
+                                                    extra.getOutput(),
+                                                    sourceVar.getDataType(),
+                                                    extra.getDimensions());
                                     for (Attribute att : sourceVar.getAttributes()) {
                                         writer.addVariableAttribute(outputVar, att);
                                     }
@@ -448,7 +440,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                     }
                 }
             }
-            
+
             // Apply variable attributes from settings (allowing overwrite)
             if (variableAttributes != null) {
                 for (NetCDFSettingsContainer.VariableAttribute att : variableAttributes) {
@@ -458,7 +450,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             }
         }
     }
-    
+
     private Double getDoubleAttribute(Variable sourceVar, String attributeName) {
         Attribute attribute = sourceVar.findAttribute(attributeName);
         if (attribute != null) {
@@ -468,7 +460,12 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         }
     }
 
-    private void addValidMinMax(Variable sourceVar, Variable var, DataPacking.DataPacker dataPacker, NetcdfFileWriter writer, String attributeName) {
+    private void addValidMinMax(
+            Variable sourceVar,
+            Variable var,
+            DataPacking.DataPacker dataPacker,
+            NetcdfFileWriter writer,
+            String attributeName) {
         Attribute attribute = sourceVar.findAttribute(attributeName);
         if (attribute != null) {
             double value = attribute.getNumericValue().doubleValue();
@@ -524,7 +521,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         final int[] dimSize = new int[numDimensions];
         final String[] dimName = new String[numDimensions];
         int iDim = 0;
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
+                dimensionsManager.getDimensions()) {
             dimSize[iDim] = dimension.getDimensionValues().getSize();
             dimName[iDim] = dimension.getNetCDFDimension().getShortName();
             iDim++;
@@ -536,7 +534,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         }
         spatialDimensionSize[numDimensions - 2] = dimSize[numDimensions - 2];
         spatialDimensionSize[numDimensions - 1] = dimSize[numDimensions - 1];
-        
+
         writeNonScalarExtraVariables(dimName);
 
         // prepare writing matrices
@@ -573,11 +571,13 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             // Fill data matrix
             // ----------------
 
-            // Loop over bands using a RandomIter 
+            // Loop over bands using a RandomIter
             final RandomIter data = RandomIterFactory.create(ri, null);
-            final int imageDataType = sampleGranule.getRenderedImage().getSampleModel().getDataType();
+            final int imageDataType =
+                    sampleGranule.getRenderedImage().getSampleModel().getDataType();
             DataType sourceDataType = NetCDFUtilities.transcodeImageDataType(imageDataType);
-            // the local slice indexing, all the extra dimensions are set to 0, the spatial ones are set in the loop
+            // the local slice indexing, all the extra dimensions are set to 0, the spatial ones are
+            // set in the loop
             int[] indexing = new int[numDimensions];
             Arrays.fill(indexing, 0);
             for (int tileY = minTileY; tileY <= maxTileY; tileY++) {
@@ -595,14 +595,25 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                                     indexing[numDimensions - 1] = k - minX;
                                     indexing[numDimensions - 2] = yPos;
 
-                                    for (int bandIdx = 0; bandIdx < bandVariables.length; bandIdx++) {
+                                    for (int bandIdx = 0;
+                                            bandIdx < bandVariables.length;
+                                            bandIdx++) {
                                         BandVariable bandVariable = bandVariables[bandIdx];
 
                                         final Index matrixIndex = bandVariable.matrix.getIndex();
                                         matrixIndex.set(indexing);
-                                        setPixel(k, j, sourceDataType,
-                                                bandVariable.netCDFDataType, data, bandVariable.matrix, matrixIndex,
-                                                bandVariable.dataPacker, bandVariable.noDataValue, null, bandIdx);
+                                        setPixel(
+                                                k,
+                                                j,
+                                                sourceDataType,
+                                                bandVariable.netCDFDataType,
+                                                data,
+                                                bandVariable.matrix,
+                                                matrixIndex,
+                                                bandVariable.dataPacker,
+                                                bandVariable.noDataValue,
+                                                null,
+                                                bandIdx);
                                     }
                                 }
                             }
@@ -610,21 +621,19 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                     }
                 }
             }
-            
+
             // dump all collected matrices
             for (BandVariable bandVariable : bandVariables) {
-                writer.write(bandVariable.var, originIndexing, bandVariable.matrix);    
+                writer.write(bandVariable.var, originIndexing, bandVariable.matrix);
             }
             writer.flush();
-            
-            // Finalize the iterator 
+
+            // Finalize the iterator
             data.done();
         }
     }
 
-    /**
-     * Add global attributes to the Dataset if needed
-     */
+    /** Add global attributes to the Dataset if needed */
     protected void initializeGlobalAttributes() {
         copyGlobalAttribute();
 
@@ -633,7 +642,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         writer.addGroupAttribute(null, new Attribute("netcdf_version_id", NETCDF_LIBRARY_VERSION));
         String isoDate = toISODate(new Date());
         writer.addGroupAttribute(null, new Attribute("date_created", isoDate));
-        writer.addGroupAttribute(null, new Attribute("spatial_resolution", getSpatialResolutionDescription()));
+        writer.addGroupAttribute(
+                null, new Attribute("spatial_resolution", getSpatialResolutionDescription()));
         DateRange startEnd = getDatasetDateRange();
         if (startEnd != null) {
             String startIsoTime = toISODate(startEnd.getMinValue());
@@ -644,42 +654,53 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             writer.addGroupAttribute(null, new Attribute("time_coverage_end", endIsoTime));
         }
         try {
-            GeneralEnvelope wgs84Envelope = CRS.transform(sampleGranule.getEnvelope(), DefaultGeographicCRS.WGS84);
-            writer.addGroupAttribute(null, new Attribute("northernmost_latitude", wgs84Envelope.getMaximum(1)));
-            writer.addGroupAttribute(null, new Attribute("southernmost_latitude", wgs84Envelope.getMinimum(1)));
-            writer.addGroupAttribute(null, new Attribute("easternmost_longitude", wgs84Envelope.getMaximum(0)));
-            writer.addGroupAttribute(null, new Attribute("westernmost_longitude", wgs84Envelope.getMinimum(0)));
+            GeneralEnvelope wgs84Envelope =
+                    CRS.transform(sampleGranule.getEnvelope(), DefaultGeographicCRS.WGS84);
+            writer.addGroupAttribute(
+                    null, new Attribute("northernmost_latitude", wgs84Envelope.getMaximum(1)));
+            writer.addGroupAttribute(
+                    null, new Attribute("southernmost_latitude", wgs84Envelope.getMinimum(1)));
+            writer.addGroupAttribute(
+                    null, new Attribute("easternmost_longitude", wgs84Envelope.getMaximum(0)));
+            writer.addGroupAttribute(
+                    null, new Attribute("westernmost_longitude", wgs84Envelope.getMinimum(0)));
         } catch (TransformException e) {
             LOGGER.log(Level.FINE, "Failed to compute WGS84 envelope, GHRRST bounds", e);
         }
-        // assumption here is that if we have to specify the units, the coordinates can be something other
-        // than WGS84, e.g. projected (otherwise the unit would always be degrees, no?... the spec is not clear here...)
+        // assumption here is that if we have to specify the units, the coordinates can be something
+        // other
+        // than WGS84, e.g. projected (otherwise the unit would always be degrees, no?... the spec
+        // is not clear here...)
         double[] resolutions = getResolutions();
         String unit = getAxisUnit();
         if (resolutions != null) {
             writer.addGroupAttribute(null, new Attribute("geospatial_lat_units", unit));
-            writer.addGroupAttribute(null, new Attribute("geospatial_lat_resolution", resolutions[0]));
+            writer.addGroupAttribute(
+                    null, new Attribute("geospatial_lat_resolution", resolutions[0]));
             writer.addGroupAttribute(null, new Attribute("geospatial_lon_units", unit));
-            writer.addGroupAttribute(null, new Attribute("geospatial_lon_resolution", resolutions[1]));
+            writer.addGroupAttribute(
+                    null, new Attribute("geospatial_lon_resolution", resolutions[1]));
         }
 
         addGlobalAttributesFromSettings();
     }
 
-    
     private DateRange getDatasetDateRange() {
         Date startDate = null;
         Date endDate = null;
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
+                dimensionsManager.getDimensions()) {
             if ("time".equalsIgnoreCase(dimension.getName())) {
-                TreeSet<Object> values = (TreeSet<Object>) dimension.getDimensionValues().getValues();
+                TreeSet<Object> values =
+                        (TreeSet<Object>) dimension.getDimensionValues().getValues();
                 Object first = values.first();
                 if (first instanceof Date) {
                     startDate = (Date) first;
                 } else if (first instanceof DateRange) {
                     startDate = ((DateRange) first).getMinValue();
                 } else {
-                    throw new IllegalArgumentException("Unrecognized data type for start date: " + first);
+                    throw new IllegalArgumentException(
+                            "Unrecognized data type for start date: " + first);
                 }
 
                 Object last = values.last();
@@ -688,7 +709,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 } else if (last instanceof DateRange) {
                     endDate = ((DateRange) first).getMaxValue();
                 } else {
-                    throw new IllegalArgumentException("Unrecognized data type for end date: " + first);
+                    throw new IllegalArgumentException(
+                            "Unrecognized data type for end date: " + first);
                 }
             }
         }
@@ -706,7 +728,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             return null;
         }
         AffineTransform2D at = (AffineTransform2D) gridToCRS2D;
-        return new double[]{Math.abs(at.getScaleX()), Math.abs(at.getScaleY())};
+        return new double[] {Math.abs(at.getScaleX()), Math.abs(at.getScaleY())};
     }
 
     private String getSpatialResolutionDescription() {
@@ -737,6 +759,4 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         isoFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return isoFormat.format(date);
     }
-
-   
 }

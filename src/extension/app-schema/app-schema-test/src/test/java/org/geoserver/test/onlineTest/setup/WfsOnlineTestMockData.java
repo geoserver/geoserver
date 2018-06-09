@@ -10,9 +10,13 @@ import org.geoserver.test.AbstractAppSchemaMockData;
 public class WfsOnlineTestMockData extends AbstractAppSchemaMockData {
     @Override
     protected void addContent() {
-        addFeatureType(GSML_PREFIX, "ShearDisplacementStructure",
+        addFeatureType(
+                GSML_PREFIX,
+                "ShearDisplacementStructure",
                 "WfsOnlineTest/gsml_ShearDisplacementStructure/gsml_ShearDisplacementStructure.xml");
-        addFeatureType(GSML_PREFIX, "DisplacementEvent",
+        addFeatureType(
+                GSML_PREFIX,
+                "DisplacementEvent",
                 "WfsOnlineTest/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
     }
 }

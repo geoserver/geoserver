@@ -8,9 +8,7 @@ import net.opengis.ows10.Ows10Factory;
 import net.opengis.ows10.SectionsType;
 import org.eclipse.emf.ecore.EObject;
 
-/**
- * Parses the "sections" GetCapabilities kvp argument
- */
+/** Parses the "sections" GetCapabilities kvp argument */
 public class SectionsKvpParser extends org.geoserver.ows.kvp.SectionsKvpParser {
 
     public SectionsKvpParser() {
@@ -22,5 +20,4 @@ public class SectionsKvpParser extends org.geoserver.ows.kvp.SectionsKvpParser {
     protected EObject createObject() {
         return Ows10Factory.eINSTANCE.createSectionsType();
     }
-
 }

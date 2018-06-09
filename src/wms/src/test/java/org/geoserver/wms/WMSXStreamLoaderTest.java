@@ -5,7 +5,6 @@
 package org.geoserver.wms;
 
 import java.io.InputStream;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
@@ -28,6 +27,5 @@ public class WMSXStreamLoaderTest extends WMSTestSupport {
         try (InputStream is = getClass().getResourceAsStream("wms-test.xml")) {
             xp.load(is, WMSInfo.class);
         }
-
     }
 }

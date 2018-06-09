@@ -23,10 +23,9 @@ public class HazelcastHomePageContentProvider implements GeoServerHomePageConten
     @Override
     public Component getPageBodyComponent(String id) {
         GeoServerSecurityManager secMgr = GeoServerExtensions.bean(GeoServerSecurityManager.class);
-        if (secMgr.checkAuthenticationForAdminRole() && cluster.isEnabled()) { 
+        if (secMgr.checkAuthenticationForAdminRole() && cluster.isEnabled()) {
             return new NodeLinkPanel(id, cluster);
         }
         return new WebMarkupContainer(id);
     }
-
 }

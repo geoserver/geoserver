@@ -7,7 +7,6 @@
 package org.geoserver.wps.kvp;
 
 import net.opengis.ows11.CodeType;
-
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.Ows11Util;
 

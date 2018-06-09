@@ -8,27 +8,28 @@ package org.geoserver.rest.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.ExtensionPriority;
 
 /**
- * Default implementation of the {@link RESTUploadPathMapper} interface. This implementation simply changes the input file root directory with the one
- * defined inside the {@link MetadataMap} of the {@link SettingsInfo} class.
- * 
+ * Default implementation of the {@link RESTUploadPathMapper} interface. This implementation simply
+ * changes the input file root directory with the one defined inside the {@link MetadataMap} of the
+ * {@link SettingsInfo} class.
+ *
  * @author Nicola Lagomarsini Geosolutions S.A.S.
- * 
  */
-public class RESTUploadExternalPathMapper extends RESTUploadPathMapperImpl implements ExtensionPriority {
+public class RESTUploadExternalPathMapper extends RESTUploadPathMapperImpl
+        implements ExtensionPriority {
 
     public RESTUploadExternalPathMapper(Catalog catalog) {
         super(catalog);
     }
 
-    public void mapStorePath(StringBuilder rootDir, String workspace, String store,
-            Map<String, String> storeParams) throws IOException {
+    public void mapStorePath(
+            StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
+            throws IOException {
         // Get the external root definition from the settings
         String externalRoot = RESTUtils.getRootDirectory(workspace, store, catalog);
 

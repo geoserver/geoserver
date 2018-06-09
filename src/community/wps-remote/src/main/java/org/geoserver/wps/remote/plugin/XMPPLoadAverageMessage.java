@@ -12,21 +12,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import net.razorvine.pickle.PickleException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.geoserver.wps.remote.RemoteMachineDescriptor;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
-import net.razorvine.pickle.PickleException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 /**
  * Listens for "LOADAVG" messages from XMPP service channels and takes action accordingly.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class XMPPLoadAverageMessage implements XMPPMessage {
 
@@ -41,8 +38,8 @@ public class XMPPLoadAverageMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message,
-            Map<String, String> signalArgs) {
+    public void handleSignal(
+            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String serviceJID = (message != null ? message.getFrom() : packet.getFrom());
 
@@ -52,8 +49,8 @@ public class XMPPLoadAverageMessage implements XMPPMessage {
         if (pID != null && pID.equalsIgnoreCase("master") && msg != null && msg.equals("loadavg")) {
             Map<String, Object> outputs = new HashMap<String, Object>();
             try {
-                final List<RemoteMachineDescriptor> registeredProcessingMachines = xmppClient
-                        .getRegisteredProcessingMachines();
+                final List<RemoteMachineDescriptor> registeredProcessingMachines =
+                        xmppClient.getRegisteredProcessingMachines();
 
                 synchronized (registeredProcessingMachines) {
                     RemoteMachineDescriptor registeredProcessingMachine = null;
@@ -69,12 +66,12 @@ public class XMPPLoadAverageMessage implements XMPPMessage {
                         for (Entry<String, String> result : signalArgs.entrySet()) {
                             if (result.getKey().startsWith("result_")) {
                                 final String key = result.getKey().substring("result_".length());
-                                final String serviceResultString = URLDecoder
-                                        .decode(result.getValue(), "UTF-8");
-                                final JSONObject serviceResultJSON = (JSONObject) JSONSerializer
-                                        .toJSON(serviceResultString);
-                                final Object output = xmppClient
-                                        .unPickle(xmppClient.pickle(serviceResultJSON));
+                                final String serviceResultString =
+                                        URLDecoder.decode(result.getValue(), "UTF-8");
+                                final JSONObject serviceResultJSON =
+                                        (JSONObject) JSONSerializer.toJSON(serviceResultString);
+                                final Object output =
+                                        xmppClient.unPickle(xmppClient.pickle(serviceResultJSON));
 
                                 // XMPP Output Visitor
                                 if (output instanceof Map) {
@@ -82,29 +79,34 @@ public class XMPPLoadAverageMessage implements XMPPMessage {
                                     // transform the textual value into a real WPS
                                     // output
                                     try {
-                                        final Object value = (resultParams
-                                                .get(key + "_value") != null
-                                                        ? resultParams.get(key + "_value") : null);
-                                        final String description = (resultParams
-                                                .get(key + "_description") != null
-                                                && resultParams.get(result.getKey()
-                                                        + "_description") instanceof String
-                                                                ? (String) resultParams
-                                                                        .get(key + "_description")
-                                                                : null);
+                                        final Object value =
+                                                (resultParams.get(key + "_value") != null
+                                                        ? resultParams.get(key + "_value")
+                                                        : null);
+                                        final String description =
+                                                (resultParams.get(key + "_description") != null
+                                                                && resultParams.get(
+                                                                                result.getKey()
+                                                                                        + "_description")
+                                                                        instanceof String
+                                                        ? (String)
+                                                                resultParams.get(
+                                                                        key + "_description")
+                                                        : null);
 
                                         if ("vmem".equalsIgnoreCase(key)) {
-                                            registeredProcessingMachine
-                                                    .setMemPercUsed((Double) value);
+                                            registeredProcessingMachine.setMemPercUsed(
+                                                    (Double) value);
                                         }
 
                                         if ("loadavg".equalsIgnoreCase(key)) {
-                                            registeredProcessingMachine
-                                                    .setLoadAverage((Double) value);
+                                            registeredProcessingMachine.setLoadAverage(
+                                                    (Double) value);
                                         }
 
                                     } catch (Exception e) {
-                                        LOGGER.log(Level.SEVERE,
+                                        LOGGER.log(
+                                                Level.SEVERE,
                                                 "Exception occurred while trying to produce the result:",
                                                 e);
                                     }
@@ -122,5 +124,4 @@ public class XMPPLoadAverageMessage implements XMPPMessage {
             }
         }
     }
-
 }

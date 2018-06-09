@@ -9,15 +9,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-/**
- * A layer in a map/animation download
- */
-@XmlRootElement(name="Layer")
+/** A layer in a map/animation download */
+@XmlRootElement(name = "Layer")
 public class Layer extends AbstractParametricEntity {
-    
+
     String capabilities;
 
-    @XmlElement(name="Capabilities")
+    @XmlElement(name = "Capabilities")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public String getCapabilities() {
         return capabilities;
@@ -26,6 +24,4 @@ public class Layer extends AbstractParametricEntity {
     public void setCapabilities(String capabilities) {
         this.capabilities = capabilities;
     }
-    
-    
 }

@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -21,7 +20,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -52,9 +50,8 @@ import org.springframework.web.client.ResourceAccessException;
 
 /**
  * OAuth2 Authentication filter receiving/validating proxy tickets and service tickets.
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public abstract class GeoServerOAuthAuthenticationFilter
         extends GeoServerPreAuthenticatedUserNameFilter
@@ -66,14 +63,15 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
     OAuth2RestOperations restTemplate;
 
-    OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-            "/");
+    OAuth2ClientAuthenticationProcessingFilter filter =
+            new OAuth2ClientAuthenticationProcessingFilter("/");
 
     ResourceServerTokenServices tokenServices;
 
     GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
 
-    public GeoServerOAuthAuthenticationFilter(SecurityNamedServiceConfig config,
+    public GeoServerOAuthAuthenticationFilter(
+            SecurityNamedServiceConfig config,
             RemoteTokenServices tokenServices,
             GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration,
             OAuth2RestOperations oauth2RestTemplate) {
@@ -95,9 +93,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         return this.aep;
     }
 
-    /**
-     * Try to authenticate if there is no authenticated principal
-     */
+    /** Try to authenticate if there is no authenticated principal */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -119,21 +115,21 @@ public abstract class GeoServerOAuthAuthenticationFilter
          */
         final String customSessionCookie = getCustomSessionCookieValue(httpRequest);
 
-        Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
-        final Collection<? extends GrantedAuthority> authorities = (authentication != null
-                ? authentication.getAuthorities()
-                : null);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Collection<? extends GrantedAuthority> authorities =
+                (authentication != null ? authentication.getAuthorities() : null);
 
-        if (accessToken == null && customSessionCookie == null
+        if (accessToken == null
+                && customSessionCookie == null
                 && (authentication != null
                         && (authentication instanceof PreAuthenticatedAuthenticationToken)
                         && !(authorities.size() == 1
                                 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE)))) {
-            final AccessTokenRequest accessTokenRequest = restTemplate.getOAuth2ClientContext()
-                    .getAccessTokenRequest();
+            final AccessTokenRequest accessTokenRequest =
+                    restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
             if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
-                restTemplate.getOAuth2ClientContext()
+                restTemplate
+                        .getOAuth2ClientContext()
                         .removePreservedState(accessTokenRequest.getStateKey());
             }
 
@@ -152,8 +148,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
 
-        if ((authentication == null && accessToken != null) || authentication == null
-                || (authentication != null && authorities.size() == 1
+        if ((authentication == null && accessToken != null)
+                || authentication == null
+                || (authentication != null
+                        && authorities.size() == 1
                         && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
 
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
@@ -161,8 +159,12 @@ public abstract class GeoServerOAuthAuthenticationFilter
             Authentication postAuthentication = authentication;
             if (postAuthentication != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager().getAuthenticationCache().put(getName(),
-                            getCacheKey((HttpServletRequest) request), postAuthentication);
+                    getSecurityManager()
+                            .getAuthenticationCache()
+                            .put(
+                                    getName(),
+                                    getCacheKey((HttpServletRequest) request),
+                                    postAuthentication);
                 }
             }
         }
@@ -171,9 +173,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
     }
 
     protected String getParameterValue(String paramName, ServletRequest request) {
-        for (Enumeration<String> iterator = request.getParameterNames(); iterator.hasMoreElements();) {
+        for (Enumeration<String> iterator = request.getParameterNames();
+                iterator.hasMoreElements(); ) {
             final String param = iterator.nextElement();
-            if(paramName.equalsIgnoreCase(param)) {
+            if (paramName.equalsIgnoreCase(param)) {
                 return request.getParameter(param);
             }
         }
@@ -181,16 +184,14 @@ public abstract class GeoServerOAuthAuthenticationFilter
         return null;
     }
 
-    /**
-     * The cache key is the authentication key (global identifier)
-     */
+    /** The cache key is the authentication key (global identifier) */
     @Override
     public String getCacheKey(HttpServletRequest request) {
         final String access_token = getParameterValue("access_token", request);
         return access_token != null ? access_token : getCustomSessionCookieValue(request);
     }
 
-    protected String getCustomSessionCookieValue(HttpServletRequest request)  {
+    protected String getCustomSessionCookieValue(HttpServletRequest request) {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Inspecting the http request looking for the Custom Session ID.");
         }
@@ -217,17 +218,20 @@ public abstract class GeoServerOAuthAuthenticationFilter
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response,
+    public void logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
             Authentication authentication) {
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
         if ((token != null && token.getTokenType().equalsIgnoreCase(OAuth2AccessToken.BEARER_TYPE))
                 || request.getRequestURI().endsWith(filterConfig.getLogoutEndpoint())) {
 
-            final AccessTokenRequest accessTokenRequest = restTemplate.getOAuth2ClientContext()
-                    .getAccessTokenRequest();
+            final AccessTokenRequest accessTokenRequest =
+                    restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
             if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
-                restTemplate.getOAuth2ClientContext()
+                restTemplate
+                        .getOAuth2ClientContext()
                         .removePreservedState(accessTokenRequest.getStateKey());
             }
 
@@ -258,8 +262,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
             }
 
-            request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
-                    filterConfig.getLogoutUri());
+            request.setAttribute(
+                    GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, filterConfig.getLogoutUri());
         }
     }
 
@@ -277,19 +281,26 @@ public abstract class GeoServerOAuthAuthenticationFilter
             principal = null;
         }
 
-        LOGGER.log(Level.FINE,
+        LOGGER.log(
+                Level.FINE,
                 "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
 
         PreAuthenticatedAuthenticationToken result = null;
 
         if (principal == null || principal.trim().length() == 0) {
-            result = new PreAuthenticatedAuthenticationToken(principal, null,
-                    Collections.singleton(GeoServerRole.ANONYMOUS_ROLE));
+            result =
+                    new PreAuthenticatedAuthenticationToken(
+                            principal, null, Collections.singleton(GeoServerRole.ANONYMOUS_ROLE));
         } else {
             if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
-                result = new PreAuthenticatedAuthenticationToken(principal, null,
-                        Arrays.asList(GeoServerRole.ADMIN_ROLE, GeoServerRole.GROUP_ADMIN_ROLE,
-                                GeoServerRole.AUTHENTICATED_ROLE));
+                result =
+                        new PreAuthenticatedAuthenticationToken(
+                                principal,
+                                null,
+                                Arrays.asList(
+                                        GeoServerRole.ADMIN_ROLE,
+                                        GeoServerRole.GROUP_ADMIN_ROLE,
+                                        GeoServerRole.AUTHENTICATED_ROLE));
             } else {
                 Collection<GeoServerRole> roles = null;
                 try {
@@ -300,20 +311,20 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
                     roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 
-                RoleCalculator calc = new RoleCalculator(
-                        getSecurityManager().getActiveRoleService());
+                RoleCalculator calc =
+                        new RoleCalculator(getSecurityManager().getActiveRoleService());
                 if (calc != null) {
                     try {
                         roles.addAll(calc.calculateRoles(principal));
                     } catch (IOException e) {
-                        LOGGER.log(Level.WARNING,
+                        LOGGER.log(
+                                Level.WARNING,
                                 "Error while trying to fetch default Roles with the following Exception cause:",
                                 e.getCause());
                     }
                 }
 
                 result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
-
             }
         }
 
@@ -347,7 +358,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
         final String accessToken = getParameterValue("access_token", req);
 
         if (accessToken != null) {
-            restTemplate.getOAuth2ClientContext()
+            restTemplate
+                    .getOAuth2ClientContext()
                     .setAccessToken(new DefaultOAuth2AccessToken(accessToken));
         }
 
@@ -363,13 +375,14 @@ public abstract class GeoServerOAuthAuthenticationFilter
             if (e instanceof UserRedirectRequiredException) {
                 if (filterConfig.getEnableRedirectAuthenticationEntryPoint()
                         || req.getRequestURI().endsWith(filterConfig.getLoginEndpoint())) {
-                    // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2 Provider login URI
+                    // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2
+                    // Provider login URI
                     this.aep.commence(req, resp, null);
                 } else {
                     if (resp.getStatus() != 302) {
                         // AEP redirection failed
-                        final AccessTokenRequest accessTokenRequest = restTemplate
-                                .getOAuth2ClientContext().getAccessTokenRequest();
+                        final AccessTokenRequest accessTokenRequest =
+                                restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
                         if (accessTokenRequest.getPreservedState() != null
                                 && accessTokenRequest.getStateKey() != null) {
                             // restTemplate.getOAuth2ClientContext().removePreservedState(accessTokenRequest.getStateKey());
@@ -382,21 +395,25 @@ public abstract class GeoServerOAuthAuthenticationFilter
             } else if (e instanceof BadCredentialsException
                     || e instanceof ResourceAccessException) {
                 if (e.getCause() instanceof OAuth2AccessDeniedException) {
-                    LOGGER.log(Level.WARNING,
+                    LOGGER.log(
+                            Level.WARNING,
                             "Error while trying to authenticate to OAuth2 Provider with the following Exception cause:",
                             e.getCause());
                 } else if (e instanceof ResourceAccessException) {
-                    LOGGER.log(Level.SEVERE,
+                    LOGGER.log(
+                            Level.SEVERE,
                             "Could not Authorize OAuth2 Resource due to the following exception:",
                             e);
                 } else if (e instanceof ResourceAccessException
                         || e.getCause() instanceof OAuth2AccessDeniedException) {
-                    LOGGER.log(Level.WARNING,
+                    LOGGER.log(
+                            Level.WARNING,
                             "It is worth notice that if you try to validate credentials against an SSH protected Endpoint, you need either your server exposed on a secure SSL channel or OAuth2 Provider Certificate to be trusted on your JVM!");
                     LOGGER.info(
                             "Please refer to the GeoServer OAuth2 Plugin Documentation in order to find the steps for importing the SSH certificates.");
                 } else {
-                    LOGGER.log(Level.SEVERE,
+                    LOGGER.log(
+                            Level.SEVERE,
                             "Could not Authorize OAuth2 Resource due to the following exception:",
                             e.getCause());
                 }
@@ -404,32 +421,30 @@ public abstract class GeoServerOAuthAuthenticationFilter
         }
 
         String principal = (authentication != null ? (String) authentication.getPrincipal() : null);
-        if (principal != null && principal.trim().length() == 0)
-            principal = null;
+        if (principal != null && principal.trim().length() == 0) principal = null;
         try {
-            if (principal != null && PreAuthenticatedUserNameRoleSource.UserGroupService
-                    .equals(getRoleSource())) {
-                GeoServerUserGroupService service = getSecurityManager()
-                        .loadUserGroupService(getUserGroupServiceName());
+            if (principal != null
+                    && PreAuthenticatedUserNameRoleSource.UserGroupService.equals(
+                            getRoleSource())) {
+                GeoServerUserGroupService service =
+                        getSecurityManager().loadUserGroupService(getUserGroupServiceName());
                 GeoServerUser u = service.getUserByUsername(principal);
                 if (u != null && u.isEnabled() == false) {
                     principal = null;
                     handleDisabledUser(u, req);
                 }
-
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
         req.setAttribute(UserNameAlreadyRetrieved, Boolean.TRUE);
-        if (principal != null)
-            req.setAttribute(UserName, principal);
+        if (principal != null) req.setAttribute(UserName, principal);
         return principal;
     }
 
     protected void configureRestTemplate() {
-        AuthorizationCodeResourceDetails details = (AuthorizationCodeResourceDetails) restTemplate
-                .getResource();
+        AuthorizationCodeResourceDetails details =
+                (AuthorizationCodeResourceDetails) restTemplate.getResource();
 
         details.setClientId(filterConfig.getCliendId());
         details.setClientSecret(filterConfig.getClientSecret());
@@ -458,5 +473,4 @@ public abstract class GeoServerOAuthAuthenticationFilter
         // Nothing to do; everything is handled by {@link getPreAuthenticatedPrincipal}
         return null;
     }
-
 }

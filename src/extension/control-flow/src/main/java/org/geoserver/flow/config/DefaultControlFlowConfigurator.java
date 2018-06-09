@@ -5,6 +5,16 @@
  */
 package org.geoserver.flow.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.flow.ControlFlowConfigurator;
 import org.geoserver.flow.FlowController;
@@ -32,42 +42,32 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Basic property file based {@link ControlFlowConfigurator} implementation
- * 
+ *
  * @author Andrea Aime - OpenGeo
  * @author Juan Marin, OpenGeo
  */
-public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, GeoServerPluginConfigurator {
+public class DefaultControlFlowConfigurator
+        implements ControlFlowConfigurator, GeoServerPluginConfigurator {
     static final Pattern RATE_PATTERN = Pattern.compile("(\\d+)/([smhd])(;(\\d+)s)?");
 
     static final Logger LOGGER = Logging.getLogger(DefaultControlFlowConfigurator.class);
-    static final String PROPERTYFILENAME="controlflow.properties";
+    static final String PROPERTYFILENAME = "controlflow.properties";
 
     /**
      * Factors out the code to build a rate flow controller
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
-     * 
      */
-    static abstract class RateControllerBuilder {
+    abstract static class RateControllerBuilder {
         public FlowController build(String[] keys, String value) {
             Matcher matcher = RATE_PATTERN.matcher(value);
             if (!matcher.matches()) {
-                LOGGER.severe("Rate limiting rule values should be expressed as <rate</<unit>[;<delay>s], "
-                        + "where unit can be s, m, h or d. This one is invalid: "
-                        + value);
+                LOGGER.severe(
+                        "Rate limiting rule values should be expressed as <rate</<unit>[;<delay>s], "
+                                + "where unit can be s, m, h or d. This one is invalid: "
+                                + value);
                 return null;
             }
             int rate = Integer.parseInt(matcher.group(1));
@@ -77,7 +77,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
             if (userDelay != null) {
                 delay = Integer.parseInt(userDelay) * 1000;
             }
-            
+
             String service = keys.length >= 3 ? keys[2] : null;
             String request = keys.length >= 4 ? keys[3] : null;
             String format = keys.length >= 5 ? keys[4] : null;
@@ -88,6 +88,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
 
         protected abstract KeyGenerator buildKeyGenerator(String[] keys, String value);
     }
+
     PropertyFileWatcher configFile;
 
     long timeout = -1;
@@ -96,12 +97,12 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
     public DefaultControlFlowConfigurator() {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource controlflow = loader.get(PROPERTYFILENAME);
-        configFile = new PropertyFileWatcher(controlflow);        
+        configFile = new PropertyFileWatcher(controlflow);
     }
 
     /**
      * Constructor used for testing purposes
-     * 
+     *
      * @param watcher
      */
     DefaultControlFlowConfigurator(PropertyFileWatcher watcher) {
@@ -114,7 +115,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
         Properties p = configFile.getProperties();
         List<FlowController> newControllers = new ArrayList<>();
         PriorityProvider priorityProvider = getPriorityProvider(p);
-        
+
         for (Object okey : p.keySet()) {
             String key = ((String) okey).trim();
             String value = (String) p.get(okey);
@@ -125,7 +126,9 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             try {
                 // some properties are not integers
-                if("ip.blacklist".equals(key) || "ip.whitelist".equals(key) || "ows.priority.http".equals(key)) {
+                if ("ip.blacklist".equals(key)
+                        || "ip.whitelist".equals(key)
+                        || "ows.priority.http".equals(key)) {
                     continue;
                 } else {
                     if (!key.startsWith("user.ows") && !key.startsWith("ip.ows")) {
@@ -135,10 +138,13 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
                             queueSize = Integer.parseInt(tokenizer.nextToken());
                         }
                     }
-                } 
+                }
             } catch (NumberFormatException e) {
-                LOGGER.severe("Rules should be assigned just a queue size, instead " + key
-                        + " is associated to " + value);
+                LOGGER.severe(
+                        "Rules should be assigned just a queue size, instead "
+                                + key
+                                + " is associated to "
+                                + value);
                 continue;
             }
 
@@ -148,12 +154,16 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
                 continue;
             }
             if ("ows.global".equalsIgnoreCase(key)) {
-                controller = new GlobalFlowController(queueSize, buildBlocker(queueSize, priorityProvider));
+                controller =
+                        new GlobalFlowController(
+                                queueSize, buildBlocker(queueSize, priorityProvider));
             } else if ("ows".equals(keys[0])) {
                 // todo: check, if possible, if the service, method and output format actually exist
                 ThreadBlocker threadBlocker = buildBlocker(queueSize, priorityProvider);
                 if (keys.length >= 4) {
-                    controller = new BasicOWSController(keys[1], keys[2], keys[3], queueSize, threadBlocker);
+                    controller =
+                            new BasicOWSController(
+                                    keys[1], keys[2], keys[3], queueSize, threadBlocker);
                 } else if (keys.length == 3) {
                     controller = new BasicOWSController(keys[1], keys[2], queueSize, threadBlocker);
                 } else if (keys.length == 2) {
@@ -163,27 +173,29 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
                 if (keys.length == 1) {
                     controller = new UserConcurrentFlowController(queueSize);
                 } else if ("ows".equals(keys[1])) {
-                    controller = new RateControllerBuilder() {
+                    controller =
+                            new RateControllerBuilder() {
 
-                        @Override
-                        protected KeyGenerator buildKeyGenerator(String[] keys, String value) {
-                            return new CookieKeyGenerator();
-                        }
-
-                    }.build(keys, value);
+                                @Override
+                                protected KeyGenerator buildKeyGenerator(
+                                        String[] keys, String value) {
+                                    return new CookieKeyGenerator();
+                                }
+                            }.build(keys, value);
                 }
             } else if ("ip".equals(keys[0])) {
                 if (keys.length == 1) {
                     controller = new IpFlowController(queueSize);
                 } else if (keys.length > 1 && "ows".equals(keys[1])) {
-                    controller = new RateControllerBuilder() {
+                    controller =
+                            new RateControllerBuilder() {
 
-                        @Override
-                        protected KeyGenerator buildKeyGenerator(String[] keys, String value) {
-                            return new IpKeyGenerator();
-                        }
-
-                    }.build(keys, value);
+                                @Override
+                                protected KeyGenerator buildKeyGenerator(
+                                        String[] keys, String value) {
+                                    return new IpKeyGenerator();
+                                }
+                            }.build(keys, value);
                 } else if (keys.length > 1) {
                     if (!"blacklist".equals(keys[1]) && !"whitelist".equals(keys[1])) {
                         String ip = key.substring("ip.".length());
@@ -191,7 +203,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
                     }
                 }
             }
-            
+
             if (controller == null) {
                 LOGGER.severe("Could not parse control-flow rule: '" + okey + "=" + value);
             } else {
@@ -205,7 +217,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
 
     /**
      * Parses the configuration for priority providers
-     * 
+     *
      * @param p the configuration properties
      * @return A {@link PriorityProvider} or null if no (valid) configuration was found
      */
@@ -230,20 +242,23 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
                     error = " " + e.getMessage();
                 }
 
-                LOGGER.severe("Unexpected priority specification found '" + value + "', " +
-                        "the expected format is headerName,defaultPriorityValue." + error);
+                LOGGER.severe(
+                        "Unexpected priority specification found '"
+                                + value
+                                + "', "
+                                + "the expected format is headerName,defaultPriorityValue."
+                                + error);
             }
-
-
         }
         return null;
     }
 
     /**
      * Builds a {@link ThreadBlocker} based on a queue size and a prority provider
+     *
      * @param queueSize The count of concurrent requests allowed to run
-     * @param priorityProvider The priority provider (if not null, a 
-     * {@link org.geoserver.flow.controller.PriorityThreadBlocker} will be built
+     * @param priorityProvider The priority provider (if not null, a {@link
+     *     org.geoserver.flow.controller.PriorityThreadBlocker} will be built
      * @return a {@link ThreadBlocker}
      */
     private ThreadBlocker buildBlocker(int queueSize, PriorityProvider priorityProvider) {
@@ -268,7 +283,7 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         if (loader != null) {
             Resource controlflow = loader.get(PROPERTYFILENAME);
-        
+
             configurationFiles.add(controlflow);
         } else if (this.configFile != null && this.configFile.getResource() != null) {
             configurationFiles.add(this.configFile.getResource());
@@ -280,16 +295,22 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
     public void saveConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         if (loader != null) {
-            for(Resource controlflow : getFileLocations()) {
-                Resource targetDir = 
-                        Files.asResource(resourceLoader.findOrCreateDirectory(Paths.convert(loader.getBaseDirectory(), controlflow.parent().dir())));
-                
+            for (Resource controlflow : getFileLocations()) {
+                Resource targetDir =
+                        Files.asResource(
+                                resourceLoader.findOrCreateDirectory(
+                                        Paths.convert(
+                                                loader.getBaseDirectory(),
+                                                controlflow.parent().dir())));
+
                 Resources.copy(controlflow.file(), targetDir);
             }
         } else if (this.configFile != null && this.configFile.getResource() != null) {
-            Resources.copy(this.configFile.getFile(), Files.asResource(resourceLoader.getBaseDirectory()));
+            Resources.copy(
+                    this.configFile.getFile(), Files.asResource(resourceLoader.getBaseDirectory()));
         } else if (this.configFile != null && this.configFile.getProperties() != null) {
-            File controlFlowConfigurationFile = Resources.file(resourceLoader.get(PROPERTYFILENAME), true);
+            File controlFlowConfigurationFile =
+                    Resources.file(resourceLoader.get(PROPERTYFILENAME), true);
             OutputStream out = Files.out(controlFlowConfigurationFile);
             try {
                 this.configFile.getProperties().store(out, "");
@@ -309,5 +330,4 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
             }
         }
     }
-
 }

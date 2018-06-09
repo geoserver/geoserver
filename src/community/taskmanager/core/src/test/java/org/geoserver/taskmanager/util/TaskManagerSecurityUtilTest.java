@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -31,33 +30,27 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
-    
-    @Autowired
-    private DataAccessRuleDAO ruleDao;
-    
-    @Autowired
-    private TaskManagerSecurityUtil secUtil;
 
-    @Autowired
-    private TaskManagerDao dao;
-    
-    @Autowired
-    private TaskManagerFactory fac;
-    
-    @Autowired
-    private BatchJobService bjService;
-    
-    @Autowired
-    private Catalog catalog;
-    
+    @Autowired private DataAccessRuleDAO ruleDao;
+
+    @Autowired private TaskManagerSecurityUtil secUtil;
+
+    @Autowired private TaskManagerDao dao;
+
+    @Autowired private TaskManagerFactory fac;
+
+    @Autowired private BatchJobService bjService;
+
+    @Autowired private Catalog catalog;
+
     private Configuration config;
-    
+
     private Batch batch;
-            
+
     @Before
     public void setup() {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-        //workspaces
+        // workspaces
         CatalogFactory catFac = new CatalogFactoryImpl(catalog);
         WorkspaceInfo wi;
         wi = catFac.createWorkspace();
@@ -67,8 +60,8 @@ public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
         wi.setName("cite");
         catalog.add(wi);
         catalog.setDefaultWorkspace(catalog.getWorkspaceByName("cite"));
-        
-        //rules
+
+        // rules
         DataAccessRule rule = new DataAccessRule();
         rule.setRoot("cdf");
         rule.setAccessMode(AccessMode.READ);
@@ -104,88 +97,125 @@ public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
         rule.setAccessMode(AccessMode.ADMIN);
         rule.getRoles().add("admincite");
         ruleDao.addRule(rule);
-        
-        config = fac.createConfiguration();  
+
+        config = fac.createConfiguration();
         config.setName("my_config");
-        config.setWorkspace("cdf"); 
-        config = dao.save(config);        
-        batch = fac.createBatch();        
+        config.setWorkspace("cdf");
+        config = dao.save(config);
+        batch = fac.createBatch();
         batch.setName("my_batch");
         batch.setConfiguration(config);
         batch.setWorkspace("cite");
         batch = bjService.saveAndSchedule(batch);
     }
-    
+
     @After
     public void cleanUp() {
-        //taskmanager db
+        // taskmanager db
         dao.delete(batch);
         dao.delete(config);
-        
-        //clear the rules
+
+        // clear the rules
         ruleDao.clear();
-        
-        //catalog
+
+        // catalog
         catalog.remove(catalog.getWorkspaceByName("cdf"));
         catalog.remove(catalog.getWorkspaceByName("cite"));
     }
-    
+
     @Test
     public void testReadable() {
-        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken("jan",
-                "jan", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("readcdf"),
-                                new SimpleGrantedAuthority("readcite") } ));
+        UsernamePasswordAuthenticationToken user =
+                new UsernamePasswordAuthenticationToken(
+                        "jan",
+                        "jan",
+                        Arrays.asList(
+                                new GrantedAuthority[] {
+                                    new SimpleGrantedAuthority("readcdf"),
+                                    new SimpleGrantedAuthority("readcite")
+                                }));
         assertTrue(secUtil.isReadable(user, config));
         assertTrue(secUtil.isReadable(user, batch));
 
-        user = new UsernamePasswordAuthenticationToken("piet", "piet", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("readcdf")} ));
+        user =
+                new UsernamePasswordAuthenticationToken(
+                        "piet",
+                        "piet",
+                        Arrays.asList(
+                                new GrantedAuthority[] {new SimpleGrantedAuthority("readcdf")}));
         assertTrue(secUtil.isReadable(user, config));
         assertFalse(secUtil.isReadable(user, batch));
 
-        user = new UsernamePasswordAuthenticationToken("pol", "pol", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("readcite")} ));
+        user =
+                new UsernamePasswordAuthenticationToken(
+                        "pol",
+                        "pol",
+                        Arrays.asList(
+                                new GrantedAuthority[] {new SimpleGrantedAuthority("readcite")}));
         assertFalse(secUtil.isReadable(user, config));
         assertFalse(secUtil.isReadable(user, batch));
     }
-    
+
     @Test
     public void testWritable() {
-        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken("jan",
-                "jan", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("writecdf"),
-                                new SimpleGrantedAuthority("writecite") } ));
+        UsernamePasswordAuthenticationToken user =
+                new UsernamePasswordAuthenticationToken(
+                        "jan",
+                        "jan",
+                        Arrays.asList(
+                                new GrantedAuthority[] {
+                                    new SimpleGrantedAuthority("writecdf"),
+                                    new SimpleGrantedAuthority("writecite")
+                                }));
         assertTrue(secUtil.isWritable(user, batch));
 
-        user = new UsernamePasswordAuthenticationToken("piet", "piet", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("writecdf")} ));
+        user =
+                new UsernamePasswordAuthenticationToken(
+                        "piet",
+                        "piet",
+                        Arrays.asList(
+                                new GrantedAuthority[] {new SimpleGrantedAuthority("writecdf")}));
         assertFalse(secUtil.isWritable(user, batch));
 
-        user = new UsernamePasswordAuthenticationToken("pol", "pol", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("writecite")} ));
+        user =
+                new UsernamePasswordAuthenticationToken(
+                        "pol",
+                        "pol",
+                        Arrays.asList(
+                                new GrantedAuthority[] {new SimpleGrantedAuthority("writecite")}));
         assertFalse(secUtil.isWritable(user, batch));
     }
-    
+
     @Test
     public void testAdminable() {
-        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken("jan",
-                "jan", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("admincdf"),
-                                new SimpleGrantedAuthority("admincite") } ));
+        UsernamePasswordAuthenticationToken user =
+                new UsernamePasswordAuthenticationToken(
+                        "jan",
+                        "jan",
+                        Arrays.asList(
+                                new GrantedAuthority[] {
+                                    new SimpleGrantedAuthority("admincdf"),
+                                    new SimpleGrantedAuthority("admincite")
+                                }));
         assertTrue(secUtil.isAdminable(user, config));
         assertTrue(secUtil.isAdminable(user, batch));
 
-        user = new UsernamePasswordAuthenticationToken("piet", "piet", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("admincdf")} ));
+        user =
+                new UsernamePasswordAuthenticationToken(
+                        "piet",
+                        "piet",
+                        Arrays.asList(
+                                new GrantedAuthority[] {new SimpleGrantedAuthority("admincdf")}));
         assertTrue(secUtil.isAdminable(user, config));
         assertFalse(secUtil.isAdminable(user, batch));
 
-        user = new UsernamePasswordAuthenticationToken("pol", "pol", Arrays.asList(
-                        new GrantedAuthority[] { new SimpleGrantedAuthority("admincite")} ));
+        user =
+                new UsernamePasswordAuthenticationToken(
+                        "pol",
+                        "pol",
+                        Arrays.asList(
+                                new GrantedAuthority[] {new SimpleGrantedAuthority("admincite")}));
         assertFalse(secUtil.isAdminable(user, config));
         assertFalse(secUtil.isAdminable(user, batch));
     }
-    
-
 }

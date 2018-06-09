@@ -6,31 +6,26 @@
 package org.vfny.geoserver.util.requests;
 
 import java.util.logging.Logger;
-
 import org.vfny.geoserver.servlets.Dispatcher;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-
 /**
- * Uses SAX to extact a GetFeature query from and incoming GetFeature request
- * XML stream.
+ * Uses SAX to extact a GetFeature query from and incoming GetFeature request XML stream.
  *
- * <p>
- * Note that this Handler extension ignores Filters completely and must be
- * chained as a parent to the PredicateFilter method in order to recognize
- * them.  If it is not chained, it will still generate valid queries, but with
- * no filtering whatsoever.
- * </p>
+ * <p>Note that this Handler extension ignores Filters completely and must be chained as a parent to
+ * the PredicateFilter method in order to recognize them. If it is not chained, it will still
+ * generate valid queries, but with no filtering whatsoever.
  *
  * @author Chris Holmes, TOPP
  * @version $Id$
  */
 public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
     /** Class logger */
-    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
+    private static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
 
     /** Stores internal request type */
     private int requestType = Dispatcher.UNKNOWN;
@@ -47,26 +42,21 @@ public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
     /** Flags whether or not type has been set */
     private boolean gotType = false;
 
-    /**
-     * @return the service type.
-     */
+    /** @return the service type. */
     public String getService() {
         return service;
     }
 
-    /**
-     * @return The request type.
-     */
+    /** @return The request type. */
     public String getRequest() {
         return request;
     }
 
-    //JD: kill these methods
+    // JD: kill these methods
     /**
-     * Gets the request type.  See Dispatcher for the available types.
+     * Gets the request type. See Dispatcher for the available types.
      *
      * @return an int of the request type.
-     *
      */
 
     //    public int getRequestType() {
@@ -90,18 +80,17 @@ public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
      * @param localName Local name of element.
      * @param rawName Raw name of element.
      * @param atts Element attributes.
-     *
      * @throws SAXException DOCUMENT ME!
      */
     public void startElement(String namespaceURI, String localName, String rawName, Attributes atts)
-        throws SAXException {
+            throws SAXException {
         if (gotType) {
             return;
         }
 
         this.request = localName;
 
-        //JD: kill this
+        // JD: kill this
         //            if (localName.equals("GetCapabilities")) {
         //                this.requestType = Dispatcher.GET_CAPABILITIES_REQUEST;
         //            } else if (localName.equals("DescribeFeatureType")) {
@@ -125,7 +114,7 @@ public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
             if (atts.getLocalName(i).equals("service")) {
                 this.service = atts.getValue(i);
 
-                //JD: kill this
+                // JD: kill this
                 //                if (service.equals("WFS")) {
                 //                    this.serviceType = Dispatcher.WFS_SERVICE;
                 //                } else if (service.equals("WMS")) {

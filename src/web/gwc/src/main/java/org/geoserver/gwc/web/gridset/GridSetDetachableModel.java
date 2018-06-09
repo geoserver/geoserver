@@ -10,10 +10,7 @@ import org.geoserver.gwc.GWC;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 
-/**
- * @see GWC#getGridSetBroker()
- * 
- */
+/** @see GWC#getGridSetBroker() */
 class GridSetDetachableModel extends LoadableDetachableModel<GridSet> {
     private static final long serialVersionUID = 7948457592325861589L;
 
@@ -29,5 +26,4 @@ class GridSetDetachableModel extends LoadableDetachableModel<GridSet> {
         GridSet gridSet = gridSetBroker.get(name);
         return gridSet;
     }
-
 }

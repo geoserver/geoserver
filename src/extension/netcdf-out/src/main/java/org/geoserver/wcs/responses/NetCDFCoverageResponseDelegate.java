@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
@@ -24,7 +23,6 @@ import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,18 +30,21 @@ import ucar.ma2.InvalidRangeException;
 
 /**
  * {@link CoverageResponseDelegate} implementation for NetCDF multidimensional Grids
- * 
+ *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
-public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate implements
-        CoverageResponseDelegate, ApplicationContextAware {
+public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
+        implements CoverageResponseDelegate, ApplicationContextAware {
 
-    public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
+    public static final Logger LOGGER =
+            Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
     private List<NetCDFEncoderFactory> encoderFactories;
 
     @SuppressWarnings("serial")
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
-        super(geoserver, Arrays.asList(NetCDFUtilities.NETCDF), // output formats
+        super(
+                geoserver,
+                Arrays.asList(NetCDFUtilities.NETCDF), // output formats
                 new HashMap<String, String>() { // file extensions
                     {
                         put(NetCDFUtilities.NETCDF, "nc");
@@ -52,28 +53,38 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
                         put(NetCDFUtilities.NETCDF3_MIMETYPE, "nc");
                         put(NetCDFUtilities.NETCDF4_MIMETYPE, "nc");
                     }
-                }, new HashMap<String, String>() { // mime types
+                },
+                new HashMap<String, String>() { // mime types
                     {
                         put(NetCDFUtilities.NETCDF, NetCDFUtilities.NETCDF3_MIMETYPE);
                         put(NetCDFUtilities.NETCDF.toLowerCase(), NetCDFUtilities.NETCDF3_MIMETYPE);
                         put(NetCDFUtilities.NETCDF.toUpperCase(), NetCDFUtilities.NETCDF3_MIMETYPE);
                         put(NetCDFUtilities.NETCDF4, NetCDFUtilities.NETCDF4_MIMETYPE);
-                        put(NetCDFUtilities.NETCDF4.toLowerCase(), NetCDFUtilities.NETCDF4_MIMETYPE);
-                        put(NetCDFUtilities.NETCDF4.toUpperCase(), NetCDFUtilities.NETCDF4_MIMETYPE);
+                        put(
+                                NetCDFUtilities.NETCDF4.toLowerCase(),
+                                NetCDFUtilities.NETCDF4_MIMETYPE);
+                        put(
+                                NetCDFUtilities.NETCDF4.toUpperCase(),
+                                NetCDFUtilities.NETCDF4_MIMETYPE);
                     }
                 });
     }
 
-    public void encode(GridCoverage2D sourceCoverage, String outputFormat,
-            Map<String, String> encodingParameters, OutputStream output) throws ServiceException,
-            IOException {
+    public void encode(
+            GridCoverage2D sourceCoverage,
+            String outputFormat,
+            Map<String, String> encodingParameters,
+            OutputStream output)
+            throws ServiceException, IOException {
         GranuleStack granuleStack = toGranuleStack(sourceCoverage);
 
         File tempFile = null;
         try {
             tempFile = File.createTempFile("tempNetCDF", ".nc");
             for (NetCDFEncoderFactory factory : encoderFactories) {
-                NetCDFEncoder encoder = factory.getEncoderFor(granuleStack, tempFile, encodingParameters, outputFormat);
+                NetCDFEncoder encoder =
+                        factory.getEncoderFor(
+                                granuleStack, tempFile, encodingParameters, outputFormat);
                 if (encoder != null) {
                     encoder.write();
                     encoder.close();
@@ -95,9 +106,10 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
 
     public GranuleStack toGranuleStack(GridCoverage2D sourceCoverage) {
         if (sourceCoverage == null) {
-            throw new IllegalStateException(new StringBuffer(
-                    "It seems prepare() has not been called").append(" or has not succeed")
-                    .toString());
+            throw new IllegalStateException(
+                    new StringBuffer("It seems prepare() has not been called")
+                            .append(" or has not succeed")
+                            .toString());
         }
         if (!(sourceCoverage instanceof GranuleStack)) {
             throw new IllegalArgumentException(
@@ -108,6 +120,7 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
 
     /**
      * Stream back the content of the temporary file to the output stream
+     *
      * @param file the temporary file containing the NetCDF output.
      * @param output the outputStream where to write the output
      * @throws IOException
@@ -128,7 +141,6 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
             }
         }
         output.flush();
-
     }
 
     @Override
@@ -146,7 +158,7 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
                 return fileName;
             }
         }
-        
+
         return super.getFileName(value, coverageId, format);
     }
 }

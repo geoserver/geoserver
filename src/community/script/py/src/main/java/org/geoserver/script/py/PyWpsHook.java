@@ -14,10 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-
 import org.geoserver.script.wps.WpsHook;
 import org.geotools.data.Parameter;
 import org.geotools.text.Text;
@@ -32,7 +30,7 @@ import org.python.core.PyType;
 
 /**
  * Python wps hook.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class PyWpsHook extends WpsHook {
@@ -54,17 +52,19 @@ public class PyWpsHook extends WpsHook {
     }
 
     @Override
-    public Map<String, Parameter<?>> getInputs(ScriptEngine engine)
-            throws ScriptException {
+    public Map<String, Parameter<?>> getInputs(ScriptEngine engine) throws ScriptException {
         engine.eval("import inspect");
-        PyList args = (PyList) engine.eval("inspect.getargspec(run.func_closure[0].cell_contents)[0]");
-        PyTuple defaults = (PyTuple) engine
-                .eval("inspect.getargspec(run.func_closure[0].cell_contents)[3]");
+        PyList args =
+                (PyList) engine.eval("inspect.getargspec(run.func_closure[0].cell_contents)[0]");
+        PyTuple defaults =
+                (PyTuple) engine.eval("inspect.getargspec(run.func_closure[0].cell_contents)[3]");
         PyDictionary inputs = (PyDictionary) process(engine).__getattr__("inputs");
 
         if (args.size() != inputs.size()) {
-            throw new RuntimeException(String.format("process function specified %d arguments but"+
-                " describes %d inputs", args.size(), inputs.size())); 
+            throw new RuntimeException(
+                    String.format(
+                            "process function specified %d arguments but" + " describes %d inputs",
+                            args.size(), inputs.size()));
         }
 
         Map<String, Parameter<?>> map = new LinkedHashMap<String, Parameter<?>>();
@@ -72,8 +72,11 @@ public class PyWpsHook extends WpsHook {
             String arg = args.get(i).toString();
             PyTuple input = (PyTuple) inputs.get(arg);
             if (input == null) {
-                throw new RuntimeException(String.format("process function specified argument %s" +
-                    " but does not specify it as an input", arg));
+                throw new RuntimeException(
+                        String.format(
+                                "process function specified argument %s"
+                                        + " but does not specify it as an input",
+                                arg));
             }
             int min = 1;
             int max = 1;
@@ -93,33 +96,39 @@ public class PyWpsHook extends WpsHook {
                 otherKeys.remove("min");
                 otherKeys.remove("max");
                 otherKeys.remove("domain");
-                if(!otherKeys.isEmpty()) {
+                if (!otherKeys.isEmpty()) {
                     if (metadata == null) {
                         metadata = new HashMap();
                     }
                     for (String key : otherKeys) {
-						metadata.put(key, meta.get(key));
-					}
+                        metadata.put(key, meta.get(key));
+                    }
                 }
             }
             if (defaults != null) {
                 // from the python guide:
-                // defaults is a tuple of default argument values or None if there are no 
-                // default arguments; if this tuple has n elements, 
+                // defaults is a tuple of default argument values or None if there are no
+                // default arguments; if this tuple has n elements,
                 // they correspond to the last n elements listed in args.
                 int defaultIdx = defaults.size() - (args.size() - i);
                 if (defaultIdx >= 0) {
                     defaultValue = defaults.get(defaultIdx);
                 }
             }
-            Parameter parameter = parameter(arg, input.__getitem__(0), min, max,
-                    input.__getitem__(1),
-                    defaultValue, metadata);
+            Parameter parameter =
+                    parameter(
+                            arg,
+                            input.__getitem__(0),
+                            min,
+                            max,
+                            input.__getitem__(1),
+                            defaultValue,
+                            metadata);
             map.put(arg, parameter);
         }
         return map;
     }
-    
+
     private <T> T getParameter(PyDictionary meta, String key, Class<T> targetType, T defaultValue) {
         if (!meta.containsKey(key)) {
             return defaultValue;
@@ -130,14 +139,13 @@ public class PyWpsHook extends WpsHook {
     }
 
     @Override
-    public Map<String, Parameter<?>> getOutputs(ScriptEngine engine)
-            throws ScriptException {
-    
-        PyDictionary outputs = (PyDictionary) process(engine).__getattr__("outputs");
-        Map<String,Parameter<?>> map = new TreeMap<String, Parameter<?>>();
+    public Map<String, Parameter<?>> getOutputs(ScriptEngine engine) throws ScriptException {
 
-        for (String name : (List<String>)outputs.keys()) {
-        	PyTuple output = (PyTuple) outputs.get(name); 
+        PyDictionary outputs = (PyDictionary) process(engine).__getattr__("outputs");
+        Map<String, Parameter<?>> map = new TreeMap<String, Parameter<?>>();
+
+        for (String name : (List<String>) outputs.keys()) {
+            PyTuple output = (PyTuple) outputs.get(name);
 
             Object type = output.__getitem__(0);
             Object desc = output.__getitem__(1);
@@ -146,11 +154,11 @@ public class PyWpsHook extends WpsHook {
             Map<String, Object> metadata = null;
             if (output.size() == 3) {
                 PyDictionary meta = (PyDictionary) output.get(2);
-                if(meta != null && !meta.isEmpty()) {
-                	metadata = new HashMap<String, Object>();
-	                for (Object key : meta.keySet()) {
-						metadata.put((String) key, meta.get(key));
-					}
+                if (meta != null && !meta.isEmpty()) {
+                    metadata = new HashMap<String, Object>();
+                    for (Object key : meta.keySet()) {
+                        metadata.put((String) key, meta.get(key));
+                    }
                 }
             }
 
@@ -161,52 +169,58 @@ public class PyWpsHook extends WpsHook {
     }
 
     @Override
-    public Map<String, Object> run(Map<String, Object> inputs, ScriptEngine engine) 
+    public Map<String, Object> run(Map<String, Object> inputs, ScriptEngine engine)
             throws ScriptException {
         PyObject run = process(engine);
-        
+
         List<PyObject> args = new ArrayList();
         List<String> kw = new ArrayList();
-        
-        for (Map.Entry<String,Object> input : inputs.entrySet()) {
+
+        for (Map.Entry<String, Object> input : inputs.entrySet()) {
             args.add(Py.java2py(input.getValue()));
             kw.add(input.getKey());
         }
-        
-        PyObject r = run.__call__(args.toArray(new PyObject[args.size()]), 
-            kw.toArray(new String[kw.size()]));
 
-        Map<String,Parameter<?>> outputs = getOutputs(engine);
+        PyObject r =
+                run.__call__(
+                        args.toArray(new PyObject[args.size()]), kw.toArray(new String[kw.size()]));
 
-        Map<String,?> result = null;
+        Map<String, Parameter<?>> outputs = getOutputs(engine);
+
+        Map<String, ?> result = null;
         if (r instanceof Map) {
             result = (Map<String, ?>) r;
-        }
-        else {
+        } else {
             result = Collections.singletonMap(outputs.keySet().iterator().next(), r);
         }
 
         if (result.size() != outputs.size()) {
-            throw new IllegalStateException(String.format("Process returned %d values, should have " +
-                "returned %d", result.size(), outputs.size()));
+            throw new IllegalStateException(
+                    String.format(
+                            "Process returned %d values, should have " + "returned %d",
+                            result.size(), outputs.size()));
         }
-        
-        Map<String,Object> results = new LinkedHashMap<String, Object>();
+
+        Map<String, Object> results = new LinkedHashMap<String, Object>();
 
         for (Map.Entry<String, Parameter<?>> e : outputs.entrySet()) {
             String key = e.getKey();
             Parameter output = e.getValue();
-            
+
             Object obj = result.get(key);
 
             if (obj instanceof PyObject) {
                 obj = ((PyObject) obj).__tojava__(output.type);
             }
             if (obj != null && !output.type.isInstance(obj)) {
-                LOGGER.warning(String.format("Output %s declared type %s but returned %s", 
-                    output.getName(), output.getType().getSimpleName(), obj.getClass().getSimpleName()));
+                LOGGER.warning(
+                        String.format(
+                                "Output %s declared type %s but returned %s",
+                                output.getName(),
+                                output.getType().getSimpleName(),
+                                obj.getClass().getSimpleName()));
             }
-            
+
             results.put(output.key, obj);
         }
 
@@ -218,21 +232,35 @@ public class PyWpsHook extends WpsHook {
     }
 
     String str(Object obj) {
-        return obj != null ? obj.toString() : null; 
+        return obj != null ? obj.toString() : null;
     }
 
-    Parameter parameter(String name, Object type, int min, int max, Object desc,
-            Object defaultValue, Map metadata) {
+    Parameter parameter(
+            String name,
+            Object type,
+            int min,
+            int max,
+            Object desc,
+            Object defaultValue,
+            Map metadata) {
         Class clazz = null;
         if (type != null && type instanceof PyType) {
-            clazz = PythonPlugin.toJavaClass((PyType)type);
+            clazz = PythonPlugin.toJavaClass((PyType) type);
         }
         if (clazz == null) {
             clazz = Object.class;
         }
 
         desc = desc != null ? desc : name;
-        return new Parameter(name, clazz, Text.text(name), Text.text(desc.toString()),
-                min > 0, min, max, defaultValue, metadata);
+        return new Parameter(
+                name,
+                clazz,
+                Text.text(name),
+                Text.text(desc.toString()),
+                min > 0,
+                min,
+                max,
+                defaultValue,
+                metadata);
     }
 }

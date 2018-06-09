@@ -7,19 +7,17 @@ package org.geoserver.wms.featureinfo;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import net.opengis.wfs.FeatureCollectionType;
-
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 
 /**
- * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo request.
- * 
+ * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a
+ * GetFeatureInfo request.
+ *
  * @author Simone Giannecchini, GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
- * 
  */
 public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
 
@@ -37,19 +35,22 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
 
     /**
      * Writes a Json (or Jsonp) response on the passed output stream
-     * 
-     * @see {@link GetFeatureInfoOutputFormat#write(FeatureCollectionType, GetFeatureInfoRequest, OutputStream)}
+     *
+     * @see {@link GetFeatureInfoOutputFormat#write(FeatureCollectionType, GetFeatureInfoRequest,
+     *     OutputStream)}
      */
     @Override
-    public void write(FeatureCollectionType features, GetFeatureInfoRequest fInfoReq,
-            OutputStream out) throws IOException {
+    public void write(
+            FeatureCollectionType features, GetFeatureInfoRequest fInfoReq, OutputStream out)
+            throws IOException {
 
-        GeoJSONGetFeatureResponse format = new GeoJSONGetFeatureResponse(wms.getGeoServer(), getContentType());
+        GeoJSONGetFeatureResponse format =
+                new GeoJSONGetFeatureResponse(wms.getGeoServer(), getContentType());
         format.write(features, out, null);
     }
 
     @Override
-    public String getCharset(){ 
+    public String getCharset() {
         return wms.getGeoServer().getSettings().getCharset();
     }
 }

@@ -7,7 +7,6 @@ package org.geoserver.wcs2_0.eo.response;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.security.decorators.DecoratingCoverageInfo;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -19,7 +18,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * Builds a view of the coverage that contains only the specified coverage
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class GranuleCoverageInfo extends DecoratingCoverageInfo {
@@ -27,7 +26,10 @@ public class GranuleCoverageInfo extends DecoratingCoverageInfo {
     private SimpleFeature feature;
     private List<DimensionDescriptor> dimensionDescriptors;
 
-    public GranuleCoverageInfo(CoverageInfo delegate, SimpleFeature feature, List<DimensionDescriptor> dimensionDescriptors) {
+    public GranuleCoverageInfo(
+            CoverageInfo delegate,
+            SimpleFeature feature,
+            List<DimensionDescriptor> dimensionDescriptors) {
         super(delegate);
         this.feature = feature;
         this.dimensionDescriptors = dimensionDescriptors;
@@ -36,7 +38,8 @@ public class GranuleCoverageInfo extends DecoratingCoverageInfo {
     @Override
     public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
             throws IOException {
-        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) super.getGridCoverageReader(listener, hints);
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) super.getGridCoverageReader(listener, hints);
         return new SingleGranuleGridCoverageReader(reader, feature, dimensionDescriptors);
     }
 }

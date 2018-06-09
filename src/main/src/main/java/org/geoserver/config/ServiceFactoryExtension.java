@@ -7,12 +7,11 @@ package org.geoserver.config;
 
 /**
  * Base class for extensions of {@link GeoServerFactory} for creating {@link ServiceInfo} objects.
- *  
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
-public abstract class ServiceFactoryExtension<T extends ServiceInfo> 
-    implements GeoServerFactory.Extension{
+public abstract class ServiceFactoryExtension<T extends ServiceInfo>
+        implements GeoServerFactory.Extension {
 
     Class<T> serviceClass;
 

@@ -5,15 +5,14 @@
  */
 package org.geoserver.wms;
 
-import org.geoserver.catalog.AuthorityURLInfo;
-import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.LayerIdentifierInfo;
-import org.geoserver.config.impl.ServiceInfoImpl;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
+import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
@@ -24,14 +23,13 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     WatermarkInfo watermark = new WatermarkInfoImpl();
 
     WMSInterpolation interpolation = WMSInterpolation.Nearest;
-    
-    
+
     boolean getFeatureInfoMimeTypeCheckingEnabled;
     Set<String> getFeatureInfoMimeTypes = new HashSet<String>();
-    
+
     boolean getMapMimeTypeCheckingEnabled;
     Set<String> getMapMimeTypes = new HashSet<String>();
-    
+
     boolean dynamicStylingDisabled;
 
     // GetFeatureInfo result are reprojected by default
@@ -40,16 +38,15 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
      * "authorityURLs", and a not transient in the 2.2.x series.
-     * 
+     *
      * @since 2.1.3
      */
     protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(2);
-    
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
      * "identifiers", and a not transient in the 2.2.x series.
-     * 
+     *
      * @since 2.1.3
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
@@ -62,12 +59,12 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     int maxRenderingErrors;
 
-    private String capabilitiesErrorHandling;    
-    
+    private String capabilitiesErrorHandling;
+
     private String rootLayerTitle;
-    
+
     private String rootLayerAbstract;
-    
+
     private Integer maxRequestedDimensionValues;
 
     public WMSInfoImpl() {
@@ -111,8 +108,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
         if (bboxForEachCRS != null) {
             return bboxForEachCRS;
         }
-        
-        //check the metadata map if upgrading from 2.1.x
+
+        // check the metadata map if upgrading from 2.1.x
         Boolean bool = getMetadata().get("bboxForEachCRS", Boolean.class);
         return bool != null && bool;
     }
@@ -183,7 +180,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
         return getFeatureInfoMimeTypeCheckingEnabled;
     }
 
-    public void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled) {
+    public void setGetFeatureInfoMimeTypeCheckingEnabled(
+            boolean getFeatureInfoMimeTypeCheckingEnabled) {
         this.getFeatureInfoMimeTypeCheckingEnabled = getFeatureInfoMimeTypeCheckingEnabled;
     }
 
@@ -195,22 +193,22 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
         this.getMapMimeTypeCheckingEnabled = getMapMimeTypeCheckingEnabled;
     }
 
-	public String getRootLayerTitle() {
-		return rootLayerTitle;
-	}
+    public String getRootLayerTitle() {
+        return rootLayerTitle;
+    }
 
-	public void setRootLayerTitle(String rootLayerTitle) {
-		this.rootLayerTitle = rootLayerTitle;
-	}
+    public void setRootLayerTitle(String rootLayerTitle) {
+        this.rootLayerTitle = rootLayerTitle;
+    }
 
-	public String getRootLayerAbstract() {
-		return rootLayerAbstract;
-	}
+    public String getRootLayerAbstract() {
+        return rootLayerAbstract;
+    }
 
-	public void setRootLayerAbstract(String rootLayerAbstract) {
-		this.rootLayerAbstract = rootLayerAbstract;
-	}
-    
+    public void setRootLayerAbstract(String rootLayerAbstract) {
+        this.rootLayerAbstract = rootLayerAbstract;
+    }
+
     /**
      * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
      *
@@ -218,17 +216,14 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
      */
     @Override
     public void setDynamicStylingDisabled(Boolean dynamicStylingDisabled) {
-        this.dynamicStylingDisabled= dynamicStylingDisabled;
+        this.dynamicStylingDisabled = dynamicStylingDisabled;
     }
 
-    /**
-     * @return the status of dynamic styling (SLD and SLD_BODY params) allowance
-     */
+    /** @return the status of dynamic styling (SLD and SLD_BODY params) allowance */
     @Override
     public Boolean isDynamicStylingDisabled() {
         return dynamicStylingDisabled;
     }
-
 
     @Override
     public boolean isFeaturesReprojectionDisabled() {

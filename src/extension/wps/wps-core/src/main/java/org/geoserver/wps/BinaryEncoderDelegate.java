@@ -7,7 +7,6 @@ package org.geoserver.wps;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geotools.xml.EncoderDelegate;
@@ -15,7 +14,7 @@ import org.xml.sax.ContentHandler;
 
 /**
  * Encodes objects as base64 binaries
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class BinaryEncoderDelegate implements EncoderDelegate {

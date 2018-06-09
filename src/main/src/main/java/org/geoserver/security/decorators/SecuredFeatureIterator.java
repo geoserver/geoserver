@@ -6,14 +6,13 @@
 package org.geoserver.security.decorators;
 
 import java.util.NoSuchElementException;
-
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 
 /**
  * Feature iterators are read only by design, but just to make extra sure there are no write enabled
  * subclasses floating around we make the wrapping anyways, this will make instanceof
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SecuredFeatureIterator implements FeatureIterator {
@@ -35,5 +34,4 @@ public class SecuredFeatureIterator implements FeatureIterator {
     public Feature next() throws NoSuchElementException {
         return wrapped.next();
     }
-
 }

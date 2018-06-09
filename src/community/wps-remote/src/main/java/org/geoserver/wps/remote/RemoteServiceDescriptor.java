@@ -5,15 +5,14 @@
 package org.geoserver.wps.remote;
 
 import java.util.Map;
-
 import org.geotools.data.Parameter;
 import org.opengis.feature.type.Name;
 
 /**
- * Just a utility class to store some info associated to the new WPS Processes created dynamically by the {@link RemoteProcessFactory}
- * 
+ * Just a utility class to store some info associated to the new WPS Processes created dynamically
+ * by the {@link RemoteProcessFactory}
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class RemoteServiceDescriptor {
 
@@ -30,15 +29,18 @@ public class RemoteServiceDescriptor {
     private Map<String, Object> metadata;
 
     /**
-     * 
      * @param name
      * @param title
      * @param description
      * @param paramInfo
      * @param outputInfo
      */
-    public RemoteServiceDescriptor(Name name, String title, String description,
-            Map<String, Parameter<?>> paramInfo, Map<String, Parameter<?>> outputInfo,
+    public RemoteServiceDescriptor(
+            Name name,
+            String title,
+            String description,
+            Map<String, Parameter<?>> paramInfo,
+            Map<String, Parameter<?>> outputInfo,
             Map<String, Object> metadata) {
         super();
         this.name = name;
@@ -49,88 +51,63 @@ public class RemoteServiceDescriptor {
         this.metadata = metadata;
     }
 
-    /**
-     * @return the name
-     */
+    /** @return the name */
     public Name getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    /** @param name the name to set */
     public void setName(Name name) {
         this.name = name;
     }
 
-    /**
-     * @return the title
-     */
+    /** @return the title */
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    /** @param title the title to set */
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the description
-     */
+    /** @return the description */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    /** @param description the description to set */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the paramInfo
-     */
+    /** @return the paramInfo */
     public Map<String, Parameter<?>> getParamInfo() {
         return paramInfo;
     }
 
-    /**
-     * @param paramInfo the paramInfo to set
-     */
+    /** @param paramInfo the paramInfo to set */
     public void setParamInfo(Map<String, Parameter<?>> paramInfo) {
         this.paramInfo = paramInfo;
     }
 
-    /**
-     * @return the outputInfo
-     */
+    /** @return the outputInfo */
     public Map<String, Parameter<?>> getOutputInfo() {
         return outputInfo;
     }
 
-    /**
-     * @param outputInfo the outputInfo to set
-     */
+    /** @param outputInfo the outputInfo to set */
     public void setOutputInfo(Map<String, Parameter<?>> outputInfo) {
         this.outputInfo = outputInfo;
     }
 
-    /**
-     * @return the metadata
-     */
+    /** @return the metadata */
     public Map<String, Object> getMetadata() {
         return metadata;
     }
 
-    /**
-     * @param metadata the metadata to set
-     */
+    /** @param metadata the metadata to set */
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
     }
-
 }

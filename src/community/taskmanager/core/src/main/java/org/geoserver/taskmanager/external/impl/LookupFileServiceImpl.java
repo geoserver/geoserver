@@ -4,16 +4,15 @@
  */
 package org.geoserver.taskmanager.external.impl;
 
+import java.util.List;
 import org.geoserver.taskmanager.external.FileService;
 import org.geoserver.taskmanager.util.LookupServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
- * Find all @FileService instance from the spring context.
- * The Lookup service will also define S3 fileServices for each configuration in the S3-geotiff module.
+ * Find all @FileService instance from the spring context. The Lookup service will also define S3
+ * fileServices for each configuration in the S3-geotiff module.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

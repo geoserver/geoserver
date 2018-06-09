@@ -8,9 +8,8 @@ import java.io.Serializable;
 
 /**
  * Parameter of a task.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface Parameter extends Serializable, Identifiable {
 
@@ -25,5 +24,4 @@ public interface Parameter extends Serializable, Identifiable {
     Task getTask();
 
     void setTask(Task task);
-
 }

@@ -4,23 +4,22 @@
  */
 package org.geoserver.wfs3.response;
 
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.LandingPageRequest;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 /**
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
@@ -48,7 +47,7 @@ public class LandingPageDocument {
                 "This document as ",
                 (format, link) -> {
                     String outputFormat = request.getOutputFormat();
-                    if (format.equals(outputFormat) 
+                    if (format.equals(outputFormat)
                             || (outputFormat == null && BaseRequest.JSON_MIME.equals(format))) {
                         link.setRel(Link.REL_SELF);
                         link.setTitle("This document");

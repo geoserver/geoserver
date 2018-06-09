@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.junit.Before;
@@ -22,7 +21,7 @@ public class SchemaMappingTest extends GeoServerSystemTestSupport {
     public SchemaMappingTest() {
         super();
     }
-    
+
     @Before
     public void removeMappings() throws IOException {
         File resourceDir = getDataDirectory().findResourceDir(getDividedRoutes());
@@ -33,34 +32,37 @@ public class SchemaMappingTest extends GeoServerSystemTestSupport {
     @Test
     public void testNoMapping() throws Exception {
         reloadCatalogAndConfiguration();
-        FeatureTypeInfo ft = 
-            getCatalog().getFeatureTypeByName( "DividedRoutes");
-        assertEquals( 4, ft.attributes().size() );
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
+        assertEquals(4, ft.attributes().size());
     }
 
     @Test
     public void testXsdMapping() throws Exception {
-        getDataDirectory().copyToResourceDir(
-            getDividedRoutes(), getClass().getResourceAsStream( "schema.xsd"), "schema.xsd");
+        getDataDirectory()
+                .copyToResourceDir(
+                        getDividedRoutes(),
+                        getClass().getResourceAsStream("schema.xsd"),
+                        "schema.xsd");
 
         reloadCatalogAndConfiguration();
-        FeatureTypeInfo ft = 
-            getCatalog().getFeatureTypeByName( "DividedRoutes");
-        assertEquals( 3, ft.attributes().size() );
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
+        assertEquals(3, ft.attributes().size());
     }
-    
+
     @Test
     public void testXmlMapping() throws Exception {
-        getDataDirectory().copyToResourceDir(
-                getDividedRoutes(), getClass().getResourceAsStream( "schema.xml"), "schema.xml");
+        getDataDirectory()
+                .copyToResourceDir(
+                        getDividedRoutes(),
+                        getClass().getResourceAsStream("schema.xml"),
+                        "schema.xml");
 
         reloadCatalogAndConfiguration();
-        FeatureTypeInfo ft = 
-            getCatalog().getFeatureTypeByName( "DividedRoutes");
-        assertEquals( 2, ft.attributes().size() );
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
+        assertEquals(2, ft.attributes().size());
     }
 
     FeatureTypeInfo getDividedRoutes() {
-        return getCatalog().getFeatureTypeByName( "DividedRoutes");
+        return getCatalog().getFeatureTypeByName("DividedRoutes");
     }
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ServiceException;
@@ -22,32 +21,31 @@ import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.util.logging.Logging;
 
 /**
- * An abstract parent class for a  DefaultValueSelectionStrategy implementations
- * that use a {@link FeatureCalc} instances for finding the matching default value.
- *  
- * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ * An abstract parent class for a DefaultValueSelectionStrategy implementations that use a {@link
+ * FeatureCalc} instances for finding the matching default value.
  *
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends AbstractDefaultValueSelectionStrategy {
+public abstract class AbstractFeatureAttributeVisitorSelectionStrategy
+        extends AbstractDefaultValueSelectionStrategy {
 
-    private static Logger LOGGER = Logging.getLogger(AbstractFeatureAttributeVisitorSelectionStrategy.class);
-    
+    private static Logger LOGGER =
+            Logging.getLogger(AbstractFeatureAttributeVisitorSelectionStrategy.class);
+
     /**
-     * Return the result of iterating through the dimension collection
-     * of the given dimension using given calculator as the attribute
-     * value calculator.
-     * 
+     * Return the result of iterating through the dimension collection of the given dimension using
+     * given calculator as the attribute value calculator.
+     *
      * @param typeInfo
      * @param dimension
      * @param calculator
-     *
      */
-    protected CalcResult getCalculatedResult(FeatureTypeInfo typeInfo, DimensionInfo dimension,
-            FeatureCalc calculator) {
+    protected CalcResult getCalculatedResult(
+            FeatureTypeInfo typeInfo, DimensionInfo dimension, FeatureCalc calculator) {
         CalcResult retval = null;
         try {
-            FeatureCollection<?, ?> dimensionCollection = getDimensionCollection(typeInfo,
-                    dimension);
+            FeatureCollection<?, ?> dimensionCollection =
+                    getDimensionCollection(typeInfo, dimension);
             if (dimensionCollection == null) {
                 throw new ServiceException(
                         "No dimension collection given, cannot select default value for dimension based on attribute"
@@ -56,13 +54,13 @@ public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends A
             dimensionCollection.accepts(calculator, null);
             retval = calculator.getResult();
         } catch (IOException e) {
-           LOGGER.log(Level.FINER, e.getMessage(), e);
+            LOGGER.log(Level.FINER, e.getMessage(), e);
         }
         return retval;
     }
 
-    private FeatureCollection<?, ?> getDimensionCollection(FeatureTypeInfo typeInfo,
-            DimensionInfo dimension) throws IOException {
+    private FeatureCollection<?, ?> getDimensionCollection(
+            FeatureTypeInfo typeInfo, DimensionInfo dimension) throws IOException {
         // grab the feature source
         FeatureSource<?, ?> source = null;
         try {
@@ -70,7 +68,8 @@ public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends A
         } catch (IOException e) {
             throw new ServiceException(
                     "Could not get the feauture source to list time info for layer "
-                            + typeInfo.prefixedName(), e);
+                            + typeInfo.prefixedName(),
+                    e);
         }
 
         // build query to grab the dimension values

@@ -7,7 +7,6 @@ package org.geogig.geoserver.web;
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
-
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
 import org.geogig.geoserver.model.DropDownModel;
@@ -15,9 +14,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.junit.Test;
 
-/**
- *
- */
+/** */
 public class RepositoriesPageTest extends GeoServerWicketTestSupport {
 
     private RepositoriesPage repoPage;
@@ -36,11 +33,15 @@ public class RepositoriesPageTest extends GeoServerWicketTestSupport {
         // verify the page is a RepositoriesEditPage
         tester.assertRenderedPage(RepositoryEditPage.class);
         // verify the type dropdown
-        DropDownChoiceParamPanel panel = (DropDownChoiceParamPanel) tester.getComponentFromLastRenderedPage(
-                "panel:repoForm:repo:repositoryConfig:configChoicePanel");
+        DropDownChoiceParamPanel panel =
+                (DropDownChoiceParamPanel)
+                        tester.getComponentFromLastRenderedPage(
+                                "panel:repoForm:repo:repositoryConfig:configChoicePanel");
         DropDownChoice<Serializable> choice = panel.getFormComponent();
         // make sure Directory is selected
-        assertEquals("Expected DropDwon to be set to " + DropDownModel.DIRECTORY_CONFIG, DropDownModel.DIRECTORY_CONFIG,
+        assertEquals(
+                "Expected DropDwon to be set to " + DropDownModel.DIRECTORY_CONFIG,
+                DropDownModel.DIRECTORY_CONFIG,
                 choice.getModelObject());
         // verify that Directory components are visible
         final String settings = "panel:repoForm:repo:repositoryConfig:settingsContainer:";
@@ -49,8 +50,9 @@ public class RepositoriesPageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible(settings + "pgPanel");
         // now select PG config
         FormTester formTester = tester.newFormTester("panel:repoForm");
-        formTester.select("repo:repositoryConfig:configChoicePanel:border:border_body:paramValue", choice.getChoices().indexOf(
-                DropDownModel.PG_CONFIG));
+        formTester.select(
+                "repo:repositoryConfig:configChoicePanel:border:border_body:paramValue",
+                choice.getChoices().indexOf(DropDownModel.PG_CONFIG));
         tester.executeAjaxEvent(choice, "change");
         // verify the Directory components go away and the PG config is visible
         tester.assertVisible(settings + "repositoryNamePanel");
@@ -65,11 +67,15 @@ public class RepositoriesPageTest extends GeoServerWicketTestSupport {
         // verify the page is a RepositoryImportPage
         tester.assertRenderedPage(RepositoryImportPage.class);
         // verify the type dropdown
-        DropDownChoiceParamPanel panel = (DropDownChoiceParamPanel) tester.getComponentFromLastRenderedPage(
-                "panel:repoForm:repo:configChoicePanel");
+        DropDownChoiceParamPanel panel =
+                (DropDownChoiceParamPanel)
+                        tester.getComponentFromLastRenderedPage(
+                                "panel:repoForm:repo:configChoicePanel");
         DropDownChoice<Serializable> choice = panel.getFormComponent();
         // verify Directory is selected
-        assertEquals("Expected DropDwon to be set to " + DropDownModel.DIRECTORY_CONFIG, DropDownModel.DIRECTORY_CONFIG,
+        assertEquals(
+                "Expected DropDwon to be set to " + DropDownModel.DIRECTORY_CONFIG,
+                DropDownModel.DIRECTORY_CONFIG,
                 choice.getModelObject());
         // verify Parent Directory component
         final String settings = "panel:repoForm:repo:settingsContainer:";
@@ -78,8 +84,9 @@ public class RepositoriesPageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible(settings + "pgPanel");
         // now select PG config
         FormTester formTester = tester.newFormTester("panel:repoForm");
-        formTester.select("repo:configChoicePanel:border:border_body:paramValue", choice.getChoices().indexOf(
-                DropDownModel.PG_CONFIG));
+        formTester.select(
+                "repo:configChoicePanel:border:border_body:paramValue",
+                choice.getChoices().indexOf(DropDownModel.PG_CONFIG));
         tester.executeAjaxEvent(choice, "change");
         // verify PG config
         tester.assertInvisible(settings + "repoDirectoryPanel");

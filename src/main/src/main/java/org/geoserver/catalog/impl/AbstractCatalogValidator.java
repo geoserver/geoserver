@@ -15,33 +15,24 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
 /**
- * A convenience implementation of InfoValidator with all methods implemented
- * as a no-op.  You can override individual methods without having to provide
- * your own stubs.
- * 
- * @author David Winslow, OpenGeo
+ * A convenience implementation of InfoValidator with all methods implemented as a no-op. You can
+ * override individual methods without having to provide your own stubs.
  *
+ * @author David Winslow, OpenGeo
  */
 public abstract class AbstractCatalogValidator implements CatalogValidator {
 
-    public void validate(ResourceInfo resource, boolean isNew) {
-    }
+    public void validate(ResourceInfo resource, boolean isNew) {}
 
-    public void validate(StoreInfo store, boolean isNew) {
-    }
+    public void validate(StoreInfo store, boolean isNew) {}
 
-    public void validate(WorkspaceInfo workspace, boolean isNew) {
-    }
+    public void validate(WorkspaceInfo workspace, boolean isNew) {}
 
-    public void validate(LayerInfo layer, boolean isNew) {
-    }
+    public void validate(LayerInfo layer, boolean isNew) {}
 
-    public void validate(StyleInfo style, boolean isNew) {
-    }
+    public void validate(StyleInfo style, boolean isNew) {}
 
-    public void validate(LayerGroupInfo layerGroup, boolean isNew) {
-    }
+    public void validate(LayerGroupInfo layerGroup, boolean isNew) {}
 
-    public void validate(NamespaceInfo namespace, boolean isNew) {
-    }
+    public void validate(NamespaceInfo namespace, boolean isNew) {}
 }

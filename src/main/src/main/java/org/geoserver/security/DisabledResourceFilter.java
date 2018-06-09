@@ -14,9 +14,8 @@ import org.opengis.filter.Filter;
 
 /**
  * Makes sure disabled layers/resources cannot be accessed from outside regardless of the service
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class DisabledResourceFilter extends AbstractCatalogFilter {
 
@@ -30,12 +29,13 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
     public Filter getSecurityFilter(Class<? extends CatalogInfo> clazz) {
         if (shouldApplyFilter()) {
             if (LayerInfo.class.isAssignableFrom(clazz)) {
-                return Predicates.and(Predicates.equal("enabled", true),
+                return Predicates.and(
+                        Predicates.equal("enabled", true),
                         Predicates.equal("resource.enabled", true),
                         Predicates.equal("resource.store.enabled", true));
             } else if (ResourceInfo.class.isAssignableFrom(clazz)) {
-                return Predicates.and(Predicates.equal("enabled", true),
-                        Predicates.equal("store.enabled", true));
+                return Predicates.and(
+                        Predicates.equal("enabled", true), Predicates.equal("store.enabled", true));
             }
         }
         return Filter.INCLUDE;
@@ -56,5 +56,4 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
         }
         return false;
     }
-
 }

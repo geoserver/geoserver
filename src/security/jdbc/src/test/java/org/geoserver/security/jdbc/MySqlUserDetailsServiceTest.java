@@ -6,13 +6,10 @@
 
 package org.geoserver.security.jdbc;
 
-
 public class MySqlUserDetailsServiceTest extends JDBCUserDetailsServiceTest {
 
-    
     @Override
     protected String getFixtureId() {
         return "mysql";
     }
-        
 }

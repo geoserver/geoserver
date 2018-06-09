@@ -14,43 +14,39 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geotools.geometry.jts.GeometryClipper;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.logging.Logging;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * A KML specific geometry centroid extractor
- */
+/** A KML specific geometry centroid extractor */
 public class KmlCentroidBuilder {
 
     static Logger LOG = Logging.getLogger(KmlCentroidBuilder.class);
 
     /**
      * Returns the centroid of the geometry, handling a geometry collection.
-     * <p>
-     * In the case of a collection a multi point containing the centroid of each geometry in the
+     *
+     * <p>In the case of a collection a multi point containing the centroid of each geometry in the
      * collection is calculated. The first point in the multi point is returned as the controid.
-     * </p>
      */
     public Coordinate geometryCentroid(Geometry g) {
-        return geometryCentroid(g, null,null);
+        return geometryCentroid(g, null, null);
     }
 
     /**
      * Returns the centroid of the geometry, handling a geometry collection.
-     * <p>
-     * In the case of a collection a multi point containing the centroid of each geometry in the
+     *
+     * <p>In the case of a collection a multi point containing the centroid of each geometry in the
      * collection is calculated. The first point in the multi point is returned as the controid.
-     * </p>
-     * <p>
-     * The <tt>opts</tt> parameter is used to provide additional options controlling how the 
+     *
+     * <p>The <tt>opts</tt> parameter is used to provide additional options controlling how the
      * centroid is computed.
-     * </p>
+     *
      * @param g The geometry to compute the centroid.
-     * @param bbox The request bbox, used to potentially clip the geometry before computting the centroid.
+     * @param bbox The request bbox, used to potentially clip the geometry before computting the
+     *     centroid.
      * @param opts The centroid options controlling whether clipping/sampling/etc... are used.
      */
     public Coordinate geometryCentroid(Geometry g, Envelope bbox, KmlCentroidOptions opts) {
@@ -84,17 +80,17 @@ public class KmlCentroidBuilder {
         } else if (g instanceof Polygon) {
             if (opts.isContain()) {
                 try {
-                    Point p = RendererUtilities.sampleForInternalPoint(
-                        (Polygon)g, null, null, null, -1, opts.getSamples());
+                    Point p =
+                            RendererUtilities.sampleForInternalPoint(
+                                    (Polygon) g, null, null, null, -1, opts.getSamples());
                     if (p != null && !p.isEmpty()) {
                         return p.getCoordinate();
                     }
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     LOG.log(Level.WARNING, "Unable to calculate central point for polygon", e);
                 }
             }
-        } 
+        }
 
         // return the actual centroid
         return g.getCentroid().getCoordinate();
@@ -102,9 +98,8 @@ public class KmlCentroidBuilder {
 
     /**
      * Selects a representative geometry from the collection (the one covering the biggest area)
-     * 
-     * @param g
      *
+     * @param g
      */
     private Geometry selectRepresentativeGeometry(GeometryCollection g) {
         GeometryCollection gc = (GeometryCollection) g;

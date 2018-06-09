@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.Catalog;
@@ -22,7 +21,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Reports the list of feature types available in the specified store
- * 
+ *
  * @author Andrea Aime - GeoSolutiosn
  */
 class TypeListModel extends LoadableDetachableModel<List<String>> {
@@ -44,8 +43,8 @@ class TypeListModel extends LoadableDetachableModel<List<String>> {
         }
         try {
             Catalog catalog = GeoServerApplication.get().getCatalog();
-            DataStore ds = (DataStore) catalog.getResourcePool()
-                    .getDataStore((DataStoreInfo) store);
+            DataStore ds =
+                    (DataStore) catalog.getResourcePool().getDataStore((DataStoreInfo) store);
             String[] typeNames = ds.getTypeNames();
             Arrays.sort(typeNames);
             return Arrays.asList(typeNames);
@@ -54,5 +53,4 @@ class TypeListModel extends LoadableDetachableModel<List<String>> {
             return Collections.emptyList();
         }
     }
-
 }

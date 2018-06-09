@@ -10,12 +10,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.DummyAction;
 import org.geoserver.taskmanager.beans.DummyTaskTypeImpl;
@@ -35,55 +35,44 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
-
-/**
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
-    
+
     private static final String ATT_DELAY = "delay";
 
     private static final String ATT_FAIL = "fail";
 
     private static final String ATT_DUMMY = "dummy";
 
-    @Autowired
-    private TaskManagerDao dao;
-    
-    @Autowired
-    private TaskManagerFactory fac;
-    
-    @Autowired
-    private TaskManagerDataUtil util;
-        
-    @Autowired
-    private TaskManagerTaskUtil taskUtil;
+    @Autowired private TaskManagerDao dao;
+
+    @Autowired private TaskManagerFactory fac;
+
+    @Autowired private TaskManagerDataUtil util;
+
+    @Autowired private TaskManagerTaskUtil taskUtil;
 
     private Configuration config;
-    
+
     private Task task1;
 
     private Task task2;
-    
+
     @Before
     public void setupConfig() {
-        config = fac.createConfiguration();  
+        config = fac.createConfiguration();
         config.setName("my_config");
         config.setWorkspace("some_ws");
         util.setConfigurationAttribute(config, ATT_FAIL, "false");
         util.setConfigurationAttribute(config, ATT_DELAY, "0");
         util.setConfigurationAttribute(config, ATT_DUMMY, "dummy");
-        
+
         task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(TestTaskTypeImpl.NAME);
         util.setTaskParameterToAttribute(task1, TestTaskTypeImpl.PARAM_FAIL, ATT_FAIL);
         util.setTaskParameterToAttribute(task1, TestTaskTypeImpl.PARAM_DELAY, ATT_DELAY);
         util.addTaskToConfiguration(config, task1);
-        
 
         task2 = fac.createTask();
         task2.setName("task2");
@@ -91,23 +80,23 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         util.setTaskParameterToAttribute(task2, DummyTaskTypeImpl.PARAM1, ATT_FAIL);
         util.setTaskParameterToAttribute(task2, DummyTaskTypeImpl.PARAM2, ATT_DUMMY);
         util.addTaskToConfiguration(config, task2);
-        
+
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
-    }  
-    
+    }
+
     @After
     public void cleanUp() {
         dao.delete(config);
     }
-        
+
     @Test
     public void testCreateContext() throws TaskException {
         TaskContext context = taskUtil.createContext(task1);
         assertEquals(task1, context.getTask());
         assertNotNull(context.getParameterValues());
         assertNull(context.getBatchContext());
-        
+
         BatchContext bContext = taskUtil.createContext(fac.createBatchRun());
         bContext.put("foo", "bar");
         context = taskUtil.createContext(task1, bContext);
@@ -117,50 +106,54 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         assertNotNull(context.getBatchContext().getBatchRun());
         assertEquals("bar", context.getBatchContext().get("foo"));
     }
-    
+
     @Test
     public void testBatchContext() throws TaskException {
         final AtomicInteger counter = new AtomicInteger(0);
         BatchContext bContext = taskUtil.createContext(fac.createBatchRun());
         bContext.put("foo", "bar");
-        bContext.get("foo", new BatchContext.Dependency() {
-            @Override
-            public void revert() throws TaskException {
-                counter.set(counter.get() + 1);
-            }            
-        });
-        bContext.get("foo", new BatchContext.Dependency() {
-            @Override
-            public void revert() throws TaskException {
-                counter.set(counter.get() + 2);
-            }            
-        });
+        bContext.get(
+                "foo",
+                new BatchContext.Dependency() {
+                    @Override
+                    public void revert() throws TaskException {
+                        counter.set(counter.get() + 1);
+                    }
+                });
+        bContext.get(
+                "foo",
+                new BatchContext.Dependency() {
+                    @Override
+                    public void revert() throws TaskException {
+                        counter.set(counter.get() + 2);
+                    }
+                });
         bContext.delete("foo");
         assertEquals(3, counter.get());
     }
-    
+
     @Test
     public void testGetActionsForAttribute() {
-        List<String> actions = taskUtil.getActionsForAttribute(
-                config.getAttributes().get(ATT_FAIL), config);
+        List<String> actions =
+                taskUtil.getActionsForAttribute(config.getAttributes().get(ATT_FAIL), config);
         assertEquals(1, actions.size());
         assertEquals(DummyAction.NAME, actions.get(0));
     }
-    
+
     @Test
     public void testGetAndUpdateDomains() {
         Map<String, List<String>> domains = taskUtil.getDomains(config);
         assertEquals(3, domains.size());
         assertEquals(Lists.newArrayList("true"), domains.get(ATT_FAIL));
         assertEquals(Lists.newArrayList("dummy"), domains.get(ATT_DUMMY));
-        
+
         util.setConfigurationAttribute(config, ATT_FAIL, "true");
-        
+
         taskUtil.updateDependentDomains(config.getAttributes().get(ATT_FAIL), config, domains);
         assertEquals(Lists.newArrayList("crash", "test", "dummy"), domains.get(ATT_DUMMY));
-        
+
         util.setConfigurationAttribute(config, ATT_FAIL, "false");
-        
+
         taskUtil.updateDomains(config, domains, Collections.singleton(ATT_DUMMY));
         assertEquals(Lists.newArrayList("dummy"), domains.get(ATT_DUMMY));
     }
@@ -171,14 +164,15 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         assertTrue(map.get(TestTaskTypeImpl.PARAM_FAIL) instanceof Boolean);
         assertTrue(map.get(TestTaskTypeImpl.PARAM_DELAY) instanceof Integer);
     }
-    
+
     @Test
     public void testGetTypesForAttribute() {
-        Set<ParameterType> types = taskUtil.getTypesForAttribute(config.getAttributes().get(ATT_FAIL), config);
+        Set<ParameterType> types =
+                taskUtil.getTypesForAttribute(config.getAttributes().get(ATT_FAIL), config);
         assertEquals(2, types.size());
         assertTrue(types.contains(ParameterType.BOOLEAN));
     }
-    
+
     @Test
     public void testInitTask() {
         Task t = taskUtil.initTask("Dummy", "newDummyTask");
@@ -198,17 +192,17 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
             assertEquals(par.getValue(), t.getParameters().get(par.getName()).getValue());
         }
     }
-    
+
     @Test
     public void testValidate() {
         util.setConfigurationAttribute(config, ATT_FAIL, "true");
-        
+
         assertTrue(taskUtil.validate(config).isEmpty());
-        
+
         util.setConfigurationAttribute(config, ATT_DELAY, "boo");
         util.setConfigurationAttribute(config, ATT_DUMMY, null);
         util.setTaskParameter(task1, "foo", "bar");
-                
+
         List<ValidationError> errors = taskUtil.validate(config);
         assertFalse(errors.isEmpty());
         assertEquals(3, errors.size());
@@ -216,7 +210,7 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         assertEquals(ValidationErrorType.INVALID_PARAM, errors.get(1).getType());
         assertEquals(ValidationErrorType.MISSING, errors.get(2).getType());
     }
-    
+
     @Test
     public void testCanCleanup() {
         assertFalse(taskUtil.canCleanup(task1));
@@ -224,14 +218,15 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         assertTrue(taskUtil.canCleanup(task2));
         config.getTasks().remove("task2");
         assertFalse(taskUtil.canCleanup(config));
-        
+
         // (cleanup itself is suffiently tested in other tests
     }
-    
+
     @Test
     public void testGetDependantRawValues() {
-        List<String> rawValues = taskUtil.getDependentRawValues(
-                DummyAction.NAME, config.getAttributes().get(ATT_DUMMY), config);
+        List<String> rawValues =
+                taskUtil.getDependentRawValues(
+                        DummyAction.NAME, config.getAttributes().get(ATT_DUMMY), config);
         assertEquals(1, rawValues.size());
         assertEquals("false", rawValues.get(0));
     }

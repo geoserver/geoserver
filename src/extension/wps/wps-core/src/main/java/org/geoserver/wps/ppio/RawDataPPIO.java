@@ -8,13 +8,12 @@ package org.geoserver.wps.ppio;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.process.AbstractRawData;
-import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.RawData;
+import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.StreamRawData;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.util.logging.Logging;
@@ -31,12 +30,14 @@ public class RawDataPPIO extends ComplexPPIO {
 
     @Override
     public Object decode(final InputStream input) throws Exception {
-        LOGGER.warning("Creating raw data out of a plain input stream, "
-                + "this won't work with asynch requests and won't provide the mime type provided");
+        LOGGER.warning(
+                "Creating raw data out of a plain input stream, "
+                        + "this won't work with asynch requests and won't provide the mime type provided");
         return new StreamRawData(AbstractRawData.BINARY_MIME, input);
     }
 
-    public Object decode(InputStream input, String mimeType, boolean asynchronous) throws Exception {
+    public Object decode(InputStream input, String mimeType, boolean asynchronous)
+            throws Exception {
         if (asynchronous) {
             Resource tmp = resourceManager.getTemporaryResource(".bin");
             IOUtils.copy(input, tmp.out());
@@ -52,7 +53,8 @@ public class RawDataPPIO extends ComplexPPIO {
 
         try (InputStream is = rd.getInputStream()) {
             IOUtils.copy(is, os);
-        };
+        }
+        ;
     }
 
     @Override
@@ -70,5 +72,4 @@ public class RawDataPPIO extends ComplexPPIO {
             return rd.getFileExtension();
         }
     }
-
 }

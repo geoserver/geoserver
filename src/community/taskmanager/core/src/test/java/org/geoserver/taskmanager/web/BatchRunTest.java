@@ -22,14 +22,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BatchRunTest extends AbstractWicketTaskManagerTest {
-    
+
     protected TaskManagerFactory fac;
     protected TaskManagerDao dao;
     private TaskManagerDataUtil util;
     private TaskManagerTaskUtil tutil;
     private BatchJobService bjservice;
     private Batch batch;
-            
+
     @Before
     public void before() {
         fac = TaskManagerBeans.get().getFac();
@@ -40,39 +40,39 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         login();
         batch = createBatch();
     }
-    
+
     @After
     public void after() {
         dao.delete(batch.getConfiguration());
     }
-    
+
     public Batch createBatch() {
-        Configuration config = fac.createConfiguration();  
+        Configuration config = fac.createConfiguration();
         config.setName("my_configuration");
         config.setDescription("my very new configuration");
         config.setWorkspace("gs");
-        
+
         Task task1 = tutil.initTask(TestTaskTypeImpl.NAME, "task1");
         util.addTaskToConfiguration(config, task1);
-        
+
         Task task2 = tutil.initTask(TestTaskTypeImpl.NAME, "task2");
         task2.getParameters().get(TestTaskTypeImpl.PARAM_DELAY).setValue("10000");
         util.addTaskToConfiguration(config, task2);
-        
+
         Task task3 = tutil.initTask(TestTaskTypeImpl.NAME, "task3");
         util.addTaskToConfiguration(config, task3);
-        
+
         config.setValidated(true);
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
         task2 = config.getTasks().get("task2");
         task3 = config.getTasks().get("task3");
-        
+
         Batch batch = fac.createBatch();
         util.addBatchElement(batch, task1);
         util.addBatchElement(batch, task2);
         util.addBatchElement(batch, task3);
-        
+
         batch.setConfiguration(config);
         batch.setName("this is the test batch");
         batch.setDescription("this is the test description");
@@ -80,64 +80,69 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         batch.setWorkspace("gs");
         return bjservice.saveAndSchedule(batch);
     }
-    
+
     @Test
-    public void testRunStop() throws InterruptedException {        
+    public void testRunStop() throws InterruptedException {
         tester.startPage(new BatchesPage());
         tester.assertRenderedPage(BatchesPage.class);
-        
-        tester.clickLink("batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:6:component:link");
-       
+
+        tester.clickLink(
+                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:6:component:link");
+
         Thread.sleep(500);
-        
+
         tester.clickLink("batchesPanel:refresh");
-        
-        tester.assertModelValue("batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component", 
+
+        tester.assertModelValue(
+                "batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component",
                 Status.RUNNING);
-        
-        tester.clickLink("batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component:link");
+
+        tester.clickLink(
+                "batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component:link");
 
         tester.assertRenderedPage(BatchRunsPage.class);
-        
-        tester.assertModelValue("form:runsPanel:listContainer:items:1:itemProperties:2:component", 
-                Status.RUNNING);
+
+        tester.assertModelValue(
+                "form:runsPanel:listContainer:items:1:itemProperties:2:component", Status.RUNNING);
 
         tester.clickLink("form:runsPanel:listContainer:items:1:itemProperties:0:component:link");
 
         tester.assertRenderedPage(BatchRunPage.class);
 
-        tester.assertModelValue("runPanel:listContainer:items:1:itemProperties:3:component", 
+        tester.assertModelValue(
+                "runPanel:listContainer:items:1:itemProperties:3:component",
                 Status.READY_TO_COMMIT);
 
-        tester.assertModelValue("runPanel:listContainer:items:2:itemProperties:3:component", 
-                Status.RUNNING);
-        
+        tester.assertModelValue(
+                "runPanel:listContainer:items:2:itemProperties:3:component", Status.RUNNING);
+
         tester.clickLink("close");
 
         tester.assertRenderedPage(BatchRunsPage.class);
 
         tester.clickLink("form:runsPanel:listContainer:items:1:itemProperties:3:component:link");
-          
+
         BatchRun br = util.init(batch).getBatchRuns().get(0);
         while (!(br = dao.reload(br)).getStatus().isClosed()) {
             Thread.sleep(100);
         }
-        
+
         tester.clickLink("refresh");
-        
-        tester.assertModelValue("form:runsPanel:listContainer:items:2:itemProperties:2:component", 
+
+        tester.assertModelValue(
+                "form:runsPanel:listContainer:items:2:itemProperties:2:component",
                 Status.ROLLED_BACK);
 
         tester.clickLink("form:runsPanel:listContainer:items:2:itemProperties:0:component:link");
 
         tester.assertRenderedPage(BatchRunPage.class);
 
-        tester.assertModelValue("runPanel:listContainer:items:1:itemProperties:3:component", 
-                Status.ROLLED_BACK);
-        
-        tester.assertModelValue("runPanel:listContainer:items:2:itemProperties:3:component", 
-                Status.ROLLED_BACK);
-        
+        tester.assertModelValue(
+                "runPanel:listContainer:items:1:itemProperties:3:component", Status.ROLLED_BACK);
+
+        tester.assertModelValue(
+                "runPanel:listContainer:items:2:itemProperties:3:component", Status.ROLLED_BACK);
+
         tester.clickLink("close");
 
         tester.assertRenderedPage(BatchRunsPage.class);
@@ -145,11 +150,11 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         tester.clickLink("close");
 
         tester.assertRenderedPage(BatchesPage.class);
-        
+
         tester.clickLink("batchesPanel:refresh");
-        
-        tester.assertModelValue("batchesPanel:form:batchesPanel:listContainer:items:3:itemProperties:7:component", 
+
+        tester.assertModelValue(
+                "batchesPanel:form:batchesPanel:listContainer:items:3:itemProperties:7:component",
                 Status.ROLLED_BACK);
     }
-
 }

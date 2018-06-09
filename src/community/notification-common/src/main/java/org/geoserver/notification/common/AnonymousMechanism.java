@@ -11,10 +11,9 @@ import com.rabbitmq.client.impl.LongStringHelper;
 
 /**
  * Handles anonymous authentication challenge
- * 
+ *
  * @author Xandros
  * @see CustomSaslConfig
- *
  */
 public class AnonymousMechanism implements SaslMechanism {
 
@@ -27,5 +26,4 @@ public class AnonymousMechanism implements SaslMechanism {
     public LongString handleChallenge(LongString challenge, String username, String password) {
         return LongStringHelper.asLongString("");
     }
-
 }

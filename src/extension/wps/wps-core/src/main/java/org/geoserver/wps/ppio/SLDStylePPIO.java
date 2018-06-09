@@ -7,7 +7,6 @@ package org.geoserver.wps.ppio;
 
 import java.io.InputStream;
 import java.io.StringReader;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.sld.bindings.SLD;
@@ -23,7 +22,7 @@ import org.xml.sax.ContentHandler;
 
 /**
  * Handles SLD 1.0 styles
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SLDStylePPIO extends XMLPPIO {
@@ -52,20 +51,20 @@ public class SLDStylePPIO extends XMLPPIO {
         NamedLayer nl = sf.createNamedLayer();
         nl.setName("");
         nl.styles().add((Style) obj);
-        sld.setStyledLayers(new StyledLayer[] { nl });
+        sld.setStyledLayers(new StyledLayer[] {nl});
 
         Encoder e = new Encoder(sldConfiguration);
         e.encode(sld, element, handler);
     }
-    
+
     @Override
     public Object decode(Object input) throws Exception {
         Parser p = getParser(sldConfiguration);
 
         // extract the first style in the first sld
-        StyledLayerDescriptor sld = (StyledLayerDescriptor) p.parse(new StringReader((String) input));
+        StyledLayerDescriptor sld =
+                (StyledLayerDescriptor) p.parse(new StringReader((String) input));
         NamedLayer styledLayer = (NamedLayer) sld.getStyledLayers()[0];
         return styledLayer.getStyles()[0];
     }
-
 }

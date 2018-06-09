@@ -6,6 +6,14 @@ package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.ContactInfo;
@@ -15,26 +23,17 @@ import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.NCNameResourceCodec;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
- * Representation of the API as a set of beans, for Jackson to translate down in JSON and YAML.
- * The class contains a makeshift object model for Swagger, based on observation, not actual spec reading and probably
- * not formally correct, but good enough for the moment (looks like Java libs are more concentrated on code generation,
- * but somewhere in there, if it does not have too many dependencies, there is probably a proper object model for this).
- * <p>
- * Actually, found this after implementing the class, https://github
- * .com/swagger-api/swagger-core/tree/master/modules/swagger-models.
- * It might  be used for re-implementing this class in a cleaner, less error prone and more general way (although,
- * think about
- * streaming support for large API documents too)
+ * Representation of the API as a set of beans, for Jackson to translate down in JSON and YAML. The
+ * class contains a makeshift object model for Swagger, based on observation, not actual spec
+ * reading and probably not formally correct, but good enough for the moment (looks like Java libs
+ * are more concentrated on code generation, but somewhere in there, if it does not have too many
+ * dependencies, there is probably a proper object model for this).
+ *
+ * <p>Actually, found this after implementing the class, https://github
+ * .com/swagger-api/swagger-core/tree/master/modules/swagger-models. It might be used for
+ * re-implementing this class in a cleaner, less error prone and more general way (although, think
+ * about streaming support for large API documents too)
  */
 @JsonPropertyOrder({"openapi", "info", "paths", "parameters"})
 public class APIDocument {
@@ -48,10 +47,12 @@ public class APIDocument {
     public static final String IN_QUERY = "query";
     public static final String IN_PATH = "path";
     private static final Reference REF_FORMAT = new Reference("#/components/parameters/f");
-    private static final Reference REF_START_INDEX = new Reference("#/components/parameters/startIndex");
+    private static final Reference REF_START_INDEX =
+            new Reference("#/components/parameters/startIndex");
     private static final Reference REF_LIMIT = new Reference("#/components/parameters/limit");
     private static final Reference REF_BBOX = new Reference("#/components/parameters/bbox");
-    private static final Reference REF_RESULT_TYPE = new Reference("#/components/parameters/resultType");
+    private static final Reference REF_RESULT_TYPE =
+            new Reference("#/components/parameters/resultType");
     private static final Reference REF_ID = new Reference("#/components/parameters/id");
     private static final Reference REF_EXCEPTION = new Reference("#/components/schemas/exception");
     private static final String TAG_CAPABILITIES = "Capabilities";
@@ -59,11 +60,12 @@ public class APIDocument {
 
     static {
         ERROR_RESPONSE = new Response("An error occurred");
-        ERROR_RESPONSE.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference(REF_EXCEPTION));
+        ERROR_RESPONSE.addFormat(
+                BaseRequest.JSON_MIME, new FormatDescription().withReference(REF_EXCEPTION));
         // uncomment when HTML format is supported
-        // ERROR_RESPONSE.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
+        // ERROR_RESPONSE.addFormat(BaseRequest.HTML_MIME, new
+        // FormatDescription().withType(TYPE_STRING));
     }
-
 
     public class Info {
         public String getTitle() {
@@ -81,7 +83,6 @@ public class APIDocument {
         public String getVersion() {
             return "0.0.1";
         }
-
     }
 
     public class Contact {
@@ -188,13 +189,11 @@ public class APIDocument {
             }
             responses.put(status, response);
         }
-
     }
 
     public static class Response {
         String description;
         Map<String, FormatDescription> content;
-
 
         public Response(String description) {
             this.description = description;
@@ -249,7 +248,6 @@ public class APIDocument {
         public void setSchema(Object schema) {
             this.schema = schema;
         }
-
     }
 
     public static class Items {
@@ -492,13 +490,11 @@ public class APIDocument {
         public void setMaxItems(Integer maxItems) {
             this.maxItems = maxItems;
         }
-
     }
 
     private final WFSInfo wfs;
     private final Catalog catalog;
     private String openapi = "3.0.0";
-
 
     public APIDocument(WFSInfo wfs, Catalog catalog) {
         this.wfs = wfs;
@@ -518,15 +514,16 @@ public class APIDocument {
         // TODO: make all output content reflect from available responses
 
         Map<String, Object> result = new LinkedHashMap<>();
-        // 
+        //
         Method caps = new Method();
         caps.addTag(TAG_CAPABILITIES);
         caps.setSummary("describe the feature collections in the dataset");
         caps.setOperationId("describeCollections");
         caps.addParameter(REF_FORMAT);
         Response contents = new Response("The feature collections shared by this API");
-        contents.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference
-                ("'#/components/schemas/content"));
+        contents.addFormat(
+                BaseRequest.JSON_MIME,
+                new FormatDescription().withReference("'#/components/schemas/content"));
         // uncomment when HTML format is supported
         // contents.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
         caps.addResponse("200", contents);
@@ -541,7 +538,8 @@ public class APIDocument {
         Response apiResponse = new Response("This API");
         apiResponse.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withType(TYPE_OBJECT));
         // uncomment when HTML format is supported
-        // apiResponse.addFormat(BaseRequest.HTML_MIME, new FormatDescription().withType(TYPE_STRING));
+        // apiResponse.addFormat(BaseRequest.HTML_MIME, new
+        // FormatDescription().withType(TYPE_STRING));
         apiResponse.addFormat(BaseRequest.YAML_MIME, new FormatDescription().withType(TYPE_OBJECT));
         api.addResponse("200", apiResponse);
         api.addResponse("default", ERROR_RESPONSE);
@@ -549,12 +547,15 @@ public class APIDocument {
 
         Method conformance = new Method();
         conformance.setOperationId("getRequirementsClasses");
-        conformance.setSummary("list all requirements classes specified in a standard (e.g., WFS 3.0) that the server" +
-                " conforms to");
+        conformance.setSummary(
+                "list all requirements classes specified in a standard (e.g., WFS 3.0) that the server"
+                        + " conforms to");
         conformance.addTag(TAG_CAPABILITIES);
-        Response conformanceResponse = new Response("the URIs of all requirements classes supported by the server");
-        conformanceResponse.addFormat(BaseRequest.JSON_MIME, new FormatDescription().withReference
-                ("#/components/schemas/req-classes"));
+        Response conformanceResponse =
+                new Response("the URIs of all requirements classes supported by the server");
+        conformanceResponse.addFormat(
+                BaseRequest.JSON_MIME,
+                new FormatDescription().withReference("#/components/schemas/req-classes"));
         conformance.addResponse("200", conformanceResponse);
         conformance.addResponse("default", ERROR_RESPONSE);
         result.put("/api/conformance", Collections.singletonMap("get", conformance));
@@ -571,8 +572,10 @@ public class APIDocument {
             layer.addParameter(REF_LIMIT);
             layer.addParameter(REF_RESULT_TYPE);
             layer.addParameter(REF_BBOX);
-            Response layerResponse = new Response("Information about the feature collection plus the first features " +
-                    "matching the selection parameters.");
+            Response layerResponse =
+                    new Response(
+                            "Information about the feature collection plus the first features "
+                                    + "matching the selection parameters.");
             layerResponse.setContent(outputFormats);
             layer.addResponse("200", layerResponse);
             layer.addResponse("default", ERROR_RESPONSE);
@@ -585,7 +588,9 @@ public class APIDocument {
             layerId.addParameter(REF_ID);
             layerId.addResponse("200", layerResponse);
             layerId.addResponse("default", ERROR_RESPONSE);
-            result.put("/collections/" + layerName + "/items/{id}", Collections.singletonMap("get", layerId));
+            result.put(
+                    "/collections/" + layerName + "/items/{id}",
+                    Collections.singletonMap("get", layerId));
         }
 
         return result;
@@ -613,10 +618,11 @@ public class APIDocument {
             countSchema.setDefault(maxFeatures);
         }
         count.setSchema(countSchema);
-        count.setDescription("The optional count parameter limits the number of items that are presented " +
-                "in the response document.\n\n" +
-                "Only items are counted that are on the first level of the collection in the response document.  " +
-                "Nested objects contained within the explicitly requested items shall not be counted.");
+        count.setDescription(
+                "The optional count parameter limits the number of items that are presented "
+                        + "in the response document.\n\n"
+                        + "Only items are counted that are on the first level of the collection in the response document.  "
+                        + "Nested objects contained within the explicitly requested items shall not be counted.");
         count.setStyle("form");
         parameters.put("count", count);
 
@@ -626,23 +632,25 @@ public class APIDocument {
         Schema indexSchema = new Schema();
         indexSchema.setType(TYPE_INTEGER);
         startIndex.setSchema(indexSchema);
-        startIndex.setDescription("The optional offset of the first item returned, can be used for random paging.");
+        startIndex.setDescription(
+                "The optional offset of the first item returned, can be used for random paging.");
         startIndex.setStyle("form");
         parameters.put("startIndex", startIndex);
 
         Parameter bbox = new Parameter();
         bbox.setName("bbox");
         bbox.setIn(IN_QUERY);
-        bbox.setDescription("Only features that have a geometry that intersects the bounding box are\n" +
-                "selected. The bounding box is provided as four numbers:\n" +
-                "* Lower left corner, coordinate axis 1\n" +
-                "* Lower left corner, coordinate axis 2\n" +
-                "* Upper right corner, coordinate axis 1\n" +
-                "* Upper right corner, coordinate axis 2\n" +
-                "For WGS84 longitude/latitude this is in most cases the sequence of\n" +
-                "minimum longitude, minimum latitude, maximum longitude and maximum latitude.\n" +
-                "However, in cases where the box spans the antimeridian the first value\n" +
-                "(west-most box edge) is larger than the third value (east-most box edge).");
+        bbox.setDescription(
+                "Only features that have a geometry that intersects the bounding box are\n"
+                        + "selected. The bounding box is provided as four numbers:\n"
+                        + "* Lower left corner, coordinate axis 1\n"
+                        + "* Lower left corner, coordinate axis 2\n"
+                        + "* Upper right corner, coordinate axis 1\n"
+                        + "* Upper right corner, coordinate axis 2\n"
+                        + "For WGS84 longitude/latitude this is in most cases the sequence of\n"
+                        + "minimum longitude, minimum latitude, maximum longitude and maximum latitude.\n"
+                        + "However, in cases where the box spans the antimeridian the first value\n"
+                        + "(west-most box edge) is larger than the third value (east-most box edge).");
         Schema bboxSchema = new Schema();
         bboxSchema.setType(TYPE_ARRAY);
         bboxSchema.setMinItems(4);
@@ -697,16 +705,17 @@ public class APIDocument {
 
     protected Map<String, FormatDescription> getAvailableFormats() {
         Map<String, FormatDescription> descriptions = new LinkedHashMap<>();
-        List<String> formatNames = DefaultWebFeatureService30.getAvailableFormats
-                (FeatureCollectionResponse.class);
-        for (String formatName: formatNames) {
-            if ((formatName.contains("text") && !formatName.contains("xml") && !formatName.contains("gml")) ||
-                    formatName.contains("csv")) {
+        List<String> formatNames =
+                DefaultWebFeatureService30.getAvailableFormats(FeatureCollectionResponse.class);
+        for (String formatName : formatNames) {
+            if ((formatName.contains("text")
+                            && !formatName.contains("xml")
+                            && !formatName.contains("gml"))
+                    || formatName.contains("csv")) {
                 descriptions.put(formatName, new FormatDescription().withType(TYPE_STRING));
             } else {
                 descriptions.put(formatName, new FormatDescription().withType(TYPE_OBJECT));
             }
-
         }
         return descriptions;
     }

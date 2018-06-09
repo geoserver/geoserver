@@ -7,9 +7,7 @@ package org.geoserver.backuprestore;
 import org.geoserver.backuprestore.listener.BackupRestoreJobExecutionListener;
 import org.springframework.batch.core.JobExecution;
 
-/**
- * Tests listener that keeps a trace of how many times it was invoked.
- */
+/** Tests listener that keeps a trace of how many times it was invoked. */
 public final class GenericListener implements BackupRestoreJobExecutionListener {
 
     private static int backupBeforeInvocations = 0;

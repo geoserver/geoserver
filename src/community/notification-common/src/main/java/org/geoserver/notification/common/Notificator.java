@@ -5,38 +5,34 @@
 
 package org.geoserver.notification.common;
 
-import java.io.Serializable;
-
 import com.thoughtworks.xstream.XStream;
+import java.io.Serializable;
 
 /**
  * The configuration of {@link MessageProcessor}, populated by {@link XStream}
- * 
- * @author Xandros
  *
+ * @author Xandros
  */
 public class Notificator implements Serializable {
 
     private static final long serialVersionUID = 6185508068154638658L;
 
     /**
-     * Size of queue used to holding the {@link NotificationProcessor} tasks before they are executed by message processor
+     * Size of queue used to holding the {@link NotificationProcessor} tasks before they are
+     * executed by message processor
      */
     private Long queueSize;
 
     /**
-     * Number of threads used to manage the {@link NotificationProcessor} tasks in the message processor queue
+     * Number of threads used to manage the {@link NotificationProcessor} tasks in the message
+     * processor queue
      */
     private Long processorThreads;
 
-    /**
-     * CQL to filter the {@link Notification} before accepted by the message processor
-     */
+    /** CQL to filter the {@link Notification} before accepted by the message processor */
     private String messageFilter;
 
-    /**
-     * Notification processor implementation used by message processor
-     */
+    /** Notification processor implementation used by message processor */
     private NotificationProcessor genericProcessor;
 
     public Long getQueueSize() {
@@ -70,5 +66,4 @@ public class Notificator implements Serializable {
     public void setGenericProcessor(NotificationProcessor genericProcessor) {
         this.genericProcessor = genericProcessor;
     }
-
 }

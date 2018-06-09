@@ -6,12 +6,9 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.math.BigInteger;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.XlinkPropertyNameType;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
@@ -20,8 +17,9 @@ import org.geotools.xml.Node;
  * Binding object for the element http://www.opengis.net/wfs:XlinkPropertyName.
  *
  * <p>
- *	<pre>
- *	 <code>
+ *
+ * <pre>
+ *  <code>
  *  &lt;xsd:element name="XlinkPropertyName"&gt;
  *      &lt;xsd:annotation&gt;
  *          &lt;xsd:documentation&gt;
@@ -61,72 +59,72 @@ import org.geotools.xml.Node;
  *                          &lt;xsd:documentation&gt;
  *                    The traverseXlinkExpiry attribute value is specified in
  *                    minutes It indicates how long a Web Feature Service should
- *                    wait to receive a response to a nested GetGmlObject request.	
+ *                    wait to receive a response to a nested GetGmlObject request.
  *                       &lt;/xsd:documentation&gt;
  *                      &lt;/xsd:annotation&gt;
  *                  &lt;/xsd:attribute&gt;
  *              &lt;/xsd:extension&gt;
  *          &lt;/xsd:simpleContent&gt;
  *      &lt;/xsd:complexType&gt;
- *  &lt;/xsd:element&gt; 
- *		
- *	  </code>
- *	 </pre>
+ *  &lt;/xsd:element&gt;
+ *
+ *   </code>
+ *  </pre>
+ *
  * @generated
  */
 public class XlinkPropertyNameBinding extends AbstractComplexBinding {
 
     WfsFactory factory;
-    
-    public XlinkPropertyNameBinding( WfsFactory factory ) {
+
+    public XlinkPropertyNameBinding(WfsFactory factory) {
         this.factory = factory;
     }
-    
-    /**
-     * @generated
-     */
+
+    /** @generated */
     public QName getTarget() {
         return WFS.XLINKPROPERTYNAME;
     }
-    
+
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     *	
+     *
      * @generated modifiable
-     */	
+     */
     public Class getType() {
-    	return XlinkPropertyNameType.class;
+        return XlinkPropertyNameType.class;
     }
-    
+
     public int getExecutionMode() {
         return OVERRIDE;
     }
-    
+
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     *	
+     *
      * @generated modifiable
-     */	
-    public Object parse(ElementInstance instance, Node node, Object value) 
-    	throws Exception {
-    	
+     */
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+
         XlinkPropertyNameType property = factory.createXlinkPropertyNameType();
 
-        property.setValue( (String) value );
-        
-        //&lt;xsd:attribute name="traverseXlinkDepth" 
+        property.setValue((String) value);
+
+        // &lt;xsd:attribute name="traverseXlinkDepth"
         //      type="xsd:string" use="required"&gt;
-        property.setTraverseXlinkDepth( (String) node.getAttributeValue( "traverseXlinkDepth" ) );
-        
-        //&lt;xsd:attribute name="traverseXlinkExpiry"
+        property.setTraverseXlinkDepth((String) node.getAttributeValue("traverseXlinkDepth"));
+
+        // &lt;xsd:attribute name="traverseXlinkExpiry"
         //      type="xsd:positiveInteger" use="optional"&gt;
-    	if ( node.hasAttribute( "traverseXlinkExpiry" ) ) {
-    	    property.setTraverseXlinkExpiry( (BigInteger) node.getAttributeValue( "traverseXlinkExpiry" ) );
+        if (node.hasAttribute("traverseXlinkExpiry")) {
+            property.setTraverseXlinkExpiry(
+                    (BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
         }
-        
+
         return property;
     }
-
 }

@@ -19,9 +19,7 @@ import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Unit test for evaluating the Root Directory TextField for the RESTUploadPathMapper.
- */
+/** Unit test for evaluating the Root Directory TextField for the RESTUploadPathMapper. */
 public class RESTPanelTest extends GeoServerWicketTestSupport {
 
     /** Workspace info object called "cite" */
@@ -68,8 +66,8 @@ public class RESTPanelTest extends GeoServerWicketTestSupport {
         String root = getTestData().getDataDirectoryRoot().getAbsolutePath();
         // Set the root directory
         FormTester form2 = tester.newFormTester("form");
-        form2.setValue("settings:settingsContainer:otherSettings:extensions:0:content:rootdir",
-                root);
+        form2.setValue(
+                "settings:settingsContainer:otherSettings:extensions:0:content:rootdir", root);
         form2.submit();
         // Check if no error has been found
         tester.assertNoErrorMessage();
@@ -121,9 +119,12 @@ public class RESTPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         // Control if the defined root has been correctly set
         assertEquals(
-                gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class),
+                gs.getGlobal()
+                        .getSettings()
+                        .getMetadata()
+                        .get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class),
                 false);
-        
+
         // Opening the selected page
         tester.startPage(new GlobalSettingsPage());
         tester.assertRenderedPage(GlobalSettingsPage.class);
@@ -140,7 +141,10 @@ public class RESTPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         // Control if the defined root has been correctly set
         assertEquals(
-                gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class),
+                gs.getGlobal()
+                        .getSettings()
+                        .getMetadata()
+                        .get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class),
                 true);
     }
 }

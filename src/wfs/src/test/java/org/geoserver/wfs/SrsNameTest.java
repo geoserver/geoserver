@@ -17,40 +17,37 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class SrsNameTest extends WFSTestSupport {
-    
+
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
-        
+
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
-        getGeoServer().save( wfs );
+        getGeoServer().save(wfs);
     }
 
     @Test
     public void testWfs10() throws Exception {
-        String q = "wfs?request=getfeature&service=wfs&version=1.0.0"
-                + "&typename=cgf:Points";
+        String q = "wfs?request=getfeature&service=wfs&version=1.0.0" + "&typename=cgf:Points";
         Document d = getAsDOM(q);
-        assertEquals("wfs:FeatureCollection", d.getDocumentElement()
-                .getNodeName());
+        assertEquals("wfs:FeatureCollection", d.getDocumentElement().getNodeName());
 
         print(d);
         NodeList boxes = d.getElementsByTagName("gml:Box");
         assertFalse(boxes.getLength() == 0);
         for (int i = 0; i < boxes.getLength(); i++) {
             Element box = (Element) boxes.item(i);
-            assertEquals("http://www.opengis.net/gml/srs/epsg.xml#32615", box
-                    .getAttribute("srsName"));
+            assertEquals(
+                    "http://www.opengis.net/gml/srs/epsg.xml#32615", box.getAttribute("srsName"));
         }
 
         NodeList points = d.getElementsByTagName("gml:Point");
         assertFalse(points.getLength() == 0);
         for (int i = 0; i < points.getLength(); i++) {
             Element point = (Element) points.item(i);
-            assertEquals("http://www.opengis.net/gml/srs/epsg.xml#32615", point
-                    .getAttribute("srsName"));
+            assertEquals(
+                    "http://www.opengis.net/gml/srs/epsg.xml#32615", point.getAttribute("srsName"));
         }
-
     }
 
     @Test
@@ -58,34 +55,29 @@ public class SrsNameTest extends WFSTestSupport {
         WFSInfo wfs = getWFS();
         boolean oldFeatureBounding = wfs.isFeatureBounding();
         wfs.setFeatureBounding(true);
-        getGeoServer().save( wfs );
-        
+        getGeoServer().save(wfs);
+
         try {
-            String q = "wfs?request=getfeature&service=wfs&version=1.1.0"
-                    + "&typename=cgf:Points";
+            String q = "wfs?request=getfeature&service=wfs&version=1.1.0" + "&typename=cgf:Points";
             Document d = getAsDOM(q);
-            assertEquals("wfs:FeatureCollection", d.getDocumentElement()
-                    .getNodeName());
-    
+            assertEquals("wfs:FeatureCollection", d.getDocumentElement().getNodeName());
+
             NodeList boxes = d.getElementsByTagName("gml:Envelope");
             assertFalse(boxes.getLength() == 0);
             for (int i = 0; i < boxes.getLength(); i++) {
                 Element box = (Element) boxes.item(i);
-                assertEquals("urn:x-ogc:def:crs:EPSG:32615", box
-                        .getAttribute("srsName"));
+                assertEquals("urn:x-ogc:def:crs:EPSG:32615", box.getAttribute("srsName"));
             }
-    
+
             NodeList points = d.getElementsByTagName("gml:Point");
             assertFalse(points.getLength() == 0);
             for (int i = 0; i < points.getLength(); i++) {
                 Element point = (Element) points.item(i);
-                assertEquals("urn:x-ogc:def:crs:EPSG:32615", point
-                        .getAttribute("srsName"));
+                assertEquals("urn:x-ogc:def:crs:EPSG:32615", point.getAttribute("srsName"));
             }
-        }
-        finally {
+        } finally {
             wfs.setFeatureBounding(oldFeatureBounding);
-            getGeoServer().save( wfs );
+            getGeoServer().save(wfs);
         }
     }
 
@@ -108,8 +100,10 @@ public class SrsNameTest extends WFSTestSupport {
         String q = "wfs?request=getfeature&service=wfs&version=1.1.0&typename=cgf:Points";
         Document d = getAsDOM(q);
         assertEquals("wfs:FeatureCollection", d.getDocumentElement().getNodeName());
-        
-        XMLAssert.assertXpathExists("//gml:Envelope[@srsName = '"+srsNameStyle.getPrefix()+"32615']", d);
-        XMLAssert.assertXpathExists("//gml:Point[@srsName = '"+srsNameStyle.getPrefix()+"32615']", d);
+
+        XMLAssert.assertXpathExists(
+                "//gml:Envelope[@srsName = '" + srsNameStyle.getPrefix() + "32615']", d);
+        XMLAssert.assertXpathExists(
+                "//gml:Point[@srsName = '" + srsNameStyle.getPrefix() + "32615']", d);
     }
 }

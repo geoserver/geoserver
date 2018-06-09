@@ -2,6 +2,7 @@ package org.geoserver.web.data.resource;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.xml.namespace.QName;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.CoverageInfo;
@@ -9,8 +10,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
-
-import javax.xml.namespace.QName;
 
 public class CoverageBandsConfigurationPanelTest extends GeoServerWicketTestSupport {
 
@@ -29,7 +28,8 @@ public class CoverageBandsConfigurationPanelTest extends GeoServerWicketTestSupp
         // one layer with "normal" bands
         testData.addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
         // one with 300+ bands
-        testData.addRasterLayer(HYPER, "hyper.tiff", "tiff", null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(
+                HYPER, "hyper.tiff", "tiff", null, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CoverageBandsConfigurationPanelTest extends GeoServerWicketTestSupp
                 (MarkupContainer)
                         tester.getComponentFromLastRenderedPage(
                                 "form:panel:bands:listContainer:items");
-        
+
         // set to non pageable, we don't have support for editing a paging table right now
         assertEquals(326, container.size());
     }

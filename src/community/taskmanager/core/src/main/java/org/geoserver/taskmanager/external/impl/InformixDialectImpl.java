@@ -9,7 +9,6 @@ import java.sql.Connection;
 /**
  * Informix 11 implementation.
  *
- * 
  * @author Timothy De Bock
  */
 public class InformixDialectImpl extends DefaultDialectImpl {
@@ -19,10 +18,10 @@ public class InformixDialectImpl extends DefaultDialectImpl {
         return tableName;
     }
 
-
     /**
-     * Override because in a view informix returns the value of the underlying column definition of the table.
-     * Even when performing left join in the create view statement.
+     * Override because in a view informix returns the value of the underlying column definition of
+     * the table. Even when performing left join in the create view statement.
+     *
      * @param nullable
      * @return
      */
@@ -33,6 +32,7 @@ public class InformixDialectImpl extends DefaultDialectImpl {
 
     /**
      * No schemas in informix 11.
+     *
      * @param connection
      * @param schema
      * @return

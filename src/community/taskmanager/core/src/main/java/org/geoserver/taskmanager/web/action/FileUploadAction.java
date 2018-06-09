@@ -5,7 +5,6 @@
 package org.geoserver.taskmanager.web.action;
 
 import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -28,21 +27,22 @@ public class FileUploadAction implements Action {
 
     private static final long serialVersionUID = 4996136164811697150L;
 
-    private final static String NAME = "FileUpload";
-    
+    private static final String NAME = "FileUpload";
+
     private static class DialogDelegate extends GeoServerDialog.DialogDelegate {
 
         private static final long serialVersionUID = 7410393012930249966L;
-        
+
         private FileUploadPanel panel;
-        
+
         private ConfigurationPage onPage;
-        
+
         private IModel<String> valueModel;
-        
+
         private String fileService;
-        
-        public DialogDelegate(ConfigurationPage onPage, IModel<String> valueModel, String fileService) {
+
+        public DialogDelegate(
+                ConfigurationPage onPage, IModel<String> valueModel, String fileService) {
             this.onPage = onPage;
             this.valueModel = valueModel;
             this.fileService = fileService;
@@ -67,17 +67,19 @@ public class FileUploadAction implements Action {
         }
     }
 
-    @Autowired
-    private LookupService<FileService> fileServices;
-    
+    @Autowired private LookupService<FileService> fileServices;
+
     @Override
     public String getName() {
         return NAME;
     }
 
     @Override
-    public void execute(ConfigurationPage onPage, AjaxRequestTarget target, 
-            IModel<String> valueModel, List<String> dependentValues) {
+    public void execute(
+            ConfigurationPage onPage,
+            AjaxRequestTarget target,
+            IModel<String> valueModel,
+            List<String> dependentValues) {
         FileService fileService;
         if (dependentValues.size() > 0) {
             fileService = fileServices.get(dependentValues.get(0));
@@ -90,9 +92,8 @@ public class FileUploadAction implements Action {
         dialog.setInitialWidth(650);
         dialog.setInitialHeight(300);
         dialog.showOkCancel(target, new DialogDelegate(onPage, valueModel, fileService.getName()));
-
     }
-    
+
     @Override
     public boolean accept(String value, List<String> dependentValues) {
         FileService fileService;
@@ -103,5 +104,4 @@ public class FileUploadAction implements Action {
         }
         return fileService != null;
     }
-
 }

@@ -9,14 +9,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.geotools.util.NumberRange;
-
 import junit.framework.TestCase;
+import org.geotools.util.NumberRange;
 
 /**
  * Test for the elevation kvp parser
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
 public class ElevationKvpParserTest extends TestCase {
@@ -59,5 +57,4 @@ public class ElevationKvpParserTest extends TestCase {
         assertEquals(8.9, elements.get(5));
         return parser;
     }
-
 }

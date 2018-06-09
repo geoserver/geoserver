@@ -7,7 +7,6 @@ package org.geoserver.web;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.geotools.filter.function.EnvFunction;
@@ -42,7 +41,6 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
     public void onEndRequest() {
         // clean up when we're done
         EnvFunction.clearLocalValues();
-
     }
 
     @Override
@@ -54,7 +52,4 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
     public void onRuntimeException(RequestCycle cycle, Exception ex) {
         // nothing to do
     }
-
-   
-
 }

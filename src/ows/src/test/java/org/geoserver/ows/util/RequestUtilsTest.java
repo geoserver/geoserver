@@ -4,12 +4,11 @@
  */
 package org.geoserver.ows.util;
 
-import javax.servlet.http.HttpServletRequest;
+import static org.junit.Assert.assertEquals;
 
+import javax.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import static org.junit.Assert.assertEquals;
 
 public class RequestUtilsTest {
 

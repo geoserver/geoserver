@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.Serializable;
-
 import org.geotools.data.DefaultRepository;
 
 /**
@@ -16,5 +15,4 @@ import org.geotools.data.DefaultRepository;
 public class SerializableDefaultRepository extends DefaultRepository implements Serializable {
 
     private static final long serialVersionUID = -4285310466894316161L;
-
 }

@@ -14,10 +14,10 @@ public class TextFieldPanel extends Panel {
 
     public TextFieldPanel(String id, IModel<String> model) {
         super(id, model);
-        
+
         add(new TextField<String>("textfield", model));
     }
-    
+
     @SuppressWarnings("unchecked")
     public TextField<String> getTextField() {
         return (TextField<String>) get("textfield");

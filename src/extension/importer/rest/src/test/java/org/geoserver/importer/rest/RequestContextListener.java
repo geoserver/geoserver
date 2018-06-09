@@ -4,9 +4,9 @@
  */
 package org.geoserver.importer.rest;
 
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AbstractResourceAccessManager;
 import org.geoserver.security.DataAccessLimits;
@@ -15,11 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * The purpose of this class is to test that requests spring context are correctly shared
- * between multiple threads. This happens for example when we perform a job asynchronously.
+ * The purpose of this class is to test that requests spring context are correctly shared between
+ * multiple threads. This happens for example when we perform a job asynchronously.
  */
 public final class RequestContextListener extends AbstractResourceAccessManager {
 
@@ -38,7 +36,9 @@ public final class RequestContextListener extends AbstractResourceAccessManager 
         if (callBack != null) {
             // let's see if we can access this request context
             try {
-                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+                HttpServletRequest request =
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                                .getRequest();
                 callBack.invoked(request, user, resource);
             } catch (Exception exception) {
                 // the call back should have test if the request context was properly obtained
@@ -52,7 +52,9 @@ public final class RequestContextListener extends AbstractResourceAccessManager 
         if (callBack != null) {
             // let's see if we can access this request context
             try {
-                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+                HttpServletRequest request =
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                                .getRequest();
                 callBack.invoked(request, user, workspace);
             } catch (Exception exception) {
                 // the call back should have test if the request context was properly obtained

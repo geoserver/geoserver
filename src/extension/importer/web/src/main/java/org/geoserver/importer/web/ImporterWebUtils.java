@@ -8,14 +8,13 @@ package org.geoserver.importer.web;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.ComponentTag;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.importer.Importer;
+import org.geoserver.web.GeoServerApplication;
 
 /**
  * Importer web utilities.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ImporterWebUtils {
 
@@ -24,7 +23,8 @@ public class ImporterWebUtils {
     }
 
     static boolean isDevMode() {
-        return RuntimeConfigurationType.DEVELOPMENT == GeoServerApplication.get().getConfigurationType();
+        return RuntimeConfigurationType.DEVELOPMENT
+                == GeoServerApplication.get().getConfigurationType();
     }
 
     static void disableLink(ComponentTag tag) {

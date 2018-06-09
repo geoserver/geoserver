@@ -12,7 +12,7 @@ public interface LookupService<T extends Named> {
     T get(String name);
 
     <S extends T> S get(String name, Class<S> clazz);
-    
+
     Set<String> names();
 
     Collection<T> all();

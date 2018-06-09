@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -48,11 +46,14 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         return GeoServerExtensions.bean(GeoServerSecurityManager.class);
     }
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     @ResponseBody
     public RuleMap rulesGet() throws IOException {
         checkUserIsAdmin();
@@ -64,11 +65,14 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    @PostMapping(consumes = {
+    @PostMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public void rulesPost(@RequestBody RuleMap map) throws IOException {
         checkUserIsAdmin();
 
@@ -79,11 +83,14 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    @PutMapping(consumes = {
+    @PutMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public void rulesPut(@RequestBody RuleMap map) throws IOException {
         checkUserIsAdmin();
 
@@ -103,8 +110,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         ruleString = URLDecoder.decode(ruleString, "utf-8");
 
         String msg = validateRuleKey(ruleString);
-        if (msg != null)
-            throw new RestException(msg, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (msg != null) throw new RestException(msg, HttpStatus.UNPROCESSABLE_ENTITY);
 
         Comparable<?> rule = null;
         for (Comparable<?> ruleCandidate : ruleDAO.getRules()) {
@@ -129,7 +135,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     /**
      * Returns the base path of the ACL resource
-     * 
+     *
      * @return
      */
     protected abstract String getBasePath();
@@ -142,7 +148,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     /**
      * Adds a rule to a map
-     * 
+     *
      * @param rule
      * @param map
      */
@@ -170,12 +176,10 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             ruleKeys.add(keyFor(rule));
         }
 
-        if (ruleKeys.isEmpty() || map.isEmpty())
-            return result;
+        if (ruleKeys.isEmpty() || map.isEmpty()) return result;
 
         for (Object key : ruleKeys) {
-            if (map.containsKey(key))
-                result.add(key);
+            if (map.containsKey(key)) result.add(key);
         }
         return result;
     }
@@ -189,8 +193,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
         List<Comparable<?>> rules = ruleDAO.getRules();
 
-        if (rules.isEmpty())
-            return map.keySet();
+        if (rules.isEmpty()) return map.keySet();
 
         Set<Object> result = new HashSet<>();
         Set<Object> ruleKeys = new HashSet<>();
@@ -198,23 +201,21 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             ruleKeys.add(keyFor(rule));
         }
         for (Object key : map.keySet()) {
-            if (!ruleKeys.contains(key))
-                result.add(key);
+            if (!ruleKeys.contains(key)) result.add(key);
         }
         return result;
     }
 
     /**
      * Returns the key string for a rule
-     * 
-     * @param rule
      *
+     * @param rule
      */
     protected abstract String keyFor(Comparable<?> rule);
 
     /**
      * Validate a rule, return an error message or <code>null</code> if the rule is ok
-     * 
+     *
      * @param ruleKey ,ruleValue
      */
     protected String validateRule(String ruleKey, String ruleValue) {
@@ -224,24 +225,23 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     }
 
     /**
-     * Validates the string representation of a rule key. Return an error message or <code>null</code> if the rule is ok
-     * 
-     * @param ruleKey
+     * Validates the string representation of a rule key. Return an error message or <code>null
+     * </code> if the rule is ok
      *
+     * @param ruleKey
      */
     protected abstract String validateRuleKey(String ruleKey);
 
     /**
      * Convert an {@link Entry} to a rule object
-     * 
-     * @param entry
      *
+     * @param entry
      */
     protected abstract Comparable convertEntryToRule(Entry<String, String> entry);
 
     /**
      * Validates the string representation of rule keys and values
-     * 
+     *
      * @param ruleMap
      */
     protected void validateMap(Map<String, String> ruleMap) {
@@ -269,7 +269,6 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             ruleDAO.addRule(rule);
         }
         ruleDAO.storeRules();
-
     }
 
     protected void putMap(Map map) throws Exception {
@@ -291,8 +290,9 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     }
 
     /**
-     * Parses a comma separated list of roles into a set of strings, with special handling for the {@link DataAccessRule#ANY} role
-     * 
+     * Parses a comma separated list of roles into a set of strings, with special handling for the
+     * {@link DataAccessRule#ANY} role
+     *
      * @param roleCsv Comma separated list of roles.
      */
     protected Set<String> parseRoles(String roleCsv) {
@@ -304,8 +304,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
         // if any of the roles is * we just remove all of the others
         for (String role : roles) {
-            if (ANY.equals(role))
-                return Collections.singleton("*");
+            if (ANY.equals(role)) return Collections.singleton("*");
         }
 
         return roles;

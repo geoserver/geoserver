@@ -15,33 +15,36 @@ import org.apache.wicket.validation.IValidator;
 
 /**
  * A label with a text field. Can receive custom validators for the text field.
- * 
+ *
  * @author Gabriel Roldan
  */
 public class TextParamPanel<T> extends Panel implements ParamPanel {
 
     private static final long serialVersionUID = 5498443514886175158L;
-	
+
     private TextField<T> textField;
-    
+
     /**
-     * 
      * @param id
      * @param paramsMap
      * @param paramName
      * @param paramLabelModel
      * @param required
-     * @param validators
-     *            any extra validator that should be added to the input field, or {@code null}
+     * @param validators any extra validator that should be added to the input field, or {@code
+     *     null}
      */
     @SafeVarargs
-	public TextParamPanel(final String id, final IModel<T> paramValue, final IModel<String> paramLabelModel,
-            final boolean required, IValidator<T>... validators) {
+    public TextParamPanel(
+            final String id,
+            final IModel<T> paramValue,
+            final IModel<String> paramLabelModel,
+            final boolean required,
+            IValidator<T>... validators) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, paramValue);
 
         // the label
-        String requiredMark = required ? " *" : ""; 
+        String requiredMark = required ? " *" : "";
         Label label = new Label("paramName", paramLabelModel.getObject() + requiredMark);
         add(label);
 
@@ -61,11 +64,8 @@ public class TextParamPanel<T> extends Panel implements ParamPanel {
         feedback.add(textField);
         add(feedback);
     }
-    
-    /**
-     * The text field stored inside the panel. 
-     *
-     */
+
+    /** The text field stored inside the panel. */
     public FormComponent<T> getFormComponent() {
         return textField;
     }

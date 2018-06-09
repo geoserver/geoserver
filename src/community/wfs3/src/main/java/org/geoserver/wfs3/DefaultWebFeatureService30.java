@@ -4,8 +4,22 @@
  */
 package org.geoserver.wfs3;
 
+import static org.geoserver.wfs3.response.ConformanceDocument.CORE;
+import static org.geoserver.wfs3.response.ConformanceDocument.GEOJSON;
+import static org.geoserver.wfs3.response.ConformanceDocument.GMLSF0;
+import static org.geoserver.wfs3.response.ConformanceDocument.OAS30;
+
 import io.swagger.v3.oas.models.OpenAPI;
-import net.opengis.wfs20.GetFeatureType;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -21,22 +35,6 @@ import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
-
-import javax.xml.namespace.QName;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import static org.geoserver.wfs3.response.ConformanceDocument.CORE;
-import static org.geoserver.wfs3.response.ConformanceDocument.GEOJSON;
-import static org.geoserver.wfs3.response.ConformanceDocument.GMLSF0;
-import static org.geoserver.wfs3.response.ConformanceDocument.OAS30;
 
 /** WFS 3.0 implementation */
 public class DefaultWebFeatureService30 implements WebFeatureService30 {
@@ -145,7 +143,6 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     @Override
     public OpenAPI api(APIRequest request) {
-       return new OpenAPIBuilder().build(request, getService());
+        return new OpenAPIBuilder().build(request, getService());
     }
-   
 }

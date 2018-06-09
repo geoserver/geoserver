@@ -5,47 +5,38 @@
 package org.geoserver.rest;
 
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * An object which contains information about the "page" or "resource" being accessed
- * in a rest request.
+ * An object which contains information about the "page" or "resource" being accessed in a rest
+ * request.
  *
- * Equivalent of PageInfo used by the old rest module.
- * <p>
- * An instance of this class can be referenced by any restlet via:
+ * <p>Equivalent of PageInfo used by the old rest module.
+ *
+ * <p>An instance of this class can be referenced by any restlet via:
+ *
  * <pre>
  * RequestContextHolder.getRequestAttributes().getAttribute( RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST );
  * </pre>
- * </p>
- *
  */
 public class RequestInfo {
 
-    /**
-     * key to reference this object by
-     */
+    /** key to reference this object by */
     public static final String KEY = "RequestInfo";
 
     String baseURL;
     String servletPath;
     String pagePath;
     String extension;
-    
 
     private Map<String, String[]> queryMap;
 
-
-    /**
-     * Constructs an empty {@link RequestInfo} object
-     */
-    public RequestInfo() { }
+    /** Constructs an empty {@link RequestInfo} object */
+    public RequestInfo() {}
 
     /**
      * Constructs a {@link RequestInfo} object, generating content based on the passed request.
@@ -54,31 +45,31 @@ public class RequestInfo {
      */
     public RequestInfo(HttpServletRequest request) {
         // http://host:port/appName
-        baseURL = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+        baseURL =
+                request.getRequestURL()
+                        .toString()
+                        .replace(request.getRequestURI(), request.getContextPath());
 
-        servletPath= request.getServletPath();
-        pagePath = request.getServletPath()+request.getPathInfo();
+        servletPath = request.getServletPath();
+        pagePath = request.getServletPath() + request.getPathInfo();
         setQueryMap(request.getParameterMap());
-        //strip off the extension
+        // strip off the extension
         extension = ResponseUtils.getExtension(pagePath);
-        if ( extension != null ) {
+        if (extension != null) {
             pagePath = pagePath.substring(0, pagePath.length() - extension.length() - 1);
         }
 
-        //trim leading slash
-        if ( pagePath.endsWith( "/" ) ) {
-            pagePath = pagePath.substring(0, pagePath.length()-1);
+        // trim leading slash
+        if (pagePath.endsWith("/")) {
+            pagePath = pagePath.substring(0, pagePath.length() - 1);
         }
     }
 
     private void setQueryMap(Map<String, String[]> parameterMap) {
         queryMap = parameterMap;
-        
     }
 
-    /**
-     * Gets the base URL of the server, e.g. "http://localhost:8080/geoserver"
-     */
+    /** Gets the base URL of the server, e.g. "http://localhost:8080/geoserver" */
     public String getBaseURL() {
         return baseURL;
     }
@@ -87,9 +78,7 @@ public class RequestInfo {
         this.baseURL = baseURL;
     }
 
-    /**
-     * Gets the relative path to the servlet, e.g. "/rest"
-     */
+    /** Gets the relative path to the servlet, e.g. "/rest" */
     public String getServletPath() {
         return servletPath;
     }
@@ -98,9 +87,7 @@ public class RequestInfo {
         this.servletPath = servletPath;
     }
 
-    /**
-     * Gets the relative path to the current page, e.g. "rest/layers"
-     */
+    /** Gets the relative path to the current page, e.g. "rest/layers" */
     public String getPagePath() {
         return pagePath;
     }
@@ -109,9 +96,7 @@ public class RequestInfo {
         this.pagePath = pagePath;
     }
 
-    /**
-     * Gets the extension for the currnet page, e.g. "xml"
-     */
+    /** Gets the extension for the currnet page, e.g. "xml" */
     public String getExtension() {
         return extension;
     }
@@ -129,10 +114,9 @@ public class RequestInfo {
     }
 
     String buildURI(String base, String path) {
-        if(path != null) {
-            if(path.startsWith(".")) {
-                if(base.endsWith("/"))
-                    base = base.substring(1);
+        if (path != null) {
+            if (path.startsWith(".")) {
+                if (base.endsWith("/")) base = base.substring(1);
                 path = base + path;
             } else {
                 path = ResponseUtils.appendPath(base, path);
@@ -141,30 +125,29 @@ public class RequestInfo {
 
         return ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.SERVICE);
     }
-    
+
     /**
      * Returns the RequestInfo from the current {@link RequestContextHolder}
-     * 
+     *
      * @return
      */
     public static RequestInfo get() {
-        return (RequestInfo) RequestContextHolder.getRequestAttributes()
-                .getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
+        return (RequestInfo)
+                RequestContextHolder.getRequestAttributes()
+                        .getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
     }
 
     public Map<String, String[]> getQueryMap() {
         return queryMap;
     }
 
-    
-
     /**
      * Sets the provided RequestInfo into the {@link RequestContextHolder}
-     * 
+     *
      * @param requestInfo
      */
     public static void set(RequestInfo requestInfo) {
-        RequestContextHolder.getRequestAttributes().setAttribute(RequestInfo.KEY, requestInfo,
-                RequestAttributes.SCOPE_REQUEST);
+        RequestContextHolder.getRequestAttributes()
+                .setAttribute(RequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
     }
 }

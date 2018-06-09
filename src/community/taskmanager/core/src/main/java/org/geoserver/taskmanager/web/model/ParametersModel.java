@@ -7,23 +7,22 @@ package org.geoserver.taskmanager.web.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.wicket.model.IModel;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class ParametersModel extends GeoServerDataProvider<Parameter> {
-    
+
     private static final long serialVersionUID = 7539336498086934903L;
-    
+
     public static final Property<Parameter> NAME = new BeanProperty<Parameter>("name", "name");
     public static final Property<Parameter> VALUE = new BeanProperty<Parameter>("value", "value");
 
     private IModel<Task> taskModel;
-    
+
     public ParametersModel(IModel<Task> taskModel) {
-       this.taskModel = taskModel;
+        this.taskModel = taskModel;
     }
 
     @Override
@@ -35,5 +34,4 @@ public class ParametersModel extends GeoServerDataProvider<Parameter> {
     protected List<Parameter> getItems() {
         return new ArrayList<Parameter>(taskModel.getObject().getParameters().values());
     }
-
 }

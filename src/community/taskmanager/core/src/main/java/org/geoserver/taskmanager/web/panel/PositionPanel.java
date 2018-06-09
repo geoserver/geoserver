@@ -20,64 +20,81 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class PositionPanel extends Panel {
     private static final long serialVersionUID = -4645368967597125299L;
-    
+
     private ImageAjaxLink<Object> upLink;
-    private ImageAjaxLink<Object> downLink;    
-    
-    public PositionPanel(String id, IModel<BatchElement> model, GeoServerTablePanel<BatchElement> tablePanel) {
+    private ImageAjaxLink<Object> downLink;
+
+    public PositionPanel(
+            String id, IModel<BatchElement> model, GeoServerTablePanel<BatchElement> tablePanel) {
         super(id, model);
-        
+
         BatchElement be = model.getObject();
         Batch batch = be.getBatch();
-        
-        upLink = new ImageAjaxLink<Object>("up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png") ) {                                                                                       
-            private static final long serialVersionUID = -4165434301439054175L;
 
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                int index = batch.getElements().indexOf(be);
-                batch.getElements().remove(index);
-                batch.getElements().add(index - 1, be);
-                tablePanel.clearSelection();
-                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                target.add(tablePanel);
-            }
-            
-            @Override
-            protected void onComponentTag(ComponentTag tag) {
-                if (batch.getElements().indexOf(be) == 0) {
-                    tag.put("style", "visibility:hidden");
-                } else {
-                    tag.put("style", "visibility:visible");
-                }
-            }
-        };
-        upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", PositionPanel.this)));
-        add(upLink);            
+        upLink =
+                new ImageAjaxLink<Object>(
+                        "up",
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                    private static final long serialVersionUID = -4165434301439054175L;
 
-        downLink = new ImageAjaxLink<Object>("down", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png") ) {
-            private static final long serialVersionUID = -8005026702401617344L;
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        int index = batch.getElements().indexOf(be);
+                        batch.getElements().remove(index);
+                        batch.getElements().add(index - 1, be);
+                        tablePanel.clearSelection();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
+                                .removeAll();
+                        target.add(tablePanel);
+                    }
 
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                int index = batch.getElements().indexOf(be);
-                batch.getElements().remove(index);
-                batch.getElements().add(index + 1, be);
-                tablePanel.clearSelection();
-                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                target.add(tablePanel);
-            }
-            
-            @Override
-            protected void onComponentTag(ComponentTag tag) {
-                if (batch.getElements().indexOf(be) == batch.getElements().size() - 1) {
-                    tag.put("style", "visibility:hidden");
-                } else {
-                    tag.put("style", "visibility:visible");
-                }
-            }
-        };
-        downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", PositionPanel.this)));
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        if (batch.getElements().indexOf(be) == 0) {
+                            tag.put("style", "visibility:hidden");
+                        } else {
+                            tag.put("style", "visibility:visible");
+                        }
+                    }
+                };
+        upLink.getImage()
+                .add(
+                        new AttributeModifier(
+                                "alt", new ParamResourceModel("up", PositionPanel.this)));
+        add(upLink);
+
+        downLink =
+                new ImageAjaxLink<Object>(
+                        "down",
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                    private static final long serialVersionUID = -8005026702401617344L;
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        int index = batch.getElements().indexOf(be);
+                        batch.getElements().remove(index);
+                        batch.getElements().add(index + 1, be);
+                        tablePanel.clearSelection();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
+                                .removeAll();
+                        target.add(tablePanel);
+                    }
+
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        if (batch.getElements().indexOf(be) == batch.getElements().size() - 1) {
+                            tag.put("style", "visibility:hidden");
+                        } else {
+                            tag.put("style", "visibility:visible");
+                        }
+                    }
+                };
+        downLink.getImage()
+                .add(
+                        new AttributeModifier(
+                                "alt", new ParamResourceModel("down", PositionPanel.this)));
         add(downLink);
     }
 }

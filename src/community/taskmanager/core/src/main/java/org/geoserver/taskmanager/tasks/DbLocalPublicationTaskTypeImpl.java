@@ -7,9 +7,7 @@ package org.geoserver.taskmanager.tasks;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
@@ -39,22 +37,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DbLocalPublicationTaskTypeImpl implements TaskType {
-    
+
     public static final String NAME = "LocalDbPublication";
-    
+
     public static final String PARAM_LAYER = "layer";
-    
+
     public static final String PARAM_DB_NAME = "database";
 
     public static final String PARAM_TABLE_NAME = "table-name";
-    
-    protected final Map<String, ParameterInfo> paramInfo = new LinkedHashMap<String, ParameterInfo>();
 
-    @Autowired
-    protected ExtTypes extTypes;
-    
-    @Autowired
-    protected Catalog catalog;
+    protected final Map<String, ParameterInfo> paramInfo =
+            new LinkedHashMap<String, ParameterInfo>();
+
+    @Autowired protected ExtTypes extTypes;
+
+    @Autowired protected Catalog catalog;
 
     @Override
     public String getName() {
@@ -65,8 +62,9 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
     public void initParamInfo() {
         ParameterInfo dbInfo = new ParameterInfo(PARAM_DB_NAME, extTypes.dbName, true);
         paramInfo.put(PARAM_DB_NAME, dbInfo);
-        paramInfo.put(PARAM_TABLE_NAME, new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, false)
-                .dependsOn(dbInfo));
+        paramInfo.put(
+                PARAM_TABLE_NAME,
+                new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, false).dependsOn(dbInfo));
         paramInfo.put(PARAM_LAYER, new ParameterInfo(PARAM_LAYER, extTypes.name, true));
     }
 
@@ -77,64 +75,78 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
 
     @Override
     public TaskResult run(TaskContext ctx) throws TaskException {
-        final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);        
+        final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
-        final DbTable table = (DbTable)   
-                ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_TABLE_NAME),
-                   new BatchContext.Dependency() {
-                    @Override
-                    public void revert() throws TaskException {
-                         FeatureTypeInfo resource = catalog.getResourceByName(layerName, FeatureTypeInfo.class);
-                         DbTable table = (DbTable) ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_TABLE_NAME));
-                         resource.setNativeName(
-                                 SqlUtil.notQualified(table.getTableName()));
-                         catalog.save(resource);
-                    }
-                });
-        
+        final DbTable table =
+                (DbTable)
+                        ctx.getBatchContext()
+                                .get(
+                                        ctx.getParameterValues().get(PARAM_TABLE_NAME),
+                                        new BatchContext.Dependency() {
+                                            @Override
+                                            public void revert() throws TaskException {
+                                                FeatureTypeInfo resource =
+                                                        catalog.getResourceByName(
+                                                                layerName, FeatureTypeInfo.class);
+                                                DbTable table =
+                                                        (DbTable)
+                                                                ctx.getBatchContext()
+                                                                        .get(
+                                                                                ctx.getParameterValues()
+                                                                                        .get(
+                                                                                                PARAM_TABLE_NAME));
+                                                resource.setNativeName(
+                                                        SqlUtil.notQualified(table.getTableName()));
+                                                catalog.save(resource);
+                                            }
+                                        });
+
         CatalogFactory catalogFac = new CatalogFactoryImpl(catalog);
-        
-        
+
         final NamespaceInfo ns = catalog.getNamespaceByURI(layerName.getNamespaceURI());
         final WorkspaceInfo ws = catalog.getWorkspaceByName(ns.getName());
-        
+
         final boolean createLayer = catalog.getLayerByName(layerName) == null;
         final boolean createStore;
         final boolean createResource;
-        
+
         final LayerInfo layer;
         final DataStoreInfo store;
         final FeatureTypeInfo resource;
-              
+
         if (createLayer) {
             String schema = SqlUtil.schema(table.getTableName());
             String dbName = schema == null ? db.getName() : (db.getName() + "_" + schema);
             final DataStoreInfo _store = catalog.getStoreByName(ws, dbName, DataStoreInfo.class);
-            final FeatureTypeInfo _resource = catalog.getResourceByName(layerName, FeatureTypeInfo.class);
+            final FeatureTypeInfo _resource =
+                    catalog.getResourceByName(layerName, FeatureTypeInfo.class);
             createStore = _store == null;
             createResource = _resource == null;
-            
+
             if (createStore) {
                 store = catalogFac.createDataStore();
                 store.setWorkspace(ws);
                 store.setName(dbName);
-                store.getConnectionParameters().put(JDBCDataStoreFactory.NAMESPACE.getName(), ns.getURI());
-                store.getConnectionParameters().putAll(db.getParameters());   
+                store.getConnectionParameters()
+                        .put(JDBCDataStoreFactory.NAMESPACE.getName(), ns.getURI());
+                store.getConnectionParameters().putAll(db.getParameters());
                 if (schema != null) {
-                    store.getConnectionParameters().put(JDBCDataStoreFactory.SCHEMA.getName(), schema);
+                    store.getConnectionParameters()
+                            .put(JDBCDataStoreFactory.SCHEMA.getName(), schema);
                 }
                 store.setEnabled(true);
                 catalog.add(store);
             } else {
                 store = unwrap(_store, DataStoreInfo.class);
             }
-            
+
             CatalogBuilder builder = new CatalogBuilder(catalog);
             if (createResource) {
                 builder.setStore(store);
                 try {
-                    resource = builder.buildFeatureType(new NameImpl(
-                            SqlUtil.notQualified(table.getTableName())));
+                    resource =
+                            builder.buildFeatureType(
+                                    new NameImpl(SqlUtil.notQualified(table.getTableName())));
                     builder.setupBounds(resource);
                 } catch (Exception e) {
                     if (createStore) {
@@ -149,10 +161,10 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
             } else {
                 resource = unwrap(_resource, FeatureTypeInfo.class);
             }
-            
+
             try {
                 layer = builder.buildLayer(resource);
-                catalog.add(layer);     
+                catalog.add(layer);
             } catch (IOException e) {
                 if (createStore) {
                     catalog.remove(store);
@@ -169,13 +181,14 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
             createStore = false;
             createResource = false;
         }
-        
+
         return new TaskResult() {
 
             @Override
             public void commit() throws TaskException {
                 if (createLayer) {
-                    ResourceInfo editResource = catalog.getResource(resource.getId(), ResourceInfo.class);
+                    ResourceInfo editResource =
+                            catalog.getResource(resource.getId(), ResourceInfo.class);
                     editResource.setAdvertised(true);
                     catalog.save(editResource);
                 }
@@ -193,9 +206,7 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
                     }
                 }
             }
-            
-        };        
-       
+        };
     }
 
     @Override
@@ -203,22 +214,23 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
         final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
         final String workspace = catalog.getNamespaceByURI(layerName.getNamespaceURI()).getPrefix();
-        
+
         final DbTable table = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
         String schema = SqlUtil.schema(table.getTableName());
         String dbName = schema == null ? db.getName() : (db.getName() + "_" + schema);
-        
-        final LayerInfo layer = catalog.getLayerByName(layerName);               
+
+        final LayerInfo layer = catalog.getLayerByName(layerName);
         final DataStoreInfo store = catalog.getStoreByName(workspace, dbName, DataStoreInfo.class);
-        final FeatureTypeInfo resource = catalog.getResourceByName(layerName, FeatureTypeInfo.class);
-        
+        final FeatureTypeInfo resource =
+                catalog.getResourceByName(layerName, FeatureTypeInfo.class);
+
         catalog.remove(layer);
         catalog.remove(resource);
         if (catalog.getResourcesByStore(store, ResourceInfo.class).isEmpty()) {
             catalog.remove(store);
         }
     }
-    
+
     private static <T> T unwrap(T o, Class<T> clazz) {
         if (o instanceof Wrapper) {
             return ((Wrapper) o).unwrap(clazz);
@@ -226,5 +238,4 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
             return o;
         }
     }
-
 }

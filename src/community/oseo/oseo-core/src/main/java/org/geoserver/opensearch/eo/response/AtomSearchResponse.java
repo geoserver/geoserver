@@ -6,9 +6,7 @@ package org.geoserver.opensearch.eo.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.SearchResults;
@@ -37,7 +35,8 @@ public class AtomSearchResponse extends Response {
         SearchResults results = (SearchResults) value;
 
         try {
-            AtomResultsTransformer transformer = new AtomResultsTransformer(gs.getGlobal(), gs.getService(OSEOInfo.class));
+            AtomResultsTransformer transformer =
+                    new AtomResultsTransformer(gs.getGlobal(), gs.getService(OSEOInfo.class));
             transformer.setIndentation(2);
             transformer.transform(results, output);
         } catch (TransformerException e) {

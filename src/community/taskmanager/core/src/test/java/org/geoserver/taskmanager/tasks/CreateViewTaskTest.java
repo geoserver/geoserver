@@ -4,6 +4,15 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
@@ -27,25 +36,13 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 /**
- * 
  * @author Niels Charlier
  * @author Timothy De Bock
- *
  */
 public class CreateViewTaskTest extends AbstractTaskManagerTest {
 
-    //configure these constants
+    // configure these constants
     private static final String DB_NAME = "testsourcedb";
     private static final String TABLE_NAME = "gw_beleid.grondwaterlichamen_new";
     private static final String VIEW_NAME = "gw_beleid.vw_grondwaterlichamen_new";
@@ -54,8 +51,8 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
     private static final int NUMBER_OF_RECORDS = 7;
     private static final int NUMBER_OF_COLUMNS = 1;
     private static final String VIEW_NAME_NEW_SCHEMA = "newschema.vw_grondwaterlichamen";
-    
-    //attributes
+
+    // attributes
     private static final String ATT_DB_NAME = "db";
     private static final String ATT_TABLE_NAME = "table_name";
     private static final String ATT_VIEW_NAME = "view_name";
@@ -63,55 +60,52 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_WHERE = "where";
     private static final String ATT_FAIL = "fail";
 
-    @Autowired
-    private TaskManagerDao dao;
-    
-    @Autowired
-    private TaskManagerFactory fac;
-    
-    @Autowired
-    private TaskManagerDataUtil dataUtil;
-    
-    @Autowired
-    private TaskManagerTaskUtil taskUtil;
+    @Autowired private TaskManagerDao dao;
 
-    @Autowired
-    private BatchJobService bjService;
+    @Autowired private TaskManagerFactory fac;
 
-    @Autowired
-    private LookupService<DbSource> dbSources;
-        
-    @Autowired
-    private Scheduler scheduler;
-    
+    @Autowired private TaskManagerDataUtil dataUtil;
+
+    @Autowired private TaskManagerTaskUtil taskUtil;
+
+    @Autowired private BatchJobService bjService;
+
+    @Autowired private LookupService<DbSource> dbSources;
+
+    @Autowired private Scheduler scheduler;
+
     private Configuration config;
-    
+
     private Batch batch;
-                
+
     @Before
     public void setupBatch() {
-        config = fac.createConfiguration();  
+        config = fac.createConfiguration();
         config.setName("my_config");
         config.setWorkspace("some_ws");
-        
+
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(CreateViewTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(task1, CreateViewTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
-        dataUtil.setTaskParameterToAttribute(task1, CreateViewTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
-        dataUtil.setTaskParameterToAttribute(task1, CreateViewTaskTypeImpl.PARAM_VIEW_NAME, ATT_VIEW_NAME);
-        dataUtil.setTaskParameterToAttribute(task1, CreateViewTaskTypeImpl.PARAM_SELECT, ATT_SELECT);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CreateViewTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CreateViewTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CreateViewTaskTypeImpl.PARAM_VIEW_NAME, ATT_VIEW_NAME);
+        dataUtil.setTaskParameterToAttribute(
+                task1, CreateViewTaskTypeImpl.PARAM_SELECT, ATT_SELECT);
         dataUtil.setTaskParameterToAttribute(task1, CreateViewTaskTypeImpl.PARAM_WHERE, ATT_WHERE);
         dataUtil.addTaskToConfiguration(config, task1);
-        
+
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
-        
+
         batch = fac.createBatch();
-        
+
         batch.setName("my_batch");
         dataUtil.addBatchElement(batch, task1);
-        
+
         batch = bjService.saveAndSchedule(batch);
     }
 
@@ -120,7 +114,7 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         dao.delete(batch);
         dao.delete(config);
     }
-    
+
     @Test
     public void testSimpleView() throws SchedulerException, SQLException {
         dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
@@ -128,22 +122,20 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_VIEW_NAME, VIEW_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_SELECT, "*");
         config = dao.save(config);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()        
-                .build();
+
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
-        
+
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
+
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), "_temp%"));
         assertTrue(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
-        assertEquals(getNumberOfRecords(TABLE_NAME), getNumberOfRecords(VIEW_NAME));   
-        assertEquals(getNumberOfColumns(TABLE_NAME), getNumberOfColumns(VIEW_NAME));   
-        
-        assertTrue(taskUtil.cleanup(config));        
-        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));    
+        assertEquals(getNumberOfRecords(TABLE_NAME), getNumberOfRecords(VIEW_NAME));
+        assertEquals(getNumberOfColumns(TABLE_NAME), getNumberOfColumns(VIEW_NAME));
+
+        assertTrue(taskUtil.cleanup(config));
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
     }
 
     @Test
@@ -154,24 +146,21 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_SELECT, SELECT);
         dataUtil.setConfigurationAttribute(config, ATT_WHERE, WHERE);
         config = dao.save(config);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()        
-                .build();
+
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
-        
+
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
+
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), "_temp%"));
         assertTrue(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
-        assertEquals(NUMBER_OF_RECORDS, getNumberOfRecords(VIEW_NAME));   
-        assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(VIEW_NAME));   
-        
-        assertTrue(taskUtil.cleanup(config));
-        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));  
-    }
+        assertEquals(NUMBER_OF_RECORDS, getNumberOfRecords(VIEW_NAME));
+        assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(VIEW_NAME));
 
+        assertTrue(taskUtil.cleanup(config));
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
+    }
 
     @Test
     public void testSimpleViewInNewSchema() throws SchedulerException, SQLException {
@@ -181,19 +170,23 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_SELECT, "*");
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), "_temp%"));
-        assertTrue(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+        assertTrue(
+                viewExists(
+                        SqlUtil.schema(VIEW_NAME_NEW_SCHEMA),
+                        SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
 
         assertTrue(taskUtil.cleanup(config));
-        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+        assertFalse(
+                viewExists(
+                        SqlUtil.schema(VIEW_NAME_NEW_SCHEMA),
+                        SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
     }
 
     @Test
@@ -205,23 +198,26 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_WHERE, WHERE);
         config = dao.save(config);
 
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()
-                .build();
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), "_temp%"));
-        assertTrue(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+        assertTrue(
+                viewExists(
+                        SqlUtil.schema(VIEW_NAME_NEW_SCHEMA),
+                        SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
         assertEquals(NUMBER_OF_RECORDS, getNumberOfRecords(VIEW_NAME_NEW_SCHEMA));
         assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(VIEW_NAME_NEW_SCHEMA));
 
         assertTrue(taskUtil.cleanup(config));
-        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+        assertFalse(
+                viewExists(
+                        SqlUtil.schema(VIEW_NAME_NEW_SCHEMA),
+                        SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
     }
-
 
     @Test
     public void testRollback() throws SchedulerException, SQLException {
@@ -229,7 +225,7 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         task2.setName("task2");
         task2.setType(TestTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(task2, TestTaskTypeImpl.PARAM_FAIL, ATT_FAIL);
-        dataUtil.addTaskToConfiguration(config, task2);  
+        dataUtil.addTaskToConfiguration(config, task2);
         dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_VIEW_NAME, VIEW_NAME);
@@ -239,19 +235,17 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         task2 = config.getTasks().get("task2");
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getId().toString())
-                .startNow()        
-                .build();
+
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         scheduler.scheduleJob(trigger);
-        
+
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
-        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));    
+
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), "_temp%"));
     }
-    
+
     private int getNumberOfRecords(String tableName) throws SQLException {
         DbSource ds = dbSources.get(DB_NAME);
         try (Connection conn = ds.getDataSource().getConnection()) {
@@ -259,27 +253,27 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
                 try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + tableName)) {
                     rs.next();
                     return rs.getInt(1);
-                }                    
+                }
             }
         }
     }
-    
+
     private int getNumberOfColumns(String tableName) throws SQLException {
         DbSource ds = dbSources.get(DB_NAME);
         try (Connection conn = ds.getDataSource().getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
                     return rs.getMetaData().getColumnCount();
-                }                    
+                }
             }
         }
     }
-    
+
     private boolean viewExists(String schema, String pattern) throws SQLException {
         DbSource ds = dbSources.get(DB_NAME);
         try (Connection conn = ds.getDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
-            if(md.storesUpperCaseIdentifiers()){
+            if (md.storesUpperCaseIdentifiers()) {
                 schema = schema.toUpperCase();
                 pattern = pattern.toUpperCase();
             }
@@ -287,5 +281,4 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
             return (rs.next());
         }
     }
-
 }

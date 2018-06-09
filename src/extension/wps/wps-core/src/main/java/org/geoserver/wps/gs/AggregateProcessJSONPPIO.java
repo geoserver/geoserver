@@ -4,27 +4,27 @@
  */
 package org.geoserver.wps.gs;
 
-import net.sf.json.JSONObject;
-import org.geoserver.wps.ppio.CDataPPIO;
-import org.geotools.process.vector.AggregateProcess;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import net.sf.json.JSONObject;
+import org.geoserver.wps.ppio.CDataPPIO;
+import org.geotools.process.vector.AggregateProcess;
 
 /**
- * <p>
- * Provides a JSON output for the aggregate process result. The result are encoded in a tabular format very similar
- * to the output of SQL query.
- * </p>
- * <p>
- * The tabular data is the composition of the group by attributes values and the aggregation functions results.
- * Both of these values appear in the order they are declared, the group by values appear first and the aggregation
- * values after. If there is no group by attributes, only the aggregations values appear.
- * </p>
- * <p>Follow some examples:</p>
- * <p>The max and min energy consumption:</p>
+ * Provides a JSON output for the aggregate process result. The result are encoded in a tabular
+ * format very similar to the output of SQL query.
+ *
+ * <p>The tabular data is the composition of the group by attributes values and the aggregation
+ * functions results. Both of these values appear in the order they are declared, the group by
+ * values appear first and the aggregation values after. If there is no group by attributes, only
+ * the aggregations values appear.
+ *
+ * <p>Follow some examples:
+ *
+ * <p>The max and min energy consumption:
+ *
  * <pre>
  * <code>{
  *   "AggregationAttribute": "energy_consumption",
@@ -36,7 +36,9 @@ import java.util.Map;
  *   ]
  * }</code>
  * </pre>
- * <p>The max and min energy consumption per building type and energy type:</p>
+ *
+ * <p>The max and min energy consumption per building type and energy type:
+ *
  * <pre>
  * <code>{
  *   "AggregationAttribute": "energy_consumption",
@@ -64,10 +66,12 @@ public class AggregateProcessJSONPPIO extends CDataPPIO {
         // we encode the common parts regardless of the presence of group by attributes
         json.put("AggregationAttribute", processResult.getAggregateAttribute());
         json.put("AggregationFunctions", extractAggregateFunctionsNames(processResult));
-        if (processResult.getGroupByAttributes() == null || processResult.getGroupByAttributes().isEmpty()) {
-            // if there is no group by attributes we only to encode the aggregations function results
+        if (processResult.getGroupByAttributes() == null
+                || processResult.getGroupByAttributes().isEmpty()) {
+            // if there is no group by attributes we only to encode the aggregations function
+            // results
             json.put("GroupByAttributes", new String[0]);
-            json.put("AggregationResults", new Number[][]{encodeSimpleResult(processResult)});
+            json.put("AggregationResults", new Number[][] {encodeSimpleResult(processResult)});
         } else {
             // there is group by values so we need to encode all the grouped results
             json.put("GroupByAttributes", processResult.getGroupByAttributes().toArray());
@@ -77,14 +81,17 @@ public class AggregateProcessJSONPPIO extends CDataPPIO {
     }
 
     /**
-     * Helper method that encodes the result of an aggregator process when there is no group by attributes.
-     * We encode the value of each aggregation function producing an output very similar of an SQL query result.
+     * Helper method that encodes the result of an aggregator process when there is no group by
+     * attributes. We encode the value of each aggregation function producing an output very similar
+     * of an SQL query result.
      *
      * @param processResult the result of the aggregator process
      * @return aggregation functions result values
      */
     private Number[] encodeSimpleResult(AggregateProcess.Results processResult) {
-        return processResult.getFunctions().stream()
+        return processResult
+                .getFunctions()
+                .stream()
                 .map(function -> processResult.getResults().get(function))
                 .toArray(Number[]::new);
     }

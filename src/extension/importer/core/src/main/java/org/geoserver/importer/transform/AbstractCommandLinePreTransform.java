@@ -4,6 +4,14 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
@@ -13,22 +21,13 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
 /**
  * Generic file translator getting a set of options, an input file, and an output file
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public abstract class AbstractCommandLinePreTransform extends AbstractCommandLineTransform implements
-        PreTransform {
+public abstract class AbstractCommandLinePreTransform extends AbstractCommandLineTransform
+        implements PreTransform {
 
     public AbstractCommandLinePreTransform(List<String> options) {
         super(options);
@@ -48,7 +47,6 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
             outputFile = new File(outputDirectory, inputFile.getName());
             substitutions.put("output", outputFile);
         }
-
 
         // setup the options
         CommandLine cmd = new CommandLine(executable);
@@ -100,9 +98,14 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
                 int result = executor.execute(cmd);
 
                 if (result != 0) {
-                    LOGGER.log(Level.SEVERE, "Failed to execute command " + cmd.toString()
-                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                            + es.toString());
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Failed to execute command "
+                                    + cmd.toString()
+                                    + "\nStandard output is:\n"
+                                    + os.toString()
+                                    + "\nStandard error is:\n"
+                                    + es.toString());
                     return false;
                 }
 
@@ -111,7 +114,8 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
                 return false;
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
+            LOGGER.log(
+                    Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
             return false;
         }
 
@@ -121,8 +125,6 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     /**
      * Returns the list of options to be passed the executable to test its availability and ability
      * to run. e.g. "--help"
-     * 
-     *
      */
     protected abstract List<String> getAvailabilityTestOptions();
 
@@ -149,16 +151,13 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     /**
      * Returns the name of all the files that should be transferred from input to output (sometimes
      * the output is made of several files)
-     * 
-     * @param data
      *
+     * @param data
      * @throws IOException
      */
     protected abstract List<String> getReplacementTargetNames(ImportData data) throws IOException;
 
-    /**
-     * Returns true if the command line manipulates the input file directly
-     */
+    /** Returns true if the command line manipulates the input file directly */
     protected boolean isInline() {
         return false;
     }
@@ -166,8 +165,6 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     /**
      * Returns true if in the command line the output file comes after the input one. The default
      * implementation returns true
-     * 
-     *
      */
     protected boolean isOutputAfterInput() {
         return true;
@@ -175,18 +172,16 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
 
     /**
      * The command input file
-     * 
-     * @param data
      *
+     * @param data
      * @throws IOException
      */
     protected abstract File getInputFile(ImportData data) throws IOException;
 
     /**
      * The directory used for outputs, by default, a subdirectory of the input file parent
-     * 
-     * @param data
      *
+     * @param data
      * @throws IOException
      */
     protected File getOutputDirectory(ImportData data) throws IOException {
@@ -201,19 +196,14 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
         return tempFile;
     }
 
-    /**
-     * Implementors must provide the executable to be run
-     * 
-     *
-     */
+    /** Implementors must provide the executable to be run */
     protected abstract File getExecutable() throws IOException;
 
     /**
      * Locates and executable in the system path. On windows it will automatically append .exe to
      * the searched file name
-     * 
-     * @param name
      *
+     * @param name
      * @throws IOException
      */
     protected File getExecutableFromPath(String name) throws IOException {
@@ -239,5 +229,4 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
                 "Could not locate executable (or could locate, but does not have execution rights): "
                         + name);
     }
-
 }

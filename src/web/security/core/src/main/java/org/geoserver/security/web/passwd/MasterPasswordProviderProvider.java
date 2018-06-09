@@ -8,18 +8,16 @@ package org.geoserver.security.web.passwd;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.security.web.SecurityNamedServiceProvider;
 
 /**
  * Data provider for master password provider configurations.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
-public class MasterPasswordProviderProvider extends 
-    SecurityNamedServiceProvider<MasterPasswordProviderConfig> {
+public class MasterPasswordProviderProvider
+        extends SecurityNamedServiceProvider<MasterPasswordProviderConfig> {
 
     @Override
     protected List<MasterPasswordProviderConfig> getItems() {
@@ -31,7 +29,6 @@ public class MasterPasswordProviderProvider extends
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return configs; 
+        return configs;
     }
-
 }

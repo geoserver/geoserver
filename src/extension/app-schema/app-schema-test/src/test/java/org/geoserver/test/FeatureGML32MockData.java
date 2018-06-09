@@ -10,39 +10,34 @@ import org.geoserver.data.test.MockData;
 
 /**
  * Mock data for testing GML32
- * 
- * Inspired by {@link MockData}.
- * 
+ *
+ * <p>Inspired by {@link MockData}.
+ *
  * @author Victor Tey, CSIRO Exploration and Mining
  */
-
 public class FeatureGML32MockData extends AbstractAppSchemaMockData {
 
     public FeatureGML32MockData() {
         super(GML32_NAMESPACES);
     }
 
-    /**
-     * Prefix for ex namespace.
-     */
+    /** Prefix for ex namespace. */
     protected static final String EX_PREFIX = "ex";
 
-    /**
-     * URI for ex namespace.
-     */
+    /** URI for ex namespace. */
     protected static final String EX_URI = "http://example.com";
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
         putNamespace(EX_PREFIX, EX_URI);
 
-        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeature32Property.xml",
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
+                "MappedFeature32Property.xml",
                 "MappedFeaturePropertyfile.properties");
-        addFeatureType(GSML_PREFIX, "GeologicUnit", "GeologicUnit32.xml", "GeologicUnit.properties");
-
+        addFeatureType(
+                GSML_PREFIX, "GeologicUnit", "GeologicUnit32.xml", "GeologicUnit.properties");
     }
-
 }

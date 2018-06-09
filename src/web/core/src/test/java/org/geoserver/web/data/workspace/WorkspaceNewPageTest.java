@@ -12,51 +12,51 @@ import static org.junit.Assert.*;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.data.test.MockTestData;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.data.test.MockTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 
 public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
-    
+
     @Before
     public void init() {
         login();
         tester.startPage(WorkspaceNewPage.class);
-        
+
         // print(tester.getLastRenderedPage(), true, true);
     }
-    
+
     @Test
     public void testLoad() {
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertNoErrorMessage();
-        
+
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:uri", TextField.class);
     }
-    
+
     @Test
     public void testNameRequired() {
         FormTester form = tester.newFormTester("form");
         form.setValue("uri", "http://www.geoserver.org");
         form.submit();
-        
+
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
     }
-    
+
     @Test
     public void testURIRequired() {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "test");
         form.submit();
-        
+
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
     }
-    
+
     @Test
     public void testValid() {
         FormTester form = tester.newFormTester("form");
@@ -64,46 +64,50 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("uri", "http://www.geoserver.org");
         form.setValue("default", "true");
         form.submit();
-    
+
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();
-        
+
         assertEquals("abc", getCatalog().getDefaultWorkspace().getName());
     }
-    
+
     @Test
-    public void testInvalidURI()  {
+    public void testInvalidURI() {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "def");
         form.setValue("uri", "not a valid uri");
         form.submit();
-        
+
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Invalid URI syntax: not a valid uri"});
     }
-    
+
     @Test
-    public void testInvalidName()  {
+    public void testInvalidName() {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "default");
         form.setValue("uri", "http://www.geoserver.org");
         form.submit();
-        
+
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[] {"Invalid workspace name: \"default\" is a reserved keyword"});
+        tester.assertErrorMessages(
+                new String[] {"Invalid workspace name: \"default\" is a reserved keyword"});
     }
 
     @Test
-    public void testDuplicateURI()  {
+    public void testDuplicateURI() {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "def");
         form.setValue("uri", MockTestData.CITE_URI);
         form.submit();
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[] {"Namespace with URI '"+MockTestData.CITE_URI+"' already exists."});
+        tester.assertErrorMessages(
+                new String[] {
+                    "Namespace with URI '" + MockTestData.CITE_URI + "' already exists."
+                });
 
-        //Make sure the workspace doesn't get added if the namespace fails
+        // Make sure the workspace doesn't get added if the namespace fails
         assertNull(getCatalog().getWorkspaceByName("def"));
         assertNull(getCatalog().getNamespaceByPrefix("def"));
     }
@@ -116,7 +120,10 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[]{"Workspace named '" + MockTestData.CITE_PREFIX + "' already exists."});
+        tester.assertErrorMessages(
+                new String[] {
+                    "Workspace named '" + MockTestData.CITE_PREFIX + "' already exists."
+                });
     }
 
     @Test
@@ -135,7 +142,8 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         // try to create non isolated workspace with the same namespace
         createWorkspace("test_b", "http://www.test.org", false);
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test.org' already exists."});
+        tester.assertErrorMessages(
+                new String[] {"Namespace with URI 'http://www.test.org' already exists."});
         // check that no objects were created in the catalog
         assertThat(catalog.getWorkspaceByName("test_b"), nullValue());
         assertThat(catalog.getNamespaceByPrefix("test_b"), nullValue());

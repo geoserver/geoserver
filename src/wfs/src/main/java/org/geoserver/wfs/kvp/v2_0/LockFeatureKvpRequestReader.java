@@ -4,7 +4,10 @@
  */
 package org.geoserver.wfs.kvp.v2_0;
 
-
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.opengis.wfs20.LockFeatureType;
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.ParameterType;
@@ -17,16 +20,10 @@ import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.kvp.BaseFeatureKvpRequestReader;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.xml.EMFUtils;
 import org.opengis.filter.FilterFactory;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
@@ -34,9 +31,8 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(LockFeatureType.class, Wfs20Factory.eINSTANCE, geoServer, filterFactory);
     }
 
-    protected void querySet(EObject request, String property, List values)
-            throws WFSException {
-        //no values specified, do nothing
+    protected void querySet(EObject request, String property, List values) throws WFSException {
+        // no values specified, do nothing
         if (values == null) {
             return;
         }
@@ -54,22 +50,22 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         int n = query.size();
 
         if ((m == 1) && (n > 1)) {
-            //apply single value to all queries
+            // apply single value to all queries
             EMFUtils.set(query, property, values.get(0));
 
             return;
         }
 
-        //WfsFactory wfsFactory = (WfsFactory) getFactory();
-        //match up sizes
+        // WfsFactory wfsFactory = (WfsFactory) getFactory();
+        // match up sizes
         if (m > n) {
             if (n == 0) {
-                //make same size, with empty objects
+                // make same size, with empty objects
                 for (int i = 0; i < m; i++) {
                     query.add(req.createQuery().getAdaptee());
                 }
             } else if (n == 1) {
-                //clone single object up to 
+                // clone single object up to
                 EObject q = (EObject) query.get(0);
 
                 for (int i = 1; i < m; i++) {
@@ -78,7 +74,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
                 return;
             } else {
-                //illegal
+                // illegal
                 String msg = "Specified " + m + " " + property + " for " + n + " queries.";
                 throw new WFSException(request, msg);
             }
@@ -107,20 +103,25 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         for (URI storedQueryId : storedQueryIds) {
             StoredQuery sq = sqp.getStoredQuery(storedQueryId.toString());
             if (sq == null) {
-                WFSException exception = new WFSException(req, "No such stored query: " + storedQueryId,
-                        ServiceException.INVALID_PARAMETER_VALUE);
+                WFSException exception =
+                        new WFSException(
+                                req,
+                                "No such stored query: " + storedQueryId,
+                                ServiceException.INVALID_PARAMETER_VALUE);
                 exception.setLocator("STOREDQUERY_ID");
                 throw exception;
             }
 
-            //JD: since stored queries are 2.0 only we will create 2.0 model objects directly... once
-            // the next version of wfs comes out (and if they keep stored queries around) we will have
+            // JD: since stored queries are 2.0 only we will create 2.0 model objects directly...
+            // once
+            // the next version of wfs comes out (and if they keep stored queries around) we will
+            // have
             // to abstract stored query away with a request object adapter
             Wfs20Factory factory = (Wfs20Factory) req.getFactory();
             StoredQueryType storedQuery = factory.createStoredQueryType();
             storedQuery.setId(storedQueryId.toString());
 
-            //look for parameters in the kvp map
+            // look for parameters in the kvp map
             for (ParameterExpressionType p : sq.getQuery().getParameter()) {
                 if (kvp.containsKey(p.getName())) {
                     ParameterType param = factory.createParameterType();

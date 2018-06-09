@@ -1,19 +1,19 @@
 /*
  *  Copyright (C) 2014 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
- * 
+ *
  *  GPLv3 + Classpath exception
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,17 +26,13 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
-/**
- *
- * @author ETj (etj at geo-solutions.it)
- */
+/** @author ETj (etj at geo-solutions.it) */
 public class GeoFenceConfigurationManager {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceAccessManager.class);
@@ -60,7 +56,9 @@ public class GeoFenceConfigurationManager {
 
         this.geofenceConfiguration = configuration;
 
-        LOGGER.log(Level.INFO, "GeoFence configuration: instance name is {0}",
+        LOGGER.log(
+                Level.INFO,
+                "GeoFence configuration: instance name is {0}",
                 configuration.getInstanceName());
     }
 
@@ -93,9 +91,7 @@ public class GeoFenceConfigurationManager {
         }
     }
 
-    /**
-     * Saves current configuration to disk.
-     */
+    /** Saves current configuration to disk. */
     protected void saveConfiguration(Writer writer, GeoFenceConfiguration configuration)
             throws IOException {
 
@@ -103,14 +99,18 @@ public class GeoFenceConfigurationManager {
 
         saveConfig(writer, "instanceName", configuration.getInstanceName());
         saveConfig(writer, "servicesUrl", configuration.getServicesUrl());
-        saveConfig(writer, "allowRemoteAndInlineLayers",
-                configuration.isAllowRemoteAndInlineLayers());
-        saveConfig(writer, "grantWriteToWorkspacesToAuthenticatedUsers",
+        saveConfig(
+                writer, "allowRemoteAndInlineLayers", configuration.isAllowRemoteAndInlineLayers());
+        saveConfig(
+                writer,
+                "grantWriteToWorkspacesToAuthenticatedUsers",
                 configuration.isGrantWriteToWorkspacesToAuthenticatedUsers());
         saveConfig(writer, "useRolesToFilter", configuration.isUseRolesToFilter());
         saveConfig(writer, "acceptedRoles", configuration.getAcceptedRoles());
         saveConfig(writer, "gwc.context.suffix", configuration.getGwcContextSuffix());
-        saveConfig(writer, "org.geoserver.rest.DefaultUserGroupServiceName",
+        saveConfig(
+                writer,
+                "org.geoserver.rest.DefaultUserGroupServiceName",
                 configuration.getDefaultUserGroupServiceName());
     }
 
@@ -127,13 +127,8 @@ public class GeoFenceConfigurationManager {
         saveConfig(writer, "cacheExpire", params.getExpireMilliSec());
     }
 
-    /**
-     * Returns a copy of the configuration.
-     *
-     */
-
+    /** Returns a copy of the configuration. */
     public void setConfigurer(GeoFencePropertyPlaceholderConfigurer configurer) {
         this.configurer = configurer;
     }
-
 }

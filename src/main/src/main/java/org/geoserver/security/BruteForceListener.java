@@ -9,9 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.security.config.BruteForcePreventionConfig;
 import org.geotools.util.logging.Logging;
@@ -33,7 +31,8 @@ public class BruteForceListener
     static final Logger LOGGER = Logging.getLogger(BruteForceListener.class);
 
     /**
-     * Simple single node delayed login tracker. Should be made pluggable to allow by some sort of network service for a clustered installation
+     * Simple single node delayed login tracker. Should be made pluggable to allow by some sort of
+     * network service for a clustered installation
      */
     Map<String, AtomicInteger> delayedUsers = new ConcurrentHashMap<>();
 
@@ -44,8 +43,8 @@ public class BruteForceListener
     }
 
     private BruteForcePreventionConfig getConfig() {
-        BruteForcePreventionConfig config = securityManager.getSecurityConfig()
-                .getBruteForcePrevention();
+        BruteForcePreventionConfig config =
+                securityManager.getSecurityConfig().getBruteForcePrevention();
         if (config == null) {
             return BruteForcePreventionConfig.DEFAULT;
         } else {
@@ -71,8 +70,10 @@ public class BruteForceListener
         Authentication authentication = event.getAuthentication();
         String name = getUserName(authentication);
         if (name == null) {
-            LOGGER.warning("Brute force attack prevention enabled, but Spring Authentication "
-                    + "does not provide a user name, skipping: " + authentication);
+            LOGGER.warning(
+                    "Brute force attack prevention enabled, but Spring Authentication "
+                            + "does not provide a user name, skipping: "
+                            + authentication);
         }
 
         // do we have a delayed login in flight already? If so, kill this login attempt
@@ -88,18 +89,20 @@ public class BruteForceListener
                 || event instanceof AuthenticationFailureProviderNotFoundEvent) {
             // are we above the max number of blocked threads already?
             int maxBlockedThreads = config.getMaxBlockedThreads();
-            if(maxBlockedThreads > 0 && delayedUsers.size() > maxBlockedThreads) {
+            if (maxBlockedThreads > 0 && delayedUsers.size() > maxBlockedThreads) {
                 throw new MaxBlockedThreadsException(1);
             }
-            
+
             delayedUsers.put(name, new AtomicInteger(1));
             try {
                 logFailedRequest(request, name, 0);
                 long delay = computeDelay(config);
                 if (delay > 0) {
                     if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info("Brute force attack prevention, delaying login for " + delay
-                                + "ms");
+                        LOGGER.info(
+                                "Brute force attack prevention, delaying login for "
+                                        + delay
+                                        + "ms");
                     }
                     Thread.sleep(delay);
                 }
@@ -111,14 +114,15 @@ public class BruteForceListener
         }
     }
 
-    private boolean requestAddressInWhiteList(HttpServletRequest request,
-            BruteForcePreventionConfig config) {
+    private boolean requestAddressInWhiteList(
+            HttpServletRequest request, BruteForcePreventionConfig config) {
         // is there a white list?
         if (config.getWhitelistAddressMatchers() == null) {
             return false;
         }
 
-        return config.getWhitelistAddressMatchers().stream()
+        return config.getWhitelistAddressMatchers()
+                .stream()
                 .anyMatch(matcher -> matcher.matches(request));
     }
 
@@ -130,7 +134,7 @@ public class BruteForceListener
 
     /**
      * Returns the username for this authentication, or null if missing or cannot be determined
-     * 
+     *
      * @param authentication
      * @return
      */
@@ -158,7 +162,8 @@ public class BruteForceListener
             sb.append(", forwarded for ").append(forwardedFor);
         }
         if (count > 0) {
-            sb.append(", stopped ").append(count)
+            sb.append(", stopped ")
+                    .append(count)
                     .append(" concurrent logins during authentication delay");
         }
 
@@ -184,5 +189,4 @@ public class BruteForceListener
     public void onReload() {
         delayedUsers.clear();
     }
-
 }

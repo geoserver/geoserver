@@ -14,11 +14,6 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import org.apache.commons.io.FileUtils;
-import org.geoserver.taskmanager.external.FileReference;
-import org.geoserver.taskmanager.external.FileService;
-import org.geotools.util.logging.Logging;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +29,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
+import org.geoserver.taskmanager.external.FileReference;
+import org.geoserver.taskmanager.external.FileService;
+import org.geotools.util.logging.Logging;
 
 /**
  * S3 remote file storage.
@@ -43,7 +42,7 @@ import java.util.regex.Pattern;
 public class S3FileServiceImpl implements FileService {
 
     private static final long serialVersionUID = -5960841858385823283L;
-    
+
     private static final Logger LOGGER = Logging.getLogger(S3FileServiceImpl.class);
 
     private static String ENCODING = "aws-chunked";
@@ -59,15 +58,15 @@ public class S3FileServiceImpl implements FileService {
     private String rootFolder;
 
     private static String S3_NAME_PREFIX = "s3-";
-    
+
     public static String name(String prefix, String bucket) {
         return S3_NAME_PREFIX + prefix + "-" + bucket;
     }
 
-    public S3FileServiceImpl() {
-    }
+    public S3FileServiceImpl() {}
 
-    public S3FileServiceImpl(String endpoint, String user, String password, String alias, String rootFolder) {
+    public S3FileServiceImpl(
+            String endpoint, String user, String password, String alias, String rootFolder) {
         this.endpoint = endpoint;
         this.user = user;
         this.password = password;
@@ -98,7 +97,7 @@ public class S3FileServiceImpl implements FileService {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public String getAlias() {
         return alias;
     }
@@ -136,12 +135,11 @@ public class S3FileServiceImpl implements FileService {
         } catch (AmazonClientException e) {
             throw new IOException(e);
         }
-
     }
 
     @Override
     public void create(String filePath, InputStream content) throws IOException {
-        //Check parameters
+        // Check parameters
         if (content == null) {
             throw new IllegalArgumentException("Content of a file can not be null.");
         }
@@ -152,7 +150,8 @@ public class S3FileServiceImpl implements FileService {
         if (checkFileExists(filePath)) {
             throw new IllegalArgumentException("The file already exists");
         }
-        File scratchFile = File.createTempFile("prefix", String.valueOf(System.currentTimeMillis()));
+        File scratchFile =
+                File.createTempFile("prefix", String.valueOf(System.currentTimeMillis()));
         try {
             if (!getS3Client().doesBucketExist(rootFolder)) {
                 getS3Client().createBucket(rootFolder);
@@ -163,10 +162,8 @@ public class S3FileServiceImpl implements FileService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentEncoding(ENCODING);
 
-            PutObjectRequest putObjectRequest = new PutObjectRequest(
-                    rootFolder,
-                    filePath,
-                    scratchFile);
+            PutObjectRequest putObjectRequest =
+                    new PutObjectRequest(rootFolder, filePath, scratchFile);
 
             putObjectRequest.withMetadata(metadata);
 
@@ -233,11 +230,13 @@ public class S3FileServiceImpl implements FileService {
         if (index < 0) {
             return new FileReferenceImpl(this, filePath, filePath);
         }
-        
+
         SortedSet<Integer> set = new TreeSet<Integer>();
-        Pattern pattern = Pattern.compile(Pattern.quote(filePath)
-                .replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));       
-                        
+        Pattern pattern =
+                Pattern.compile(
+                        Pattern.quote(filePath)
+                                .replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
+
         ObjectListing listing = getS3Client().listObjects(rootFolder, filePath.substring(0, index));
         for (S3ObjectSummary summary : listing.getObjectSummaries()) {
             Matcher matcher = pattern.matcher(summary.getKey());
@@ -245,14 +244,18 @@ public class S3FileServiceImpl implements FileService {
                 try {
                     set.add(Integer.parseInt(matcher.group(1)));
                 } catch (NumberFormatException e) {
-                    LOGGER.log(Level.WARNING, "could not parse version in versioned file " + summary.getKey(), e);
+                    LOGGER.log(
+                            Level.WARNING,
+                            "could not parse version in versioned file " + summary.getKey(),
+                            e);
                 }
             }
         }
         int last = set.isEmpty() ? 0 : set.last();
-        return new FileReferenceImpl(this, filePath.replace(FileService.PLACEHOLDER_VERSION, last + ""),
+        return new FileReferenceImpl(
+                this,
+                filePath.replace(FileService.PLACEHOLDER_VERSION, last + ""),
                 filePath.replace(FileService.PLACEHOLDER_VERSION, (last + 1) + ""));
-        
     }
 
     @Override
@@ -266,24 +269,29 @@ public class S3FileServiceImpl implements FileService {
 
     private AmazonS3 getS3Client() {
         if (endpoint == null) {
-            throw new IllegalArgumentException("The endpoint is required, add a property: alias.s3.endpoint");
+            throw new IllegalArgumentException(
+                    "The endpoint is required, add a property: alias.s3.endpoint");
         }
         if (user == null) {
-            throw new IllegalArgumentException("The user is required, add a property: alias.s3.user");
+            throw new IllegalArgumentException(
+                    "The user is required, add a property: alias.s3.user");
         }
         if (password == null) {
-            throw new IllegalArgumentException("The password is required, add a property: alias.s3.password");
+            throw new IllegalArgumentException(
+                    "The password is required, add a property: alias.s3.password");
         }
         if (rootFolder == null) {
-            throw new IllegalStateException("The rootfolder is required, add a property: alias.s3.rootfolder");
+            throw new IllegalStateException(
+                    "The rootfolder is required, add a property: alias.s3.rootfolder");
         }
 
         AmazonS3 s3;
-        //custom endpoint
+        // custom endpoint
 
         s3 = new AmazonS3Client(new BasicAWSCredentials(user, password));
 
-        final S3ClientOptions clientOptions = S3ClientOptions.builder().setPathStyleAccess(true).build();
+        final S3ClientOptions clientOptions =
+                S3ClientOptions.builder().setPathStyleAccess(true).build();
         s3.setS3ClientOptions(clientOptions);
         String endpoint = this.endpoint;
         if (!endpoint.endsWith("/")) {
@@ -293,6 +301,4 @@ public class S3FileServiceImpl implements FileService {
 
         return s3;
     }
-
-
 }

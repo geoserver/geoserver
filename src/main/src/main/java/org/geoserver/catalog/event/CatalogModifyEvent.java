@@ -9,28 +9,20 @@ import java.util.List;
 
 /**
  * Event for the modification of an object in the catalog.
- * <p>
- * The {@link #getSource()} method returns the object unmodified. For access to the object 
- * after it has been modified, see {@link CatalogPostModifyEvent}.
- * </p>
- * 
+ *
+ * <p>The {@link #getSource()} method returns the object unmodified. For access to the object after
+ * it has been modified, see {@link CatalogPostModifyEvent}.
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public interface CatalogModifyEvent extends CatalogEvent {
 
-    /**
-     * The names of the properties that were modified.
-     */
+    /** The names of the properties that were modified. */
     List<String> getPropertyNames();
 
-    /**
-     * The old values of the properties that were modified.
-     */
+    /** The old values of the properties that were modified. */
     List<Object> getOldValues();
 
-    /**
-     * The new values of the properties that were modified.
-     */
+    /** The new values of the properties that were modified. */
     List<Object> getNewValues();
 }

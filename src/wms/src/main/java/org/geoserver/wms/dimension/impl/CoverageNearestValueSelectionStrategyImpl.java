@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -28,40 +27,38 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 
 /**
- * Default implementation for selecting the default values for dimensions of 
- * coverage (raster) resources using the nearest-domain-value-to-the-reference-value
- * strategy.
- *  
- * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ * Default implementation for selecting the default values for dimensions of coverage (raster)
+ * resources using the nearest-domain-value-to-the-reference-value strategy.
  *
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultValueSelectionStrategy {
+public class CoverageNearestValueSelectionStrategyImpl
+        extends AbstractDefaultValueSelectionStrategy {
 
-    private static Logger LOGGER = Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
-    
+    private static Logger LOGGER =
+            Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
+
     private Object toMatch;
     private String fixedCapabilitiesValue;
 
-    /**
-     * Default constructor.
-     */
+    /** Default constructor. */
     public CoverageNearestValueSelectionStrategyImpl(Object toMatch) {
-        this(toMatch,null);
+        this(toMatch, null);
     }
-    
+
     public CoverageNearestValueSelectionStrategyImpl(Object toMatch, String capabilitiesValue) {
         this.toMatch = toMatch;
         this.fixedCapabilitiesValue = capabilitiesValue;
     }
-    
 
     @Override
-    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class clz) {    
+    public Object getDefaultValue(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
         Object retval = null;
         try {
-            GridCoverage2DReader reader = (GridCoverage2DReader) ((CoverageInfo) resource)
-                    .getGridCoverageReader(null, null);
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            ((CoverageInfo) resource).getGridCoverageReader(null, null);
             ReaderDimensionsAccessor dimAccessor = new ReaderDimensionsAccessor(reader);
 
             if (dimensionName.equals(ResourceInfo.TIME)) {
@@ -77,25 +74,31 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
                     } catch (IllegalArgumentException e) {
                         throw new ServiceException(
                                 "Error parsing value to match against while trying to find the default time value for the layer "
-                                        + resource.getName(), e);
+                                        + resource.getName(),
+                                e);
                     }
                 }
                 retval = findNearestTime(dimAccessor, dateToMatch);
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
-                if (this.toMatch instanceof Number){
-                    Double doubleToMatch = ((Number)this.toMatch).doubleValue();                   
+                if (this.toMatch instanceof Number) {
+                    Double doubleToMatch = ((Number) this.toMatch).doubleValue();
                     retval = findNearestElevation(dimAccessor, doubleToMatch);
-                }
-                else {
+                } else {
                     throw new ServiceException(
-                            "The default value for elevation dimension is not a number. Cannot find a default elevation value for the layer " + resource.getName());
+                            "The default value for elevation dimension is not a number. Cannot find a default elevation value for the layer "
+                                    + resource.getName());
                 }
-            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)){
-                retval = findNearestCustomDimensionValue(dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()), dimAccessor, this.toMatch.toString());
+            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
+                retval =
+                        findNearestCustomDimensionValue(
+                                dimensionName.substring(
+                                        ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()),
+                                dimAccessor,
+                                this.toMatch.toString());
             }
-            
+
         } catch (IOException e) {
-           LOGGER.log(Level.FINER, e.getMessage(), e);
+            LOGGER.log(Level.FINER, e.getMessage(), e);
         }
         return Converters.convert(retval, clz);
     }
@@ -217,17 +220,18 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         }
         return candidate;
     }
-    
-    private String findNearestCustomDimensionValue(String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch)
+
+    private String findNearestCustomDimensionValue(
+            String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch)
             throws IOException {
         String candidate = null;
         List<String> domain = dimAccessor.getDomain(dimensionName);
-        
-        //TODO: decide comparison strategy based on domain data type.        
-        //Does any coverage actually return anything else that null for this:
-        //String type = dimAccessor.getDomainDatatype(dimensionName);
-        
-        //Just use a case insensitive lexical string comparison for now:
+
+        // TODO: decide comparison strategy based on domain data type.
+        // Does any coverage actually return anything else that null for this:
+        // String type = dimAccessor.getDomainDatatype(dimensionName);
+
+        // Just use a case insensitive lexical string comparison for now:
         Comparator<String> comp = String.CASE_INSENSITIVE_ORDER;
         Collections.sort(domain, comp);
         long shortestDistance = Long.MAX_VALUE;
@@ -235,16 +239,15 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
 
         for (String toCompare : domain) {
             int compValue = comp.compare(toCompare, toMatch);
-            if (compValue < 0){
+            if (compValue < 0) {
                 currentDistance = -compValue;
-                if (currentDistance < shortestDistance){
+                if (currentDistance < shortestDistance) {
                     shortestDistance = currentDistance;
                     candidate = toCompare;
                 }
-            }
-            else {
+            } else {
                 currentDistance = compValue;
-                if (currentDistance < shortestDistance){
+                if (currentDistance < shortestDistance) {
                     candidate = toCompare;
                     // the distance can only grow after this
                     // assuming the values are in ascending order,
@@ -252,18 +255,16 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
                     break;
                 }
             }
-
         }
         return candidate;
     }
 
     @Override
-    public String getCapabilitiesRepresentation(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimensionInfo) {
-        if (fixedCapabilitiesValue != null){
+    public String getCapabilitiesRepresentation(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
+        if (fixedCapabilitiesValue != null) {
             return this.fixedCapabilitiesValue;
-        }
-        else {
+        } else {
             return super.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
         }
     }
@@ -271,5 +272,4 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
     public Object getTargetValue() {
         return toMatch;
     }
-   
 }

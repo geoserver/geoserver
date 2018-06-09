@@ -8,13 +8,13 @@ package org.geoserver.security.decorators;
 import org.geoserver.security.Response;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.Hints;
 
 /**
  * Secures a format applying the policy
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SecuredGridFormat extends DecoratingGridFormat {
@@ -45,10 +45,10 @@ public class SecuredGridFormat extends DecoratingGridFormat {
     }
 
     /**
-     * Notifies the caller the requested operation is not supported, using a plain
-     * {@link UnsupportedOperationException} in case we have to conceal the fact the data is
-     * actually writable, using an Spring Security security exception otherwise to force an
-     * authentication from the user
+     * Notifies the caller the requested operation is not supported, using a plain {@link
+     * UnsupportedOperationException} in case we have to conceal the fact the data is actually
+     * writable, using an Spring Security security exception otherwise to force an authentication
+     * from the user
      */
     RuntimeException notifyUnsupportedOperation() {
         if (policy.response == Response.CHALLENGE) {
@@ -57,5 +57,4 @@ public class SecuredGridFormat extends DecoratingGridFormat {
             return new UnsupportedOperationException(
                     "This data access is read only, service code is supposed to perform writes via FeatureStore instead");
     }
-
 }

@@ -15,7 +15,7 @@ public class NamePanel extends Panel {
 
     public NamePanel(String id, IModel<String> model) {
         super(id, model);
-        
+
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(new TextField<String>("textfield", model).setRequired(true));
     }
@@ -23,7 +23,7 @@ public class NamePanel extends Panel {
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("feedback");
     }
-    
+
     @SuppressWarnings("unchecked")
     public TextField<String> getTextField() {
         return (TextField<String>) get("textfield");

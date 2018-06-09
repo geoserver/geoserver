@@ -6,16 +6,12 @@
 package org.geoserver.wms.web.publish;
 
 import java.util.Comparator;
-
 import org.geoserver.catalog.StyleInfo;
 
-/**
- * Compares two {@link StyleInfo} by name
- */
+/** Compares two {@link StyleInfo} by name */
 class StyleNameComparator implements Comparator<StyleInfo> {
 
     public int compare(StyleInfo o1, StyleInfo o2) {
         return o1.getName().compareToIgnoreCase(o2.getName());
     }
-    
 }

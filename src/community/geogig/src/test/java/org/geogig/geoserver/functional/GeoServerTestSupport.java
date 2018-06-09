@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
-
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.SystemTestData;
@@ -28,9 +27,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.w3c.dom.Document;
 
-/**
- * Helper class for running mock http requests.
- */
+/** Helper class for running mock http requests. */
 @TestSetup(run = TestSetupFrequency.ONCE)
 class GeoServerTestSupport extends GeoServerSystemTestSupport {
 
@@ -62,16 +59,11 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
         CRS.reset("all");
     }
 
-    /**
-     * Override to avoid creating default geoserver test data
-     */
+    /** Override to avoid creating default geoserver test data */
     @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-    }
+    protected void setUpTestData(SystemTestData testData) throws Exception {}
 
-    /**
-     * @return the catalog used by the test helper
-     */
+    /** @return the catalog used by the test helper */
     public Catalog getCatalog() {
         return super.getCatalog();
     }
@@ -82,7 +74,6 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
      * @param resourceUri the url to issue the request to
      * @param formFieldName the form field name for the file to be posted
      * @param file the file to post
-     *
      * @return the response to the request
      */
     public MockHttpServletResponse postFile(String resourceUri, String formFieldName, File file)
@@ -90,11 +81,11 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
 
         try (FileInputStream fis = new FileInputStream(file)) {
             MockMultipartFile mFile = new MockMultipartFile(formFieldName, fis);
-            MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .fileUpload(new URI(resourceUri)).file(mFile);
+            MockMultipartHttpServletRequestBuilder requestBuilder =
+                    MockMvcRequestBuilders.fileUpload(new URI(resourceUri)).file(mFile);
 
-            MockHttpServletRequest request = requestBuilder
-                    .buildRequest(applicationContext.getServletContext());
+            MockHttpServletRequest request =
+                    requestBuilder.buildRequest(applicationContext.getServletContext());
 
             /**
              * Duplicated from GeoServerSystemTestSupport#createRequest to do the same work on the
@@ -104,16 +95,19 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
             request.setServerName("localhost");
             request.setServerPort(8080);
             request.setContextPath("/geoserver");
-            request.setRequestURI(ResponseUtils
-                    .stripQueryString(ResponseUtils.appendPath("/geoserver/", resourceUri)));
+            request.setRequestURI(
+                    ResponseUtils.stripQueryString(
+                            ResponseUtils.appendPath("/geoserver/", resourceUri)));
             // request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver",
             // path ) );
             request.setQueryString(ResponseUtils.getQueryString(resourceUri));
             request.setRemoteAddr("127.0.0.1");
             request.setServletPath(
                     ResponseUtils.makePathAbsolute(ResponseUtils.stripRemainingPath(resourceUri)));
-            request.setPathInfo(ResponseUtils.makePathAbsolute(
-                    ResponseUtils.stripBeginningPath(ResponseUtils.stripQueryString(resourceUri))));
+            request.setPathInfo(
+                    ResponseUtils.makePathAbsolute(
+                            ResponseUtils.stripBeginningPath(
+                                    ResponseUtils.stripQueryString(resourceUri))));
             request.addHeader("Host", "localhost:8080");
 
             // deal with authentication
@@ -122,24 +116,22 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
                 if (password != null) {
                     token += password;
                 }
-                request.addHeader("Authorization",
+                request.addHeader(
+                        "Authorization",
                         "Basic " + new String(Base64.encodeBase64(token.getBytes())));
             }
 
             kvp(request, resourceUri);
 
             request.setUserPrincipal(null);
-            /**
-             * End duplication
-             */
-
+            /** End duplication */
             return dispatch(request);
         }
     }
 
     /**
      * Copied from parent class to do the same work on MockMultipartHttpServletRequest.
-     * 
+     *
      * @param request
      * @param path
      */
@@ -154,7 +146,6 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
                 request.addParameter(key, values);
             }
         }
-
     }
 
     /**
@@ -163,11 +154,10 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
      * @param contentType the content type of the data
      * @param resourceUri the url to issue the request to
      * @param postContent the content to be posted
-     *
      * @return the response to the request
      */
-    public MockHttpServletResponse postContent(String contentType, String resourceUri,
-            String postContent) throws Exception {
+    public MockHttpServletResponse postContent(
+            String contentType, String resourceUri, String postContent) throws Exception {
 
         MockHttpServletRequest req = createRequest(resourceUri);
 
@@ -184,7 +174,6 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
      *
      * @param method the http method to use
      * @param resourceUri the uri to issue the request to
-     *
      * @return the response to the request
      */
     public MockHttpServletResponse callInternal(HttpMethod method, String resourceUri)
@@ -193,11 +182,11 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
         request.setMethod(method.name());
 
         return dispatch(request, null);
-
     }
 
-    public MockHttpServletResponse callWithContentTypeInternal(HttpMethod method,
-            String resourceUri, String payload, String contentType) throws Exception {
+    public MockHttpServletResponse callWithContentTypeInternal(
+            HttpMethod method, String resourceUri, String payload, String contentType)
+            throws Exception {
         MockHttpServletRequest request = super.createRequest(resourceUri);
         request.setMethod(method.name());
         // set the JSON payload
@@ -211,9 +200,7 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
      * Provide access to the helper function that turns the response into a {@link Document}.
      *
      * @param stream the stream to read as a document
-     *
      * @return the {@link Document}
-     *
      * @throws Exception
      */
     public Document getDom(InputStream stream) throws Exception {

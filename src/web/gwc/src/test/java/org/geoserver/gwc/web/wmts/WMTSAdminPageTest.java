@@ -4,17 +4,15 @@
  */
 package org.geoserver.gwc.web.wmts;
 
-import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.gwc.wmts.WMTSInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.web.GeoServerHomePage;
-import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.wms.WMSInfo;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.gwc.wmts.WMTSInfo;
+import org.geoserver.web.GeoServerHomePage;
+import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class WMTSAdminPageTest extends GeoServerWicketTestSupport {
 

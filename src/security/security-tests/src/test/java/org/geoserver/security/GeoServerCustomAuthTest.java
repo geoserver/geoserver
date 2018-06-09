@@ -5,6 +5,11 @@
  */
 package org.geoserver.security;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
@@ -19,12 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
-
 @Category(SystemTest.class)
 public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
 
@@ -32,29 +31,28 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add(
-            getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+                getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
     }
 
-    @Test 
+    @Test
     public void testInactive() throws Exception {
-        UsernamePasswordAuthenticationToken upAuth = 
-            new UsernamePasswordAuthenticationToken("foo", "bar");
+        UsernamePasswordAuthenticationToken upAuth =
+                new UsernamePasswordAuthenticationToken("foo", "bar");
         try {
-            getSecurityManager().authenticationManager().authenticate(upAuth);            
+            getSecurityManager().authenticationManager().authenticate(upAuth);
+        } catch (BadCredentialsException e) {
+        } catch (ProviderNotFoundException e) {
         }
-        catch(BadCredentialsException e) {}
-        catch(ProviderNotFoundException e) {}
     }
 
     @Test
     public void testActive() throws Exception {
         GeoServerSecurityManager secMgr = getSecurityManager();
-        UsernamePasswordAuthenticationProviderConfig config = 
+        UsernamePasswordAuthenticationProviderConfig config =
                 new UsernamePasswordAuthenticationProviderConfig();
         config.setName("custom");
         config.setClassName(AuthProvider.class.getName());
         secMgr.saveAuthenticationProvider(config);
-        
 
         SecurityManagerConfig mgrConfig = secMgr.getSecurityConfig();
         mgrConfig.getAuthProviderNames().add("custom");
@@ -65,12 +63,13 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         auth = getSecurityManager().authenticationManager().authenticate(auth);
         assertTrue(auth.isAuthenticated());
     }
-    
+
     static class SecurityProvider extends GeoServerSecurityProvider {
         @Override
         public Class<? extends GeoServerAuthenticationProvider> getAuthenticationProviderClass() {
             return AuthProvider.class;
         }
+
         @Override
         public GeoServerAuthenticationProvider createAuthenticationProvider(
                 SecurityNamedServiceConfig config) {
@@ -81,21 +80,24 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
     static class AuthProvider extends GeoServerAuthenticationProvider {
 
         @Override
-        public Authentication authenticate(Authentication authentication, HttpServletRequest request)
+        public Authentication authenticate(
+                Authentication authentication, HttpServletRequest request)
                 throws AuthenticationException {
             if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                UsernamePasswordAuthenticationToken up = 
-                    (UsernamePasswordAuthenticationToken)authentication;
+                UsernamePasswordAuthenticationToken up =
+                        (UsernamePasswordAuthenticationToken) authentication;
                 if ("foo".equals(up.getPrincipal()) && "bar".equals(up.getCredentials())) {
-                    authentication = new UsernamePasswordAuthenticationToken("foo", "bar", 
-                        Collections.<GrantedAuthority> emptyList());
+                    authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    "foo", "bar", Collections.<GrantedAuthority>emptyList());
                 }
             }
             return authentication;
         }
 
         @Override
-        public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
+        public boolean supports(
+                Class<? extends Object> authentication, HttpServletRequest request) {
             return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
         }
     }

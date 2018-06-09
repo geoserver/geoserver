@@ -8,7 +8,6 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -17,17 +16,16 @@ import org.springframework.util.Assert;
 
 /**
  * Handles a GetMap request that produces a map in HTMLImageMap format.
- * 
+ *
  * @author Mauro Bartolomeoli
  */
 public class HTMLImageMapMapProducer implements GetMapOutputFormat {
 
-    /**
-     * The ImageMap is served as text/html: it is an HTML fragment, after all.
-     */
+    /** The ImageMap is served as text/html: it is an HTML fragment, after all. */
     static final String MIME_TYPE = "text/html";
-    
-    static final MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false, true, true, null);
+
+    static final MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(false, false, true, true, null);
 
     public HTMLImageMapMapProducer() {
         //
@@ -35,13 +33,12 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
 
     /**
      * Renders the map.
-     * 
-     * @throws ServiceException
-     *             if an error occurs during rendering
+     *
+     * @throws ServiceException if an error occurs during rendering
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
-    public EncodeHTMLImageMap produceMap(WMSMapContent mapContent) throws ServiceException,
-            IOException {
+    public EncodeHTMLImageMap produceMap(WMSMapContent mapContent)
+            throws ServiceException, IOException {
         Assert.notNull(mapContent, "mapContent is not set");
         return new EncodeHTMLImageMap(mapContent);
     }
@@ -62,8 +59,7 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
         return MIME_TYPE;
     }
 
-	public MapProducerCapabilities getCapabilities(String format) {
-		return CAPABILITIES;
-	}
-
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
+    }
 }

@@ -27,7 +27,7 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
     }
-    
+
     @Before
     public void setup() throws Exception {
         oldDefaults = GWCConfig.getOldDefaults();
@@ -68,7 +68,6 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
         config.getDefaultVectorCacheFormats().clear();
         assertFalse(config.isSane());
         assertTrue((config = config.saneConfig()).isSane());
-
     }
 
     @Test
@@ -76,8 +75,8 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
         GWCConfig clone = config.clone();
         assertEquals(config, clone);
         assertNotSame(config.getDefaultCachingGridSetIds(), clone.getDefaultCachingGridSetIds());
-        assertNotSame(config.getDefaultCoverageCacheFormats(),
-                clone.getDefaultCoverageCacheFormats());
+        assertNotSame(
+                config.getDefaultCoverageCacheFormats(), clone.getDefaultCoverageCacheFormats());
         assertNotSame(config.getDefaultOtherCacheFormats(), clone.getDefaultOtherCacheFormats());
         assertNotSame(config.getDefaultVectorCacheFormats(), clone.getDefaultVectorCacheFormats());
         assertNotSame(config.getCacheConfigurations(), clone.getCacheConfigurations());

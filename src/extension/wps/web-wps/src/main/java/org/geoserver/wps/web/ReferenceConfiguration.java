@@ -9,13 +9,14 @@ import java.io.Serializable;
 
 /**
  * The GUI configuration for reference data
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
 class ReferenceConfiguration implements Serializable {
     enum Method {
-        GET, POST
+        GET,
+        POST
     };
 
     Method method = Method.GET;
@@ -57,5 +58,4 @@ class ReferenceConfiguration implements Serializable {
     public void setBody(String body) {
         this.body = body;
     }
-
 }

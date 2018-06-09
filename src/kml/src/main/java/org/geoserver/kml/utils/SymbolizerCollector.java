@@ -7,7 +7,6 @@ package org.geoserver.kml.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Symbolizer;
@@ -15,7 +14,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Collects the symbolizers active on the specified simple feature
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SymbolizerCollector extends AbstractStyleVisitor {
@@ -40,11 +39,10 @@ public class SymbolizerCollector extends AbstractStyleVisitor {
 
     public List<Symbolizer> getSymbolizers() {
         // the else filters are activated only if the regular rules are not catching the style
-        if(symbolizers.size() == 0) {
+        if (symbolizers.size() == 0) {
             return elseSymbolizers;
         } else {
             return symbolizers;
         }
     }
-    
 }

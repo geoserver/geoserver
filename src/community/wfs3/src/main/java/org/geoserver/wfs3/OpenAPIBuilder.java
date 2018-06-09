@@ -12,6 +12,14 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.servers.Server;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.ManifestLoader;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.ows.URLMangler;
@@ -22,15 +30,6 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
-
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class OpenAPIBuilder {
 

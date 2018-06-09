@@ -20,15 +20,18 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 
 /**
- * A growable {@link MultiPoint} that saves all points in a single
- * {@link GrowableCoordinateSequence}
+ * A growable {@link MultiPoint} that saves all points in a single {@link
+ * GrowableCoordinateSequence}
  */
 class CompactMultiPoint extends MultiPoint {
 
     private static final long serialVersionUID = 1L;
 
-    public static final GeometryFactory GEOM_FACTORY = new GeometryFactory(new PrecisionModel(1E6),
-            0, new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.FLOAT));
+    public static final GeometryFactory GEOM_FACTORY =
+            new GeometryFactory(
+                    new PrecisionModel(1E6),
+                    0,
+                    new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.FLOAT));
 
     private final GrowableCoordinateSequence coordSeq;
 

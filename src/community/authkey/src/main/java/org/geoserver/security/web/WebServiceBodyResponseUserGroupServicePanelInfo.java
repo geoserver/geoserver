@@ -8,12 +8,11 @@ import org.geoserver.security.WebServiceBodyResponseUserGroupService;
 import org.geoserver.security.WebServiceBodyResponseUserGroupServiceConfig;
 import org.geoserver.security.web.usergroup.UserGroupServicePanelInfo;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
-public class WebServiceBodyResponseUserGroupServicePanelInfo extends
-        UserGroupServicePanelInfo<WebServiceBodyResponseUserGroupServiceConfig, WebServiceBodyResponseUserGroupServicePanel> {
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
+public class WebServiceBodyResponseUserGroupServicePanelInfo
+        extends UserGroupServicePanelInfo<
+                WebServiceBodyResponseUserGroupServiceConfig,
+                WebServiceBodyResponseUserGroupServicePanel> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 5523562464549930885L;
@@ -23,5 +22,4 @@ public class WebServiceBodyResponseUserGroupServicePanelInfo extends
         setServiceClass(WebServiceBodyResponseUserGroupService.class);
         setServiceConfigClass(WebServiceBodyResponseUserGroupServiceConfig.class);
     }
-
 }

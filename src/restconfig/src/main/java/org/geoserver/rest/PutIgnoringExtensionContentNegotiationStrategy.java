@@ -4,25 +4,25 @@
  */
 package org.geoserver.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * When doing a POST or PUT to endpoints accepting some file, the URL will contain the extension of the POSTed file,
- * while the response should be a standard XML or JSON response, depending on the accepts header.
+ * When doing a POST or PUT to endpoints accepting some file, the URL will contain the extension of
+ * the POSTed file, while the response should be a standard XML or JSON response, depending on the
+ * accepts header.
  *
- * The default ContentNegotiationStrategies will favor the extension when determining the response type.
- * For example, when posting an sld file, "Ponds.sld", to "/rest/styles/Ponds.sld", the default content negotiation
- * assumes this to mean you expect an .sld response.
+ * <p>The default ContentNegotiationStrategies will favor the extension when determining the
+ * response type. For example, when posting an sld file, "Ponds.sld", to "/rest/styles/Ponds.sld",
+ * the default content negotiation assumes this to mean you expect an .sld response.
  *
- * This strategy overrides this behavior for specified paths
+ * <p>This strategy overrides this behavior for specified paths
  */
 public class PutIgnoringExtensionContentNegotiationStrategy implements ContentNegotiationStrategy {
 
@@ -30,11 +30,15 @@ public class PutIgnoringExtensionContentNegotiationStrategy implements ContentNe
     List<MediaType> mediaTypes;
 
     /**
-     * Construct a new strategy. This should be instantiated as a bean for it to get picked up by the {@link RestConfiguration}
-     * @param pathMatcher The {@link PatternsRequestCondition} used to determine if the request path matches
+     * Construct a new strategy. This should be instantiated as a bean for it to get picked up by
+     * the {@link RestConfiguration}
+     *
+     * @param pathMatcher The {@link PatternsRequestCondition} used to determine if the request path
+     *     matches
      * @param mediaTypes The list of {@link MediaType}s to return when the path matches
      */
-    public PutIgnoringExtensionContentNegotiationStrategy(PatternsRequestCondition pathMatcher, List<MediaType> mediaTypes) {
+    public PutIgnoringExtensionContentNegotiationStrategy(
+            PatternsRequestCondition pathMatcher, List<MediaType> mediaTypes) {
         this.pathMatcher = pathMatcher;
         this.mediaTypes = mediaTypes;
     }
@@ -43,13 +47,15 @@ public class PutIgnoringExtensionContentNegotiationStrategy implements ContentNe
      * Determine the list of supported media types
      *
      * @param webRequest
-     * @return {@link #mediaTypes}, as long as the request is a PUT or POST, and the path provided by webRequest
-     * matches. Otherwise returns an empty list (never null).
+     * @return {@link #mediaTypes}, as long as the request is a PUT or POST, and the path provided
+     *     by webRequest matches. Otherwise returns an empty list (never null).
      */
     @Override
-    public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
+    public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
+            throws HttpMediaTypeNotAcceptableException {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (pathMatcher.getMatchingCondition(request) != null && ("PUT".equals(request.getMethod()) || "POST".equals(request.getMethod()))) {
+        if (pathMatcher.getMatchingCondition(request) != null
+                && ("PUT".equals(request.getMethod()) || "POST".equals(request.getMethod()))) {
             return mediaTypes;
         }
         return new ArrayList<>();

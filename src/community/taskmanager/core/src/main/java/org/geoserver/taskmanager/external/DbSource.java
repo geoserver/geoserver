@@ -5,61 +5,54 @@
 package org.geoserver.taskmanager.external;
 
 import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
-import org.geoserver.taskmanager.util.Named;
-
-
-import javax.sql.DataSource;
-
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.geoserver.taskmanager.util.Named;
 
 /**
  * A database configuration used by tasks.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface DbSource extends Named {
-    
+
     /**
      * Get a data source for this database.
-     * 
+     *
      * @return the data source.
-     * @throws SQLException 
+     * @throws SQLException
      */
     DataSource getDataSource() throws SQLException;
-    
+
     /**
      * Get a geoserver store encoder from this source.
-     * 
+     *
      * @param name name for the source
      * @param extGs TODO
-     * 
      * @return the geoserver store encoder
      */
     GSAbstractStoreEncoder getStoreEncoder(String name, ExternalGS extGs);
 
     /**
      * Generate parameters for GeoServer datastore
-     * 
+     *
      * @return the parameters for GeoServer datastore
      */
     Map<String, Serializable> getParameters();
 
     /**
-     * schema 
-     * 
+     * schema
+     *
      * @return
      */
     String getSchema();
-    
+
     /**
-     * 
-     * 
      * @param encoder
      * @param origParameters
-     * @return 
+     * @return
      */
     GSAbstractStoreEncoder postProcess(GSAbstractStoreEncoder encoder, DbTable table);
 
@@ -69,14 +62,12 @@ public interface DbSource extends Named {
      * @return
      */
     Dialect getDialect();
-    
 
-    
     /*
      * these methods could serve an alternative table copy implementation
      * that doesn't use jdbc but uses direct database commands and sends SQL commands
-     * through a pipeline between servers. 
-     * 
+     * through a pipeline between servers.
+     *
     public InputStream dump(String realTableName, String tempTableName) throws IOException;
 
     OutputStream script() throws IOException;

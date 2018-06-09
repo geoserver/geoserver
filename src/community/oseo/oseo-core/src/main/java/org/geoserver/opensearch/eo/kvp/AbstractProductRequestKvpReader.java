@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo.kvp;
 
 import java.util.Map;
-
 import org.geoserver.opensearch.eo.AbstractProductRequest;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.OWS20Exception;
@@ -31,15 +30,19 @@ public abstract class AbstractProductRequestKvpReader extends KvpRequestReader {
         // map uid
         String uid = (String) rawKvp.get("uid");
         if (uid == null) {
-            throw new OWS20Exception("Missing mandatory uid parameter",
-                    OWS20Exception.OWSExceptionCode.MissingParameterValue, "uid");
+            throw new OWS20Exception(
+                    "Missing mandatory uid parameter",
+                    OWS20Exception.OWSExceptionCode.MissingParameterValue,
+                    "uid");
         }
         apr.setId(uid);
 
         // check parentId if required
         if (parentIdRequired && apr.getParentId() == null) {
-            throw new OWS20Exception("Missing mandatory parentId parameter",
-                    OWS20Exception.OWSExceptionCode.MissingParameterValue, "parentId");
+            throw new OWS20Exception(
+                    "Missing mandatory parentId parameter",
+                    OWS20Exception.OWSExceptionCode.MissingParameterValue,
+                    "parentId");
         }
 
         return apr;

@@ -14,50 +14,44 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-
 import net.opengis.wfs.ActionType;
 import net.opengis.wfs.InsertResultsType;
 import net.opengis.wfs.InsertedFeatureType;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionResultsType;
 import net.opengis.wfs.TransactionType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.Response;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.util.Version;
 import org.geotools.xml.Encoder;
 import org.opengis.filter.identity.FeatureId;
 
-
 public class TransactionResponse extends WFSResponse {
     private boolean verbose = false;
     private String indent = " ";
     private String offset = "";
-    
+
     Catalog catalog;
     WFSConfiguration configuration;
 
     public TransactionResponse(GeoServer gs, WFSConfiguration configuration) {
         super(gs, TransactionResponseType.class);
-        
+
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
     }
 
-    public String getMimeType(Object value, Operation operation)
-        throws ServiceException {
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
     public void write(Object value, OutputStream output, Operation operation)
-        throws IOException, ServiceException {
+            throws IOException, ServiceException {
         TransactionResponseType response = (TransactionResponseType) value;
 
         if (new Version("1.0.0").equals(operation.getService().getVersion())) {
@@ -68,15 +62,15 @@ public class TransactionResponse extends WFSResponse {
     }
 
     public void v_1_0(TransactionResponseType response, OutputStream output, Operation operation)
-        throws IOException, ServiceException {
+            throws IOException, ServiceException {
         TransactionResultsType result = response.getTransactionResults();
 
-        Charset charset = Charset.forName( getInfo().getGeoServer().getSettings().getCharset() );
+        Charset charset = Charset.forName(getInfo().getGeoServer().getSettings().getCharset());
         Writer writer = new OutputStreamWriter(output, charset);
         writer = new BufferedWriter(writer);
 
-        //boolean verbose = ConfigInfo.getInstance().formatOutput();
-        //String indent = ((verbose) ? "\n" + OFFSET : " ");
+        // boolean verbose = ConfigInfo.getInstance().formatOutput();
+        // String indent = ((verbose) ? "\n" + OFFSET : " ");
         String encoding = charset.name();
         String xmlHeader = "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>";
         writer.write(xmlHeader);
@@ -95,29 +89,32 @@ public class TransactionResponse extends WFSResponse {
         writer.write(indent);
         writer.write("xsi:schemaLocation=\"http://www.opengis.net/wfs ");
 
-        TransactionType req = (TransactionType)operation.getParameters()[0];
-        String baseUrl = buildSchemaURL(req.getBaseUrl(), "wfs/1.0.0/WFS-transaction.xsd"); 
+        TransactionType req = (TransactionType) operation.getParameters()[0];
+        String baseUrl = buildSchemaURL(req.getBaseUrl(), "wfs/1.0.0/WFS-transaction.xsd");
 
         writer.write(baseUrl);
         writer.write("\">");
 
         InsertResultsType insertResults = response.getInsertResults();
 
-        //JD: make sure we group insert results by handle, this is wfs 1.0 cite
-        // thing that conflicts with wfs 1.1 cite, i am pretty sure its just a 
+        // JD: make sure we group insert results by handle, this is wfs 1.0 cite
+        // thing that conflicts with wfs 1.1 cite, i am pretty sure its just a
         // problem with the 1.0 tests
         String lastHandle = null;
         boolean first = true;
 
         if (insertResults != null) {
-            for (Iterator i = insertResults.getFeature().iterator(); i.hasNext();) {
+            for (Iterator i = insertResults.getFeature().iterator(); i.hasNext(); ) {
                 InsertedFeatureType insertedFeature = (InsertedFeatureType) i.next();
                 String handle = insertedFeature.getHandle();
 
-                if (first || ((lastHandle == null) && (handle != null))
-                        || ((lastHandle != null) && (handle != null) && handle.equals(lastHandle))) {
+                if (first
+                        || ((lastHandle == null) && (handle != null))
+                        || ((lastHandle != null)
+                                && (handle != null)
+                                && handle.equals(lastHandle))) {
                     if (!first) {
-                        //close last one, if not the first time through
+                        // close last one, if not the first time through
                         writer.write("</wfs:InsertResult>");
                     }
 
@@ -130,7 +127,7 @@ public class TransactionResponse extends WFSResponse {
                     writer.write(">");
                 }
 
-                for (Iterator id = insertedFeature.getFeatureId().iterator(); id.hasNext();) {
+                for (Iterator id = insertedFeature.getFeatureId().iterator(); id.hasNext(); ) {
                     FeatureId featureId = (FeatureId) id.next();
                     writer.write("<ogc:FeatureId fid=\"" + featureId.toString() + "\"/>");
                 }
@@ -152,7 +149,7 @@ public class TransactionResponse extends WFSResponse {
         writer.write(indent + offset + "<wfs:Status>");
         writer.write(indent + offset + offset);
 
-        //if there is an actino, that means we failed
+        // if there is an actino, that means we failed
         if (!result.getAction().isEmpty()) {
             writer.write("<wfs:FAILED/>");
         } else {
@@ -187,23 +184,23 @@ public class TransactionResponse extends WFSResponse {
     }
 
     public void v_1_1(TransactionResponseType response, OutputStream output, Operation operation)
-        throws IOException, ServiceException {
+            throws IOException, ServiceException {
         if (!response.getTransactionResults().getAction().isEmpty()) {
-            //since we do atomic transactions, an action failure means all we rolled back
+            // since we do atomic transactions, an action failure means all we rolled back
             // spec says to throw exception
-            ActionType action = (ActionType) response.getTransactionResults().getAction().iterator()
-                                                     .next();
+            ActionType action =
+                    (ActionType) response.getTransactionResults().getAction().iterator().next();
             throw new WFSException(action.getMessage(), action.getCode(), action.getLocator());
         }
 
         Encoder encoder = new Encoder(configuration, configuration.schema());
-        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getSettings().getCharset()) );
+        encoder.setEncoding(Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
 
-        TransactionType req = (TransactionType)operation.getParameters()[0];
-        
-        encoder.setSchemaLocation(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
+        TransactionType req = (TransactionType) operation.getParameters()[0];
+
+        encoder.setSchemaLocation(
+                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
                 buildSchemaURL(req.getBaseUrl(), "wfs/1.1.0/wfs.xsd"));
         encoder.encode(response, org.geoserver.wfs.xml.v1_1_0.WFS.TRANSACTIONRESPONSE, output);
-       
     }
 }

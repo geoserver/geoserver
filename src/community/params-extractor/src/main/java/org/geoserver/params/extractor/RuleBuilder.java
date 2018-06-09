@@ -76,12 +76,29 @@ public final class RuleBuilder {
     }
 
     public Rule build() {
-        Utils.checkCondition(position == null || match == null, "Only one of the attributes position and match can be selected.");
+        Utils.checkCondition(
+                position == null || match == null,
+                "Only one of the attributes position and match can be selected.");
         Utils.checkCondition(id != null && !id.isEmpty(), "Rule id cannot be NULL or EMPTY.");
-        Utils.checkCondition(matchPattern != null, "Both attributes position or match cannot be NULL.");
-        Utils.checkCondition(parameter != null && !parameter.isEmpty(), "Parameter attribute is mandatory it cannot be NULL or EMPTY.");
-        Utils.checkCondition(transform != null && !transform.isEmpty(), "Transform attribute is mandatory it cannot be NULL or EMPTY.");
-        return new Rule(id, Utils.withDefault(activated, true), position, match, activation, parameter,
-                transform, remove, combine, matchPattern, activationPattern);
+        Utils.checkCondition(
+                matchPattern != null, "Both attributes position or match cannot be NULL.");
+        Utils.checkCondition(
+                parameter != null && !parameter.isEmpty(),
+                "Parameter attribute is mandatory it cannot be NULL or EMPTY.");
+        Utils.checkCondition(
+                transform != null && !transform.isEmpty(),
+                "Transform attribute is mandatory it cannot be NULL or EMPTY.");
+        return new Rule(
+                id,
+                Utils.withDefault(activated, true),
+                position,
+                match,
+                activation,
+                parameter,
+                transform,
+                remove,
+                combine,
+                matchPattern,
+                activationPattern);
     }
 }

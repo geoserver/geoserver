@@ -7,23 +7,20 @@ package org.geoserver.taskmanager.report.impl;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import org.geoserver.taskmanager.report.Report;
 import org.geoserver.taskmanager.report.ReportService;
 import org.geotools.util.logging.Logging;
 
 /**
  * Sends a report over email (SMTP).
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class EmailReportServiceImpl implements ReportService {
 
@@ -85,8 +82,6 @@ public class EmailReportServiceImpl implements ReportService {
         } catch (MessagingException e) {
 
             LOGGER.log(Level.WARNING, "Failed to send email report", e);
-
         }
     }
-
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageDimensionInfo;
@@ -33,11 +32,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates all methods to the provided delegate. Suclasses will override
- * methods in order to perform their decoration work
- * 
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to
+ * perform their decoration work
+ *
  * @author Andrea Aime - TOPP
- * 
  * @param <T>
  * @param <F>
  */
@@ -67,9 +65,9 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     public Catalog getCatalog() {
         return delegate.getCatalog();
     }
-    
+
     public void setCatalog(Catalog catalog) {
-        delegate.setCatalog( catalog );
+        delegate.setCatalog(catalog);
     }
 
     public CoordinateReferenceSystem getCRS() {
@@ -92,18 +90,18 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
         return delegate.getGrid();
     }
 
-    public GridCoverage getGridCoverage(ProgressListener listener, Hints hints)
-            throws IOException {
+    public GridCoverage getGridCoverage(ProgressListener listener, Hints hints) throws IOException {
         return delegate.getGridCoverage(listener, hints);
     }
 
-    public GridCoverage getGridCoverage(ProgressListener listener,
-            ReferencedEnvelope envelope, Hints hints) throws IOException {
+    public GridCoverage getGridCoverage(
+            ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
+            throws IOException {
         return delegate.getGridCoverage(listener, envelope, hints);
     }
 
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener,
-            Hints hints) throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
+            throws IOException {
         return delegate.getGridCoverageReader(listener, hints);
     }
 
@@ -145,9 +143,7 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
         return delegate.getName();
     }
 
-    /**
-     * @see org.geoserver.catalog.ResourceInfo#getQualifiedName()
-     */
+    /** @see org.geoserver.catalog.ResourceInfo#getQualifiedName() */
     public Name getQualifiedName() {
         return delegate.getQualifiedName();
     }
@@ -172,9 +168,7 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
         return delegate.getNativeName();
     }
 
-    /**
-     * @see org.geoserver.catalog.ResourceInfo#getQualifiedNativeName()
-     */
+    /** @see org.geoserver.catalog.ResourceInfo#getQualifiedNativeName() */
     public Name getQualifiedNativeName() {
         return delegate.getQualifiedNativeName();
     }
@@ -290,16 +284,16 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     public void setTitle(String title) {
         delegate.setTitle(title);
     }
-    
+
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
-    
+
     @Override
     public boolean isAdvertised() {
         return delegate.isAdvertised();
     }
-    
+
     @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);

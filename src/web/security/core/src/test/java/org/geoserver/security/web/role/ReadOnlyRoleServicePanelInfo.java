@@ -10,15 +10,14 @@ import org.geoserver.security.impl.ReadOnlyRoleService;
 
 /**
  * Configuration panel info for {@link ReadOnlyRoleService}.
- * <p>
- * This service is only used for testing, it is only available when running from the development 
- * environment. 
- * </p>
- * 
+ *
+ * <p>This service is only used for testing, it is only available when running from the development
+ * environment.
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class ReadOnlyRoleServicePanelInfo 
-    extends RoleServicePanelInfo<MemoryRoleServiceConfigImpl, ReadOnlyRoleServicePanel> {
+public class ReadOnlyRoleServicePanelInfo
+        extends RoleServicePanelInfo<MemoryRoleServiceConfigImpl, ReadOnlyRoleServicePanel> {
 
     public ReadOnlyRoleServicePanelInfo() {
         setComponentClass(ReadOnlyRoleServicePanel.class);

@@ -12,5 +12,4 @@ public class DB2RoleServiceTest extends JDBCRoleServiceTest {
     protected String getFixtureId() {
         return "db2";
     }
-
 }

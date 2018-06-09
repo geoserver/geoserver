@@ -8,11 +8,10 @@ package org.geoserver.wms;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphic;
-import org.geotools.filter.function.EnvFunction;
 
 /**
  * WMS GetLegendGraphic operation default implementation.
- * 
+ *
  * @author Gabriel Roldan
  */
 public class GetLegendGraphic {
@@ -26,12 +25,11 @@ public class GetLegendGraphic {
     /**
      * Produces a representation of the map's legend graphic given by the {@code request} by means
      * of a {@link GetLegendGraphicOutputFormat}.
-     * <p>
-     * Note there's no subscribed return type for the produced legend graphic, the only requisite
+     *
+     * <p>Note there's no subscribed return type for the produced legend graphic, the only requisite
      * for the whole OWS operation to succeed is that there exist a {@link Response} object (in the
      * application context) that can handle the returned object.
-     * </p>
-     * 
+     *
      * @param request
      * @return an Object representing the produced legend graphic
      * @throws ServiceException
@@ -43,11 +41,11 @@ public class GetLegendGraphic {
         final String outputFormat = request.getFormat();
         final GetLegendGraphicOutputFormat format = wms.getLegendGraphicOutputFormat(outputFormat);
         if (format == null) {
-            throw new ServiceException("There is no support for creating legends in "
-                    + outputFormat + " format", "InvalidFormat");
+            throw new ServiceException(
+                    "There is no support for creating legends in " + outputFormat + " format",
+                    "InvalidFormat");
         }
         Object legend = format.produceLegendGraphic(request);
         return legend;
     }
-
 }

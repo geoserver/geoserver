@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import java.util.Date;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -13,17 +14,17 @@ import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.filter.Filter;
 
-import java.util.Date;
-
-/**
- * Represents a time dimension of a raster.
- */
+/** Represents a time dimension of a raster. */
 public class RasterTimeDimension extends RasterDimension {
 
     public RasterTimeDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.TEMPORAL);
+        super(
+                wms,
+                ResourceInfo.TIME,
+                layerInfo,
+                dimensionInfo,
+                CoverageDimensionsReader.DataType.TEMPORAL);
     }
 
     @Override
@@ -38,10 +39,12 @@ public class RasterTimeDimension extends RasterDimension {
 
     @Override
     protected FeatureCollection getDomain(Query query) {
-        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
-        Tuple<String, FeatureCollection> values = reader.getValues(this.dimensionName, query,
-                CoverageDimensionsReader.DataType.TEMPORAL);
-        
+        CoverageDimensionsReader reader =
+                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        Tuple<String, FeatureCollection> values =
+                reader.getValues(
+                        this.dimensionName, query, CoverageDimensionsReader.DataType.TEMPORAL);
+
         return values.second;
     }
 }

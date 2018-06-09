@@ -4,11 +4,10 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.IOException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.junit.Test;
-
-import java.io.IOException;
 
 public class SqlViewNewPageTest extends AbstractSqlViewPageTest {
 
@@ -21,7 +20,6 @@ public class SqlViewNewPageTest extends AbstractSqlViewPageTest {
         pp.add(SQLViewAbstractPage.DATASTORE, AbstractSqlViewPageTest.STORE_NAME);
         tester.startPage(new SQLViewNewPage(pp));
 
-
         FormTester form = tester.newFormTester("form");
         form.setValue("sql", "SELECT * FROM \"Forests\" where name = %FOO%");
         tester.clickLink("form:guessParams", true);
@@ -29,7 +27,7 @@ public class SqlViewNewPageTest extends AbstractSqlViewPageTest {
         // print(tester.getLastRenderedPage(), true, true);
 
         // check it did not crash and the param has been guessed
-        tester.assertModelValue("form:parameters:listContainer:items:1:itemProperties:0:component:text", "FOO");
+        tester.assertModelValue(
+                "form:parameters:listContainer:items:1:itemProperties:0:component:text", "FOO");
     }
-
 }

@@ -6,23 +6,20 @@
 package org.geoserver.csw.util;
 
 import javax.xml.namespace.QName;
-
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Helper class turning a qualified names as a string and namespaces into a QName object
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class QNameResolver {
 
     /**
      * Parses the string into a list of {@link QName}
-     * 
-     * @param qualifiedString a string in the form prefix:localName
-     * 
-     * @param namespaces Binds prefixes with namespace URIs
      *
+     * @param qualifiedString a string in the form prefix:localName
+     * @param namespaces Binds prefixes with namespace URIs
      */
     public QName parseQName(String qualifiedString, NamespaceSupport namespaces) {
         int idx = qualifiedString.indexOf(":");

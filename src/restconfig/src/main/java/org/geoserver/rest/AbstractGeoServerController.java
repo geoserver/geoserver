@@ -5,11 +5,8 @@
 package org.geoserver.rest;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.rest.RestBaseController;
 
-/**
- * Base controller implementation for geoserver info requests
- */
+/** Base controller implementation for geoserver info requests */
 public abstract class AbstractGeoServerController extends RestBaseController {
     protected final GeoServer geoServer;
 

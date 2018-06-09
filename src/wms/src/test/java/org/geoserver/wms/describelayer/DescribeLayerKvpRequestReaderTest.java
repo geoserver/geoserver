@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
@@ -31,7 +30,7 @@ import org.junit.Test;
 
 /**
  * Unit test suite for {@link DescribeLayerKvpRequestReader}
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  */

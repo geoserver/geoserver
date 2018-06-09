@@ -7,19 +7,18 @@ package org.geoserver.taskmanager.schedule;
 import org.geoserver.taskmanager.data.BatchRun;
 
 /**
- * During run, tasks create temporary objects that are committed to real objects during
- * the commit phase (such as a table name) This maps real objects
- * to temporary objects during a single batch run. Tasks should save and look up temporary 
- * objects so that tasks within a batch can work together.
- * 
- * @author Niels Charlier
+ * During run, tasks create temporary objects that are committed to real objects during the commit
+ * phase (such as a table name) This maps real objects to temporary objects during a single batch
+ * run. Tasks should save and look up temporary objects so that tasks within a batch can work
+ * together.
  *
+ * @author Niels Charlier
  */
 public interface BatchContext {
-    
+
     public static interface Dependency {
         public void revert() throws TaskException;
-    }    
+    }
 
     Object get(Object original);
 
@@ -27,7 +26,7 @@ public interface BatchContext {
 
     /**
      * Whatever is put here in the task, must be removed in the commit!
-     * 
+     *
      * @param original
      * @param temp
      */
@@ -36,5 +35,4 @@ public interface BatchContext {
     void delete(Object original) throws TaskException;
 
     BatchRun getBatchRun();
-
 }

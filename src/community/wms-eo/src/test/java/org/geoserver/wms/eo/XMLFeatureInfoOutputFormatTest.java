@@ -11,32 +11,37 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
-
-
-/**
- * 
- * @author Davide Savazzi - geo-solutions.it
- */
+/** @author Davide Savazzi - geo-solutions.it */
 public class XMLFeatureInfoOutputFormatTest extends WMSTestSupport {
-   
-   @Test
-   public void testXmlGetFeatureInfo() throws Exception {
-       String layer = getLayerId(MockData.FORESTS);
-       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-               + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
-               + "&width=20&height=20&x=10&y=10" + "&info_format=" + XMLFeatureInfoOutputFormat.FORMAT;
 
-       MockHttpServletResponse response = getAsServletResponse(request);
+    @Test
+    public void testXmlGetFeatureInfo() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request =
+                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20&x=10&y=10"
+                        + "&info_format="
+                        + XMLFeatureInfoOutputFormat.FORMAT;
 
-       // MimeType
-       assertEquals(XMLFeatureInfoOutputFormat.FORMAT, response.getContentType());
+        MockHttpServletResponse response = getAsServletResponse(request);
 
-       // Content
-       Document dom = getAsDOM(request);        
-       assertXpathEvaluatesTo("109", "//wfs:FeatureCollection/gml:featureMembers/cite:Forests/cite:FID", dom);
-       assertXpathEvaluatesTo("Green Forest", "//wfs:FeatureCollection/gml:featureMembers/cite:Forests/cite:NAME", dom);
-   }   
+        // MimeType
+        assertEquals(XMLFeatureInfoOutputFormat.FORMAT, response.getContentType());
+
+        // Content
+        Document dom = getAsDOM(request);
+        assertXpathEvaluatesTo(
+                "109", "//wfs:FeatureCollection/gml:featureMembers/cite:Forests/cite:FID", dom);
+        assertXpathEvaluatesTo(
+                "Green Forest",
+                "//wfs:FeatureCollection/gml:featureMembers/cite:Forests/cite:NAME",
+                dom);
+    }
 }

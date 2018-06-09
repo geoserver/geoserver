@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
 import org.geoserver.flow.ControllerPriorityComparator;
 import org.geoserver.flow.FlowController;
 import org.geoserver.flow.controller.BasicOWSController;
@@ -55,8 +54,8 @@ public class DefaultControlFlowConfigurationTest {
         p.put("ip.ows.wms.getmap", "100/m;3s");
         p.put("ip.ows.wps.execute", "50/d;60s");
 
-        DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(
-                new FixedWatcher(p));
+        DefaultControlFlowConfigurator configurator =
+                new DefaultControlFlowConfigurator(new FixedWatcher(p));
         assertTrue(configurator.isStale());
         List<FlowController> controllers = configurator.buildFlowControllers();
         Collections.sort(controllers, new ControllerPriorityComparator());
@@ -122,16 +121,16 @@ public class DefaultControlFlowConfigurationTest {
 
         // store the properties into a temp folder and relaod
         assertTrue(configurator.getFileLocations().isEmpty());
-        
+
         File tmpDir = createTempDir();
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(tmpDir);
-        
+
         configurator.saveConfiguration(resourceLoader);
         Resource controlFlowProps = Files.asResource(resourceLoader.find("controlflow.properties"));
         assertTrue(Resources.exists(controlFlowProps));
-        
+
         PropertyFileWatcher savedProps = new PropertyFileWatcher(controlFlowProps);
-        
+
         assertEquals(savedProps.getProperties(), p);
     }
 
@@ -160,8 +159,8 @@ public class DefaultControlFlowConfigurationTest {
     }
 
     private void checkPriorityParsing(Properties p) throws Exception {
-        DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(
-                new FixedWatcher(p));
+        DefaultControlFlowConfigurator configurator =
+                new DefaultControlFlowConfigurator(new FixedWatcher(p));
         assertTrue(configurator.isStale());
         List<FlowController> controllers = configurator.buildFlowControllers();
         Collections.sort(controllers, new ControllerPriorityComparator());
@@ -182,13 +181,15 @@ public class DefaultControlFlowConfigurationTest {
         assertPriorityThreadBlocker(blocker, "gs-priority", 3);
     }
 
-    public void assertPriorityThreadBlocker(ThreadBlocker blocker, String headerName, int 
-            defaultPriority) {
+    public void assertPriorityThreadBlocker(
+            ThreadBlocker blocker, String headerName, int defaultPriority) {
         assertThat(blocker, CoreMatchers.instanceOf(PriorityThreadBlocker.class));
         PriorityThreadBlocker ptb = (PriorityThreadBlocker) blocker;
-        assertThat(ptb.getPriorityProvider(), CoreMatchers.instanceOf(HttpHeaderPriorityProvider
-                .class));
-        HttpHeaderPriorityProvider priorityProvider = (HttpHeaderPriorityProvider) ptb.getPriorityProvider();
+        assertThat(
+                ptb.getPriorityProvider(),
+                CoreMatchers.instanceOf(HttpHeaderPriorityProvider.class));
+        HttpHeaderPriorityProvider priorityProvider =
+                (HttpHeaderPriorityProvider) ptb.getPriorityProvider();
         assertEquals(headerName, priorityProvider.getHeaderName());
         assertEquals(defaultPriority, priorityProvider.getDefaultPriority());
     }
@@ -199,7 +200,7 @@ public class DefaultControlFlowConfigurationTest {
         Properties properties;
 
         public FixedWatcher(Properties properties) {
-            super((Resource)null);
+            super((Resource) null);
             this.properties = properties;
         }
 
@@ -218,7 +219,7 @@ public class DefaultControlFlowConfigurationTest {
             return properties;
         }
     }
-    
+
     static File createTempDir() throws IOException {
         File f = File.createTempFile("controlFlow", "data", new File("target"));
         f.delete();

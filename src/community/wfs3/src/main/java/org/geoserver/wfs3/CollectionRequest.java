@@ -4,10 +4,5 @@
  */
 package org.geoserver.wfs3;
 
-/**
- * Request for the server contents
- */
-public class CollectionRequest extends BaseRequest {
-    
-    
-}
+/** Request for the server contents */
+public class CollectionRequest extends BaseRequest {}

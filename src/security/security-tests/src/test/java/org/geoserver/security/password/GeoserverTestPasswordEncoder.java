@@ -8,7 +8,7 @@ package org.geoserver.security.password;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 
-public class GeoserverTestPasswordEncoder extends  AbstractGeoserverPasswordEncoder{
+public class GeoserverTestPasswordEncoder extends AbstractGeoserverPasswordEncoder {
 
     @Override
     public String getPrefix() {
@@ -23,22 +23,21 @@ public class GeoserverTestPasswordEncoder extends  AbstractGeoserverPasswordEnco
     @Override
     protected CharArrayPasswordEncoder createCharEncoder() {
         return new CharArrayPasswordEncoder() {
-            
+
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
                 return encPass.equals(new String(rawPass));
             }
-            
+
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
                 return new String(rawPass);
             }
         };
     }
-    
+
     @Override
     public PasswordEncodingType getEncodingType() {
         return PasswordEncodingType.PLAIN;
     }
-
 }

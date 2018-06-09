@@ -9,7 +9,6 @@ package org.geoserver.wps.response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -21,7 +20,7 @@ import org.geoserver.wps.resource.WPSResourceManager;
 
 /**
  * Returns a response already computed and stored in an output
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class StoredResourceResponse extends Response {
@@ -35,45 +34,47 @@ public class StoredResourceResponse extends Response {
     @Override
     public boolean canHandle(Operation operation) {
         String operationId = operation.getId();
-        return ("GetExecutionStatus".equalsIgnoreCase(operationId) || "GetExecutionResult"
-                .equalsIgnoreCase(operationId))
+        return ("GetExecutionStatus".equalsIgnoreCase(operationId)
+                        || "GetExecutionResult".equalsIgnoreCase(operationId))
                 && operation.getService().getId().equals("wps");
     }
 
     public String getMimeType(Object value, Operation operation) {
         Object request = operation.getParameters()[0];
-        if(request instanceof GetExecutionStatusType) {
+        if (request instanceof GetExecutionStatusType) {
             return "text/xml";
-        } else if(request instanceof GetExecutionResultType) {
+        } else if (request instanceof GetExecutionResultType) {
             GetExecutionResultType ger = (GetExecutionResultType) request;
-            if(ger.getMimeType() != null) {
+            if (ger.getMimeType() != null) {
                 return ger.getMimeType();
             } else {
                 // generic binary output...
                 return "application/octet-stream";
             }
         } else {
-            throw new WPSException("Trying to get a mime type for a unknown operation, " +
-            		"we should not have got here in the first place");
+            throw new WPSException(
+                    "Trying to get a mime type for a unknown operation, "
+                            + "we should not have got here in the first place");
         }
     }
-    
+
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         Object request = operation.getParameters()[0];
-        if(request instanceof GetExecutionStatusType) {
+        if (request instanceof GetExecutionStatusType) {
             return "text/xml";
-        } else if(request instanceof GetExecutionResultType) {
+        } else if (request instanceof GetExecutionResultType) {
             GetExecutionResultType ger = (GetExecutionResultType) request;
-            if(ger.getOutputId() != null) {
+            if (ger.getOutputId() != null) {
                 return ger.getOutputId();
             } else {
                 // we should really never get here, the request should fail before
                 return "result.dat";
             }
         } else {
-            throw new WPSException("Trying to get a file name for a unknown operation, " +
-                    "we should not have got here in the first place");
+            throw new WPSException(
+                    "Trying to get a file name for a unknown operation, "
+                            + "we should not have got here in the first place");
         }
     }
 

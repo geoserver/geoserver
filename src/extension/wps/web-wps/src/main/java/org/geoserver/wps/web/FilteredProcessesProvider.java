@@ -5,13 +5,14 @@
  */
 package org.geoserver.wps.web;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -24,31 +25,28 @@ import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
 /**
  * Provides entries for the process filtering table in the {@link ProcessSelectionPage}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("serial")
-public class FilteredProcessesProvider extends
-        GeoServerDataProvider<FilteredProcessesProvider.FilteredProcess> {
+public class FilteredProcessesProvider
+        extends GeoServerDataProvider<FilteredProcessesProvider.FilteredProcess> {
 
     /**
      * Represents a selectable process in the GUI
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
-    static class FilteredProcess implements Serializable, Comparable<FilteredProcess>{
+    static class FilteredProcess implements Serializable, Comparable<FilteredProcess> {
 
         private boolean enabled;
-        
+
         private Name name;
 
         private String description;
-        
+
         private List<String> roles;
 
         private Multimap<String, WPSInputValidator> validators = ArrayListMultimap.create();
@@ -65,7 +63,7 @@ public class FilteredProcessesProvider extends
         public String getDescription() {
             return description;
         }
-        
+
         public List<String> getRoles() {
             return roles;
         }
@@ -84,9 +82,9 @@ public class FilteredProcessesProvider extends
 
         @Override
         public int compareTo(FilteredProcess other) {
-            if(name == null) {
+            if (name == null) {
                 return other.getName() == null ? 0 : -1;
-            } else if(other.getName() == null) {
+            } else if (other.getName() == null) {
                 return 1;
             } else {
                 return name.getURI().compareTo(other.getName().getURI());
@@ -113,7 +111,7 @@ public class FilteredProcessesProvider extends
 
         public void setValidators(Multimap<String, WPSInputValidator> validators) {
             this.validators = validators;
-        }        
+        }
 
         public boolean isValidated() {
             return validators != null && validators.size() > 0;
@@ -134,22 +132,24 @@ public class FilteredProcessesProvider extends
         selectableProcesses = new ArrayList<FilteredProcess>();
         List<ProcessInfo> filteredProcesses = pfi.getFilteredProcesses();
         for (Name name : names) {
-            InternationalString description = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false).getDescription(name);
+            InternationalString description =
+                    GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false)
+                            .getDescription(name);
             String des = "";
-            if(description != null){
+            if (description != null) {
                 des = description.toString(locale);
             }
             FilteredProcess sp = new FilteredProcess(name, des);
             sp.setEnabled(true);
-            
-            for (ProcessInfo fp: filteredProcesses) {
-                if(sp.getName().equals(fp.getName())){
+
+            for (ProcessInfo fp : filteredProcesses) {
+                if (sp.getName().equals(fp.getName())) {
                     sp.setEnabled(fp.isEnabled());
                     sp.setRoles(fp.getRoles());
                     sp.setValidators(fp.getValidators());
                 }
             }
-            
+
             selectableProcesses.add(sp);
         }
 
@@ -158,20 +158,23 @@ public class FilteredProcessesProvider extends
 
     @Override
     protected List<Property<FilteredProcess>> getProperties() {
-        List<Property<FilteredProcess>> props = new ArrayList<GeoServerDataProvider.Property<FilteredProcess>>();
+        List<Property<FilteredProcess>> props =
+                new ArrayList<GeoServerDataProvider.Property<FilteredProcess>>();
         props.add(new BeanProperty<FilteredProcess>("enabled", "enabled"));
         props.add(new BeanProperty<FilteredProcess>("name", "name"));
         props.add(new BeanProperty<FilteredProcess>("description", "description"));
-        props.add(new AbstractProperty<FilteredProcess>("roles") {
-            @Override
-            public Object getPropertyValue(FilteredProcess item) {
-                return item.getRoles();
-            } 
-            @Override
-            public IModel getModel(IModel itemModel) {
-                return new PropertyModel(itemModel, "roles");
-            }
-        });
+        props.add(
+                new AbstractProperty<FilteredProcess>("roles") {
+                    @Override
+                    public Object getPropertyValue(FilteredProcess item) {
+                        return item.getRoles();
+                    }
+
+                    @Override
+                    public IModel getModel(IModel itemModel) {
+                        return new PropertyModel(itemModel, "roles");
+                    }
+                });
         props.add(new PropertyPlaceholder("edit"));
         props.add(new BeanProperty("validated", "validated"));
         return props;
@@ -181,6 +184,4 @@ public class FilteredProcessesProvider extends
     protected List<FilteredProcess> getItems() {
         return selectableProcesses;
     }
-
-
 }

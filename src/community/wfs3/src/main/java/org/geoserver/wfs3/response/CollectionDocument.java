@@ -7,7 +7,9 @@ package org.geoserver.wfs3.response;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -17,10 +19,6 @@ import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.NCNameResourceCodec;
 import org.geoserver.wfs3.WFSExtents;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"name", "title", "description", "extent", "links"})

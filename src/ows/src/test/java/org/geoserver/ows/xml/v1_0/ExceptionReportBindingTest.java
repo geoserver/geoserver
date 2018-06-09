@@ -7,14 +7,11 @@ package org.geoserver.ows.xml.v1_0;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
-
 import org.geotools.xml.Configuration;
 import org.geotools.xml.test.XMLTestSupport;
 import org.w3c.dom.Document;
@@ -35,13 +32,16 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
     }
 
     public void testParseServiceException() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<ows:ExceptionReport version=\"1.0.0\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/ows http://demo.opengeo.org/geoserver/schemas/ows/1.0.0/owsExceptionReport.xsd\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows\">\n"
-                + "  <ows:Exception exceptionCode=\"InvalidParameterValue\" locator=\"service\">\n"
-                + "    <ows:ExceptionText>No service: ( madeUp )</ows:ExceptionText>\n"
-                + "  </ows:Exception>\n" + "</ows:ExceptionReport>\n" + "";
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<ows:ExceptionReport version=\"1.0.0\"\n"
+                        + "  xsi:schemaLocation=\"http://www.opengis.net/ows http://demo.opengeo.org/geoserver/schemas/ows/1.0.0/owsExceptionReport.xsd\"\n"
+                        + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows\">\n"
+                        + "  <ows:Exception exceptionCode=\"InvalidParameterValue\" locator=\"service\">\n"
+                        + "    <ows:ExceptionText>No service: ( madeUp )</ows:ExceptionText>\n"
+                        + "  </ows:Exception>\n"
+                        + "</ows:ExceptionReport>\n"
+                        + "";
 
         document = dom(xml);
         Object result = parse(OWS.EXCEPTIONREPORT);

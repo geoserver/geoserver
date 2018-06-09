@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -21,7 +20,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.eo.EOCoverageResourceCodec;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
-import org.geoserver.wcs2_0.eo.response.DescribeEOCoverageSetTransformer.CoverageGranules;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -35,10 +33,10 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**
- * Extension point implementing {@link WCS20DescribeCoverageExtension} that handles the granules for Structured Coverages
- * 
+ * Extension point implementing {@link WCS20DescribeCoverageExtension} that handles the granules for
+ * Structured Coverages
+ *
  * @author Nicola Lagomarsini - GeoSolutions
- * 
  */
 public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension {
     /** Constant used as separator for the granule definition */
@@ -91,8 +89,9 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                 SimpleFeatureIterator it = null;
                 try {
                     // Getting the structured coverage reader
-                    StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) ci
-                            .getGridCoverageReader(null, GeoTools.getDefaultHints());
+                    StructuredGridCoverage2DReader reader =
+                            (StructuredGridCoverage2DReader)
+                                    ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
                     String name;
                     // Getting the coverage name
                     name = codec.getCoverageName(ci);
@@ -103,8 +102,8 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
 
                     // create a GranuleCoverageInfo object for the single granule
                     if (!collection.isEmpty()) {
-                        List<DimensionDescriptor> descriptors = getActiveDimensionDescriptor(ci,
-                                reader, name);
+                        List<DimensionDescriptor> descriptors =
+                                getActiveDimensionDescriptor(ci, reader, name);
                         it = collection.features();
                         if (it.hasNext()) {
                             SimpleFeature feature = it.next();
@@ -113,8 +112,10 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                     }
                     if (info == null) {
                         if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.log(Level.FINE, "No granule found for the granuleId: "
-                                    + getGranuleId(coverageId));
+                            LOGGER.log(
+                                    Level.FINE,
+                                    "No granule found for the granuleId: "
+                                            + getGranuleId(coverageId));
                         }
                     }
                 } catch (IOException e) {
@@ -143,7 +144,7 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
 
     /**
      * CHecks if the EO extension is enabled globally
-     * 
+     *
      * @return true if the EO extension is enabled
      */
     public boolean isEOEnabled() {
@@ -153,9 +154,11 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
     }
 
     /**
-     * Returns the coverage identifier related to the specified coverageId, or null if the syntax is incorrect
-     * 
-     * @return the coverageId related to the following coverageId parameter (with the _granule_ extension)
+     * Returns the coverage identifier related to the specified coverageId, or null if the syntax is
+     * incorrect
+     *
+     * @return the coverageId related to the following coverageId parameter (with the _granule_
+     *     extension)
      */
     public String getCoverageId(String coverageId) {
         // does it have the expected lexical structure?
@@ -171,9 +174,11 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
     }
 
     /**
-     * Returns the coverage identifier related to the specified coverageId, or null if the syntax is incorrect
-     * 
-     * @return the coverageId related to the following coverageId parameter (with the _granule_ extension)
+     * Returns the coverage identifier related to the specified coverageId, or null if the syntax is
+     * incorrect
+     *
+     * @return the coverageId related to the following coverageId parameter (with the _granule_
+     *     extension)
      */
     public String getGranuleId(String coverageId) {
         // does it have the expected lexical structure?
@@ -188,13 +193,13 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
         }
     }
 
-    /**
-     * This method returns the active dimensions
-     */
-    private List<DimensionDescriptor> getActiveDimensionDescriptor(CoverageInfo ci,
-            StructuredGridCoverage2DReader reader, String name) throws IOException {
+    /** This method returns the active dimensions */
+    private List<DimensionDescriptor> getActiveDimensionDescriptor(
+            CoverageInfo ci, StructuredGridCoverage2DReader reader, String name)
+            throws IOException {
         // map the source descriptors for easy retrieval
-        Map<String, DimensionDescriptor> sourceDescriptors = new HashMap<String, DimensionDescriptor>();
+        Map<String, DimensionDescriptor> sourceDescriptors =
+                new HashMap<String, DimensionDescriptor>();
         for (DimensionDescriptor dimensionDescriptor : reader.getDimensionDescriptors(name)) {
             sourceDescriptors.put(dimensionDescriptor.getName().toUpperCase(), dimensionDescriptor);
         }
@@ -206,11 +211,12 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                 if (di.isEnabled()) {
                     String dimensionName = entry.getKey();
                     if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
-                        dimensionName = dimensionName
-                                .substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
+                        dimensionName =
+                                dimensionName.substring(
+                                        ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
                     }
-                    DimensionDescriptor selected = sourceDescriptors.get(dimensionName
-                            .toUpperCase());
+                    DimensionDescriptor selected =
+                            sourceDescriptors.get(dimensionName.toUpperCase());
                     if (selected != null) {
                         enabledDescriptors.add(selected);
                     }

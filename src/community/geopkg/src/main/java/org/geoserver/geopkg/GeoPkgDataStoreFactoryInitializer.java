@@ -9,21 +9,18 @@ import org.geoserver.data.DataStoreFactoryInitializer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.geopkg.GeoPkgDataStoreFactory;
 
-
 /**
- * Initializes an GeoPkg data store factory setting its location to the geoserver
- *  data directory.
+ * Initializes an GeoPkg data store factory setting its location to the geoserver data directory.
  *
  * @author Justin Deoliveira, Boundless
- *
  */
-public class GeoPkgDataStoreFactoryInitializer extends
-        DataStoreFactoryInitializer<GeoPkgDataStoreFactory> {
+public class GeoPkgDataStoreFactoryInitializer
+        extends DataStoreFactoryInitializer<GeoPkgDataStoreFactory> {
 
     GeoServerResourceLoader resourceLoader;
 
     public GeoPkgDataStoreFactoryInitializer() {
-        super( GeoPkgDataStoreFactory.class );
+        super(GeoPkgDataStoreFactory.class);
     }
 
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
@@ -31,6 +28,6 @@ public class GeoPkgDataStoreFactoryInitializer extends
     }
 
     public void initialize(GeoPkgDataStoreFactory factory) {
-        factory.setBaseDirectory( resourceLoader.getBaseDirectory() );
+        factory.setBaseDirectory(resourceLoader.getBaseDirectory());
     }
 }

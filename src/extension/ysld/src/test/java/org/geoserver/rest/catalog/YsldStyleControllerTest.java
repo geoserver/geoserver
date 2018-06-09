@@ -4,6 +4,11 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.junit.Assert.*;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -20,15 +25,8 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.ysld.YsldHandler;
 import org.geotools.styling.Style;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
 
@@ -43,13 +41,13 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
 
         catalog = getCatalog();
-        
+
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         namespaces.put("sld", "http://www.opengis.net/sld");
         namespaces.put("ogc", "http://www.opengis.net/ogc");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");
-        
+
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
     }
@@ -58,38 +56,36 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
     public void login() throws Exception {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
-    
+
     @Test
     public void testRawPutYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();
-        assertNull("foo not available",cat.getStyleByName("foo"));
+        assertNull("foo not available", cat.getStyleByName("foo"));
 
         String xml =
-            "<style>" +
-                "<name>foo</name>" +
-                "<format>ysld</format>"+
-                "<filename>foo.yaml</filename>" +
-                "</style>";
-        MockHttpServletResponse response = postAsServletResponse(
-                RestBaseController.ROOT_PATH + "/styles", xml);
+                "<style>"
+                        + "<name>foo</name>"
+                        + "<format>ysld</format>"
+                        + "<filename>foo.yaml</filename>"
+                        + "</style>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("foo"));
-        
-        
+
         String content = newYSLD();
-        response =
-            putAsServletResponse( "/rest/styles/foo?raw=true", content, YsldHandler.MIMETYPE);
-        assertEquals( 200, response.getStatus() );
+        response = putAsServletResponse("/rest/styles/foo?raw=true", content, YsldHandler.MIMETYPE);
+        assertEquals(200, response.getStatus());
 
         GeoServerResourceLoader resources = catalog.getResourceLoader();
-        
+
         Resource resource = resources.get("/styles/foo.yaml");
-        
+
         String definition = new String(resource.getContents());
-        assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
-        
-        StyleInfo styleInfo = catalog.getStyleByName( "foo" );
+        assertTrue("is yaml", definition.contains("stroke-color: '#FF0000'"));
+
+        StyleInfo styleInfo = catalog.getStyleByName("foo");
         Style s = styleInfo.getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -104,20 +100,21 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
     public void testPostYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();
-        assertNull("foo not available",cat.getStyleByName("foo"));
+        assertNull("foo not available", cat.getStyleByName("foo"));
 
         String content = newYSLD();
-        MockHttpServletResponse response = postAsServletResponse( "/rest/styles?name=foo", content, YsldHandler.MIMETYPE);
-        assertEquals( 201, response.getStatus() );
+        MockHttpServletResponse response =
+                postAsServletResponse("/rest/styles?name=foo", content, YsldHandler.MIMETYPE);
+        assertEquals(201, response.getStatus());
 
         GeoServerResourceLoader resources = catalog.getResourceLoader();
 
         Resource resource = resources.get("/styles/foo.yaml");
 
         String definition = new String(resource.getContents());
-        assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
+        assertTrue("is yaml", definition.contains("stroke-color: '#FF0000'"));
 
-        StyleInfo styleInfo = catalog.getStyleByName( "foo" );
+        StyleInfo styleInfo = catalog.getStyleByName("foo");
         Style s = styleInfo.getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -127,7 +124,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         assertTrue(content.contains("<sld:Name>foo</sld:Name>"));
         catalog.remove(styleInfo);
     }
-    
+
     @Test
     public void testPutYSLD() throws Exception {
         // step 1 create style info with correct format
@@ -135,31 +132,29 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         assertNull(cat.getStyleByName("bar"));
 
         String xml =
-            "<style>" +
-                "<name>bar</name>" +
-                "<format>ysld</format>"+
-                "<filename>bar.yaml</filename>" +
-                "</style>";
-        
+                "<style>"
+                        + "<name>bar</name>"
+                        + "<format>ysld</format>"
+                        + "<filename>bar.yaml</filename>"
+                        + "</style>";
+
         MockHttpServletResponse response =
-            postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("bar"));
-        
-        
+
         String content = newYSLD();
-        response =
-            putAsServletResponse( "/rest/styles/bar", content, YsldHandler.MIMETYPE);
-        assertEquals( 200, response.getStatus() );
+        response = putAsServletResponse("/rest/styles/bar", content, YsldHandler.MIMETYPE);
+        assertEquals(200, response.getStatus());
 
         GeoServerResourceLoader resources = catalog.getResourceLoader();
-        
+
         Resource resource = resources.get("/styles/bar.yaml");
-        
+
         String definition = new String(resource.getContents());
-        assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
-        
-        StyleInfo styleInfo = catalog.getStyleByName( "bar" );
+        assertTrue("is yaml", definition.contains("stroke-color: '#FF0000'"));
+
+        StyleInfo styleInfo = catalog.getStyleByName("bar");
         Style s = styleInfo.getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -167,16 +162,15 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
         content = new String(out.toByteArray());
         assertTrue(content.contains("<sld:Name>bar</sld:Name>"));
-        
+
         catalog.remove(styleInfo);
     }
-    
+
     String newYSLD() {
-        return
-            "title: valid ysld\n"+
-            "symbolizers:\n"+
-            "- line:\n"+
-            "    stroke-width: 1.0\n"+
-            "    stroke-color: '#FF0000'";
+        return "title: valid ysld\n"
+                + "symbolizers:\n"
+                + "- line:\n"
+                + "    stroke-width: 1.0\n"
+                + "    stroke-color: '#FF0000'";
     }
 }

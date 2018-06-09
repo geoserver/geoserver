@@ -31,5 +31,4 @@ public class OSEOWebTestSupport extends GeoServerWicketTestSupport {
         OSEOInfo service = getGeoServer().getService(OSEOInfo.class);
         openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
     }
-
 }

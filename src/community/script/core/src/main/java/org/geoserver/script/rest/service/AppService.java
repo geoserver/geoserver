@@ -1,12 +1,22 @@
-/** (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/**
+ * (c) 2014 Open Source Geospatial Foundation - all rights reserved (c) 2001 - 2013 OpenPlans This
+ * code is licensed under the GPL 2.0 license, available at the root application directory.
  *
  * @author David Vick, Boundless 2017
- **/
+ */
 package org.geoserver.script.rest.service;
 
+import static java.lang.String.format;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.script.ScriptEngine;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.platform.resource.Resource;
@@ -20,24 +30,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.script.ScriptEngine;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static java.lang.String.format;
-
 @Service
 public class AppService {
     static Logger LOGGER = Logging.getLogger(AppService.class);
 
-    @Autowired
-    ScriptManager scriptManager;
+    @Autowired ScriptManager scriptManager;
 
     public ResponseEntity<?> getAppList() {
         Resource appRoot = scriptManager.app();
@@ -61,7 +58,8 @@ public class AppService {
             try {
                 appDir = scriptManager.app(app);
             } catch (IllegalStateException e) {
-                throw new RestException(format("Error looking up app directory %s", app),
+                throw new RestException(
+                        format("Error looking up app directory %s", app),
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -69,22 +67,26 @@ public class AppService {
                 throw new RestException(format("No such app %s", app), HttpStatus.NOT_FOUND);
             }
 
-            //look for main script
+            // look for main script
             script = scriptManager.findAppMainScript(appDir);
             if (script == null) {
-                throw new RestException(format("No main file for app %s", app), HttpStatus.NOT_FOUND);
+                throw new RestException(
+                        format("No main file for app %s", app), HttpStatus.NOT_FOUND);
             }
 
             ScriptEngine eng = scriptManager.createNewEngine(script);
             if (eng == null) {
-                throw new RestException(format("Script engine for %s not found", script.name()), HttpStatus.BAD_REQUEST);
+                throw new RestException(
+                        format("Script engine for %s not found", script.name()),
+                        HttpStatus.BAD_REQUEST);
             }
 
-            //look up the app hook
+            // look up the app hook
             AppHook hook = scriptManager.lookupAppHook(script);
             if (hook == null) {
-                //TODO: fall back on default
-                throw new RestException(format("No hook found for %s", script.path()),
+                // TODO: fall back on default
+                throw new RestException(
+                        format("No hook found for %s", script.path()),
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -98,8 +100,8 @@ public class AppService {
 
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            throw new RestException("Error executing script " + script.name(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException(
+                    "Error executing script " + script.name(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

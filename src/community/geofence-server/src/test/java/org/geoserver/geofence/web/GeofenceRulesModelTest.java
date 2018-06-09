@@ -9,17 +9,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 
 /**
- * 
  * Geofence Rules Model Test
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
 
@@ -78,5 +75,4 @@ public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
         GeofenceRulesModel freshModel = new GeofenceRulesModel(); // reload rules from db
         assertEquals(model.getItems().toString(), freshModel.getItems().toString());
     }
-
 }

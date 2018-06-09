@@ -5,19 +5,17 @@
 
 package org.geoserver.notification.support;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.geoserver.notification.common.CustomSaslConfig;
-import org.geotools.util.logging.Logging;
-
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geoserver.notification.common.CustomSaslConfig;
+import org.geotools.util.logging.Logging;
 
 public class Receiver {
 
@@ -25,7 +23,7 @@ public class Receiver {
 
     private static String BROKER_URI = "amqp://localhost:4432";
 
-    private final static String QUEUE_NAME = "jms/queue";
+    private static final String QUEUE_NAME = "jms/queue";
 
     private ReceiverService service;
 
@@ -33,8 +31,7 @@ public class Receiver {
 
     private Channel channel;
 
-    public Receiver() {
-    }
+    public Receiver() {}
 
     public Receiver(String username, String password) {
         if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
@@ -65,8 +62,12 @@ public class Receiver {
     private DefaultConsumer newConsumer(Channel channel) {
         return new DefaultConsumer(channel) {
             @Override
-            public void handleDelivery(String consumerTag, Envelope envelope,
-                    AMQP.BasicProperties properties, byte[] body) throws IOException {
+            public void handleDelivery(
+                    String consumerTag,
+                    Envelope envelope,
+                    AMQP.BasicProperties properties,
+                    byte[] body)
+                    throws IOException {
                 service.manage(body);
             }
         };
@@ -88,5 +89,4 @@ public class Receiver {
             }
         }
     }
-
 }

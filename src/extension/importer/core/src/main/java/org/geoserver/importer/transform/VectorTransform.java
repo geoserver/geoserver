@@ -5,6 +5,4 @@
  */
 package org.geoserver.importer.transform;
 
-
-public interface VectorTransform extends ImportTransform {
-}
+public interface VectorTransform extends ImportTransform {}

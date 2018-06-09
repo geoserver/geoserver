@@ -8,7 +8,6 @@ package org.geoserver.wfs.xml;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDCompositor;
 import org.eclipse.xsd.XSDDerivationMethod;
@@ -58,95 +55,87 @@ import org.opengis.feature.type.Schema;
 
 /**
  * XSD for an application schema of a geoserver feature type.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ApplicationSchemaXSD extends XSD {
 
-    static Logger LOGGER = Logging.getLogger( "org.geoserver.wfs" );
-    
-    /**
-     * namespace for the app schema
-     */
+    static Logger LOGGER = Logging.getLogger("org.geoserver.wfs");
+
+    /** namespace for the app schema */
     NamespaceInfo ns;
-    
-    /**
-     * the catalog
-     */
+
+    /** the catalog */
     Catalog catalog;
-    /**
-     * base url used for schemaLocation
-     */
+    /** base url used for schemaLocation */
     String baseURL;
-    
-    /**
-     * wfs schema
-     */
+
+    /** wfs schema */
     WFS wfs;
-    
-    /**
-     * list of types to be included in the app schema.
-     */
+
+    /** list of types to be included in the app schema. */
     Collection<FeatureTypeInfo> types;
 
-    /**
-     * type mapping profile
-     */
+    /** type mapping profile */
     TypeMappingProfile typeMappingProfile;
-    
-    public ApplicationSchemaXSD( NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs ) {
-        this( ns, catalog, baseURL, wfs, Collections.EMPTY_LIST );
+
+    public ApplicationSchemaXSD(NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs) {
+        this(ns, catalog, baseURL, wfs, Collections.EMPTY_LIST);
     }
-    
-    public ApplicationSchemaXSD( NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs, Collection<FeatureTypeInfo> types ) {
+
+    public ApplicationSchemaXSD(
+            NamespaceInfo ns,
+            Catalog catalog,
+            String baseURL,
+            WFS wfs,
+            Collection<FeatureTypeInfo> types) {
         this.ns = ns;
         this.catalog = catalog;
         this.baseURL = baseURL;
         this.wfs = wfs;
         this.types = types;
-        
-        if ( this.types == null ) {
+
+        if (this.types == null) {
             types = Collections.EMPTY_LIST;
         }
-        
-        if ( this.ns == null ) {
-            //ns set to null, if all given types are from the same namespace, us that one
-            if ( !types.isEmpty() ) {
+
+        if (this.ns == null) {
+            // ns set to null, if all given types are from the same namespace, us that one
+            if (!types.isEmpty()) {
                 Iterator<FeatureTypeInfo> i = types.iterator();
                 NamespaceInfo namespace = i.next().getNamespace();
-                while( i.hasNext() ) {
+                while (i.hasNext()) {
                     FeatureTypeInfo type = i.next();
-                    if ( !namespace.equals( type.getNamespace() ) ) {
+                    if (!namespace.equals(type.getNamespace())) {
                         namespace = null;
                         break;
                     }
                 }
-                
-                if ( namespace != null ) {
+
+                if (namespace != null) {
                     this.ns = namespace;
                 }
             }
         }
-        
-        //set up type mapping profiles
+
+        // set up type mapping profiles
         Set<Schema> profiles = new LinkedHashSet<Schema>();
-        for ( XSD xsd : wfs.getAllDependencies() ) {
-            profiles.add( xsd.getTypeMappingProfile() );
+        for (XSD xsd : wfs.getAllDependencies()) {
+            profiles.add(xsd.getTypeMappingProfile());
         }
-        typeMappingProfile = new TypeMappingProfile( profiles );
+        typeMappingProfile = new TypeMappingProfile(profiles);
     }
-    
+
     @Override
     protected void addDependencies(Set dependencies) {
-        dependencies.add( wfs );
+        dependencies.add(wfs);
     }
-    
+
     @Override
     public String getNamespaceURI() {
-        //namespace will be null in case where types from different namespaces are 
-        //included in this schema
-        if ( ns != null ) {
+        // namespace will be null in case where types from different namespaces are
+        // included in this schema
+        if (ns != null) {
             return ns.getURI();
         }
         return null;
@@ -154,64 +143,64 @@ public class ApplicationSchemaXSD extends XSD {
 
     @Override
     public String getSchemaLocation() {
-        String schemaLocation = ResponseUtils.appendQueryString( ResponseUtils.appendPath( baseURL, "wfs" ), 
-            "request=DescribeFeatureType&service=WFS&version=" + wfs.getVersion() );
-        
-        if ( types.isEmpty() ) {
-            schemaLocation = ResponseUtils.appendQueryString( schemaLocation, "namespace=" + ns.getURI() );
-        }
-        else {
-            StringBuffer sb = new StringBuffer( "typeName=");
-            for ( FeatureTypeInfo type : types ) {
-                sb.append( type.getPrefixedName() ).append( ",");
+        String schemaLocation =
+                ResponseUtils.appendQueryString(
+                        ResponseUtils.appendPath(baseURL, "wfs"),
+                        "request=DescribeFeatureType&service=WFS&version=" + wfs.getVersion());
+
+        if (types.isEmpty()) {
+            schemaLocation =
+                    ResponseUtils.appendQueryString(schemaLocation, "namespace=" + ns.getURI());
+        } else {
+            StringBuffer sb = new StringBuffer("typeName=");
+            for (FeatureTypeInfo type : types) {
+                sb.append(type.getPrefixedName()).append(",");
             }
-            sb.setLength( sb.length() - 1);
-            schemaLocation = ResponseUtils.appendQueryString( schemaLocation, sb.toString() );
+            sb.setLength(sb.length() - 1);
+            schemaLocation = ResponseUtils.appendQueryString(schemaLocation, sb.toString());
         }
-        
+
         return schemaLocation;
     }
-    
+
     @Override
     protected XSDSchema buildSchema() throws IOException {
         XSDFactory factory = XSDFactory.eINSTANCE;
         XSDSchema schema = factory.createXSDSchema();
-        
+
         schema.setSchemaForSchemaQNamePrefix("xsd");
         schema.getQNamePrefixToNamespaceMap().put("xsd", XSDConstants.SCHEMA_FOR_SCHEMA_URI_2001);
         schema.setElementFormDefault(XSDForm.get(XSDForm.QUALIFIED));
 
-        if ( ns == null ) {
-            //there must be types from different namespaces included, build a schema 
+        if (ns == null) {
+            // there must be types from different namespaces included, build a schema
             // with imports
-            if ( types.isEmpty() ) {
-                //build for all namespaces
-                buildSchemaImports( catalog.getNamespaces(), schema, factory );
-            }
-            else {
+            if (types.isEmpty()) {
+                // build for all namespaces
+                buildSchemaImports(catalog.getNamespaces(), schema, factory);
+            } else {
                 Set<NamespaceInfo> namespaces = new HashSet<NamespaceInfo>();
-                for ( FeatureTypeInfo type : types ) {
-                    namespaces.add( type.getNamespace() );
+                for (FeatureTypeInfo type : types) {
+                    namespaces.add(type.getNamespace());
                 }
-                buildSchemaImports( namespaces, schema, factory );
+                buildSchemaImports(namespaces, schema, factory);
             }
-        }
-        else {
+        } else {
             schema.setTargetNamespace(ns.getURI());
             schema.getQNamePrefixToNamespaceMap().put(ns.getPrefix(), ns.getURI());
-            
+
             schema.getQNamePrefixToNamespaceMap().put("wfs", WFS.NAMESPACE);
             schema.getQNamePrefixToNamespaceMap().put("gml", GML.NAMESPACE);
-            
-            //import wfs schema
-            synchronized(Schemas.class) {
-                Schemas.importSchema( schema ,wfs.getSchema() );
+
+            // import wfs schema
+            synchronized (Schemas.class) {
+                Schemas.importSchema(schema, wfs.getSchema());
             }
-            schema.resolveElementDeclaration( WFS.NAMESPACE, "FeatureCollection" );
+            schema.resolveElementDeclaration(WFS.NAMESPACE, "FeatureCollection");
             /*
             XSDImport imprt = factory.createXSDImport();
             imprt.setNamespace(WFS.NAMESPACE);
-            
+
             String location = ResponseUtils.appendPath( baseURL, "schemas/wfs/");
             location += wfs.getVersion() + "/";
             location += new File( new URL(wfs.getSchemaLocation()).getFile() ).getName();
@@ -219,76 +208,99 @@ public class ApplicationSchemaXSD extends XSD {
             imprt.setResolvedSchema(wfs.getSchema());
             schema.getContents().add(imprt);
             */
-            
+
             Collection<FeatureTypeInfo> featureTypes = types;
-            if ( featureTypes == null || featureTypes.isEmpty() ) {
-                //grab all from catalog
+            if (featureTypes == null || featureTypes.isEmpty()) {
+                // grab all from catalog
                 featureTypes = catalog.getFeatureTypesByNamespace(ns);
             }
-            
-            SchemaIndexImpl index = new SchemaIndexImpl( new XSDSchema[]{ schema });
-            //all types in same namespace, write out the schema
-            for (FeatureTypeInfo featureType : featureTypes ) {
-                buildSchemaContent(featureType, schema, factory, index );
+
+            SchemaIndexImpl index = new SchemaIndexImpl(new XSDSchema[] {schema});
+            // all types in same namespace, write out the schema
+            for (FeatureTypeInfo featureType : featureTypes) {
+                buildSchemaContent(featureType, schema, factory, index);
             }
         }
-        
+
         return schema;
     }
 
-    void buildSchemaImports(Collection<NamespaceInfo> namespaces, XSDSchema schema, XSDFactory factory) {
-        
-        Map<String, String> params = params("service", "wfs",
-                "request", "DescribeFeatureType",
-                "version", wfs.getVersion());
-        
-//        String schemaLocation = ResponseUtils.appendQueryString(ResponseUtils.appendPath( baseURL, "wfs"), 
-//            "service=wfs&request=DescribeFeatureType&version=" + wfs.getVersion() + "&namespace=");
-        
-        for ( NamespaceInfo namespace : namespaces ) {
+    void buildSchemaImports(
+            Collection<NamespaceInfo> namespaces, XSDSchema schema, XSDFactory factory) {
+
+        Map<String, String> params =
+                params(
+                        "service",
+                        "wfs",
+                        "request",
+                        "DescribeFeatureType",
+                        "version",
+                        wfs.getVersion());
+
+        //        String schemaLocation = ResponseUtils.appendQueryString(ResponseUtils.appendPath(
+        // baseURL, "wfs"),
+        //            "service=wfs&request=DescribeFeatureType&version=" + wfs.getVersion() +
+        // "&namespace=");
+
+        for (NamespaceInfo namespace : namespaces) {
             XSDImport imprt = factory.createXSDImport();
             imprt.setNamespace(namespace.getURI());
             params.put("namespace", namespace.getPrefix());
             imprt.setSchemaLocation(buildURL(baseURL, "wfs", params, URLType.SERVICE));
 
             synchronized (Schemas.class) {
-                schema.getContents().add(imprt);                
+                schema.getContents().add(imprt);
             }
         }
     }
-    
-    void buildSchemaContent(FeatureTypeInfo featureTypeInfo,
-            XSDSchema schema, XSDFactory factory, SchemaIndex index) throws IOException {
 
-        //look if the schema for the type is already defined
+    void buildSchemaContent(
+            FeatureTypeInfo featureTypeInfo,
+            XSDSchema schema,
+            XSDFactory factory,
+            SchemaIndex index)
+            throws IOException {
+
+        // look if the schema for the type is already defined
         String prefix = featureTypeInfo.getNamespace().getPrefix();
         String store = featureTypeInfo.getStore().getName();
         String name = featureTypeInfo.getName();
 
-        Resource schemaFile = catalog.getResourceLoader().get("workspaces" + "/" + prefix + "/" + store + 
-                    "/" + name + "/schema.xsd");
-       
+        Resource schemaFile =
+                catalog.getResourceLoader()
+                        .get(
+                                "workspaces"
+                                        + "/"
+                                        + prefix
+                                        + "/"
+                                        + store
+                                        + "/"
+                                        + name
+                                        + "/schema.xsd");
+
         if (schemaFile.getType() == Type.RESOURCE) {
-            //schema file found, parse it and lookup the complex type
+            // schema file found, parse it and lookup the complex type
             List locators = new ArrayList();
-            for ( XSD xsd : wfs.getAllDependencies() ) {
-                locators.add( xsd.createSchemaLocator() );
+            for (XSD xsd : wfs.getAllDependencies()) {
+                locators.add(xsd.createSchemaLocator());
             }
             XSDSchema ftSchema = null;
 
             try {
                 ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, null);
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                    "Unable to parse schema: " + schemaFile.file().getAbsolutePath(), e);
+                LOGGER.log(
+                        Level.WARNING,
+                        "Unable to parse schema: " + schemaFile.file().getAbsolutePath(),
+                        e);
             }
 
             if (ftSchema != null) {
-                //add the contents of this schema to the schema being built
-                //look up the complex type
+                // add the contents of this schema to the schema being built
+                // look up the complex type
                 List contents = ftSchema.getContents();
 
-                for (Iterator i = contents.iterator(); i.hasNext();) {
+                for (Iterator i = contents.iterator(); i.hasNext(); ) {
                     XSDSchemaContent content = (XSDSchemaContent) i.next();
                     content.setElement(null);
                 }
@@ -299,47 +311,50 @@ public class ApplicationSchemaXSD extends XSD {
                 return;
             }
         }
-        
-        //build the type manually
+
+        // build the type manually
         SimpleFeatureType featureType = (SimpleFeatureType) featureTypeInfo.getFeatureType();
-        
+
         XSDComplexTypeDefinition complexType = factory.createXSDComplexTypeDefinition();
-        complexType.setName(name+ "Type");
+        complexType.setName(name + "Type");
 
         complexType.setDerivationMethod(XSDDerivationMethod.EXTENSION_LITERAL);
         complexType.setBaseTypeDefinition(
-            schema.resolveComplexTypeDefinition(GML.NAMESPACE, "AbstractFeatureType"));
+                schema.resolveComplexTypeDefinition(GML.NAMESPACE, "AbstractFeatureType"));
 
         XSDModelGroup group = factory.createXSDModelGroup();
         group.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
 
         List attributes = featureType.getAttributeDescriptors();
-        
+
         for (int i = 0; i < attributes.size(); i++) {
             AttributeDescriptor attribute = (AttributeDescriptor) attributes.get(i);
-            if ( filterAttributeType( attribute ) ) {
+            if (filterAttributeType(attribute)) {
                 continue;
             }
-            
-           
+
             XSDElementDeclaration element = factory.createXSDElementDeclaration();
             element.setName(attribute.getLocalName());
             element.setNillable(attribute.isNillable());
 
-            
             Class binding = attribute.getType().getBinding();
             Name typeName = findTypeName(binding);
 
             if (typeName == null) {
-                throw new NullPointerException("Could not find a type for property: "
-                    + attribute.getName() + " of type: " + binding.getName());
+                throw new NullPointerException(
+                        "Could not find a type for property: "
+                                + attribute.getName()
+                                + " of type: "
+                                + binding.getName());
             }
 
-            XSDTypeDefinition type = index.getTypeDefinition( new QName( typeName.getNamespaceURI(), typeName.getLocalPart() ) );
-            if ( type == null ) {
-                throw new IllegalStateException( "Could not find type: " + typeName );
+            XSDTypeDefinition type =
+                    index.getTypeDefinition(
+                            new QName(typeName.getNamespaceURI(), typeName.getLocalPart()));
+            if (type == null) {
+                throw new IllegalStateException("Could not find type: " + typeName);
             }
-            //XSDTypeDefinition type = schema.resolveTypeDefinition(typeName.getNamespaceURI(),
+            // XSDTypeDefinition type = schema.resolveTypeDefinition(typeName.getNamespaceURI(),
             //        typeName.getLocalPart());
             element.setTypeDefinition(type);
 
@@ -360,21 +375,21 @@ public class ApplicationSchemaXSD extends XSD {
         XSDElementDeclaration element = factory.createXSDElementDeclaration();
         element.setName(name);
 
-        element.setSubstitutionGroupAffiliation(schema.resolveElementDeclaration(GML.NAMESPACE,
-                "_Feature"));
+        element.setSubstitutionGroupAffiliation(
+                schema.resolveElementDeclaration(GML.NAMESPACE, "_Feature"));
         element.setTypeDefinition(complexType);
 
         schema.getContents().add(element);
         schema.updateElement();
     }
-    
-    boolean filterAttributeType( AttributeDescriptor attribute ) {
-        return "name".equals( attribute.getName().getLocalPart() ) 
-            || "description".equals( attribute.getName().getLocalPart() ) 
-            || "boundedBy".equals( attribute.getName().getLocalPart());
+
+    boolean filterAttributeType(AttributeDescriptor attribute) {
+        return "name".equals(attribute.getName().getLocalPart())
+                || "description".equals(attribute.getName().getLocalPart())
+                || "boundedBy".equals(attribute.getName().getLocalPart());
     }
-    
+
     Name findTypeName(Class binding) {
-           return typeMappingProfile.name(binding);
+        return typeMappingProfile.name(binding);
     }
 }

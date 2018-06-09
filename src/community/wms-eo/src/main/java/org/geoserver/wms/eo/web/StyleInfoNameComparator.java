@@ -6,12 +6,11 @@
 package org.geoserver.wms.eo.web;
 
 import java.util.Comparator;
-
 import org.geoserver.catalog.StyleInfo;
 
 /**
  * StyleInfo name comparator
- * 
+ *
  * @author Davide Savazzi - geo-solutions.it
  */
 public class StyleInfoNameComparator implements Comparator<StyleInfo> {

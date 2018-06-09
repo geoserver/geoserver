@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.config;
 
+import com.google.common.base.Preconditions;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -11,14 +12,11 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Simple bean that contains PostgreSQL specific configuration parameters for connecting to a GeoGig
@@ -116,13 +114,18 @@ public class PostgresConfigBean implements Serializable {
             // try to URLEncode the username value, using UTF-8 encoding
             encodedUsername = URLEncoder.encode(username, UTF8);
         } catch (UnsupportedEncodingException uee) {
-            LOGGER.warn(String.format("Error encoding PostgreSQL username in UTF-8, attempting to use unencoded value: %s",
-                    username), uee);
+            LOGGER.warn(
+                    String.format(
+                            "Error encoding PostgreSQL username in UTF-8, attempting to use unencoded value: %s",
+                            username),
+                    uee);
         }
         try {
-            encodedPassword =  URLEncoder.encode(password, UTF8);
+            encodedPassword = URLEncoder.encode(password, UTF8);
         } catch (UnsupportedEncodingException uee) {
-            LOGGER.warn("Error encoding PostgreSQL password value, attempting to use unencoded value", uee);
+            LOGGER.warn(
+                    "Error encoding PostgreSQL password value, attempting to use unencoded value",
+                    uee);
         }
         builder.queryParam(USER, encodedUsername);
         builder.queryParam(PASSWORD, encodedPassword);
@@ -165,14 +168,19 @@ public class PostgresConfigBean implements Serializable {
             // username should be URLEncoded, decode it here
             username = URLDecoder.decode(username, UTF8);
         } catch (UnsupportedEncodingException uee) {
-            LOGGER.warn(String.format("Error decoding PostgreSQL username value, attempting to use undecoded value: %s",
-                    username), uee);
+            LOGGER.warn(
+                    String.format(
+                            "Error decoding PostgreSQL username value, attempting to use undecoded value: %s",
+                            username),
+                    uee);
         }
         try {
             // password should be URLEncoded, decode it here
             password = URLDecoder.decode(password, UTF8);
         } catch (UnsupportedEncodingException uee) {
-            LOGGER.warn("Error decoding PostgreSQL password value, attempting to use undecoded value", uee);
+            LOGGER.warn(
+                    "Error decoding PostgreSQL password value, attempting to use undecoded value",
+                    uee);
         }
         PostgresConfigBean bean = new PostgresConfigBean();
         bean.setHost(host);
@@ -196,13 +204,16 @@ public class PostgresConfigBean implements Serializable {
 
     @Override
     public int hashCode() {
-        // hash all the fields, if they aren't null, otherwise use some prime numbers as place holders
-        return (host != null) ? host.hashCode() : 17 ^
-                ((port != null) ? port.hashCode() : 37) ^
-                ((username != null) ? username.hashCode() : 57) ^
-                ((schema != null) ? schema.hashCode() : 97) ^
-                ((password != null) ? password.hashCode() : 137) ^
-                ((database != null) ? database.hashCode() : 197);
+        // hash all the fields, if they aren't null, otherwise use some prime numbers as place
+        // holders
+        return (host != null)
+                ? host.hashCode()
+                : 17
+                        ^ ((port != null) ? port.hashCode() : 37)
+                        ^ ((username != null) ? username.hashCode() : 57)
+                        ^ ((schema != null) ? schema.hashCode() : 97)
+                        ^ ((password != null) ? password.hashCode() : 137)
+                        ^ ((database != null) ? database.hashCode() : 197);
     }
 
     @Override

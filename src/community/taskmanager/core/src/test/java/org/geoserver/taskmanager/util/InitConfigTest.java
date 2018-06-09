@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.DummyTaskTypeImpl;
 import org.geoserver.taskmanager.data.Attribute;
@@ -22,47 +21,40 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class InitConfigTest extends AbstractTaskManagerTest {
-    
-    private static final String ATT_DUMMY1 = "dummy1";    
 
-    private static final String ATT_DUMMY2 = "dummy2";    
+    private static final String ATT_DUMMY1 = "dummy1";
 
-    private static final String ATT_DUMMY3 = "dummy3";  
+    private static final String ATT_DUMMY2 = "dummy2";
 
-    @Autowired
-    private TaskManagerDao dao;
-    
-    @Autowired
-    private TaskManagerFactory fac;
-    
-    @Autowired
-    private TaskManagerDataUtil util;
-        
-    @Autowired
-    private TaskManagerTaskUtil taskUtil;
+    private static final String ATT_DUMMY3 = "dummy3";
 
-    @Autowired
-    private InitConfigUtil initUtil;
+    @Autowired private TaskManagerDao dao;
 
-    
+    @Autowired private TaskManagerFactory fac;
+
+    @Autowired private TaskManagerDataUtil util;
+
+    @Autowired private TaskManagerTaskUtil taskUtil;
+
+    @Autowired private InitConfigUtil initUtil;
+
     private Configuration config;
-    
+
     @Before
     public void setupConfiguration() {
-        config = fac.createConfiguration();  
+        config = fac.createConfiguration();
         config.setName("my_config");
         config.setWorkspace("some_ws");
 
         util.setConfigurationAttribute(config, ATT_DUMMY1, "foo");
         util.setConfigurationAttribute(config, ATT_DUMMY2, "dummy");
-        
+
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(DummyTaskTypeImpl.NAME);
         util.setTaskParameterToAttribute(task1, DummyTaskTypeImpl.PARAM1, ATT_DUMMY1);
         util.setTaskParameterToAttribute(task1, DummyTaskTypeImpl.PARAM2, ATT_DUMMY2);
         util.addTaskToConfiguration(config, task1);
-        
 
         Task task2 = fac.createTask();
         task2.setName("task2");
@@ -70,7 +62,7 @@ public class InitConfigTest extends AbstractTaskManagerTest {
         util.setTaskParameterToAttribute(task2, DummyTaskTypeImpl.PARAM1, ATT_DUMMY2);
         util.setTaskParameterToAttribute(task2, DummyTaskTypeImpl.PARAM2, ATT_DUMMY3);
         util.addTaskToConfiguration(config, task2);
-                    
+
         Batch batch = fac.createBatch();
         batch.setName("@Initialize");
         util.addBatchElement(batch, task1);
@@ -82,34 +74,34 @@ public class InitConfigTest extends AbstractTaskManagerTest {
         util.addBatchElement(otherBatch, task2);
         util.addBatchToConfiguration(config, otherBatch);
 
-        config = dao.save(config);        
+        config = dao.save(config);
     }
-    
+
     @After
     public void clearDataFromDatabase() {
         dao.delete(config);
     }
-    
-    @Test 
+
+    @Test
     public void testInitConfig() {
         assertEquals(config.getBatches().get("@Initialize"), InitConfigUtil.getInitBatch(config));
         assertTrue(initUtil.isInitConfig(config));
-        
+
         Configuration initConfig = InitConfigUtil.wrap(config);
         assertNotEquals(config, initConfig);
         assertEquals(config, InitConfigUtil.unwrap(initConfig));
-        
+
         assertEquals(config.getId(), initConfig.getId());
         assertEquals(config.getName(), initConfig.getName());
-        
+
         assertEquals(2, config.getTasks().size());
         assertEquals(1, initConfig.getTasks().size());
 
         assertEquals(2, config.getBatches().size());
         assertEquals(1, initConfig.getBatches().size());
-        
-        Attribute attDummy2 = config.getAttributes().get(ATT_DUMMY2);        
-        
+
+        Attribute attDummy2 = config.getAttributes().get(ATT_DUMMY2);
+
         List<Parameter> params = util.getAssociatedParameters(attDummy2, config);
         assertEquals(2, params.size());
         assertEquals(config.getTasks().get("task1"), params.get(0).getTask());
@@ -117,10 +109,10 @@ public class InitConfigTest extends AbstractTaskManagerTest {
         params = util.getAssociatedParameters(attDummy2, initConfig);
         assertEquals(1, params.size());
         assertEquals(config.getTasks().get("task1"), params.get(0).getTask());
-        
+
         assertFalse(taskUtil.validate(config).isEmpty());
         assertTrue(taskUtil.validate(initConfig).isEmpty());
-        
+
         assertEquals(1, taskUtil.getActionsForAttribute(attDummy2, config).size());
         assertEquals(1, taskUtil.getActionsForAttribute(attDummy2, initConfig).size());
 

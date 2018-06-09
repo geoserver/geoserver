@@ -4,16 +4,14 @@
  */
 package org.geogig.geoserver.functional;
 
-import java.io.IOException;
-
-import org.geogig.web.functional.WebAPICucumberHooks;
-import org.locationtech.geogig.repository.Repository;
-
 import com.google.inject.Inject;
 import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
 import cucumber.runtime.java.StepDefAnnotation;
 import cucumber.runtime.java.guice.ScenarioScoped;
+import java.io.IOException;
+import org.geogig.web.functional.WebAPICucumberHooks;
+import org.locationtech.geogig.repository.Repository;
 
 /**
  * Extensions to the GeoGig Web API Functional tests. These these are specific to the GeoServer
@@ -30,8 +28,8 @@ public class PluginWebAPICucumberHooks {
     /**
      * Create an instance of this set of Steps with the GeoGig Web API Hooks as a parent. Since you
      * cannot extend a Step Definition class, just inject the one that gets created during the test
-     * run and grab the Context. It <i>should</i> be an instance of
-     * {@link GeoServerFunctionalTestContext}.
+     * run and grab the Context. It <i>should</i> be an instance of {@link
+     * GeoServerFunctionalTestContext}.
      *
      * @param parent
      */
@@ -51,7 +49,8 @@ public class PluginWebAPICucumberHooks {
         context.createUnManagedRepoWithAltRoot(repoName)
                 .init("geogigUser", "repo1_Owner@geogig.org")
                 .loadDefaultData()
-                .getRepo().close();
+                .getRepo()
+                .close();
         this.repoName = repoName;
     }
 

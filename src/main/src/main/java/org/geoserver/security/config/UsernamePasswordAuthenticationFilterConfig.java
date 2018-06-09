@@ -12,12 +12,12 @@ import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilt
  *
  * @author mcr
  */
-public class UsernamePasswordAuthenticationFilterConfig extends SecurityFilterConfig 
-    implements SecurityAuthFilterConfig {
+public class UsernamePasswordAuthenticationFilterConfig extends SecurityFilterConfig
+        implements SecurityAuthFilterConfig {
 
-    public final static String DEFAULT_PASSWORD_PARAM="password";
-    public final static String DEFAULT_USERNAME_PARAM="username";
-    
+    public static final String DEFAULT_PASSWORD_PARAM = "password";
+    public static final String DEFAULT_USERNAME_PARAM = "username";
+
     private static final long serialVersionUID = 1L;
 
     private String passwordParameterName;
@@ -26,19 +26,21 @@ public class UsernamePasswordAuthenticationFilterConfig extends SecurityFilterCo
     public String getPasswordParameterName() {
         return passwordParameterName;
     }
+
     public void setPasswordParameterName(String passwordParameterName) {
         this.passwordParameterName = passwordParameterName;
     }
+
     public String getUsernameParameterName() {
         return usernameParameterName;
     }
+
     public void setUsernameParameterName(String usernameParameterName) {
         this.usernameParameterName = usernameParameterName;
-    }        
-    
-    @Override
-    public  boolean providesAuthenticationEntryPoint() {
-        return true;
     }
 
+    @Override
+    public boolean providesAuthenticationEntryPoint() {
+        return true;
+    }
 }

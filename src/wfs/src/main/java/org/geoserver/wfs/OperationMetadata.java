@@ -7,9 +7,7 @@ package org.geoserver.wfs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple implementation 
- */
+/** A simple implementation */
 public class OperationMetadata {
     String name;
     List<DomainType> parameters = new ArrayList<>();

@@ -5,23 +5,19 @@
 package org.geoserver.jdbcstore.cache;
 
 import java.io.File;
-
 import javax.servlet.ServletContext;
-
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.web.context.ServletContextAware;
 
 /**
- * 
  * Resource Caches that uses GeoServer Data Directory.
- * 
- * @author NielsCharlier
  *
+ * @author NielsCharlier
  */
 public class DataDirectoryResourceCache extends SimpleResourceCache implements ServletContextAware {
 
     public DataDirectoryResourceCache() {}
-    
+
     @Override
     public void setServletContext(ServletContext servletContext) {
         String data = GeoServerResourceLoader.lookupGeoServerDataDirectory(servletContext);
@@ -31,5 +27,4 @@ public class DataDirectoryResourceCache extends SimpleResourceCache implements S
             throw new IllegalStateException("Unable to determine data directory");
         }
     }
-
 }

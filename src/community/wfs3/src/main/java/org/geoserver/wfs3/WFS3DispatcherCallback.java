@@ -4,6 +4,12 @@
  */
 package org.geoserver.wfs3;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.function.Supplier;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
@@ -13,13 +19,6 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs3.response.RFCGeoJSONFeaturesResponse;
 import org.springframework.http.HttpHeaders;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class WFS3DispatcherCallback extends AbstractDispatcherCallback {
 
@@ -86,7 +85,8 @@ public class WFS3DispatcherCallback extends AbstractDispatcherCallback {
         return super.operationExecuted(request, operation, result);
     }
 
-    private void setOutputFormat(Request request, Object parsedRequest, Method formatSetter, String outputformat)
+    private void setOutputFormat(
+            Request request, Object parsedRequest, Method formatSetter, String outputformat)
             throws IllegalAccessException, InvocationTargetException {
         request.setOutputFormat(outputformat);
         formatSetter.invoke(parsedRequest, outputformat);

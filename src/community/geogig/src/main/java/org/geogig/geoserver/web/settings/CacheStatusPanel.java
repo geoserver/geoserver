@@ -5,7 +5,6 @@
 package org.geogig.geoserver.web.settings;
 
 import java.util.logging.Logger;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -50,13 +49,14 @@ public class CacheStatusPanel extends Panel {
 
         Form<CacheManagerBean> form = new Form<>("settingsForm", model);
         formFragment.add(form);
-        
+
         IModel<Double> absoluteMaximumSizeMB = new PropertyModel<>(model, "absoluteMaximumSizeMB");
         form.add(new Label("absoluteMaximumSizeMB", absoluteMaximumSizeMB));
 
         final NumberTextField<Double> maxSizeTextField;
-        maxSizeTextField = new NumberTextField<Double>("maximumSize",
-                new PropertyModel<>(model, "maximumSizeMB"));
+        maxSizeTextField =
+                new NumberTextField<Double>(
+                        "maximumSize", new PropertyModel<>(model, "maximumSizeMB"));
         maxSizeTextField.setOutputMarkupId(true);
         maxSizeTextField.setRequired(true);
         maxSizeTextField.setMinimum(0d);
@@ -67,44 +67,45 @@ public class CacheStatusPanel extends Panel {
         feedback.setOutputMarkupId(true);
         form.add(feedback);
 
-        form.add(new AjaxSubmitLink("submit", form) {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxSubmitLink("submit", form) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onAfterSubmit(final AjaxRequestTarget target, final Form<?> form) {
-                target.add(tableFragment);
-                feedback.setVisible(false);
-                target.add(feedback);
-                feedback.setVisible(true);
-            }
+                    @Override
+                    public void onAfterSubmit(final AjaxRequestTarget target, final Form<?> form) {
+                        target.add(tableFragment);
+                        feedback.setVisible(false);
+                        target.add(feedback);
+                        feedback.setVisible(true);
+                    }
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                feedback.setVisible(true);
-                target.add(feedback);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        feedback.setVisible(true);
+                        target.add(feedback);
+                    }
+                });
 
-        });
+        form.add(
+                new AjaxLink<CacheManagerBean>("reset", model) {
+                    private static final long serialVersionUID = 1L;
 
-        form.add(new AjaxLink<CacheManagerBean>("reset", model) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                CacheManagerBean manager = form.getModelObject();
-                final double maximumSizeMB = manager.getMaximumSizeMB();
-                final double defaultMaxSizeMB = manager.getDefaultSizeMB();
-                if (maximumSizeMB != defaultMaxSizeMB) {
-                    manager.setMaximumSizeMB(defaultMaxSizeMB);
-                }
-                maxSizeTextField.clearInput();
-                target.add(maxSizeTextField);
-                target.add(tableFragment);
-                feedback.setVisible(false);
-                target.add(feedback);
-                feedback.setVisible(true);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        CacheManagerBean manager = form.getModelObject();
+                        final double maximumSizeMB = manager.getMaximumSizeMB();
+                        final double defaultMaxSizeMB = manager.getDefaultSizeMB();
+                        if (maximumSizeMB != defaultMaxSizeMB) {
+                            manager.setMaximumSizeMB(defaultMaxSizeMB);
+                        }
+                        maxSizeTextField.clearInput();
+                        target.add(maxSizeTextField);
+                        target.add(tableFragment);
+                        feedback.setVisible(false);
+                        target.add(feedback);
+                        feedback.setVisible(true);
+                    }
+                });
     }
 
     private Fragment createTableFragment(IModel<CacheManagerBean> model) {
@@ -115,8 +116,12 @@ public class CacheStatusPanel extends Panel {
         tableFragment.add(new Label("size", new PropertyModel<>(model, "size")));
         tableFragment.add(new Label("sizeMB", new PropertyModel<>(model, "sizeMB")));
         tableFragment.add(new Label("maximumSizeMB", new PropertyModel<>(model, "maximumSizeMB")));
-        tableFragment.add(new Label("maximumSizePercent", new PropertyModel<>(model, "maximumSizePercent")));
-        tableFragment.add(new Label("absoluteMaximumSizeMB", new PropertyModel<>(model, "absoluteMaximumSizeMB")));
+        tableFragment.add(
+                new Label("maximumSizePercent", new PropertyModel<>(model, "maximumSizePercent")));
+        tableFragment.add(
+                new Label(
+                        "absoluteMaximumSizeMB",
+                        new PropertyModel<>(model, "absoluteMaximumSizeMB")));
         tableFragment.add(new Label("defaultSizeMB", new PropertyModel<>(model, "defaultSizeMB")));
         tableFragment.add(new Label("evictionCount", new PropertyModel<>(model, "evictionCount")));
         tableFragment.add(new Label("hitCount", new PropertyModel<>(model, "hitCount")));
@@ -124,25 +129,27 @@ public class CacheStatusPanel extends Panel {
         tableFragment.add(new Label("missCount", new PropertyModel<>(model, "missCount")));
         tableFragment.add(new Label("missRate", new PropertyModel<>(model, "missRate")));
 
-        add(new AjaxLink<Void>("refresh") {
-            private static final long serialVersionUID = 1L;
+        add(
+                new AjaxLink<Void>("refresh") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                target.add(tableFragment);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        target.add(tableFragment);
+                    }
+                });
 
-        add(new AjaxLink<CacheManagerBean>("clear", model) {
-            private static final long serialVersionUID = 1L;
+        add(
+                new AjaxLink<CacheManagerBean>("clear", model) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                CacheManagerBean manager = getModelObject();
-                manager.clear();
-                target.add(tableFragment);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        CacheManagerBean manager = getModelObject();
+                        manager.clear();
+                        target.add(tableFragment);
+                    }
+                });
 
         return tableFragment;
     }

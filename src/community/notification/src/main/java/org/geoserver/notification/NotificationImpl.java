@@ -6,7 +6,6 @@
 package org.geoserver.notification;
 
 import java.util.Map;
-
 import org.geoserver.notification.common.Notification;
 
 public class NotificationImpl implements Notification {
@@ -23,8 +22,13 @@ public class NotificationImpl implements Notification {
 
     private Object object;
 
-    public NotificationImpl(Type type, String handle, Action action, Object object,
-            Map<String, Object> properties, String user) {
+    public NotificationImpl(
+            Type type,
+            String handle,
+            Action action,
+            Object object,
+            Map<String, Object> properties,
+            String user) {
         this.type = type;
         this.handle = handle;
         this.action = action;
@@ -62,5 +66,4 @@ public class NotificationImpl implements Notification {
     public String getUser() {
         return user;
     }
-
 }

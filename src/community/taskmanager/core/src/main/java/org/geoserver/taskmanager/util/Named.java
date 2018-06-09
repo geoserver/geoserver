@@ -5,7 +5,6 @@
 package org.geoserver.taskmanager.util;
 
 public interface Named {
-    
+
     String getName();
-    
 }

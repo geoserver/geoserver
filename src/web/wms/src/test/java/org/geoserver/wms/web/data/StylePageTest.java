@@ -20,14 +20,14 @@ import org.junit.Test;
 import org.opengis.filter.Filter;
 
 public class StylePageTest extends GeoServerWicketTestSupport {
-    
+
     @Test
     public void testPageLoad() {
         login();
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
     }
-    
+
     @Test
     public void testStyleProvider() {
         login();
@@ -36,8 +36,8 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         // Get the StyleProvider
 
-        DataView dv = (DataView) tester
-                .getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         Catalog catalog = getCatalog();
         assertEquals(dv.size(), catalog.getStyles().size());
         IDataProvider dataProvider = dv.getDataProvider();
@@ -60,8 +60,9 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         assertTrue(catchedException);
 
         StyleInfo actual = provider.iterator(0, 1).next();
-        CloseableIterator<StyleInfo> list = catalog.list(StyleInfo.class, Filter.INCLUDE, 0, 1,
-                Predicates.sortBy("name", true));
+        CloseableIterator<StyleInfo> list =
+                catalog.list(
+                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true));
         assertTrue(list.hasNext());
         StyleInfo expected = list.next();
 

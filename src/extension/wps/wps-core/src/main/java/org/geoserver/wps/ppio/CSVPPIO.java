@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -36,11 +35,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Text;
 
-
-/**
- * @author ian
- *
- */
+/** @author ian */
 public class CSVPPIO extends CDataPPIO {
     WPSResourceManager resourceManager;
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.wps.ppio.CSVPPIO");
@@ -49,8 +44,6 @@ public class CSVPPIO extends CDataPPIO {
         super(SimpleFeatureCollection.class, SimpleFeatureCollection.class, "text/csv");
         this.resourceManager = resourceManager;
     }
-  
-
 
     @Override
     public Object decode(String input) throws Exception {
@@ -62,35 +55,30 @@ public class CSVPPIO extends CDataPPIO {
         return "csv";
     }
 
-    
-    
-
     @Override
     public Object decode(Object input) throws Exception {
         Class<? extends Object> type = input.getClass();
-        if(type.isAssignableFrom(String.class)) {
-            return decode((String)input);
+        if (type.isAssignableFrom(String.class)) {
+            return decode((String) input);
         }
-        if(type.isAssignableFrom(Text.class)) {
-            return decode(((Text)input).getValue());
+        if (type.isAssignableFrom(Text.class)) {
+            return decode(((Text) input).getValue());
         }
         return super.decode(input);
     }
-
-
 
     @Override
     public Object decode(InputStream input) throws Exception {
         // this will be deleted for us when the process finishes
         Resource tmp = resourceManager.getTemporaryResource(".csv");
-        
+
         IOUtils.copy(input, tmp.out());
         HashMap<String, Object> params = new HashMap<>();
-        params.put(CSVDataStoreFactory.FILE_PARAM.key,tmp.file().getAbsoluteFile());
+        params.put(CSVDataStoreFactory.FILE_PARAM.key, tmp.file().getAbsoluteFile());
         params.put(CSVDataStoreFactory.STRATEGYP.key, CSVDataStoreFactory.GUESS_STRATEGY);
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
         SimpleFeatureCollection collection = store.getFeatureSource().getFeatures();
-        LOGGER.info("read in "+collection.size()+" features from CSV source");
+        LOGGER.info("read in " + collection.size() + " features from CSV source");
         store.dispose();
         return collection;
     }
@@ -101,22 +89,19 @@ public class CSVPPIO extends CDataPPIO {
         Resource tmp = resourceManager.getTemporaryResource(".csv");
         SimpleFeatureCollection collection = (SimpleFeatureCollection) value;
         HashMap<String, Object> params = new HashMap<>();
-        params.put(CSVDataStoreFactory.FILE_PARAM.key,tmp.file().getAbsoluteFile());
+        params.put(CSVDataStoreFactory.FILE_PARAM.key, tmp.file().getAbsoluteFile());
         params.put(CSVDataStoreFactory.STRATEGYP.key, CSVDataStoreFactory.ATTRIBUTES_ONLY_STRATEGY);
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
         store.createSchema(collection.getSchema());
         String name = store.getTypeName().getLocalPart();
         Transaction transaction = Transaction.AUTO_COMMIT;
-        SimpleFeatureSource featureSource = store.getFeatureSource(name,transaction );
-        if(featureSource instanceof FeatureStore) {
-            CSVFeatureStore csvFeatureStore = (CSVFeatureStore)featureSource;
-            
+        SimpleFeatureSource featureSource = store.getFeatureSource(name, transaction);
+        if (featureSource instanceof FeatureStore) {
+            CSVFeatureStore csvFeatureStore = (CSVFeatureStore) featureSource;
+
             csvFeatureStore.addFeatures(collection);
-            
         }
         store.dispose();
-        IOUtils.copy(tmp.in(),os);
-        
+        IOUtils.copy(tmp.in(), os);
     }
-
 }

@@ -6,17 +6,16 @@ package org.geoserver.jdbcconfig.internal;
 
 import java.io.Serializable;
 import java.util.Arrays;
-
 import org.geoserver.catalog.Info;
 
 public class InfoIdentity implements Serializable {
-    
+
     private static final long serialVersionUID = -1756381133395681156L;
 
     private Class<? extends Info> clazz;
-    
+
     private String[] descriptor;
-    
+
     private String[] values;
 
     public InfoIdentity(Class<? extends Info> clazz, String[] descriptor, String[] values) {
@@ -53,25 +52,15 @@ public class InfoIdentity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         InfoIdentity other = (InfoIdentity) obj;
         if (clazz == null) {
-            if (other.clazz != null)
-                return false;
-        } else if (!clazz.equals(other.clazz))
-            return false;
-        if (!Arrays.equals(descriptor, other.descriptor))
-            return false;
-        if (!Arrays.equals(values, other.values))
-            return false;
+            if (other.clazz != null) return false;
+        } else if (!clazz.equals(other.clazz)) return false;
+        if (!Arrays.equals(descriptor, other.descriptor)) return false;
+        if (!Arrays.equals(values, other.values)) return false;
         return true;
     }
-
-    
-
 }

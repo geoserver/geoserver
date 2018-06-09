@@ -6,8 +6,9 @@
 package org.geoserver.feature;
 
 import static org.junit.Assert.*;
-import junit.framework.TestCase;
 
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -15,9 +16,6 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
-
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class ReprojectingFeatureCollectionTest {
 
@@ -37,22 +35,20 @@ public class ReprojectingFeatureCollectionTest {
         features.add(f);
 
         FeatureIterator it = features.features();
-        
+
         try {
             assertEquals("bar", it.next().getUserData().get("foo"));
-        }
-        finally {
+        } finally {
             it.close();
         }
 
-        ReprojectingFeatureCollection reprojected = 
+        ReprojectingFeatureCollection reprojected =
                 new ReprojectingFeatureCollection(features, CRS.decode("EPSG:3005"));
         it = reprojected.features();
-        
+
         try {
             assertEquals("bar", it.next().getUserData().get("foo"));
-        }
-        finally {
+        } finally {
             it.close();
         }
     }

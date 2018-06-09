@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * The GUI configuration for a vector layer. At the moment just the layer name is provided, but
  * there are plans to add filtering and attribute selection as well
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
@@ -45,5 +45,4 @@ class VectorLayerConfiguration implements Serializable {
     public void setFilter(String filter) {
         this.filter = filter;
     }
-
 }

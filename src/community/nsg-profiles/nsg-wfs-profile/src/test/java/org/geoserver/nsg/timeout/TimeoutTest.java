@@ -4,6 +4,11 @@
  */
 package org.geoserver.nsg.timeout;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -16,20 +21,15 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.servlets.ServiceStrategyFactory;
 import org.w3c.dom.Document;
 
-import java.io.ByteArrayInputStream;
-import java.util.List;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-
 public class TimeoutTest extends WFS20TestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        SimpleFeatureStore fs = (SimpleFeatureStore) getCatalog().getFeatureTypeByName
-                ("Fifteen").getFeatureSource(null, null);
+        SimpleFeatureStore fs =
+                (SimpleFeatureStore)
+                        getCatalog().getFeatureTypeByName("Fifteen").getFeatureSource(null, null);
         // double the number of features at each iteration to get a large amount of them, breaking
         // eventual output buffering in GML encoder. Size goes like this, 15, 30, 60, 120, 240, 480
         for (int i = 0; i < 5; i++) {
@@ -50,23 +50,25 @@ public class TimeoutTest extends WFS20TestSupport {
         setEncodeDelay(0, 0);
         // set the service strategy to fast, otherwise tests with small outputs will
         // be playing with buffering and get unexpected results
-        ServiceStrategyFactory serviceStrategyFactory = GeoServerExtensions.bean(ServiceStrategyFactory.class);
+        ServiceStrategyFactory serviceStrategyFactory =
+                GeoServerExtensions.bean(ServiceStrategyFactory.class);
         serviceStrategyFactory.setServiceStrategy("SPEED");
     }
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add("classpath:/org/geoserver/nsg/timeout/timeoutApplicationContext.xml");
+        springContextLocations.add(
+                "classpath:/org/geoserver/nsg/timeout/timeoutApplicationContext.xml");
     }
-
 
     @Test
     public void testNoTimeout() throws Exception {
         setTimeout(0);
 
         // no timeout happening
-        Document dom = getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
+        Document dom =
+                getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", dom);
         assertXpathEvaluatesTo("480", "count(//cdf:Fifteen)", dom);
     }
@@ -77,21 +79,22 @@ public class TimeoutTest extends WFS20TestSupport {
         setTimeout(1);
         setExecutionDelay(2);
 
-        Document dom = getAsDOM(
-                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
+        Document dom =
+                getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
         // print(dom);
         checkOws11Exception(dom, "2.0.0", TimeoutVerifier.TIMEOUT_EXCEPTION_CODE, "GetFeature");
     }
 
     @Test
     public void testTimeoutOnGMLEncodingStart() throws Exception {
-        // timeout in two, but delay three right away, so that streaming does not even start writing stuff out
+        // timeout in two, but delay three right away, so that streaming does not even start writing
+        // stuff out
         setTimeout(2);
         setExecutionDelay(0);
         setEncodeDelay(3, 0);
 
-        Document dom = getAsDOM(
-                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
+        Document dom =
+                getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
         // print(dom);
         checkOws11Exception(dom, "2.0.0", TimeoutVerifier.TIMEOUT_EXCEPTION_CODE, "GetFeature");
     }
@@ -102,8 +105,8 @@ public class TimeoutTest extends WFS20TestSupport {
         setExecutionDelay(0);
         setEncodeDelay(3, 400);
 
-        Document dom = getAsDOM(
-                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
+        Document dom =
+                getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
         // print(dom);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", dom);
         assertXpathEvaluatesTo("480", "count(//cdf:Fifteen)", dom);
@@ -117,8 +120,9 @@ public class TimeoutTest extends WFS20TestSupport {
         setExecutionDelay(0);
         setEncodeDelay(3, 14);
 
-        MockHttpServletResponse response = getAsServletResponse(
-                "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&outputFormat=SHAPE-ZIP");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&outputFormat=SHAPE-ZIP");
         assertEquals("application/xml", response.getContentType());
         // This one does not work due to a bug in MockHttpServletResponse, asking for header values
         // to be non null, while the javadoc does not make any such request
@@ -136,12 +140,14 @@ public class TimeoutTest extends WFS20TestSupport {
     }
 
     public void setExecutionDelay(int executionDelay) {
-        GetFeatureWaitOnExecuteCallback wait = GeoServerExtensions.bean(GetFeatureWaitOnExecuteCallback.class);
+        GetFeatureWaitOnExecuteCallback wait =
+                GeoServerExtensions.bean(GetFeatureWaitOnExecuteCallback.class);
         wait.delaySeconds = executionDelay;
     }
 
     public void setEncodeDelay(int encodingDelay, int afterFeatures) {
-        GetFeatureWaitOnEncodeCallback wait = GeoServerExtensions.bean(GetFeatureWaitOnEncodeCallback.class);
+        GetFeatureWaitOnEncodeCallback wait =
+                GeoServerExtensions.bean(GetFeatureWaitOnEncodeCallback.class);
         wait.delaySeconds = encodingDelay;
         wait.delayAfterFeatures = afterFeatures;
     }

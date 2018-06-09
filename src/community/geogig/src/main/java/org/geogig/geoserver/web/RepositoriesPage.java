@@ -10,9 +10,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.geogig.geoserver.web.repository.RepositoriesListPanel;
 import org.geoserver.web.GeoServerSecuredPage;
 
-/**
- * Add/edit/remove repositories
- */
+/** Add/edit/remove repositories */
 public class RepositoriesPage extends GeoServerSecuredPage {
 
     private final RepositoriesListPanel table;

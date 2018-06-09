@@ -4,21 +4,22 @@
  */
 package org.geoserver.wcs.responses;
 
-import org.geoserver.platform.ExtensionPriority;
-import org.geoserver.wcs2_0.response.GranuleStack;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.wcs2_0.response.GranuleStack;
 
-/**
- * Fallback factory encoding NetCDFs "as-is", without any coverage remapping
- */
+/** Fallback factory encoding NetCDFs "as-is", without any coverage remapping */
 public class DefaultNetCDFEncoderFactory implements NetCDFEncoderFactory, ExtensionPriority {
 
     @Override
-    public NetCDFEncoder getEncoderFor(GranuleStack granuleStack, File file, Map<String, String> encodingParameters,
-                                       String outputFormat) throws IOException {
+    public NetCDFEncoder getEncoderFor(
+            GranuleStack granuleStack,
+            File file,
+            Map<String, String> encodingParameters,
+            String outputFormat)
+            throws IOException {
         return new DefaultNetCDFEncoder(granuleStack, file, encodingParameters, outputFormat);
     }
 

@@ -38,5 +38,4 @@ public class ImportRepositoryFormBean {
     public void setPgBean(PostgresConfigBean pgBean) {
         this.pgBean = pgBean;
     }
-
 }

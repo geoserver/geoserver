@@ -10,7 +10,8 @@ import org.geoserver.inspire.ViewServicesTestSupport;
 
 public class WMTSExtendedCapabilitiesTest extends ViewServicesTestSupport {
 
-    private static final String WMTS_1_0_0_GETCAPREQUEST = "gwc/service/wmts?REQUEST=GetCapabilities";
+    private static final String WMTS_1_0_0_GETCAPREQUEST =
+            "gwc/service/wmts?REQUEST=GetCapabilities";
 
     @Override
     protected String getGetCapabilitiesRequestPath() {

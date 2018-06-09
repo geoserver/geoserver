@@ -9,9 +9,8 @@ import java.util.List;
 
 /**
  * A batch runs a number of tasks in a specific order.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface Batch extends SoftRemove, Serializable, Identifiable {
 
@@ -42,15 +41,16 @@ public interface Batch extends SoftRemove, Serializable, Identifiable {
     Configuration getConfiguration();
 
     void setConfiguration(Configuration configuration);
-    
+
     List<BatchRun> getBatchRuns();
-    
+
     default String getFullName() {
-        return getConfiguration() == null ? getName() : 
-            ((getConfiguration().getName() == null ? "" : 
-                getConfiguration().getName()) + FULL_NAME_DIVISOR + getName());
+        return getConfiguration() == null
+                ? getName()
+                : ((getConfiguration().getName() == null ? "" : getConfiguration().getName())
+                        + FULL_NAME_DIVISOR
+                        + getName());
     }
 
     BatchRun getLatestBatchRun();
-
 }

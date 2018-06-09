@@ -4,6 +4,9 @@
  */
 package org.geoserver.ows;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -19,9 +22,6 @@ import org.geotools.feature.NameImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class LocalWorkspaceCallbackTest extends GeoServerSystemTestSupport {
 

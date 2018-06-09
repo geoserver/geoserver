@@ -4,16 +4,12 @@
  */
 package org.geoserver.importer.rest;
 
+import java.io.File;
+import java.util.Arrays;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.importer.transform.PostScriptTransform;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
-import org.geoserver.platform.resource.Resource;
-import org.junit.Assume;
-
-import java.io.File;
-import java.util.Arrays;
 
 public class PostScriptTransformTest extends TransformTestSupport {
 

@@ -6,17 +6,17 @@ package org.geoserver.wps;
 
 /**
  * A specific exception class for unknown execution id
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class UnknownExecutionIdException extends WPSException {
     private static final long serialVersionUID = 3886845200543307484L;
 
     public UnknownExecutionIdException(String executionId) {
-        super("Unknown execution id " + executionId
-                + ", either the execution was never submitted, was dismissed, or too much time "
-                + "passed since the process completed");
+        super(
+                "Unknown execution id "
+                        + executionId
+                        + ", either the execution was never submitted, was dismissed, or too much time "
+                        + "passed since the process completed");
     }
-
 }

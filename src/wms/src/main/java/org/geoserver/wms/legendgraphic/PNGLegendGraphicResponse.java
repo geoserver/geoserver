@@ -10,14 +10,12 @@ import java.awt.image.DirectColorModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.media.jai.PlanarImage;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -26,7 +24,7 @@ import org.springframework.util.Assert;
 
 /**
  * OWS {@link Response} that encodes a {@link BufferedImageLegendGraphic} to the image/png MIME Type
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  */
@@ -37,15 +35,13 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
     }
 
     /**
-     * @param legend
-     *            a {@link BufferedImageLegendGraphic}
-     * @param output
-     *            png image destination
+     * @param legend a {@link BufferedImageLegendGraphic}
+     * @param output png image destination
      * @see GetLegendGraphicProducer#writeTo(java.io.OutputStream)
      */
     @Override
-    public void write(Object legend, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object legend, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
         BufferedImage image = ((BufferedImageLegendGraphic) legend).getLegend();
@@ -56,8 +52,10 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         // /////////////////////////////////////////////////////////////////
         final MemoryCacheImageOutputStream memOutStream = new MemoryCacheImageOutputStream(output);
         final ImageWorker worker = new ImageWorker(image);
-        final PlanarImage finalImage = (image.getColorModel() instanceof DirectColorModel) ? worker
-                .forceComponentColorModel().getPlanarImage() : worker.getPlanarImage();
+        final PlanarImage finalImage =
+                (image.getColorModel() instanceof DirectColorModel)
+                        ? worker.forceComponentColorModel().getPlanarImage()
+                        : worker.getPlanarImage();
 
         // /////////////////////////////////////////////////////////////////
         //
@@ -81,7 +79,8 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         // /////////////////////////////////////////////////////////////////
         final ImageWriteParam iwp = writer.getDefaultWriteParam();
 
-        if (writer.getClass().getName()
+        if (writer.getClass()
+                .getName()
                 .equals("com.sun.media.imageioimpl.plugins.png.CLibPNGImageWriter")) {
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 
@@ -104,5 +103,4 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, value);
         return PNGLegendOutputFormat.MIME_TYPE;
     }
-
 }

@@ -4,16 +4,16 @@
  */
 package org.geoserver.catalog;
 
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geotools.util.DateRange;
 import org.geotools.util.Range;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-
 /**
- * Represents the parsed acceptable range. For elevation it's simple numbers, for dates it's a number of milliseconds.
+ * Represents the parsed acceptable range. For elevation it's simple numbers, for dates it's a
+ * number of milliseconds.
  */
 public class AcceptableRange {
 
@@ -24,15 +24,17 @@ public class AcceptableRange {
      * @param dataType The target data type (e.g. {@link Date}
      * @return An {@link AcceptableRange} object, or null if the spec was null or empty
      */
-    public static AcceptableRange getAcceptableRange(String spec, Class dataType) throws ParseException {
+    public static AcceptableRange getAcceptableRange(String spec, Class dataType)
+            throws ParseException {
         if (spec == null || spec.trim().isEmpty()) {
             return null;
         }
 
         String[] split = spec.split("/");
         if (split.length > 2) {
-            throw new IllegalArgumentException("Invalid acceptable range specification, must be either a single " +
-                    "value, or two values split by a forward slash");
+            throw new IllegalArgumentException(
+                    "Invalid acceptable range specification, must be either a single "
+                            + "value, or two values split by a forward slash");
         }
         Number before = parseValue(split[0], dataType);
         Number after = before;
@@ -71,9 +73,8 @@ public class AcceptableRange {
             Range after = getSearchRangeOnSingleValue(range.getMaxValue());
             return before.union(after);
         } else {
-            return getSearchRangeOnSingleValue(value);    
+            return getSearchRangeOnSingleValue(value);
         }
-        
     }
 
     public Range getSearchRangeOnSingleValue(Object value) {
@@ -87,13 +88,14 @@ public class AcceptableRange {
             cal.setTimeInMillis(cal.getTimeInMillis() + after.longValue());
             Date max = cal.getTime();
             return new DateRange(min, max);
-        } 
+        }
         // TODO: add support for Number, e.g., elevation
-        throw new IllegalArgumentException("Unsupported value type " + dataType); 
+        throw new IllegalArgumentException("Unsupported value type " + dataType);
     }
 
     /**
      * Before offset
+     *
      * @return
      */
     public Number getBefore() {
@@ -102,6 +104,7 @@ public class AcceptableRange {
 
     /**
      * After offset
+     *
      * @return
      */
     public Number getAfter() {
@@ -110,6 +113,7 @@ public class AcceptableRange {
 
     /**
      * The range data type
+     *
      * @return
      */
     public Class getDataType() {

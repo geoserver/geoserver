@@ -5,9 +5,9 @@
  */
 package org.geoserver.cluster.impl.handlers.configuration;
 
+import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
 import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent;
@@ -15,13 +15,9 @@ import org.geoserver.cluster.impl.utils.BeanUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
- * 
  * @see {@link JMSServiceHandlerSPI}
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
  */
 public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyEvent> {
     private final GeoServer geoServer;
@@ -57,8 +53,10 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
                     geoServer.save(localObject);
                     break;
                 case ADDED:
-                    // checking that this service is not already present, we don't synchronize this check
-                    // if two threads add the same service well one of them will fail and throw an exception
+                    // checking that this service is not already present, we don't synchronize this
+                    // check
+                    // if two threads add the same service well one of them will fail and throw an
+                    // exception
                     // this event may be generated for a service that already exists
                     if (geoServer.getService(ev.getSource().getId(), ServiceInfo.class) == null) {
                         // this is a new service so let's add it to this GeoServer instance
@@ -72,19 +70,19 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: "
-                        + ev);
+                LOGGER.severe(
+                        this.getClass() + " is unable to synchronize the incoming event: " + ev);
             throw e;
         } finally {
             producer.enable();
         }
         return true;
-
     }
 
     /**
-     * Starting from an incoming de-serialized ServiceInfo modify event, search for it (by name) into local geoserver and update changed members.
-     * 
+     * Starting from an incoming de-serialized ServiceInfo modify event, search for it (by name)
+     * into local geoserver and update changed members.
+     *
      * @param geoServer local GeoServer instance
      * @param ev the incoming event
      * @return the localized and updated ServiceInfo to save
@@ -92,9 +90,9 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
      * @throws InvocationTargetException
      * @throws NoSuchMethodException
      */
-    private static ServiceInfo localizeService(final GeoServer geoServer,
-            final JMSServiceModifyEvent ev) throws IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException {
+    private static ServiceInfo localizeService(
+            final GeoServer geoServer, final JMSServiceModifyEvent ev)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (geoServer == null || ev == null)
             throw new IllegalArgumentException("wrong passed arguments are null");
 
@@ -109,14 +107,14 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
     }
 
     /**
-     * get local object searching by name if name is changed (remotely), search is performed using the old one
-     * 
+     * get local object searching by name if name is changed (remotely), search is performed using
+     * the old one
+     *
      * @param geoServer
      * @param ev
-     *
      */
-    public static ServiceInfo getLocalService(final GeoServer geoServer,
-            final JMSServiceModifyEvent ev) {
+    public static ServiceInfo getLocalService(
+            final GeoServer geoServer, final JMSServiceModifyEvent ev) {
 
         final ServiceInfo service = ev.getSource();
         if (service == null) {
@@ -142,5 +140,4 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
         // globals service
         return geoServer.getServiceByName(service.getWorkspace(), serviceName, ServiceInfo.class);
     }
-
 }

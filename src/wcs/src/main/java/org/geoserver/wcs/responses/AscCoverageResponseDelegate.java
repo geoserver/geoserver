@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
@@ -20,14 +19,16 @@ import org.geotools.gce.arcgrid.ArcGridWriter;
 
 /**
  * {@link CoverageResponseDelegate} implementation for Ascii Grids
- * 
+ *
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
+public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
+        implements CoverageResponseDelegate {
 
     public static final String ARCGRID_COVERAGE_FORMAT = "ARCGRID";
-    public static final String ARCGRID_COMPRESSED_COVERAGE_FORMAT = ARCGRID_COVERAGE_FORMAT + "-GZIP";
+    public static final String ARCGRID_COMPRESSED_COVERAGE_FORMAT =
+            ARCGRID_COVERAGE_FORMAT + "-GZIP";
     private static final String ARCGRID_MIME_TYPE = "text/plain";
     private static final String ARCGRID_COMPRESSED_MIME_TYPE = "application/x-gzip";
     private static final String ARCGRID_FILE_EXTENSION = "asc";
@@ -37,8 +38,12 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
     public AscCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList(ARCGRID_COVERAGE_FORMAT, ARCGRID_COMPRESSED_COVERAGE_FORMAT, "ArcGrid","ArcGrid-GZIP"), //output formats
-                new HashMap<String, String>(){ // file extensions
+                Arrays.asList(
+                        ARCGRID_COVERAGE_FORMAT,
+                        ARCGRID_COMPRESSED_COVERAGE_FORMAT,
+                        "ArcGrid",
+                        "ArcGrid-GZIP"), // output formats
+                new HashMap<String, String>() { // file extensions
                     {
                         put("ArcGrid", ARCGRID_FILE_EXTENSION);
                         put("ArcGrid-GZIP", ARCGRID_COMPRESSED_FILE_EXTENSION);
@@ -48,7 +53,7 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
                         put(ARCGRID_COMPRESSED_COVERAGE_FORMAT, ARCGRID_COMPRESSED_FILE_EXTENSION);
                     }
                 },
-                new HashMap<String, String>(){ //mime types
+                new HashMap<String, String>() { // mime types
                     {
                         put("ArcGrid", ARCGRID_MIME_TYPE);
                         put("ArcGrid-GZIP", ARCGRID_COMPRESSED_MIME_TYPE);
@@ -64,11 +69,17 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
                 || ARCGRID_COMPRESSED_MIME_TYPE.equals(outputFormat);
     }
 
-    public void encode(GridCoverage2D sourceCoverage, String outputFormat,  Map<String,String> econdingParameters,OutputStream output) throws ServiceException, IOException {
+    public void encode(
+            GridCoverage2D sourceCoverage,
+            String outputFormat,
+            Map<String, String> econdingParameters,
+            OutputStream output)
+            throws ServiceException, IOException {
         if (sourceCoverage == null) {
-            throw new IllegalStateException(new StringBuffer(
-                    "It seems prepare() has not been called").append(" or has not succeeded")
-                    .toString());
+            throw new IllegalStateException(
+                    new StringBuffer("It seems prepare() has not been called")
+                            .append(" or has not succeeded")
+                            .toString());
         }
 
         GZIPOutputStream gzipOut = null;
@@ -77,7 +88,7 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
             output = gzipOut;
         }
 
-        ArcGridWriter writer=null;
+        ArcGridWriter writer = null;
         try {
             writer = new ArcGridWriter(output);
             writer.write(sourceCoverage, null);
@@ -87,18 +98,15 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
                 gzipOut.flush();
             }
 
+        } finally {
+            try {
+                if (writer != null) writer.dispose();
+            } catch (Throwable e) {
+                // eating exception
+            }
+            if (gzipOut != null) IOUtils.closeQuietly(gzipOut);
 
-        }finally {
-        	try{
-        	if(writer!=null)
-        		writer.dispose();
-        	}catch (Throwable e) {
-				// eating exception
-			}
-        	if(gzipOut!=null)
-        		IOUtils.closeQuietly(gzipOut);
-        	
             sourceCoverage.dispose(true);
-		}
+        }
     }
 }

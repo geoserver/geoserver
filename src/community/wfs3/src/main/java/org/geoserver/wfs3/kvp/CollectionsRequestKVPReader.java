@@ -4,15 +4,12 @@
  */
 package org.geoserver.wfs3.kvp;
 
-import org.geoserver.wfs3.CollectionsRequest;
-
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Map;
+import javax.xml.namespace.QName;
+import org.geoserver.wfs3.CollectionsRequest;
 
-/**
- * Parses a "content" request
- */
+/** Parses a "content" request */
 public class CollectionsRequestKVPReader extends BaseKvpRequestReader {
 
     public CollectionsRequestKVPReader() {
@@ -20,7 +17,6 @@ public class CollectionsRequestKVPReader extends BaseKvpRequestReader {
     }
 
     @Override
-    
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         CollectionsRequest cr = (CollectionsRequest) super.read(request, kvp, rawKvp);
         Object objTypeName = kvp.get("TYPENAME");
@@ -28,7 +24,7 @@ public class CollectionsRequestKVPReader extends BaseKvpRequestReader {
             QName name = (QName) ((ArrayList) objTypeName).get(0);
             cr.setTypeName(name);
         }
-        
+
         return cr;
     }
 }

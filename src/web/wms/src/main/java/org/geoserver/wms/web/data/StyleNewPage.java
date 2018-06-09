@@ -17,9 +17,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.Version;
 
-/**
- * Allows for editing a new style, includes file upload
- */
+/** Allows for editing a new style, includes file upload */
 public class StyleNewPage extends AbstractStylePage {
 
     private static final long serialVersionUID = -6137191207739266238L;
@@ -34,9 +32,9 @@ public class StyleNewPage extends AbstractStylePage {
         super.initUI(style);
 
         if (!isAuthenticatedAsAdmin()) {
-            //initialize the workspace drop down
-            //default to first available workspace
-            List<WorkspaceInfo> ws = getCatalog().getWorkspaces(); 
+            // initialize the workspace drop down
+            // default to first available workspace
+            List<WorkspaceInfo> ws = getCatalog().getWorkspaces();
             if (!ws.isEmpty()) {
                 styleModel.getObject().setWorkspace(ws.get(0));
             }
@@ -48,10 +46,10 @@ public class StyleNewPage extends AbstractStylePage {
         // add the style
         Catalog catalog = getCatalog();
         StyleInfo model = styleForm.getModelObject();
-        //Duplicate the model style so that values are preserved as models are detached
+        // Duplicate the model style so that values are preserved as models are detached
         StyleInfo s = catalog.getFactory().createStyle();
         CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.updateStyle(s,  model);
+        builder.updateStyle(s, model);
 
         StyleHandler styleHandler = styleHandler();
 
@@ -66,21 +64,20 @@ public class StyleNewPage extends AbstractStylePage {
         try {
             if (s.getFilename() == null) {
                 // TODO: check that this does not override any existing files
-                s.setFilename(s.getName() + "."+styleHandler.getFileExtension());
+                s.setFilename(s.getName() + "." + styleHandler.getFileExtension());
             }
-            catalog.getResourcePool().writeStyle(s,
-                    new ByteArrayInputStream(rawStyle.getBytes()));
+            catalog.getResourcePool().writeStyle(s, new ByteArrayInputStream(rawStyle.getBytes()));
         } catch (IOException e) {
             throw new WicketRuntimeException(e);
         }
-        
+
         // store in the catalog
         try {
             Version version = styleHandler.version(rawStyle);
             s.setFormatVersion(version);
             catalog.add(s);
             styleForm.info("Style saved");
-            
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             error(e.getMessage());

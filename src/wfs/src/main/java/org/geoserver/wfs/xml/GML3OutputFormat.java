@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.ErrorListener;
@@ -38,9 +37,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import net.opengis.wfs.FeatureCollectionType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -69,25 +66,27 @@ import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 
 public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
-    
-    /**
-     * Enables the optimized encoders
-     */
-    public static final boolean OPTIMIZED_ENCODING = Boolean.parseBoolean(System.getProperty(
-            "GML_OPTIMIZED_ENCODING", "true"));
+
+    /** Enables the optimized encoders */
+    public static final boolean OPTIMIZED_ENCODING =
+            Boolean.parseBoolean(System.getProperty("GML_OPTIMIZED_ENCODING", "true"));
 
     GeoServer geoServer;
     Catalog catalog;
     WFSConfiguration configuration;
     protected static DOMSource xslt;
-    
+
     static {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument = docFactory.newDocumentBuilder().parse(
-                    GML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature.xslt"));
+            xsdDocument =
+                    docFactory
+                            .newDocumentBuilder()
+                            .parse(
+                                    GML3OutputFormat.class.getResourceAsStream(
+                                            "/ChangeNumberOfFeature.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {
             xslt = null;
@@ -96,28 +95,32 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     public GML3OutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
-        this(new HashSet(Arrays.asList(new Object[] {"gml3", "text/xml; subtype=gml/3.1.1"})), 
-            geoServer, configuration);
+        this(
+                new HashSet(Arrays.asList(new Object[] {"gml3", "text/xml; subtype=gml/3.1.1"})),
+                geoServer,
+                configuration);
     }
-    
-    public GML3OutputFormat(Set<String> outputFormats, GeoServer geoServer, WFSConfiguration configuration) {
+
+    public GML3OutputFormat(
+            Set<String> outputFormats, GeoServer geoServer, WFSConfiguration configuration) {
         super(geoServer, outputFormats);
 
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
-        
+
         this.configuration = configuration;
     }
 
     public String getMimeType(Object value, Operation operation) {
         return "text/xml; subtype=gml/3.1.1";
     }
-    
+
     public String getCapabilitiesElementName() {
         return "GML3";
     }
 
-    protected void write(FeatureCollectionResponse results, OutputStream output, Operation getFeature)
+    protected void write(
+            FeatureCollectionResponse results, OutputStream output, Operation getFeature)
             throws ServiceException, IOException, UnsupportedEncodingException {
         List featureCollections = results.getFeature();
 
@@ -128,24 +131,29 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         // round up the info objects for each feature collection
         HashMap<String, Set<ResourceInfo>> ns2metas = new HashMap<String, Set<ResourceInfo>>();
         for (int fcIndex = 0; fcIndex < featureCollections.size(); fcIndex++) {
-            if(request != null) {
+            if (request != null) {
                 List<Query> queries = request.getQueries();
                 Query queryType = queries.get(fcIndex);
-                
+
                 // may have multiple type names in each query, so add them all
                 for (QName name : queryType.getTypeNames()) {
                     // get a feature type name from the query
-                    Name featureTypeName = new NameImpl(name.getNamespaceURI(), name.getLocalPart());
-                    ResourceInfo meta = catalog.getResourceByName(featureTypeName, ResourceInfo.class);
-                    
+                    Name featureTypeName =
+                            new NameImpl(name.getNamespaceURI(), name.getLocalPart());
+                    ResourceInfo meta =
+                            catalog.getResourceByName(featureTypeName, ResourceInfo.class);
+
                     if (meta == null) {
-                        throw new WFSException(request, "Could not find feature type " + featureTypeName
-                                + " in the GeoServer catalog");
+                        throw new WFSException(
+                                request,
+                                "Could not find feature type "
+                                        + featureTypeName
+                                        + " in the GeoServer catalog");
                     }
-                    
+
                     // add it to the map
                     Set<ResourceInfo> metas = ns2metas.get(featureTypeName.getNamespaceURI());
-                    
+
                     if (metas == null) {
                         metas = new HashSet<ResourceInfo>();
                         ns2metas.put(featureTypeName.getNamespaceURI(), metas);
@@ -153,17 +161,21 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                     metas.add(meta);
                 }
             } else {
-                FeatureType featureType = ((FeatureCollection) featureCollections.get(fcIndex)).getSchema();
+                FeatureType featureType =
+                        ((FeatureCollection) featureCollections.get(fcIndex)).getSchema();
 
-                //load the metadata for the feature type
+                // load the metadata for the feature type
                 String namespaceURI = featureType.getName().getNamespaceURI();
                 FeatureTypeInfo meta = catalog.getFeatureTypeByName(featureType.getName());
-                
-                if(meta == null)
-                    throw new WFSException(request, "Could not find feature type " + 
-                        featureType.getName() + " in the GeoServer catalog");
 
-                //add it to the map
+                if (meta == null)
+                    throw new WFSException(
+                            request,
+                            "Could not find feature type "
+                                    + featureType.getName()
+                                    + " in the GeoServer catalog");
+
+                // add it to the map
                 Set metas = ns2metas.get(namespaceURI);
 
                 if (metas == null) {
@@ -176,22 +188,20 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         }
 
         WFSInfo wfs = getInfo();
-        
-        //set feature bounding parameter
-        //JD: this is quite bad as its not at all thread-safe, once we remove the configuration
+
+        // set feature bounding parameter
+        // JD: this is quite bad as its not at all thread-safe, once we remove the configuration
         // as being a singleton on trunk/2.0.x this should not be an issue
-        if ( wfs.isFeatureBounding() ) {
-            configuration.getProperties().remove( GMLConfiguration.NO_FEATURE_BOUNDS );
-        }
-        else {
-            configuration.getProperties().add( GMLConfiguration.NO_FEATURE_BOUNDS);
+        if (wfs.isFeatureBounding()) {
+            configuration.getProperties().remove(GMLConfiguration.NO_FEATURE_BOUNDS);
+        } else {
+            configuration.getProperties().add(GMLConfiguration.NO_FEATURE_BOUNDS);
         }
 
         if (wfs.isCiteCompliant()) {
-            //cite compliance forces us to forgo srsDimension attribute
+            // cite compliance forces us to forgo srsDimension attribute
             configuration.getProperties().add(GMLConfiguration.NO_SRS_DIMENSION);
-        }
-        else {
+        } else {
             configuration.getProperties().remove(GMLConfiguration.NO_SRS_DIMENSION);
         }
 
@@ -201,28 +211,28 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             configuration.getProperties().remove(GMLConfiguration.OPTIMIZED_ENCODING);
         }
 
-
-        //set up the srsname syntax
-        configuration.setSrsSyntax(wfs.getGML().get(WFSInfo.Version.V_11).getSrsNameStyle().toSrsSyntax());
+        // set up the srsname syntax
+        configuration.setSrsSyntax(
+                wfs.getGML().get(WFSInfo.Version.V_11).getSrsNameStyle().toSrsSyntax());
 
         /*
          * Set property encoding featureMemeber as opposed to featureMembers
-         * 
+         *
          */
         if (wfs.isEncodeFeatureMember()) {
             configuration.getProperties().add(GMLConfiguration.ENCODE_FEATURE_MEMBER);
         } else {
             configuration.getProperties().remove(GMLConfiguration.ENCODE_FEATURE_MEMBER);
         }
-        
-        //declare wfs schema location
+
+        // declare wfs schema location
         Object gft = getFeature.getParameters()[0];
 
         Configuration configuration = customizeConfiguration(this.configuration, ns2metas, gft);
         setNumDecimals(configuration, numDecimals);
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
 
-        encoder.setEncoding(Charset.forName( geoServer.getSettings().getCharset() ));
+        encoder.setEncoding(Charset.forName(geoServer.getSettings().getCharset()));
         Request dispatcherRequest = Dispatcher.REQUEST.get();
         if (dispatcherRequest != null) {
             encoder.setOmitXMLDeclaration(dispatcherRequest.isSOAP());
@@ -231,24 +241,31 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         if (wfs.isCanonicalSchemaLocation()) {
             encoder.setSchemaLocation(getWfsNamespace(), getCanonicalWfsSchemaLocation());
         } else {
-            encoder.setSchemaLocation(getWfsNamespace(),
+            encoder.setSchemaLocation(
+                    getWfsNamespace(),
                     buildSchemaURL(request.getBaseURL(), getRelativeWfsSchemaLocation()));
         }
 
-        //declare application schema namespaces
-        
-        Map<String, String> params = params("service", "WFS", "version", request.getVersion(), 
-                "request", "DescribeFeatureType");
-        for (Iterator i = ns2metas.entrySet().iterator(); i.hasNext();) {
+        // declare application schema namespaces
+
+        Map<String, String> params =
+                params(
+                        "service",
+                        "WFS",
+                        "version",
+                        request.getVersion(),
+                        "request",
+                        "DescribeFeatureType");
+        for (Iterator i = ns2metas.entrySet().iterator(); i.hasNext(); ) {
             Map.Entry entry = (Map.Entry) i.next();
 
             String namespaceURI = (String) entry.getKey();
             Set metas = (Set) entry.getValue();
 
             StringBuffer typeNames = new StringBuffer();
-            for (Iterator m = metas.iterator(); m.hasNext();) {
+            for (Iterator m = metas.iterator(); m.hasNext(); ) {
                 ResourceInfo ri = (ResourceInfo) m.next();
-                if(ri instanceof FeatureTypeInfo) {
+                if (ri instanceof FeatureTypeInfo) {
                     FeatureTypeInfo meta = (FeatureTypeInfo) ri;
                     FeatureType featureType = meta.getFeatureType();
                     Object userSchemaLocation = featureType.getUserData().get("schemaURI");
@@ -264,17 +281,21 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                         }
                     }
                 } else {
-                    encoder.getNamespaces().declarePrefix(ri.getStore().getWorkspace().getName(),
-                            namespaceURI);
+                    encoder.getNamespaces()
+                            .declarePrefix(ri.getStore().getWorkspace().getName(), namespaceURI);
                 }
             }
 
             if (typeNames.length() > 0) {
                 params.put("typeName", typeNames.toString());
                 // set the made up schema location for types not provided by the user
-                String schemaLocation = buildURL(request.getBaseURL(), "wfs", params, URLType.SERVICE);
-                LOGGER.finer("Unable to find user-defined schema location for: " + namespaceURI
-                        + ". Using a built schema location by default: " + schemaLocation);
+                String schemaLocation =
+                        buildURL(request.getBaseURL(), "wfs", params, URLType.SERVICE);
+                LOGGER.finer(
+                        "Unable to find user-defined schema location for: "
+                                + namespaceURI
+                                + ". Using a built schema location by default: "
+                                + schemaLocation);
                 encoder.setSchemaLocation(namespaceURI, schemaLocation);
             }
         }
@@ -285,9 +306,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         } else {
             encode(results, output, encoder);
         }
-        
     }
-    
+
     protected void setNumDecimals(Configuration configuration, int numDecimals) {
         GMLConfiguration gml = configuration.getDependency(GMLConfiguration.class);
         if (gml != null) {
@@ -295,12 +315,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
-    protected Configuration customizeConfiguration(Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
+    protected Configuration customizeConfiguration(
+            Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
         return configuration;
     }
 
-    protected Encoder createEncoder(Configuration configuration,
-                                    Map<String, Set<ResourceInfo>> resources, Object request ) {
+    protected Encoder createEncoder(
+            Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
         // reuse the WFS configuration feature builder, otherwise build a new one
         FeatureTypeSchemaBuilder schemaBuilder;
         if (configuration instanceof WFSConfiguration) {
@@ -325,22 +346,26 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
-    protected void setAdditionalSchemaLocations(Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
-        //hook for subclasses
+    protected void setAdditionalSchemaLocations(
+            Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
+        // hook for subclasses
     }
-    
+
     protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
-        throws IOException {
-        encoder.encode(results.unadapt(FeatureCollectionType.class),
-                org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+            throws IOException {
+        encoder.encode(
+                results.unadapt(FeatureCollectionType.class),
+                org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION,
+                output);
     }
-    
+
     protected DOMSource getXSLT() {
         return GML3OutputFormat.xslt;
     }
 
-    private void complexFeatureStreamIntercept(FeatureCollectionResponse results, OutputStream output,
-            Encoder encoder) throws IOException {
+    private void complexFeatureStreamIntercept(
+            FeatureCollectionResponse results, OutputStream output, Encoder encoder)
+            throws IOException {
         if (this.getXSLT() == null) {
             throw new FileNotFoundException("Unable to locate xslt resource file");
         }
@@ -357,22 +382,22 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             encode(results, out, encoder);
             this.transform(in, this.getXSLT(), output);
         } catch (TransformerException e) {
-            throw (IOException) new IOException(e.getMessage()).initCause(e);           
+            throw (IOException) new IOException(e.getMessage()).initCause(e);
         } finally {
             out.close();
             in.close();
             featureOut.delete();
         }
     }
-    
+
     protected String getWfsNamespace() {
         return org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE;
     }
-    
+
     protected String getCanonicalWfsSchemaLocation() {
         return WFS.CANONICAL_SCHEMA_LOCATION;
     }
-    
+
     protected String getRelativeWfsSchemaLocation() {
         return "wfs/1.1.0/wfs.xsd";
     }
@@ -391,8 +416,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     public void transform(InputStream in, DOMSource xslt, OutputStream out)
             throws TransformerException {
         TransformerFactory factory = TransformerFactory.newInstance();
-        Transformer transformer = (xslt == null ? factory.newTransformer() : factory
-                .newTransformer(xslt));
+        Transformer transformer =
+                (xslt == null ? factory.newTransformer() : factory.newTransformer(xslt));
         transformer.setErrorListener(new TransformerErrorListener());
         transformer.transform(new StreamSource(in), new StreamResult(out));
     }
@@ -407,12 +432,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
 
         public void fatalError(TransformerException exception) throws TransformerException {
             throw exception;
-
         }
 
         public void warning(TransformerException exception) throws TransformerException {
             throw exception;
         }
-
     }
 }

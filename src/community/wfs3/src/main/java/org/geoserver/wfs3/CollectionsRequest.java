@@ -4,13 +4,9 @@
  */
 package org.geoserver.wfs3;
 
-import org.geotools.xml.xsi.XSISimpleTypes;
-
 import javax.xml.namespace.QName;
 
-/**
- * Request for the server contents
- */
+/** Request for the server contents */
 public class CollectionsRequest extends BaseRequest {
 
     QName typeName;
@@ -22,5 +18,4 @@ public class CollectionsRequest extends BaseRequest {
     public void setTypeName(QName typeName) {
         this.typeName = typeName;
     }
-    
 }

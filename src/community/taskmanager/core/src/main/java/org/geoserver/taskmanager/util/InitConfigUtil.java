@@ -7,7 +7,6 @@ package org.geoserver.taskmanager.util;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
@@ -18,20 +17,14 @@ import org.geoserver.taskmanager.data.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-/**
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 @Service
 public class InitConfigUtil {
-    
-    @Autowired
-    TaskManagerDataUtil dataUtil;
-    
+
+    @Autowired TaskManagerDataUtil dataUtil;
+
     private static final String INIT_BATCH = "@Initialize";
-    
+
     public boolean isInitConfig(Configuration config) {
         if (config.isTemplate()) {
             return false;
@@ -51,7 +44,7 @@ public class InitConfigUtil {
             return false;
         }
     }
-    
+
     public static Configuration wrap(Configuration config) {
         if (!(config instanceof ConfigurationWrapper)) {
             return new ConfigurationWrapper(config);
@@ -67,21 +60,21 @@ public class InitConfigUtil {
             return config;
         }
     }
-    
+
     public static Batch getInitBatch(Configuration config) {
         return config.getBatches().get(INIT_BATCH);
     }
-    
+
     private static class ConfigurationWrapper implements Configuration {
-        
+
         private static final long serialVersionUID = 8073599284694547987L;
-        
+
         private Configuration delegate;
-        
+
         public ConfigurationWrapper(Configuration delegate) {
             this.delegate = delegate;
         }
-        
+
         public Configuration getDelegate() {
             return delegate;
         }
@@ -143,7 +136,7 @@ public class InitConfigUtil {
 
         @Override
         public void setDescription(String name) {
-            delegate.setDescription(name); 
+            delegate.setDescription(name);
         }
 
         @Override
@@ -164,7 +157,7 @@ public class InitConfigUtil {
                 for (BatchElement element : batch.getElements()) {
                     tasks.put(element.getTask().getName(), element.getTask());
                 }
-            }        
+            }
             return Collections.unmodifiableMap(tasks);
         }
 
@@ -173,9 +166,8 @@ public class InitConfigUtil {
             Batch batch = getInitBatch(delegate);
             if (batch != null) {
                 return Collections.singletonMap(batch.getName(), batch);
-            }        
+            }
             return Collections.emptyMap();
         }
     }
-
 }

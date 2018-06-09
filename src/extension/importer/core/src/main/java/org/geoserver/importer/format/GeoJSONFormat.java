@@ -5,6 +5,9 @@
  */
 package org.geoserver.importer.format;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,17 +16,22 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.importer.Directory;
+import org.geoserver.importer.FileData;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.VectorFormat;
+import org.geoserver.importer.job.ProgressMonitor;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -31,22 +39,12 @@ import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.Directory;
-import org.geoserver.importer.FileData;
-import org.geoserver.importer.ImportData;
-import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.VectorFormat;
-import org.geoserver.importer.job.ProgressMonitor;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 
 public class GeoJSONFormat extends VectorFormat {
 
@@ -56,7 +54,7 @@ public class GeoJSONFormat extends VectorFormat {
     @Override
     public FeatureReader read(ImportData data, ImportTask item) throws IOException {
         final SimpleFeatureType featureType =
-            (SimpleFeatureType) item.getMetadata().get(FeatureType.class);
+                (SimpleFeatureType) item.getMetadata().get(FeatureType.class);
         FeatureJSON json = new FeatureJSON();
         json.setFeatureType(featureType);
         final FeatureIterator it = json.streamFeatureCollection(file(data, item));
@@ -74,8 +72,8 @@ public class GeoJSONFormat extends VectorFormat {
             }
 
             @Override
-            public Feature next() throws IOException, IllegalArgumentException,
-                    NoSuchElementException {
+            public Feature next()
+                    throws IOException, IllegalArgumentException, NoSuchElementException {
                 return it.next();
             }
 
@@ -90,17 +88,17 @@ public class GeoJSONFormat extends VectorFormat {
     public void dispose(FeatureReader reader, ImportTask item) throws IOException {
         reader.close();
     }
-    
+
     @Override
     public int getFeatureCount(ImportData data, ImportTask item) throws IOException {
         return -1;
     }
-    
+
     @Override
     public String getName() {
         return "GeoJSON";
     }
-    
+
     @Override
     public boolean canRead(ImportData data) throws IOException {
         Optional<File> file = maybeFile(data);
@@ -118,8 +116,7 @@ public class GeoJSONFormat extends VectorFormat {
                 if (it.hasNext()) {
                     return (SimpleFeature) it.next();
                 }
-            }
-            finally {
+            } finally {
                 it.close();
             }
         } catch (Exception e) {
@@ -129,24 +126,23 @@ public class GeoJSONFormat extends VectorFormat {
     }
 
     @Override
-    public StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) 
-        throws IOException {
+    public StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
+            throws IOException {
         // direct import not supported
         return null;
     }
-    
+
     @Override
-    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) 
-        throws IOException {
+    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
+            throws IOException {
 
         if (data instanceof Directory) {
             List<ImportTask> tasks = new ArrayList<ImportTask>();
-            for (FileData file : ((Directory)data).getFiles()) {
+            for (FileData file : ((Directory) data).getFiles()) {
                 tasks.add(task(file, catalog));
             }
             return tasks;
-        }
-        else {
+        } else {
             return Arrays.asList(task(data, catalog));
         }
     }
@@ -185,8 +181,7 @@ public class GeoJSONFormat extends VectorFormat {
         }
         try {
             crs = crs != null ? crs : CRS.decode("EPSG:4326");
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
 
@@ -214,15 +209,17 @@ public class GeoJSONFormat extends VectorFormat {
 
     File file(ImportData data, final ImportTask item) {
         if (data instanceof Directory) {
-            return Iterables.find(((Directory) data).getFiles(), new Predicate<FileData>() {
-                @Override
-                public boolean apply(FileData input) {
-                    return FilenameUtils.getBaseName(input.getFile().getName())
-                        .equals(item.getLayer().getName());
-                }
-            }).getFile();
-        }
-        else {
+            return Iterables.find(
+                            ((Directory) data).getFiles(),
+                            new Predicate<FileData>() {
+                                @Override
+                                public boolean apply(FileData input) {
+                                    return FilenameUtils.getBaseName(input.getFile().getName())
+                                            .equals(item.getLayer().getName());
+                                }
+                            })
+                    .getFile();
+        } else {
             return maybeFile(data).get();
         }
     }
@@ -236,14 +233,13 @@ public class GeoJSONFormat extends VectorFormat {
 
     String srs(CoordinateReferenceSystem crs) {
         Integer epsg = null;
-        
+
         try {
             epsg = CRS.lookupEpsgCode(crs, false);
             if (epsg == null) {
                 epsg = CRS.lookupEpsgCode(crs, true);
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             LOG.log(Level.FINER, "Error looking up epsg code", e);
         }
         return epsg != null ? "EPSG:" + epsg : null;

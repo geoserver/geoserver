@@ -5,7 +5,6 @@
 package org.geoserver.security.onelogin;
 
 import java.util.List;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerAuthenticationProvider;
@@ -24,11 +23,9 @@ import org.springframework.security.saml.SAMLProcessingFilter;
 
 /**
  * Security provider for OneLogin
- * 
- * @author Xandros
  *
+ * @author Xandros
  */
-
 public class OneloginSecurityProvider extends AbstractFilterProvider
         implements SecurityManagerListener {
 
@@ -42,9 +39,7 @@ public class OneloginSecurityProvider extends AbstractFilterProvider
         securityManager.addListener(this);
     }
 
-    /**
-     * Adds {@link #SAMLAuthenticationProvider} as {@link #AuthenticationProvider}
-     */
+    /** Adds {@link #SAMLAuthenticationProvider} as {@link #AuthenticationProvider} */
     @Override
     public void handlePostChanged(GeoServerSecurityManager securityManager) {
         List<GeoServerAuthenticationProvider> aps = securityManager.getAuthenticationProviders();
@@ -71,35 +66,36 @@ public class OneloginSecurityProvider extends AbstractFilterProvider
 
     /**
      * Configures filter chain for:
+     *
      * <ul>
-     * <li>IDP login callback for URL: <code>/saml/SSO</code> to {@link #SAMLProcessingFilter}</li>
-     * <li>IDP single logout callback for URL: <code>/saml/SingleLogout</code> to {@link #SAMLLogoutProcessingFilter}</li>
-     * <li>IDP logout callback for URL: <code>/saml/logout</code> to {@link #SAMLLogoutFilter}</li>
+     *   <li>IDP login callback for URL: <code>/saml/SSO</code> to {@link #SAMLProcessingFilter}
+     *   <li>IDP single logout callback for URL: <code>/saml/SingleLogout</code> to {@link
+     *       #SAMLLogoutProcessingFilter}
+     *   <li>IDP logout callback for URL: <code>/saml/logout</code> to {@link #SAMLLogoutFilter}
      * </ul>
      */
     @Override
     public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {
         if (filterChain.getRequestChainByName("samlSSOChain") == null) {
-            RequestFilterChain samlChain = new ConstantFilterChain(
-                    SAMLProcessingFilter.FILTER_URL + "/**");
+            RequestFilterChain samlChain =
+                    new ConstantFilterChain(SAMLProcessingFilter.FILTER_URL + "/**");
             samlChain.setFilterNames("samlWebSSOProcessingFilter");
             samlChain.setName("samlSSOChain");
             filterChain.getRequestChains().add(0, samlChain);
         }
         if (filterChain.getRequestChainByName("samlLogoutChain") == null) {
-            RequestFilterChain samlChain = new ConstantFilterChain(
-                    SAMLLogoutProcessingFilter.FILTER_URL + "/**");
+            RequestFilterChain samlChain =
+                    new ConstantFilterChain(SAMLLogoutProcessingFilter.FILTER_URL + "/**");
             samlChain.setFilterNames("samlLogoutProcessingFilter");
             samlChain.setName("samlLogoutChain");
             filterChain.getRequestChains().add(0, samlChain);
         }
         if (filterChain.getRequestChainByName("samlLogout") == null) {
-            RequestFilterChain samlChain = new ConstantFilterChain(
-                    SAMLLogoutFilter.FILTER_URL + "/**");
+            RequestFilterChain samlChain =
+                    new ConstantFilterChain(SAMLLogoutFilter.FILTER_URL + "/**");
             samlChain.setFilterNames("samlLogoutFilter");
             samlChain.setName("samlLogout");
             filterChain.getRequestChains().add(0, samlChain);
         }
-
     }
 }

@@ -8,7 +8,6 @@ package org.geoserver.wcs.response;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
-
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +31,8 @@ public class GdalWrapperTest {
     @Test
     public void testFormats() {
         Set<String> formats = gdal.getSupportedFormats();
-        // well, we can't know which formats GDAL was complied with, but at least there will be one, right?
+        // well, we can't know which formats GDAL was complied with, but at least there will be one,
+        // right?
         assertTrue(formats.size() > 0);
 
         // these work on my machine, with gdal 1.11.2, libgeotiff 1.4.0, libpng 1.6

@@ -9,7 +9,7 @@ import org.geoserver.security.validation.SecurityConfigException;
 
 /**
  * Base class for master password provider config exceptions.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class MasterPasswordProviderException extends SecurityConfigException {

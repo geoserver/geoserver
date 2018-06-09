@@ -10,21 +10,20 @@ import org.geotools.map.Layer;
 /**
  * Extension point allowing implementors to follow and manipulate the lifecycle of a GetMap request.
  * Possibilities offered:
+ *
  * <ul>
- * <li>Gather information about the GetMap request, the layer structure and the results</li>
- * <li>Modify the request</li>
- * <li>Alter or remove the layers</li>
- * <li>Alter the map content before rendering</li>
- * <li>Alter the rendering results</li>
+ *   <li>Gather information about the GetMap request, the layer structure and the results
+ *   <li>Modify the request
+ *   <li>Alter or remove the layers
+ *   <li>Alter the map content before rendering
+ *   <li>Alter the rendering results
  * </ul>
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public interface GetMapCallback {
 
-    /**
-     * Marks the beginning of a GetMap request internal processing
-     */
+    /** Marks the beginning of a GetMap request internal processing */
     GetMapRequest initRequest(GetMapRequest request);
 
     /**
@@ -55,6 +54,7 @@ public interface GetMapCallback {
 
     /**
      * Called if the GetMap fails for any reason.
+     *
      * @param t
      */
     void failed(Throwable t);

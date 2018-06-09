@@ -6,28 +6,26 @@
 package org.geoserver.security.web.role;
 
 import java.io.IOException;
-
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.validation.RoleStoreValidationWrapper;
 
 /**
- * Page for editing a  {@link GeoServerRole} object
- * 
- * @author christian
+ * Page for editing a {@link GeoServerRole} object
  *
+ * @author christian
  */
 public class EditRolePage extends AbstractRolePage {
 
-    public EditRolePage(String roleServiceName,GeoServerRole role) {
+    public EditRolePage(String roleServiceName, GeoServerRole role) {
         // parent role name not known at this moment, parent
-        // constructor will do the job 
+        // constructor will do the job
         super(roleServiceName, role);
-        
+
         get("form:name").setEnabled(false);
 
         // do we have a personalized role?
-        if (role.getUserName()!=null ) {
+        if (role.getUserName() != null) {
             get("form:properties").setEnabled(false);
             get("form:parent").setEnabled(false);
             get("form:save").setEnabled(false);
@@ -35,13 +33,14 @@ public class EditRolePage extends AbstractRolePage {
     }
 
     @Override
-    protected void onFormSubmit(GeoServerRole updated) throws IOException{
-        
-        if (hasRoleStore(roleServiceName)==false) {
-            throw new RuntimeException("Invalid workflow, cannot store in a read only role service");
+    protected void onFormSubmit(GeoServerRole updated) throws IOException {
+
+        if (hasRoleStore(roleServiceName) == false) {
+            throw new RuntimeException(
+                    "Invalid workflow, cannot store in a read only role service");
         }
 
-        GeoServerRoleStore store=null;
+        GeoServerRoleStore store = null;
         try {
             store = new RoleStoreValidationWrapper(getRoleStore(roleServiceName));
 
@@ -59,9 +58,12 @@ public class EditRolePage extends AbstractRolePage {
 
             store.store();
         } catch (IOException ex) {
-            try {store.load(); } catch (IOException ex2) {};
+            try {
+                store.load();
+            } catch (IOException ex2) {
+            }
+            ;
             throw ex;
         }
     }
-
 }

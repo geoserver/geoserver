@@ -7,39 +7,26 @@ package org.geoserver.catalog;
 
 /**
  * A link to underlying data represented by resource.
- * 
+ *
  * @author Marcus Sen, British Geological Survey
- * 
  */
 public interface DataLinkInfo extends Info {
 
-    /**
-     * @uml.property name="about"
-     */
+    /** @uml.property name="about" */
     String getAbout();
 
-    /**
-     * @uml.property name="about"
-     */
+    /** @uml.property name="about" */
     void setAbout(String about);
 
-    /**
-     * @uml.property name="type"
-     */
+    /** @uml.property name="type" */
     String getType();
 
-    /**
-     * @uml.property name="type"
-     */
+    /** @uml.property name="type" */
     void setType(String type);
 
-    /**
-     * @uml.property name="content"
-     */
+    /** @uml.property name="content" */
     String getContent();
 
-    /**
-     * @uml.property name="content"
-     */
+    /** @uml.property name="content" */
     void setContent(String content);
 }

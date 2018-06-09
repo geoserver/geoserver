@@ -10,9 +10,9 @@ import org.apache.wicket.util.crypt.NoCrypt;
 import org.geoserver.security.GeoServerSecurityManager;
 
 /**
- * Returns an ICrypt that actually encrypts the urls, or not, depending on
- * the security manager settings
- * 
+ * Returns an ICrypt that actually encrypts the urls, or not, depending on the security manager
+ * settings
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class GeoServerCryptProvider implements IProvider<ICrypt> {
@@ -20,7 +20,6 @@ class GeoServerCryptProvider implements IProvider<ICrypt> {
     GeoServerSecurityManager manager;
     volatile ICrypt theCrypt;
 
-    
     public GeoServerCryptProvider(GeoServerSecurityManager manager) {
         this.manager = manager;
     }
@@ -39,9 +38,9 @@ class GeoServerCryptProvider implements IProvider<ICrypt> {
     private ICrypt getCrypt() {
         // lazy init via double checked locking (with volatile, should be safe)
         // because we cannot get to the settings untile after the whole app startup is done
-        if(theCrypt == null) {
+        if (theCrypt == null) {
             synchronized (this) {
-                if(theCrypt == null) {
+                if (theCrypt == null) {
                     GeoServerApplication application = GeoServerApplication.get();
                     theCrypt = application.getSecuritySettings().getCryptFactory().newCrypt();
                 }
@@ -49,5 +48,4 @@ class GeoServerCryptProvider implements IProvider<ICrypt> {
         }
         return theCrypt;
     }
-
 }

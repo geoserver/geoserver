@@ -11,5 +11,4 @@ public class ConfigurationsPage extends AbstractConfigurationsPage {
     public ConfigurationsPage() {
         super(false);
     }
-
 }

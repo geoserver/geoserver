@@ -6,7 +6,6 @@
 package org.geoserver.wcs.web.demo;
 
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -18,22 +17,20 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Helper class to turn a {@link GetCoverageRequest} into the corresponding WCS 1.0 GetCoverage xml
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 class WCS10GetCoverageTransformer extends TransformerBase {
 
     static final Logger LOGGER = Logging.getLogger(WCS10GetCoverageTransformer.class);
     private Catalog catalog;
-    
+
     public WCS10GetCoverageTransformer(Catalog catalog) {
         this.catalog = catalog;
     }
@@ -65,10 +62,24 @@ class WCS10GetCoverageTransformer extends TransformerBase {
         }
 
         private void encode(GetCoverageRequest request) {
-            AttributesImpl attributes = attributes("version", "1.0.0", "service", "WCS",
-                    "xmlns:xsi", XSI_URI, "xmlns", WCS_URI, "xmlns:ows", OWS.NAMESPACE, "xmlns:gml", GML.NAMESPACE, "xmlns:ogc",
-                    OGC.NAMESPACE, "xsi:schemaLocation", WCS_URI + " "
-                            + "http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd");
+            AttributesImpl attributes =
+                    attributes(
+                            "version",
+                            "1.0.0",
+                            "service",
+                            "WCS",
+                            "xmlns:xsi",
+                            XSI_URI,
+                            "xmlns",
+                            WCS_URI,
+                            "xmlns:ows",
+                            OWS.NAMESPACE,
+                            "xmlns:gml",
+                            GML.NAMESPACE,
+                            "xmlns:ogc",
+                            OGC.NAMESPACE,
+                            "xsi:schemaLocation",
+                            WCS_URI + " " + "http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd");
 
             start("GetCoverage", attributes);
             element("sourceCoverage", request.coverage);
@@ -82,7 +93,7 @@ class WCS10GetCoverageTransformer extends TransformerBase {
 
         private void handleOutput(GetCoverageRequest request) {
             start("output");
-            if(request.targetCRS != null) {
+            if (request.targetCRS != null) {
                 element("crs", epsgCode(request.targetCRS));
             }
             element("format", request.outputFormat);
@@ -90,42 +101,41 @@ class WCS10GetCoverageTransformer extends TransformerBase {
         }
 
         void handleSpatialSubset(GetCoverageRequest request, CoverageInfo coverage) {
-                start("spatialSubset");
-                
-                // model space bounds
-                final ReferencedEnvelope bounds = request.bounds;
-                CoordinateReferenceSystem boundsCrs = bounds.getCoordinateReferenceSystem();
-                final String epsgCode = epsgCode(boundsCrs);
-                start("gml:Envelope", attributes("srsName", epsgCode));
-                element("gml:pos", bounds.getMinX() + " " + bounds.getMinY());
-                element("gml:pos", bounds.getMaxX() + " " + bounds.getMaxY());
-                end("gml:Envelope");
-                
-                // the grid
-                start("gml:Grid", attributes("dimension", "2"));
-                
-                // grid limits
-                final GridEnvelope2D limits = request.sourceGridRange;
-                start("gml:limits");
-                start("gml:GridEnvelope");
-                element("gml:low", (int) limits.getMinX() + " " + (int) limits.getMinY());
-                element("gml:high", (int) limits.getMaxX() + " " + (int) limits.getMaxY());
-                end("gml:GridEnvelope");
-                end("gml:limits");
-                
-                
-                // axis names
-                CoordinateReferenceSystem gridCrs = coverage.getCRS();
-                for (int dn = 0; dn < gridCrs.getCoordinateSystem().getDimension(); dn++) {
-                    String axisName = gridCrs.getCoordinateSystem().getAxis(dn).getAbbreviation();
-                    axisName = axisName.toLowerCase().startsWith("lon") ? "x" : axisName;
-                    axisName = axisName.toLowerCase().startsWith("lat") ? "y" : axisName;
-                    element("gml:axisName", axisName);
-                }
-                
-                end("gml:Grid");
-                
-                end("spatialSubset");
+            start("spatialSubset");
+
+            // model space bounds
+            final ReferencedEnvelope bounds = request.bounds;
+            CoordinateReferenceSystem boundsCrs = bounds.getCoordinateReferenceSystem();
+            final String epsgCode = epsgCode(boundsCrs);
+            start("gml:Envelope", attributes("srsName", epsgCode));
+            element("gml:pos", bounds.getMinX() + " " + bounds.getMinY());
+            element("gml:pos", bounds.getMaxX() + " " + bounds.getMaxY());
+            end("gml:Envelope");
+
+            // the grid
+            start("gml:Grid", attributes("dimension", "2"));
+
+            // grid limits
+            final GridEnvelope2D limits = request.sourceGridRange;
+            start("gml:limits");
+            start("gml:GridEnvelope");
+            element("gml:low", (int) limits.getMinX() + " " + (int) limits.getMinY());
+            element("gml:high", (int) limits.getMaxX() + " " + (int) limits.getMaxY());
+            end("gml:GridEnvelope");
+            end("gml:limits");
+
+            // axis names
+            CoordinateReferenceSystem gridCrs = coverage.getCRS();
+            for (int dn = 0; dn < gridCrs.getCoordinateSystem().getDimension(); dn++) {
+                String axisName = gridCrs.getCoordinateSystem().getAxis(dn).getAbbreviation();
+                axisName = axisName.toLowerCase().startsWith("lon") ? "x" : axisName;
+                axisName = axisName.toLowerCase().startsWith("lat") ? "y" : axisName;
+                element("gml:axisName", axisName);
+            }
+
+            end("gml:Grid");
+
+            end("spatialSubset");
         }
 
         private String epsgCode(CoordinateReferenceSystem boundsCrs) {
@@ -141,9 +151,8 @@ class WCS10GetCoverageTransformer extends TransformerBase {
 
         /**
          * Helper to build a set of attributes out of a list of key/value pairs
-         * 
-         * @param nameValues
          *
+         * @param nameValues
          */
         AttributesImpl attributes(String... nameValues) {
             AttributesImpl atts = new AttributesImpl();
@@ -157,8 +166,5 @@ class WCS10GetCoverageTransformer extends TransformerBase {
 
             return atts;
         }
-
-        
     }
-
 }

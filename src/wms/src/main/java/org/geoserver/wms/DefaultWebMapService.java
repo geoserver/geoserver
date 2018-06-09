@@ -5,15 +5,14 @@
  */
 package org.geoserver.wms;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import net.opengis.wfs.FeatureCollectionType;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStyles;
@@ -38,114 +37,82 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
  * A default implementation of a {@link WebMapService}
- * <p>
- * This implementations relies on the code setting up the instance to provide the operation beans
+ *
+ * <p>This implementations relies on the code setting up the instance to provide the operation beans
  * through the following properties:
+ *
  * <ul>
- * <li>{@link #setDescribeLayer DescribeLayer} for the {@link #describeLayer(DescribeLayerRequest)}
- * operation
- * <li>{@link #setGetCapabilities GetCapabilities} for the
- * {@link #getCapabilities(GetCapabilitiesRequest)} operation
- * <li>{@link #setGetFeatureInfo GetFeatureInfo} for the
- * {@link #getFeatureInfo(GetFeatureInfoRequest)} operation
- * <li>{@link #setGetLegendGraphic GetLegendGraphic} for the
- * {@link #getLegendGraphic(GetLegendGraphicRequest)} operation
- * <li>{@link #setGetMap GetMap} for the {@link #getMap(GetMapRequest)} operation
- * <li>{@link #setGetStyles GetStyles} for the {@link #getStyles(GetStylesRequest)} operation
+ *   <li>{@link #setDescribeLayer DescribeLayer} for the {@link
+ *       #describeLayer(DescribeLayerRequest)} operation
+ *   <li>{@link #setGetCapabilities GetCapabilities} for the {@link
+ *       #getCapabilities(GetCapabilitiesRequest)} operation
+ *   <li>{@link #setGetFeatureInfo GetFeatureInfo} for the {@link
+ *       #getFeatureInfo(GetFeatureInfoRequest)} operation
+ *   <li>{@link #setGetLegendGraphic GetLegendGraphic} for the {@link
+ *       #getLegendGraphic(GetLegendGraphicRequest)} operation
+ *   <li>{@link #setGetMap GetMap} for the {@link #getMap(GetMapRequest)} operation
+ *   <li>{@link #setGetStyles GetStyles} for the {@link #getStyles(GetStylesRequest)} operation
  * </ul>
+ *
  * If an operation is called for which its corresponding operation bean is not set, the call will
  * result in an {@link UnsupportedOperationException}
- * </p>
- * 
+ *
  * @author Andrea Aime
  * @author Justin Deoliveira
  * @author Gabriel Roldan
  */
-public class DefaultWebMapService implements WebMapService, ApplicationContextAware,
-        DisposableBean {
-    /**
-     * default for 'format' parameter.
-     */
+public class DefaultWebMapService
+        implements WebMapService, ApplicationContextAware, DisposableBean {
+    /** default for 'format' parameter. */
     public static String FORMAT = "image/png";
 
-    /**
-     * default for 'styles' parameter.
-     */
+    /** default for 'styles' parameter. */
     public static List<Style> STYLES = Collections.emptyList();
 
-    /**
-     * longest side for the preview
-     */
+    /** longest side for the preview */
     public static int MAX_SIDE = 768;
 
-    /**
-     * minimum height to have a reasonable looking OL preview
-     */
+    /** minimum height to have a reasonable looking OL preview */
     public static int MIN_OL_HEIGHT = 330;
 
-    /**
-     * minimum width to have a reasonable looking OL preview
-     */
+    /** minimum width to have a reasonable looking OL preview */
     public static int MIN_OL_WIDTH = 330;
 
-    /**
-     * max height to have a reasonable looking OL preview
-     */
+    /** max height to have a reasonable looking OL preview */
     public static int MAX_OL_HEIGHT = 768;
 
-    /**
-     * max width to have a reasonable looking OL preview
-     */
+    /** max width to have a reasonable looking OL preview */
     public static int MAX_OL_WIDTH = 1024;
 
-    /**
-     * default for 'srs' parameter.
-     */
+    /** default for 'srs' parameter. */
     public static String SRS = "EPSG:4326";
 
-    /**
-     * default for 'transparent' parameter.
-     */
+    /** default for 'transparent' parameter. */
     public static Boolean TRANSPARENT = Boolean.TRUE;
 
-    /**
-     * default for 'transparent' parameter.
-     */
+    /** default for 'transparent' parameter. */
     public static ExecutorService RENDERING_POOL;
 
-    /**
-     * default for 'bbox' paramter
-     */
-    public static ReferencedEnvelope BBOX = new ReferencedEnvelope(
-            new Envelope(-180, 180, -90, 90), DefaultGeographicCRS.WGS84);
+    /** default for 'bbox' paramter */
+    public static ReferencedEnvelope BBOX =
+            new ReferencedEnvelope(new Envelope(-180, 180, -90, 90), DefaultGeographicCRS.WGS84);
 
-    /**
-     * wms configuration
-     */
+    /** wms configuration */
     private final WMS wms;
 
-    /**
-     * Temporary field that handles the usage of the line width optimization code
-     */
+    /** Temporary field that handles the usage of the line width optimization code */
     private static Boolean OPTIMIZE_LINE_WIDTH = null;
 
-    /**
-     * This variable is used to bypass direct raster rendering.
-     */
-    private static boolean BYPASS_DIRECT = Boolean.getBoolean("org.geoserver.render.raster.direct.disable");
+    /** This variable is used to bypass direct raster rendering. */
+    private static boolean BYPASS_DIRECT =
+            Boolean.getBoolean("org.geoserver.render.raster.direct.disable");
 
-    /**
-     * Max number of rule filters to be used against the data source
-     */
+    /** Max number of rule filters to be used against the data source */
     private static Integer MAX_FILTER_RULES = null;
-    
-    /**
-     * Use a global rendering pool, or use a new pool each time
-     */
+
+    /** Use a global rendering pool, or use a new pool each time */
     private static Boolean USE_GLOBAL_RENDERING_POOL = null;
 
     private GetCapabilities getCapabilities;
@@ -164,115 +131,86 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         this.wms = wms;
     }
 
-    /**
-     * @see WebMapService#getServiceInfo()
-     */
+    /** @see WebMapService#getServiceInfo() */
     public WMSInfo getServiceInfo() {
         return wms.getServiceInfo();
     }
 
-    /**
-     * Establishes the operation bean responsible for executing the GetCapabilities requests
-     */
+    /** Establishes the operation bean responsible for executing the GetCapabilities requests */
     public void setGetCapabilities(GetCapabilities getCapabilities) {
         this.getCapabilities = getCapabilities;
     }
 
-    /**
-     * Establishes the operation bean responsible for executing the DescribeLayer requests
-     */
+    /** Establishes the operation bean responsible for executing the DescribeLayer requests */
     public void setDescribeLayer(DescribeLayer describeLayer) {
         this.describeLayer = describeLayer;
     }
 
-    /**
-     * Establishes the operation bean responsible for executing the GetMap requests
-     */
+    /** Establishes the operation bean responsible for executing the GetMap requests */
     public void setGetMap(GetMap getMap) {
         this.getMap = getMap;
     }
 
-    /**
-     * Establishes the operation bean responsible for executing the GetFeatureInfo requests
-     */
+    /** Establishes the operation bean responsible for executing the GetFeatureInfo requests */
     public void setGetFeatureInfo(GetFeatureInfo getFeatureInfo) {
         this.getFeatureInfo = getFeatureInfo;
     }
 
-    /**
-     * Establishes the operation bean responsible for executing the GetStyles requests
-     */
+    /** Establishes the operation bean responsible for executing the GetStyles requests */
     public void setGetStyles(GetStyles getStyles) {
         this.getStyles = getStyles;
     }
 
-    /**
-     * Establishes the operation bean responsible for executing the GetLegendGraphics requests
-     */
+    /** Establishes the operation bean responsible for executing the GetLegendGraphics requests */
     public void setGetLegendGraphic(GetLegendGraphic getLegendGraphic) {
         this.getLegendGraphic = getLegendGraphic;
     }
 
-    /**
-     * @see ApplicationContextAware#setApplicationContext(ApplicationContext)
-     */
+    /** @see ApplicationContextAware#setApplicationContext(ApplicationContext) */
     public void setApplicationContext(ApplicationContext context) throws BeansException {
 
         // first time initialization of line width optimization flag
         if (OPTIMIZE_LINE_WIDTH == null) {
             String enabled = GeoServerExtensions.getProperty("OPTIMIZE_LINE_WIDTH", context);
             // default to true, but allow switching off
-            if (enabled == null)
-                OPTIMIZE_LINE_WIDTH = false;
-            else
-                OPTIMIZE_LINE_WIDTH = Boolean.valueOf(enabled);
+            if (enabled == null) OPTIMIZE_LINE_WIDTH = false;
+            else OPTIMIZE_LINE_WIDTH = Boolean.valueOf(enabled);
         }
 
         // initialization of the renderer choice flag
         if (MAX_FILTER_RULES == null) {
             String rules = GeoServerExtensions.getProperty("MAX_FILTER_RULES", context);
             // default to true, but allow switching off
-            if (rules == null)
-                MAX_FILTER_RULES = 20;
-            else
-                MAX_FILTER_RULES = Integer.valueOf(rules);
+            if (rules == null) MAX_FILTER_RULES = 20;
+            else MAX_FILTER_RULES = Integer.valueOf(rules);
         }
-        
+
         // control usage of the global rendering thread pool
         if (USE_GLOBAL_RENDERING_POOL == null) {
             String usePool = GeoServerExtensions.getProperty("USE_GLOBAL_RENDERING_POOL", context);
             // default to true, but allow switching off
-            if (usePool == null)
-                USE_GLOBAL_RENDERING_POOL = true;
-            else
-                USE_GLOBAL_RENDERING_POOL = Boolean.valueOf(usePool);
+            if (usePool == null) USE_GLOBAL_RENDERING_POOL = true;
+            else USE_GLOBAL_RENDERING_POOL = Boolean.valueOf(usePool);
         }
     }
 
     /**
      * Checks wheter the line width optimization is enabled, or not (defaults to true unless the
      * user sets the OPTIMIZE_LINE_WIDTH property to false)
-     * 
-     *
      */
     public static boolean isLineWidthOptimizationEnabled() {
         return OPTIMIZE_LINE_WIDTH;
     }
-    
+
     /**
      * If true (default) use the sld rule filters to compose the query to the DB, otherwise don't
      * and get down only with the bbox and eventual definition filter)
-     * 
-     *
      */
     public static int getMaxFilterRules() {
         return MAX_FILTER_RULES;
     }
-    
-    /**
-     * If true (default) the direct raster rendering path is enabled
-     *
-     */
+
+    /** If true (default) the direct raster rendering path is enabled */
     public static boolean isDirectRasterPathEnabled() {
         return !BYPASS_DIRECT;
     }
@@ -290,16 +228,12 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return getCapabilities.run(request);
     }
 
-    /**
-     * @see WebMapService#capabilities(GetCapabilitiesRequest)
-     */
+    /** @see WebMapService#capabilities(GetCapabilitiesRequest) */
     public TransformerBase capabilities(GetCapabilitiesRequest request) {
         return getCapabilities(request);
     }
 
-    /**
-     * @see WebMapService#describeLayer(DescribeLayerRequest)
-     */
+    /** @see WebMapService#describeLayer(DescribeLayerRequest) */
     @Override
     public DescribeLayerModel describeLayer(DescribeLayerRequest request) {
         if (null == describeLayer) {
@@ -309,9 +243,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return describeLayer.run(request);
     }
 
-    /**
-     * @see WebMapService#getMap(GetMapRequest)
-     */
+    /** @see WebMapService#getMap(GetMapRequest) */
     public WebMap getMap(GetMapRequest request) {
         if (null == getMap) {
             throw new UnsupportedOperationException(
@@ -320,16 +252,12 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return getMap.run(request);
     }
 
-    /**
-     * @see WebMapService#map(GetMapRequest)
-     */
+    /** @see WebMapService#map(GetMapRequest) */
     public WebMap map(GetMapRequest request) {
         return getMap(request);
     }
 
-    /**
-     * @see WebMapService#getFeatureInfo(GetFeatureInfoRequest)
-     */
+    /** @see WebMapService#getFeatureInfo(GetFeatureInfoRequest) */
     public FeatureCollectionType getFeatureInfo(final GetFeatureInfoRequest request) {
         if (null == getFeatureInfo) {
             throw new UnsupportedOperationException(
@@ -338,9 +266,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return getFeatureInfo.run(request);
     }
 
-    /**
-     * @see WebMapService#getLegendGraphic(GetLegendGraphicRequest)
-     */
+    /** @see WebMapService#getLegendGraphic(GetLegendGraphicRequest) */
     public Object getLegendGraphic(GetLegendGraphicRequest request) {
         if (null == getLegendGraphic) {
             throw new UnsupportedOperationException(
@@ -350,12 +276,13 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     }
 
     public WebMap kml(GetMapRequest getMap) {
-        throw new ServiceException("kml service is not available, please include a KML module in WEB-INF/lib");
+        throw new ServiceException(
+                "kml service is not available, please include a KML module in WEB-INF/lib");
     }
 
     /**
      * Method for generation of WMS animations.
-     * 
+     *
      * @param getMap GetMapRequest
      * @return the <WebMap> output
      */
@@ -366,25 +293,20 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
             throw new RuntimeException(e);
         }
     }
-    
-    /**
-     * @see WebMapService#reflect(GetMapRequest)
-     */
+
+    /** @see WebMapService#reflect(GetMapRequest) */
     public WebMap reflect(GetMapRequest request) {
         return getMapReflect(request);
     }
 
-    /**
-     * @see org.geoserver.wms.WebMapService#getStyles(org.geoserver.sld.GetStylesRequest)
-     */
+    /** @see org.geoserver.wms.WebMapService#getStyles(org.geoserver.sld.GetStylesRequest) */
     public StyledLayerDescriptor getStyles(GetStylesRequest request) {
         return getStyles.run(request);
-
     }
 
     /**
      * s
-     * 
+     *
      * @see WebMapService#getMapReflect(GetMapRequest)
      */
     public WebMap getMapReflect(GetMapRequest request) {
@@ -427,16 +349,17 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     /**
      * This method tries to automatically determine SRS, bounding box and output size based on the
      * layers provided by the user and any other parameters.
-     * 
-     * If bounds are not specified by the user, they are automatically se to the union of the bounds
-     * of all layers.
-     * 
-     * The size of the output image defaults to 512 pixels, the height is automatically determined
-     * based on the width to height ratio of the requested layers. This is also true if either
-     * height or width are specified by the user. If both height and width are specified by the
-     * user, the automatically determined bounding box will be adjusted to fit inside these bounds.
-     * 
-     * General idea 1) Figure out whether SRS has been specified, fall back to EPSG:4326 2)
+     *
+     * <p>If bounds are not specified by the user, they are automatically se to the union of the
+     * bounds of all layers.
+     *
+     * <p>The size of the output image defaults to 512 pixels, the height is automatically
+     * determined based on the width to height ratio of the requested layers. This is also true if
+     * either height or width are specified by the user. If both height and width are specified by
+     * the user, the automatically determined bounding box will be adjusted to fit inside these
+     * bounds.
+     *
+     * <p>General idea 1) Figure out whether SRS has been specified, fall back to EPSG:4326 2)
      * Determine whether all requested layers use the same SRS, - if so, try to do bounding box
      * calculations in native coordinates 3) Aggregate the bounding boxes (in EPSG:4326 or native)
      * 4a) If bounding box has been specified, adjust height of image to match 4b) If bounding box
@@ -461,8 +384,9 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         for (int i = 0; useNativeBounds && i < layers.size(); i++) {
             if (layers.get(i) != null) {
                 String layerSRS = layers.get(i).getSRS();
-                useNativeBounds = reqSRS.equalsIgnoreCase(layerSRS)
-                        && layers.get(i).getResource().getNativeBoundingBox() != null;
+                useNativeBounds =
+                        reqSRS.equalsIgnoreCase(layerSRS)
+                                && layers.get(i).getResource().getNativeBoundingBox() != null;
             } else {
                 useNativeBounds = false;
             }
@@ -493,8 +417,8 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                         ReferencedEnvelope nativeBbox = layerInfo.getBoundingBox();
                         if (nativeBbox == null) {
                             try {
-                                CoordinateReferenceSystem nativeCrs = layerInfo
-                                        .getCoordinateReferenceSystem();
+                                CoordinateReferenceSystem nativeCrs =
+                                        layerInfo.getCoordinateReferenceSystem();
                                 nativeBbox = curbbox.transform(nativeCrs, true);
                             } catch (Exception e) {
                                 throw new ServiceException(
@@ -509,7 +433,8 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                 if (aggregateBbox != null) {
                     aggregateBbox.expandToInclude(curbbox);
                 } else {
-                    // defensive copy (otherwise it can cause a catalog referenced envelope to be modified)
+                    // defensive copy (otherwise it can cause a catalog referenced envelope to be
+                    // modified)
                     aggregateBbox = new ReferencedEnvelope(curbbox);
                 }
             }
@@ -605,7 +530,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                         }
                     }
                 }
-
             }
 
             // Actually set the bounding box and size of image
@@ -647,13 +571,11 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     /**
      * This adjusts the bounds by zooming out 2%, but also ensuring that the maximum bounds do not
      * exceed the world bounding box
-     * 
-     * This only applies if the SRS is EPSG:4326 or EPSG:900913
-     * 
-     * @param reqSRS
-     *            the SRS
-     * @param bbox
-     *            the current bounding box
+     *
+     * <p>This only applies if the SRS is EPSG:4326 or EPSG:900913
+     *
+     * @param reqSRS the SRS
+     * @param bbox the current bounding box
      * @return the adjusted bounding box
      */
     private static Envelope adjustBounds(String reqSRS, Envelope bbox) {
@@ -670,20 +592,16 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return bbox;
     }
 
-    /**
-     * Returns a app wide cached rendering pool that can be used for parallelized rendering
-     * 
-     *
-     */
+    /** Returns a app wide cached rendering pool that can be used for parallelized rendering */
     public static ExecutorService getRenderingPool() {
-        if(USE_GLOBAL_RENDERING_POOL && RENDERING_POOL == null) {
+        if (USE_GLOBAL_RENDERING_POOL && RENDERING_POOL == null) {
             synchronized (DefaultWebMapService.class) {
-                if(RENDERING_POOL == null) {
+                if (RENDERING_POOL == null) {
                     RENDERING_POOL = Executors.newCachedThreadPool();
                 }
             }
         }
-        
+
         return RENDERING_POOL;
     }
 
@@ -694,5 +612,4 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
             RENDERING_POOL = null;
         }
     }
-
 }

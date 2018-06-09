@@ -21,7 +21,7 @@ public class Keyword implements Serializable, KeywordInfo {
             throw new NullPointerException("value must be non-null");
         }
     }
-    
+
     public Keyword(Keyword other) {
         this.value = other.value;
         this.language = other.language;
@@ -70,30 +70,19 @@ public class Keyword implements Serializable, KeywordInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         Keyword other = (Keyword) obj;
         if (language == null) {
-            if (other.language != null)
-                return false;
-        } else if (!language.equals(other.language))
-            return false;
+            if (other.language != null) return false;
+        } else if (!language.equals(other.language)) return false;
         if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
-            return false;
+            if (other.value != null) return false;
+        } else if (!value.equals(other.value)) return false;
         if (vocabulary == null) {
-            if (other.vocabulary != null)
-                return false;
-        } else if (!vocabulary.equals(other.vocabulary))
-            return false;
+            if (other.vocabulary != null) return false;
+        } else if (!vocabulary.equals(other.vocabulary)) return false;
         return true;
     }
-
-    
 }

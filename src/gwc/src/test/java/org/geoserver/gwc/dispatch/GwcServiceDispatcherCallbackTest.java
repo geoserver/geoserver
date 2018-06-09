@@ -4,17 +4,6 @@
  */
 package org.geoserver.gwc.dispatch;
 
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.ows.Request;
-import org.geoserver.platform.ServiceException;
-import org.junit.After;
-import org.junit.Test;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.HashMap;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -22,6 +11,16 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.ServiceException;
+import org.junit.After;
+import org.junit.Test;
 
 public final class GwcServiceDispatcherCallbackTest {
 
@@ -50,7 +49,8 @@ public final class GwcServiceDispatcherCallbackTest {
         LocalWorkspace.set(mock(WorkspaceInfo.class));
         when(request.getContext()).thenReturn("validWorkspace/gwc/service");
         assertThat(callback.init(request), notNullValue());
-        // an invalid virtual service request (a missing local workspace will make the workspace invalid)
+        // an invalid virtual service request (a missing local workspace will make the workspace
+        // invalid)
         LocalWorkspace.remove();
         when(request.getContext()).thenReturn("invalidWorkspace/gwc/service");
         try {
@@ -83,10 +83,16 @@ public final class GwcServiceDispatcherCallbackTest {
         assertThat(wrappedRequest, notNullValue());
         assertThat(wrappedRequest.getHttpRequest(), notNullValue());
         assertThat(wrappedRequest.getHttpRequest().getContextPath(), is("geoserver/someWorkspace"));
-        assertThat(wrappedRequest.getHttpRequest().getParameter("layer"), is("someWorkspace:someLayer"));
+        assertThat(
+                wrappedRequest.getHttpRequest().getParameter("layer"),
+                is("someWorkspace:someLayer"));
         assertThat(wrappedRequest.getHttpRequest().getParameterMap(), notNullValue());
-        assertThat(wrappedRequest.getHttpRequest().getParameterMap().get("layer"), is(new String[]{"someWorkspace:someLayer"}));
-        assertThat(wrappedRequest.getHttpRequest().getParameterValues("layer"), is(new String[]{"someWorkspace:someLayer"}));
+        assertThat(
+                wrappedRequest.getHttpRequest().getParameterMap().get("layer"),
+                is(new String[] {"someWorkspace:someLayer"}));
+        assertThat(
+                wrappedRequest.getHttpRequest().getParameterValues("layer"),
+                is(new String[] {"someWorkspace:someLayer"}));
     }
 
     @Test

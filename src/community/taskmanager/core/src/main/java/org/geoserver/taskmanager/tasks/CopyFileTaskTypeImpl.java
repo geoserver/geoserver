@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
@@ -29,31 +27,37 @@ public class CopyFileTaskTypeImpl implements TaskType {
     public static final String PARAM_SOURCE_SERVICE = "sourceService";
 
     public static final String PARAM_TARGET_SERVICE = "targetService";
-    
+
     public static final String PARAM_SOURCE_PATH = "sourcePath";
 
     public static final String PARAM_TARGET_PATH = "targetPath";
-    
-    protected final Map<String, ParameterInfo> paramInfo = new LinkedHashMap<String, ParameterInfo>();
 
-    @Autowired
-    protected ExtTypes extTypes;
+    protected final Map<String, ParameterInfo> paramInfo =
+            new LinkedHashMap<String, ParameterInfo>();
+
+    @Autowired protected ExtTypes extTypes;
 
     @Override
     public String getName() {
         return NAME;
     }
-    
+
     @PostConstruct
     public void initParamInfo() {
-        ParameterInfo sourceService = new ParameterInfo(PARAM_SOURCE_SERVICE, extTypes.fileService, true);    
-        paramInfo.put(PARAM_SOURCE_SERVICE, sourceService);    
-        paramInfo.put(PARAM_SOURCE_PATH, new ParameterInfo(PARAM_SOURCE_PATH, extTypes.file(false, true), true)
-                .dependsOn(sourceService));
-        ParameterInfo targetService = new ParameterInfo(PARAM_TARGET_SERVICE, extTypes.fileService, true);    
+        ParameterInfo sourceService =
+                new ParameterInfo(PARAM_SOURCE_SERVICE, extTypes.fileService, true);
+        paramInfo.put(PARAM_SOURCE_SERVICE, sourceService);
+        paramInfo.put(
+                PARAM_SOURCE_PATH,
+                new ParameterInfo(PARAM_SOURCE_PATH, extTypes.file(false, true), true)
+                        .dependsOn(sourceService));
+        ParameterInfo targetService =
+                new ParameterInfo(PARAM_TARGET_SERVICE, extTypes.fileService, true);
         paramInfo.put(PARAM_TARGET_SERVICE, targetService);
-        paramInfo.put(PARAM_TARGET_PATH, new ParameterInfo(PARAM_TARGET_PATH, extTypes.file(false, false), true)
-                .dependsOn(targetService));
+        paramInfo.put(
+                PARAM_TARGET_PATH,
+                new ParameterInfo(PARAM_TARGET_PATH, extTypes.file(false, false), true)
+                        .dependsOn(targetService));
     }
 
     @Override
@@ -62,11 +66,13 @@ public class CopyFileTaskTypeImpl implements TaskType {
     }
 
     @Override
-    public TaskResult run(TaskContext ctx) throws TaskException {        
-        final FileReference source = (FileReference) 
-                ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_SOURCE_PATH));
-        final FileReference target = (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
-           
+    public TaskResult run(TaskContext ctx) throws TaskException {
+        final FileReference source =
+                (FileReference)
+                        ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_SOURCE_PATH));
+        final FileReference target =
+                (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
+
         try {
             if (target.getLatestVersion().equals(target.getNextVersion())) {
                 target.getService().delete(target.getNextVersion());
@@ -77,7 +83,7 @@ public class CopyFileTaskTypeImpl implements TaskType {
         } catch (IOException e) {
             throw new TaskException(e);
         }
-        
+
         return new TaskResult() {
 
             @Override
@@ -101,19 +107,18 @@ public class CopyFileTaskTypeImpl implements TaskType {
                     throw new TaskException(e);
                 }
             }
-            
         };
     }
 
     @Override
     public void cleanup(TaskContext ctx) throws TaskException {
-        final FileReference target = (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
-                
+        final FileReference target =
+                (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
+
         try {
             target.getService().delete(target.getLatestVersion());
         } catch (IOException e) {
             throw new TaskException(e);
         }
     }
-
 }

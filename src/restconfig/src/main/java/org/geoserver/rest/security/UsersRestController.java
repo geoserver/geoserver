@@ -4,6 +4,8 @@
  */
 package org.geoserver.rest.security;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.security.xml.JaxbGroupList;
 import org.geoserver.rest.security.xml.JaxbUser;
@@ -18,9 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 @RestController(value = "usergroupRestController")
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/usergroup")
 public class UsersRestController {
@@ -28,9 +27,10 @@ public class UsersRestController {
     protected GeoServerSecurityManager securityManager;
 
     private static final String DEFAULT_ROLE_SERVICE_NAME = "default";
-    
+
     private String getDefaultServiceName() {
-        String defaultServiceName = System.getProperty("org.geoserver.rest.DefaultUserGroupServiceName");
+        String defaultServiceName =
+                System.getProperty("org.geoserver.rest.DefaultUserGroupServiceName");
         return defaultServiceName == null ? DEFAULT_ROLE_SERVICE_NAME : defaultServiceName;
     }
 
@@ -39,27 +39,40 @@ public class UsersRestController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
-    	response.sendError(404, exception.getMessage());
+    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response)
+            throws IOException {
+        response.sendError(404, exception.getMessage());
     }
 
-    @GetMapping(value = "/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+        value = "/users",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public JaxbUserList getUsers() throws IOException {
         return getUsers(getDefaultServiceName());
     }
 
-    @GetMapping(value = "/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+        value = "/groups",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public JaxbGroupList getGroups() throws IOException {
         return getGroups(getDefaultServiceName());
     }
 
-    @GetMapping(value = "/group/{group}/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+        value = "/group/{group}/users",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public JaxbUserList getUsersFromGroup(@PathVariable("group") String groupName)
             throws IOException {
         return getUsersFromGroup(getDefaultServiceName(), groupName);
     }
 
-    @GetMapping(value = "/user/{user}/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+        value = "/user/{user}/groups",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public JaxbGroupList getGroupsFromUser(@PathVariable("user") String userName)
             throws IOException {
         return getGroupsFromUser(getDefaultServiceName(), userName);
@@ -72,8 +85,9 @@ public class UsersRestController {
     }
 
     @PostMapping(value = "/user/{user}")
-    public @ResponseStatus(HttpStatus.OK) void updateUser(@PathVariable("user") String userName,
-            @RequestBody JaxbUser user) throws PasswordPolicyException, IOException {
+    public @ResponseStatus(HttpStatus.OK) void updateUser(
+            @PathVariable("user") String userName, @RequestBody JaxbUser user)
+            throws PasswordPolicyException, IOException {
         updateUser(getDefaultServiceName(), userName, user);
     }
 
@@ -109,27 +123,42 @@ public class UsersRestController {
         disassociateUserFromGroup(getDefaultServiceName(), userName, groupName);
     }
 
-    @GetMapping(value = "/service/{serviceName}/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+        value = "/service/{serviceName}/users",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public JaxbUserList getUsers(@PathVariable("serviceName") String serviceName)
             throws IOException {
         return new JaxbUserList(getService(serviceName).getUsers());
     }
 
-    @GetMapping(value = "/service/{serviceName}/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+        value = "/service/{serviceName}/groups",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public JaxbGroupList getGroups(@PathVariable("serviceName") String serviceName)
             throws IOException {
         return new JaxbGroupList(getService(serviceName).getUserGroups());
     }
 
-    @GetMapping(value = "/service/{serviceName}/group/{group}/users", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public JaxbUserList getUsersFromGroup(@PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
+    @GetMapping(
+        value = "/service/{serviceName}/group/{group}/users",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public JaxbUserList getUsersFromGroup(
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("group") String groupName)
             throws IOException {
         GeoServerUserGroupService service = getService(serviceName);
         return new JaxbUserList(service.getUsersForGroup(getGroup(service, groupName)));
     }
 
-    @GetMapping(value = "/service/{serviceName}/user/{user}/groups", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public JaxbGroupList getGroupsFromUser(@PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
+    @GetMapping(
+        value = "/service/{serviceName}/user/{user}/groups",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public JaxbGroupList getGroupsFromUser(
+            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
             throws IOException {
         GeoServerUserGroupService service = getService(serviceName);
         return new JaxbGroupList(service.getGroupsForUser(getUser(service, userName)));
@@ -149,8 +178,10 @@ public class UsersRestController {
 
     @PostMapping(value = "/service/{serviceName}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void updateUser(
-            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName,
-            @RequestBody JaxbUser user) throws PasswordPolicyException, IOException {
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("user") String userName,
+            @RequestBody JaxbUser user)
+            throws PasswordPolicyException, IOException {
         GeoServerUserGroupStore store = getStore(serviceName);
         try {
             store.updateUser(user.toUser(getUser(store, userName)));
@@ -173,7 +204,8 @@ public class UsersRestController {
 
     @PostMapping(value = "/service/{serviceName}/group/{group}")
     public @ResponseStatus(HttpStatus.CREATED) void insertGroup(
-            @PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("group") String groupName)
             throws PasswordPolicyException, IOException {
         GeoServerUserGroupStore store = getStore(serviceName);
         try {
@@ -185,7 +217,8 @@ public class UsersRestController {
 
     @DeleteMapping(value = "/service/{serviceName}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void deleteGroup(
-            @PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("group") String groupName)
             throws IOException {
         GeoServerUserGroupStore store = getStore(serviceName);
         try {
@@ -197,12 +230,13 @@ public class UsersRestController {
 
     @PostMapping(value = "/service/{serviceName}/user/{user}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void associateUserToGroup(
-            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName,
-            @PathVariable("group") String groupName) throws IOException {
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("user") String userName,
+            @PathVariable("group") String groupName)
+            throws IOException {
         GeoServerUserGroupStore store = getStore(serviceName);
         try {
-            store.associateUserToGroup(getUser(store, userName),
-                    getGroup(store, groupName));
+            store.associateUserToGroup(getUser(store, userName), getGroup(store, groupName));
         } finally {
             store.store();
         }
@@ -210,51 +244,55 @@ public class UsersRestController {
 
     @DeleteMapping(value = "/service/{serviceName}/user/{user}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void disassociateUserFromGroup(
-            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName,
-            @PathVariable("group") String groupName) throws IOException {
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("user") String userName,
+            @PathVariable("group") String groupName)
+            throws IOException {
         GeoServerUserGroupStore store = getStore(serviceName);
         try {
-            store.disAssociateUserFromGroup(getUser(store, userName),
-                    getGroup(store, groupName));
+            store.disAssociateUserFromGroup(getUser(store, userName), getGroup(store, groupName));
         } finally {
             store.store();
         }
     }
-    
+
     protected GeoServerUserGroupService getService(String serviceName) throws IOException {
         GeoServerUserGroupService service = securityManager.loadUserGroupService(serviceName);
         if (service == null) {
-            throw new IllegalArgumentException("Provided user/group service does not exist: " + serviceName);
+            throw new IllegalArgumentException(
+                    "Provided user/group service does not exist: " + serviceName);
         } else {
             return securityManager.loadUserGroupService(serviceName);
-        } 
+        }
     }
 
     protected GeoServerUserGroupStore getStore(String serviceName) throws IOException {
         GeoServerUserGroupService service = securityManager.loadUserGroupService(serviceName);
         if (service == null) {
-            throw new IllegalArgumentException("Provided user/group service does not exist: " + serviceName);
+            throw new IllegalArgumentException(
+                    "Provided user/group service does not exist: " + serviceName);
         } else if (service.canCreateStore()) {
             return securityManager.loadUserGroupService(serviceName).createStore();
         } else {
             throw new IOException("Provided UserGroupService is read-only.");
         }
     }
-    
-    protected GeoServerUser getUser(GeoServerUserGroupService service, String userName) throws IOException {
+
+    protected GeoServerUser getUser(GeoServerUserGroupService service, String userName)
+            throws IOException {
         GeoServerUser user = service.getUserByUsername(userName);
         if (user == null) {
             throw new IllegalArgumentException("Provided username does not exist: " + userName);
         }
         return user;
     }
-    
-    protected GeoServerUserGroup getGroup(GeoServerUserGroupService service, String groupName) throws IOException {
+
+    protected GeoServerUserGroup getGroup(GeoServerUserGroupService service, String groupName)
+            throws IOException {
         GeoServerUserGroup group = service.getGroupByGroupname(groupName);
         if (group == null) {
             throw new IllegalArgumentException("Provided groupname does not exist: " + groupName);
         }
         return group;
-    }    
-
+    }
 }

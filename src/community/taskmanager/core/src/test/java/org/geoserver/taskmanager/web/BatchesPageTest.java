@@ -5,7 +5,6 @@
 package org.geoserver.taskmanager.web;
 
 import java.util.Collection;
-
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 
@@ -30,6 +29,4 @@ public class BatchesPageTest extends AbstractBatchesPanelTest<BatchesPage> {
     protected Collection<Batch> getBatches() {
         return dao.getAllBatches();
     }
-    
-    
 }

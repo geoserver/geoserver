@@ -4,18 +4,13 @@
  */
 package org.geoserver.nsg.pagination.random;
 
-import org.geoserver.config.GeoServer;
-import org.geoserver.ows.XmlRequestReader;
-import org.geoserver.platform.ExtensionPriority;
-import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.xml.v2_0.WfsXmlReader;
-import org.geotools.util.Version;
-import org.geotools.wfs.v2_0.WFS;
-import org.springframework.util.xml.SimpleNamespaceContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,13 +24,17 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import org.geoserver.config.GeoServer;
+import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.xml.v2_0.WfsXmlReader;
+import org.geotools.util.Version;
+import org.geotools.wfs.v2_0.WFS;
+import org.springframework.util.xml.SimpleNamespaceContext;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 public class NsgWfsXmlReader extends XmlRequestReader implements ExtensionPriority {
 
@@ -58,15 +57,18 @@ public class NsgWfsXmlReader extends XmlRequestReader implements ExtensionPriori
     }
 
     // XPATH used to check if index result type is being used
-    private static final ThreadLocal<XPathExpression> INDEX_RESULT_TYPE_XPATH = ThreadLocal.withInitial(() -> {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(WFS_20_NAMESPACES);
-        try {
-            return xpath.compile("/wfs:GetFeature[@resultType='index']");
-        } catch (Exception exception) {
-            throw new RuntimeException("Error compiling result type xpath expression.");
-        }
-    });
+    private static final ThreadLocal<XPathExpression> INDEX_RESULT_TYPE_XPATH =
+            ThreadLocal.withInitial(
+                    () -> {
+                        XPath xpath = XPathFactory.newInstance().newXPath();
+                        xpath.setNamespaceContext(WFS_20_NAMESPACES);
+                        try {
+                            return xpath.compile("/wfs:GetFeature[@resultType='index']");
+                        } catch (Exception exception) {
+                            throw new RuntimeException(
+                                    "Error compiling result type xpath expression.");
+                        }
+                    });
 
     // WFS 2.0 XML reader that will be used to parse WFS 2.0 GetFeature operation
     private final WfsXmlReader wfsXmlReader;

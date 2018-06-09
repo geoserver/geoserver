@@ -5,6 +5,15 @@
  */
 package org.geoserver.cluster.hazelcast;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheStats;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -16,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Info;
@@ -25,21 +33,9 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.util.CacheProvider;
 import org.geoserver.util.DefaultCacheProvider;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheStats;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
-
 /**
- * {@link CacheProvider} for a cluster configuration. Looked up by interface by
- * {@link DefaultCacheProvider#findProvider()} hence shall be declared in
- * {@code applicationContext.xml}.
- *
+ * {@link CacheProvider} for a cluster configuration. Looked up by interface by {@link
+ * DefaultCacheProvider#findProvider()} hence shall be declared in {@code applicationContext.xml}.
  */
 public class HzCacheProvider implements CacheProvider {
 
@@ -49,8 +45,9 @@ public class HzCacheProvider implements CacheProvider {
 
     public static final String DEFAULT_TIME_KEY = "evictionTime";
 
-    /** Expiration time in minutes for each entry*/
-    public final long expirationMinutes = Long.parseLong(System.getProperty(DEFAULT_TIME_KEY, DEFAULT_TTL + ""));
+    /** Expiration time in minutes for each entry */
+    public final long expirationMinutes =
+            Long.parseLong(System.getProperty(DEFAULT_TIME_KEY, DEFAULT_TTL + ""));
 
     private Map<String, Cache<?, ?>> inUse = Maps.newConcurrentMap();
 
@@ -69,18 +66,24 @@ public class HzCacheProvider implements CacheProvider {
         if (distributedCache == null) {
             // distributedCache = new NullCache<K, V>();
             if ("catalog".equals(cacheName)) {
-                distributedCache = (Cache<K, V>) new HzCatalogCache(cacheName, expirationMinutes,
-                        DEFAULT_TTL_UNIT, serializationFactory);
+                distributedCache =
+                        (Cache<K, V>)
+                                new HzCatalogCache(
+                                        cacheName,
+                                        expirationMinutes,
+                                        DEFAULT_TTL_UNIT,
+                                        serializationFactory);
             } else {
-                distributedCache = new HzCache<K, V>(cacheName, expirationMinutes, DEFAULT_TTL_UNIT);
+                distributedCache =
+                        new HzCache<K, V>(cacheName, expirationMinutes, DEFAULT_TTL_UNIT);
             }
             inUse.put(cacheName, distributedCache);
         }
         return distributedCache;
     }
 
-    private static final class HzCache<K extends Serializable, V extends Serializable> implements
-            Cache<K, V> {
+    private static final class HzCache<K extends Serializable, V extends Serializable>
+            implements Cache<K, V> {
 
         private IMap<K, V> hzMap;
 
@@ -220,7 +223,10 @@ public class HzCacheProvider implements CacheProvider {
 
         private XStreamPersister persister;
 
-        public HzCatalogCache(String mapName, long ttl, TimeUnit ttlUnit,
+        public HzCatalogCache(
+                String mapName,
+                long ttl,
+                TimeUnit ttlUnit,
                 XStreamPersisterFactory serializationFactory2) {
             this.mapName = mapName;
             this.ttl = ttl;
@@ -268,7 +274,8 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public Info get(String key, Callable<? extends Info> valueLoader) throws ExecutionException {
+        public Info get(String key, Callable<? extends Info> valueLoader)
+                throws ExecutionException {
             Info value = getIfPresent(key);
             if (value == null) {
                 try {
@@ -289,12 +296,13 @@ public class HzCacheProvider implements CacheProvider {
                     set.add((String) k);
                 }
                 Map<String, byte[]> allPresent = hzMap.getAll(set);
-                Function<byte[], Info> function = new Function<byte[], Info>() {
-                    @Override
-                    public Info apply(byte[] input) {
-                        return unmarshal(input);
-                    }
-                };
+                Function<byte[], Info> function =
+                        new Function<byte[], Info>() {
+                            @Override
+                            public Info apply(byte[] input) {
+                                return unmarshal(input);
+                            }
+                        };
                 Map<String, Info> transformedValues = Maps.transformValues(allPresent, function);
                 return ImmutableMap.copyOf(transformedValues);
             }
@@ -322,12 +330,13 @@ public class HzCacheProvider implements CacheProvider {
 
         @Override
         public void putAll(Map<? extends String, ? extends Info> m) {
-            Function<Info, byte[]> f = new Function<Info, byte[]>() {
-                @Override
-                public byte[] apply(Info input) {
-                    return serialize(input);
-                }
-            };
+            Function<Info, byte[]> f =
+                    new Function<Info, byte[]>() {
+                        @Override
+                        public byte[] apply(Info input) {
+                            return serialize(input);
+                        }
+                    };
             Map<? extends String, byte[]> map = Maps.transformValues(m, f);
             hzMap.putAll(map);
         }
@@ -369,12 +378,13 @@ public class HzCacheProvider implements CacheProvider {
         public ConcurrentMap<String, Info> asMap() {
             if (available()) {
 
-                Function<byte[], Info> function = new Function<byte[], Info>() {
-                    @Override
-                    public Info apply(byte[] input) {
-                        return unmarshal(input);
-                    }
-                };
+                Function<byte[], Info> function =
+                        new Function<byte[], Info>() {
+                            @Override
+                            public Info apply(byte[] input) {
+                                return unmarshal(input);
+                            }
+                        };
                 Map<String, Info> transformedValues = Maps.transformValues(hzMap, function);
                 return new ConcurrentHashMap<String, Info>(transformedValues);
             }

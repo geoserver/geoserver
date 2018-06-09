@@ -5,12 +5,9 @@
 package org.geogig.geoserver.util;
 
 import java.net.UnknownHostException;
-
 import org.postgresql.util.PSQLException;
 
-/**
- * Utility class for building the best error message for PostgreSQL connection errors.
- */
+/** Utility class for building the best error message for PostgreSQL connection errors. */
 public class PostgresConnectionErrorHandler {
 
     public static String getMessage(final Throwable t) {

@@ -4,6 +4,10 @@
  */
 package org.geoserver.nsg.versioning;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ExtensionPriority;
@@ -29,14 +33,10 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 final class TimeVersioningCallback implements GetFeatureCallback, TransactionCallback {
 
-    private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+    private static final FilterFactory2 FILTER_FACTORY =
+            CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
 
     private final Catalog catalog;
 
@@ -58,10 +58,12 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         Query query = new Query(context.getQuery());
         Filter adapted = VersioningFilterAdapter.adapt(featureTypeInfo, query.getFilter());
         query.setFilter(adapted);
-        SortBy sort = FILTER_FACTORY.sort(TimeVersioning.getTimePropertyName(featureTypeInfo), SortOrder.DESCENDING);
+        SortBy sort =
+                FILTER_FACTORY.sort(
+                        TimeVersioning.getTimePropertyName(featureTypeInfo), SortOrder.DESCENDING);
         SortBy[] sorts = query.getSortBy();
         if (sorts == null) {
-            sorts = new SortBy[]{sort};
+            sorts = new SortBy[] {sort};
         } else {
             sorts = Arrays.copyOf(sorts, sorts.length + 1);
             sorts[sorts.length - 1] = sort;
@@ -80,7 +82,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(featureType);
         if (TimeVersioning.isEnabled(featureTypeInfo)) {
             String timePropertyName = TimeVersioning.getTimePropertyName(featureTypeInfo);
-            AttributeDescriptor attributeDescriptor = feature.getType().getDescriptor(timePropertyName);
+            AttributeDescriptor attributeDescriptor =
+                    feature.getType().getDescriptor(timePropertyName);
             Object timeValue = Converters.convert(date, attributeDescriptor.getType().getBinding());
             feature.setAttribute(timePropertyName, timeValue);
         }
@@ -94,23 +97,27 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         try {
             Query query = new Query();
             query.setFilter(VersioningFilterAdapter.adapt(featureTypeInfo, filter));
-            SortBy sort = FILTER_FACTORY.sort(TimeVersioning.getTimePropertyName(featureTypeInfo), SortOrder.DESCENDING);
-            query.setSortBy(new SortBy[]{sort});
+            SortBy sort =
+                    FILTER_FACTORY.sort(
+                            TimeVersioning.getTimePropertyName(featureTypeInfo),
+                            SortOrder.DESCENDING);
+            query.setSortBy(new SortBy[] {sort});
             return source.getFeatures(query);
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error getting features of type '%s'.", typeName), exception);
+            throw new RuntimeException(
+                    String.format("Error getting features of type '%s'.", typeName), exception);
         }
     }
 
     /**
-     * Returns the most recent version of each feature (note, this is an aggregate operator, a visitor, wondering
-     * if it could be optimized in a single db query)
+     * Returns the most recent version of each feature (note, this is an aggregate operator, a
+     * visitor, wondering if it could be optimized in a single db query)
      */
-    private List<SimpleFeature> getMostRecentFeatures(SimpleFeatureCollection timeSortedFeatures, FeatureTypeInfo featureTypeInfo) {
+    private List<SimpleFeature> getMostRecentFeatures(
+            SimpleFeatureCollection timeSortedFeatures, FeatureTypeInfo featureTypeInfo) {
         String nameProperty = TimeVersioning.getNamePropertyName(featureTypeInfo);
         Map<Object, SimpleFeature> featuresIndexedById = new HashMap<>();
-        try(SimpleFeatureIterator iterator = timeSortedFeatures.features()) {
+        try (SimpleFeatureIterator iterator = timeSortedFeatures.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 Object id = feature.getAttribute(nameProperty);
@@ -121,18 +128,21 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
     }
 
     /**
-     * Takes an update and transforms it in an insert if the feature type is versioned, leave it
-     * as is otherwise
+     * Takes an update and transforms it in an insert if the feature type is versioned, leave it as
+     * is otherwise
      */
-    private TransactionElement transformUpdate(TransactionRequest request, Update update, Date referenceTime) throws IOException {
+    private TransactionElement transformUpdate(
+            TransactionRequest request, Update update, Date referenceTime) throws IOException {
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(update.getTypeName()));
-        if(!TimeVersioning.isEnabled(featureTypeInfo)) {
+        if (!TimeVersioning.isEnabled(featureTypeInfo)) {
             return update;
         }
         SimpleFeatureCollection features = getTransactionFeatures(update);
         List<SimpleFeature> recent = getMostRecentFeatures(features, featureTypeInfo);
-        List<SimpleFeature> newFeatures = recent.stream()
-                .map(f -> prepareInsertFeature(f, update, referenceTime)).collect(Collectors.toList());
+        List<SimpleFeature> newFeatures =
+                recent.stream()
+                        .map(f -> prepareInsertFeature(f, update, referenceTime))
+                        .collect(Collectors.toList());
         Insert insert = request.createInsert();
         insert.setHandle(update.getHandle());
         insert.getFeatures().addAll(newFeatures);
@@ -140,7 +150,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         return insert;
     }
 
-    private SimpleFeature prepareInsertFeature(SimpleFeature feature, Update update, Date referenceTime) {
+    private SimpleFeature prepareInsertFeature(
+            SimpleFeature feature, Update update, Date referenceTime) {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(feature.getFeatureType());
         builder.init(feature);
         SimpleFeature versionedFeature = builder.buildFeature(null);
@@ -162,8 +173,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
     private FeatureTypeInfo getFeatureTypeInfo(Name featureTypeName) {
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
         if (featureTypeInfo == null) {
-            throw new RuntimeException(String.format(
-                    "Couldn't find feature type info ''%s.", featureTypeName));
+            throw new RuntimeException(
+                    String.format("Couldn't find feature type info ''%s.", featureTypeName));
         }
         return featureTypeInfo;
     }
@@ -191,7 +202,6 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
         return DataUtilities.simple(source);
     }
 
-
     @Override
     public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
         if (request.getVersion() == null || !request.getVersion().startsWith("2.0")) {
@@ -212,15 +222,17 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
                 newElements.add(element);
             } else if (element instanceof Update) {
                 try {
-                    TransactionElement transformed = transformUpdate(request, (Update) element, referenceTime);
+                    TransactionElement transformed =
+                            transformUpdate(request, (Update) element, referenceTime);
                     newElements.add(transformed);
                 } catch (IOException e) {
                     throw new WFSException(e);
                 }
             } else if (element instanceof Delete) {
                 Delete delete = (Delete) element;
-                FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(delete.getTypeName()));
-                if(TimeVersioning.isEnabled(featureTypeInfo)) {
+                FeatureTypeInfo featureTypeInfo =
+                        getFeatureTypeInfo(new NameImpl(delete.getTypeName()));
+                if (TimeVersioning.isEnabled(featureTypeInfo)) {
                     Filter filter = delete.getFilter();
                     Filter adaptedFilter = VersioningFilterAdapter.adapt(featureTypeInfo, filter);
                     delete.setFilter(adaptedFilter);
@@ -241,8 +253,8 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
     }
 
     @Override
-    public void afterTransaction(TransactionRequest request, TransactionResponse result, boolean committed) {
+    public void afterTransaction(
+            TransactionRequest request, TransactionResponse result, boolean committed) {
         // nothing to do
     }
-
 }

@@ -13,13 +13,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -70,12 +72,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
-
-import net.sf.json.JSONObject;
-
-
 public class ImporterIntegrationTest extends ImporterTestSupport {
 
     @Override
@@ -101,35 +97,44 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         File locations = new File(dir, "locations.csv");
 
-        // @formatter:off 
-        String contextDefinition = "{\n" + 
-                "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" + 
-                "         \"workspace\": {\n" + 
-                "            \"name\": \"" + wsName + "\"\n" + 
-                "         }\n" + 
-                "      },\n" + 
-                "      \"data\": {\n" + 
-                "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + jsonSafePath(locations) + "\"\n" + 
-                "      },\n" + 
-                "      targetStore: {\n" + 
-                "        dataStore: {\n" + 
-                "        name: \"h2\",\n" + 
-                "        }\n" +
-                "      },\n" +
-                "      \"transforms\": [\n" +
-                "        {\n" +
-                "          \"type\": \"AttributesToPointGeometryTransform\",\n" +
-                "          \"latField\": \"LAT\"," +
-                "          \"lngField\": \"LON\"" +
-                "        }\n" + "      ]" +
-                "   }\n" + 
-                "}";
-        // @formatter:on 
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(locations)
+                        + "\"\n"
+                        + "      },\n"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      },\n"
+                        + "      \"transforms\": [\n"
+                        + "        {\n"
+                        + "          \"type\": \"AttributesToPointGeometryTransform\",\n"
+                        + "          \"latField\": \"LAT\","
+                        + "          \"lngField\": \"LON\""
+                        + "        }\n"
+                        + "      ]"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
 
-        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports",
-                contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports", contextDefinition, "application/json"));
         // print(json);
         int importId = json.getJSONObject("import").getInt("id");
 
@@ -143,40 +148,48 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         File locations = new File(dir, "locations.csv");
 
-        // @formatter:off 
-        String contextDefinition = "{\n" + 
-                "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" + 
-                "         \"workspace\": {\n" + 
-                "            \"name\": \"" + wsName + "\"\n" + 
-                "         }\n" + 
-                "      },\n" + 
-                "      targetStore: {\n" + 
-                "        dataStore: {\n" + 
-                "        name: \"h2\",\n" + 
-                "        }\n" +
-                "      },\n" +
-                "      \"transforms\": [\n" +
-                "        {\n" +
-                "          \"type\": \"AttributesToPointGeometryTransform\",\n" +
-                "          \"latField\": \"LAT\"," +
-                "          \"lngField\": \"LON\"" +
-                "        }\n" + "      ]" +
-                "   }\n" + 
-                "}";
-        // @formatter:on 
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      },\n"
+                        + "      \"transforms\": [\n"
+                        + "        {\n"
+                        + "          \"type\": \"AttributesToPointGeometryTransform\",\n"
+                        + "          \"latField\": \"LAT\","
+                        + "          \"lngField\": \"LON\""
+                        + "        }\n"
+                        + "      ]"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
 
-        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports",
-                contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports", contextDefinition, "application/json"));
         // print(json);
         int importId = json.getJSONObject("import").getInt("id");
 
         // upload the data
-        String body = "--AaB03x\r\nContent-Disposition: form-data; name=filedata; filename=data.csv\r\n"
-                + "Content-Type: text/plain\n"
-                + "\r\n\r\n"
-                + FileUtils.readFileToString(locations)
-                + "\r\n\r\n--AaB03x--";
+        String body =
+                "--AaB03x\r\nContent-Disposition: form-data; name=filedata; filename=data.csv\r\n"
+                        + "Content-Type: text/plain\n"
+                        + "\r\n\r\n"
+                        + FileUtils.readFileToString(locations)
+                        + "\r\n\r\n--AaB03x--";
 
         post("/rest/imports/" + importId + "/tasks", body, "multipart/form-data; boundary=AaB03x");
 
@@ -189,7 +202,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         ImportTask task = context.getTasks().get(0);
 
         TransformChain transformChain = task.getTransform();
-        assertThat(transformChain.getTransforms().get(0),
+        assertThat(
+                transformChain.getTransforms().get(0),
                 CoreMatchers.instanceOf(AttributesToPointGeometryTransform.class));
         assertEquals(ImportTask.State.NO_CRS, task.getState());
 
@@ -211,10 +225,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertNotNull("Expecting geometry", geometryDescriptor);
         assertEquals("Invalid geometry name", "location", geometryDescriptor.getLocalName());
         assertEquals(3, featureType.getAttributeCount());
-        FeatureSource<? extends FeatureType, ? extends Feature> featureSource = fti
-                .getFeatureSource(null, null);
-        FeatureCollection<? extends FeatureType, ? extends Feature> features = featureSource
-                .getFeatures();
+        FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
+                fti.getFeatureSource(null, null);
+        FeatureCollection<? extends FeatureType, ? extends Feature> features =
+                featureSource.getFeatures();
         assertEquals(9, features.size());
         FeatureIterator<? extends Feature> featureIterator = features.features();
         assertTrue("Expected features", featureIterator.hasNext());
@@ -246,43 +260,53 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // set a callback to check that the request spring context is passed to the job thread
         RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
         SecurityContextHolder.getContext().setAuthentication(createAuthentication());
-        
+
         final boolean[] invoked = {false};
-        listener.setCallBack((request, user, resource) -> {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            assertThat(request, notNullValue());
-            assertThat(resource, notNullValue());
-            assertThat(auth, notNullValue());
-            invoked[0] = true;
-        });
+        listener.setCallBack(
+                (request, user, resource) -> {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    assertThat(request, notNullValue());
+                    assertThat(resource, notNullValue());
+                    assertThat(auth, notNullValue());
+                    invoked[0] = true;
+                });
 
         File gmlFile = file("gml/poi.gml2.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
 
-        // @formatter:off 
-        String contextDefinition = "{\n" + 
-                "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" + 
-                "         \"workspace\": {\n" + 
-                "            \"name\": \"" + wsName + "\"\n" + 
-                "         }\n" + 
-                "      },\n" + 
-                "      \"data\": {\n" + 
-                "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + jsonSafePath(gmlFile) +  "\"\n" + 
-                "      }," +
-                "      targetStore: {\n" + 
-                "        dataStore: {\n" + 
-                "        name: \"h2\",\n" + 
-                "        }\n" +
-                "      }\n" +    
-                "   }\n" + 
-                "}";
-        // @formatter:on 
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(gmlFile)
+                        + "\"\n"
+                        + "      },"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
 
-        JSONObject json = (JSONObject) json(
-                postAsServletResponse("/rest/imports?exec=true"
-                + (async ? "&async=true" : ""), contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports?exec=true" + (async ? "&async=true" : ""),
+                                        contextDefinition,
+                                        "application/json"));
         // print(json);
         String state = null;
         int importId;
@@ -305,10 +329,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertThat(invoked[0], is(true));
         checkPoiImport();
 
-        //Test delete
-        MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/"+importId);
+        // Test delete
+        MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/" + importId);
         assertEquals(204, resp.getStatus());
-        
+
         // check it was actually deleted
         MockHttpServletResponse getAgain = getAsServletResponse("/rest/imports/" + importId);
         assertEquals(404, getAgain.getStatus());
@@ -331,42 +355,52 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         SecurityContextHolder.getContext().setAuthentication(createAuthentication());
 
         final boolean[] invoked = {false};
-        listener.setCallBack((request, user, resource) -> {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            assertThat(request, notNullValue());
-            assertThat(resource, notNullValue());
-            assertThat(auth, notNullValue());
-            invoked[0] = true;
-        });
+        listener.setCallBack(
+                (request, user, resource) -> {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    assertThat(request, notNullValue());
+                    assertThat(resource, notNullValue());
+                    assertThat(auth, notNullValue());
+                    invoked[0] = true;
+                });
 
         File gmlFile = file("gml/poi.gml2.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
 
         // @formatter:off
-        String contextDefinition = "{\n" +
-                "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" +
-                "         \"workspace\": {\n" +
-                "            \"name\": \"" + wsName + "\"\n" +
-                "         }\n" +
-                "      },\n" +
-                "      \"data\": {\n" +
-                "        \"type\": \"file\",\n" +
-                "        \"file\": \"" + jsonSafePath(gmlFile) +  "\"\n" +
-                "      }," +
-                "      targetStore: {\n" +
-                "        dataStore: {\n" +
-                "        name: \"h2\",\n" +
-                "        }\n" +
-                "      }\n" +
-                "   }\n" +
-                "}";
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(gmlFile)
+                        + "\"\n"
+                        + "      },"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
         // @formatter:on
 
         // initialize the import
-        JSONObject json = (JSONObject) json(
-                postAsServletResponse("/rest/imports"
-                        + (async ? "?async=true" : ""), contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports" + (async ? "?async=true" : ""),
+                                        contextDefinition,
+                                        "application/json"));
         // print(json);
         String state = null;
         int importId;
@@ -388,7 +422,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         invoked[0] = false;
 
         // run the import
-        postAsServletResponse("/rest/imports/"+importId + (async ? "?async=true" : ""), "", "application/json");
+        postAsServletResponse(
+                "/rest/imports/" + importId + (async ? "?async=true" : ""), "", "application/json");
 
         if (async) {
             for (int i = 0; i < 60 * 2 * 2; i++) {
@@ -409,7 +444,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         checkPoiImport();
 
         // test delete
-        MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/"+importId);
+        MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/" + importId);
         assertEquals(204, resp.getStatus());
     }
 
@@ -417,11 +452,11 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         GeoServerUser anonymous = GeoServerUser.createAnonymous();
         List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
         roles.addAll(anonymous.getAuthorities());
-        AnonymousAuthenticationToken auth = new AnonymousAuthenticationToken("geoserver", 
-                anonymous.getUsername(),roles);
+        AnonymousAuthenticationToken auth =
+                new AnonymousAuthenticationToken("geoserver", anonymous.getUsername(), roles);
         return auth;
     }
-    
+
     private String jsonSafePath(File gmlFile) throws IOException {
         return gmlFile.getCanonicalPath().replace('\\', '/');
     }
@@ -431,8 +466,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertNotNull(fti);
         SimpleFeatureType featureType = (SimpleFeatureType) fti.getFeatureType();
         GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
-        assertEquals("Expecting a point geometry", Point.class, geometryDescriptor.getType()
-                .getBinding());
+        assertEquals(
+                "Expecting a point geometry",
+                Point.class,
+                geometryDescriptor.getType().getBinding());
         assertEquals(4, featureType.getAttributeCount());
 
         // read the features, check they are in the right order
@@ -459,14 +496,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         Properties props = new Properties();
         props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
         props.put("database", "empty");
-        try (FileOutputStream fos = new FileOutputStream(
-                new File(mosaicRoot, "datastore.properties"))) {
+        try (FileOutputStream fos =
+                new FileOutputStream(new File(mosaicRoot, "datastore.properties"))) {
             props.store(fos, null);
         }
         props.clear();
         props.put("CanBeEmpty", "true");
-        try (FileOutputStream fos = new FileOutputStream(
-                new File(mosaicRoot, "indexer.properties"))) {
+        try (FileOutputStream fos =
+                new FileOutputStream(new File(mosaicRoot, "indexer.properties"))) {
             props.store(fos, null);
         }
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -484,32 +521,42 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         store = catalog.getCoverageStoreByName(mosaicName);
 
-        // @formatter:off 
-        String contextDefinition = "{\n" + 
-                "   \"import\": {\n" +
-                "      \"data\": {\n" + 
-                "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + jsonSafePath(granule.getAbsoluteFile()) +  "\"\n" + 
-                "      }," +
-                "      targetStore: {\n" + 
-                "        dataStore: {\n" + 
-                "        name: \"" + store.getName() + "\",\n" + 
-                "        }\n" +
-                "      }\n" +    
-                "   }\n" + 
-                "}";
-        // @formatter:on 
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(granule.getAbsoluteFile())
+                        + "\"\n"
+                        + "      },"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \""
+                        + store.getName()
+                        + "\",\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
 
         // sync execution
-        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports?exec=true",
-                contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports?exec=true",
+                                        contextDefinition,
+                                        "application/json"));
         // print(json);
         String state = json.getJSONObject("import").getString("state");
         assertEquals("COMPLETE", state);
 
         // check the import produced a granule
-        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
-                .getGridCoverageReader(null, null);
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) store.getGridCoverageReader(null, null);
         GranuleSource granules = reader.getGranules(reader.getGridCoverageNames()[0], true);
         assertEquals(1, granules.getCount(Query.ALL));
 
@@ -520,12 +567,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
     /**
      * Attribute computation integration test
+     *
      * @throws Exception
      */
     @Test
     public void testAttributeCompute() throws Exception {
         // create H2 store to act as a target
-        DataStoreInfo h2Store = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
+        DataStoreInfo h2Store =
+                createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
 
         // create context with default name
         File dir = unpack("shape/archsites_epsg_prj.zip");
@@ -535,15 +584,19 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to compute a new attribute
-        String json = "{\n" +
-                "  \"type\": \"AttributeComputeTransform\",\n" +
-                "  \"field\": \"label\",\n" +
-                "  \"fieldType\": \"java.lang.String\",\n" +
-                "  \"cql\": \"'Test string'\"\n" +
-                "}";
+        String json =
+                "{\n"
+                        + "  \"type\": \"AttributeComputeTransform\",\n"
+                        + "  \"field\": \"label\",\n"
+                        + "  \"fieldType\": \"java.lang.String\",\n"
+                        + "  \"cql\": \"'Test string'\"\n"
+                        + "}";
 
-        MockHttpServletResponse resp = postAsServletResponse(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        json,
+                        "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
@@ -564,38 +617,39 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         }
         mosaicRoot.mkdirs();
     }
-    
+
     @Test
     public void testUploadRootExternal() throws Exception {
         File dirFromEnv = null;
         try {
-            // Let's now override the external folder through the Environment variable. This takes precedence on .properties
+            // Let's now override the external folder through the Environment variable. This takes
+            // precedence on .properties
             System.setProperty(Importer.UPLOAD_ROOT_KEY, "env_uploads");
             assertNotNull(importer.getUploadRoot());
 
             // the target layer is not there
             assertNull(getCatalog().getLayerByName("archsites"));
-    
+
             // create context with default name
             File dir = unpack("shape/archsites_epsg_prj.zip");
             ImportContext context = importer.createContext(0l);
             importer.changed(context);
             importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
-    
+
             // run it
             context = importer.getContext(0);
             importer.run(context);
-    
+
             // check the layer has been created
             assertNotNull(getCatalog().getLayerByName("archsites"));
-    
+
             // verify the file has been placed under the uploaded root specified on Env vars
             dirFromEnv = Resources.directory(Resources.fromPath("env_uploads"));
             // ... and ensure it is the same as defined on the .properties file
             assertEquals(dirFromEnv, importer.getUploadRoot());
-            
+
             // ... and that the "archsites_epsg_prj" data has been stored inside that folder
-            for(String subFolder : dirFromEnv.list()) {
+            for (String subFolder : dirFromEnv.list()) {
                 File archsites = new File(subFolder, "archsites.shp");
                 assertTrue(archsites.exists());
                 break;
@@ -613,8 +667,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     @Test
     public void testRunPostScript() throws Exception {
         // check if bash is there
-        Assume.assumeTrue("Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
-        
+        Assume.assumeTrue(
+                "Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
+
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("archsites"));
 
@@ -631,13 +686,17 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to run post script
-        String json = "{\n" +
-                "  \"type\": \"PostScriptTransform\",\n" +
-                "  \"name\": \"test.sh\"\n" +
-                "}";
+        String json =
+                "{\n"
+                        + "  \"type\": \"PostScriptTransform\",\n"
+                        + "  \"name\": \"test.sh\"\n"
+                        + "}";
 
-        MockHttpServletResponse resp = postAsServletResponse(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        json,
+                        "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
@@ -655,7 +714,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     @Test
     public void testRunPostScriptWithOptions() throws Exception {
         // check if bash is there
-        Assume.assumeTrue("Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
+        Assume.assumeTrue(
+                "Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
 
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("archsites"));
@@ -673,14 +733,18 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to run post script
-        String json = "{\n" +
-                "  \"type\": \"PostScriptTransform\",\n" +
-                "  \"name\": \"test.sh\",\n" +
-                "  \"options\": [\"test.abc\"]" +
-                "}";
+        String json =
+                "{\n"
+                        + "  \"type\": \"PostScriptTransform\",\n"
+                        + "  \"name\": \"test.sh\",\n"
+                        + "  \"options\": [\"test.abc\"]"
+                        + "}";
 
-        MockHttpServletResponse resp = postAsServletResponse(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        json,
+                        "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
@@ -694,12 +758,12 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         File testFile = new File(scripts, "test.abc");
         assertTrue(testFile.exists());
     }
-    
+
     @Test
     public void testRunWithTimeDimention() throws Exception {
         Catalog cat = getCatalog();
 
-        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming"); 
+        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming");
 
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("ming_time"));
@@ -716,14 +780,18 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         context.getTasks().get(0).getData().setCharsetEncoding("UTF-8");
 
         // add a transformation to run post script
-        String json = "{\n" +
-                "  \"type\": \"DateFormatTransform\",\n" +
-                "  \"field\": \"Year_Date\",\n" +
-                "  \"presentation\": \"DISCRETE_INTERVAL\"" +
-                "}";
+        String json =
+                "{\n"
+                        + "  \"type\": \"DateFormatTransform\",\n"
+                        + "  \"field\": \"Year_Date\",\n"
+                        + "  \"presentation\": \"DISCRETE_INTERVAL\""
+                        + "}";
 
-        MockHttpServletResponse resp = postAsServletResponse(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms", json, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        json,
+                        "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
@@ -743,21 +811,21 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // check the layer has been created
         LayerInfo layer = cat.getLayerByName("ming_time");
         assertNotNull(layer);
-        
+
         ResourceInfo resource = layer.getResource();
-        
+
         // verify the TIME dimension has benn defined
         MetadataMap md = resource.getMetadata();
         assertNotNull(md);
         assertTrue(md.containsKey("time"));
-        
+
         DimensionInfo timeDimension = (DimensionInfo) md.get("time");
         assertNotNull(timeDimension);
-        
+
         assertEquals(timeDimension.getAttribute(), "Year_Date");
         assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);
     }
-    
+
     @Test
     public void testIndirectImportTempCleanup() throws Exception {
         File dir = unpack("csv/locations.zip");
@@ -765,37 +833,45 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         File locations = new File(dir, "locations.csv");
 
-        // @formatter:off 
-        String contextDefinition = "{\n" + 
-                "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" + 
-                "         \"workspace\": {\n" + 
-                "            \"name\": \"" + wsName + "\"\n" + 
-                "         }\n" + 
-                "      },\n" + 
-                "      \"data\": {\n" + 
-                "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + jsonSafePath(locations) + "\"\n" + 
-                "      },\n" + 
-                "      targetStore: {\n" + 
-                "        dataStore: {\n" + 
-                "        name: \"h2\",\n" + 
-                "        }\n" +
-                "      }\n" +
-                "   }\n" + 
-                "}";
-        // @formatter:on 
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(locations)
+                        + "\"\n"
+                        + "      },\n"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
 
-        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports",
-                contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports", contextDefinition, "application/json"));
         // print(json);
         int importId = json.getJSONObject("import").getInt("id");
 
         ImportContext context = importer.getContext(importId);
         assertEquals(ImportContext.State.PENDING, context.getState());
-        
+
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
-        
+
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
         LayerInfo layer = task.getLayer();
@@ -808,10 +884,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
-        
+
         assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
     }
-    
+
     @Test
     public void testDirectImportTempCleanup() throws Exception {
         File dir = unpack("csv/locations.zip");
@@ -819,32 +895,40 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         File locations = new File(dir, "locations.csv");
 
-        // @formatter:off 
-        String contextDefinition = "{\n" + 
-                "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" + 
-                "         \"workspace\": {\n" + 
-                "            \"name\": \"" + wsName + "\"\n" + 
-                "         }\n" + 
-                "      },\n" + 
-                "      \"data\": {\n" + 
-                "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + jsonSafePath(locations) + "\"\n" + 
-                "      }\n" + 
-                "   }\n" + 
-                "}";
-        // @formatter:on 
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(locations)
+                        + "\"\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
 
-        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports",
-                contextDefinition, "application/json"));
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports", contextDefinition, "application/json"));
         // print(json);
         int importId = json.getJSONObject("import").getInt("id");
 
         ImportContext context = importer.getContext(importId);
         assertEquals(ImportContext.State.PENDING, context.getState());
-        
+
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
-        
+
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
         LayerInfo layer = task.getLayer();
@@ -857,7 +941,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
-        
+
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
     }
 }

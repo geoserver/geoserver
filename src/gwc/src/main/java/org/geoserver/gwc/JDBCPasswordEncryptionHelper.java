@@ -7,7 +7,6 @@ package org.geoserver.gwc;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geotools.util.logging.Logging;
@@ -17,7 +16,7 @@ import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 /**
  * Helper class that encodes and decodes the JDBC connection pool password on demand
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class JDBCPasswordEncryptionHelper {
@@ -33,10 +32,9 @@ class JDBCPasswordEncryptionHelper {
     /**
      * If the connection pool password is encrypted, this method will un-encrypt it using the
      * GeoServer password encoders
-     * 
-     * @param configuration A deep copy of the configuration with the unencrypted password, if the
-     *        password was encrypted, or the original one, if the password was plaintext
      *
+     * @param configuration A deep copy of the configuration with the unencrypted password, if the
+     *     password was encrypted, or the original one, if the password was plaintext
      */
     public JDBCConfiguration unencryptPassword(JDBCConfiguration configuration) {
         if (configuration.getConnectionPool() != null
@@ -48,8 +46,10 @@ class JDBCPasswordEncryptionHelper {
                 configuration = cloneAndSetPassword(configuration, decoded);
             } catch (EncryptionOperationNotPossibleException e) {
                 // fine, it must have been a plain text password
-                LOGGER.log(Level.FINE,
-                        "Unencrypting the password failed, assuming it is a plain text one", e);
+                LOGGER.log(
+                        Level.FINE,
+                        "Unencrypting the password failed, assuming it is a plain text one",
+                        e);
             }
         }
 
@@ -58,9 +58,8 @@ class JDBCPasswordEncryptionHelper {
 
     /**
      * Encrypts the connection pool password, if not null, using the GeoServer password encoders.
-     * 
-     * @param configuration A deep copy ofthe configuration, with the password encoded
      *
+     * @param configuration A deep copy ofthe configuration, with the password encoded
      */
     public JDBCConfiguration encryptPassword(JDBCConfiguration configuration) {
         ConnectionPoolConfiguration pool = configuration.getConnectionPool();
@@ -94,5 +93,4 @@ class JDBCPasswordEncryptionHelper {
         result.setJNDISource(configuration.getJNDISource());
         return result;
     }
-
 }

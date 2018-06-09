@@ -7,7 +7,6 @@ package org.geoserver.rest.security;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
-
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.impl.RESTAccessRuleDAO;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/rest")
 public class RestAccessController extends AbstractAclController {
 
-    /**
-     * rule pattern
-     */
-    static final Pattern KEYPATTERN = Pattern
-            .compile("\\S+:(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*");
+    /** rule pattern */
+    static final Pattern KEYPATTERN =
+            Pattern.compile("\\S+:(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*");
 
     public RestAccessController() {
         super(RESTAccessRuleDAO.get());
@@ -49,10 +46,9 @@ public class RestAccessController extends AbstractAclController {
             return "Invalid '" + ruleKey + "' not matching " + KEYPATTERN;
         return null;
     }
-    
+
     @Override
     protected String getBasePath() {
         return "/security/acl/rest";
     }
-
 }

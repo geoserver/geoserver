@@ -5,24 +5,22 @@
 package org.geoserver.taskmanager.data;
 
 /**
- * Objects that are be soft removed are still stored in database for historical reasons,
- * but are generally not displayed.
- * 
- * @author Niels Charlier
+ * Objects that are be soft removed are still stored in database for historical reasons, but are
+ * generally not displayed.
  *
+ * @author Niels Charlier
  */
 public interface SoftRemove {
 
     void setRemoveStamp(long removeStamp);
-    
+
     long getRemoveStamp();
-    
+
     default boolean isActive() {
         return getRemoveStamp() == 0;
     }
-    
-    default void setActive(boolean active) {
-       setRemoveStamp(active ? 0 : System.currentTimeMillis());
-    }
 
+    default void setActive(boolean active) {
+        setRemoveStamp(active ? 0 : System.currentTimeMillis());
+    }
 }

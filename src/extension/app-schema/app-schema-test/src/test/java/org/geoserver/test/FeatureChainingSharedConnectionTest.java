@@ -12,7 +12,6 @@ import static org.junit.Assume.assumeTrue;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
@@ -58,24 +57,24 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         guTransaction = null;
         mfSourceDataStore = null;
         guSourceDataStore = null;
-
     }
 
     /**
-     * Tests that connection is automatically shared among top feature iterators and nested feature iterators, but only in the context of a single
-     * AppSchemaDataAccess instance.
-     * 
-     * <p>
-     * What this means in practice is:
+     * Tests that connection is automatically shared among top feature iterators and nested feature
+     * iterators, but only in the context of a single AppSchemaDataAccess instance.
+     *
+     * <p>What this means in practice is:
+     *
      * <ul>
-     * <li><em>MappedFeature</em> and <em>GeologicUnit</em> belong to different AppSchemaDataAccess instances, so an iterator on MappedFeature will
-     * open a new database connection to retrieve the nested GeologicUnit features</li>
-     * <li><em>GeologicUnit, CompositionPart, ControlledConcept, CGI_TermValue</em> belong to the same AppSchemaDataAccess instances, so an iterator
-     * on GeologicUnit will NOT open a new database connection to retrieve the nested <em>CompositionPart, ControlledConcept, CGI_TermValue</em>
-     * "features"</li>
+     *   <li><em>MappedFeature</em> and <em>GeologicUnit</em> belong to different
+     *       AppSchemaDataAccess instances, so an iterator on MappedFeature will open a new database
+     *       connection to retrieve the nested GeologicUnit features
+     *   <li><em>GeologicUnit, CompositionPart, ControlledConcept, CGI_TermValue</em> belong to the
+     *       same AppSchemaDataAccess instances, so an iterator on GeologicUnit will NOT open a new
+     *       database connection to retrieve the nested <em>CompositionPart, ControlledConcept,
+     *       CGI_TermValue</em> "features"
      * </ul>
-     * </p>
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -98,14 +97,16 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         FeatureSource guSourceFs = guFs.getMapping().getSource();
 
         // The test only makes sense if we have a databae backend and joining is enabled
-        assumeTrue(mfSourceFs.getDataStore() instanceof JDBCDataStore
-                && guSourceFs.getDataStore() instanceof JDBCDataStore
-                && AppSchemaDataAccessConfigurator.isJoining());
+        assumeTrue(
+                mfSourceFs.getDataStore() instanceof JDBCDataStore
+                        && guSourceFs.getDataStore() instanceof JDBCDataStore
+                        && AppSchemaDataAccessConfigurator.isJoining());
 
         mfSourceDataStore = (JDBCDataStore) mfSourceFs.getDataStore();
         guSourceDataStore = (JDBCDataStore) guSourceFs.getDataStore();
 
-        // retrieve one feature to trigger all necessary initialization steps so they don't interfere
+        // retrieve one feature to trigger all necessary initialization steps so they don't
+        // interfere
         // with the test's outcome
         try (FeatureIterator fIt = mfFs.getFeatures().features()) {
             assertTrue(fIt.hasNext());
@@ -119,9 +120,10 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
         ff.setNamepaceContext(mfFs.getMapping().getNamespaces());
 
-        PropertyIsLike like = ff.like(
-                ff.property("gsml:specification/gsml:GeologicUnit/gml:description"),
-                "*sedimentary*");
+        PropertyIsLike like =
+                ff.like(
+                        ff.property("gsml:specification/gsml:GeologicUnit/gml:description"),
+                        "*sedimentary*");
 
         try (FeatureIterator fIt = mfFs.getFeatures(like).features()) {
             assertTrue(fIt instanceof DataAccessMappingFeatureIterator);
@@ -137,8 +139,8 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
             assertNotNull(mappingIt.getTransaction());
             mfTransaction = mappingIt.getTransaction();
 
-            testSharedConnectionRecursively(mfFs.getMapping(), mappingIt, mfSourceDataStore,
-                    mfTransaction);
+            testSharedConnectionRecursively(
+                    mfFs.getMapping(), mappingIt, mfSourceDataStore, mfTransaction);
         }
 
         assertEquals(2, connListener.actionCountByDataStore.size());
@@ -151,9 +153,12 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         assertEquals(8, nestedFeaturesCount);
     }
 
-    private void testSharedConnectionRecursively(FeatureTypeMapping mapping,
-            DataAccessMappingFeatureIterator mappingIt, DataAccess parentDataStore,
-            Transaction parentTx) throws IOException {
+    private void testSharedConnectionRecursively(
+            FeatureTypeMapping mapping,
+            DataAccessMappingFeatureIterator mappingIt,
+            DataAccess parentDataStore,
+            Transaction parentTx)
+            throws IOException {
         List<AttributeMapping> attrs = mapping.getAttributeMappings();
         assertTrue(attrs != null);
         assertTrue(attrs.size() > 0);
@@ -162,19 +167,20 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
             if (attr instanceof JoiningNestedAttributeMapping) {
                 nestedFeaturesCount++;
 
-                JoiningNestedAttributeMapping joiningNestedAttr = (JoiningNestedAttributeMapping) attr;
-                Map<Name, DataAccessMappingFeatureIterator> nestedFeatureIterators = joiningNestedAttr
-                        .getNestedFeatureIterators(mappingIt);
+                JoiningNestedAttributeMapping joiningNestedAttr =
+                        (JoiningNestedAttributeMapping) attr;
+                Map<Name, DataAccessMappingFeatureIterator> nestedFeatureIterators =
+                        joiningNestedAttr.getNestedFeatureIterators(mappingIt);
                 assertNotNull(nestedFeatureIterators);
 
                 if (nestedFeatureIterators.size() > 0) {
                     assertEquals(1, nestedFeatureIterators.size());
 
-                    FeatureTypeMapping nestedMapping = joiningNestedAttr
-                            .getFeatureTypeMapping(null);
+                    FeatureTypeMapping nestedMapping =
+                            joiningNestedAttr.getFeatureTypeMapping(null);
 
-                    DataAccessMappingFeatureIterator nestedIt = nestedFeatureIterators.values()
-                            .iterator().next();
+                    DataAccessMappingFeatureIterator nestedIt =
+                            nestedFeatureIterators.values().iterator().next();
 
                     Transaction expectedTx = parentTx;
                     DataAccess expectedDataStore = parentDataStore;
@@ -197,11 +203,10 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
                     assertEquals(expectedDataStore, nestedMappedSource.getDataStore());
                     assertEquals(expectedTx, nestedIt.getTransaction());
 
-                    testSharedConnectionRecursively(nestedMapping, nestedIt, expectedDataStore,
-                            expectedTx);
+                    testSharedConnectionRecursively(
+                            nestedMapping, nestedIt, expectedDataStore, expectedTx);
                 }
             }
         }
     }
-
 }

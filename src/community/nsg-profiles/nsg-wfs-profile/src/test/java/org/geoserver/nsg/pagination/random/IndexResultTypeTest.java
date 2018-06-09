@@ -5,6 +5,9 @@
 
 package org.geoserver.nsg.pagination.random;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.nsg.TestsUtils;
@@ -16,9 +19,6 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 
 public class IndexResultTypeTest extends WFS20TestSupport {
 
@@ -32,52 +32,70 @@ public class IndexResultTypeTest extends WFS20TestSupport {
 
     @Test
     public void testIndexGet() throws Exception {
-        Document doc = getAsDOM(
-                "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index");
+        Document doc =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index");
         assertGML32(doc);
         assertEquals("15", doc.getDocumentElement().getAttribute("numberMatched"));
         assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
         XMLAssert.assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", doc);
         IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
         DataStore dataStore = ic.getCurrentDataStore();
-        SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
+        SimpleFeatureStore featureStore =
+                (SimpleFeatureStore)
+                        dataStore.getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
         String resultSetId = doc.getDocumentElement().getAttribute("resultSetID");
-        SimpleFeature feature = featureStore.getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
-                .features().next();
+        SimpleFeature feature =
+                featureStore
+                        .getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
+                        .features()
+                        .next();
         assertNotNull(feature);
     }
 
     @Test
     public void testIndexResultTypePost() throws Exception {
-        String request = TestsUtils.readResource("/org/geoserver/nsg/pagination/random/get_request_1.xml");
+        String request =
+                TestsUtils.readResource("/org/geoserver/nsg/pagination/random/get_request_1.xml");
         MockHttpServletResponse response = postAsServletResponse("wfs", request);
         assertThat(response.getStatus(), is(200));
         Document document = dom(response, true);
         assertGML32(document);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection[@resultSetID])", document);
+        XMLAssert.assertXpathEvaluatesTo(
+                "1", "count(//wfs:FeatureCollection[@resultSetID])", document);
         IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
         DataStore dataStore = ic.getCurrentDataStore();
-        SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
+        SimpleFeatureStore featureStore =
+                (SimpleFeatureStore)
+                        dataStore.getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
         String resultSetId = document.getDocumentElement().getAttribute("resultSetID");
-        SimpleFeature feature = featureStore.getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
-                .features().next();
+        SimpleFeature feature =
+                featureStore
+                        .getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
+                        .features()
+                        .next();
         assertNotNull(feature);
         // check that is possible to perform a PageResults operation on the obtained resultSetID
-        response = getAsServletResponse("ows?service=WFS&version=2.0.0&request=PageResults&resultSetID=" + resultSetId);
+        response =
+                getAsServletResponse(
+                        "ows?service=WFS&version=2.0.0&request=PageResults&resultSetID="
+                                + resultSetId);
         assertThat(response.getStatus(), is(200));
         document = dom(response, true);
         assertGML32(document);
-        XMLAssert.assertXpathEvaluatesTo("5", "count(//wfs:FeatureCollection/wfs:member)", document);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection[@numberMatched='15'])", document);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection[@numberReturned='5'])", document);
+        XMLAssert.assertXpathEvaluatesTo(
+                "5", "count(//wfs:FeatureCollection/wfs:member)", document);
+        XMLAssert.assertXpathEvaluatesTo(
+                "1", "count(//wfs:FeatureCollection[@numberMatched='15'])", document);
+        XMLAssert.assertXpathEvaluatesTo(
+                "1", "count(//wfs:FeatureCollection[@numberReturned='5'])", document);
     }
 
     @Test
     public void testIndexPaginationGet() throws Exception {
-        Document doc = getAsDOM(
-                "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index&count=2&startIndex=6");
+        Document doc =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index&count=2&startIndex=6");
         assertGML32(doc);
         assertEquals("15", doc.getDocumentElement().getAttribute("numberMatched"));
         assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
@@ -90,21 +108,28 @@ public class IndexResultTypeTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", doc);
         IndexConfigurationManager ic = applicationContext.getBean(IndexConfigurationManager.class);
         DataStore dataStore = ic.getCurrentDataStore();
-        SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
+        SimpleFeatureStore featureStore =
+                (SimpleFeatureStore)
+                        dataStore.getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
         String resultSetId = doc.getDocumentElement().getAttribute("resultSetID");
-        SimpleFeature feature = featureStore.getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
-                .features().next();
+        SimpleFeature feature =
+                featureStore
+                        .getFeatures(CQL.toFilter("ID='" + resultSetId + "'"))
+                        .features()
+                        .next();
         assertNotNull(feature);
     }
 
     @Test
     public void testPageResultIndexPaginationGet() throws Exception {
-        Document docIndex = getAsDOM(
-                "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index&count=2&startIndex=6");
+        Document docIndex =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index&count=2&startIndex=6");
         String resultSetId = docIndex.getDocumentElement().getAttribute("resultSetID");
-        Document docResutl = getAsDOM(
-                "ows?service=WFS&version=2.0.2&request=PageResults&resultSetID=" + resultSetId);
+        Document docResutl =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.2&request=PageResults&resultSetID="
+                                + resultSetId);
         XMLAssert.assertXpathEvaluatesTo("2", "count(//cdf:Fifteen)", docResutl);
         assertStartIndexCount(docResutl, "previous", 4, 2);
         assertStartIndexCount(docResutl, "next", 8, 2);
@@ -112,22 +137,27 @@ public class IndexResultTypeTest extends WFS20TestSupport {
 
     @Test
     public void testPageResultDefaultPaginationGet() throws Exception {
-        Document docIndex = getAsDOM(
-                "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index");
+        Document docIndex =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index");
         String resultSetId = docIndex.getDocumentElement().getAttribute("resultSetID");
-        Document docResutl = getAsDOM(
-                "ows?service=WFS&version=2.0.2&request=PageResults&resultSetID=" + resultSetId);
+        Document docResutl =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.2&request=PageResults&resultSetID="
+                                + resultSetId);
         XMLAssert.assertXpathEvaluatesTo("10", "count(//cdf:Fifteen)", docResutl);
     }
 
     @Test
     public void testPageResultOverridePaginationGet() throws Exception {
-        Document docIndex = getAsDOM(
-                "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index&count=2&startIndex=6");
+        Document docIndex =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cdf:Fifteen&resultType=index&count=2&startIndex=6");
         String resultSetId = docIndex.getDocumentElement().getAttribute("resultSetID");
-        Document docResutl = getAsDOM(
-                "ows?service=WFS&version=2.0.2&request=PageResults&count=3&startIndex=5&resultSetID="
-                        + resultSetId);
+        Document docResutl =
+                getAsDOM(
+                        "ows?service=WFS&version=2.0.2&request=PageResults&count=3&startIndex=5&resultSetID="
+                                + resultSetId);
         XMLAssert.assertXpathEvaluatesTo("3", "count(//cdf:Fifteen)", docResutl);
         assertStartIndexCount(docResutl, "previous", 2, 3);
         assertStartIndexCount(docResutl, "next", 8, 3);
@@ -154,5 +184,4 @@ public class IndexResultTypeTest extends WFS20TestSupport {
         assertEquals(startIndex, actualStartIndex);
         assertEquals(count, actualCount);
     }
-
 }

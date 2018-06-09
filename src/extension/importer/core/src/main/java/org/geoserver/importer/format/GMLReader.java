@@ -7,7 +7,6 @@ package org.geoserver.importer.format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
-
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.xml.Configuration;
@@ -17,9 +16,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * A reader for GML files
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 class GMLReader implements FeatureReader<SimpleFeatureType, SimpleFeature> {
 
@@ -43,8 +41,8 @@ class GMLReader implements FeatureReader<SimpleFeatureType, SimpleFeature> {
     }
 
     @Override
-    public SimpleFeature next() throws IOException, IllegalArgumentException,
-            NoSuchElementException {
+    public SimpleFeature next()
+            throws IOException, IllegalArgumentException, NoSuchElementException {
         if (!hasNext()) {
             throw new NoSuchElementException();
         } else {
@@ -75,5 +73,4 @@ class GMLReader implements FeatureReader<SimpleFeatureType, SimpleFeature> {
     public void close() throws IOException {
         inputStream.close();
     }
-
 }

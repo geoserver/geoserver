@@ -7,12 +7,11 @@ package org.geoserver.wcs.kvp;
 
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.ows11.SectionsType;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**
  * Parses the "sections" GetCapabilities kvp argument
- * 
+ *
  * @author Andrea Aime - TOPP
  */
 public class SectionsKvpParser extends org.geoserver.ows.kvp.SectionsKvpParser {
@@ -25,5 +24,4 @@ public class SectionsKvpParser extends org.geoserver.ows.kvp.SectionsKvpParser {
     protected EObject createObject() {
         return Ows11Factory.eINSTANCE.createSectionsType();
     }
-
 }

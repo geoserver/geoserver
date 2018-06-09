@@ -7,32 +7,29 @@ package org.geoserver.ows.kvp;
 
 import java.text.ParseException;
 import java.util.List;
-
 import org.geoserver.ows.KvpParser;
 
 /**
  * Parses the {@code elevation} parameter of the request.
- * 
+ *
  * @author Ariel Nunez, GeoSolutions S.A.S.
  * @author Simone Giannecchini, GeoSolutions S.A.S.
  * @version $Id$
  */
 public class ElevationKvpParser extends KvpParser {
-    
+
     ElevationParser parser = new ElevationParser();
 
     /**
      * Creates the parser specifying the name of the key to latch to.
-     * 
-     * @param key
-     *            The key whose associated value to parse.
+     *
+     * @param key The key whose associated value to parse.
      */
     public ElevationKvpParser(String key) {
         super(key, List.class);
     }
-    
 
-    @SuppressWarnings( { "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object parse(String value) throws ParseException {
         ElevationParser parser = getElevationParser();
         return parser.parse(value);
@@ -40,10 +37,10 @@ public class ElevationKvpParser extends KvpParser {
 
     /**
      * Allows subclasses to customize the {@link ElevationParser} used in {@link #parse(String)}
+     *
      * @return
      */
     protected ElevationParser getElevationParser() {
         return parser;
     }
-
 }

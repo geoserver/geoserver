@@ -6,14 +6,11 @@
 package org.geoserver.ows.xml.v1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.ows10.AcceptFormatsType;
 import net.opengis.ows10.Ows10Factory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptFormatsType.
@@ -38,14 +35,13 @@ public class AcceptFormatsTypeBinding extends AbstractComplexBinding {
         this.owsfactory = owsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return OWS.ACCEPTFORMATSTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -56,13 +52,13 @@ public class AcceptFormatsTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         AcceptFormatsType acceptFormats = owsfactory.createAcceptFormatsType();
         acceptFormats.getOutputFormat().addAll(node.getChildValues("OutputFormat"));
 

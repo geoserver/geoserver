@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -49,29 +48,32 @@ import org.opengis.filter.Filter;
  * {@code http://geogig.org}, and that each {@link LayerInfo layer} from a geogig datastore gets a
  * {@link LayerIdentifierInfo} with authority {@code GEOGIG_ENTRY_POINT} and the identifier composed
  * of {@code <repositoryId>:<nativeName>[:<branch/head>]}
- * <p>
- * The identifier is made of the following parts:
+ *
+ * <p>The identifier is made of the following parts:
+ *
  * <ul>
- * <li>{@code <repositoryId>}: {@link RepositoryInfo#getId() RepositoryInfo ID} that identifies the
- * repository referred by the layer's {@link DataStore}. {@link RepositoryInfo}s are managed by
- * {@link RepositoryManager} and are the way this plugin supports configuring several datastores
- * against the same repository without duplication of information.
- * <li>{@code <nativeName>}: the layer's resource {@link ResourceInfo#getNativeName() native name}
- * <li>{@code <branch/head>}: the geogig datastore's configured {@link GeoGigDataStoreFactory#BRANCH
- * branch} or {@link GeoGigDataStoreFactory#HEAD}, whichever is present, or absent if no branch or
- * head is configured (and hence the datastore operates on whatever the current HEAD is)
+ *   <li>{@code <repositoryId>}: {@link RepositoryInfo#getId() RepositoryInfo ID} that identifies
+ *       the repository referred by the layer's {@link DataStore}. {@link RepositoryInfo}s are
+ *       managed by {@link RepositoryManager} and are the way this plugin supports configuring
+ *       several datastores against the same repository without duplication of information.
+ *   <li>{@code <nativeName>}: the layer's resource {@link ResourceInfo#getNativeName() native name}
+ *   <li>{@code <branch/head>}: the geogig datastore's configured {@link
+ *       GeoGigDataStoreFactory#BRANCH branch} or {@link GeoGigDataStoreFactory#HEAD}, whichever is
+ *       present, or absent if no branch or head is configured (and hence the datastore operates on
+ *       whatever the current HEAD is)
  * </ul>
- * <p>
- * Handles the following events:
+ *
+ * <p>Handles the following events:
+ *
  * <ul>
- * <li>{@link WorkspaceInfo} renamed: all geogig layers of stores in that workspace get their
- * authority URL identifiers updated
- * <li>{@link DataStoreInfo} renamed: all geogig layers of stores in that workspace get their
- * authority URL identifiers updated
- * <li>{@link DataStoreInfo} workspace changed: all geogig layers of stores in that workspace get
- * their authority URL identifiers updated
- * <li>{@link LayerInfo} added: if its a geogig layer, creates its geogig authority URL identifier
- * and saves the layer info
+ *   <li>{@link WorkspaceInfo} renamed: all geogig layers of stores in that workspace get their
+ *       authority URL identifiers updated
+ *   <li>{@link DataStoreInfo} renamed: all geogig layers of stores in that workspace get their
+ *       authority URL identifiers updated
+ *   <li>{@link DataStoreInfo} workspace changed: all geogig layers of stores in that workspace get
+ *       their authority URL identifiers updated
+ *   <li>{@link LayerInfo} added: if its a geogig layer, creates its geogig authority URL identifier
+ *       and saves the layer info
  * </ul>
  */
 public class GeogigLayerIntegrationListener implements CatalogListener {
@@ -86,8 +88,7 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
 
     private final GeoGigCatalogVisitor visitor = new GeoGigCatalogVisitor();
 
-    /**
-     */
+    /** */
     public GeogigLayerIntegrationListener(GeoServer geoserver) {
         LOGGER.log(Level.FINE, "Initialized {0}", getClass().getName());
         this.geoserver = geoserver;
@@ -116,7 +117,9 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         if (PRE_MOFIFY_EVENT.get() != null) {
-            LOGGER.log(Level.FINE, "pre-modify event exists, ignoring handleModifyEvent ({0})",
+            LOGGER.log(
+                    Level.FINE,
+                    "pre-modify event exists, ignoring handleModifyEvent ({0})",
                     PRE_MOFIFY_EVENT.get());
             return;
         }
@@ -127,8 +130,8 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
 
         boolean tryPostUpdate = (source instanceof WorkspaceInfo) || isGeogigStore;
         final List<String> propertyNames = event.getPropertyNames();
-        tryPostUpdate &= propertyNames.contains("name")
-                || propertyNames.contains("connectionParameters");
+        tryPostUpdate &=
+                propertyNames.contains("name") || propertyNames.contains("connectionParameters");
 
         if (tryPostUpdate) {
             LOGGER.log(Level.FINE, "Storing event for post-handling on {0}", source);
@@ -173,8 +176,10 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
         final String wsId = source.getId();
         final String storeType = DISPLAY_NAME;
 
-        Filter filter = and(equal("resource.store.workspace.id", wsId),
-                equal("resource.store.type", storeType));
+        Filter filter =
+                and(
+                        equal("resource.store.workspace.id", wsId),
+                        equal("resource.store.type", storeType));
 
         CloseableIterator<LayerInfo> affectedLayers = catalog.list(LayerInfo.class, filter);
         updateLayers(affectedLayers);
@@ -219,25 +224,21 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
         return true;
     }
 
-    /**
-     * Does nothing
-     */
+    /** Does nothing */
     @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         // do nothing
     }
 
-    /**
-     * Does nothing
-     */
+    /** Does nothing */
     @Override
     public void reloaded() {
         // do nothing
     }
 
     private void setIdentifier(LayerInfo layer) {
-        LOGGER.log(Level.FINE, "Updating geogig auth identifier for layer {0}",
-                layer.prefixedName());
+        LOGGER.log(
+                Level.FINE, "Updating geogig auth identifier for layer {0}", layer.prefixedName());
         final String layerIdentifier = buildLayerIdentifier(layer);
         updateIdentifier(layer, layerIdentifier);
     }
@@ -267,8 +268,10 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
         layerIdentifiers.add(newId);
         Catalog catalog = geoserver.getCatalog();
         catalog.save(geogigLayer);
-        LOGGER.log(Level.INFO, "Updated geogig auth identifier for layer {0} as {1}",
-                new Object[] { geogigLayer.prefixedName(), newIdentifier });
+        LOGGER.log(
+                Level.INFO,
+                "Updated geogig auth identifier for layer {0} as {1}",
+                new Object[] {geogigLayer.prefixedName(), newIdentifier});
     }
 
     private String buildLayerIdentifier(LayerInfo geogigLayer) {
@@ -285,8 +288,8 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
             refSpec = connectionParameters.get(HEAD.key);
         }
 
-        StringBuilder identifier = new StringBuilder(repositoryId).append(':')
-                .append(resource.getNativeName());
+        StringBuilder identifier =
+                new StringBuilder(repositoryId).append(':').append(resource.getNativeName());
         if (refSpec != null) {
             identifier.append(':').append(refSpec);
         }

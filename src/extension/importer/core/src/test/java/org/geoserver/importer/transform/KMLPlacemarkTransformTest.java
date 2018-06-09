@@ -5,11 +5,14 @@
  */
 package org.geoserver.importer.transform;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import java.util.ArrayList;
 import java.util.List;
-
 import junit.framework.TestCase;
-
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.kml.Folder;
@@ -17,12 +20,6 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
 
 public class KMLPlacemarkTransformTest extends TestCase {
 
@@ -78,15 +75,21 @@ public class KMLPlacemarkTransformTest extends TestCase {
         GeometryFactory gf = new GeometryFactory();
         fb.set("Geometry", gf.createPoint(new Coordinate(3d, 4d)));
         SimpleFeature feature = fb.buildFeature("testgeometry");
-        assertEquals("Unexpected Geometry class", Point.class, feature.getAttribute("Geometry")
-                .getClass());
-        assertEquals("Unexpected default geometry", Point.class, feature.getDefaultGeometry()
-                .getClass());
+        assertEquals(
+                "Unexpected Geometry class",
+                Point.class,
+                feature.getAttribute("Geometry").getClass());
+        assertEquals(
+                "Unexpected default geometry",
+                Point.class,
+                feature.getDefaultGeometry().getClass());
         SimpleFeature result = kmlPlacemarkTransform.convertFeature(feature, transformedType);
-        assertEquals("Invalid Geometry class", Point.class, result.getAttribute("Geometry")
-                .getClass());
-        assertEquals("Unexpected default geometry", Point.class, feature.getDefaultGeometry()
-                .getClass());
+        assertEquals(
+                "Invalid Geometry class", Point.class, result.getAttribute("Geometry").getClass());
+        assertEquals(
+                "Unexpected default geometry",
+                Point.class,
+                feature.getDefaultGeometry().getClass());
     }
 
     public void testLookAtProperty() throws Exception {
@@ -95,11 +98,15 @@ public class KMLPlacemarkTransformTest extends TestCase {
         Coordinate c = new Coordinate(3d, 4d);
         fb.set("LookAt", gf.createPoint(c));
         SimpleFeature feature = fb.buildFeature("testlookat");
-        assertEquals("Unexpected LookAt attribute class", Point.class,
+        assertEquals(
+                "Unexpected LookAt attribute class",
+                Point.class,
                 feature.getAttribute("LookAt").getClass());
         SimpleFeature result = kmlPlacemarkTransform.convertFeature(feature, transformedType);
-        assertEquals("Invalid LookAt attribute class", Point.class, result.getAttribute("LookAt")
-                .getClass());
+        assertEquals(
+                "Invalid LookAt attribute class",
+                Point.class,
+                result.getAttribute("LookAt").getClass());
     }
 
     public void testFolders() throws Exception {

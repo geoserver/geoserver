@@ -6,20 +6,18 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:DescribeFeatureTypeType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="DescribeFeatureTypeType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -83,6 +81,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
@@ -92,9 +91,7 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.DESCRIBEFEATURETYPETYPE;
     }
@@ -104,6 +101,7 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -114,21 +112,20 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        DescribeFeatureTypeType describeFeatureType = wfsfactory
-            .createDescribeFeatureTypeType();
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        DescribeFeatureTypeType describeFeatureType = wfsfactory.createDescribeFeatureTypeType();
 
-        //&lt;xsd:element maxOccurs="unbounded" minOccurs="0"
+        // &lt;xsd:element maxOccurs="unbounded" minOccurs="0"
         //   name="TypeName" type="xsd:QName"&gt;
         describeFeatureType.getTypeName().addAll(node.getChildValues(QName.class));
 
-        //lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
+        // lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
         //   name="outputFormat" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("outputFormat")) {
             describeFeatureType.setOutputFormat((String) node.getAttributeValue("outputFormat"));

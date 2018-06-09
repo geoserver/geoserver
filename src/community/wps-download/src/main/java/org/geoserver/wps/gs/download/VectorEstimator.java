@@ -5,9 +5,9 @@
  */
 package org.geoserver.wps.gs.download;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -21,13 +21,11 @@ import org.opengis.filter.spatial.Intersects;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * Checks whether or not the provided request exceeds the provided download limits for a vectorial resource.
- * 
+ * Checks whether or not the provided request exceeds the provided download limits for a vectorial
+ * resource.
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
- * 
  */
 class VectorEstimator {
 
@@ -38,8 +36,9 @@ class VectorEstimator {
 
     /**
      * Constructor.
-     * 
-     * @param limits an instance of the {@link DownloadEstimatorProcess} that contains the limits to enforce
+     *
+     * @param limits an instance of the {@link DownloadEstimatorProcess} that contains the limits to
+     *     enforce
      */
     public VectorEstimator(DownloadServiceConfiguration limits) {
         this.downloadServiceConfiguration = limits;
@@ -47,7 +46,7 @@ class VectorEstimator {
 
     /**
      * Checks whether or not the requests exceed download limits for vector data.
-     * 
+     *
      * @param resourceInfo the {@link FeatureTypeInfo} to download from
      * @param roi the {@link Geometry} for the clip/intersection
      * @param clip whether or not to clip the resulting data (useless for the moment)
@@ -57,8 +56,13 @@ class VectorEstimator {
      * @return <code>true</code> if we do not exceeds the limits, <code>false</code> otherwise.
      * @throws Exception in case something bad happens.
      */
-    public boolean execute(FeatureTypeInfo resourceInfo, Geometry roi, boolean clip, Filter filter,
-            CoordinateReferenceSystem targetCRS, final ProgressListener progressListener)
+    public boolean execute(
+            FeatureTypeInfo resourceInfo,
+            Geometry roi,
+            boolean clip,
+            Filter filter,
+            CoordinateReferenceSystem targetCRS,
+            final ProgressListener progressListener)
             throws Exception {
 
         //
@@ -93,8 +97,9 @@ class VectorEstimator {
         //
 
         // access feature source and collection of features
-        final SimpleFeatureSource featureSource = (SimpleFeatureSource) resourceInfo
-                .getFeatureSource(null, GeoTools.getDefaultHints());
+        final SimpleFeatureSource featureSource =
+                (SimpleFeatureSource)
+                        resourceInfo.getFeatureSource(null, GeoTools.getDefaultHints());
 
         // basic filter preparation
         Filter ra = Filter.INCLUDE;
@@ -109,12 +114,13 @@ class VectorEstimator {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Adding Geometry filter with ROI");
             }
-            final String dataGeomName = featureSource.getSchema().getGeometryDescriptor()
-                    .getLocalName();
-            final Intersects intersectionFilter = FeatureUtilities.DEFAULT_FILTER_FACTORY
-                    .intersects(FeatureUtilities.DEFAULT_FILTER_FACTORY.property(dataGeomName),
-                            FeatureUtilities.DEFAULT_FILTER_FACTORY.literal(roiManager
-                                    .getSafeRoiInNativeCRS()));
+            final String dataGeomName =
+                    featureSource.getSchema().getGeometryDescriptor().getLocalName();
+            final Intersects intersectionFilter =
+                    FeatureUtilities.DEFAULT_FILTER_FACTORY.intersects(
+                            FeatureUtilities.DEFAULT_FILTER_FACTORY.property(dataGeomName),
+                            FeatureUtilities.DEFAULT_FILTER_FACTORY.literal(
+                                    roiManager.getSafeRoiInNativeCRS()));
             ra = FeatureUtilities.DEFAULT_FILTER_FACTORY.and(ra, intersectionFilter);
         }
 
@@ -126,7 +132,8 @@ class VectorEstimator {
         // read
         int count = featureSource.getCount(new Query("counter", ra));
         if (count < 0) {
-            // a value minor than "0" means that the store does not provide any counting feature ... lets proceed using the iterator
+            // a value minor than "0" means that the store does not provide any counting feature ...
+            // lets proceed using the iterator
             SimpleFeatureCollection features = featureSource.getFeatures(ra);
             count = features.size();
         }
@@ -140,8 +147,8 @@ class VectorEstimator {
         }
         if (maxFeatures > 0 && count > maxFeatures) {
             if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE, "MaxFeatures limit exceeded. " + count + " > "
-                        + maxFeatures);
+                LOGGER.log(
+                        Level.SEVERE, "MaxFeatures limit exceeded. " + count + " > " + maxFeatures);
             }
             return false;
         }

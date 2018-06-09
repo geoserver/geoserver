@@ -6,7 +6,6 @@
 package org.geoserver.web.admin;
 
 import java.util.List;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -21,32 +20,29 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.LockingManager;
-/** 
- * 
- * @author Arne Kepp, The Open Planning Project
- */
+
+/** @author Arne Kepp, The Open Planning Project */
 @SuppressWarnings("serial")
 public abstract class ServerAdminPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = 4712657652337914993L;
 
-    public IModel<GeoServer> getGeoServerModel(){
-        return new LoadableDetachableModel<GeoServer>(){
+    public IModel<GeoServer> getGeoServerModel() {
+        return new LoadableDetachableModel<GeoServer>() {
             public GeoServer load() {
                 return getGeoServerApplication().getGeoServer();
             }
         };
     }
 
-    public IModel<GeoServerInfo> getGlobalInfoModel(){
-        return new LoadableDetachableModel<GeoServerInfo>(){
+    public IModel<GeoServerInfo> getGlobalInfoModel() {
+        return new LoadableDetachableModel<GeoServerInfo>() {
             public GeoServerInfo load() {
                 return getGeoServerApplication().getGeoServer().getGlobal();
             }
         };
     }
 
-    
-    public IModel<JAIInfo> getJAIModel(){
+    public IModel<JAIInfo> getJAIModel() {
         // Notes setup on top of an explanation provided by Gabriel Roldan for
         // his patch which fixes the modificationProxy unable to detect changes
         // --------------------------------------------------------------------
@@ -61,8 +57,8 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         JAIInfo currJaiInfo = getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
         return new Model<JAIInfo>(currJaiInfo);
     }
- 
-    public IModel<CoverageAccessInfo> getCoverageAccessModel(){
+
+    public IModel<CoverageAccessInfo> getCoverageAccessModel() {
         // Notes setup on top of an explanation provided by Gabriel Roldan for
         // his patch which fixes the modificationProxy unable to detect changes
         // --------------------------------------------------------------------
@@ -74,22 +70,20 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // is actually setting the same object reference, and hence the
         // modificationProxy does not count it as a change.
 
-        CoverageAccessInfo currCoverageAccessInfo = getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
+        CoverageAccessInfo currCoverageAccessInfo =
+                getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
         return new Model<CoverageAccessInfo>(currCoverageAccessInfo);
     }
-    
+
     @Deprecated
-    public IModel<ContactInfo> getContactInfoModel(){
-        return new LoadableDetachableModel<ContactInfo>(){
+    public IModel<ContactInfo> getContactInfoModel() {
+        return new LoadableDetachableModel<ContactInfo>() {
             public ContactInfo load() {
-                return getGeoServerApplication()
-                    .getGeoServer()
-                    .getGlobal()
-                    .getContact();
+                return getGeoServerApplication().getGeoServer().getGlobal().getContact();
             }
         };
     }
-    
+
     public IModel<LoggingInfo> getLoggingInfoModel() {
         return new LoadableDetachableModel<LoggingInfo>() {
             @Override
@@ -99,7 +93,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         };
     }
 
-    private synchronized int getLockCount(){
+    private synchronized int getLockCount() {
         int count = 0;
 
         for (DataStoreInfo meta : getDataStores()) {
@@ -109,16 +103,16 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
             }
 
             try {
-                DataAccess<?,?> store = meta.getDataStore(null);
-                if(store instanceof DataStore) {
+                DataAccess<?, ?> store = meta.getDataStore(null);
+                if (store instanceof DataStore) {
                     LockingManager lockingManager = ((DataStore) store).getLockingManager();
-                    if (lockingManager != null){
+                    if (lockingManager != null) {
                         // we can't actually *count* locks right now?
                         // count += lockingManager.getLockSet().size();
                     }
                 }
             } catch (IllegalStateException notAvailable) {
-                continue; 
+                continue;
             } catch (Throwable huh) {
                 continue;
             }
@@ -133,14 +127,14 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         for (DataStoreInfo meta : getDataStores()) {
             if (!meta.isEnabled()) {
                 // Don't count connections from disabled datastores.
-                continue; 
+                continue;
             }
 
             try {
                 meta.getDataStore(null);
             } catch (Throwable notAvailable) {
-                //TODO: Logging.
-                continue; 
+                // TODO: Logging.
+                continue;
             }
 
             count += 1;
@@ -149,8 +143,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         return count;
     }
 
-    private List<DataStoreInfo> getDataStores(){
+    private List<DataStoreInfo> getDataStores() {
         return getGeoServerApplication().getGeoServer().getCatalog().getDataStores();
     }
 }
-

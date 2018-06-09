@@ -14,9 +14,8 @@ import org.restlet.resource.Resource;
 
 /**
  * {@link Finder} implementation returning a {@link ResumableUploadCatalogResource}.
- * 
- * @author Nicola Lagomarsini
  *
+ * @author Nicola Lagomarsini
  */
 public class ResumableUploadCatalogFinder extends AbstractCatalogFinder {
     /** Manager for the Resumable REST upload */
@@ -28,13 +27,12 @@ public class ResumableUploadCatalogFinder extends AbstractCatalogFinder {
 
     @Override
     public Resource findTarget(Request request, Response response) {
-        return new ResumableUploadCatalogResource(getContext(), request, response, catalog,
-                resumableUploadResourceManager);
+        return new ResumableUploadCatalogResource(
+                getContext(), request, response, catalog, resumableUploadResourceManager);
     }
 
     public void setResumableUploadResourceManager(
             ResumableUploadResourceManager resumableUploadResourceManager) {
         this.resumableUploadResourceManager = resumableUploadResourceManager;
     }
-
 }

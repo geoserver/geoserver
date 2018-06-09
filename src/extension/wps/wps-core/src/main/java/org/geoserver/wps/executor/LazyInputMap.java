@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
 import org.geotools.util.NullProgressListener;
@@ -22,7 +21,7 @@ import org.opengis.util.ProgressListener;
 /**
  * A map using input providers internally, allows for deferred execution of the input parsing (it
  * happens in a single shot when the first input is fetched)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class LazyInputMap extends AbstractMap<String, Object> {
@@ -51,7 +50,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
         // return the value
         return values.get(key);
     }
-    
+
     private void parseInputs() {
         // we want to (try to) actually parse stuff just once
         if (parsed) {
@@ -68,15 +67,19 @@ class LazyInputMap extends AbstractMap<String, Object> {
         listener.started();
         float stepsSoFar = 0;
         for (InputProvider provider : providers.values()) {
-            listener.setTask(new SimpleInternationalString("Retrieving/parsing process input: "
-                    + provider.getInputId()));
+            listener.setTask(
+                    new SimpleInternationalString(
+                            "Retrieving/parsing process input: " + provider.getInputId()));
             try {
                 // force parsing
                 float providerLongSteps = provider.longStepCount();
                 ProgressListener subListener;
                 if (providerLongSteps > 0) {
-                    subListener = new SubProgressListener(listener,
-                            (stepsSoFar / totalSteps) * 100, (providerLongSteps / totalSteps) * 100);
+                    subListener =
+                            new SubProgressListener(
+                                    listener,
+                                    (stepsSoFar / totalSteps) * 100,
+                                    (providerLongSteps / totalSteps) * 100);
                 } else {
                     subListener = new NullProgressListener();
                 }
@@ -90,8 +93,8 @@ class LazyInputMap extends AbstractMap<String, Object> {
                 if (e instanceof WPSException) {
                     throw (WPSException) e;
                 }
-                throw new WPSException("Failed to retrieve value for input "
-                        + provider.getInputId(), e);
+                throw new WPSException(
+                        "Failed to retrieve value for input " + provider.getInputId(), e);
             }
         }
     }
@@ -104,10 +107,10 @@ class LazyInputMap extends AbstractMap<String, Object> {
         }
         return result;
     }
-    
+
     public int longStepCount() {
         int count = 0;
-        for (InputProvider provider: providers.values()) {
+        for (InputProvider provider : providers.values()) {
             count += provider.longStepCount();
         }
         return count;
@@ -136,16 +139,14 @@ class LazyInputMap extends AbstractMap<String, Object> {
         public Object setValue(Object value) {
             throw new UnsupportedOperationException();
         }
-
     }
 
     /**
      * The listener will be informed of the parse progress, when it happens
+     *
      * @param listener
      */
     public void setListener(ProgressListener listener) {
         this.listener = listener;
     }
-
-    
 }

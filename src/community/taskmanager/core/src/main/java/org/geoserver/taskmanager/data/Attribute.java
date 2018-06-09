@@ -8,22 +8,20 @@ import java.io.Serializable;
 
 /**
  * Represents an attribute in a configuration.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface Attribute extends Serializable, Identifiable {
 
     String getName();
-    
-    void setName(String name);
-    
-    String getValue();
-    
-    void setValue(String value);
-    
-    Configuration getConfiguration();
-    
-    void setConfiguration(Configuration configuration);
 
+    void setName(String name);
+
+    String getValue();
+
+    void setValue(String value);
+
+    Configuration getConfiguration();
+
+    void setConfiguration(Configuration configuration);
 }
